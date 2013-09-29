@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  - Base application context definition for "springapp" DispatcherServlet.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+    xmlns:cloud="http://schema.cloudfoundry.org/spring"
+    
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                http://www.springframework.org/schema/aop
+                http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+                http://www.springframework.org/schema/data/mongo
+                http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+                http://schema.cloudfoundry.org/spring
+                http://schema.cloudfoundry.org/spring/cloudfoundry-spring-0.8.xsd">
+	<import resource="config.xml"/>
+    <import resource="managers.xml"/>
+    <import resource="security.xml"/>
+    <import resource="services.xml"/>
+
+    <bean id="requestInitInterceptor" class="com.wavemaker.runtime.interceptor.RequestInitInterceptor">
+        <property name="runtime">
+            <ref bean="runtime"/>
+        </property>
+        <property name="runtimeAccess">
+            <ref bean="runtimeAccess"/>
+        </property>
+        <property name="internalRuntime">
+            <ref bean="internalRuntime"/>
+        </property>
+    </bean>
+
+	<bean id="multipartResolver"
+			class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+
+    <bean id="agJSONController"
+            class="com.wavemaker.runtime.server.JSONRPCController">
+        <property name="serviceManager">
+            <ref bean="serviceManager"/>
+        </property>
+        <property name="servletEventNotifier">
+            <ref bean="servletEventNotifier"/>
+        </property>
+        <property name="serviceEventNotifier">
+            <ref bean="serviceEventNotifier"/>
+        </property>
+        <property name="runtime">
+            <ref bean="runtime"/>
+        </property>
+        <property name="runtimeAccess">
+            <ref bean="runtimeAccess"/>
+        </property>
+        <property name="internalRuntime">
+            <ref bean="internalRuntime"/>
+        </property>
+		<property name="serviceResponse">
+            <ref bean="serviceResponse"/>
+        </property>
+
+        <!-- controller configuration -->
+        <property name="supportedMethods" value="POST" />
+    </bean>
+
+	<bean id="agFileUploadController"
+			class="com.wavemaker.runtime.server.FileUploadController">
+        <property name="serviceManager">
+            <ref bean="serviceManager"/>
+        </property>
+        <property name="servletEventNotifier">
+            <ref bean="servletEventNotifier"/>
+        </property>
+        <property name="serviceEventNotifier">
+            <ref bean="serviceEventNotifier"/>
+        </property>
+        <property name="runtime">
+            <ref bean="runtime"/>
+        </property>
+        <property name="runtimeAccess">
+            <ref bean="runtimeAccess"/>
+        </property>
+        <property name="internalRuntime">
+            <ref bean="internalRuntime"/>
+        </property>
+
+        <!-- controller configuration -->
+        <property name="supportedMethods" value="POST" />
+	</bean>
+
+	<bean id="agFlashFileUploadController"
+			class="com.wavemaker.runtime.server.FlashFileUploadController">
+        <property name="serviceManager">
+            <ref bean="serviceManager"/>
+        </property>
+        <property name="servletEventNotifier">
+            <ref bean="servletEventNotifier"/>
+        </property>
+        <property name="serviceEventNotifier">
+            <ref bean="serviceEventNotifier"/>
+        </property>
+        <property name="runtime">
+            <ref bean="runtime"/>
+        </property>
+        <property name="runtimeAccess">
+            <ref bean="runtimeAccess"/>
+        </property>
+        <property name="internalRuntime">
+            <ref bean="internalRuntime"/>
+        </property>
+
+        <!-- controller configuration -->
+        <property name="supportedMethods" value="POST" />
+	</bean>
+
+	<bean id="agFileDownloadController"
+			class="com.wavemaker.runtime.server.FileDownloadController">
+        <property name="serviceManager">
+            <ref bean="serviceManager"/>
+        </property>
+        <property name="servletEventNotifier">
+            <ref bean="servletEventNotifier"/>
+        </property>
+        <property name="serviceEventNotifier">
+            <ref bean="serviceEventNotifier"/>
+        </property>
+        <property name="runtime">
+            <ref bean="runtime"/>
+        </property>
+        <property name="runtimeAccess">
+            <ref bean="runtimeAccess"/>
+        </property>
+        <property name="internalRuntime">
+            <ref bean="internalRuntime"/>
+        </property>
+
+        <!-- controller configuration -->
+        <!--property name="supportedMethods" value="GET" /-->
+	</bean>
+
+	<bean id="wmModuleController"
+			class="com.wavemaker.runtime.module.ModuleController">
+        <property name="moduleManager">
+            <ref bean="moduleManager"/>
+        </property>
+
+        <!-- controller configuration -->
+        <property name="supportedMethods" value="GET" />
+	</bean>
+
+	<bean id="runtime" class="com.activegrid.runtime.AGRuntime">
+        <property name="runtimeAccess">
+            <ref bean="runtimeAccess"/>
+        </property>
+    </bean>
+
+	<bean id="runtimeAccess"
+			class="com.wavemaker.runtime.RuntimeAccess" scope="request">
+        <property name="serviceManager">
+            <ref bean="serviceManager"/>
+        </property>
+
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="internalRuntime"
+            class="com.wavemaker.runtime.server.InternalRuntime"
+            scope="request">
+        <aop:scoped-proxy/>
+    </bean>
+
+    <bean id="viewResolver"
+            class="org.springframework.web.servlet.view.ResourceBundleViewResolver">
+        <property name="basename" value="views"/>
+    </bean>
+
+    <bean id="fileController"
+            class="com.wavemaker.runtime.FileController">
+
+		<property name="moduleManager">
+            <ref bean="moduleManager"/>
+        </property>
+		<property name="serviceResponse">
+            <ref bean="serviceResponse"/>
+        </property>
+
+        <!-- controller configuration -->
+        <!--property name="supportedMethods" value="GET" /-->
+    </bean>
+    
+    <bean class="com.wavemaker.runtime.data.cloudfoundry.CloudFoundryDataServiceBeanFactoryPostProcessor"/>
+
+	<beans profile="default">
+		<bean id="serviceResponse" class="com.wavemaker.runtime.server.ServiceResponse" scope="singleton" lazy-init="true">
+			<property name="runtimeAccess">
+				<ref bean="runtimeAccess"/>
+			</property>
+			<!-- Set this value to your environment's connection timeout. Setting this value to zero means "no timeout" -->
+			<property name="connectionTimeout" value="0"/>
+		</bean>
+	</beans>
+	<beans profile="cloud">
+		<bean id="serviceResponse" class="com.wavemaker.runtime.server.ServiceResponse" scope="singleton" lazy-init="true">
+			<property name="runtimeAccess">
+				<ref bean="runtimeAccess"/>
+			</property>
+			<!-- Set this value to your environment's connection timeout. Setting this value to zero means "no timeout" -->
+			<property name="connectionTimeout" value="60"/>
+		</bean>
+	</beans>
+	<beans profile="cloud-test">
+		<bean id="serviceResponse" class="com.wavemaker.runtime.server.ServiceResponse" scope="singleton" lazy-init="true">
+			<property name="runtimeAccess">
+				<ref bean="runtimeAccess"/>
+			</property>
+			<!-- Set this value to your environment's connection timeout. Setting this value to zero means "no timeout" -->
+			<property name="connectionTimeout" value="60"/>
+		</bean>
+	</beans>
+</beans>

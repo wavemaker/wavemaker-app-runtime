@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<bean id="objectBean1"
+			class="com.wavemaker.runtime.server.testspring.BeanClass"
+			scope="singleton">
+		<property name="name" value="ObjectBean1" />
+	</bean>
+
+	<bean id="objectBean2"
+			class="com.wavemaker.runtime.server.testspring.BeanClass"
+			scope="singleton">
+		<property name="name" value="ObjectBean2" />
+	</bean>
+</beans>
