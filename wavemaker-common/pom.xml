@@ -5,9 +5,10 @@
 	<parent>
 		<groupId>com.wavemaker</groupId>
 		<artifactId>wavemaker-studio</artifactId>
-		<version>6.6.1.M3</version>
+		<version>0.0.1</version>
 	</parent>
 	<artifactId>wavemaker-common</artifactId>
+    <version>0.0.1</version>
 	<packaging>jar</packaging>
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
