@@ -24,20 +24,30 @@ public class WMRuntimeException extends RuntimeException {
 
     private final Integer msgId;
 
+    private MessageResource messageResource;
+
+    private Object insertions[];
+
     public WMRuntimeException(MessageResource resource) {
         this(resource.getMessage(), resource.getDetailMessage(), resource.getId());
+        this.messageResource = resource;
     }
 
     public WMRuntimeException(MessageResource resource, Throwable cause) {
         this(resource.getMessage(), resource.getDetailMessage(), resource.getId(), cause);
+        this.messageResource = resource;
     }
 
     public WMRuntimeException(MessageResource resource, Object... args) {
         this(resource.getMessage(args), resource.getDetailMessage(args), resource.getId());
+        this.messageResource = resource;
+        this.insertions = args;
     }
 
     public WMRuntimeException(MessageResource resource, Throwable cause, Object... args) {
         this(resource.getMessage(args), resource.getDetailMessage(args), resource.getId(), cause);
+        this.messageResource = resource;
+        this.insertions = args;
     }
 
     public WMRuntimeException(String message) {
@@ -76,5 +86,21 @@ public class WMRuntimeException extends RuntimeException {
 
     public Integer getMessageId() {
         return this.msgId;
+    }
+
+    public MessageResource getMessageResource() {
+        return messageResource;
+    }
+
+    public void setMessageResource(MessageResource messageResource) {
+        this.messageResource = messageResource;
+    }
+
+    public Object[] getInsertions() {
+        return insertions;
+    }
+
+    public void setInsertions(Object[] insertions) {
+        this.insertions = insertions;
     }
 }
