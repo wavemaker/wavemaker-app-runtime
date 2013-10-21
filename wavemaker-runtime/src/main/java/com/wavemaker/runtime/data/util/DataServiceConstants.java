@@ -133,12 +133,6 @@ public class DataServiceConstants {
 
     public static final String HSQL_URL_SUFFIX = ";shutdown=true;ifexists=true";
 
-    public static final String CURRENT_PROJECT_MANAGER = "currentProjectManager";
-
-    public static final String CURRENT_PROJECT_NAME = "currentProjectName";
-
-    public static final String CURRENT_PROJECT_APP_ROOT = "currentProjectRoot";
-
     public static final String WAVEMAKER_STUDIO = "WaveMaker Studio";
 
     public static final String TENANT_FIELD_PROPERTY_NAME = "tenantIdField";

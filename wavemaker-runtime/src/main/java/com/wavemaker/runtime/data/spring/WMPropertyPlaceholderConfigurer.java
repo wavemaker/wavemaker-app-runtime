@@ -18,7 +18,6 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.common.util.SystemUtils;
-import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 
@@ -33,15 +32,8 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
             return SystemUtils.decrypt(value);
         }
 
-        // In case of HSQLDB, replace the web root token with the web application root path
-        String path;
         if (value.contains(DataServiceConstants.WEB_ROOT_TOKEN)) {
-            String appName = WMAppContext.getInstance().getAppName();
-            if (appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
-                path = (String) RuntimeAccess.getInstance().getSession().getAttribute(DataServiceConstants.CURRENT_PROJECT_APP_ROOT);
-            } else {
-                path = WMAppContext.getInstance().getAppContextRoot();
-            }
+            String path = WMAppContext.getInstance().getAppContextRoot();
             value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
         }
         return value;

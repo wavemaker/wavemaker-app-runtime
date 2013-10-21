@@ -137,7 +137,7 @@ public class DataServiceMetaData_Hib implements DataServiceMetaData { // salesfo
     }
 
     @Override
-    public void init(String configurationName) {
+    public void init() {
     } // salesforce
 
     @Override

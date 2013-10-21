@@ -17,19 +17,20 @@ package com.wavemaker.runtime;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.support.ServletContextResource;
 
 import com.wavemaker.common.CommonConstants;
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 
 /**
@@ -48,15 +49,17 @@ public class WMAppContext {
 
     private String tenantColumnName = "";
 
-    private HashMap<String, ProjectInfo> hm;
-
     private ServletContext context;
 
     private String appName;
 
-    private JSONObject typesObj;
+    private JSONObject appTypesObj;
+
+    private Map<String, JSONObject> typesObjMap = new HashMap<String, JSONObject>();
 
     private final CloudEnvironment cloudEnvironment = new CloudEnvironment();
+
+    protected static final Logger logger = Logger.getLogger(WMAppContext.class);
 
     private WMAppContext(ServletContextEvent event) {
         this.context = event.getServletContext();
@@ -71,9 +74,9 @@ public class WMAppContext {
             try {
                 Resource typesResource = new ServletContextResource(this.context, "/types.js");
                 String s = IOUtils.toString(typesResource.getInputStream());
-                this.typesObj = new JSONObject(s.substring(11));
+                this.appTypesObj = new JSONObject(s.substring(11));
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("Cannot load types.js file for the application [" + appName + "]",e);
                 return;
             }
 
@@ -81,10 +84,8 @@ public class WMAppContext {
             Resource appPropsResource = null;
             try {
                 appPropsResource = new ServletContextResource(this.context, "/WEB-INF/" + CommonConstants.APP_PROPERTY_FILE);
-            } catch (WMRuntimeException re) {
-                return;
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("Cannot load app properties resource [" + CommonConstants.APP_PROPERTY_FILE + "]", e);
                 return;
             }
 
@@ -129,17 +130,7 @@ public class WMAppContext {
 
     public int getDefaultTenantID() {
         if (this.appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
-            String p = (String) RuntimeAccess.getInstance().getSession().getAttribute(DataServiceConstants.CURRENT_PROJECT_NAME);
-            if (this.hm == null) {
-                return DataServiceConstants.DEFAULT_TENANT_ID;
-            } else {
-                ProjectInfo pi = this.hm.get(p);
-                if (pi == null) {
-                    return DataServiceConstants.DEFAULT_TENANT_ID;
-                } else {
-                    return pi.defTenantId;
-                }
-            }
+            return DataServiceConstants.DEFAULT_TENANT_ID;
         } else {
             return this.defaultTenantID;
         }
@@ -147,17 +138,7 @@ public class WMAppContext {
 
     public String getTenantFieldName() {
         if (this.appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
-            String p = (String) RuntimeAccess.getInstance().getSession().getAttribute(DataServiceConstants.CURRENT_PROJECT_NAME);
-            if (this.hm == null) {
-                return DataServiceConstants.DEFAULT_TENANT_FIELD;
-            } else {
-                ProjectInfo pi = this.hm.get(p);
-                if (pi == null) {
-                    return DataServiceConstants.DEFAULT_TENANT_FIELD;
-                } else {
-                    return pi.tenantFldName;
-                }
-            }
+            return DataServiceConstants.DEFAULT_TENANT_FIELD;
         } else {
             return this.tenantFieldName;
         }
@@ -165,52 +146,17 @@ public class WMAppContext {
 
     public String getTenantColumnName() {
         if (this.appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
-            String p = (String) RuntimeAccess.getInstance().getSession().getAttribute(DataServiceConstants.CURRENT_PROJECT_NAME);
-            if (this.hm == null) {
-                return "";
-            } else {
-                ProjectInfo pi = this.hm.get(p);
-                if (pi == null) {
-                    return "";
-                } else {
-                    return pi.tenantColName;
-                }
-            }
+            return "";
         } else {
             return this.tenantColumnName;
         }
     }
 
-    public void setTenantInfoForProj(String projName, String val1, int val2, String val3) {
-        if (this.hm == null) {
-            this.hm = new HashMap<String, ProjectInfo>();
-        }
-        ProjectInfo pi = new ProjectInfo(val1, val2, val3);
-        this.hm.put(projName, pi);
-    }
-
     public boolean isMultiTenant() {
-        String tf;
+        String tf = getTenantFieldName();
         boolean multiTenancy;
 
-        if (this.appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
-            String p = (String) RuntimeAccess.getInstance().getSession().getAttribute(DataServiceConstants.CURRENT_PROJECT_NAME);
-
-            if (this.hm == null) {
-                tf = DataServiceConstants.DEFAULT_TENANT_FIELD;
-            } else {
-                ProjectInfo pi = this.hm.get(p);
-                if (pi == null) {
-                    tf = DataServiceConstants.DEFAULT_TENANT_FIELD;
-                } else {
-                    tf = pi.tenantFldName;
-                }
-            }
-        } else {
-            tf = this.tenantFieldName;
-        }
-
-        if (tf.equalsIgnoreCase(DataServiceConstants.DEFAULT_TENANT_FIELD) || tf.length() == 0 || tf == null) {
+        if (tf == null || tf.length() == 0 || tf.equalsIgnoreCase(DataServiceConstants.DEFAULT_TENANT_FIELD)) {
             multiTenancy = false;
         } else {
             multiTenancy = true;
@@ -235,26 +181,18 @@ public class WMAppContext {
         return this.context.getRealPath("");
     }
 
-    public JSONObject getTypesObject() {
-        return this.typesObj;
-    }
-
-    public void setTypesObject(JSONObject val) {
-        this.typesObj = val;
-    }
-
-    class ProjectInfo {
-
-        String tenantFldName;
-
-        int defTenantId;
-
-        String tenantColName;
-
-        private ProjectInfo(String val1, int val2, String val3) {
-            this.tenantFldName = val1;
-            this.defTenantId = val2;
-            this.tenantColName = val3;
+    public JSONObject getTypesObject(String projectName) {
+        if(projectName == null) {//Goes inside during application run time
+            return appTypesObj;
         }
+        return this.typesObjMap.get(projectName);//in studio run time(app design time)
+    }
+
+    public void addTypesObject(String projectName, JSONObject val) {
+        this.typesObjMap.put(projectName, val);
+    }
+
+    public void removeTypesObject(String projectName) {
+        this.typesObjMap.remove(projectName);
     }
 }

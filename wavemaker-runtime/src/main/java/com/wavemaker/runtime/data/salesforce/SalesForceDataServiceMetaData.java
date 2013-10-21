@@ -68,16 +68,18 @@ public class SalesForceDataServiceMetaData implements DataServiceMetaData {
     // entities to refresh after insert/update
     private final Set<String> refreshEntities;
 
+    private final String projectName;
     // used for messages
     private final String configurationName;
 
     private String serviceClassName = null;
 
-    public SalesForceDataServiceMetaData(String configurationName) {
-        this(configurationName, Collections.<String, String> emptyMap());
+    public SalesForceDataServiceMetaData(String projectName, String configurationName) {
+        this(projectName, configurationName, Collections.<String, String> emptyMap());
     }
 
-    public SalesForceDataServiceMetaData(String configurationName, Map<String, String> properties) {
+    public SalesForceDataServiceMetaData(String projectName, String configurationName, Map<String, String> properties) {
+        this.projectName = projectName;
         this.configurationName = configurationName;
         // this.cfg = cfg;
 
@@ -99,13 +101,11 @@ public class SalesForceDataServiceMetaData implements DataServiceMetaData {
 
     /**
      * Must be called before calling any other methods on this instance.
-     * 
-     * @param configurationName A valid configuration name.
      */
     @Override
-    public void init(String configurationName) {
+    public void init() {
 
-        DataOperationFactory fac = initFactory(configurationName);
+        DataOperationFactory fac = initFactory();
 
         this.operationManager = new DataServiceOperationManager(fac, false);
     }
@@ -233,7 +233,7 @@ public class SalesForceDataServiceMetaData implements DataServiceMetaData {
         return null;
     }
 
-    private DataOperationFactory initFactory(String configurationName) {
+    private DataOperationFactory initFactory() {
         return new DataOperationFactory() {
 
             private static final String qfname = "com/sforce/queries/sforce-queries.xml";
@@ -287,7 +287,7 @@ public class SalesForceDataServiceMetaData implements DataServiceMetaData {
 
                 List<String> fldList;
 
-                SalesforceSupport sfs = new SalesforceSupport();
+                SalesforceSupport sfs = new SalesforceSupport(SalesForceDataServiceMetaData.this.projectName);
                 fldList = sfs.getColumns(query);
 
                 if (fldList == null || fldList.size() == 0) {
@@ -317,7 +317,7 @@ public class SalesForceDataServiceMetaData implements DataServiceMetaData {
 
                 List<String> types;
 
-                SalesforceSupport sfs = new SalesforceSupport();
+                SalesforceSupport sfs = new SalesforceSupport(SalesForceDataServiceMetaData.this.projectName);
                 try {
                     types = sfs.getColumnTypes(query);
                 } catch (Exception e) {

@@ -40,13 +40,16 @@ public class SalesforceDataServiceManager implements DataServiceManager {
 
     public static final Log txLogger = DataServiceLoggers.transactionLogger;
 
+    private final String projectName;
+
     private final PlatformTransactionManager txMgr;
 
     private final DataServiceMetaData metaData;
 
-    public SalesforceDataServiceManager(PlatformTransactionManager txMgr, TaskManager taskMgr, Map<String, String> properties) {
+    public SalesforceDataServiceManager(String projectName, PlatformTransactionManager txMgr, TaskManager taskMgr, Map<String, String> properties) {
+        this.projectName = projectName;
         this.txMgr = txMgr;
-        this.metaData = initMetaData(CommonConstants.SALESFORCE_SERVICE, properties);
+        this.metaData = initMetaData(projectName, CommonConstants.SALESFORCE_SERVICE, properties);
     }
 
     @Override
@@ -149,7 +152,7 @@ public class SalesforceDataServiceManager implements DataServiceManager {
             }
             Object rtn;
 
-            SalesforceSupport sfs = new SalesforceSupport();
+            SalesforceSupport sfs = new SalesforceSupport(projectName);
             if (this.named) {
                 rtn = sfs.runNamedQuery(this.types, this.input);
             } else {
@@ -168,10 +171,10 @@ public class SalesforceDataServiceManager implements DataServiceManager {
         return ctx.getTransactionStatus() != null;
     }
 
-    private static DataServiceMetaData initMetaData(String configurationName, final Map<String, String> properties) {
-        final DataServiceMetaData rtn = new SalesForceDataServiceMetaData(configurationName, properties);
+    private static DataServiceMetaData initMetaData(String projectName, String configurationName, final Map<String, String> properties) {
+        final DataServiceMetaData rtn = new SalesForceDataServiceMetaData(projectName, configurationName, properties);
 
-        rtn.init(configurationName);
+        rtn.init();
 
         return rtn;
     }

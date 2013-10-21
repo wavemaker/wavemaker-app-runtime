@@ -77,6 +77,12 @@ public class SalesforceSupport {
 
     Long recId;
 
+    private String projectName;
+
+    public SalesforceSupport(String projectName) {
+        this.projectName = projectName;
+    }
+
     public JSONObject getPickLists(String objClassName, JSONObject fieldAndValuePairs) throws Exception {
         JSONObject carrier = new JSONObject();
         String objName = getSalesforceObjName(objClassName);
@@ -1084,7 +1090,7 @@ public class SalesforceSupport {
             setupFields(sq.objectName);
             String apiObjName = getSforceAPIObjectName(sq.objectName);
 
-            org.json.JSONObject jsonObj = WMAppContext.getInstance().getTypesObject();
+            org.json.JSONObject jsonObj = WMAppContext.getInstance().getTypesObject(projectName);
             org.json.JSONObject classesObj = jsonObj.getJSONObject("types");
             String className = "com.sforce.soap.enterprise.salesforceservice." + apiObjName + "Type";
             org.json.JSONObject classObj = classesObj.getJSONObject(className);
