@@ -25,7 +25,7 @@ import com.wavemaker.common.util.ClassUtils;
 /**
  * All known resources defined in our resource bundles. These constants are meant to be used when instantiating a
  * WM(Runtime)Exception. The underlying message can be accessed using getMessage/getDetailMessage.
- * 
+ *
  * @author Simon Toens
  */
 public class MessageResource {
@@ -55,11 +55,11 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource JSONRPC_CONTROLLER_BAD_PARAMS_NON_EMPTY = new MessageResource(
-        "com.wavemaker.runtime.server$BadParamsNonEmpty");
+            "com.wavemaker.runtime.server$BadParamsNonEmpty");
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource JSONRPC_CONTROLLER_BAD_PARAMS_UNKNOWN_TYPE = new MessageResource(
-        "com.wavemaker.runtime.server$BadParamsUnknownType");
+            "com.wavemaker.runtime.server$BadParamsUnknownType");
 
     // input: service name, length of classes list
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
@@ -116,7 +116,7 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
     public static final MessageResource JSONPARAMETER_COULD_NOTLLOAD_TYPE = new MessageResource(
-        "com.wavemaker.runtime.server$JSONParameterCouldNotLoadType");
+            "com.wavemaker.runtime.server$JSONParameterCouldNotLoadType");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource RUNTIME_UNINITIALIZED = new MessageResource("com.wavemaker.runtime.server$RuntimeUninitialized");
@@ -240,7 +240,7 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
     public static final MessageResource PROJECT_NEWER_THAN_STUDIO = new MessageResource("com.wavemaker.tools$ProjectNewerThanStudio");
-     
+
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource NO_DATA_SERVICE_MGR_BEAN_FOUND = new MessageResource("com.wavemaker.tools$NoDataServiceMgrBeanFound");
 
@@ -252,7 +252,7 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource PROJECT_TOO_MANY_SERVICE_WIRES = new MessageResource("com.wavemaker.tools.project$TooManyServiceWires");
-    
+
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource PROJECT_TOO_OLD_FOR_UPGRADE = new MessageResource("com.wavemaker.tools$ProjectTooOldForUpgrade");
 
@@ -413,7 +413,14 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource JSON_BAD_CYCLE_HANDLER = new MessageResource("com.wavemaker.json$UnknownCycleHandler");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource VALUE_COULD_NOT_NULL = new MessageResource("com.wavemaker.json$ValueCouldNotBeNULL");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource IllEGAL_ARGUMENT_VALUE = new MessageResource("com.wavemaker.json$IllegalArgumentValue");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
+
     static {
 
         Map<MessageResource, ResourceConstraint> m = new HashMap<MessageResource, ResourceConstraint>();
@@ -484,7 +491,7 @@ public class MessageResource {
         if (numArgsRequired > 0) {
             if (args == null || args.length != numArgsRequired) {
                 throw new IllegalArgumentException(key + ": " + "args don't match.  msg requires: " + numArgsRequired + " " + "passed in: "
-                    + (args == null ? "null" : args.length));
+                        + (args == null ? "null" : args.length));
             }
         }
         return ResourceManager.getInstance().getMessage(key, args);
