@@ -414,10 +414,19 @@ public class MessageResource {
     public static final MessageResource JSON_BAD_CYCLE_HANDLER = new MessageResource("com.wavemaker.json$UnknownCycleHandler");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource VALUE_COULD_NOT_NULL = new MessageResource("com.wavemaker.json$ValueCouldNotBeNULL");
+    public static final MessageResource VALUE_COULD_NOT_NULL = new MessageResource("com.wavemaker.tools$ValueCouldNotBeNULL");
+
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource IllEGAL_ARGUMENT_VALUE = new MessageResource("com.wavemaker.tools$IllegalArgumentValue");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource IllEGAL_ARGUMENT_VALUE = new MessageResource("com.wavemaker.json$IllegalArgumentValue");
+    public static final MessageResource FAILED_TO_UNDEPLOY_PROJECT = new MessageResource("com.wavemaker.tools$FailedToUndeployProject");
+
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource ACTION_IS_REQUIRED = new MessageResource("com.wavemaker.tools$ActionIsRequired");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_ACTION = new MessageResource("com.wavemaker.tools$InvalidAction");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
