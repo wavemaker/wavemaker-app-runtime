@@ -422,11 +422,29 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_UNDEPLOY_PROJECT = new MessageResource("com.wavemaker.tools$FailedToUndeployProject");
 
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource ACTION_IS_REQUIRED = new MessageResource("com.wavemaker.tools$ActionIsRequired");
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_ACTION = new MessageResource("com.wavemaker.tools.deployment$InvalidAction");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource INVALID_ACTION = new MessageResource("com.wavemaker.tools$InvalidAction");
+    public static final MessageResource MISSING_FIELD_VALUE = new MessageResource("com.wavemaker.json$MissingFieldValue");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_FIELD_VALUE = new MessageResource("com.wavemaker.json$InvalidFieldValue");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_OBJECT = new MessageResource("com.wavemaker.json$InvalidObject");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource UNRECOGNIZED_FIELD = new MessageResource("com.wavemaker.json$UnrecognizedField");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_JSON = new MessageResource("com.wavemaker.json$InvalidJsonObject");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource MESSAGE_NOT_READABLE = new MessageResource("com.wavemaker.json$MessageNotReadable");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource UNEXPECTED_ERROR = new MessageResource("com.wavemaker.json$UnexpectedError");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
