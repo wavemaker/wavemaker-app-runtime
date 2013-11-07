@@ -284,6 +284,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource SERVICE_ALREADY_EXIST = new MessageResource("com.wavemaker.tools$ServiceAlreadyExist");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource SAMPLE_DATABASE_ALREADY_EXIST = new MessageResource("com.wavemaker.tools$SampleDataBaseAlreadyExist");
+
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource INVALID_CLASS_NAME = new MessageResource("com.wavemaker.tools$InvalidClassName");
 
