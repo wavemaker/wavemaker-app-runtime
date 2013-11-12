@@ -327,6 +327,9 @@ public class MessageResource {
     public static final MessageResource UNSET_SCHEMA = new MessageResource("com.wavemaker.tools.data$SchemaShouldNotBeSet");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource INVALID_SCHEMA = new MessageResource("com.wavemaker.tools$InvalidSchema");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource CATALOG_SHOULD_BE_SET = new MessageResource("com.wavemaker.tools.data$CatalogShouldBeSet");
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
