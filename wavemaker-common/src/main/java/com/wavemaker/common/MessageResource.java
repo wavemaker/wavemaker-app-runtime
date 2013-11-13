@@ -455,6 +455,15 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource UNEXPECTED_ERROR = new MessageResource("com.wavemaker.json$UnexpectedError");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource ONLY_ZIP_FILES_ALLOWED_FOR_PREFABS = new MessageResource("com.wavemaker.json$onlyZipFilesAllowedForPrefabs");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource ALREADY_PREFAB_EXISTS = new MessageResource("com.wavemaker.json$alreadyPrefabExists");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PREFAB_DOES_NOT_EXIST = new MessageResource("com.wavemaker.json$prefabdoesNotExist");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
