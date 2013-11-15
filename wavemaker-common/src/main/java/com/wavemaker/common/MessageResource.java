@@ -329,6 +329,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource INVALID_SCHEMA = new MessageResource("com.wavemaker.tools$InvalidSchema");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FILE_OR_DIRECTORY_NOT_EXIST = new MessageResource("com.wavemaker.tools$FileOrDirectoryNotExist");
+
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource CATALOG_SHOULD_BE_SET = new MessageResource("com.wavemaker.tools.data$CatalogShouldBeSet");
 
@@ -463,6 +466,9 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource PREFAB_DOES_NOT_EXIST = new MessageResource("com.wavemaker.json$prefabdoesNotExist");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource NOT_A_FILE = new MessageResource("com.wavemaker.json$prefabdoesNotExist");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
