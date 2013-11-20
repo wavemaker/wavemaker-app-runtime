@@ -470,6 +470,27 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource NOT_A_FILE = new MessageResource("com.wavemaker.json$prefabdoesNotExist");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource USERNAME_ALREADY_EXISTS = new MessageResource("com.wavemaker.usernameAlreadyExists");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource EMAIL_ALREADY_EXISTS = new MessageResource("com.wavemaker.emailAlreadyExists");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_TOKEN = new MessageResource("com.wavemaker.invalidToken");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource USER_IS_ALREADY_CONFIRMED = new MessageResource("com.wavemaker.userAlreadyConfirmed");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource USER_DNE_WITH_USERNAME = new MessageResource("com.wavemaker.noUserWithUsername");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource USER_DNE_WITH_EMAIL = new MessageResource("com.wavemaker.noUserWithEmail");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource RESOURCE_DNE_WITH_ID = new MessageResource("com.wavemaker.resourceDNEWithId");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {

@@ -14,6 +14,8 @@
 
 package com.wavemaker.runtime.data.spring;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import com.wavemaker.common.util.StringUtils;
@@ -26,6 +28,9 @@ import com.wavemaker.runtime.data.util.DataServiceConstants;
  */
 public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
 
+    private static final String RANDOM_STRING = "{randomStr}";
+    private static final String TMP_DIR = "{tmpDir}";
+
     @Override
     protected String convertPropertyValue(String value) {
         if (SystemUtils.isEncrypted(value)) {
@@ -35,6 +40,15 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
         if (value.contains(DataServiceConstants.WEB_ROOT_TOKEN)) {
             String path = WMAppContext.getInstance().getAppContextRoot();
             value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
+        }
+
+        if(value.contains(RANDOM_STRING)) {
+            String randomStr = UUID.randomUUID().toString();
+            value = StringUtils.replacePlainStr(value, RANDOM_STRING, randomStr);
+        }
+        if(value.contains(TMP_DIR)) {
+            String tmpDir = System.getProperty("java.io.tmpdir");
+            value = StringUtils.replacePlainStr(value, TMP_DIR, tmpDir);
         }
         return value;
     }
