@@ -491,6 +491,12 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource RESOURCE_DNE_WITH_ID = new MessageResource("com.wavemaker.resourceDNEWithId");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DEPLOYMENT_ID_COUlD_NOT_BE_NULL = new MessageResource("com.wavemaker.deploymentIdCouldNotBeNull");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource DEPLOYMENT_ID_DOES_NOT_EXIST = new MessageResource("com.wavemaker.deploymentIdDoesNotExist");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
@@ -563,7 +569,7 @@ public class MessageResource {
         if (numArgsRequired > 0) {
             if (args == null || args.length != numArgsRequired) {
                 throw new IllegalArgumentException(key + ": " + "args don't match.  msg requires: " + numArgsRequired + " " + "passed in: "
-                        + (args == null ? "null" : args.length));
+                                                           + (args == null ? "null" : args.length));
             }
         }
         return ResourceManager.getInstance().getMessage(key, args);
