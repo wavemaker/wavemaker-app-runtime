@@ -14,36 +14,27 @@
 
 package com.wavemaker.json;
 
+import com.wavemaker.common.MessageResource;
+import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.EntryComparator;
+import com.wavemaker.common.util.Tuple;
+import com.wavemaker.json.type.*;
+import com.wavemaker.json.type.converters.WriteObjectConverter;
+import com.wavemaker.json.type.reflect.ObjectReflectTypeDefinition;
+import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.EntryComparator;
-import com.wavemaker.common.util.Tuple;
-import com.wavemaker.json.type.FieldDefinition;
-import com.wavemaker.json.type.GenericFieldDefinition;
-import com.wavemaker.json.type.MapTypeDefinition;
-import com.wavemaker.json.type.ObjectTypeDefinition;
-import com.wavemaker.json.type.PrimitiveTypeDefinition;
-import com.wavemaker.json.type.TypeState;
-import com.wavemaker.json.type.converters.WriteObjectConverter;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 
 /**
  * @author Matt Small
@@ -336,8 +327,8 @@ public final class JSONMarshaller {
             }
 
         } else if (fieldDefinition.getTypeDefinition() instanceof ObjectTypeDefinition) {
-            ObjectTypeDefinition otd = (ObjectTypeDefinition) fieldDefinition.getTypeDefinition();
-            if (otd.getTypeName().equals(obj.getClass().getName())) {
+            ObjectReflectTypeDefinition otd = (ObjectReflectTypeDefinition) fieldDefinition.getTypeDefinition();
+            if (otd.getKlass().isAssignableFrom(obj.getClass())) {
                 for (Entry<String, FieldDefinition> entry : otd.getFields().entrySet()) {
                     String name = entry.getKey();
                     fieldDefinition = entry.getValue();
