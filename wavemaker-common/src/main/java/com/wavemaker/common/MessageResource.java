@@ -330,7 +330,16 @@ public class MessageResource {
     public static final MessageResource INVALID_SCHEMA = new MessageResource("com.wavemaker.tools$InvalidSchema");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource FILE_OR_DIRECTORY_NOT_EXIST = new MessageResource("com.wavemaker.tools$FileOrDirectoryNotExist");
+    public static final MessageResource FILE_TYPE_NOT_SUPPORTED = new MessageResource("com.wavemaker.tools$FileTypeNotSupported");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PACKAGE_TYPE_NOT_SUPPORTED = new MessageResource("com.wavemaker.tools$PackageTypeNotSupported");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FILE_OR_DIRECTORY_NOT_EXIST = new MessageResource("com.wavemaker.tools$FileFormatNotSupported");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource UNABLE_TO_PARSE_XML = new MessageResource("com.wavemaker.tools$Unable_To_Parse_XML");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource CATALOG_SHOULD_BE_SET = new MessageResource("com.wavemaker.tools.data$CatalogShouldBeSet");
@@ -492,10 +501,12 @@ public class MessageResource {
     public static final MessageResource RESOURCE_DNE_WITH_ID = new MessageResource("com.wavemaker.resourceDNEWithId");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource DEPLOYMENT_ID_COUlD_NOT_BE_NULL = new MessageResource("com.wavemaker.deploymentIdCouldNotBeNull");
+    public static final MessageResource DEPLOYMENT_ID_COUlD_NOT_BE_NULL = new MessageResource("com.wavemaker.deployment$IdCouldNotBeNull");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource DEPLOYMENT_ID_DOES_NOT_EXIST = new MessageResource("com.wavemaker.deploymentIdDoesNotExist");
+    public static final MessageResource DEPLOYMENT_ID_DOES_NOT_EXIST = new MessageResource("com.wavemaker.deployment$IdDoesNotExist");
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DEPLOYMENT_INFO_COULD_NOT_BE_EMPTY_OR_NULL = new MessageResource("com.wavemaker.deployment$DeploymentInfoCouldNotBeEmptyOrNull");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
