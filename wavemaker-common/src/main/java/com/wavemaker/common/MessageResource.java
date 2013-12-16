@@ -232,6 +232,25 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource PROJECT_USERHOMEDNE = new MessageResource("com.wavemaker.tools$Project_UserHomeDNE");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource TEMPLATE_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools$TemplateDoesNotExist");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource TEMPLATE_ALREADY_EXIST = new MessageResource("com.wavemaker.tools$TemplateAlreadyExist");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_TEMPLATE = new MessageResource("com.wavemaker.tools$InvalidTemplate");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_PROJECT = new MessageResource("com.wavemaker.tools$InvalidProject");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_DELETE_TEMPLATE = new MessageResource("com.wavemaker.tools$FailedToDeleteTemplate");
+
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource SAVE_AS_NOT_POSSIBLE = new MessageResource("com.wavemaker.tools$SaveAsNotPossible");
+
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource PAGECP_SOURCEDNE = new MessageResource("com.wavemaker.tools$Pages_Copy_SourcePageDNE");
 

@@ -12,9 +12,7 @@
  *  limitations under the License.
  */
 
-package com.wavemaker.common.util;
-
-import com.wavemaker.common.WMRuntimeException;
+package com.wavemaker.common;
 
 /**
  * Add more details about method we're trying to invoke here.

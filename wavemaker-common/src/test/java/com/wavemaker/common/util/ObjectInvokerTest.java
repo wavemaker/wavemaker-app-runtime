@@ -20,6 +20,7 @@ package com.wavemaker.common.util;
 
 import java.util.Map;
 
+import com.wavemaker.common.MethodNotFoundRuntimeException;
 import com.wavemaker.infra.WMTestCase;
 
 /**
