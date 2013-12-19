@@ -51,7 +51,7 @@ import com.wavemaker.common.XMLException;
  */
 public class ProjectUtils {
 
-    public static final String DOC_BASE = "dobase";
+    public static final String DOC_BASE = "docBase";
 
     public static boolean replacePathInProjectXML(File xmlFile, String path) {
         if (xmlFile != null && xmlFile.exists()) {
