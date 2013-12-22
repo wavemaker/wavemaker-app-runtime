@@ -1,15 +1,4 @@
-
 package com.wavemaker.tools.cloudfoundry.timeout;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.io.IOException;
 
@@ -30,6 +19,16 @@ import org.mockito.MockitoAnnotations;
 
 import com.wavemaker.tools.cloudfoundry.timeout.monitor.HttpServletResponseMonitorFactory;
 import com.wavemaker.tools.cloudfoundry.timeout.monitor.MonitoredHttpServletResponseWrapper;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link TimeoutProtectionFilter}.
@@ -94,7 +93,7 @@ public class TimeoutProtectionFilterTest {
         this.filter.doFilter(this.request, this.response, this.chain);
         verify(this.protector).handleRequest(any(TimeoutProtectionHttpRequest.class));
         verify(this.chain).doFilter(eq(this.request), this.responseCaptor.capture());
-        assertThat(this.responseCaptor.getValue(), is(MonitoredHttpServletResponseWrapper.class));
+        assertThat((MonitoredHttpServletResponseWrapper)this.responseCaptor.getValue(), is(MonitoredHttpServletResponseWrapper.class));
     }
 
     @Test
