@@ -530,6 +530,21 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource DEPLOYMENT_INFO_COULD_NOT_BE_EMPTY_OR_NULL = new MessageResource("com.wavemaker.deployment$DeploymentInfoCouldNotBeEmptyOrNull");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource INVALID_CREDENTIALS = new MessageResource("com.wavemaker.invalidCredentials");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_AUTHENTICATE = new MessageResource("com.wavemaker.failedToAuthenticate");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource ACCESS_DENIED = new MessageResource("com.wavemaker.accessDenied");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource UNAUTHORIZED = new MessageResource("com.wavemaker.unAuthorized");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource USER_ALREADY_LOGGED_OUT = new MessageResource("com.wavemaker.userAlreadyLoggedOut");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
