@@ -358,7 +358,7 @@ public class MessageResource {
     public static final MessageResource PACKAGE_TYPE_NOT_SUPPORTED = new MessageResource("com.wavemaker.tools$PackageTypeNotSupported");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource FILE_OR_DIRECTORY_NOT_EXIST = new MessageResource("com.wavemaker.tools$FileFormatNotSupported");
+    public static final MessageResource FILE_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools$FileDoesNotExist");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource UNABLE_TO_PARSE_XML = new MessageResource("com.wavemaker.tools$Unable_To_Parse_XML");

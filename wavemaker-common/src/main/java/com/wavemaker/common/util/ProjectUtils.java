@@ -107,6 +107,6 @@ public class ProjectUtils {
                 throw new XMLException(MessageResource.UNABLE_TO_PARSE_XML);
             }
         }
-        throw new WMRuntimeException(MessageResource.FILE_OR_DIRECTORY_NOT_EXIST, xmlFile != null ? xmlFile.getName() : null);
+        throw new WMRuntimeException(MessageResource.FILE_DOES_NOT_EXIST, xmlFile != null ? xmlFile.getName() : null);
     }
 }

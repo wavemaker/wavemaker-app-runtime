@@ -16,7 +16,9 @@ package com.wavemaker.common;
 /**
  * @author Sunil Kumar
  */
-public class DeploymentException extends WMRuntimeException{
+public class DeploymentException extends WMRuntimeException {
+
+    private static final long serialVersionUID = 6041241082015545250L;
 
     public DeploymentException(MessageResource resource) {
         super(resource);

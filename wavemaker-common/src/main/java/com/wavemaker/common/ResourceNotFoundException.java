@@ -5,6 +5,7 @@ package com.wavemaker.common;
  */
 public class ResourceNotFoundException extends WMRuntimeException {
 
+    private static final long serialVersionUID = -3920445885731314103L;
 
     public ResourceNotFoundException(MessageResource resource) {
         super(resource);
