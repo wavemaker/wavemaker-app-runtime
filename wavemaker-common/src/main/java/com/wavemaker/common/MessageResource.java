@@ -309,6 +309,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource SAMPLE_DATABASE_ALREADY_EXIST = new MessageResource("com.wavemaker.tools$SampleDataBaseAlreadyExist");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource UNABLE_TO_FIND_FOREIGN_KEY_COLUMN = new MessageResource("com.wavemaker.tools$UnableToFindForeignKeyColumn");
+
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource INVALID_CLASS_NAME = new MessageResource("com.wavemaker.tools$InvalidClassName");
 
