@@ -188,7 +188,6 @@
         <!--property name="supportedMethods" value="GET" /-->
     </bean>
 
-    <bean class="com.wavemaker.runtime.data.cloudfoundry.CloudFoundryDataServiceBeanFactoryPostProcessor"/>
 
     <beans profile="default">
         <bean id="serviceResponse" class="com.wavemaker.runtime.server.ServiceResponse" scope="singleton"

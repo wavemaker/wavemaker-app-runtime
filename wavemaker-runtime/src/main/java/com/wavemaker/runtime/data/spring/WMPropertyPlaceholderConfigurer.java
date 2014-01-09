@@ -38,15 +38,17 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
         }
 
         if (value.contains(DataServiceConstants.WEB_ROOT_TOKEN)) {
-            String path = WMAppContext.getInstance().getAppContextRoot();
-            value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
+            if (WMAppContext.getInstance() != null) {
+                String path = WMAppContext.getInstance().getAppContextRoot();
+                value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
+            }
         }
 
-        if(value.contains(RANDOM_STRING)) {
+        if (value.contains(RANDOM_STRING)) {
             String randomStr = UUID.randomUUID().toString();
             value = StringUtils.replacePlainStr(value, RANDOM_STRING, randomStr);
         }
-        if(value.contains(TMP_DIR)) {
+        if (value.contains(TMP_DIR)) {
             String tmpDir = System.getProperty("java.io.tmpdir");
             value = StringUtils.replacePlainStr(value, TMP_DIR, tmpDir);
         }

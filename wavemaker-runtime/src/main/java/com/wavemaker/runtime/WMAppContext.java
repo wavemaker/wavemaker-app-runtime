@@ -25,7 +25,6 @@ import javax.servlet.ServletContextEvent;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.cloudfoundry.runtime.env.CloudEnvironment;
 import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.support.ServletContextResource;
@@ -57,8 +56,6 @@ public class WMAppContext {
 
     private Map<String, JSONObject> typesObjMap = new HashMap<String, JSONObject>();
 
-    private final CloudEnvironment cloudEnvironment = new CloudEnvironment();
-
     protected static final Logger logger = Logger.getLogger(WMAppContext.class);
 
     private WMAppContext(ServletContextEvent event) {
@@ -76,14 +73,15 @@ public class WMAppContext {
                 String s = IOUtils.toString(typesResource.getInputStream());
                 this.appTypesObj = new JSONObject(s.substring(11));
             } catch (Exception e) {
-                logger.warn("Cannot load types.js file for the application [" + appName + "]",e);
+                logger.warn("Cannot load types.js file for the application [" + appName + "]", e);
                 return;
             }
 
             // Set up multi-tenant info
             Resource appPropsResource = null;
             try {
-                appPropsResource = new ServletContextResource(this.context, "/WEB-INF/" + CommonConstants.APP_PROPERTY_FILE);
+                appPropsResource = new ServletContextResource(this.context, "/WEB-INF/"
+                        + CommonConstants.APP_PROPERTY_FILE);
             } catch (Exception e) {
                 logger.warn("Cannot load app properties resource [" + CommonConstants.APP_PROPERTY_FILE + "]", e);
                 return;
@@ -107,7 +105,8 @@ public class WMAppContext {
 
             this.tenantFieldName = props.getProperty(DataServiceConstants.TENANT_FIELD_PROPERTY_NAME);
             this.tenantColumnName = props.getProperty(DataServiceConstants.TENANT_COLUMN_PROPERTY_NAME);
-            this.defaultTenantID = Integer.parseInt(props.getProperty(DataServiceConstants.DEFAULT_TENANT_ID_PROPERTY_NAME));
+            this.defaultTenantID = Integer.parseInt(props
+                    .getProperty(DataServiceConstants.DEFAULT_TENANT_ID_PROPERTY_NAME));
         }
     }
 
@@ -165,14 +164,6 @@ public class WMAppContext {
         return multiTenancy;
     }
 
-    public boolean isCloudFoundry() {
-        return this.cloudEnvironment.getInstanceInfo() != null;
-    }
-
-    public CloudEnvironment getCloudEnvironment() {
-        return this.cloudEnvironment;
-    }
-
     public String getAppName() {
         return this.appName;
     }
@@ -182,10 +173,10 @@ public class WMAppContext {
     }
 
     public JSONObject getTypesObject(String projectName) {
-        if(projectName == null) {//Goes inside during application run time
+        if (projectName == null) {// Goes inside during application run time
             return appTypesObj;
         }
-        return this.typesObjMap.get(projectName);//in studio run time(app design time)
+        return this.typesObjMap.get(projectName);// in studio run time(app design time)
     }
 
     public void addTypesObject(String projectName, JSONObject val) {
