@@ -551,6 +551,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource USER_ALREADY_LOGGED_OUT = new MessageResource("com.wavemaker.userAlreadyLoggedOut");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource EMPTY_CLOUDJEE_ACCOUNT_DETAILS = new MessageResource("com.wavemaker.emptyCloudJeeAccountDetails");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
