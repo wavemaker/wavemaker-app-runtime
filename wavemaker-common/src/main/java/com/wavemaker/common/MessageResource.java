@@ -554,6 +554,12 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource EMPTY_CLOUDJEE_ACCOUNT_DETAILS = new MessageResource("com.wavemaker.emptyCloudJeeAccountDetails");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource OLD_PASSWORD_DOES_NOT_MATCH = new MessageResource("com.wavemaker.oldPasswordDoesNotMatch");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource NEW_PASSWORD_SAME_AS_OLD_PASSWORD = new MessageResource("com.wavemaker.newPasswordSameAsOldPassword");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
