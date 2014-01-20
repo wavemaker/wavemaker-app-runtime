@@ -172,18 +172,18 @@ public class WMAppContext {
         return this.context.getRealPath("");
     }
 
-    public JSONObject getTypesObject(String projectName) {
-        if (projectName == null) {// Goes inside during application run time
+    public JSONObject getTypesObject(String projectId) {
+        if (projectId == null) {// Goes inside during application run time
             return appTypesObj;
         }
-        return this.typesObjMap.get(projectName);// in studio run time(app design time)
+        return this.typesObjMap.get(projectId);// in studio run time(app design time)
     }
 
-    public void addTypesObject(String projectName, JSONObject val) {
-        this.typesObjMap.put(projectName, val);
+    public void addTypesObject(String projectId, JSONObject val) {
+        this.typesObjMap.put(projectId, val);
     }
 
-    public void removeTypesObject(String projectName) {
-        this.typesObjMap.remove(projectName);
+    public void removeTypesObject(String projectId) {
+        this.typesObjMap.remove(projectId);
     }
 }

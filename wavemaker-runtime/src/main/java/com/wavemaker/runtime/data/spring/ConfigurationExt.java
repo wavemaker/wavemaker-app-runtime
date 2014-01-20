@@ -16,14 +16,13 @@ package com.wavemaker.runtime.data.spring;
 
 import java.util.Iterator;
 
-import com.wavemaker.runtime.security.SecurityService;
 import org.dom4j.Element;
 import org.hibernate.MappingException;
 import org.hibernate.cfg.Configuration;
 
-import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.QueryHandler;
+import com.wavemaker.runtime.security.SecurityService;
 
 /**
  * @author Seung Lee
@@ -31,8 +30,6 @@ import com.wavemaker.runtime.data.util.QueryHandler;
 public class ConfigurationExt extends Configuration {
 
     private static final long serialVersionUID = 2733041879945822764L;
-
-    public static String projectName;
 
     public ConfigurationExt() {
         super();
