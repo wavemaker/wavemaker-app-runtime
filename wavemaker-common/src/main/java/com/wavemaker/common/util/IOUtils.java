@@ -187,11 +187,11 @@ public abstract class IOUtils {
      * 
      * @param is InputStream to read from.
      * @param os OutputStream to write to.
+     * @return returns the number of bytes actually written
      * @throws IOException
      */
-    public static void copy(InputStream is, OutputStream os) throws IOException {
-
-        org.apache.commons.io.IOUtils.copy(is, os);
+    public static int copy(InputStream is, OutputStream os) throws IOException {
+        return org.apache.commons.io.IOUtils.copy(is, os);
     }
 
     /**
