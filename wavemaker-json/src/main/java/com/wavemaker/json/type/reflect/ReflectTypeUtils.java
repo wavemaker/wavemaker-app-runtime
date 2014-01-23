@@ -135,12 +135,12 @@ public class ReflectTypeUtils {
         if (!strict) {
             if (type instanceof Class && Map.class.isAssignableFrom((Class<?>) type) && !Properties.class.isAssignableFrom((Class<?>) type)) {
                 if (!JSON.class.isAssignableFrom((Class<?>) type)) {
-                    logger.warn(MessageResource.JSON_TYPE_NOGENERICS.getMessage(type));
+                    logger.debug(MessageResource.JSON_TYPE_NOGENERICS.getMessage(type));
                 }
                 return null;
             } else if (type instanceof Class && List.class.isAssignableFrom((Class<?>) type)) {
                 if (!JSON.class.isAssignableFrom((Class<?>) type)) {
-                    logger.warn(MessageResource.JSON_TYPE_NOGENERICS.getMessage(type));
+                    logger.debug(MessageResource.JSON_TYPE_NOGENERICS.getMessage(type));
                 }
                 return null;
             }
@@ -218,7 +218,7 @@ public class ReflectTypeUtils {
                     } else if (pd.getWriteMethod() != null) {
                         paramType = pd.getWriteMethod().getGenericParameterTypes()[0];
                     } else {
-                        logger.warn("No getter in type " + pd.getName());
+                        logger.debug("No getter in type " + pd.getName());
                         continue;
                     }
 
@@ -289,7 +289,7 @@ public class ReflectTypeUtils {
                 ret.setArrayTypes(dimAndClass.v2);
             } else if (!strict && Collection.class.isAssignableFrom(returnTypeClass)) {
                 if (!JSON.class.isAssignableFrom(returnTypeClass)) {
-                    logger.warn(MessageResource.JSON_TYPE_NOGENERICS.getMessage(returnTypeClass));
+                    logger.debug(MessageResource.JSON_TYPE_NOGENERICS.getMessage(returnTypeClass));
                 }
 
                 ret.setArrayTypes(new ArrayList<ListTypeDefinition>(1));
@@ -318,7 +318,7 @@ public class ReflectTypeUtils {
                 if (strict) {
                     throw new WMRuntimeException(MessageResource.JSON_TYPE_UNKNOWNRAWTYPE, pt.getOwnerType(), pt);
                 } else {
-                    logger.warn(MessageResource.JSON_TYPE_UNKNOWNRAWTYPE.getMessage(pt.getOwnerType(), pt));
+                    logger.debug(MessageResource.JSON_TYPE_UNKNOWNRAWTYPE.getMessage(pt.getOwnerType(), pt));
                 }
             }
         } else if (type instanceof GenericArrayType) {
