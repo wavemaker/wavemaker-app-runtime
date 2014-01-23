@@ -23,7 +23,6 @@ import org.springframework.core.NamedThreadLocal;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.wavemaker.common.CommonConstants;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.WMRuntimeInitException;
 import com.wavemaker.runtime.service.ServiceManager;
@@ -60,6 +59,15 @@ public class RuntimeAccess {
     private HttpServletResponse response = null;
 
     private ServiceManager serviceManager = null;
+
+    private static String APPLICATION_HOST_URL = null;
+
+    private static int APPLICATION_HOST_PORT = 0;
+
+    private static boolean SECURED = false;
+
+    private static boolean iniitialized = false;
+
 
     private long startTime;
 
@@ -204,5 +212,26 @@ public class RuntimeAccess {
 
     public long getStartTime() {
         return this.startTime;
+    }
+
+    public static void init(HttpServletRequest httpServletRequest) {
+        if(!iniitialized) {
+            APPLICATION_HOST_URL = httpServletRequest.getServerName();
+            APPLICATION_HOST_PORT = httpServletRequest.getServerPort();
+            SECURED = httpServletRequest.isSecure();
+            iniitialized = true;
+        }
+    }
+
+    public static String getApplicationHostUrl() {
+        return APPLICATION_HOST_URL;
+    }
+
+    public static int getApplicationHostPort() {
+        return APPLICATION_HOST_PORT;
+    }
+
+    public static boolean isSecured() {
+        return SECURED;
     }
 }
