@@ -204,6 +204,9 @@ public class MessageResource {
     public static final MessageResource WS_REST_WSDL_MISSING_URL = new MessageResource("com.wavemaker.runtime.ws$RestWsdlMissingUrl");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PROVIDE_EITHER_WSDL_URL_OR_FILE = new MessageResource("com.wavemaker.runtime.ws$ProvideEitherWSDLURLOrFile");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource WS_WADL_METHOD_NOT_FOUND = new MessageResource("com.wavemaker.runtime.ws$WadlMethodNotFound");
 
     // input: name(s) of required property(ies)
