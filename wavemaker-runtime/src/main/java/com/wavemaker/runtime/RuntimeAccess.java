@@ -54,6 +54,10 @@ public class RuntimeAccess {
 
     private static ThreadLocal<RuntimeAccess> runtimeThreadLocal = new NamedThreadLocal<RuntimeAccess>("Wavemake Runtime");
 
+    private String projectId;
+
+    private String projectRoot;
+
     private HttpServletRequest request = null;
 
     private HttpServletResponse response = null;
@@ -233,5 +237,21 @@ public class RuntimeAccess {
 
     public static boolean isSecured() {
         return SECURED;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectRoot() {
+        return projectRoot;
+    }
+
+    public void setProjectRoot(String projectRoot) {
+        this.projectRoot = projectRoot;
     }
 }

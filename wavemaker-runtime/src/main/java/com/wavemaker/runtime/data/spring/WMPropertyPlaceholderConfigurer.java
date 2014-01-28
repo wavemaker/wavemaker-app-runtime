@@ -20,6 +20,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.common.util.SystemUtils;
+import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 
@@ -39,8 +40,19 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
 
         if (value.contains(DataServiceConstants.WEB_ROOT_TOKEN)) {
             if (WMAppContext.getInstance() != null) {
-                String path = WMAppContext.getInstance().getAppContextRoot();
-                value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
+                String appName = WMAppContext.getInstance().getAppName();
+                String path = "";
+                if (appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
+                    String projectRoot = RuntimeAccess.getInstance().getProjectRoot();
+                    if(projectRoot!= null) {
+                        path = projectRoot;
+                    }
+                } else {
+                    path = WMAppContext.getInstance().getAppContextRoot();
+                }
+                if(!path.isEmpty()) {
+                    value = StringUtils.replacePlainStr(value, DataServiceConstants.WEB_ROOT_TOKEN, path);
+                }
             }
         }
 

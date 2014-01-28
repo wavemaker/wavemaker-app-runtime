@@ -94,4 +94,10 @@ public class JsonView extends AbstractView implements TypedView {
     public void setRootType(FieldDefinition type) {
         this.rootType = type;
     }
+
+    @Override
+    protected Map<String, Object> createMergedOutputModel(Map<String, ?> model, HttpServletRequest request,
+                                                          HttpServletResponse response) {
+        return (Map<String, Object>) model;
+    }
 }

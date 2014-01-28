@@ -84,6 +84,8 @@ public class RequestInitInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        RuntimeAccess.setRuntimeBean(null);
+        //TODO need to cleanup InternalRuntime too
     }
 
     @Override
