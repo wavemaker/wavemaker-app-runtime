@@ -83,12 +83,20 @@ public class HTTPBindingSupport {
         }
         DataSource response = getResponse(serviceQName, portQName, endpointAddress, method, postSource, bindingProperties, DataSource.class,
             headerParams);
-
+        InputStream is = null;
         try {
-            InputStream is = new BufferedInputStream(response.getInputStream());
+            is = new BufferedInputStream(response.getInputStream());
             bytes = IOUtils.toByteArray(is);
         } catch (IOException e) {
             throw new WebServiceException(e);
+        } finally {
+            try {
+                if (is != null) {
+                    is.close();
+                }
+            } catch (IOException e) {
+                throw new WebServiceException(e);
+            }
         }
 
         IPwsResponseProcessor respProcessor;
