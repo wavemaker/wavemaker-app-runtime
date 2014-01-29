@@ -19,8 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.NamedThreadLocal;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.wavemaker.common.WMRuntimeException;
@@ -52,7 +52,8 @@ import com.wavemaker.runtime.service.reflect.ReflectServiceWire;
  */
 public class RuntimeAccess {
 
-    private static ThreadLocal<RuntimeAccess> runtimeThreadLocal = new NamedThreadLocal<RuntimeAccess>("Wavemake Runtime");
+    private static ThreadLocal<RuntimeAccess> runtimeThreadLocal = new NamedThreadLocal<RuntimeAccess>(
+            "Wavemake Runtime");
 
     private String projectId;
 
@@ -72,8 +73,9 @@ public class RuntimeAccess {
 
     private static boolean iniitialized = false;
 
-
     private long startTime;
+
+    private ApplicationContext appContext;
 
     /**
      * Do not use this constructor; instead, use either {@link #getInstance()} or access this class through bean
@@ -121,10 +123,11 @@ public class RuntimeAccess {
     /**
      * Get the service with the specified service id.
      * 
-     * @param serviceId The service ID to look for.
+     * @param serviceId
+     *            The service ID to look for.
      * @return The service bean (if a bean with the id exists).
-     * @throws WMRuntimeException If a bean with the specified id is not found, or if Spring has not yet initialized
-     *         this bean.
+     * @throws WMRuntimeException
+     *             If a bean with the specified id is not found, or if Spring has not yet initialized this bean.
      */
     @SuppressWarnings("deprecation")
     public Object getService(String serviceId) {
@@ -136,10 +139,12 @@ public class RuntimeAccess {
      * WMRuntimeException will be thrown if more than one bean matches the serviceType class. It may be better to use
      * {@link #getService(String)}, since the serviceId is guaranteed unique (whereas the service class is not).
      * 
-     * @param serviceType The class of the service to search for.
+     * @param serviceType
+     *            The class of the service to search for.
      * @return The service bean.
-     * @throws WMRuntimeException If a bean with the specified class is not found, more than one bean with the specified
-     *         class is found, or if Spring has not yet initialized this bean.
+     * @throws WMRuntimeException
+     *             If a bean with the specified class is not found, more than one bean with the specified class is
+     *             found, or if Spring has not yet initialized this bean.
      */
     @Deprecated
     public Object getService(Class<?> serviceType) {
@@ -154,10 +159,12 @@ public class RuntimeAccess {
      * Get the service of the corresponding service id. An WMRuntimeException will be thrown if more than one bean
      * matches the serviceType class.
      * 
-     * @param serviceId The id of the service to search for.
+     * @param serviceId
+     *            The id of the service to search for.
      * @return The service bean.
-     * @throws WMRuntimeException If a bean with the specified class is not found, more than one bean with the specified
-     *         class is found, or if Spring has not yet initialized this bean.
+     * @throws WMRuntimeException
+     *             If a bean with the specified class is not found, more than one bean with the specified class is
+     *             found, or if Spring has not yet initialized this bean.
      */
     public Object getServiceBean(String serviceId) {
         return ((ReflectServiceWire) this.getServiceWire(serviceId)).getServiceBean();
@@ -179,27 +186,24 @@ public class RuntimeAccess {
         this.serviceManager = serviceManager;
     }
 
-    /*public void setTenantId(int val) {
-        this.getSession().setAttribute(CommonConstants.LOGON_TENANT_ID, val);
-    }
-
-    public int getTenantId() {
-        Object o = this.getSession().getAttribute(CommonConstants.LOGON_TENANT_ID);
-        if (o == null) {
-            return -1;
-        }
-
-        return (Integer) o;
-    }*/
+    /*
+     * public void setTenantId(int val) { this.getSession().setAttribute(CommonConstants.LOGON_TENANT_ID, val); }
+     * 
+     * public int getTenantId() { Object o = this.getSession().getAttribute(CommonConstants.LOGON_TENANT_ID); if (o ==
+     * null) { return -1; }
+     * 
+     * return (Integer) o; }
+     */
 
     public Object getSpringBean(String beanId) {
-        if (this.request == null) {
-            return null;
+        if (this.appContext == null) {
+            if (this.request == null) {
+                return null;
+            }
+            ServletContext context = this.request.getSession().getServletContext();
+            appContext = WebApplicationContextUtils.getWebApplicationContext(context);
         }
-        ServletContext context = this.request.getSession().getServletContext();
-        WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(context);
-
-        return applicationContext.getBean(beanId);
+        return appContext.getBean(beanId);
     }
 
     public void setResponse(HttpServletResponse response) {
@@ -219,7 +223,7 @@ public class RuntimeAccess {
     }
 
     public static void init(HttpServletRequest httpServletRequest) {
-        if(!iniitialized) {
+        if (!iniitialized) {
             APPLICATION_HOST_URL = httpServletRequest.getServerName();
             APPLICATION_HOST_PORT = httpServletRequest.getServerPort();
             SECURED = httpServletRequest.isSecure();
@@ -253,5 +257,9 @@ public class RuntimeAccess {
 
     public void setProjectRoot(String projectRoot) {
         this.projectRoot = projectRoot;
+    }
+
+    public void setApplicationContext(ApplicationContext context) {
+        this.appContext = context;
     }
 }
