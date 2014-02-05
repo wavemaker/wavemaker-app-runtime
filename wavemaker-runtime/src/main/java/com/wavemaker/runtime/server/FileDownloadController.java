@@ -42,7 +42,10 @@ public class FileDownloadController extends ControllerBase {
 
     @Override
     protected ModelAndView executeRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, WMException {
-
+        if("get".equals(request.getMethod().toLowerCase())) {
+            handleGetRequest(request, response);
+            return null;
+        }
         String serviceName = ServerUtils.getServiceName(request);
         Map<String, Object[]> params = ServerUtils.mergeParams(request);
         String method = ServerUtils.getMethod(params);

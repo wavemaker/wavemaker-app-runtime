@@ -60,7 +60,7 @@
         </property>
 
         <!-- controller configuration -->
-        <property name="supportedMethods" value="POST"/>
+        <property name="supportedMethods" value="GET,POST"/>
     </bean>
 
     <bean id="agFileUploadController"
@@ -85,7 +85,7 @@
         </property>
 
         <!-- controller configuration -->
-        <property name="supportedMethods" value="POST"/>
+        <property name="supportedMethods" value="GET,POST"/>
     </bean>
 
     <bean id="agFlashFileUploadController"
@@ -110,7 +110,7 @@
         </property>
 
         <!-- controller configuration -->
-        <property name="supportedMethods" value="POST"/>
+        <property name="supportedMethods" value="GET,POST"/>
     </bean>
 
     <bean id="agFileDownloadController"

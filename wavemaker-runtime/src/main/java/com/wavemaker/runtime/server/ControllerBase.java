@@ -15,6 +15,8 @@
 package com.wavemaker.runtime.server;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +27,8 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.NDC;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
@@ -33,6 +37,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMException;
 import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.json.JSONArray;
 import com.wavemaker.json.JSONState;
 import com.wavemaker.json.type.FieldDefinition;
@@ -41,6 +46,7 @@ import com.wavemaker.json.type.reflect.MapReflectTypeDefinition;
 import com.wavemaker.json.type.reflect.ReflectTypeState;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.interceptor.RequestInitInterceptor;
 import com.wavemaker.runtime.server.view.TypedView;
 import com.wavemaker.runtime.service.ParsedServiceArguments;
@@ -226,6 +232,22 @@ public abstract class ControllerBase extends AbstractController {
     @SuppressWarnings("deprecation")
     private void initializeRuntime(HttpServletRequest request, HttpServletResponse response) {
         RequestInitInterceptor.preHandle(request, response, runtimeAccess, internalRuntime, runtime);
+    }
+
+    protected void handleGetRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String appContextRoot = WMAppContext.getInstance().getAppContextRoot();
+        String requestURI = request.getRequestURI();
+        Resource resource = new FileSystemResource(appContextRoot);
+        resource = resource.createRelative(requestURI);
+
+        InputStream content = resource.getInputStream();
+        String contentType = URLConnection.getFileNameMap().getContentTypeFor(requestURI);
+        response.setContentType(contentType);
+        try {
+            IOUtils.copy(content, response.getOutputStream());
+        } finally {
+            content.close();
+        }
     }
 
     public void setServiceManager(ServiceManager spm) {
