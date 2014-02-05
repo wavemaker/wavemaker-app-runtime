@@ -477,6 +477,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource INVALID_ACTION = new MessageResource("com.wavemaker.tools.deployment$InvalidAction");
 
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource CONVERSION_IS_NOT_SUPPORTED = new MessageResource("com.wavemaker.tools$ConversionIsNotSupported");
+
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource MISSING_FIELD_VALUE = new MessageResource("com.wavemaker.json$MissingFieldValue");
 
