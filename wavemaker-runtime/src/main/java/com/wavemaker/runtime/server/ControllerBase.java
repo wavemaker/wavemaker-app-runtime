@@ -236,12 +236,13 @@ public abstract class ControllerBase extends AbstractController {
 
     protected void handleGetRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String appContextRoot = WMAppContext.getInstance().getAppContextRoot();
-        String requestURI = request.getRequestURI();
+        appContextRoot = appContextRoot.endsWith("/")?appContextRoot:appContextRoot+"/";
+        String requestedURI = request.getRequestURI().substring(request.getContextPath().length());
         Resource resource = new FileSystemResource(appContextRoot);
-        resource = resource.createRelative(requestURI);
+        resource = resource.createRelative(requestedURI);
 
         InputStream content = resource.getInputStream();
-        String contentType = URLConnection.getFileNameMap().getContentTypeFor(requestURI);
+        String contentType = URLConnection.getFileNameMap().getContentTypeFor(requestedURI);
         response.setContentType(contentType);
         try {
             IOUtils.copy(content, response.getOutputStream());
