@@ -299,6 +299,24 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource STUDIO_UNKNOWN_LOCATION = new MessageResource("com.wavemaker.studio$UnknownStaticFileLocation");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource THEME_NAME_CAN_NOT_BE_NULL_OR_EMPTY = new MessageResource("com.wavemaker.studio$ThemeNameCanNotBeNullOrEmpty");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource THEME_DOES_NOT_EXIST = new MessageResource("com.wavemaker.studio$ThemeDoesNotExist");
+
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource THEME_ALREADY_EXIST_IN_PROJECT = new MessageResource("com.wavemaker.studio$ThemeAlreadyExistInProject");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource THEME_ALREADY_EXIST_IN_STUDIO = new MessageResource("com.wavemaker.studio$ThemeAlreadyExistInStudio");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_THEME = new MessageResource("com.wavemaker.studio$InvalidTheme");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource THEME_IS_INACTIVE = new MessageResource("com.wavemaker.studio$ThemeIsInactive");
+
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource UTIL_FILEUTILS_REACHEDROOT = new MessageResource("com.wavemaker.common.util$FileUtils_ReachedRoot");
 
@@ -380,21 +398,6 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource WM_HOME_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools.data$WMHomeDoesNotExist");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource THEME_NAME_COULD_NOT_BE_NULL_OR_EMPTY = new MessageResource("com.wavemaker.tools.data$ThemeNameCouldNotBeNullOrEmpty");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource THEME_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools.data$ThemeDoesNotExist");
-
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource THEME_ALREADY_EXIST_IN_PROJECT = new MessageResource("com.wavemaker.tools.data$ThemeAlreadyExistInProject");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource THEME_ALREADY_EXIST_IN_STUDIO = new MessageResource("com.wavemaker.tools.data$ThemeAlreadyExistInStudio");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource INVALID_THEME = new MessageResource("com.wavemaker.tools.data$InvalidTheme");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource JSON_FAILED_PARSING = new MessageResource("com.wavemaker.json$FailedParsing");
