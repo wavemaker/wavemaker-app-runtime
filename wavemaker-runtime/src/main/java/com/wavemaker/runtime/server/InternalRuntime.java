@@ -16,39 +16,43 @@ package com.wavemaker.runtime.server;
 
 import java.util.List;
 
+import org.springframework.core.NamedThreadLocal;
+
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.JSONState;
 
 /**
  * Provides request-scoped runtime information; for internal use only.
- * 
+ *
  * @author Matt Small
  */
 public class InternalRuntime {
 
-    private JSONState jsonState;
+    private static ThreadLocal<InternalRuntime> internalRuntimeThreadLocal = new NamedThreadLocal<InternalRuntime>("Wavemaker Internal Runtime");
 
-    private static InternalRuntime internalRuntime;
+    private JSONState jsonState;
 
     private List<List<String>> deserializedProperties;
 
     /**
-     * Statically return the current instance of RuntimeAccess. This depends on the Spring bean being already loaded.
-     * 
+     * returns the current instance of Internal Runtime. This depends on the Spring bean being already loaded.
      * @return
      */
     public static InternalRuntime getInstance() {
-
-        if (InternalRuntime.internalRuntime == null) {
+        InternalRuntime internalRuntime = internalRuntimeThreadLocal.get();
+        if (internalRuntime == null) {
             throw new WMRuntimeException(MessageResource.RUNTIME_UNINITIALIZED);
         }
-
-        return InternalRuntime.internalRuntime;
+        return internalRuntime;
     }
 
     public static void setInternalRuntimeBean(InternalRuntime bean) {
-        InternalRuntime.internalRuntime = bean;
+        if (bean == null) {
+            internalRuntimeThreadLocal.remove();
+        } else {
+            internalRuntimeThreadLocal.set(bean);
+        }
     }
 
     public JSONState getJSONState() {

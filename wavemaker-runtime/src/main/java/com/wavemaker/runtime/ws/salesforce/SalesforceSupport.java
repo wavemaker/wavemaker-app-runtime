@@ -32,7 +32,6 @@ import com.wavemaker.common.util.Tuple;
 import com.wavemaker.common.util.TypeConversionUtils;
 import com.wavemaker.json.JSONArray;
 import com.wavemaker.json.JSONObject;
-import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.QueryHandler;
 import com.wavemaker.runtime.service.PagingOptions;
@@ -63,7 +62,7 @@ public class SalesforceSupport {
 
     private Map<String, List<FieldType>> fieldsMap = null;
 
-    private final LoginService loginSvcBean = (LoginService) RuntimeAccess.getInstance().getSpringBean("sfLoginService");
+    private final LoginService loginSvcBean = WMAppContext.getInstance().getSpringBean("sfLoginService");
 
     private int lastQryId = 0;
 

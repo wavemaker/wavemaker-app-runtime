@@ -22,12 +22,15 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.core.io.Resource;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletContextResource;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.wavemaker.common.CommonConstants;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
@@ -56,7 +59,15 @@ public class WMAppContext {
 
     private Map<String, JSONObject> typesObjMap = new HashMap<String, JSONObject>();
 
-    protected static final Logger logger = Logger.getLogger(WMAppContext.class);
+    private String applicationHostUrl = null;
+
+    private int applicationHostPort = 0;
+
+    private boolean secured = false;
+
+    private boolean initialized = false;
+
+    private static final Logger logger = Logger.getLogger(WMAppContext.class);
 
     private WMAppContext(ServletContextEvent event) {
         this.context = event.getServletContext();
@@ -185,5 +196,42 @@ public class WMAppContext {
 
     public void removeTypesObject(String projectId) {
         this.typesObjMap.remove(projectId);
+    }
+
+    public <T> T getSpringBean(String beanId) {
+        //TODO use ApplicationContext instead of WebApplicationContext
+        WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(context);
+        return (T) applicationContext.getBean(beanId);
+    }
+
+    public <T> T getSpringBean(Class<T> c) {
+        //TODO use ApplicationContext instead of WebApplicationContext
+        WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(context);
+        return applicationContext.getBean(c);
+    }
+
+    public ServletContext getContext() {
+        return context;
+    }
+
+    public void init(HttpServletRequest httpServletRequest) {
+        if(!initialized) {
+            applicationHostUrl = httpServletRequest.getServerName();
+            applicationHostPort = httpServletRequest.getServerPort();
+            secured = httpServletRequest.isSecure();
+            initialized = true;
+        }
+    }
+
+    public String getApplicationHostUrl() {
+        return applicationHostUrl;
+    }
+
+    public int getApplicationHostPort() {
+        return applicationHostPort;
+    }
+
+    public boolean isSecured() {
+        return secured;
     }
 }

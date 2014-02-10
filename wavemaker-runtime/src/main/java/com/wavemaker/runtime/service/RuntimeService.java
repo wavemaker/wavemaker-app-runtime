@@ -176,10 +176,6 @@ public class RuntimeService {
         return SystemUtils.getIP();
     }
 
-    public String getSessionId() {
-        return RuntimeAccess.getInstance().getSession().getId();
-    }
-
     public DownloadResponse echo(String contents, String contentType, String fileName) {
         InputStream is;
         try {

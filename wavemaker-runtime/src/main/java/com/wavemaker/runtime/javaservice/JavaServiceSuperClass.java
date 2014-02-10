@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.wavemaker.common.util.IOUtils;
-import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.annotations.HideFromClient;
 
@@ -65,7 +65,7 @@ public class JavaServiceSuperClass {
         try {
 
             // Determine if we're in live layout, test run or deployed
-            String currentPath = RuntimeAccess.getInstance().getSession().getServletContext().getRealPath("");
+            String currentPath = WMAppContext.getInstance().getContext().getRealPath("");
             File webapproot = new File(currentPath);
             boolean isDeployedApp = false;
             if (new File(webapproot, "app/deploy.js").exists()) {

@@ -18,7 +18,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,6 +43,7 @@ import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.common.util.SystemUtils;
 import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.server.DownloadResponse;
 import com.wavemaker.runtime.server.InternalRuntime;
 import com.wavemaker.runtime.server.ServerUtils;
@@ -81,7 +81,7 @@ public class WaveMakerService {
 	 * Builds whitelist tables and sets isStudio for proxy security
 	 */
 	public WaveMakerService(){
-		ServletContext context = RuntimeAccess.getInstance().getSession().getServletContext();
+		ServletContext context = WMAppContext.getInstance().getContext();
 		String webinf = context.getRealPath("WEB-INF");
 		try{
 			isStudio = new File(webinf + File.separator + STUDIO_SPRINGAPP).exists();
@@ -127,10 +127,6 @@ public class WaveMakerService {
 
     public String getLocalHostIP() {
         return SystemUtils.getIP();
-    }
-
-    public String getSessionId() {
-        return RuntimeAccess.getInstance().getSession().getId();
     }
 
     public DownloadResponse echo(String contents, String contentType, String fileName) {

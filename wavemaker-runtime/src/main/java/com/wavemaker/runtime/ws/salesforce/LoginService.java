@@ -14,7 +14,7 @@
 
 package com.wavemaker.runtime.ws.salesforce;
 
-import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.ws.salesforce.gen.SessionHeader;
 import com.wavemaker.runtime.ws.salesforce.gen.SforceService;
 
@@ -37,8 +37,8 @@ public class LoginService {
     public String logIn(String userName, String password) throws Exception {
         String result;
 
-        LoginObject bean = (LoginObject) RuntimeAccess.getInstance().getSpringBean("sfLoginObject");
-        SforceService svc = (SforceService) RuntimeAccess.getInstance().getSpringBean("sfServiceBean");
+        LoginObject bean = WMAppContext.getInstance().getSpringBean("sfLoginObject");
+        SforceService svc = WMAppContext.getInstance().getSpringBean("sfServiceBean");
         bean.setSforceService(svc);
 
         try {
@@ -53,17 +53,17 @@ public class LoginService {
     }
 
     public String logOut() throws Exception {
-        LoginObject bean = (LoginObject) RuntimeAccess.getInstance().getSpringBean("sfLoginObject");
+        LoginObject bean = WMAppContext.getInstance().getSpringBean("sfLoginObject");
         return bean.logOut();
     }
 
     public static SessionHeader getSessionHeader() throws Exception {
-        LoginObject bean = (LoginObject) RuntimeAccess.getInstance().getSpringBean("sfLoginObject");
+        LoginObject bean = WMAppContext.getInstance().getSpringBean("sfLoginObject");
         return bean.getSessionHeader();
     }
 
     public static SforceService getSforceService() throws Exception {
-        LoginObject bean = (LoginObject) RuntimeAccess.getInstance().getSpringBean("sfLoginObject");
+        LoginObject bean = WMAppContext.getInstance().getSpringBean("sfLoginObject");
         return bean.getSforceService();
     }
 

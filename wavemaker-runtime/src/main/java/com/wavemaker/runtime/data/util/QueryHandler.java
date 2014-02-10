@@ -14,6 +14,8 @@
 
 package com.wavemaker.runtime.data.util;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,25 +23,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.beans.PropertyDescriptor;
-import java.beans.Introspector;
-import java.beans.IntrospectionException;
 
-import com.wavemaker.runtime.security.SecurityService;
-import com.wavemaker.runtime.security.WMUserDetails;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.engine.NamedQueryDefinition;
 import org.hibernate.mapping.PersistentClass;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.runtime.WMAppContext;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.wavemaker.runtime.security.SecurityService;
 
 /**
  * This class wraps Hibernate APIs to incorporate the tenant ID in the DB queries.

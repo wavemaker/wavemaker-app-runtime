@@ -1,21 +1,23 @@
 package com.wavemaker.runtime.interceptor;
 
-import com.activegrid.runtime.AGRuntime;
+import java.io.File;
+import java.sql.Blob;
+import java.sql.Clob;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.wavemaker.json.JSONState;
 import com.wavemaker.json.type.reflect.converters.DateTypeDefinition;
 import com.wavemaker.json.type.reflect.converters.FileTypeDefinition;
 import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.server.InternalRuntime;
 import com.wavemaker.runtime.server.json.converters.BlobTypeDefinition;
 import com.wavemaker.runtime.server.json.converters.ClobTypeDefinition;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.sql.Blob;
-import java.sql.Clob;
 
 /**
  * @author Uday Shankar
@@ -27,20 +29,16 @@ public class RequestInitInterceptor implements HandlerInterceptor {
 
     private InternalRuntime internalRuntime;
 
-    private AGRuntime runtime;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        preHandle(request, response, runtimeAccess, internalRuntime, runtime);
+        preHandle(request, response, getRuntimeAccess(), getInternalRuntime());
         return true;
     }
 
-    public static void preHandle(HttpServletRequest request, HttpServletResponse response, RuntimeAccess runtimeAccess, InternalRuntime internalRuntime, AGRuntime runtime) {
+    public static void preHandle(HttpServletRequest request, HttpServletResponse response, RuntimeAccess runtimeAccess, InternalRuntime internalRuntime) {
+        WMAppContext.getInstance().init(request);
         RuntimeAccess.setRuntimeBean(runtimeAccess);
         InternalRuntime.setInternalRuntimeBean(internalRuntime);
-
-        // when you remove this, also remove the SuppressWarnings anno
-        AGRuntime.setRuntimeBean(runtime);
 
         runtimeAccess.setRequest(request);
         runtimeAccess.setResponse(response);
@@ -84,8 +82,12 @@ public class RequestInitInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        postHandle();
+    }
+
+    public static void postHandle() {
         RuntimeAccess.setRuntimeBean(null);
-        //TODO need to cleanup InternalRuntime too
+        InternalRuntime.setInternalRuntimeBean(null);
     }
 
     @Override
@@ -106,13 +108,5 @@ public class RequestInitInterceptor implements HandlerInterceptor {
 
     public void setInternalRuntime(InternalRuntime internalRuntime) {
         this.internalRuntime = internalRuntime;
-    }
-
-    public AGRuntime getRuntime() {
-        return runtime;
-    }
-
-    public void setRuntime(AGRuntime runtime) {
-        this.runtime = runtime;
     }
 }

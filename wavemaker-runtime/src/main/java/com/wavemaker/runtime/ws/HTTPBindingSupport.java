@@ -48,7 +48,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
-import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.pws.IPwsResponseProcessor;
 import com.wavemaker.runtime.pws.PwsResponseProcessorBeanFactory;
 
@@ -103,8 +103,7 @@ public class HTTPBindingSupport {
         if (partnerName == null || partnerName.length() == 0) {
             respProcessor = new DefaultResponseProcessor();
         } else {
-            PwsResponseProcessorBeanFactory factory = (PwsResponseProcessorBeanFactory) RuntimeAccess.getInstance().getSpringBean(
-                "pwsResponseProcessorBeanFactory");
+            PwsResponseProcessorBeanFactory factory = WMAppContext.getInstance().getSpringBean("pwsResponseProcessorBeanFactory");
             respProcessor = factory.getPwsResponseProcessor(partnerName);
         }
 

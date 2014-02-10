@@ -73,9 +73,6 @@ public abstract class ControllerBase extends AbstractController {
 
     private ServletEventNotifier servletEventNotifier;
 
-    @SuppressWarnings("deprecation")
-    private com.activegrid.runtime.AGRuntime runtime;
-
     private InternalRuntime internalRuntime;
 
     private RuntimeAccess runtimeAccess;
@@ -231,7 +228,7 @@ public abstract class ControllerBase extends AbstractController {
 
     @SuppressWarnings("deprecation")
     private void initializeRuntime(HttpServletRequest request, HttpServletResponse response) {
-        RequestInitInterceptor.preHandle(request, response, runtimeAccess, internalRuntime, runtime);
+        RequestInitInterceptor.preHandle(request, response, runtimeAccess, internalRuntime);
     }
 
     protected void handleGetRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -273,16 +270,6 @@ public abstract class ControllerBase extends AbstractController {
 
     public void setServiceEventNotifier(ServiceEventNotifier serviceEventNotifier) {
         this.serviceEventNotifier = serviceEventNotifier;
-    }
-
-    @SuppressWarnings("deprecation")
-    public com.activegrid.runtime.AGRuntime getRuntime() {
-        return this.runtime;
-    }
-
-    @SuppressWarnings("deprecation")
-    public void setRuntime(com.activegrid.runtime.AGRuntime runtime) {
-        this.runtime = runtime;
     }
 
     public InternalRuntime getInternalRuntime() {

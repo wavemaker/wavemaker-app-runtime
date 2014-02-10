@@ -18,9 +18,6 @@
     <import resource="services.xml"/>
 
     <bean id="requestInitInterceptor" class="com.wavemaker.runtime.interceptor.RequestInitInterceptor">
-        <property name="runtime">
-            <ref bean="runtime"/>
-        </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>
         </property>
@@ -45,9 +42,6 @@
         </property>
         <property name="serviceEventNotifier">
             <ref bean="serviceEventNotifier"/>
-        </property>
-        <property name="runtime">
-            <ref bean="runtime"/>
         </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>
@@ -74,9 +68,6 @@
         <property name="serviceEventNotifier">
             <ref bean="serviceEventNotifier"/>
         </property>
-        <property name="runtime">
-            <ref bean="runtime"/>
-        </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>
         </property>
@@ -98,9 +89,6 @@
         </property>
         <property name="serviceEventNotifier">
             <ref bean="serviceEventNotifier"/>
-        </property>
-        <property name="runtime">
-            <ref bean="runtime"/>
         </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>
@@ -124,9 +112,6 @@
         <property name="serviceEventNotifier">
             <ref bean="serviceEventNotifier"/>
         </property>
-        <property name="runtime">
-            <ref bean="runtime"/>
-        </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>
         </property>
@@ -146,12 +131,6 @@
 
         <!-- controller configuration -->
         <property name="supportedMethods" value="GET"/>
-    </bean>
-
-    <bean id="runtime" class="com.activegrid.runtime.AGRuntime">
-        <property name="runtimeAccess">
-            <ref bean="runtimeAccess"/>
-        </property>
     </bean>
 
     <bean id="runtimeAccess"
