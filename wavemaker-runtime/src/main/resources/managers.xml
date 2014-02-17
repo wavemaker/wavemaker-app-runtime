@@ -19,7 +19,7 @@ and every other time.
             class="com.wavemaker.runtime.service.ServiceManager"
             scope="singleton">
     </bean>
-    <bean class="com.wavemaker.runtime.service.ServiceManagerBeanPostProcessor">
+    <bean id="serviceManagerBeanPostProcessor" class="com.wavemaker.runtime.service.ServiceManagerBeanPostProcessor" scope="singleton">
         <property name="serviceManager">
             <ref bean="serviceManager" />
         </property>
