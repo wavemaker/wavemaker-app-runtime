@@ -32,6 +32,10 @@ public class DataServiceRuntimeException extends WMRuntimeException {
         super(msg, th);
     }
 
+    public DataServiceRuntimeException(Throwable th, MessageResource resource, Object... args) {
+        super(resource, th, args);
+    }
+
     public DataServiceRuntimeException(MessageResource resource, Object... args) {
         super(resource, args);
     }

@@ -22,6 +22,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.wavemaker.common.MessageResource;
 import org.apache.commons.logging.Log;
 
 import com.wavemaker.common.util.ClassLoaderUtils;
@@ -42,7 +43,7 @@ public class JDBCUtils {
             loadDriver(driverClassName);
             return DriverManager.getConnection(url, username, password);
         } catch (SQLException ex) {
-            throw new DataServiceRuntimeException(ex);
+            throw new DataServiceRuntimeException(ex, MessageResource.DATABASE_CONNECTION_EXCEPTION);
         }
     }
 
@@ -62,7 +63,7 @@ public class JDBCUtils {
             try {
                 con.setAutoCommit(true);
             } catch (SQLException ex) {
-                throw new DataServiceRuntimeException(ex);
+                throw new DataServiceRuntimeException(ex,MessageResource.DATABASE_COMMIT_EXCEPTION);
             }
 
             Statement s = con.createStatement();
@@ -100,7 +101,7 @@ public class JDBCUtils {
             if (ex instanceof RuntimeException) {
                 throw (RuntimeException) ex;
             } else {
-                throw new DataServiceRuntimeException(ex);
+                throw new DataServiceRuntimeException(ex,MessageResource.DATABASE_SQL_EXECUTION_EXCEPTION);
             }
         } finally {
             try {

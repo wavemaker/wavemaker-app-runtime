@@ -63,28 +63,31 @@ public class DataServiceUtils {
     private static final ObjectAccess objectAccess = ObjectAccess.getInstance();
 
     public static RuntimeException unwrap(Throwable th) {
-
-        th = SystemUtils.getRootException(th);
-
-        if (InvalidDataAccessResourceUsageException.class.isAssignableFrom(th.getClass())) {
-            InvalidDataAccessResourceUsageException e = (InvalidDataAccessResourceUsageException) th;
-            if (e.getRootCause() != null) {
-                th = e.getRootCause();
-            }
-        }
-        if (SQLGrammarException.class.isAssignableFrom(th.getClass())) {
-            SQLGrammarException s = (SQLGrammarException) th;
-            if (s.getSQLException() != null) {
-                th = s.getSQLException();
-            } else if (s.getCause() != null) {
-                th = s.getCause();
-            }
-        }
-
-        if (th instanceof RuntimeException) {
-            return (RuntimeException) th;
+        if (th instanceof DataServiceRuntimeException) {
+            return (DataServiceRuntimeException) th;
         } else {
-            return new DataServiceRuntimeException(th);
+            th = SystemUtils.getRootException(th);
+
+            if (InvalidDataAccessResourceUsageException.class.isAssignableFrom(th.getClass())) {
+                InvalidDataAccessResourceUsageException e = (InvalidDataAccessResourceUsageException) th;
+                if (e.getRootCause() != null) {
+                    th = e.getRootCause();
+                }
+            }
+            if (SQLGrammarException.class.isAssignableFrom(th.getClass())) {
+                SQLGrammarException s = (SQLGrammarException) th;
+                if (s.getSQLException() != null) {
+                    th = s.getSQLException();
+                } else if (s.getCause() != null) {
+                    th = s.getCause();
+                }
+            }
+
+            if (th instanceof RuntimeException) {
+                return (RuntimeException) th;
+            } else {
+                return new DataServiceRuntimeException(th);
+            }
         }
     }
 

@@ -602,6 +602,15 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource CANNOT_REMOVE_OWNER_FROM_PROJECT_USERS = new MessageResource("com.wavemaker.cannotRemoveOwnerFromProjectUsers");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DATABASE_CONNECTION_EXCEPTION = new MessageResource("com.wavemaker.runtime.data$DBConnectionException");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DATABASE_COMMIT_EXCEPTION = new MessageResource("com.wavemaker.runtime.data$DBCommitException");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DATABASE_SQL_EXECUTION_EXCEPTION = new MessageResource("com.wavemaker.runtime.data$DBSQLException");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
