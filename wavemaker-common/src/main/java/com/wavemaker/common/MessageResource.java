@@ -387,6 +387,17 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FILE_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools$FileDoesNotExist");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FILE_NOT_DELETED = new MessageResource("com.wavemaker.tools$FailedToDeleteFile");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FOLDER_NOT_DELETED = new MessageResource("com.wavemaker.tools$FailedToDeleteFolder");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource RESOURCE_NOT_ALLOWED_FOR_DELETION = new MessageResource("com.wavemaker.tools$ResourceNotAllowedForDeletion");
+
+
+
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource INSUFFICIENT_RESOURCES_TO_CREATE_JAR_FILE = new MessageResource("com.wavemaker.tools$InsufficientResourcesToCreateJarFile");
 
