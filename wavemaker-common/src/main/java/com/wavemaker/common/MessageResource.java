@@ -622,6 +622,21 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource DATABASE_SQL_EXECUTION_EXCEPTION = new MessageResource("com.wavemaker.runtime.data$DBSQLException");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource APPLICATION_FAILED_TO_START = new MessageResource("com.wavemaker.saas.applicationFailedToStart");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_ACTIVATE_USER_CONTAINER = new MessageResource("com.wavemaker.saas.failedToActivateUserContainer");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_LOGIN = new MessageResource("com.wavemaker.saas.failedToLogin");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FIELD_SHOULD_NOT_BE_EMPTY = new MessageResource("com.wavemaker.fieldShouldNotBeEmpty");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_VALIDATE_URL = new MessageResource("com.wavemaker.core.failedToValidateUrl");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
