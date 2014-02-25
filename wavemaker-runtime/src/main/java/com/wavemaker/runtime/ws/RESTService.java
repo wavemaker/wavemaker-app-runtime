@@ -15,6 +15,7 @@
 package com.wavemaker.runtime.ws;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -129,6 +130,8 @@ public class RESTService {
             return HTTPBindingSupport.getResponseObject(this.serviceQName, this.serviceQName, endpointAddress, this.httpRequestMethod, contentType,
                 postData, responseType, this.bindingProperties, partnerName, headerParams);
         } catch (WebServiceException e) {
+            throw new WebServiceInvocationException(e);
+        } catch (MalformedURLException e) {
             throw new WebServiceInvocationException(e);
         }
     }

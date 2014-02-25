@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,12 +47,17 @@ import javax.xml.ws.http.HTTPBinding;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONException;
+import org.springframework.http.MediaType;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.pws.IPwsResponseProcessor;
 import com.wavemaker.runtime.pws.PwsResponseProcessorBeanFactory;
+import net.sf.json.JSON;
+import net.sf.json.JSONSerializer;
+import net.sf.json.xml.XMLSerializer;
 
 /**
  * This class provides helper methods for HTTP binding.
@@ -59,6 +66,8 @@ import com.wavemaker.runtime.pws.PwsResponseProcessorBeanFactory;
  */
 public class HTTPBindingSupport {
 
+    private static final String RESPONSE = "Response";
+
     public enum HTTPRequestMethod {
         GET, POST, PUT, DELETE
     }
@@ -66,16 +75,17 @@ public class HTTPBindingSupport {
     private static Log logger = LogFactory.getLog(HTTPBindingSupport.class);
 
     public static <T extends Object> T getResponseObject(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
-        String contentType, Object postData, Class<T> responseType, BindingProperties bindingProperties) throws WebServiceException {
+        String contentType, Object postData, Class<T> responseType, BindingProperties bindingProperties) throws WebServiceException,MalformedURLException {
         return getResponseObject(serviceQName, portQName, endpointAddress, method, contentType, postData, responseType, bindingProperties, null, null);
     }
 
     public static <T extends Object> T getResponseObject(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
         String contentType, Object postData, Class<T> responseType, BindingProperties bindingProperties, String partnerName,
-        Map<String, Object> headerParams) throws WebServiceException {
+        Map<String, Object> headerParams) throws WebServiceException,MalformedURLException {
 
         String msg = postData == null ? null : postData instanceof String ? (String) postData : convertToXMLString(postData);
-
+        URL serviceUrl = new URL(endpointAddress);
+        String serviceName = constructServiceName(serviceUrl)+RESPONSE;
         DataSource postSource = null;
         byte[] bytes = null;
         if (method == HTTPRequestMethod.POST) {
@@ -83,13 +93,22 @@ public class HTTPBindingSupport {
         }
         DataSource response = getResponse(serviceQName, portQName, endpointAddress, method, postSource, bindingProperties, DataSource.class,
             headerParams);
+        String responseContentType =  getContentType(response.getContentType());
         InputStream is = null;
         try {
-            is = new BufferedInputStream(response.getInputStream());
+            String responseString  = HTTPBindingSupport.convertStreamToString(response.getInputStream());
+            if(MediaType.APPLICATION_JSON.toString().equals(responseContentType))
+            {
+                responseString = convertJSONToXML(responseString,serviceName);
+            }
+            is = new BufferedInputStream(IOUtils.toInputStream(responseString, "UTF-8"));
             bytes = IOUtils.toByteArray(is);
         } catch (IOException e) {
             throw new WebServiceException(e);
-        } finally {
+        } catch (JSONException e) {
+            throw new WebServiceException(e);
+        }
+        finally {
             try {
                 if (is != null) {
                     is.close();
@@ -216,9 +235,15 @@ public class HTTPBindingSupport {
         }
 
         logger.info("Invoking HTTP '" + method + "' request with URL: " + endpointAddress);
+        try {
+            T result = d.invoke(postSource);
+            return result;
+        }
+        catch (Exception e)
+        {
+            throw new WebServiceException(e);
+        }
 
-        T result = d.invoke(postSource);
-        return result;
     }
 
     public static String getResponseString(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
@@ -226,6 +251,11 @@ public class HTTPBindingSupport {
 		return getResponseString(serviceQName, portQName, endpointAddress,
 				method, postSource, bindingProperties, null);
 	}
+
+    public static DataSource getDataSource(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
+                                           DataSource postSource, BindingProperties bindingProperties, Map<String, Object> headerParams) throws WebServiceException {
+        return getResponse(serviceQName, portQName, endpointAddress, method, postSource, bindingProperties, DataSource.class, headerParams);
+    }
 
 	public static String getResponseString(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
         DataSource postSource, BindingProperties bindingProperties, Map<String, Object> headerParams) throws WebServiceException {
@@ -251,5 +281,40 @@ public class HTTPBindingSupport {
             is.close();
         }
         return sb.toString();
+    }
+
+    public static String convertJSONToXML(String json, String rootNode) throws JSONException {
+        XMLSerializer serializer = new XMLSerializer();
+        serializer.setTypeHintsEnabled(false);
+        serializer.setRootName(rootNode);
+        JSON jsonString = JSONSerializer.toJSON(json);
+        return serializer.write(jsonString);
+    }
+
+    public static String constructServiceName(URL url) {
+        String host = url.getHost();
+        int i = host.indexOf('.');
+        if (i > -1) {
+            String s1 = host.substring(i + 1, host.length());
+            int j = s1.indexOf('.');
+            String s2 = null;
+            if (j > -1) {
+                s2 = s1.substring(0, j);
+            } else {
+                s2 = host.substring(0, i);
+            }
+            return s2;
+        }
+        return host;
+    }
+
+    public static String getContentType(String type) {
+        if (type != null && !type.isEmpty()) {
+            int index = type.indexOf(";");
+            if (index != -1) {
+                return type.substring(0, index);
+            }
+        }
+        return type;
     }
 }

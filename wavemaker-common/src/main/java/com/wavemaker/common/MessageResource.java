@@ -209,6 +209,15 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource WS_WADL_METHOD_NOT_FOUND = new MessageResource("com.wavemaker.runtime.ws$WadlMethodNotFound");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource CONTENT_TYPE_IS_NOT_SUPPORTED = new MessageResource("com.wavemaker.runtime.ws$ContentTypeIsNotSupported");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_PARSE_RESPONSE = new MessageResource("com.wavemaker.runtime.ws$FailedToParseResponse");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_INVOKE_SERVICE = new MessageResource("com.wavemaker.runtime.ws$FailedToInvokeService");
+
     // input: name(s) of required property(ies)
     @ResourceConstraint(numArgs = 1, hasDetailMsg = true)
     public static final MessageResource MISSING_SYS_PROPERTIES = new MessageResource("com.wavemaker.tools$SysPropertyNotSet");
