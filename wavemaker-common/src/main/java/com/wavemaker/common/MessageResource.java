@@ -397,6 +397,9 @@ public class MessageResource {
     public static final MessageResource FILE_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools$FileDoesNotExist");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_LOAD_STUDIO_PROPERTIES = new MessageResource("com.wavemaker.studio$FailedToLoadStudioProperties");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FILE_NOT_DELETED = new MessageResource("com.wavemaker.tools$FailedToDeleteFile");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
