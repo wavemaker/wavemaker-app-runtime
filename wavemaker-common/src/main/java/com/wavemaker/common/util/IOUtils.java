@@ -16,6 +16,7 @@ package com.wavemaker.common.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -571,5 +572,14 @@ public abstract class IOUtils {
     public static boolean excludeByExactMatch(File file) {
 
         return DEFAULT_EXCLUSION.contains(file.getName());
+    }
+
+    public static void closeSilently(Closeable e) {
+        if (e != null) {
+            try {
+                e.close();
+            } catch (IOException exc) {
+            }
+        }
     }
 }
