@@ -649,6 +649,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_VALIDATE_URL = new MessageResource("com.wavemaker.core.failedToValidateUrl");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_DELETE_PROJECT_FILES = new MessageResource("com.wavemaker.tools.failedToDeleteProjectFiles");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
