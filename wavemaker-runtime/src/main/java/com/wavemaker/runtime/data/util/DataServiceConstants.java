@@ -99,12 +99,6 @@ public class DataServiceConstants {
 
     public static final String PROP_SEP = "" + AlternateJSONTransformer.PROP_SEP;
 
-    public static final String OLD_SESSION_FACTORY_CLASS_NAME = "com.activegrid.runtime.data.spring.AGLocalSessionFactoryBean";
-
-    public static final String OLD_SPRING_DATA_SERVICE_MANAGER_NAME = "com.activegrid.runtime.data.spring.SpringDataServiceManager";
-
-    public static final String OLD_TASK_MANAGER_NAME = "com.activegrid.runtime.data.DefaultTaskManager";
-
     public static final String COLUMN_NODE = "COL";
 
     public static final String RELATIONSHIP_NODE = "REL";
