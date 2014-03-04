@@ -14,16 +14,26 @@
 
 package com.wavemaker.runtime.data.spring;
 
+import com.wavemaker.common.MessageResource;
+import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.StringUtils;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.data.*;
+import com.wavemaker.runtime.data.hibernate.DataServiceMetaData_Hib;
+import com.wavemaker.runtime.data.task.DefaultRollback;
+import com.wavemaker.runtime.data.task.PreProcessor;
+import com.wavemaker.runtime.data.util.DataServiceConstants;
+import com.wavemaker.runtime.data.util.QueryHandler;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.wavemaker.common.WMRuntimeException;
 import org.apache.commons.logging.Log;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -31,22 +41,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import com.wavemaker.common.util.StringUtils;
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.data.DataServiceLoggers;
-import com.wavemaker.runtime.data.DataServiceManager;
-import com.wavemaker.runtime.data.DataServiceMetaData;
-import com.wavemaker.runtime.data.DataServiceRuntimeException;
-import com.wavemaker.runtime.data.DefaultTaskManager;
-import com.wavemaker.runtime.data.Task;
-import com.wavemaker.runtime.data.TaskManager;
-import com.wavemaker.runtime.data.ThreadContext;
-import com.wavemaker.runtime.data.hibernate.DataServiceMetaData_Hib;
-import com.wavemaker.runtime.data.task.DefaultRollback;
-import com.wavemaker.runtime.data.task.PreProcessor;
-import com.wavemaker.runtime.data.util.DataServiceConstants;
-import com.wavemaker.runtime.data.util.QueryHandler;
 
 /**
  * @author Simon Toens
@@ -69,11 +63,11 @@ public class SpringDataServiceManager implements DataServiceManager {
 
     public SpringDataServiceManager(String configurationName, HibernateTemplate hibernateTemplate, PlatformTransactionManager txMgr) {
 
-        this(configurationName, hibernateTemplate, txMgr, DefaultTaskManager.getInstance(), Collections.<String, String> emptyMap());
+        this(configurationName, hibernateTemplate, txMgr, DefaultTaskManager.getInstance(), Collections.<String, String>emptyMap());
     }
 
     public SpringDataServiceManager(String configurationName, HibernateTemplate hibernateTemplate, PlatformTransactionManager txMgr,
-        TaskManager taskMgr, Map<String, String> properties) {
+                                    TaskManager taskMgr, Map<String, String> properties) {
         if (configurationName == null) {
             throw new IllegalArgumentException("configurationName must be set");
         }
@@ -298,18 +292,20 @@ public class SpringDataServiceManager implements DataServiceManager {
         Object rtn = null;
         try {
             rtn = txTemplate.execute(tx);
+        } catch (InvalidDataAccessResourceUsageException invalidDataAccessResourceUsageException) {
+            throw new DataServiceRuntimeException(MessageResource.DATABASE_INVALID_DATA_ACCESS_RESOURCE_USAGE_EXCEPTION, invalidDataAccessResourceUsageException.getMessage());
         } catch (Throwable ex) {
             //The following logic intends to display a sensible message for the user when a column contains a value whose length
             //exceeds the maximum length allowed in the database.  The logic has been tested on MySQL, Postgres, Oracle and
             //SQLServer so far.
             if (ex.getCause() instanceof java.sql.BatchUpdateException) { //Oracle
-                String msg = ((java.sql.BatchUpdateException)ex.getCause()).getNextException().getMessage();
+                String msg = ((java.sql.BatchUpdateException) ex.getCause()).getNextException().getMessage();
                 if (msg != null) {
                     ex.printStackTrace();
                     throw new WMRuntimeException(msg);
                 }
             } else if (ex.getCause().getCause() instanceof java.sql.BatchUpdateException) { //Postgres
-                java.sql.BatchUpdateException e = (java.sql.BatchUpdateException)ex.getCause().getCause();
+                java.sql.BatchUpdateException e = (java.sql.BatchUpdateException) ex.getCause().getCause();
                 if (e != null && e.getMessage() != null) {
                     ex.printStackTrace();
                     throw new WMRuntimeException(e.getNextException().getMessage());
@@ -360,12 +356,12 @@ public class SpringDataServiceManager implements DataServiceManager {
                     txLogger.info("Running preprocessor task " + preProcessorTask.getName());
                 }
                 this.input = (Object[]) preProcessorTask.run(session, SpringDataServiceManager.this.metaData.getName(), this.input, this.task,
-                    SpringDataServiceManager.this.taskMgr);
+                        SpringDataServiceManager.this.taskMgr);
             }
 
             WMAppContext wmApp = WMAppContext.getInstance();
             if (wmApp != null && wmApp.isMultiTenant()) {
-                Class[] clsArr = new Class[] { Session.class };
+                Class[] clsArr = new Class[]{Session.class};
                 ClassLoader cl = Session.class.getClassLoader();
                 QueryHandler qh = new QueryHandler(session, SpringDataServiceManager.this.metaData.getConfiguration());
                 session = (Session) Proxy.newProxyInstance(cl, clsArr, qh);
@@ -397,7 +393,7 @@ public class SpringDataServiceManager implements DataServiceManager {
     }
 
     private static DataServiceMetaData initMetaData(String configurationName, Configuration cfg, HibernateTemplate htemp,
-        final boolean useIndividualCRUDOperations, final Map<String, String> properties) {
+                                                    final boolean useIndividualCRUDOperations, final Map<String, String> properties) {
         final DataServiceMetaData rtn = new DataServiceMetaData_Hib(configurationName, cfg, properties); // salesforce
 
         htemp.execute(new HibernateCallback() {

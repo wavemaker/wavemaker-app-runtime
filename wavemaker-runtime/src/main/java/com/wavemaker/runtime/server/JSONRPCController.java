@@ -14,15 +14,6 @@
 
 package com.wavemaker.runtime.server;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.JsonView;
-
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMException;
 import com.wavemaker.common.WMRuntimeException;
@@ -34,6 +25,13 @@ import com.wavemaker.runtime.server.view.TypedView;
 import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.TypedServiceReturn;
 import com.wavemaker.runtime.service.response.ErrorResponse;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.JsonView;
 
 /**
  * Controller (in the MVC sense) implementing a JSON interface and view onto the AG framework.
@@ -47,6 +45,8 @@ public class JSONRPCController extends ControllerBase {
 
     @Override
     protected ModelAndView executeRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, WMException {
+
+        TypedServiceReturn reflInvokeRef=null;
         if("get".equals(request.getMethod().toLowerCase())) {
             handleGetRequest(request, response);
             return null;
@@ -110,7 +110,11 @@ public class JSONRPCController extends ControllerBase {
         if (sw == null) {
             throw new WMRuntimeException(MessageResource.NO_SERVICEWIRE, serviceName);
         }
-        TypedServiceReturn reflInvokeRef = invokeMethod(sw, method, params, null, this.serviceResponse);
+
+
+        reflInvokeRef = invokeMethod(sw, method, params, null, this.serviceResponse);
+
+
 
         if (this.logger.isDebugEnabled()) {
             this.logger.debug("method " + method + " result: " + reflInvokeRef);
