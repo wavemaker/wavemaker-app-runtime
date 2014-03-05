@@ -67,17 +67,20 @@ public class WMAppContext {
 
     private boolean initialized = false;
 
+    private Boolean studioMode;
+
     private static final Logger logger = Logger.getLogger(WMAppContext.class);
 
     private WMAppContext(ServletContextEvent event) {
         this.context = event.getServletContext();
+        this.studioMode = Boolean.valueOf(context.getInitParameter("studioMode"));;
         this.appName = this.context.getServletContextName();
         if (this.appName == null) {
             this.appName = "Project Name";
         }
 
         // In Studio, the tenant field and def tenant ID is injected by ProjectManager when a project opens
-        if (!this.appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
+        if (!studioMode) {
             // Store types.js contents in memory
             try {
                 Resource typesResource = new ServletContextResource(this.context, "/types.js");
@@ -139,7 +142,7 @@ public class WMAppContext {
     }
 
     public int getDefaultTenantID() {
-        if (this.appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
+        if (isStudioMode()) {
             return DataServiceConstants.DEFAULT_TENANT_ID;
         } else {
             return this.defaultTenantID;
@@ -147,7 +150,7 @@ public class WMAppContext {
     }
 
     public String getTenantFieldName() {
-        if (this.appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
+        if (isStudioMode()) {
             return DataServiceConstants.DEFAULT_TENANT_FIELD;
         } else {
             return this.tenantFieldName;
@@ -155,7 +158,7 @@ public class WMAppContext {
     }
 
     public String getTenantColumnName() {
-        if (this.appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
+        if (isStudioMode()) {
             return "";
         } else {
             return this.tenantColumnName;
@@ -173,10 +176,6 @@ public class WMAppContext {
         }
 
         return multiTenancy;
-    }
-
-    public String getAppName() {
-        return this.appName;
     }
 
     public String getAppContextRoot() {
@@ -233,5 +232,9 @@ public class WMAppContext {
 
     public boolean isSecured() {
         return secured;
+    }
+
+    public Boolean isStudioMode() {
+        return studioMode;
     }
 }

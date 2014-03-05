@@ -133,8 +133,6 @@ public class DataServiceConstants {
 
     public static final String HSQL_URL_SUFFIX = ";shutdown=true;ifexists=true";
 
-    public static final String WAVEMAKER_STUDIO = "WaveMaker Studio";
-
     public static final String TENANT_FIELD_PROPERTY_NAME = "tenantIdField";
 
     public static final String TENANT_COLUMN_PROPERTY_NAME = "tenantIdColumn";

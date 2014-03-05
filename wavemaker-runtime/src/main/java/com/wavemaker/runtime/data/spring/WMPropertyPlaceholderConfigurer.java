@@ -40,9 +40,8 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
 
         if (value.contains(DataServiceConstants.WEB_ROOT_TOKEN)) {
             if (WMAppContext.getInstance() != null) {
-                String appName = WMAppContext.getInstance().getAppName();
                 String path = "";
-                if (appName.equals(DataServiceConstants.WAVEMAKER_STUDIO)) {
+                if (WMAppContext.getInstance().isStudioMode()) {
                     String projectRoot = RuntimeAccess.getInstance().getProjectRoot();
                     if(projectRoot!= null) {
                         path = projectRoot;
