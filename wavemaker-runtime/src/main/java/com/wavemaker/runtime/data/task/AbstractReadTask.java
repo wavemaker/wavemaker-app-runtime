@@ -14,32 +14,25 @@
 
 package com.wavemaker.runtime.data.task;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
-import org.hibernate.mapping.Column;
-import org.hibernate.mapping.Property;
-import org.hibernate.type.Type;
-
+import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.util.ObjectAccess;
 import com.wavemaker.common.util.Tuple;
 import com.wavemaker.runtime.data.DataServiceLoggers;
 import com.wavemaker.runtime.data.DataServiceMetaData;
+import com.wavemaker.runtime.data.DataServiceRuntimeException;
 import com.wavemaker.runtime.data.Task;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 import com.wavemaker.runtime.data.util.DataServiceUtils;
 import com.wavemaker.runtime.service.OrderBy;
 import com.wavemaker.runtime.service.PagingOptions;
 import com.wavemaker.runtime.service.ServiceConstants;
+import java.util.*;
+
+import org.hibernate.*;
+import org.hibernate.criterion.Order;
+import org.hibernate.mapping.Column;
+import org.hibernate.mapping.Property;
+import org.hibernate.type.Type;
 
 /**
  * @author Simon Toens
@@ -201,7 +194,7 @@ public abstract class AbstractReadTask extends BaseTask implements Task {
     protected String[] splitPropertyPath(String propertyPath) {
         String[] rtn = null;
         if (propertyPath.indexOf(DataServiceConstants.PROP_SEP) == -1) {
-            rtn = new String[] { propertyPath };
+            rtn = new String[]{propertyPath};
         } else {
             rtn = propertyPath.split("\\" + DataServiceConstants.PROP_SEP);
         }
@@ -228,7 +221,7 @@ public abstract class AbstractReadTask extends BaseTask implements Task {
     }
 
     protected void logQuery(String query) {
-        logQuery(query, Collections.<String, Object> emptyMap());
+        logQuery(query, Collections.<String, Object>emptyMap());
     }
 
     protected void logQuery(String query, Map<String, Object> bindParams) {
@@ -245,38 +238,43 @@ public abstract class AbstractReadTask extends BaseTask implements Task {
         if (singleResult) {
             return query.uniqueResult();
         } else {
+            try {
 
-            List<?> rs = query.list();
+                List<?> rs = query.list();
 
-            SessionFactory sessFact = getSessionFactory(dbName);
-            Type[] returnTypes = query.getReturnTypes();
-            Class<?> returnedClass = returnTypes[0].getReturnedClass();
-            String[] propertyNames = sessFact.getClassMetadata(returnedClass).getPropertyNames();
-            Type[] propertyTypes = sessFact.getClassMetadata(returnedClass).getPropertyTypes();
+                SessionFactory sessFact = getSessionFactory(dbName);
+                Type[] returnTypes = query.getReturnTypes();
+                Class<?> returnedClass = returnTypes[0].getReturnedClass();
+                String[] propertyNames = sessFact.getClassMetadata(returnedClass).getPropertyNames();
+                Type[] propertyTypes = sessFact.getClassMetadata(returnedClass).getPropertyTypes();
 
-            ObjectAccess oa = ObjectAccess.getInstance();
+                ObjectAccess oa = ObjectAccess.getInstance();
 
-            //
-            // To eliminate possible duplicates and construct a new list
-            // with orders preserved for the final results
-            //
-            Iterator<?> rsItr = rs.iterator();
-            List<Object> finalResultSet = new ArrayList<Object>();
-            while (rsItr.hasNext()) {
-                Object obj = rsItr.next();
-                if (finalResultSet.contains(obj)) {
-                    continue;
-                }
-
-                for (int i = 0; i < propertyTypes.length; i++) {
-                    if (propertyTypes[i].getName().contains("lob") || propertyTypes[i].getName().toLowerCase().contains("binary")) {
-                        oa.setProperty(obj, propertyNames[i], null);
+                //
+                // To eliminate possible duplicates and construct a new list
+                // with orders preserved for the final results
+                //
+                Iterator<?> rsItr = rs.iterator();
+                List<Object> finalResultSet = new ArrayList<Object>();
+                while (rsItr.hasNext()) {
+                    Object obj = rsItr.next();
+                    if (finalResultSet.contains(obj)) {
+                        continue;
                     }
+
+                    for (int i = 0; i < propertyTypes.length; i++) {
+                        if (propertyTypes[i].getName().contains("lob") || propertyTypes[i].getName().toLowerCase().contains("binary")) {
+                            oa.setProperty(obj, propertyNames[i], null);
+                        }
+                    }
+                    finalResultSet.add(obj);
                 }
-                finalResultSet.add(obj);
+
+                return finalResultSet;
+            } catch (Exception ex) {
+                throw new DataServiceRuntimeException(MessageResource.DATABASE_INVALID_DATA_ACCESS_RESOURCE_USAGE_EXCEPTION, ex);
             }
 
-            return finalResultSet;
         }
     }
 

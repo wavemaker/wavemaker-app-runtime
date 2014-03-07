@@ -15,7 +15,6 @@
 package com.wavemaker.runtime.data.spring;
 
 import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.*;
@@ -293,7 +292,7 @@ public class SpringDataServiceManager implements DataServiceManager {
         try {
             rtn = txTemplate.execute(tx);
         } catch (InvalidDataAccessResourceUsageException invalidDataAccessResourceUsageException) {
-            throw new DataServiceRuntimeException(MessageResource.DATABASE_INVALID_DATA_ACCESS_RESOURCE_USAGE_EXCEPTION, invalidDataAccessResourceUsageException.getMessage());
+            throw new DataServiceRuntimeException(MessageResource.DATABASE_INVALID_DATA_ACCESS_RESOURCE_USAGE_EXCEPTION, invalidDataAccessResourceUsageException);
         } catch (Throwable ex) {
             //The following logic intends to display a sensible message for the user when a column contains a value whose length
             //exceeds the maximum length allowed in the database.  The logic has been tested on MySQL, Postgres, Oracle and
@@ -302,22 +301,22 @@ public class SpringDataServiceManager implements DataServiceManager {
                 String msg = ((java.sql.BatchUpdateException) ex.getCause()).getNextException().getMessage();
                 if (msg != null) {
                     ex.printStackTrace();
-                    throw new WMRuntimeException(msg);
+                    throw new DataServiceRuntimeException(msg);
                 }
             } else if (ex.getCause().getCause() instanceof java.sql.BatchUpdateException) { //Postgres
                 java.sql.BatchUpdateException e = (java.sql.BatchUpdateException) ex.getCause().getCause();
                 if (e != null && e.getMessage() != null) {
                     ex.printStackTrace();
-                    throw new WMRuntimeException(e.getNextException().getMessage());
+                    throw new DataServiceRuntimeException(e.getNextException().getMessage());
                 }
             } else if (ex.getCause().getCause() != null) { //MySQL, SQLServer
                 String msg = ex.getCause().getCause().getMessage();
                 if (msg != null) {
                     ex.printStackTrace();
-                    throw new WMRuntimeException(msg);
+                    throw new DataServiceRuntimeException(msg);
                 }
             } else {
-                throw new WMRuntimeException(ex);
+                throw new DataServiceRuntimeException(ex);
             }
         }
         if (txLogger.isInfoEnabled()) {

@@ -634,9 +634,11 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource DATABASE_SQL_EXECUTION_EXCEPTION = new MessageResource("com.wavemaker.runtime.data$DBSQLException");
 
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource DATABASE_INVALID_DATA_ACCESS_RESOURCE_USAGE_EXCEPTION = new MessageResource("com.wavemaker.runtime.data$DBInvalidDataAccessResourceUsageException");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource DATABASE_OPERATION_FAILED = new MessageResource("com.wavemaker.runtime.data$DBOperationFailedException");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource APPLICATION_FAILED_TO_START = new MessageResource("com.wavemaker.saas.applicationFailedToStart");
