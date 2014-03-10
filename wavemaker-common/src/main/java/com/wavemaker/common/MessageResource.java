@@ -656,6 +656,12 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_DELETE_PROJECT_FILES = new MessageResource("com.wavemaker.tools.failedToDeleteProjectFiles");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource UNAUTHORIZED_TO_CLOUDJEE = new MessageResource("com.wavemaker.tools.unAuthorizedToCloudJee");
+
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource UNEXPECTED_CLOUDJEE_RESPONSE = new MessageResource("com.wavemaker.tools.unexpectedCloudJeeResponse");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
