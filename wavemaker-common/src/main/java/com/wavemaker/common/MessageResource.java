@@ -664,6 +664,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource UNEXPECTED_CLOUDJEE_RESPONSE = new MessageResource("com.wavemaker.tools.unexpectedCloudJeeResponse");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource SAAS_CLIENT_APPLICATION_STARTUP_TIMED_OUT = new MessageResource("com.wavemaker.saas.saasclientApplicationStartupTimedOut");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
