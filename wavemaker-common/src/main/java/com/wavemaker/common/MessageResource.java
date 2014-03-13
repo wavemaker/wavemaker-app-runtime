@@ -667,6 +667,15 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource SAAS_CLIENT_APPLICATION_STARTUP_TIMED_OUT = new MessageResource("com.wavemaker.saas.saasclientApplicationStartupTimedOut");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_CREATE_PREFAB_FILES = new MessageResource("com.wavemaker.tools.failedToCreatePrefabFiles");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_REGISTER_PREFAB_FOR_PROJECT = new MessageResource("com.wavemaker.tools.failedToRegisterPrefabForProject");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_DE_REGISTER_PREFAB_FOR_PROJECT = new MessageResource("com.wavemaker.tools.failedToDeRegisterPrefabForProject");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
