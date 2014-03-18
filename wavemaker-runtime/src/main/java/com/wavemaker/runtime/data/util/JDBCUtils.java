@@ -14,20 +14,15 @@
 
 package com.wavemaker.runtime.data.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.wavemaker.common.MessageResource;
-import org.apache.commons.logging.Log;
-
 import com.wavemaker.common.util.ClassLoaderUtils;
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.runtime.data.DataServiceRuntimeException;
+import org.apache.commons.logging.Log;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JDBCUtils {
 
@@ -43,6 +38,12 @@ public class JDBCUtils {
             loadDriver(driverClassName);
             return DriverManager.getConnection(url, username, password);
         } catch (SQLException ex) {
+            //wrt to MySQL the cause of the SQLException is set to null; the actual exception is set in a cause filed in MySQLException; hence you need to get the message from the sqlexception itself..
+            if(ex.getCause() != null) {
+                throw new DataServiceRuntimeException(ex.getCause().getMessage(), ex);
+            } else if(ex.getMessage() != null) {
+                throw new DataServiceRuntimeException(ex.getMessage(), ex);
+            }
             throw new DataServiceRuntimeException(ex, MessageResource.DATABASE_CONNECTION_EXCEPTION);
         }
     }
