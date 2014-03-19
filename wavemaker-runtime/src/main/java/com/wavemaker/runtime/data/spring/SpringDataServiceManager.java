@@ -23,11 +23,6 @@ import com.wavemaker.runtime.data.task.DefaultRollback;
 import com.wavemaker.runtime.data.task.PreProcessor;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 import com.wavemaker.runtime.data.util.QueryHandler;
-import java.lang.reflect.Proxy;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -40,6 +35,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.lang.reflect.Proxy;
+import java.sql.BatchUpdateException;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Simon Toens
@@ -297,27 +299,29 @@ public class SpringDataServiceManager implements DataServiceManager {
             //The following logic intends to display a sensible message for the user when a column contains a value whose length
             //exceeds the maximum length allowed in the database.  The logic has been tested on MySQL, Postgres, Oracle and
             //SQLServer so far.
-            if (ex.getCause() instanceof java.sql.BatchUpdateException) { //Oracle
-                String msg = ((java.sql.BatchUpdateException) ex.getCause()).getNextException().getMessage();
-                if (msg != null) {
-                    ex.printStackTrace();
-                    throw new DataServiceRuntimeException(msg);
+            if(ex.getCause() != null) {
+                if (ex.getCause() instanceof java.sql.BatchUpdateException) { //Oracle
+                    SQLException nextException = ((BatchUpdateException) ex.getCause()).getNextException();
+                    if (nextException != null && nextException.getMessage() != null) {
+                        throw new DataServiceRuntimeException(nextException.getMessage(), ex);
+                    }
+                } else if (ex.getCause().getCause() != null && ex.getCause().getCause() instanceof java.sql.BatchUpdateException) { //Postgres
+                    java.sql.BatchUpdateException e = (java.sql.BatchUpdateException) ex.getCause().getCause();
+                    if ( e.getMessage() != null) {
+                        throw new DataServiceRuntimeException(e.getNextException().getMessage(), ex);
+                    }
+                } else if (ex.getCause().getCause() != null) { //MySQL, SQLServer
+                    String msg = ex.getCause().getCause().getMessage();
+                    if (msg != null) {
+                        throw new DataServiceRuntimeException(msg, ex);
+                    }
                 }
-            } else if (ex.getCause().getCause() instanceof java.sql.BatchUpdateException) { //Postgres
-                java.sql.BatchUpdateException e = (java.sql.BatchUpdateException) ex.getCause().getCause();
-                if (e != null && e.getMessage() != null) {
-                    ex.printStackTrace();
-                    throw new DataServiceRuntimeException(e.getNextException().getMessage());
-                }
-            } else if (ex.getCause().getCause() != null) { //MySQL, SQLServer
-                String msg = ex.getCause().getCause().getMessage();
-                if (msg != null) {
-                    ex.printStackTrace();
-                    throw new DataServiceRuntimeException(msg);
-                }
-            } else {
-                throw new DataServiceRuntimeException(ex);
             }
+
+            if (ex.getMessage() != null) {
+                throw new DataServiceRuntimeException(ex.getMessage(),ex);
+            }
+            throw new DataServiceRuntimeException(ex);
         }
         if (txLogger.isInfoEnabled()) {
             if (isTxRunning()) {
