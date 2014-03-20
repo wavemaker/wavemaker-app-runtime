@@ -7,7 +7,7 @@
 #####################################################
 wm.studio.db.driverClassName=com.mysql.jdbc.Driver
 wm.studio.hibernate.dialect=org.hibernate.dialect.MySQLDialect
-wm.studio.db.connectionUrl=jdbc:mysql://localhost:3306/wavemaker
+wm.studio.db.connectionUrl=jdbc:mysql://localhost:3306/WMSTUDIO
 wm.studio.db.username=root
 wm.studio.db.password=pramati
 
@@ -15,3 +15,9 @@ wm.studio.db.password=pramati
 #Db migration script properties
 #####################################################
 wm.studio.hibernate.hbm2ddl.auto=update
+
+#####################################################
+# static content & login Urls
+#####################################################
+wm.studio.static.content.url=//wmstudio.s3.amazonaws.com/static/7.0
+wm.studio.login.url=https://studio.wavemaker.com/login
