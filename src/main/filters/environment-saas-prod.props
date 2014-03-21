@@ -20,5 +20,5 @@ wm.studio.hibernate.hbm2ddl.auto=update
 # static content & login Urls
 # properties name should not contain dot's(.) in it
 #####################################################
-wm_studio_static_content.url=//wmstudio.s3.amazonaws.com/static/7.0
+wm_studio_static_content_url=//wmstudio.s3.amazonaws.com/static/7.0
 wm_studio_login_url=https://studio.wavemaker.com/login

@@ -20,6 +20,6 @@ wm.studio.hibernate.hbm2ddl.auto=update
 # static content & login Urls
 # properties name should not contain dot's(.) in it
 #####################################################
-wm_studio_static_content.url=/
+wm_studio_static_content_url=/
 wm_studio_login_url=login.html
 
