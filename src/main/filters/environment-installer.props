@@ -9,7 +9,7 @@ wm.studio.db.driverClassName=org.hsqldb.jdbcDriver
 wm.studio.hibernate.dialect=org.hibernate.dialect.HSQLDialect
 wm.studio.db.connectionUrl=jdbc:hsqldb:file:wavemaker/db;create=true
 wm.studio.db.username=SA
-wm.studio.db.password=""
+wm.studio.db.password=
 
 #####################################################
 #Db migration script properties
