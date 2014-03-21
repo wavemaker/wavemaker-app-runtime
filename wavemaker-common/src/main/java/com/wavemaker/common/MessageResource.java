@@ -408,7 +408,8 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource RESOURCE_NOT_ALLOWED_FOR_DELETION = new MessageResource("com.wavemaker.tools$ResourceNotAllowedForDeletion");
 
-
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource COULD_NOT_EXPORT_EMPTY_DATABASE = new MessageResource("com.wavemaker.tools$CouldNotExportEmptyDatabase");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource INSUFFICIENT_RESOURCES_TO_CREATE_JAR_FILE = new MessageResource("com.wavemaker.tools$InsufficientResourcesToCreateJarFile");
