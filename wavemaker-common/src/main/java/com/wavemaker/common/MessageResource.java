@@ -429,6 +429,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource DATAMODEL_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools.data$DataModelDoesNotExist");
 
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource NO_TABLE_FOUND = new MessageResource("com.wavemaker.tools.data$NoTableFound");
+
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource JSON_FAILED_PARSING = new MessageResource("com.wavemaker.json$FailedParsing");
 
