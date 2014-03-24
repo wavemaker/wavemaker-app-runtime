@@ -17,6 +17,9 @@ wm.studio.db.password=
 #Db migration script properties
 #####################################################
 wm.studio.hibernate.hbm2ddl.auto=update
+wm.studio.db.scripts.location=db/hsql
+wm.studio.db.scripts.prefix=v
+wm.studio.db.should.migrate=false
 
 #####################################################
 # static content & login Urls

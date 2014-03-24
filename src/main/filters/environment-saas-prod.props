@@ -16,7 +16,10 @@ wm.studio.db.password=pramati
 #####################################################
 #Db migration script properties
 #####################################################
-wm.studio.hibernate.hbm2ddl.auto=update
+wm.studio.db.scripts.location=db/mysql
+wm.studio.db.scripts.prefix=v
+wm.studio.hibernate.hbm2ddl.auto=validate
+wm.studio.db.should.migrate=true
 
 #####################################################
 # static content & login Urls
