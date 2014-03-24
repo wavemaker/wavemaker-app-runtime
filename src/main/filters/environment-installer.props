@@ -2,6 +2,8 @@
 #Config properties for desktop environment
 #####################################################
 
+wm.studio.spring.active.profiles=local
+
 #####################################################
 #Db connection properties
 #####################################################
