@@ -26,4 +26,7 @@ wm.studio.db.should.migrate=true
 # properties name should not contain dot's(.) in it
 #####################################################
 wm_studio_static_content_url=/studio/app
-wm_studio_login_url=login.html
+wm_studio_login_url_ui=login.html
+wm_studio_login_url_backEnd=/app/login.html
+wm_studio_static_content_file_relative_location=app
+wm_studio_build_type=local

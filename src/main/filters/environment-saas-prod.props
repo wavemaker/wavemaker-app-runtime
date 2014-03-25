@@ -26,4 +26,7 @@ wm.studio.db.should.migrate=true
 # properties name should not contain dot's(.) in it
 #####################################################
 wm_studio_static_content_url=//wmstudio.s3.amazonaws.com/static/7.0
-wm_studio_login_url=https://studio.wavemaker.com/login
+wm_studio_login_url_ui=https://studio.wavemaker.com/login
+wm_studio_login_url_backEnd=https://studio.wavemaker.com/login
+wm_studio_static_content_file_relative_location=dest
+wm_studio_build_type=production
