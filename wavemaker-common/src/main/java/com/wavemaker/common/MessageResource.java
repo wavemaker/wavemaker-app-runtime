@@ -435,6 +435,24 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource NO_TABLE_FOUND = new MessageResource("com.wavemaker.tools.data$NoTableFound");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DATAMODEL_NAME_NOT_SET = new MessageResource("com.wavemaker.tools.data$DataModelNotSet");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource ENTITY_NAME_NOT_SET = new MessageResource("com.wavemaker.tools.data$EntityNameNotSet");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource ENTITIES_NOT_FOUND = new MessageResource("com.wavemaker.tools.data$EntitiesNotFound");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PACKAGE_NAME_NOT_SET = new MessageResource("com.wavemaker.tools.data$PackageNameNotSet");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_PACKAGE_NAME = new MessageResource("com.wavemaker.tools.data$InvalidPackageName");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource TYPE_NOT_CREATED = new MessageResource("com.wavemaker.tools.data$TypeNotCreated");
+
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource JSON_FAILED_PARSING = new MessageResource("com.wavemaker.json$FailedParsing");
 
