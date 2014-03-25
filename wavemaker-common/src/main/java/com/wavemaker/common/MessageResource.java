@@ -284,6 +284,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource ADD_SRV_UPGRADE_NO_SPRING_FILE = new MessageResource("com.wavemaker.tools$AddServiceUpgrade_NoSpringFile");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PROJECTNAME_CONTAINS_SPECIAL_CHARACTER = new MessageResource("com.wavemaker.tools$ProjectNameContainsSpecialCharacter");
+
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource PROJECT_TOO_MANY_SERVICE_WIRES = new MessageResource("com.wavemaker.tools.project$TooManyServiceWires");
 
