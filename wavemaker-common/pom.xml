@@ -1,18 +1,23 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
+
+    <parent>
 		<groupId>com.wavemaker</groupId>
 		<artifactId>wavemaker-studio</artifactId>
 		<version>7.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>wavemaker-common</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+
+    <artifactId>wavemaker-common</artifactId>
 	<packaging>jar</packaging>
+
 	<properties>
 		<main.basedir>${basedir}/../..</main.basedir>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
