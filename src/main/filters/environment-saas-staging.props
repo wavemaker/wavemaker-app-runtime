@@ -2,6 +2,9 @@
 #Config properties for saas staging environment
 #####################################################
 
+#####################################################
+#Spring profile to be activated
+#####################################################
 wm.studio.spring.active.profiles=production
 
 #####################################################
@@ -30,3 +33,13 @@ wm_studio_login_url_ui=https://stage-studio.wavemaker.com/login
 wm_studio_login_url_backEnd=https://stage-studio.wavemaker.com/login
 wm_studio_static_content_file_relative_location=dest
 wm_studio_build_type=production
+
+#####################################################
+#Deploy Properties
+#####################################################
+wm_studio_deploy_host=staging.wavemakercloud.com
+
+#####################################################
+#Saas Properties
+#####################################################
+wm_studio_saas_host=stage-studio.wavemaker.com

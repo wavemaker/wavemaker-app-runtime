@@ -2,6 +2,9 @@
 #Config properties for desktop environment
 #####################################################
 
+#####################################################
+#Spring profile to be activated
+#####################################################
 wm.studio.spring.active.profiles=local
 
 #####################################################
@@ -30,4 +33,14 @@ wm_studio_login_url_ui=login.html
 wm_studio_login_url_backEnd=/app/login.html
 wm_studio_static_content_file_relative_location=app
 wm_studio_build_type=local
+
+#####################################################
+#Deploy Properties
+#####################################################
+wm_studio_deploy_host=staging.wavemakercloud.com
+
+#####################################################
+#Saas Properties
+#####################################################
+wm_studio_saas_host=studio.wavemaker.com
 
