@@ -21,6 +21,11 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>wavemaker-prefab</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>wavemaker-json</artifactId>
             <version>${project.version}</version>
         </dependency>
