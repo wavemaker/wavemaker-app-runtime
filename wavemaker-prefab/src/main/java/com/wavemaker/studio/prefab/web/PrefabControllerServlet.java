@@ -13,6 +13,8 @@
  */
 package com.wavemaker.studio.prefab.web;
 
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -131,7 +133,17 @@ public class PrefabControllerServlet extends DispatcherServlet {
         ApplicationContext context = lookupContext(request);
 
         if (context != null) {
-            return context.getBean(HandlerMapping.class).getHandler(request);
+            Map<String, HandlerMapping> handlerMappingMap = context.getBeansOfType(HandlerMapping.class);
+            for (HandlerMapping hm : handlerMappingMap.values()) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                            "Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
+                }
+                HandlerExecutionChain handler = hm.getHandler(request);
+                if (handler != null) {
+                    return handler;
+                }
+            }
         }
 
         return null;
@@ -194,24 +206,32 @@ public class PrefabControllerServlet extends DispatcherServlet {
      */
     @Override
     protected HandlerAdapter getHandlerAdapter(final Object handler) throws ServletException {
-        HandlerAdapter handlerAdapter = activeContext.get().getBean(HandlerAdapter.class);
-
-        if (handlerAdapter.supports(handler)) {
-            return handlerAdapter;
+        Map<String, HandlerAdapter> handlerAdapterMap = activeContext.get().getBeansOfType(HandlerAdapter.class);
+        for (HandlerAdapter ha : handlerAdapterMap.values()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Testing handler adapter [" + ha + "]");
+            }
+            if (ha.supports(handler)) {
+                return ha;
+            }
         }
-
-        throw new ServletException(String.format("No adapter for Controller %s", handler));
+        throw new ServletException("No adapter for handler [" + handler +
+                "]: Does your handler implement a supported interface like Controller?");
     }
 
     @Override
     protected ModelAndView processHandlerException(final HttpServletRequest request, final HttpServletResponse response,
                                                    final Object handler, final Exception ex) throws Exception {
 		ApplicationContext context = lookupContext(request);
-
+        ModelAndView exMv = null;
         if (context != null) {
-            HandlerExceptionResolver handlerExceptionResolver = context.getBean(HandlerExceptionResolver.class);
-            ModelAndView exMv = handlerExceptionResolver.resolveException(request, response, handler, ex);
-
+            Map<String, HandlerExceptionResolver> handlerExceptionResolversMap = context.getBeansOfType(HandlerExceptionResolver.class);
+            for (HandlerExceptionResolver handlerExceptionResolver : handlerExceptionResolversMap.values()) {
+                exMv = handlerExceptionResolver.resolveException(request, response, handler, ex);
+                if (exMv != null) {
+                    break;
+                }
+            }
             if (exMv != null) {
                 if (exMv.isEmpty()) {
                     return null;
