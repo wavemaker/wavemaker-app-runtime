@@ -19,7 +19,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
+import org.apache.tika.Tika;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -206,10 +205,7 @@ public final class FileController extends AbstractController {
     }
 
     protected void setContentType(HttpServletResponse response, File file) {
-        ConfigurableMimeFileTypeMap mimeFileTypeMap = new ConfigurableMimeFileTypeMap();
-        mimeFileTypeMap.setMappings(new String[] { "text/css css CSS", "application/json json JSON smd SMD" });
-
-        response.setContentType(mimeFileTypeMap.getContentType(file));
+        response.setContentType(new Tika().detect(file.getName()));
     }
 
     public void setModuleManager(ModuleManager moduleManager) {
