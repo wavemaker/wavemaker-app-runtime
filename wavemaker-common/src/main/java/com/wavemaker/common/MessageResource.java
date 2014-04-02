@@ -710,6 +710,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource MAX_APPLICATIONS_EXCEEDED = new MessageResource("com.wavemaker.core.MaxApplicationsExceeded");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource APP_CONTAINER_ALLOCATION_FAILED = new MessageResource("com.wavemaker.tools.AppContainerAllocationFailed");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
