@@ -704,6 +704,12 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_DE_REGISTER_PREFAB_FOR_PROJECT = new MessageResource("com.wavemaker.tools.failedToDeRegisterPrefabForProject");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_DEPLOY_APPLICATION = new MessageResource("com.wavemaker.tools.failedToDeployApplication");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource MAX_APPLICATIONS_EXCEEDED = new MessageResource("com.wavemaker.core.MaxApplicationsExceeded");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
