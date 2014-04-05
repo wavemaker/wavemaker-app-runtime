@@ -14,12 +14,13 @@
 package com.wavemaker.studio.prefab.impl;
 
 import java.io.File;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
@@ -35,15 +36,15 @@ import com.wavemaker.studio.prefab.util.PrefabUtils;
 import com.wavemaker.studio.prefab.util.Utils;
 
 /**
- * A composite {@link PrefabLoader} to load local and remote prefabs. All available prefabs are
+ * Default implementation for {@link PrefabLoader}. All available prefabs are
  * (re)loaded on {@link ContextRefreshedEvent}.
- * 
+ *
  * @author Dilip Kumar
  */
 @Service
 public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<ApplicationEvent> {
 
-    private static final Logger LOGGER = Logger.getLogger(PrefabLoaderImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PrefabLoaderImpl.class);
 
     private File prefabDirectory;
     private PrefabUtils prefabUtils;
@@ -86,7 +87,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
             try {
                 loadPrefab(prefabDir);
             } catch (Exception e) {
-                LOGGER.warning(String.format("Prefab %s could not be loaded: %s (%s)", prefabDir.getName(), e, e.getCause()));
+                LOGGER.warn(String.format("Prefab %s could not be loaded: %s (%s)", prefabDir.getName(), e, e.getCause()));
             }
         }
 
@@ -121,20 +122,24 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
             if (event.getSource() == context) {
                 loadPrefabs();
             }
+        } else if (event instanceof ContextClosedEvent) {
+            if (event.getSource() == context) {
+                publishEvent(new PrefabsUnloadedEvent(context));
+            }
         }
     }
 
-	protected File[] readPrefabDirs() {
+    protected File[] readPrefabDirs() {
         if (prefabDirectory == null) {
-            LOGGER.warning("Prefabs directory is not defined or accessible, cannot load prefabs.");
+            LOGGER.warn("Prefabs directory is not defined or accessible, cannot load prefabs.");
             return PrefabConstants.ZERO_FILES;
         }
         return prefabUtils.listPrefabDirectories(prefabDirectory);
-	}
+    }
 
     /**
      * Publishes th given {@link PrefabEvent} to the context.
-     * 
+     *
      * @param event event
      */
     private void publishEvent(final PrefabEvent event) {

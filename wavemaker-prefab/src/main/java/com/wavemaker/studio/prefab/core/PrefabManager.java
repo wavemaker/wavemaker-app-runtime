@@ -43,7 +43,7 @@ public interface PrefabManager {
      * 
      * @return enabled {@link Prefab}s
      */
-    public Collection<Prefab> getEnabledPrefabs();
+    public Collection<Prefab> getPrefabs();
 
     /**
      * Returns the {@link Prefab} with the given name.

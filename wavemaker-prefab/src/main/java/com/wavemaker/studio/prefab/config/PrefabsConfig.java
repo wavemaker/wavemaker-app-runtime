@@ -1,7 +1,6 @@
 package com.wavemaker.studio.prefab.config;
 
-import java.util.logging.Logger;
-
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +14,7 @@ import com.wavemaker.studio.prefab.util.PrefabConstants;
 @Configuration
 @PropertySource("classpath:" + PrefabConstants.PREFABS_PROP_FILE)
 public class PrefabsConfig {
-    private static final Logger LOGGER = Logger.getLogger(PrefabsConfig.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PrefabsConfig.class);
 
     private static final String PREFAB_HOME_DIR_PROP = "prefabs.home.dir";
     private static final String PREFAB_LIB_DIR_PROP = "prefabs.lib.dir";

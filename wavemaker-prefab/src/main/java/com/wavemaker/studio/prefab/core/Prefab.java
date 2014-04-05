@@ -18,24 +18,20 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 /**
- * Barebones prefab class, holds a {@link ClassLoader} that can load packaged {@link Class}es.
- * 
- * A prefab is initially in the ENABLED state, during which its {@link Class}es can be of service.
- * When a prefab is in the DISABLED state, its {@link Class}es can no longer be used and are likely
- * to be garbage collected.
- * 
+ * prefab class, holds a {@link ClassLoader} that can load packaged {@link Class}es.
+ * <p/>
+ *
  * @author Dilip Kumar
  */
 public class Prefab {
 
     private final String name;
     private ClassLoader classLoader;
-    private State state;
 
     /**
      * Creates a new <code>Prefab</code> with the specified name and classloader.
-     * 
-     * @param name name, usually the name of the source
+     *
+     * @param name        name, usually the name of the source
      * @param classLoader {@link ClassLoader} to be used to load packaged classes
      */
     public Prefab(final String name, final ClassLoader classLoader) {
@@ -44,7 +40,6 @@ public class Prefab {
 
         this.name = name;
         this.classLoader = classLoader;
-        state = State.ENABLED;
     }
 
     /**
@@ -61,29 +56,16 @@ public class Prefab {
         return classLoader;
     }
 
-    /**
-     * Disable this prefab. A prefab once disabled, cannot be enabled again.
-     */
-    public void disable() {
-        classLoader = null;
-
-        state = State.DISABLED;
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
-    /**
-     * Checks whether this prefab is enabled.
-     * 
-     * @return test true, if enabled
-     */
-    public boolean isEnabled() {
-        return state == State.ENABLED;
-    }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(name)
-        .append(classLoader)
-        .toHashCode();
+                .append(classLoader)
+                .toHashCode();
     }
 
     @Override
@@ -97,19 +79,15 @@ public class Prefab {
         Prefab prefab = (Prefab) that;
 
         return new EqualsBuilder().append(name, prefab.name)
-        .append(classLoader, prefab.classLoader)
-        .isEquals();
+                .append(classLoader, prefab.classLoader)
+                .isEquals();
     }
 
     @Override
     public String toString() {
-        return name + " (" + state + ")";
-    }
-
-    /**
-     * Valid states of prefab.
-     */
-    private static enum State {
-        ENABLED, DISABLED
+        return "Prefab{" +
+                "name='" + name + '\'' +
+                ", classLoader=" + classLoader +
+                '}';
     }
 }

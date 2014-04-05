@@ -2,11 +2,11 @@ package com.wavemaker.studio.prefab.util;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import com.wavemaker.studio.prefab.config.PrefabsConfig;
  */
 @Service
 public class PrefabUtils {
-    private static final Logger LOGGER = Logger.getLogger(PrefabUtils.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PrefabUtils.class);
 
     @Autowired
     private ServletContext servletContext;

@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.stereotype.Service;
@@ -27,58 +26,47 @@ import com.wavemaker.studio.prefab.core.PrefabManager;
 import com.wavemaker.studio.prefab.util.Utils;
 
 /**
- * Default implementation for {@link PrefabManager}. A new version of {@link Prefab} is added by disabling the existing
- * version. References to {@link Class}es of disabled {@link Prefab}s should be destroyed for garbage collection.
- * 
+ * Default implementation for {@link PrefabManager}.
+ *
  * @author Dilip Kumar
  */
 @Service
 public class PrefabManagerImpl implements PrefabManager {
 
-	// map containing prefab name in lowercase as key and prefab as value
-	private static final Map<String, Prefab> prefabs = Utils.newConcurrentMap();
-	private static final Predicate ENABLED_PREDICATE = new Predicate() {
+    // map containing prefab name as key and prefab as value
+    private static final Map<String, Prefab> prefabs = Utils.newConcurrentMap();
 
-		@Override
-		public boolean evaluate(final Object object) {
-			return ((Prefab) object).isEnabled();
-		}
-	};
+    @Override
+    public synchronized void addPrefab(final Prefab prefab) {
+        deletePrefab(prefab.getName());
+        prefabs.put(prefab.getName(), prefab);
+    }
 
-	@Override
-	public synchronized void addPrefab(final Prefab prefab) {
-		deletePrefab(prefab.getName());
-		prefabs.put(prefab.getName().toLowerCase(), prefab);
-	}
+    @Override
+    public synchronized void deletePrefab(final String prefabName) {
+        if (StringUtils.isEmpty(prefabName)) {
+            return;
+        }
 
-	@Override
-	public synchronized void deletePrefab(final String prefabName) {
-		if (StringUtils.isEmpty(prefabName)) {
-			return;
-		}
-
-		Prefab existingPrefab = getPrefab(prefabName);
-
-		if (existingPrefab != null) {
-			existingPrefab.disable();
-			prefabs.remove(existingPrefab.getName().toLowerCase());
-		}
-	}
+        Prefab existingPrefab = getPrefab(prefabName);
+        if (existingPrefab != null) {
+            prefabs.remove(existingPrefab.getName().toLowerCase());
+        }
+    }
 
     @Override
     public synchronized void deleteAllPrefabs() {
         prefabs.clear();
     }
 
-	@Override
-	public Collection<Prefab> getEnabledPrefabs() {
-		return CollectionUtils.select(prefabs.values(), ENABLED_PREDICATE);
-	}
+    @Override
+    public Collection<Prefab> getPrefabs() {
+        return CollectionUtils.unmodifiableCollection(prefabs.values());
+    }
 
-	@Override
-	public Prefab getPrefab(final String prefabName) {
-		Validate.notNull(prefabName, "PrefabManagerImpl: Prefab name should not be null");
-
-		return prefabs.get(prefabName.toLowerCase());
-	}
+    @Override
+    public Prefab getPrefab(final String prefabName) {
+        Validate.notNull(prefabName, "PrefabManagerImpl: Prefab name should not be null");
+        return prefabs.get(prefabName);
+    }
 }

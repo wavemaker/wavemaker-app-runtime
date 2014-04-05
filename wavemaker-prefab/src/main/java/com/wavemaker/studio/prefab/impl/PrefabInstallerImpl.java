@@ -15,6 +15,7 @@ package com.wavemaker.studio.prefab.impl;
 
 import javax.servlet.ServletContext;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -24,6 +25,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 
+import com.wavemaker.studio.prefab.classloader.PrefabClassLoader;
 import com.wavemaker.studio.prefab.context.PrefabWebApplicationContext;
 import com.wavemaker.studio.prefab.core.Prefab;
 import com.wavemaker.studio.prefab.core.PrefabInstaller;
@@ -34,7 +36,7 @@ import com.wavemaker.studio.prefab.event.PrefabsLoadedEvent;
 import com.wavemaker.studio.prefab.event.PrefabsUnloadedEvent;
 
 /**
- * Default implementation of {@link com.wavemaker.studio.prefab.core.PrefabInstaller}. Hooks to the {@link ApplicationContext} of
+ * Default implementation of {@link PrefabInstaller}. Hooks to the {@link ApplicationContext} of
  * the prefab servlet for installing/uninstalling the beans of the {@link Prefab}.
  * <p/>
  * Uses Spring event handling to communicate prefab state changes.
@@ -45,12 +47,24 @@ import com.wavemaker.studio.prefab.event.PrefabsUnloadedEvent;
 public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextAware,
         ApplicationListener<PrefabEvent>, ServletContextAware {
 
+    private static final Logger LOGGER = Logger.getLogger(PrefabInstallerImpl.class);
+
+    @Override
+    public void installPrefab(final Prefab prefab) {
+        if (prefabRegistry == null) {
+            return;
+        }
+        ConfigurableApplicationContext prefabContext = new PrefabWebApplicationContext(prefab, context, servletContext);
+        prefabRegistry.addPrefabContext(prefab.getName(), prefabContext);
+    }
+
     @Autowired
     private PrefabManager prefabManager;
+
     @Autowired
     private PrefabRegistry prefabRegistry;
-
     private ServletContext servletContext;
+
     private ApplicationContext context;
 
     @Override
@@ -93,15 +107,6 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
     }
 
     @Override
-    public void installPrefab(final Prefab prefab) {
-        if (prefabRegistry == null) {
-            return;
-        }
-        ConfigurableApplicationContext prefabContext = new PrefabWebApplicationContext(prefab, context, servletContext);
-        prefabRegistry.addPrefabContext(prefab.getName(), prefabContext);
-    }
-
-    @Override
     public void onApplicationEvent(final PrefabEvent event) {
         if (event instanceof PrefabsLoadedEvent) {
             if (event.getSource() == context) {
@@ -122,7 +127,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
             return;
         }
 
-        for (Prefab prefab : prefabManager.getEnabledPrefabs()) {
+        for (Prefab prefab : prefabManager.getPrefabs()) {
             installPrefab(prefab);
         }
     }
@@ -132,10 +137,19 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
      */
     public void uninstallPrefabs() {
         if (prefabRegistry != null) {
+            // closing application contexts
+            for (String prefabName : prefabRegistry.getPrefabs()) {
+                prefabRegistry.getPrefabContext(prefabName).close();
+            }
             prefabRegistry.deletePrefabContexts();
         }
 
-        if(prefabManager != null) {
+        if (prefabManager != null) {
+            // closing class loader
+            for (Prefab prefab : prefabManager.getPrefabs()) {
+                ((PrefabClassLoader) prefab.getClassLoader()).close();
+                prefab.setClassLoader(null);
+            }
             prefabManager.deleteAllPrefabs();
         }
     }
