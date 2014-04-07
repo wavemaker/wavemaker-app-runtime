@@ -633,7 +633,7 @@ public class MessageResource {
     public static final MessageResource USER_ALREADY_LOGGED_OUT = new MessageResource("com.wavemaker.userAlreadyLoggedOut");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource EMPTY_CLOUDJEE_ACCOUNT_DETAILS = new MessageResource("com.wavemaker.emptyCloudJeeAccountDetails");
+    public static final MessageResource EMPTY_WAVEMAKER_CLOUD_ACCOUNT_DETAILS = new MessageResource("com.wavemaker.emptyWavemakerCloudAccountDetails");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource OLD_PASSWORD_DOES_NOT_MATCH = new MessageResource("com.wavemaker.oldPasswordDoesNotMatch");
@@ -687,10 +687,10 @@ public class MessageResource {
     public static final MessageResource FAILED_TO_DELETE_PROJECT_FILES = new MessageResource("com.wavemaker.tools.failedToDeleteProjectFiles");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource UNAUTHORIZED_TO_CLOUDJEE = new MessageResource("com.wavemaker.tools.unAuthorizedToCloudJee");
+    public static final MessageResource UNAUTHORIZED_TO_WAVEMAKER_CLOUD = new MessageResource("com.wavemaker.tools.unAuthorizedToWavemakerCloud");
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource UNEXPECTED_CLOUDJEE_RESPONSE = new MessageResource("com.wavemaker.tools.unexpectedCloudJeeResponse");
+    public static final MessageResource UNEXPECTED_WAVEMAKER_CLOUD_RESPONSE = new MessageResource("com.wavemaker.tools.unexpectedWavemakerCloudResponse");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource SAAS_CLIENT_APPLICATION_STARTUP_TIMED_OUT = new MessageResource("com.wavemaker.saas.saasclientApplicationStartupTimedOut");
@@ -709,9 +709,6 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource MAX_APPLICATIONS_EXCEEDED = new MessageResource("com.wavemaker.core.MaxApplicationsExceeded");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource APP_CONTAINER_ALLOCATION_FAILED = new MessageResource("com.wavemaker.tools.AppContainerAllocationFailed");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 

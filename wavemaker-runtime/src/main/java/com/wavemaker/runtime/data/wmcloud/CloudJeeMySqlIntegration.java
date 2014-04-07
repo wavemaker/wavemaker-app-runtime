@@ -2,6 +2,8 @@ package com.wavemaker.runtime.data.wmcloud;
 
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.runtime.data.util.JDBCUtils;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
 import java.sql.Connection;
@@ -102,8 +104,10 @@ public class CloudJeeMySqlIntegration extends LocalSessionFactoryBean {
             return;
         }
         String schemaNameExtract = JDBCUtils.getMySQLDatabaseName(this.getUrl());
-        setSchemaName(schemaNameExtract);
-        ensureDBNameExists();
+        if(!StringUtils.isBlank(schemaNameExtract)) {
+            setSchemaName(schemaNameExtract);
+            ensureDBNameExists();
+        }
     }
 
 }
