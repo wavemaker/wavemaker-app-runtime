@@ -262,6 +262,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_DELETE_TEMPLATE = new MessageResource("com.wavemaker.tools$FailedToDeleteTemplate");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_DELETE_PREFAB = new MessageResource("com.wavemaker.tools$FailedToDeletePrefab");
+
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource SAVE_AS_NOT_POSSIBLE = new MessageResource("com.wavemaker.tools$SaveAsNotPossible");
