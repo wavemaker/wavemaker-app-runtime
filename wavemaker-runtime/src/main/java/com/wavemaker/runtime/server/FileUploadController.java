@@ -22,9 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.JsonView;
 
 import com.wavemaker.common.WMException;
-import com.wavemaker.runtime.server.view.UploadResponseView;
 import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.TypedServiceReturn;
 
@@ -64,11 +64,10 @@ public class FileUploadController extends JSONRPCController {
     }
 
     @Override
-    protected UploadResponseView getView() {
+    protected JsonView getView() {
 
-        UploadResponseView ret = new UploadResponseView();
+        JsonView ret = new JsonView();
         ret.setJsonConfig(getInternalRuntime().getJSONState());
-
         return ret;
     }
 }
