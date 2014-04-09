@@ -37,7 +37,7 @@ wm_studio_build_type=production
 #####################################################
 #Deploy Properties
 #####################################################
-wm_studio_deploy_host=staging.wavemakercloud.com
+wm_studio_deploy_host=apps.wavemakercloud.com
 wm_studio_deploy_use_logged_in_user_token=true
 
 #####################################################
