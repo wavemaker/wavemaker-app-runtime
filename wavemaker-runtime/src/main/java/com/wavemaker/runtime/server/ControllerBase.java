@@ -120,7 +120,7 @@ public abstract class ControllerBase extends AbstractController {
             }
             return handleError(message, t);
         } finally {
-            RuntimeAccess.setRuntimeBean(null);
+            destroyRuntime(request, response);
             NDC.pop();
             NDC.remove();
         }
@@ -229,6 +229,10 @@ public abstract class ControllerBase extends AbstractController {
     @SuppressWarnings("deprecation")
     private void initializeRuntime(HttpServletRequest request, HttpServletResponse response) {
         RequestInitInterceptor.preHandle(request, response, runtimeAccess, internalRuntime);
+    }
+
+    private void destroyRuntime(HttpServletRequest request, HttpServletResponse response) {
+        RequestInitInterceptor.postHandle();
     }
 
     protected void handleGetRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
