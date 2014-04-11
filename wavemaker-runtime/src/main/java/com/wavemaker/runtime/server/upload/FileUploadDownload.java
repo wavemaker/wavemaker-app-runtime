@@ -102,6 +102,11 @@ protected File getUploadDir() {
      * DESCRIPTION: 
      *   The wm.DojoFileUpload widget automatically calls this method whenever the 
      *   user selects a new file.
+     *
+     * PARAMS:
+     * file : multipart file to be uploaded.
+     * relativePath : This is the relative path where file will be uploaded.
+     *
      * RETURNS DojoFileUploaderResponse 
      *   This has the following fields
      *   Path: tells the client where the file was stored so that the client can
@@ -129,14 +134,19 @@ protected File getUploadDir() {
      *      its associated with, and other details of what to do with the file.  (after
      *      compiling these changes, you may need to recreate your wm.DojoFileUpload widget)
      ********************************************************************************/
-    public FileUploadResponse uploadFile(MultipartFile file) throws IOException
+    public FileUploadResponse uploadFile(MultipartFile file, String relativePath) throws IOException
     {
 
         // Create our return object
         FileUploadResponse ret = new FileUploadResponse();
         try {
-            /* Find our upload directory, make sure it exists */
             File dir = getUploadDir();
+            if (relativePath != null && !relativePath.isEmpty()) {
+                relativePath = relativePath.trim();
+                dir = new File(dir.getAbsolutePath(),relativePath);
+            }
+            /* Find our upload directory, make sure it exists */
+
             if (!dir.exists()) 
               dir.mkdirs();
 
