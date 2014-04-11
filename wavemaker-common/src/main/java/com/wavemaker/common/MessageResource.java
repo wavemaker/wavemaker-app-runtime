@@ -330,6 +330,15 @@ public class MessageResource {
     public static final MessageResource INVALID_THEME = new MessageResource("com.wavemaker.studio$InvalidTheme");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_PREFAB = new MessageResource("com.wavemaker.studio$InvalidPrefab");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource CONFIGURATION_EXCEPTION = new MessageResource("com.wavemaker.studio$ConfigurationException");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PREFAB_PROPERTY_MISSING_IN_CONFIG_FILE = new MessageResource("com.wavemaker.studio$PrefabPropertyMissingInConfigFile");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource THEME_IS_INACTIVE = new MessageResource("com.wavemaker.studio$ThemeIsInactive");
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
