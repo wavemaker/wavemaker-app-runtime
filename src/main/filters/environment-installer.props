@@ -1,6 +1,7 @@
 #####################################################
 #Config properties for desktop environment
 #####################################################
+project.installationType=DESKTOP
 
 #####################################################
 #Spring profile to be activated
@@ -39,9 +40,4 @@ wm_studio_build_type=local
 #####################################################
 wm_studio_deploy_host=staging.wavemakercloud.com
 wm_studio_deploy_use_logged_in_user_token=false
-
-#####################################################
-#Saas Properties
-#####################################################
-wm_studio_saas_host=studio.wavemaker.com
 
