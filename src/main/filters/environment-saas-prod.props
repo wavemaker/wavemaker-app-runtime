@@ -28,7 +28,7 @@ wm.studio.db.should.migrate=true
 # static content & login Urls
 # properties name should not contain dot's(.) in it
 #####################################################
-wm_studio_static_content_url=//wmstudio.s3.amazonaws.com/static/7.0
+wm_studio_static_content_url=//d3bi8ph4tuvpgm.cloudfront.net/static/7.0
 wm_studio_login_url_ui=https://studio.wavemaker.com/login
 wm_studio_login_url_backEnd=https://studio.wavemaker.com/login
 wm_studio_static_content_file_relative_location=dest
