@@ -1,5 +1,0 @@
-Copyright (c) ${year} ${company}. All Rights Reserved.
-
-This software is the confidential and proprietary information of ${company}. 
-You shall not disclose such Confidential Information and shall use it only in accordance 
-with the terms of the source code license agreement you entered into with ${company}.
