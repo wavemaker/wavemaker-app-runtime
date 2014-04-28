@@ -85,7 +85,7 @@ public class FileUploadDownload extends JavaServiceSuperClass {
       public void setType(String s){type = s;}
       public long getSize() {return size;}
       public void setSize(long i) {size = i;}
-    };
+    }
 
 
     /********************************************************************************

@@ -36,7 +36,7 @@ public class HQLGenerator {
 
         boolean isComponentPath(String propertyPath, String dbName);
 
-    };
+    }
 
     public interface JoinStrategy {
 
@@ -56,7 +56,7 @@ public class HQLGenerator {
 
         Join getJoin(String propertyPath, String dbName);
 
-    };
+    }
 
     private static enum Operator {
 
@@ -71,7 +71,7 @@ public class HQLGenerator {
             }
             throw new AssertionError();
         }
-    };
+    }
 
     private static final String SELECT = DataServiceConstants.SELECT_KEYWORD;
 

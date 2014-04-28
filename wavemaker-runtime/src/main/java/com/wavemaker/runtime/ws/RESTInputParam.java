@@ -24,11 +24,11 @@ public class RESTInputParam {
 
     public enum InputType {
         STRING, INTEGER, OTHER
-    };
+    }
 
     public enum InputLocation {
         URL, HEADER, OTHER
-    };
+    }
 
     private String name;
 

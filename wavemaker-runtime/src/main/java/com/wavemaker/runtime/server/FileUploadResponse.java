@@ -59,4 +59,4 @@ public class FileUploadResponse {
     public void setHeight(String height) {
         this.height = height;
     }
-};
+}

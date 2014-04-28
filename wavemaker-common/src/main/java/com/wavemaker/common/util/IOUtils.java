@@ -159,11 +159,7 @@ public abstract class IOUtils {
 
         }
 
-        if (i2.read() == -1) {
-            return true;
-        }
-
-        return false;
+        return i2.read() == -1;
 
     }
 

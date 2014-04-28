@@ -34,7 +34,7 @@ public class ObjectGraphTraversalTest extends WMTestCase implements ObjectGraphT
 
     private List<Node> expectedNodes;
 
-    private List<Node> expectedParentNodes;;
+    private List<Node> expectedParentNodes;
 
     private List<String> expectedProperties;
 

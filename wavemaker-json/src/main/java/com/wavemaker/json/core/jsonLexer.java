@@ -107,7 +107,6 @@ public class jsonLexer extends Lexer {
     // delegators
 
     public jsonLexer() {
-        ;
     }
 
     public jsonLexer(CharStream input) {

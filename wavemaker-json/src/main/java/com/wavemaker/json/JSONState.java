@@ -48,7 +48,7 @@ public class JSONState {
          * Trim the property that would have resulted in a cycle off the object graph entirely. A->B->A becomes A->B.
          */
         NO_PROPERTY,
-    };
+    }
 
     /**
      * Properties which are required. These will be allowed in cycles from JSONMarshaller.

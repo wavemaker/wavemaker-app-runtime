@@ -74,7 +74,7 @@ public class WMAppContext {
 
     private WMAppContext(ServletContextEvent event) {
         this.context = event.getServletContext();
-        this.studioMode = Boolean.valueOf(context.getInitParameter("studioMode"));;
+        this.studioMode = Boolean.valueOf(context.getInitParameter("studioMode"));
         this.appName = this.context.getServletContextName();
         if (this.appName == null) {
             this.appName = "Project Name";

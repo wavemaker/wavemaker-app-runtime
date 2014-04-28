@@ -81,7 +81,7 @@ public class HQLReadTask extends AbstractReadTask implements Task, DefaultRollba
 
             return HQLGenerator.JoinStrategy.Join.INNER_JOIN;
         }
-    };
+    }
 
     private class TypeManager implements HQLGenerator.TypeManager {
 
@@ -109,7 +109,7 @@ public class HQLReadTask extends AbstractReadTask implements Task, DefaultRollba
             return false;
         }
 
-    };
+    }
 
     @Override
     public Object run(Session session, String dbName, Object... input) {

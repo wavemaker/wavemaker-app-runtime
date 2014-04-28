@@ -171,7 +171,7 @@ public class JSONMarshaller_Objects {
 
         public enum DAYS {
             MONDAY, TUESDAY, WEDNESDAY
-        };
+        }
 
         private DAYS days;
 
