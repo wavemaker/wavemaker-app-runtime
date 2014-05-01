@@ -42,9 +42,9 @@ public class WMAuthenticationEntryPoint extends
 			throws IOException, ServletException {
 
 		if (isAjaxRequest(request)) {
-			response.sendError(HttpServletResponse.SC_FORBIDDEN);
-		} else {
-			String redirectUrl = null;
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        } else {
+            String redirectUrl = null;
 
 			if (useForward) {
 
