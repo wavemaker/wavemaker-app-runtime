@@ -16,13 +16,18 @@
 package com.wavemaker.runtime.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.hibernate.Session;
 
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.NotYetImplementedException;
@@ -31,9 +36,12 @@ import com.wavemaker.common.util.SystemUtils;
 import com.wavemaker.json.JSONState;
 import com.wavemaker.json.type.TypeDefinition;
 import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.runtime.data.DataServiceManager;
+import com.wavemaker.runtime.data.DataServiceManagerAccess;
 import com.wavemaker.runtime.server.DownloadResponse;
 import com.wavemaker.runtime.server.InternalRuntime;
 import com.wavemaker.runtime.server.JSONParameterTypeField;
+import com.wavemaker.runtime.server.ServerConstants;
 import com.wavemaker.runtime.server.ServerUtils;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.events.ServiceEventNotifier;
@@ -171,6 +179,16 @@ public class RuntimeService {
         } else {
             throw new NotYetImplementedException();
         }
+    }
+
+    public String executeQuery(String serviceId, String query) throws IOException {
+        DataServiceManager dsMgr = ((DataServiceManagerAccess)RuntimeAccess.getInstance().getService(serviceId)).getDataServiceManager();
+        dsMgr.begin();
+        Session session = dsMgr.getSession();
+        List list = session.createQuery(query).list();
+        String output = new ObjectMapper().writeValueAsString(list);
+        dsMgr.commit();
+        return output;
     }
 
     public String getLocalHostIP() {
