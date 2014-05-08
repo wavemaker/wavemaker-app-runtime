@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.Session;
 
 import com.wavemaker.common.MessageResource;
@@ -181,14 +180,13 @@ public class RuntimeService {
         }
     }
 
-    public String executeQuery(String serviceId, String query) throws IOException {
+    public Object executeQuery(String serviceId, String query) throws IOException {
         DataServiceManager dsMgr = ((DataServiceManagerAccess)RuntimeAccess.getInstance().getService(serviceId)).getDataServiceManager();
         dsMgr.begin();
         Session session = dsMgr.getSession();
         List list = session.createQuery(query).list();
-        String output = new ObjectMapper().writeValueAsString(list);
         dsMgr.commit();
-        return output;
+        return list;
     }
 
     public String getLocalHostIP() {
