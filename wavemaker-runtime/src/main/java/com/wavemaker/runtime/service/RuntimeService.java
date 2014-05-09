@@ -180,13 +180,17 @@ public class RuntimeService {
         }
     }
 
-    public Object executeQuery(String serviceId, String query) throws IOException {
+    public Object executeQuery(String serviceId, String query, int firstResult, int maxResults) throws IOException {
         DataServiceManager dsMgr = ((DataServiceManagerAccess)RuntimeAccess.getInstance().getService(serviceId)).getDataServiceManager();
         dsMgr.begin();
         Session session = dsMgr.getSession();
-        List list = session.createQuery(query).list();
+        int total = session.createQuery(query).list().size();
+        List list = session.createQuery(query).setFirstResult(firstResult).setMaxResults(maxResults).list();
         dsMgr.commit();
-        return list;
+        Map map = new HashMap();
+        map.put("dataSetSize", total);
+        map.put("result", list);
+        return map;
     }
 
     public String getLocalHostIP() {
