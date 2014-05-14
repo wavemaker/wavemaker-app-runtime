@@ -24,20 +24,6 @@ public abstract class CommonConstants {
 
     public static final String APP_PROPERTY_FILE = "app.properties";
 
-    public static final String LOGON_TENANT_ID = "logOnTenantId";
-
-    public static final String LOGON_USER_NAME = "logOnUsername";
-
-    public static final String IBMWAS_DIR = "websphere";
-
-    public static final String SERVER_TYPE_TOMCAT = "tomcat";
-
-    public static final String SERVER_TYPE_WEBSPHERE = "websphere";
-
-    public static final String SERVER_TYPE_CLOUDFOUNDRY = "cloudfoundry";
-
-    public static final String DEPLOYMENT_TARGETS_XML = "deploymentTargets.xml";
-
     public static final String SALESFORCE_SERVICE = "salesforceService";
 
     public static final String SFLOGIN_SERVICE = "loginService";
