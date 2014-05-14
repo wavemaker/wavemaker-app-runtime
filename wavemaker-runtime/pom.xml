@@ -188,14 +188,15 @@
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>1.4</version>
         </dependency>
-
+        <dependency>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+        </dependency>
 
         <!-- Provided -->
         <dependency>
@@ -219,10 +220,13 @@
             <classifier>jdk15</classifier>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
-            <groupId>xom</groupId>
-            <artifactId>xom</artifactId>
-            <version>1.1</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>wavemaker-common</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
