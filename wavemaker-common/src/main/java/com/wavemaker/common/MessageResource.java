@@ -715,10 +715,10 @@ public class MessageResource {
     public static final MessageResource FAILED_TO_DELETE_PREFAB_DUE_TO_DEPENDENCY = new MessageResource("com.wavemaker.tools.failedToDeletePrefabDueToDependency");
 
 
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_REGISTER_PREFAB_FOR_PROJECT = new MessageResource("com.wavemaker.tools.failedToRegisterPrefabForProject");
 
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_DE_REGISTER_PREFAB_FOR_PROJECT = new MessageResource("com.wavemaker.tools.failedToDeRegisterPrefabForProject");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
