@@ -18,6 +18,7 @@ package com.wavemaker.runtime.service;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,15 +33,19 @@ import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.NotYetImplementedException;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.SystemUtils;
+import com.wavemaker.json.JSONMarshaller;
 import com.wavemaker.json.JSONState;
+import com.wavemaker.json.type.GenericFieldDefinition;
 import com.wavemaker.json.type.TypeDefinition;
+import com.wavemaker.json.type.reflect.MapReflectTypeDefinition;
+import com.wavemaker.json.type.reflect.ReflectTypeState;
+import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.data.DataServiceManager;
 import com.wavemaker.runtime.data.DataServiceManagerAccess;
 import com.wavemaker.runtime.server.DownloadResponse;
 import com.wavemaker.runtime.server.InternalRuntime;
 import com.wavemaker.runtime.server.JSONParameterTypeField;
-import com.wavemaker.runtime.server.ServerConstants;
 import com.wavemaker.runtime.server.ServerUtils;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.events.ServiceEventNotifier;
@@ -181,17 +186,32 @@ public class RuntimeService {
     }
 
     public Object executeQuery(String serviceId, String query, int firstResult, int maxResults) throws IOException {
-        DataServiceManager dsMgr = ((DataServiceManagerAccess)RuntimeAccess.getInstance().getService(serviceId)).getDataServiceManager();
+    	String result = "";
+    	DataServiceManager dsMgr = ((DataServiceManagerAccess)RuntimeAccess.getInstance().getService(serviceId)).getDataServiceManager();
         dsMgr.begin();
         Session session = dsMgr.getSession();
         int total = session.createQuery(query).list().size();
         List list = session.createQuery(query).setFirstResult(firstResult).setMaxResults(maxResults).list();
-        dsMgr.commit();
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("dataSetSize", total);
-        map.put("result", list);
+        map.put("result", list); 
+        result = marshall(map);
+        dsMgr.commit();
         return map;
     }
+
+	private String marshall(Map<String, Object> result) throws IOException {
+		StringWriter writer = new StringWriter();
+		JSONState jsonState = InternalRuntime.getInstance().getJSONState();
+		MapReflectTypeDefinition mrtd = new MapReflectTypeDefinition();
+		mrtd.setKeyFieldDefinition(ReflectTypeUtils.getFieldDefinition(
+				String.class, new ReflectTypeState(), false, null));
+		mrtd.setValueFieldDefinition(new GenericFieldDefinition());
+		JSONMarshaller.marshal(writer, result, jsonState,
+				new GenericFieldDefinition(mrtd), false, false);
+		return writer.toString();
+	}
+	
 
     public String getLocalHostIP() {
         return SystemUtils.getIP();
