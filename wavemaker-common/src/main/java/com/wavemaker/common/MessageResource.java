@@ -730,6 +730,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource REMOTE_CLIENT_SERVER_IS_NOT_RUNNING = new MessageResource("com.wavemaker.saas.remoteClientServerIsNotRunning");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_READ_WRITE_IN_FILE = new MessageResource("com.wavemaker.tools$FailedToReadWriteInFile");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {

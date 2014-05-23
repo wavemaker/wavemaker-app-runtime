@@ -401,6 +401,16 @@ public abstract class IOUtils {
     }
 
     /**
+     * Create a file at given location.
+     */
+    public static File createFile(String path) throws IOException {
+        File file = new File(path);
+        if(!file.exists())
+            file.createNewFile();
+        return file;
+    }
+
+    /**
      * Delete a directory or file; if a directory, delete its children recursively.
      * 
      * @param dir

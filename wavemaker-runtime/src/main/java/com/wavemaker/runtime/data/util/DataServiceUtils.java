@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -76,12 +77,12 @@ public class DataServiceUtils {
                 }
             }
             if (SQLGrammarException.class.isAssignableFrom(th.getClass())) {
-                SQLGrammarException s = (SQLGrammarException) th;
-                if (s.getSQLException() != null) {
-                    th = s.getSQLException();
-                } else if (s.getCause() != null) {
-                    th = s.getCause();
-                }
+//                SQLGrammarException s = (SQLGrammarException) th;
+//                if (s.getSQLException() != null) {
+//                    th = s.getSQLException();
+//                } else if (s.getCause() != null) {
+//                    th = s.getCause();
+//                }
             }
 
             if (th instanceof RuntimeException) {
@@ -96,10 +97,11 @@ public class DataServiceUtils {
         if (type.isCollectionType()) {
             AssociationType ass = (AssociationType) type;
             SessionFactoryImplementor fai = (SessionFactoryImplementor) factory;
-            return ass.getAssociatedEntityName(fai);
+//            return ass.getAssociatedEntityName(fai);
         } else {
             return type.getReturnedClass().getName();
         }
+        return "";
     }
 
     public static boolean requiresResultWrapper(String queryString) {
@@ -206,7 +208,12 @@ public class DataServiceUtils {
     }
 
     public static Configuration initConfiguration(String hbConfFile, Properties p) {
-        Configuration cfg = new Configuration().configure(hbConfFile);
+        Configuration cfg = null;
+        try {
+//            cfg = new Configuration().configure(hbConfFile);
+        } catch (HibernateException hibernateException) {
+            hibernateException.printStackTrace();
+        }
         setup(cfg, p);
         return cfg;
     }
@@ -216,7 +223,8 @@ public class DataServiceUtils {
     }
 
     public static Configuration initConfiguration(File hbConfFile, Properties p) {
-        Configuration cfg = new Configuration().configure(hbConfFile);
+//        Configuration cfg = new Configuration().configure(hbConfFile);
+        Configuration cfg = new Configuration();
         setup(cfg, p);
         return cfg;
     }
@@ -328,7 +336,8 @@ public class DataServiceUtils {
 
         Serializable id = (Serializable) objectAccess.getProperty(originalInstance, s);
 
-        Object rtn = session.get(clazz, id);
+        Object rtn = new Object();
+//                session.get(clazz, id);
 
         if (logger != null && logger.isDebugEnabled()) {
             logger.debug("reloadById: " + ObjectUtils.getId(originalInstance) + " " + s + ":" + id);
