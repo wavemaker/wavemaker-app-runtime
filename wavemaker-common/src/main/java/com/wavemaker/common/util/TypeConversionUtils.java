@@ -70,6 +70,15 @@ public abstract class TypeConversionUtils {
         return PRIMITIVES.get(className);
     }
 
+    public static Class<?> primitiveWrapperClassByName(String className) {
+        for(Class klass: PRIMITIVE_WRAPPERS) {
+            if(klass.getSimpleName().equals(className)) {
+                return klass;
+            }
+        }
+        return null;
+    }
+
     /**
      * Returns true iff the Class clazz represents a primitive (boolean, int) or a primitive wrapper (Integer),
      * including Big{Integer,Decimal} and Atomic{Integer,Long}. Also, Strings and Dates are included.

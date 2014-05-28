@@ -197,6 +197,10 @@
             <groupId>xom</groupId>
             <artifactId>xom</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
 
         <!-- Provided -->
         <dependency>

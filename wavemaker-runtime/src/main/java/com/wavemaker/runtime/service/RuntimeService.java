@@ -28,11 +28,13 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.hibernate.Session;
+import org.springframework.http.MediaType;
 
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.NotYetImplementedException;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.SystemUtils;
+import com.wavemaker.common.util.Tuple;
 import com.wavemaker.json.JSONMarshaller;
 import com.wavemaker.json.JSONState;
 import com.wavemaker.json.type.GenericFieldDefinition;
@@ -43,6 +45,11 @@ import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.data.DataServiceManager;
 import com.wavemaker.runtime.data.DataServiceManagerAccess;
+import com.wavemaker.runtime.helper.SchemaConversionHelper;
+import com.wavemaker.runtime.rest.model.RestRequestInfo;
+import com.wavemaker.runtime.rest.model.RestResponse;
+import com.wavemaker.runtime.rest.service.RestConnector;
+import com.wavemaker.runtime.rest.service.RestRuntimeService;
 import com.wavemaker.runtime.server.DownloadResponse;
 import com.wavemaker.runtime.server.InternalRuntime;
 import com.wavemaker.runtime.server.JSONParameterTypeField;
@@ -50,6 +57,7 @@ import com.wavemaker.runtime.server.ServerUtils;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.events.ServiceEventNotifier;
 import com.wavemaker.runtime.service.response.SuccessResponse;
+import net.sf.json.JSONObject;
 
 /**
  * Runtime service. This service is always present during the runtime of a WaveMaker application, and provides general
@@ -60,6 +68,8 @@ import com.wavemaker.runtime.service.response.SuccessResponse;
  */
 @ExposeToClient
 public class RuntimeService {
+
+    private RestRuntimeService restRuntimeService = new RestRuntimeService();
 
     /**
      * getProperty() is a legacy interface. This retrieves (and allows lazy-loading) of a single attribute of an object.
@@ -200,7 +210,22 @@ public class RuntimeService {
         return map;
     }
 
-	private String marshall(Map<String, Object> result) throws IOException {
+    public RestResponse executeRestCall(String serviceId, String operationId, Map<String, String> params) throws IOException {
+        RestRequestInfo restRequestInfo = restRuntimeService.getRestRequestInfo(serviceId, operationId, params);
+        RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
+        MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
+        String responseBody = restResponse.getResponseBody();
+        if (MediaType.APPLICATION_XML.getType().equals(responseContentType.getType()) && MediaType.APPLICATION_XML.getSubtype().equals(responseContentType.getSubtype())) {
+            Tuple.Two<String, JSONObject> rootKeyVsJsonObject = SchemaConversionHelper.convertXmlToJson(responseBody);
+            restResponse.setConvertedResponse(rootKeyVsJsonObject.v2.toString());
+        }
+        if(restResponse.getConvertedResponse() != null) {
+            restResponse.setResponseBody(null);
+        }
+        return restResponse;
+    }
+
+    private String marshall(Map<String, Object> result) throws IOException {
 		StringWriter writer = new StringWriter();
 		JSONState jsonState = InternalRuntime.getInstance().getJSONState();
 		MapReflectTypeDefinition mrtd = new MapReflectTypeDefinition();
