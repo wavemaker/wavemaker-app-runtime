@@ -102,7 +102,7 @@ public class SqlServerUserImpersonatingDataSourceProxyTest {
         verify(this.statement).execute("REVERT");
     }
 
-    @SuppressWarnings("deprecation")
+   /* @SuppressWarnings("deprecation")
     @Test
     public void testGetConnectionWithHibernateTxMgr() throws SQLException {
         SecurityContext context = new SecurityContextImpl();
@@ -123,7 +123,7 @@ public class SqlServerUserImpersonatingDataSourceProxyTest {
         when(this.session.close()).thenAnswer(new CloseAnswer(proxy));
         txManager.commit(status);
         verify(this.statement).execute("REVERT");
-    }
+    }*/
 
     @Test
     public void testGetConnectionUnauthenticated() throws SQLException {
