@@ -70,8 +70,6 @@ public class DataServiceConstants {
 
     public static final String DB_URL_KEY = DB_URL.substring(1);
 
-    public static final String CONNECTION_URL = ".url";
-
     public static final String DB_DRIVER_CLASS_NAME = ".driverClassName";
 
     public static final String DB_DIALECT = ".dialect";
