@@ -15,15 +15,14 @@
  */
 package com.wavemaker.runtime.data.spring;
 
-import java.util.Iterator;
-
-import org.dom4j.Element;
-import org.hibernate.MappingException;
-import org.hibernate.cfg.Configuration;
-
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.QueryHandler;
 import com.wavemaker.runtime.security.SecurityService;
+import org.dom4j.Element;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.internal.util.xml.XmlDocument;
+
+import java.util.Iterator;
 
 /**
  * @author Seung Lee
@@ -37,8 +36,8 @@ public class ConfigurationExt extends Configuration {
     }
 
     @Override
-    protected void add(org.dom4j.Document doc) throws MappingException {
-        Element hmNode = doc.getRootElement();
+    public void add(XmlDocument metadataXml) {
+        Element hmNode = metadataXml.getDocumentTree().getRootElement();
         Iterator rootChildren = hmNode.elementIterator();
 
         while (rootChildren.hasNext()) {
@@ -51,8 +50,7 @@ public class ConfigurationExt extends Configuration {
                 element.setText(query);
             }
         }
-
-        super.add(doc);
+        super.add(metadataXml);
     }
 
     private String insertTenantIdInQuery(String query) {

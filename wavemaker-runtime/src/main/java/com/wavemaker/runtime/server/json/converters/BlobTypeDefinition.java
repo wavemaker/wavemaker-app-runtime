@@ -15,14 +15,6 @@
  */
 package com.wavemaker.runtime.server.json.converters;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.Blob;
-import java.sql.SQLException;
-
-import org.apache.commons.io.IOUtils;
-import org.hibernate.lob.BlobImpl;
-
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.JSONArray;
@@ -31,6 +23,15 @@ import com.wavemaker.json.type.converters.ReadObjectConverter;
 import com.wavemaker.json.type.converters.WriteObjectConverter;
 import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import org.apache.commons.io.IOUtils;
+import org.hibernate.engine.jdbc.BinaryStream;
+import org.hibernate.engine.jdbc.BlobImplementer;
+import org.hibernate.engine.jdbc.internal.BinaryStreamImpl;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.Blob;
+import java.sql.SQLException;
 
 /**
  * TypeDefinition for types extending from {@link Blob}.
@@ -53,7 +54,7 @@ public class BlobTypeDefinition extends PrimitiveReflectTypeDefinition implement
             return null;
         } else if (JSONArray.class.isAssignableFrom(input.getClass())) {
             JSONArray jarr = (JSONArray) input;
-            byte[] barr = new byte[jarr.size()];
+            final byte[] barr = new byte[jarr.size()];
 
             for (int i = 0; i < barr.length; i++) {
                 if (Number.class.isAssignableFrom(jarr.get(i).getClass())) {
@@ -63,7 +64,12 @@ public class BlobTypeDefinition extends PrimitiveReflectTypeDefinition implement
                 }
             }
 
-            return new BlobImpl(barr);
+            return new BlobImplementer() {
+                @Override
+                public BinaryStream getUnderlyingStream() {
+                    return new BinaryStreamImpl(barr);
+                }
+            };
         } else {
             return input;
         }

@@ -32,7 +32,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.engine.NamedQueryDefinition;
+import org.hibernate.engine.spi.NamedQueryDefinition;
 import org.hibernate.mapping.Component;
 import org.hibernate.mapping.Property;
 import org.hibernate.mapping.RootClass;

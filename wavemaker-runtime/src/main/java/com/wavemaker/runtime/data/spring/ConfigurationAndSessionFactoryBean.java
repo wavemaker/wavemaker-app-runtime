@@ -15,13 +15,13 @@
  */
 package com.wavemaker.runtime.data.spring;
 
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
-import org.springframework.util.Assert;
-
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
+import org.hibernate.cfg.Configuration;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
+
+import javax.annotation.PreDestroy;
+import java.io.IOException;
 
 /**
  * @author Simon Toens
@@ -32,39 +32,43 @@ public class ConfigurationAndSessionFactoryBean extends LocalSessionFactoryBean 
     private String name = null;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        setConfigurationClass(getDefaultConfigurationClass());
+    public void afterPropertiesSet() throws IOException {
+//        setConfigurationClass(getDefaultConfigurationClass());
         super.afterPropertiesSet();
-    }
 
-    @Override
-    public Configuration newConfiguration() {
-        if (this.name == null) {
-            throw new IllegalStateException("name must be set before creating new Configuration");
-        }
-
-        Configuration configuration = super.newConfiguration();
-        Assert.isAssignable(this.getDefaultConfigurationClass(), configuration.getClass(), "Type of Hibernate Configuration "
-            + "object is incorrect for the current studio environment.  Expected a subclass of " + this.getDefaultConfigurationClass() + " but was "
-            + configuration.getClass());
-        ConfigurationRegistry.getInstance().register(this.name, configuration);
-        return configuration;
+        ConfigurationRegistry.getInstance().register(this.name, super.getConfiguration());
+        ConfigurationRegistry.getInstance().register(this.name, super.getObject());
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    @Override
-    protected void afterSessionFactoryCreation() throws Exception {
-        SessionFactory sessionFactory = getSessionFactory();
-        ConfigurationRegistry.getInstance().register(this.name, sessionFactory);
-    }
-
-    @Override
+    @PreDestroy
     protected void beforeSessionFactoryDestruction() {
         ConfigurationRegistry.getInstance().remove(this.name);
     }
+
+//    @Override
+//    public Configuration newConfiguration() {
+//        if (this.name == null) {
+//            throw new IllegalStateException("name must be set before creating new Configuration");
+//        }
+//
+//        Configuration configuration = super.newConfiguration();
+//        Assert.isAssignable(this.getDefaultConfigurationClass(), configuration.getClass(), "Type of Hibernate Configuration "
+//            + "object is incorrect for the current studio environment.  Expected a subclass of " + this.getDefaultConfigurationClass() + " but was "
+//            + configuration.getClass());
+//        ConfigurationRegistry.getInstance().register(this.name, configuration);
+//        return configuration;
+//    }
+//
+
+//    @Override
+//    protected void afterSessionFactoryCreation() throws Exception {
+//        SessionFactory sessionFactory = getSessionFactory();
+//        ConfigurationRegistry.getInstance().register(this.name, sessionFactory);
+//    }
 
     private Class<? extends Configuration> getDefaultConfigurationClass() {
 

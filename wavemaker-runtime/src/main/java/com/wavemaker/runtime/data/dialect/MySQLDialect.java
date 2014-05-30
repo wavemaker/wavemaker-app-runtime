@@ -15,9 +15,9 @@
  */
 package com.wavemaker.runtime.data.dialect;
 
-import org.hibernate.Hibernate;
 import org.hibernate.dialect.MySQL5Dialect;
 import org.hibernate.dialect.function.NoArgSQLFunction;
+import org.hibernate.type.StringType;
 
 /**
  * @author Simon Toens
@@ -26,7 +26,7 @@ public class MySQLDialect extends MySQL5Dialect {
 
     public MySQLDialect() {
         super();
-        registerFunction("uuid", new NoArgSQLFunction("uuid", Hibernate.STRING));
+        registerFunction("uuid", new NoArgSQLFunction("uuid", StringType.INSTANCE));
     }
 
 }

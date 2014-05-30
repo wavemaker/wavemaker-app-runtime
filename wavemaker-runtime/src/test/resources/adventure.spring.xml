@@ -45,7 +45,7 @@
   </bean-->
 
   <bean id="adventureTxMgr" 
-        class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager"
         lazy-init="true">
     <property name="sessionFactory">
       <ref bean="adventureSessionFactory"/>
@@ -53,7 +53,7 @@
   </bean>
 
   <bean id="adventureHibernateTemplate"
-        class="org.springframework.orm.hibernate3.HibernateTemplate"
+        class="org.springframework.orm.hibernate4.HibernateTemplate"
         lazy-init="true">
     <property name="sessionFactory"> 
       <ref bean="adventureSessionFactory"/>
@@ -74,9 +74,7 @@
             org.hibernate.dialect.SQLServerDialect</prop>
         <prop key="hibernate.transaction.factory_class">
             org.hibernate.transaction.JDBCTransactionFactory</prop>
-        <prop key="hibernate.current_session_context_class">thread</prop>
-
-      </props> 
+      </props>
     </property>
 
     <property name="mappingResources">

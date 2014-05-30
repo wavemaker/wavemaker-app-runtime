@@ -24,7 +24,7 @@ import java.util.Properties;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.engine.NamedQueryDefinition;
+import org.hibernate.engine.spi.NamedQueryDefinition;
 
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.runtime.data.hibernate.DataServiceMetaData_Hib;

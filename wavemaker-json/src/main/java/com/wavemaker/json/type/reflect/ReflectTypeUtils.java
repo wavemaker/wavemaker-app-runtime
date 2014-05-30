@@ -15,33 +15,19 @@
  */
 package com.wavemaker.json.type.reflect;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.log4j.Logger;
-import org.springframework.util.ClassUtils;
-
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.Tuple;
 import com.wavemaker.json.JSON;
 import com.wavemaker.json.core.JSONUtils;
-import com.wavemaker.json.type.FieldDefinition;
-import com.wavemaker.json.type.GenericFieldDefinition;
-import com.wavemaker.json.type.ListTypeDefinition;
-import com.wavemaker.json.type.TypeDefinition;
-import com.wavemaker.json.type.TypeState;
+import com.wavemaker.json.type.*;
+import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.log4j.Logger;
+import org.springframework.util.ClassUtils;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  * Type utility methods. Includes methods for creating types & fields.
@@ -110,7 +96,6 @@ public class ReflectTypeUtils {
      * parameter class; any entries after that (if any) are TypeDefinitions for any other types that were required as
      * fields for that root TypeDefinition.
      * 
-     * @param klass The Class object to describe.
      * @param typeState The TypeState for the current operation.
      * @param strict True indicates that processing should stop on ambiguous entries; false indicates that null should
      *        be entered.
@@ -271,7 +256,7 @@ public class ReflectTypeUtils {
      * @param type
      * @param typeState
      * @param strict True if strict mode is on; not enough information will result in exceptions instead of warnings.
-     * @param The name of this field (if known)
+     * @param name The name of this field (if known)
      * @return The corresponding fieldDefinition to the type.
      */
     public static FieldDefinition getFieldDefinition(Type type, TypeState typeState, boolean strict, String name) {
@@ -366,7 +351,7 @@ public class ReflectTypeUtils {
 
             Class<?> klass;
             try {
-                klass = ClassUtils.forName(gat.toString());
+                klass = ClassUtils.forName(gat.toString(), gat.getClass().getClassLoader());
             } catch (ClassNotFoundException e) {
                 klass = null;
             } catch (LinkageError e) {
@@ -399,8 +384,6 @@ public class ReflectTypeUtils {
     /**
      * Return the type name for the corresponding class and fields.
      * 
-     * @param klass Generally, the klass is sufficient to identify the class.
-     * @param mapFields If klass is a Map type, this should be the generic parameters.
      * @return A String uniquely identifying this type.
      */
     public static String getTypeName(Type type) {

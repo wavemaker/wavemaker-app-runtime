@@ -61,7 +61,7 @@ Configuration for 'aghr' database service
 
     <bean 
         id="aghrTxMgr" 
-        class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager"
         lazy-init="true">
         <property name="sessionFactory">
             <ref bean="aghrSessionFactory"/>
@@ -71,7 +71,7 @@ Configuration for 'aghr' database service
 
     <bean 
         id="aghrHibernateTemplate"
-        class="org.springframework.orm.hibernate3.HibernateTemplate"
+        class="org.springframework.orm.hibernate4.HibernateTemplate"
         lazy-init="true">
         <property name="sessionFactory"> 
             <ref bean="aghrSessionFactory"/>
@@ -94,8 +94,7 @@ Configuration for 'aghr' database service
                 <prop key="hibernate.transaction.factory_class">
                     org.hibernate.transaction.JDBCTransactionFactory
                 </prop>
-                <prop key="hibernate.current_session_context_class">thread</prop>
-            </props> 
+            </props>
         </property>
 
         <property name="mappingResources">

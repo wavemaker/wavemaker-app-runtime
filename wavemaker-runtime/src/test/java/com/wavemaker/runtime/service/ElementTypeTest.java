@@ -89,7 +89,7 @@ public class ElementTypeTest extends WMTestCase {
 
     public void testWithArrayField() throws Exception {
 
-        ElementType nested = new ElementType(ClassUtils.forName("int[]"));
+        ElementType nested = new ElementType(ClassUtils.forName("int[]", null));
         nested.setList(true);
 
         ElementType et = new ElementType("foo.bar.Baz");

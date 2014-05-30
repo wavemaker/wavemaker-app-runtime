@@ -79,7 +79,7 @@
   </bean-->
 
   <bean id="sakilaTxMgr" 
-        class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager"
         lazy-init="true">
     <property name="sessionFactory">
       <ref bean="sakilaSessionFactory"/>
@@ -87,7 +87,7 @@
   </bean>
 
   <bean id="sakilaHibernateTemplate"
-        class="org.springframework.orm.hibernate3.HibernateTemplate"
+        class="org.springframework.orm.hibernate4.HibernateTemplate"
         lazy-init="true">
     <property name="sessionFactory"> 
       <ref bean="sakilaSessionFactory"/>
@@ -108,7 +108,6 @@
             org.hibernate.dialect.MySQL5Dialect</prop>
         <prop key="hibernate.transaction.factory_class">
             org.hibernate.transaction.JDBCTransactionFactory</prop>
-        <prop key="hibernate.current_session_context_class">thread</prop>
 
       </props> 
     </property>

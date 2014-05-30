@@ -16,26 +16,9 @@
 
 package com.wavemaker.runtime.data.sqlserver;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.atMost;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import javax.sql.DataSource;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.classic.Session;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,9 +29,23 @@ import org.mockito.stubbing.Answer;
 import org.springframework.jdbc.datasource.ConnectionProxy;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.orm.hibernate3.HibernateTransactionManager;
+import org.springframework.orm.hibernate4.HibernateTransactionManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class SqlServerUserImpersonatingDataSourceProxyTest {
 
@@ -111,7 +108,7 @@ public class SqlServerUserImpersonatingDataSourceProxyTest {
         SecurityContextHolder.setContext(context);
         DataSource proxy = new SqlServerUserImpersonatingDataSourceProxy(this.targetDataSource);
         ConnectionAnswer answer = new ConnectionAnswer(proxy);
-        when(this.session.connection()).thenAnswer(answer);
+//        when(this.session.connection()).thenAnswer(answer);
         HibernateTransactionManager txManager = new HibernateTransactionManager(this.sessionFactory);
         txManager.setDataSource(proxy);
         TransactionStatus status = txManager.getTransaction(null);

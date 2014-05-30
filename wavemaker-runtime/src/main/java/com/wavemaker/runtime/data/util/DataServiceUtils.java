@@ -32,7 +32,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
-import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.exception.SQLGrammarException;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.AssociationType;

@@ -293,7 +293,7 @@ public class ElementType implements Cloneable {
         Class<?> klass = null;
         try {
             if (getJavaType() != null) {
-                klass = ClassUtils.forName(getJavaType());
+                klass = ClassUtils.forName(getJavaType(), null);
             }
         } catch (ClassNotFoundException e) {
             // ignore

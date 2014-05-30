@@ -6,7 +6,6 @@
     <session-factory>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
         <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
-        <property name="hibernate.current_session_context_class">thread</property>
 <mapping resource="com/wavemaker/runtime/data/sample/sakila/CityInfo.hbm.xml"/>
 <mapping resource="com/wavemaker/runtime/data/sample/sakila/TestActor.hbm.xml"/>
 <mapping resource="com/wavemaker/runtime/data/sample/sakila/TestAddress.hbm.xml"/>

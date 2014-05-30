@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
+import com.wavemaker.runtime.rest.model.RestRequestInfo;
+import com.wavemaker.runtime.rest.model.RestResponse;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,15 +13,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.CommonsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
-
-import com.wavemaker.runtime.rest.model.RestRequestInfo;
-import com.wavemaker.runtime.rest.model.RestResponse;
 
 /**
  * @author Uday Shankar
@@ -37,16 +32,17 @@ public class RestConnector {
             throw new IllegalArgumentException("Invalid method value [" + restRequestInfo.getMethod() + "]");
         }
         RestTemplate restTemplate = new RestTemplate();
-        HttpClient httpClient = new HttpClient();
-        CommonsClientHttpRequestFactory commonsClientHttpRequestFactory = new CommonsClientHttpRequestFactory(httpClient);
+//        HttpClient httpClient = new HttpClient();
+        SimpleClientHttpRequestFactory commonsClientHttpRequestFactory = new SimpleClientHttpRequestFactory();
         MultiValueMap headersMap = new LinkedMultiValueMap();
 
 
         //set basic authorization
         if(restRequestInfo.getBasicAuth()) {
-            httpClient.getParams().setAuthenticationPreemptive(true);
-            Credentials credentials = new UsernamePasswordCredentials(restRequestInfo.getUserName(), restRequestInfo.getPassword());
-            httpClient.getState().setCredentials(AuthScope.ANY, credentials);
+//
+//            httpClient.getParams().setAuthenticationPreemptive(true);
+//            Credentials credentials = new UsernamePasswordCredentials(restRequestInfo.getUserName(), restRequestInfo.getPassword());
+//            httpClient.getState().setCredentials(AuthScope.ANY, credentials);
         }
 
         //set headers

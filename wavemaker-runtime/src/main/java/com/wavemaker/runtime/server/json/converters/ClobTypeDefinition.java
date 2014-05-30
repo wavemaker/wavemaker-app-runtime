@@ -15,14 +15,6 @@
  */
 package com.wavemaker.runtime.server.json.converters;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.Clob;
-import java.sql.SQLException;
-
-import org.apache.commons.io.IOUtils;
-import org.hibernate.lob.ClobImpl;
-
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.JSONMarshaller;
@@ -30,6 +22,15 @@ import com.wavemaker.json.type.converters.ReadObjectConverter;
 import com.wavemaker.json.type.converters.WriteObjectConverter;
 import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import org.apache.commons.io.IOUtils;
+import org.hibernate.engine.jdbc.CharacterStream;
+import org.hibernate.engine.jdbc.ClobImplementer;
+import org.hibernate.engine.jdbc.internal.CharacterStreamImpl;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.Clob;
+import java.sql.SQLException;
 
 /**
  * TypeDefinition for types extending from {@link Clob}.
@@ -46,12 +47,17 @@ public class ClobTypeDefinition extends PrimitiveReflectTypeDefinition implement
     }
 
     @Override
-    public Object readObject(Object input, Object root, String path) {
+    public Object readObject(final Object input, Object root, String path) {
 
         if (input == null) {
             return null;
         } else if (String.class.isAssignableFrom(input.getClass())) {
-            return new ClobImpl((String) input);
+            return new ClobImplementer() {
+                @Override
+                public CharacterStream getUnderlyingStream() {
+                    return new CharacterStreamImpl((String)input);
+                }
+            };
         } else {
             return input;
         }

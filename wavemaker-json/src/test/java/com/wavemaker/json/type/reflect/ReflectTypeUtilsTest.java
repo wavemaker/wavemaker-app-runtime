@@ -15,29 +15,18 @@
  */
 package com.wavemaker.json.type.reflect;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.springframework.util.ClassUtils;
-
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.SpringUtils;
 import com.wavemaker.common.util.Tuple;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.JSONMarshaller_Objects.ClassWithEnum;
-import com.wavemaker.json.type.FieldDefinition;
-import com.wavemaker.json.type.ListTypeDefinition;
-import com.wavemaker.json.type.MapTypeDefinition;
-import com.wavemaker.json.type.ObjectTypeDefinition;
-import com.wavemaker.json.type.PrimitiveTypeDefinition;
-import com.wavemaker.json.type.TypeDefinition;
-import com.wavemaker.json.type.TypeState;
+import com.wavemaker.json.type.*;
+import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * @author Matt Small
@@ -65,7 +54,7 @@ public class ReflectTypeUtilsTest extends WMTestCase {
 
         Tuple.Two<TypeDefinition, List<ListTypeDefinition>> sample;
 
-        sample = ReflectTypeUtils.getArrayDimensions(ClassUtils.forName("int"), new ReflectTypeState(), false);
+        sample = ReflectTypeUtils.getArrayDimensions(ClassUtils.forName("int", null), new ReflectTypeState(), false);
         assertEquals("int", sample.v1.getTypeName());
         assertEquals(0, sample.v2.size());
     }
@@ -74,7 +63,7 @@ public class ReflectTypeUtilsTest extends WMTestCase {
 
         Tuple.Two<TypeDefinition, List<ListTypeDefinition>> sample;
 
-        sample = ReflectTypeUtils.getArrayDimensions(ClassUtils.forName("int[]"), new ReflectTypeState(), false);
+        sample = ReflectTypeUtils.getArrayDimensions(ClassUtils.forName("int[]", null), new ReflectTypeState(), false);
         assertEquals("int", sample.v1.getTypeName());
         assertEquals(1, sample.v2.size());
         assertTrue(sample.v2.get(0) instanceof ListTypeDefinition);
@@ -85,7 +74,7 @@ public class ReflectTypeUtilsTest extends WMTestCase {
 
         Tuple.Two<TypeDefinition, List<ListTypeDefinition>> sample;
 
-        sample = ReflectTypeUtils.getArrayDimensions(ClassUtils.forName("int[][]"), new ReflectTypeState(), false);
+        sample = ReflectTypeUtils.getArrayDimensions(ClassUtils.forName("int[][]", null), new ReflectTypeState(), false);
         assertEquals("int", sample.v1.getTypeName());
         assertEquals(2, sample.v2.size());
         assertTrue(sample.v2.get(0) instanceof ListTypeDefinition);
@@ -98,7 +87,7 @@ public class ReflectTypeUtilsTest extends WMTestCase {
 
         Tuple.Two<TypeDefinition, List<ListTypeDefinition>> sample;
 
-        sample = ReflectTypeUtils.getArrayDimensions(ClassUtils.forName("int"), new ReflectTypeState(), false);
+        sample = ReflectTypeUtils.getArrayDimensions(ClassUtils.forName("int", null), new ReflectTypeState(), false);
         assertEquals("int", sample.v1.getTypeName());
         assertEquals(0, sample.v2.size());
     }
@@ -149,7 +138,7 @@ public class ReflectTypeUtilsTest extends WMTestCase {
         assertEquals(3, sample.v2.size());
         assertEquals(List.class.getName(), sample.v2.get(0).getTypeName());
         assertEquals(List.class.getName(), sample.v2.get(1).getTypeName());
-        assertEquals(ClassUtils.forName("java.lang.String[]").getName(), sample.v2.get(2).getTypeName());
+        assertEquals(ClassUtils.forName("java.lang.String[]", null).getName(), sample.v2.get(2).getTypeName());
     }
 
     public void testGetDimensionsAndType_ListSetMapType_Complicated() throws Exception {
@@ -559,7 +548,7 @@ public class ReflectTypeUtilsTest extends WMTestCase {
     // WM-124
     public void testGetArrayParameterType() throws Exception {
 
-        Method m = ArrayParameterTestClass.class.getMethod("getProperties", Object.class, String.class, ClassUtils.forName("java.lang.String[]"));
+        Method m = ArrayParameterTestClass.class.getMethod("getProperties", Object.class, String.class, ClassUtils.forName("java.lang.String[]", null));
         assertNotNull(m);
 
         Type[] types = m.getGenericParameterTypes();

@@ -15,17 +15,14 @@
  */
 package com.wavemaker.json.type.reflect;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.springframework.util.ClassUtils;
-
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.type.TypeDefinition;
 import com.wavemaker.json.type.TypeState;
+import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.springframework.util.ClassUtils;
 
-import javax.lang.model.type.DeclaredType;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Matt Small
@@ -48,7 +45,7 @@ public class ReflectTypeState implements TypeState {
             return this.knownTypes.get(typeName);
         } else {
             try {
-                TypeDefinition td = ReflectTypeUtils.getTypeDefinition(ClassUtils.forName(typeName), this, false);
+                TypeDefinition td = ReflectTypeUtils.getTypeDefinition(ClassUtils.forName(typeName, typeName.getClass().getClassLoader()), this, false);
                 addType(td);
                 return td;
             } catch (ClassNotFoundException e) {

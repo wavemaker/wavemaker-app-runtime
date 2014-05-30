@@ -53,7 +53,7 @@ public class PrimitiveReflectTypeDefinition extends ReflectTypeDefinition implem
         Object ret;
         if (Class.class.isAssignableFrom(klass)) {
             try {
-                ret = ClassUtils.forName(obj.toString());
+                ret = ClassUtils.forName(obj.toString(), obj.getClass().getClassLoader());
             } catch (ClassNotFoundException e) {
                 throw new WMRuntimeException(e);
             } catch (LinkageError e) {

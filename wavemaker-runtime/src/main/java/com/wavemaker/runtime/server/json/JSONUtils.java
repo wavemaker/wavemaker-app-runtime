@@ -54,7 +54,6 @@ public class JSONUtils {
      * Convert a JSONArray into an array of objects, with types as specified in the paramTypes argument.
      * 
      * @param params JSONArray of data to convert.
-     * @param paramTypes An array of Class objects, specifying the output types.
      * @return An array of Objects; data is from params, and the types match those of paramTypes.
      * @throws WMException
      */
@@ -115,7 +114,7 @@ public class JSONUtils {
                     String typeString = (String) params.get(pos);
 
                     try {
-                        Class<?> newType = org.springframework.util.ClassUtils.forName(typeString);
+                        Class<?> newType = org.springframework.util.ClassUtils.forName(typeString, null);
 
                         if (Collection.class.isAssignableFrom(newType)) {
                             throw new WMRuntimeException(MessageResource.JSONUTILS_PARAMTYPEGENERIC, i, m.getName());

@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.engine.NamedQueryDefinition;
+import org.hibernate.engine.spi.NamedQueryDefinition;
 import org.hibernate.mapping.Property;
 
 /**

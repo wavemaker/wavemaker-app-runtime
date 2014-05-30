@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.engine.NamedQueryDefinition;
+import org.hibernate.engine.spi.NamedQueryDefinition;
 import org.hibernate.mapping.PersistentClass;
 
 import com.wavemaker.common.WMRuntimeException;

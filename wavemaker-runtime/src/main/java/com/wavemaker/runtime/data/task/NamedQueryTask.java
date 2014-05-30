@@ -24,8 +24,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.engine.NamedQueryDefinition;
-import org.hibernate.engine.NamedSQLQueryDefinition;
+import org.hibernate.engine.spi.NamedQueryDefinition;
+import org.hibernate.engine.spi.NamedSQLQueryDefinition;
 import org.hibernate.type.Type;
 
 import com.wavemaker.common.MessageResource;
