@@ -17,7 +17,9 @@ package com.wavemaker.runtime.security;
 
 import java.util.*;
 
+import com.wavemaker.runtime.WMAppContext;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,6 +46,8 @@ public class SecurityService {
     private List<String> roles;
 
     private Map<String, List<Rule>> roleMap;
+
+    private Boolean securityEnabled;
 
     public SecurityService() {
     }
@@ -264,6 +268,23 @@ public class SecurityService {
 
     public void setRoleMap(Map<String, List<Rule>> roleMap) {
         this.roleMap = roleMap;
+    }
+
+    @ExposeToClient
+    public Boolean isSecurityEnabled() {
+        if(securityEnabled == null) {
+            try {
+                WMSecurityConfigStore wmSecurityConfigStore = WMAppContext.getInstance().getSpringBean(WMSecurityConfigStore.class);
+                securityEnabled = wmSecurityConfigStore.isEnforceSecurity();
+            } catch (NoSuchBeanDefinitionException e) {
+                securityEnabled = false;
+            }
+        }
+        return securityEnabled;
+    }
+
+    public void setSecurityEnabled(Boolean securityEnabled) {
+        this.securityEnabled = securityEnabled;
     }
 
 }
