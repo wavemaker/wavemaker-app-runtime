@@ -8,7 +8,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 import com.wavemaker.runtime.data.jpa.exception.QueryParameterMismatchException;
 
-@NoRepositoryBean
+//@NoRepositoryBean
 public interface WMQueryExecutorRepository {
 
 	Page<Object> executeNativeQuery(String queryStr,
