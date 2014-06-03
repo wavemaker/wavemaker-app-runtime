@@ -63,7 +63,7 @@ public class RestRuntimeService {
                     pathParams.put(parameter.getName(), params.get(parameter.getName()));
                 }
             } else if(ParameterType.BODY.equals(parameter.getParameterType())) {
-                if(!params.containsKey(parameter.getName())) {
+                if(params.containsKey(parameter.getName())) {
                     requestBody = params.get(parameter.getName());
                 }
             }

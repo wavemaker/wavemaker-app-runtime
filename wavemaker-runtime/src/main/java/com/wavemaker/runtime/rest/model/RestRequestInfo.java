@@ -106,4 +106,19 @@ public class RestRequestInfo {
     public void setSampleRestResponse(RestResponse sampleRestResponse) {
         this.sampleRestResponse = sampleRestResponse;
     }
+
+    @Override
+    public String toString() {
+        return "RestRequestInfo{" +
+                "endpointAddress='" + endpointAddress + '\'' +
+                ", method='" + method + '\'' +
+                ", contentType='" + contentType + '\'' +
+                ", requestBody='" + requestBody + '\'' +
+                ", basicAuth=" + basicAuth +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", headers=" + headers +
+                ", sampleRestResponse=" + sampleRestResponse +
+                '}';
+    }
 }
