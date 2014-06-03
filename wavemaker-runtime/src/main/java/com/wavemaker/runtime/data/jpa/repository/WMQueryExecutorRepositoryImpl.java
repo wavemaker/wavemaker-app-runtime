@@ -16,10 +16,10 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-@Repository
+//@Repository
 public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository {
 
-	@PersistenceContext
+	//@PersistenceContext
 	private EntityManager entityManager;
 
 	@Override
