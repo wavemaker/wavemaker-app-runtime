@@ -16,13 +16,13 @@ public class QueryHelper {
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(QueryHelper.class);
 
-	public static String getCountNativeQuery(String query, Map<String, String> params)
+	public static String getCountNativeQuery(String query, Map<String, Object>params)
 			throws QueryParameterMismatchException {
 		LOGGER.debug("Getting count query for query {} with params {}", query, params);
 		if (params != null) {
 			for (Object key : params.keySet()) {
 				String queryParamName = key.toString();
-				String queryParamValue = params.get(key);
+				Object queryParamValue = params.get(key);
 				String parameterPlaceholder = new StringBuilder(":").append(
 						queryParamName).toString();
 				if (!query.contains(parameterPlaceholder)) {
@@ -31,7 +31,7 @@ public class QueryHelper {
 							+ " does not exist in named query.");
 				} else {
 					query = StringUtils.replace(query, parameterPlaceholder,
-							queryParamValue);
+							queryParamValue.toString());
 				}
 			}
 		}

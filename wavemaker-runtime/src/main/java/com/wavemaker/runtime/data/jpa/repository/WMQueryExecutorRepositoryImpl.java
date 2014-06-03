@@ -24,7 +24,7 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 
 	@Override
 	public Page<Object> executeNativeQuery(String queryStr,
-			Map<String, String> params, Pageable pageable)
+			Map<String, Object> params, Pageable pageable)
 			throws QueryParameterMismatchException {
 
 		Query query = getNativeQuery(queryStr, params);
@@ -33,7 +33,7 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 		return getPageableQueryResult(pageable, query, count);
 	}
 
-	private Long getNativeQueryCount(String queryStr, Map<String, String> params)
+	private Long getNativeQueryCount(String queryStr, Map<String, Object> params)
 			throws QueryParameterMismatchException {
 		String strQuery = QueryHelper.getCountNativeQuery(queryStr, params);
 		Query query = entityManager.createNativeQuery(strQuery);
@@ -52,7 +52,7 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 
 	@Override
 	public Page<Object> executeJPQLQuery(String queryStr,
-			Map<String, String> params, Pageable pageable)
+			Map<String, Object> params, Pageable pageable)
 			throws QueryParameterMismatchException {
 		Query query = getJPQLQuery(queryStr, params);
 
@@ -63,7 +63,7 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 
 	}
 
-	private Query getJPQLQuery(String queryStr, Map<String, String> params)
+	private Query getJPQLQuery(String queryStr, Map<String, Object> params)
 			throws QueryParameterMismatchException {
 		Query query = entityManager.createQuery(queryStr);
 		if (!params.isEmpty()) {
@@ -72,7 +72,7 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 		return query;
 	}
 
-	private Query getNativeQuery(String queryStr, Map<String, String> params) {
+	private Query getNativeQuery(String queryStr, Map<String, Object> params) {
 		Query query = entityManager.createNativeQuery(queryStr);
 		if (!params.isEmpty()) {
 			setQueryParams(query, params);
@@ -80,7 +80,7 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 		return query;
 	}
 
-	private void setQueryParams(Query query, Map<String, String> params) {
+	private void setQueryParams(Query query, Map<String, Object> params) {
 		if (!params.isEmpty()) {
 			for (Object key : params.keySet()) {
 				String queryParamName = key.toString();
@@ -91,7 +91,7 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 
 	}
 
-	private void setJPQLQueryParams(Query query, Map<String, String> params)
+	private void setJPQLQueryParams(Query query, Map<String, Object> params)
 			throws QueryParameterMismatchException {
 		if (!params.isEmpty()) {
 			for (Object key : params.keySet()) {

@@ -12,9 +12,9 @@ import com.wavemaker.runtime.data.jpa.exception.QueryParameterMismatchException;
 public interface WMQueryExecutorRepository {
 
 	Page<Object> executeNativeQuery(String queryStr,
-			Map<String, String> params, Pageable pageable) throws QueryParameterMismatchException;
+			Map<String, Object> params, Pageable pageable) throws QueryParameterMismatchException;
 
-	Page<Object> executeJPQLQuery(String queryStr, Map<String, String> params,
+	Page<Object> executeJPQLQuery(String queryStr, Map<String, Object> params,
 			Pageable pageable) throws QueryParameterMismatchException;
 
 }
