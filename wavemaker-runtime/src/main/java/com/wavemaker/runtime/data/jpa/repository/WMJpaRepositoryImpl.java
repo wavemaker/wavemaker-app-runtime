@@ -45,7 +45,7 @@ public class WMJpaRepositoryImpl<T, ID extends Serializable> extends
 		Root<T> root = criteriaQuery.from(entity);
 
 		for (QueryFilter queryFilter : queryFilters) {
-			switch (Type.valueOf(queryFilter.getFilterCondition())) {
+			switch (queryFilter.getFilterCondition()) {
 			case EQUALS: {	
 							Predicate predicate = criteriaBuilder.equal(root.get(queryFilter.getAttributeName()),queryFilter.getAttributeValue());
 							predicates[counter++] = predicate;

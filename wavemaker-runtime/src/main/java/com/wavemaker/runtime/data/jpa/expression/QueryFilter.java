@@ -4,14 +4,14 @@ public class QueryFilter {
 
 	private String attributeName;
 	private String attributeValue;
-	private String filterCondition;
+	private Type filterCondition;
 
 	public QueryFilter() {
 		super();
 	}
 
 	public QueryFilter(String attributeName, String attributeValue,
-			String filterCondition) {
+			Type filterCondition) {
 		super();
 		this.attributeName = attributeName;
 		this.attributeValue = attributeValue;
@@ -34,11 +34,11 @@ public class QueryFilter {
 		this.attributeValue = attributeValue;
 	}
 
-	public String getFilterCondition() {
+	public Type getFilterCondition() {
 		return filterCondition;
 	}
 
-	public void setFilterCondition(String filterCondition) {
+	public void setFilterCondition(Type filterCondition) {
 		this.filterCondition = filterCondition;
 	}
 
