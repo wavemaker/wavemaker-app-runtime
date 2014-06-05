@@ -19,7 +19,8 @@ public enum ParameterType {
 	PATH(2),
 	BODY(3),
 	FORM(4),
-	HEADER(4);
+	HEADER(5),
+    AUTH(6);
 	
 	private int id;
 	

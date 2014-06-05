@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wavemaker.runtime.rest.RestConstants;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.util.Assert;
@@ -49,24 +50,33 @@ public class RestRuntimeService {
         Map<String, String> queryParams = new HashMap<String, String>();
         Map<String, String> pathParams = new HashMap<String, String>();
         String requestBody = null;
-        for(Parameter parameter : parameters) {
-            if(ParameterType.HEADER.equals(parameter.getParameterType()))  {
-                if(params.containsKey(parameter.getName())) {
-                    headers.put(parameter.getName(), params.get(parameter.getName()));
-                }
-            } else if(ParameterType.QUERY.equals(parameter.getParameterType())) {
-                if(params.containsKey(parameter.getName())) {
-                    queryParams.put(parameter.getName(), params.get(parameter.getName()));
-                }
-            } else if(ParameterType.PATH.equals(parameter.getParameterType())) {
-                if(params.containsKey(parameter.getName())) {
-                    pathParams.put(parameter.getName(), params.get(parameter.getName()));
-                }
-            } else if(ParameterType.BODY.equals(parameter.getParameterType())) {
-                if(params.containsKey(parameter.getName())) {
-                    requestBody = params.get(parameter.getName());
+        if(params != null){
+            for(Parameter parameter : parameters) {
+                if(ParameterType.HEADER.equals(parameter.getParameterType())) {
+                    if(params.containsKey(parameter.getName())) {
+                        headers.put(parameter.getName(), params.get(parameter.getName()));
+                    }
+                } else if(ParameterType.QUERY.equals(parameter.getParameterType())) {
+                    if(params.containsKey(parameter.getName())) {
+                        queryParams.put(parameter.getName(), params.get(parameter.getName()));
+                    }
+                } else if(ParameterType.PATH.equals(parameter.getParameterType())) {
+                    if(params.containsKey(parameter.getName())) {
+                        pathParams.put(parameter.getName(), params.get(parameter.getName()));
+                    }
+                } else if(ParameterType.BODY.equals(parameter.getParameterType())) {
+                    if(params.containsKey(parameter.getName())) {
+                        requestBody = params.get(parameter.getName());
+                    }
+                }   else if(ParameterType.AUTH.equals(parameter.getParameterType())){
+                      if(params.containsKey(RestConstants.AUTH_USER_NAME)) {
+                          restRequestInfo.setUserName(params.get(RestConstants.AUTH_USER_NAME));
+                        } else if (params.containsKey(RestConstants.AUTH_PASSWORD)){
+                          restRequestInfo.setPassword(params.get(RestConstants.AUTH_PASSWORD));
+                      }
                 }
             }
+
         }
         boolean first = true;
         for(String queryParam : queryParams.keySet()) {
