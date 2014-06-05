@@ -215,7 +215,7 @@ public class RuntimeService {
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
         MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
         String responseBody = restResponse.getResponseBody();
-        if (MediaType.APPLICATION_XML.getType().equals(responseContentType.getType()) && MediaType.APPLICATION_XML.getSubtype().equals(responseContentType.getSubtype())) {
+        if (MediaType.APPLICATION_XML.getType().equals(responseContentType.getType()) || MediaType.APPLICATION_XML.getSubtype().equals(responseContentType.getSubtype())) {
             Tuple.Two<String, JSONObject> rootKeyVsJsonObject = SchemaConversionHelper.convertXmlToJson(responseBody);
             restResponse.setConvertedResponse(rootKeyVsJsonObject.v2.toString());
         }
