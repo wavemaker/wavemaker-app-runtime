@@ -21,10 +21,11 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 	private EntityManager entityManager;
 
 	@Override
-	public Page<Object> executeNativeQuery(String queryStr,
+	public Page<Object> executeNativeQuery(com.wavemaker.runtime.data.model.Query queryInput,
 			Map<String, Object> params, Pageable pageable)
 			throws QueryParameterMismatchException {
-
+		
+		String queryStr = queryInput.getQuery(); 
 		Query query = getNativeQuery(queryStr, params);
 		Long count = getNativeQueryCount(queryStr, params);
 
@@ -49,9 +50,11 @@ public class WMQueryExecutorRepositoryImpl implements WMQueryExecutorRepository 
 	}
 
 	@Override
-	public Page<Object> executeJPQLQuery(String queryStr,
+	public Page<Object> executeJPQLQuery(com.wavemaker.runtime.data.model.Query queryInput,
 			Map<String, Object> params, Pageable pageable)
 			throws QueryParameterMismatchException {
+		
+		String queryStr = queryInput.getQuery();
 		Query query = getJPQLQuery(queryStr, params);
 
 		return getPageableQueryResult(pageable, query, 100L);// This is

@@ -7,14 +7,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import com.wavemaker.runtime.data.jpa.exception.QueryParameterMismatchException;
+import com.wavemaker.runtime.data.model.Query;
 
 //@NoRepositoryBean
 public interface WMQueryExecutorRepository {
 
-	Page<Object> executeNativeQuery(String queryStr,
+	Page<Object> executeNativeQuery(Query query,
 			Map<String, Object> params, Pageable pageable) throws QueryParameterMismatchException;
 
-	Page<Object> executeJPQLQuery(String queryStr, Map<String, Object> params,
+	Page<Object> executeJPQLQuery(Query query, Map<String, Object> params,
 			Pageable pageable) throws QueryParameterMismatchException;
 
 }
