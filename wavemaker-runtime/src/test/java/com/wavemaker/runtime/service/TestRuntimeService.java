@@ -15,19 +15,33 @@ import java.util.HashMap;
 public class TestRuntimeService {
 
     public static void main(String args[]) throws IOException {
+        System.out.println(MediaType.APPLICATION_XML.getSubtype());
+        System.out.println(MediaType.parseMediaType("text/xml").getSubtype());
+
+        RuntimeService runtimeService = new RuntimeService();
+
+
         RestRuntimeService restRuntimeService = new RestRuntimeService();
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("Cookie", "JSESSIONID=D29BE72223C8525D4A75A2B3006CCBB5");
-        params.put("RequestBody", "{\"name\":\"runCreatedProject\"}");
-        RestRequestInfo restRequestInfo = restRuntimeService.getRestRequestInfo("localhost", "invoke", params);
-        System.out.println(restRequestInfo);
+//        params.put("Cookie", "JSESSIONID=D29BE72223C8525D4A75A2B3006CCBB5");
+//        params.put("RequestBody", "{\"name\":\"runCreatedProject\"}");
 
-        RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
-        MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
-        System.out.println("responseContenType: " + responseContentType);
+        params.put("q", "delhi");
+        params.put("mode", "xml");
 
-        String responseBody = restResponse.getResponseBody();
+        RestResponse restResponse1 = runtimeService.executeRestCall("openweathermap", "invoke", params);
+        System.out.println(restResponse1);
+
+//        RestRequestInfo restRequestInfo = restRuntimeService.getRestRequestInfo("openweathermap", "invoke", params);
+//        System.out.println(restRequestInfo);
+//
+//        RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
+//        MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
+//        System.out.println("responseContenType: " + responseContentType);
+//
+        String responseBody = restResponse1.getResponseBody();
         System.out.println("responseBody: " + responseBody);
+        System.out.println("convertedResponseBody: " + restResponse1.getConvertedResponse());
     }
 }
 
