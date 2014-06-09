@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.jpa.util;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -7,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.runtime.data.jpa.exception.QueryParameterMismatchException;
+import com.wavemaker.runtime.data.model.CustomQueryParam;
 
 public class QueryHelper {
 
@@ -42,5 +44,32 @@ public class QueryHelper {
         LOGGER.debug("Got count query string {}", countQuery);
         return countQuery;
     }
+
+	public static String getCountCustomQuery(String queryStr,
+			List<CustomQueryParam> queryParamsList) {
+		LOGGER.debug("Getting count query for query {} with params {}", queryStr, queryParamsList);
+        if (queryParamsList != null) {
+        	for (CustomQueryParam param : queryParamsList) {
+                String queryParamName = param.getParamName();
+                Object queryParamValue = param.getParamValue();
+                String parameterPlaceholder = new StringBuilder(":").append(
+                        queryParamName).toString();
+                if (!queryStr.contains(parameterPlaceholder)) {
+                    throw new QueryParameterMismatchException("Parameter "
+                            + queryParamName
+                            + " does not exist in named query.");
+                } else {
+                	queryStr = StringUtils.replace(queryStr, parameterPlaceholder,
+                            String.valueOf(queryParamValue));
+                }
+            }
+        }
+        LOGGER.debug("Got query string after placing params {}", queryStr);
+        int index = StringUtils.indexOfIgnoreCase(queryStr, FROM);
+        String subQuery = queryStr.substring(index, queryStr.length());
+        String countQuery=SELECT_COUNT + subQuery;
+        LOGGER.debug("Got count query string {}", countQuery);
+        return countQuery;
+	}
 
 }

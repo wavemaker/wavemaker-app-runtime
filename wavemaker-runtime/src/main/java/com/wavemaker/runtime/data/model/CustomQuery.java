@@ -3,28 +3,33 @@ package com.wavemaker.runtime.data.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class CustomQuery {
 
-    private String name = null;
+	@NotBlank
+	@NotEmpty
+    private String queryStr = null;
     
     public CustomQuery() {
 		super();
 	}
 
-	public CustomQuery(String name, List<CustomQueryParam> queryParams) {
+	public CustomQuery(String queryStr, List<CustomQueryParam> queryParams) {
 		super();
-		this.name = name;
+		this.queryStr = queryStr;
 		this.queryParams = queryParams;
 	}
 
 	private List<CustomQueryParam> queryParams = new ArrayList<CustomQueryParam>();
     
-    public String getName() {
-        return name;
+    public String getQueryStr() {
+        return queryStr;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setQueryStr(String queryStr) {
+        this.queryStr = queryStr;
     }
     
     public List<CustomQueryParam> getQueryParams() {
