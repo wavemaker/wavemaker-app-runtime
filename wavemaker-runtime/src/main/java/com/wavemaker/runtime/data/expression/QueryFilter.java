@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.data.jpa.expression;
+package com.wavemaker.runtime.data.expression;
 
 public class QueryFilter {
 

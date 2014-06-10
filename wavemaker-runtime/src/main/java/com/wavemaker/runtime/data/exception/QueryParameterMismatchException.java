@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.data.jpa.exception;
+package com.wavemaker.runtime.data.exception;
 
 public class QueryParameterMismatchException extends RuntimeException {
 	

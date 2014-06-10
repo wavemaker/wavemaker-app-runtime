@@ -1,6 +1,6 @@
 package com.wavemaker.runtime.data.dao;
 
-import com.wavemaker.runtime.data.jpa.expression.QueryFilter;
+import com.wavemaker.runtime.data.expression.QueryFilter;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Projections;

@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.data.jpa.util;
+package com.wavemaker.runtime.data.dao.util;
 
 import java.util.List;
 import java.util.Map;
@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.runtime.data.jpa.exception.QueryParameterMismatchException;
+import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 import com.wavemaker.runtime.data.model.CustomQueryParam;
 
 public class QueryHelper {

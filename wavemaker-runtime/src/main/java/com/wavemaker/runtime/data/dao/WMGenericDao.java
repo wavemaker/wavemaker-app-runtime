@@ -1,6 +1,6 @@
 package com.wavemaker.runtime.data.dao;
 
-import com.wavemaker.runtime.data.jpa.expression.QueryFilter;
+import com.wavemaker.runtime.data.expression.QueryFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
