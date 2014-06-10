@@ -3,6 +3,7 @@ package com.wavemaker.runtime.data.dao;
 import com.wavemaker.runtime.data.jpa.expression.QueryFilter;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -59,27 +60,42 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 	@Transactional(readOnly=true)
 	public Page<Entity> search(QueryFilter queryFilters[], Pageable pageable) {
 		Criteria criteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
+        Criteria countCriteria =getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
         if(queryFilters != null && queryFilters.length > 0) {
             for (QueryFilter queryFilter : queryFilters) {
                 switch (queryFilter.getFilterCondition()) {
                     case EQUALS:
                         criteria.add(Restrictions.eq(queryFilter.getAttributeName(), queryFilter.getAttributeValue()));
+                        countCriteria.add(Restrictions.eq(queryFilter.getAttributeName(), queryFilter.getAttributeValue()));
                         break;
                     case STARTING_WITH:
                         criteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.START));
+                        countCriteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.START));
                         break;
                     case ENDING_WITH:
                         criteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.END));
+                        countCriteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.END));
                         break;
                     case CONTAINING:
                         criteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.ANYWHERE));
+                        countCriteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.ANYWHERE));
                         break;
                     default:
                         throw new RuntimeException("Unhandled filter condition: " + queryFilter.getFilterCondition());
                 }
             }
         }
-		return new PageImpl<Entity>(criteria.list());
+        if(pageable!=null)
+        {
+            countCriteria.setProjection(Projections.rowCount());
+            Long count = (Long) countCriteria.uniqueResult();
+            criteria.setFirstResult(pageable.getOffset());
+            criteria.setMaxResults(pageable.getPageSize());
+            return new PageImpl<Entity>(criteria.list(), pageable, count);
+
+        }
+        else
+        return new PageImpl<Entity>(criteria.list());
 	}
 
     @Override
