@@ -11,7 +11,11 @@ public class CustomQuery {
 	@NotBlank
 	@NotEmpty
     private String queryStr = null;
-    
+
+    private boolean nativeSql = false;
+
+    private List<CustomQueryParam> queryParams = new ArrayList<CustomQueryParam>();
+
     public CustomQuery() {
 		super();
 	}
@@ -22,8 +26,6 @@ public class CustomQuery {
 		this.queryParams = queryParams;
 	}
 
-	private List<CustomQueryParam> queryParams = new ArrayList<CustomQueryParam>();
-    
     public String getQueryStr() {
         return queryStr;
     }
@@ -38,5 +40,13 @@ public class CustomQuery {
 
     public void setQueryParams(List<CustomQueryParam> queryParams) {
         this.queryParams = queryParams;
+    }
+
+    public boolean isNativeSql() {
+        return nativeSql;
+    }
+
+    public void setNativeSql(boolean nativeSql) {
+        this.nativeSql = nativeSql;
     }
 }

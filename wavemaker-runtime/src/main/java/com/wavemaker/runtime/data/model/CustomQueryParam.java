@@ -1,16 +1,16 @@
 package com.wavemaker.runtime.data.model;
 
 public class CustomQueryParam {
+
 	private String paramName = null;
     private String paramType = null;
-    private String paramValue = null;
+    private Object paramValue = null;
         
 	public CustomQueryParam() {
 		super();
 	}
 	
-	public CustomQueryParam(String paramName, String paramType,
-			String paramValue) {
+	public CustomQueryParam(String paramName, String paramType, Object paramValue) {
 		super();
 		this.paramName = paramName;
 		this.paramType = paramType;
@@ -23,16 +23,18 @@ public class CustomQueryParam {
 	public void setParamName(String paramName) {
 		this.paramName = paramName;
 	}
+
 	public String getParamType() {
 		return paramType;
 	}
 	public void setParamType(String paramType) {
 		this.paramType = paramType;
 	}
-	public String getParamValue() {
+
+	public Object getParamValue() {
 		return paramValue;
 	}
-	public void setParamValue(String paramValue) {
+	public void setParamValue(Object paramValue) {
 		this.paramValue = paramValue;
 	}
 

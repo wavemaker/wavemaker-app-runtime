@@ -1,11 +1,12 @@
 package com.wavemaker.runtime.data.dao.query;
 
+import com.wavemaker.runtime.data.model.CustomQuery;
+import com.wavemaker.runtime.data.model.CustomQueryParam;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.Type;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,8 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WMQueryExecutorImpl implements WMQueryExecutor {
@@ -55,8 +58,26 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 		return new PageImpl<Object>(namedQuery.list());
 	}
 
-	@Transactional(readOnly=true)
-	public Page<Object> executeNativeQuery(String queryString, Map<String, Object> params, Pageable pageable) {
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
+        if(customQueryParams != null && !customQueryParams.isEmpty()){
+            for (CustomQueryParam customQueryParam: customQueryParams) {
+                params.put(customQueryParam.getParamName(), customQueryParam.getParamValue());
+            }
+        }
+
+        if(customQuery.isNativeSql()) {
+            return executeNativeQuery(customQuery.getQueryStr(), params, pageable);
+        } else {
+            return executeHQLQuery(customQuery.getQueryStr(), params, pageable);
+        }
+    }
+
+	protected Page<Object> executeNativeQuery(String queryString, Map<String, Object> params, Pageable pageable) {
 		Session currentSession = template.getSessionFactory().getCurrentSession();
 
 		SQLQuery sqlQuery = currentSession.createSQLQuery(queryString);
@@ -66,7 +87,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 		return new PageImpl<Object>(sqlQuery.list());
 	}
 
-	public Page<Object> executeHQLQuery(String queryString, Map<String, Object> params, Pageable pageable) {
+	protected Page<Object> executeHQLQuery(String queryString, Map<String, Object> params, Pageable pageable) {
 		Session currentSession = template.getSessionFactory().getCurrentSession();
 
 		Query hqlQuery = currentSession.createQuery(queryString);
