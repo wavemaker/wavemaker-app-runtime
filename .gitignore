@@ -36,5 +36,8 @@ wavemaker-common/src/main/webapp/
 wavemaker-json/src/main/webapp/
 wavemaker-runtime/src/main/webapp/
 wavemaker-prefab/src/main/webapp/
+wavemaker-core/src/main/webapp/
+wavemaker-platform/src/main/webapp/
+/src
 
 buildNumber.properties
