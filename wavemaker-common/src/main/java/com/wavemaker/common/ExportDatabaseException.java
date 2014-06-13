@@ -16,4 +16,9 @@ public class ExportDatabaseException extends WMRuntimeException {
     public ExportDatabaseException(String message) {
         super(message, (String) null);
     }
+
+    public ExportDatabaseException(Throwable e, String message)
+    {
+        super(message, e) ;
+    }
 }
