@@ -3,14 +3,14 @@ package com.wavemaker.runtime.data.expression;
 public class QueryFilter {
 
 	private String attributeName;
-	private String attributeValue;
+	private Object attributeValue;
 	private Type filterCondition;
 
 	public QueryFilter() {
 		super();
 	}
 
-	public QueryFilter(String attributeName, String attributeValue,
+	public QueryFilter(String attributeName, Object attributeValue,
 			Type filterCondition) {
 		super();
 		this.attributeName = attributeName;
@@ -26,11 +26,11 @@ public class QueryFilter {
 		this.attributeName = attributeName;
 	}
 
-	public String getAttributeValue() {
+	public Object getAttributeValue() {
 		return attributeValue;
 	}
 
-	public void setAttributeValue(String attributeValue) {
+	public void setAttributeValue(Object attributeValue) {
 		this.attributeValue = attributeValue;
 	}
 
