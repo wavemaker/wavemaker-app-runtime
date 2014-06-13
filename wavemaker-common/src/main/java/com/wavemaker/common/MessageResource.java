@@ -321,6 +321,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource THEME_DOES_NOT_EXIST = new MessageResource("com.wavemaker.studio$ThemeDoesNotExist");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource THEME_ASSOCIATED = new MessageResource("com.wavemaker.studio$ThemeAssociated");
+
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource THEME_ALREADY_EXIST_IN_PROJECT = new MessageResource("com.wavemaker.studio$ThemeAlreadyExistInProject");
 
