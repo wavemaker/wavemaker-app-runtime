@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -31,33 +32,33 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 		this.entityClass = (Class<Entity>) genericSuperclass.getActualTypeArguments()[0];
 	}
 	
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRED)
 	public Entity create(Entity entity) {
         Identifier identifier = (Identifier) getTemplate().save(entity);
         return findById(identifier);
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void update(Entity entity) {
         getTemplate().update(entity);
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRED)
 	public void delete(Entity entity) {
         getTemplate().delete(entity);
 	}
 
-	@Transactional(readOnly=true)
+	@Transactional(readOnly=true, propagation = Propagation.REQUIRED)
 	public Entity findById(Identifier entityId) {
 		return getTemplate().get(entityClass, entityId);
 	}
 
-	@Transactional(readOnly=true)
+	@Transactional(readOnly=true, propagation = Propagation.REQUIRED)
 	public Page<Entity> list() {
 		return new PageImpl<Entity>(getTemplate().loadAll(entityClass));
 	}
 
-	@Transactional(readOnly=true)
+	@Transactional(readOnly=true, propagation = Propagation.REQUIRED)
 	public Page<Entity> search(QueryFilter queryFilters[], Pageable pageable) {
 		Criteria criteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
         Criteria countCriteria =getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
@@ -99,11 +100,13 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 	}
 
     @Override
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public Page<Entity> list(Pageable pageable) {
         return search(null, pageable);
     }
 
     @Override
+    @Transactional(readOnly=true, propagation = Propagation.REQUIRED)
     public long count() {
         return getTemplate().loadAll(entityClass).size();
     }
