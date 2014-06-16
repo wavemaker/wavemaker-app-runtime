@@ -164,8 +164,10 @@ public class SecurityService {
     public static int getTenantId() {
         Authentication authentication = getAuthenticatedAuthentication();
         if (authentication != null) {
-            WMUserDetails principal = (WMUserDetails) authentication.getPrincipal();
-            return principal.getTenantId();
+            if (authentication.getPrincipal() instanceof WMUserDetails) {
+                WMUserDetails principal = (WMUserDetails) authentication.getPrincipal();
+                return principal.getTenantId();
+            }
         }
         return -1;
     }
