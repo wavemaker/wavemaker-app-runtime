@@ -32,33 +32,27 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 		this.entityClass = (Class<Entity>) genericSuperclass.getActualTypeArguments()[0];
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRED)
 	public Entity create(Entity entity) {
         Identifier identifier = (Identifier) getTemplate().save(entity);
         return findById(identifier);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRED)
 	public void update(Entity entity) {
         getTemplate().update(entity);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRED)
 	public void delete(Entity entity) {
         getTemplate().delete(entity);
 	}
 
-	@Transactional(readOnly=true, propagation = Propagation.REQUIRED)
 	public Entity findById(Identifier entityId) {
 		return getTemplate().get(entityClass, entityId);
 	}
 
-	@Transactional(readOnly=true, propagation = Propagation.REQUIRED)
 	public Page<Entity> list() {
 		return new PageImpl<Entity>(getTemplate().loadAll(entityClass));
 	}
 
-	@Transactional(readOnly=true, propagation = Propagation.REQUIRED)
 	public Page<Entity> search(QueryFilter queryFilters[], Pageable pageable) {
 		Criteria criteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
         Criteria countCriteria =getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
@@ -100,13 +94,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 	}
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public Page<Entity> list(Pageable pageable) {
         return search(null, pageable);
     }
 
     @Override
-    @Transactional(readOnly=true, propagation = Propagation.REQUIRED)
     public long count() {
         return getTemplate().loadAll(entityClass).size();
     }

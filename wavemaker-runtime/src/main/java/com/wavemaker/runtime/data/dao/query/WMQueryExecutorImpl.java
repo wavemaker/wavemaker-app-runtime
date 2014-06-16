@@ -35,7 +35,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         this.template = template;
     }
 
-    @Transactional(readOnly=true)
 	public Page<Object> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable) {
 		Session currentSession = template.getSessionFactory().getCurrentSession();
 		
@@ -49,7 +48,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 	}
 
     @Override
-    @Transactional(readOnly = true)
     public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
         Map<String, Object> params = new HashMap<String, Object>();
 
