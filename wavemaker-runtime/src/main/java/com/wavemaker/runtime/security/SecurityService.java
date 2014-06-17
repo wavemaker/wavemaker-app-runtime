@@ -169,7 +169,7 @@ public class SecurityService {
                 return principal.getTenantId();
             }
         }
-        return -1;
+        return 0;
     }
 
     /**
