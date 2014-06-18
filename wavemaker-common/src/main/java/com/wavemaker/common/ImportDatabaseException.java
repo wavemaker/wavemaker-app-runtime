@@ -17,4 +17,8 @@ public class ImportDatabaseException extends WMRuntimeException {
         super(message, (String) null);
     }
 
+    public ImportDatabaseException(Throwable e, String message) {
+        super(message, e);
+    }
+
 }
