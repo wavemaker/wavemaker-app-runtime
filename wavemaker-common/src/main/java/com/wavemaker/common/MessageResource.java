@@ -467,6 +467,9 @@ public class MessageResource {
     public static final MessageResource TYPE_NOT_CREATED = new MessageResource("com.wavemaker.tools.data$TypeNotCreated");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PUBLISHED_DATA_MODEL_DNE = new MessageResource("com.wavemaker.tools.data$PublishedDataModelDNE");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource JSON_FAILED_PARSING = new MessageResource("com.wavemaker.json$FailedParsing");
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
