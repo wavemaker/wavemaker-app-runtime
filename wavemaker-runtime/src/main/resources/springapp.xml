@@ -153,21 +153,6 @@
         <property name="basename" value="views"/>
     </bean>
 
-    <bean id="fileController"
-          class="com.wavemaker.runtime.FileController">
-
-        <property name="moduleManager">
-            <ref bean="moduleManager"/>
-        </property>
-        <property name="serviceResponse">
-            <ref bean="serviceResponse"/>
-        </property>
-
-        <!-- controller configuration -->
-        <!--property name="supportedMethods" value="GET" /-->
-    </bean>
-
-
     <beans profile="default">
         <bean id="serviceResponse" class="com.wavemaker.runtime.server.ServiceResponse" scope="singleton"
               lazy-init="true">
