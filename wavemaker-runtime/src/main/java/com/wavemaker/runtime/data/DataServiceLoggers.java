@@ -35,4 +35,6 @@ public class DataServiceLoggers {
     public static final Log metaDataLogger = LogFactory.getLog("com.wavemaker.data.metadata");
 
     public static final Log connectionLogger = LogFactory.getLog("com.wavemaker.data.connection");
+
+    public static final Log fileControllerLogger = LogFactory.getLog("com.wavemaker.runtime.fileController");
 }
