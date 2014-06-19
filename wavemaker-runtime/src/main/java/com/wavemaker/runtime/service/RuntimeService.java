@@ -213,11 +213,13 @@ public class RuntimeService {
     public RestResponse executeRestCall(String serviceId, String operationId, Map<String, String> params) throws IOException {
         RestRequestInfo restRequestInfo = restRuntimeService.getRestRequestInfo(serviceId, operationId, params);
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
-        MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
         String responseBody = restResponse.getResponseBody();
-        if (MediaType.APPLICATION_XML.getSubtype().equals(responseContentType.getSubtype())) {
-            Tuple.Two<String, JSONObject> rootKeyVsJsonObject = SchemaConversionHelper.convertXmlToJson(responseBody);
-            restResponse.setConvertedResponse(rootKeyVsJsonObject.v2.toString());
+        if(restResponse.getContentType() != null) {
+            MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
+            if (MediaType.APPLICATION_XML.getSubtype().equals(responseContentType.getSubtype())) {
+                Tuple.Two<String, JSONObject> rootKeyVsJsonObject = SchemaConversionHelper.convertXmlToJson(responseBody);
+                restResponse.setConvertedResponse(rootKeyVsJsonObject.v2.toString());
+            }
         }
         if(restResponse.getConvertedResponse() != null) {
             restResponse.setResponseBody(null);
