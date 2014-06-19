@@ -5,18 +5,31 @@ public class QueryFilter {
 	private String attributeName;
 	private Object attributeValue;
 	private Type filterCondition;
+    private AttributeType attributeType;
+
 
 	public QueryFilter() {
 		super();
 	}
 
-	public QueryFilter(String attributeName, Object attributeValue,
-			Type filterCondition) {
+    public QueryFilter(String attributeName, Object attributeValue,
+			Type filterCondition, AttributeType attributeType) {
 		super();
 		this.attributeName = attributeName;
 		this.attributeValue = attributeValue;
 		this.filterCondition = filterCondition;
+        this.attributeType=attributeType;
+
 	}
+
+
+    public AttributeType getAttributeType() {
+        return attributeType;
+    }
+
+    public void setAttributeType(AttributeType attributeType) {
+        this.attributeType = attributeType;
+    }
 
 	public String getAttributeName() {
 		return attributeName;
