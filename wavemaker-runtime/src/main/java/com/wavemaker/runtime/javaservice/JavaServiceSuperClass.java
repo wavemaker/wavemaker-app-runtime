@@ -67,10 +67,10 @@ public class JavaServiceSuperClass {
 
             // Determine if we're in live layout, test run or deployed
             String currentPath = WMAppContext.getInstance().getContext().getRealPath("");
-            File webapproot = new File(currentPath);
+            File webAppRoot = new File(currentPath);
             boolean isDeployedApp = false;
-            if (new File(webapproot, "app/deploy.js").exists()) {
-            } else if (new File(webapproot, "lib/dojo").exists()) {
+            if (new File(webAppRoot, "app/deploy.js").exists()) {
+            } else if (new File(webAppRoot, "lib/dojo").exists()) {
                 isDeployedApp = true;
             } else {
             }
@@ -80,7 +80,7 @@ public class JavaServiceSuperClass {
 
             File logFolder = new File(System.getProperty("catalina.home") + "/logs/ProjectLogs");
             if (!isDeployedApp) {
-                String projectName = webapproot.getParentFile().getName();
+                String projectName = webAppRoot.getParentFile().getName();
                 logFolder = new File(logFolder, projectName);
             }
             IOUtils.makeDirectories(logFolder, new File(System.getProperty("catalina.home")));
