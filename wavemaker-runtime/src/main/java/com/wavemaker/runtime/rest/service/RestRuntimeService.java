@@ -6,12 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.wavemaker.runtime.rest.RestConstants;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.util.Assert;
 
 import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.api.ApiDocument;
 import com.wavemaker.runtime.rest.model.api.DataFormat;
@@ -111,7 +111,7 @@ public class RestRuntimeService {
 
     private ApiDocument getApiDocument(String serviceId) throws IOException {
         if (!apiDocumentCache.containsKey(serviceId)) {
-            InputStream stream = RestRuntimeService.class.getClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
             ApiDocument apiDocument = new ObjectMapper().readValue(stream, ApiDocument.class);
             apiDocumentCache.put(serviceId, apiDocument);
         }
