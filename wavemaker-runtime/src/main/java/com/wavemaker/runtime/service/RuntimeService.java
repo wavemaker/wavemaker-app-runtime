@@ -57,7 +57,7 @@ import com.wavemaker.runtime.server.ServerUtils;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.events.ServiceEventNotifier;
 import com.wavemaker.runtime.service.response.SuccessResponse;
-import net.sf.json.JSONObject;
+import net.sf.json.JSON;
 
 /**
  * Runtime service. This service is always present during the runtime of a WaveMaker application, and provides general
@@ -217,7 +217,7 @@ public class RuntimeService {
         if(restResponse.getContentType() != null) {
             MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
             if (MediaType.APPLICATION_XML.getSubtype().equals(responseContentType.getSubtype())) {
-                Tuple.Two<String, JSONObject> rootKeyVsJsonObject = SchemaConversionHelper.convertXmlToJson(responseBody);
+                Tuple.Two<String, JSON> rootKeyVsJsonObject = SchemaConversionHelper.convertXmlToJson(responseBody);
                 restResponse.setConvertedResponse(rootKeyVsJsonObject.v2.toString());
             }
         }
