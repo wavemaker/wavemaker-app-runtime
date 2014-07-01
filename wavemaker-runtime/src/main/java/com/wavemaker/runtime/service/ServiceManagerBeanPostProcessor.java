@@ -15,7 +15,8 @@
  */
 package com.wavemaker.runtime.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
@@ -28,7 +29,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 public class ServiceManagerBeanPostProcessor implements BeanPostProcessor {
 
     /** Logger for this class and subclasses */
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {

@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMException;
@@ -48,7 +48,7 @@ public class JSONUtils {
     private JSONUtils() {
     }
 
-    private static final Log logger = LogFactory.getLog(JSONUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(JSONUtils.class);
 
     /**
      * Convert a JSONArray into an array of objects, with types as specified in the paramTypes argument.

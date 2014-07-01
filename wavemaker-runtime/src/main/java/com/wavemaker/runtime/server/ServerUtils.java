@@ -34,8 +34,11 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -65,7 +68,7 @@ import com.wavemaker.runtime.service.events.ServiceEventNotifier;
 public class ServerUtils {
 
     /** Logger for this class and subclasses */
-    protected final static Logger logger = Logger.getLogger(ServerUtils.class);
+    protected final static Logger logger = LoggerFactory.getLogger(ServerUtils.class);
 
     static final Pattern extensionPattern;
     static {

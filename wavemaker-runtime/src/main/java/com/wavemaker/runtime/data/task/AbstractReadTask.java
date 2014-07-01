@@ -229,7 +229,7 @@ public abstract class AbstractReadTask extends BaseTask implements Task {
         if (DataServiceLoggers.taskLogger.isInfoEnabled()) {
             DataServiceLoggers.taskLogger.info(query);
             if (!bindParams.isEmpty()) {
-                DataServiceLoggers.taskLogger.debug(bindParams);
+                DataServiceLoggers.taskLogger.debug(bindParams.toString());
             }
         }
     }

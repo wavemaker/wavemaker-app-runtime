@@ -46,8 +46,8 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.http.HTTPBinding;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONException;
 import org.springframework.http.MediaType;
 
@@ -73,7 +73,7 @@ public class HTTPBindingSupport {
         GET, POST, PUT, DELETE
     }
 
-    private static Log logger = LogFactory.getLog(HTTPBindingSupport.class);
+    private static Logger logger = LoggerFactory.getLogger(HTTPBindingSupport.class);
 
     public static <T extends Object> T getResponseObject(QName serviceQName, QName portQName, String endpointAddress, HTTPRequestMethod method,
         String contentType, Object postData, Class<T> responseType, BindingProperties bindingProperties) throws WebServiceException,MalformedURLException {

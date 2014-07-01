@@ -20,13 +20,14 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.util.UrlUtils;
 
 public class WMHashAwareRedirectStrategy extends DefaultRedirectStrategy{
 
-	protected final Logger logger = Logger.getLogger(WMHashAwareRedirectStrategy.class);
+	protected final Logger logger = LoggerFactory.getLogger(WMHashAwareRedirectStrategy.class);
 	
 	private boolean contextRelative;
 	

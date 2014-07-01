@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -324,7 +324,7 @@ public class DataServiceUtils {
         return loadById(o, session, metaData, null);
     }
 
-    public static Object loadById(Object originalInstance, Session session, DataServiceMetaData metaData, Log logger) {
+    public static Object loadById(Object originalInstance, Session session, DataServiceMetaData metaData, Logger logger) {
 
         if (originalInstance == null) {
             throw new IllegalArgumentException("instance to reload cannot be null");

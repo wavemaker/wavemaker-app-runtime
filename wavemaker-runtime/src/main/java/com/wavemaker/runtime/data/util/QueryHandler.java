@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.cfg.Configuration;
@@ -51,7 +51,7 @@ public class QueryHandler implements InvocationHandler {
 
     private final Configuration cfg;
 
-    private final Log log = LogFactory.getLog(QueryHandler.class);
+    private final Logger log = LoggerFactory.getLogger(QueryHandler.class);
 
     public QueryHandler(Configuration cfg) {
         this.cfg = cfg;

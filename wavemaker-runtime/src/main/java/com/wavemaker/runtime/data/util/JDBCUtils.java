@@ -19,7 +19,7 @@ import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.util.ClassLoaderUtils;
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.runtime.data.DataServiceRuntimeException;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public class JDBCUtils {
         return runSql(sql, url, username, password, driverClassName, null, isDDL);
     }
 
-    public static Object runSql(String sql[], String url, String username, String password, String driverClassName, Log logger, boolean isDDL) {
+    public static Object runSql(String sql[], String url, String username, String password, String driverClassName, Logger logger, boolean isDDL) {
 
         Connection con = getConnection(url, username, password, driverClassName);
 

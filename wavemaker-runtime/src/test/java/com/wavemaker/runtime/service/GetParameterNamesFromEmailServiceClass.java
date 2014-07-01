@@ -17,18 +17,19 @@ package com.wavemaker.runtime.service;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Matt Small
  */
 public class GetParameterNamesFromEmailServiceClass {
 
-    private static Logger logger = Logger.getLogger(GetParameterNamesFromEmailServiceClass.class);
+    private static Logger logger = LoggerFactory.getLogger(GetParameterNamesFromEmailServiceClass.class);
 
     public static String sendMail(String Host, String Port, String User, String Pass, String To, String Cc, String From, String Subject,
         String Message) {
-        // Get Logger and Log Params
+        // Get Logger and Logger Params
         // Output to tomcat stdout log file
 
         logger.info("com.wavemaker.emailService.sendMail");

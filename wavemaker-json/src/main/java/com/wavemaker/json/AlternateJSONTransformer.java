@@ -23,7 +23,8 @@ import java.util.Stack;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
@@ -46,7 +47,7 @@ public class AlternateJSONTransformer {
 
     public static final char PROP_SEP = '.';
 
-    protected static final Logger logger = Logger.getLogger(AlternateJSONTransformer.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AlternateJSONTransformer.class);
 
     public static Object toObject(JSONObject obj, Class<?> klass) {
         return toObject(new JSONState(), obj, klass);

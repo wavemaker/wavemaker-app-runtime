@@ -36,8 +36,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
@@ -58,7 +58,7 @@ import com.wavemaker.runtime.service.events.ServiceEventNotifier;
 @ExposeToClient
 public class WaveMakerService {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private TypeManager typeManager;
 

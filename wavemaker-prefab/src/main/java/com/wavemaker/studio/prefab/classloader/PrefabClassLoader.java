@@ -27,7 +27,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarFile;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstracts a prefab {@link ClassLoader}. <code>PrefabClassLoader</code> can load {@link Class}es.
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
  */
 public class PrefabClassLoader extends URLClassLoader {
 
-    private static final Logger LOGGER = Logger.getLogger(PrefabClassLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrefabClassLoader.class);
 
     private final String prefabName;
     private Set<String> loadedJarFiles = new HashSet<String>();

@@ -21,7 +21,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.wavemaker.common.WMException;
@@ -37,7 +38,7 @@ import com.wavemaker.runtime.service.TypedServiceReturn;
 public class FlashFileUploadController extends ControllerBase {
 
     /** Logger for this class and subclasses */
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * UPLOADS stores the location of files on disk. Windows users must update this; Mac & Linux should be fine.

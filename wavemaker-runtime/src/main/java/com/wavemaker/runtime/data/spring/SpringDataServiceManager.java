@@ -24,7 +24,7 @@ import com.wavemaker.runtime.data.task.DefaultRollback;
 import com.wavemaker.runtime.data.task.PreProcessor;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 import com.wavemaker.runtime.data.util.QueryHandler;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -49,7 +49,7 @@ import java.util.Map;
  */
 public class SpringDataServiceManager implements DataServiceManager {
 
-    public static final Log txLogger = DataServiceLoggers.transactionLogger;
+    public static final Logger txLogger = DataServiceLoggers.transactionLogger;
 
     private final PlatformTransactionManager txMgr;
 

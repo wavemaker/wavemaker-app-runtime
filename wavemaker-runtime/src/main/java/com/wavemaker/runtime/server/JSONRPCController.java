@@ -30,7 +30,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.JsonView;
 
@@ -42,7 +43,7 @@ import org.springframework.web.servlet.view.JsonView;
 public class JSONRPCController extends ControllerBase {
 
     /** Logger for this class and subclasses */
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     protected ModelAndView executeRequest(HttpServletRequest request, HttpServletResponse response) throws IOException, WMException {

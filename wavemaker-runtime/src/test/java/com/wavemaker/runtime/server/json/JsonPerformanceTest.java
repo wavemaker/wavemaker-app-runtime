@@ -15,21 +15,16 @@
  */
 package com.wavemaker.runtime.server.json;
 
+import com.wavemaker.infra.WMTestCase;
+import com.wavemaker.json.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import com.wavemaker.infra.WMTestCase;
-import com.wavemaker.json.AlternateJSONTransformer;
-import com.wavemaker.json.JSONMarshaller;
-import com.wavemaker.json.JSONObject;
-import com.wavemaker.json.JSONState;
-import com.wavemaker.json.JSONUnmarshaller;
 
 /**
  * Test JSON performance, make sure nothing is worse.
@@ -43,23 +38,18 @@ import com.wavemaker.json.JSONUnmarshaller;
  */
 public class JsonPerformanceTest extends WMTestCase {
 
-    private Level oldLoggerLevel;
-
-    Logger jsonMarshallerLogger = Logger.getLogger(JSONMarshaller.class);
+    Logger jsonMarshallerLogger = LoggerFactory.getLogger(JSONMarshaller.class);
 
     @Override
     public void setUp() throws Exception {
 
         super.setUp();
-        this.oldLoggerLevel = this.jsonMarshallerLogger.getLevel();
-        this.jsonMarshallerLogger.setLevel(Level.ERROR);
     }
 
     @Override
     public void tearDown() throws Exception {
 
         super.tearDown();
-        this.jsonMarshallerLogger.setLevel(this.oldLoggerLevel);
     }
 
     public void testNothing() {

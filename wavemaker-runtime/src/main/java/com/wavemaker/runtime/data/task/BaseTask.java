@@ -15,7 +15,7 @@
  */
 package com.wavemaker.runtime.data.task;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -33,7 +33,7 @@ import com.wavemaker.runtime.data.util.DataServiceUtils;
  */
 public abstract class BaseTask implements Task {
 
-    private final Log logger = DataServiceLoggers.taskLogger;
+    private final Logger logger = DataServiceLoggers.taskLogger;
 
     private final ObjectAccess objectAccess = ObjectAccess.getInstance();
 

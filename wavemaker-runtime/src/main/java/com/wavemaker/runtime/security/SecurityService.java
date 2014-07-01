@@ -18,7 +18,8 @@ package com.wavemaker.runtime.security;
 import java.util.*;
 
 import com.wavemaker.runtime.WMAppContext;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
@@ -37,7 +38,7 @@ import com.wavemaker.runtime.service.annotations.HideFromClient;
 @HideFromClient
 public class SecurityService {
 
-    static final Logger logger = Logger.getLogger(SecurityService.class);
+    static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
 
     private String rolePrefix;
 

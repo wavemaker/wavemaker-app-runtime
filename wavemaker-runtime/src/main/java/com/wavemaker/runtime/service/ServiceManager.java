@@ -21,7 +21,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -40,7 +41,7 @@ import com.wavemaker.runtime.RuntimeAccess;
 public class ServiceManager implements ApplicationContextAware {
 
     /** Logger for this class and subclasses */
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ApplicationContext applicationContext = null;
 

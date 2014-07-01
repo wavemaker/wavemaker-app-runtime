@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wavemaker.runtime.service.ServiceWire;
 
@@ -30,7 +31,7 @@ import com.wavemaker.runtime.service.ServiceWire;
 public class EventManager {
 
     /** Logger for this class and subclasses */
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<EventWire> eventWires = new ArrayList<EventWire>();
 

@@ -15,8 +15,8 @@
  */
 package com.wavemaker.runtime.data;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Simon Toens
@@ -26,15 +26,15 @@ public class DataServiceLoggers {
     private DataServiceLoggers() {
     }
 
-    public static final Log taskLogger = LogFactory.getLog("com.wavemaker.runtime.data.work");
+    public static final Logger taskLogger = LoggerFactory.getLogger("com.wavemaker.runtime.data.work");
 
-    public static final Log transactionLogger = LogFactory.getLog("com.wavemaker.runtime.data.tx");
+    public static final Logger transactionLogger = LoggerFactory.getLogger("com.wavemaker.runtime.data.tx");
 
-    public static final Log eventLogger = LogFactory.getLog("com.wavemaker.runtime.data.event");
+    public static final Logger eventLogger = LoggerFactory.getLogger("com.wavemaker.runtime.data.event");
 
-    public static final Log metaDataLogger = LogFactory.getLog("com.wavemaker.data.metadata");
+    public static final Logger metaDataLogger = LoggerFactory.getLogger("com.wavemaker.data.metadata");
 
-    public static final Log connectionLogger = LogFactory.getLog("com.wavemaker.data.connection");
+    public static final Logger connectionLogger = LoggerFactory.getLogger("com.wavemaker.data.connection");
 
-    public static final Log fileControllerLogger = LogFactory.getLog("com.wavemaker.runtime.fileController");
+    public static final Logger fileControllerLogger = LoggerFactory.getLogger("com.wavemaker.runtime.fileController");
 }

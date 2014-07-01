@@ -17,7 +17,8 @@ package com.wavemaker.studio.prefab.impl;
 
 import javax.servlet.ServletContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -49,7 +50,7 @@ import com.wavemaker.studio.prefab.event.PrefabsUnloadedEvent;
 public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextAware,
         ApplicationListener<PrefabEvent>, ServletContextAware {
 
-    private static final Logger LOGGER = Logger.getLogger(PrefabInstallerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrefabInstallerImpl.class);
 
     @Override
     public void installPrefab(final Prefab prefab) {

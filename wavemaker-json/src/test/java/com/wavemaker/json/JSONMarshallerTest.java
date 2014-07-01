@@ -27,7 +27,8 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
@@ -73,17 +74,17 @@ public class JSONMarshallerTest extends WMTestCase {
         TypeDefinition boolTypeDef = ReflectTypeUtils.getTypeDefinition(boolean.class, new ReflectTypeState(), false);
 
         JSONMarshaller.doMarshal(sw, "foo", "foo", jc, false, false, new Stack<Object>(), new Stack<String>(), new GenericFieldDefinition(
-            stringTypeDef), 0, new ReflectTypeState(), false, 0, Logger.getLogger(JSONMarshaller.class));
+            stringTypeDef), 0, new ReflectTypeState(), false, 0, LoggerFactory.getLogger(JSONMarshaller.class));
         assertEquals("\"foo\"", sw.toString());
 
         sw = new StringWriter();
         JSONMarshaller.doMarshal(sw, false, false, jc, false, false, new Stack<Object>(), new Stack<String>(),
-            new GenericFieldDefinition(boolTypeDef), 0, new ReflectTypeState(), false, 0, Logger.getLogger(JSONMarshaller.class));
+            new GenericFieldDefinition(boolTypeDef), 0, new ReflectTypeState(), false, 0, LoggerFactory.getLogger(JSONMarshaller.class));
         assertEquals("false", sw.toString());
 
         sw = new StringWriter();
         JSONMarshaller.doMarshal(sw, Boolean.TRUE, Boolean.TRUE, jc, false, false, new Stack<Object>(), new Stack<String>(),
-            new GenericFieldDefinition(boolTypeDef), 0, new ReflectTypeState(), false, 0, Logger.getLogger(JSONMarshaller.class));
+            new GenericFieldDefinition(boolTypeDef), 0, new ReflectTypeState(), false, 0, LoggerFactory.getLogger(JSONMarshaller.class));
         assertEquals("true", sw.toString());
     }
 

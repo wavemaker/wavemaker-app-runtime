@@ -26,7 +26,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.WebApplicationContext;
@@ -70,7 +71,7 @@ public class WMAppContext {
 
     private Boolean studioMode;
 
-    private static final Logger logger = Logger.getLogger(WMAppContext.class);
+    private static final Logger logger = LoggerFactory.getLogger(WMAppContext.class);
 
     private WMAppContext(ServletContextEvent event) {
         this.context = event.getServletContext();

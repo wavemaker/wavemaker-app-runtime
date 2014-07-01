@@ -30,7 +30,8 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -53,7 +54,7 @@ import com.wavemaker.common.util.Tuple;
 public class ModuleManager {
 
     /** Logger for this class and subclasses */
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ClassLoader classLoader;
 

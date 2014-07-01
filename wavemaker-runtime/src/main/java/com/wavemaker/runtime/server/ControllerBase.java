@@ -25,9 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.NDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -64,7 +66,7 @@ import com.wavemaker.runtime.service.response.RootServiceResponse;
 public abstract class ControllerBase extends AbstractController {
 
     /** Logger that is available to subclasses */
-    protected final Log logger = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected ServiceResponse serviceResponse;
 

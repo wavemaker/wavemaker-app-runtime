@@ -15,10 +15,9 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.wavemaker.common.MessageResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DataService logging convenience methods.
@@ -27,23 +26,23 @@ import com.wavemaker.common.MessageResource;
  */
 public class LoggingUtils {
 
-    private static final Log defaultLogger = LogFactory.getLog("com.wavemaker.runtime.data");
+    private static final Logger defaultLogger = LoggerFactory.getLogger("com.wavemaker.runtime.data");
 
     private LoggingUtils() {
     }
 
     /**
-     * Log error when it is impossible to roll back the current tx.
+     * Logger error when it is impossible to roll back the current tx.
      */
     public static void logCannotRollbackTx(Throwable th) {
         logCannotRollbackTx(defaultLogger, th);
     }
 
     public static void logCannotRollbackTx(String loggerName, Throwable th) {
-        logCannotRollbackTx(LogFactory.getLog(loggerName), th);
+        logCannotRollbackTx(LoggerFactory.getLogger(loggerName), th);
     }
 
-    public static void logCannotRollbackTx(Log logger, Throwable th) {
+    public static void logCannotRollbackTx(Logger logger, Throwable th) {
         logger.error(MessageResource.CANNOT_ROLLBACK_TX.getMessage(), th);
     }
 

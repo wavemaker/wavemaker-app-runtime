@@ -17,8 +17,11 @@ package com.wavemaker.runtime.javaservice;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.runtime.WMAppContext;
@@ -58,7 +61,7 @@ public class JavaServiceSuperClass {
     }
 
     private void init(int logLevel) {
-        this.logger = Logger.getLogger(this.getClass().getName());
+        this.logger = LoggerFactory.getLogger(this.getClass().getName());
 
         // Am I running within studio with a logged on user, within studio but in a non-cloud configuration, or in my
         // own context (testrun or fully deployed)?
@@ -127,7 +130,7 @@ public class JavaServiceSuperClass {
                 this.logger.warn(message, e);
                 break;
             case FATAL:
-                this.logger.fatal(message, e);
+                this.logger.error(message, e);
                 break;
         }
     }
@@ -147,7 +150,7 @@ public class JavaServiceSuperClass {
                 this.logger.warn(message);
                 break;
             case FATAL:
-                this.logger.fatal(message);
+                this.logger.error(message);
                 break;
         }
     }

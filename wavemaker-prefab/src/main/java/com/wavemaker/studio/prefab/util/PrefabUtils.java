@@ -21,7 +21,8 @@ import java.io.FileFilter;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ import com.wavemaker.studio.prefab.config.PrefabsConfig;
  */
 @Service
 public class PrefabUtils {
-    private static final Logger LOGGER = Logger.getLogger(PrefabUtils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrefabUtils.class);
 
     @Autowired
     private ServletContext servletContext;

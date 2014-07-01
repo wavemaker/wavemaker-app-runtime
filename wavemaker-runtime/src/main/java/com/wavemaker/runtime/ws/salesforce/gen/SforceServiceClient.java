@@ -15,15 +15,16 @@
  */
 package com.wavemaker.runtime.ws.salesforce.gen;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceFeature;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Sforce SOAP API
@@ -35,7 +36,7 @@ public class SforceServiceClient extends Service {
 
     private final static URL SFORCESERVICE_WSDL_LOCATION;
 
-    private final static Logger logger = Logger.getLogger(com.wavemaker.runtime.ws.salesforce.gen.SforceServiceClient.class.getName());
+    private final static Logger logger = LoggerFactory.getLogger(com.wavemaker.runtime.ws.salesforce.gen.SforceServiceClient.class.getName());
 
     static {
         URL url = null;
@@ -44,8 +45,8 @@ public class SforceServiceClient extends Service {
             baseUrl = com.wavemaker.runtime.ws.salesforce.gen.SforceServiceClient.class.getResource(".");
             url = new URL(baseUrl, "partner.wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'partner.wsdl', retrying as a local file");
-            logger.warning(e.getMessage());
+            logger.warn("Failed to create URL for the wsdl Location: 'partner.wsdl', retrying as a local file");
+            logger.warn(e.getMessage());
         }
         SFORCESERVICE_WSDL_LOCATION = url;
     }

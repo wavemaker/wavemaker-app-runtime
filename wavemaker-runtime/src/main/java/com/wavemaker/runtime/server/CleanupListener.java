@@ -24,6 +24,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import com.wavemaker.common.util.CastUtils;
 import com.wavemaker.runtime.WMAppContext;

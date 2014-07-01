@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.engine.spi.NamedQueryDefinition;
@@ -46,7 +46,7 @@ import com.wavemaker.runtime.service.PagingOptions;
  */
 public class NamedQueryTask extends BaseTask implements Task {
 
-    private final Log logger = DataServiceLoggers.taskLogger;
+    private final Logger logger = DataServiceLoggers.taskLogger;
 
     /**
      * First element in input array is the query name

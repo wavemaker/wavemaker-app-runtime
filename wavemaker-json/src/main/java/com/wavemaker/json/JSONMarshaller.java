@@ -26,7 +26,8 @@ import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -42,7 +43,7 @@ import java.util.Map.Entry;
  */
 public final class JSONMarshaller {
 
-    protected static final Logger logger = Logger.getLogger(JSONMarshaller.class);
+    protected static final Logger logger = LoggerFactory.getLogger(JSONMarshaller.class);
 
     private static final boolean DEFAULT_PRETTY_PRINT = false;
 
@@ -182,7 +183,7 @@ public final class JSONMarshaller {
         TypeState typeState = jsonState.getTypeState();
 
         doMarshal(writer, obj, obj, jsonState, sort, true, new Stack<Object>(), new Stack<String>(), rootFieldDefinition, 0, typeState, prettyPrint,
-            0, Logger.getLogger(JSONMarshaller.class));
+            0, LoggerFactory.getLogger(JSONMarshaller.class));
     }
 
     /**

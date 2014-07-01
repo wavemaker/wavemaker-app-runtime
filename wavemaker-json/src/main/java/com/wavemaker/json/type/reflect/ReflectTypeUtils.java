@@ -22,7 +22,8 @@ import com.wavemaker.json.JSON;
 import com.wavemaker.json.core.JSONUtils;
 import com.wavemaker.json.type.*;
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
 import java.beans.PropertyDescriptor;
@@ -37,7 +38,7 @@ import java.util.*;
 public class ReflectTypeUtils {
 
     /** Logger for this class and subclasses */
-    protected static final Logger logger = Logger.getLogger(ReflectTypeUtils.class);
+    protected static final Logger logger = LoggerFactory.getLogger(ReflectTypeUtils.class);
 
     /**
      * Gets a ListTypeDefinition from the given type.

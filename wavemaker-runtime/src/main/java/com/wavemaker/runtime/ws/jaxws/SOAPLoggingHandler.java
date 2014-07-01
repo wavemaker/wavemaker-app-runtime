@@ -15,17 +15,16 @@
  */
 package com.wavemaker.runtime.ws.jaxws;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.ByteArrayOutputStream;
+import java.util.Set;
 
 /**
  * This handler is used to log inbound and outbound SOAP messages.
@@ -34,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext> {
 
-    private static Log log = LogFactory.getLog(SOAPLoggingHandler.class);
+    private static Logger log = LoggerFactory.getLogger(SOAPLoggingHandler.class);
 
     @Override
     public Set<QName> getHeaders() {
@@ -73,7 +72,7 @@ public class SOAPLoggingHandler implements SOAPHandler<SOAPMessageContext> {
             log.debug(messageText + baos.toString());
             baos.close();
         } catch (Exception e) {
-            log.error(e);
+            log.error(e.getMessage(), e);
         }
     }
 }
