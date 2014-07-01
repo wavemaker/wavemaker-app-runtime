@@ -147,6 +147,10 @@ public class SecurityService {
                     realRoleName = roleName;
                 }
             }
+
+            if(realRoleName.length() > 5 && realRoleName.substring(0,5).equals("ROLE_")) {
+                realRoleName = realRoleName.substring(5, realRoleName.length());
+            }
             // make sure the role is not the maker for no roles
             if (realRoleName != null && !realRoleName.equals(this.noRolesMarkerRole)) {
                 roleNames.add(realRoleName);
