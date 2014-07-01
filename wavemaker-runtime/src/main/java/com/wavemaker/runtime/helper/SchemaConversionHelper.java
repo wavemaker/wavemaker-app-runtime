@@ -24,6 +24,7 @@ public class SchemaConversionHelper {
         JSONObject rootJsonObject = (JSONObject) xmlSerializer.read(xmlContent);
         Iterator keys = rootJsonObject.keys();
         String rootKey = (String) keys.next();
-        return (Tuple.Two<String, JSON>) Tuple.tuple(rootKey, rootJsonObject.get(rootKey));
+        JSON v2 = (JSON) rootJsonObject.get(rootKey);
+        return Tuple.tuple(rootKey, v2);
     }
 }
