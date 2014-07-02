@@ -12,4 +12,8 @@ public interface WMQueryExecutor {
 	
 	public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable);
 
+    public int executeNamedQueryForUpdate(String queryName, Map<String, Object> params);
+
+    public int executeCustomQueryForUpdate(CustomQuery customQuery);
+
 }

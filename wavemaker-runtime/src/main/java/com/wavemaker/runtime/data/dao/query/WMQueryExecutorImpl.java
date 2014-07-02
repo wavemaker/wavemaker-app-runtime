@@ -3,15 +3,9 @@ package com.wavemaker.runtime.data.dao.query;
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.CustomQueryParam;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -19,10 +13,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class WMQueryExecutorImpl implements WMQueryExecutor {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(WMQueryExecutorImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WMQueryExecutorImpl.class);
     private static final long UNKNOWN_COUNT=-1L;
 
 	private HibernateTemplate template;
@@ -69,12 +66,38 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         }
     }
 
-	protected Page<Object> executeNativeQuery(String queryString, Map<String, Object> params, Pageable pageable) {
-		Session currentSession = template.getSessionFactory().getCurrentSession();
+    @Override
+    public int executeNamedQueryForUpdate(String queryName, Map<String, Object> params) {
+        Session currentSession = template.getSessionFactory().getCurrentSession();
 
-		SQLQuery sqlQuery = currentSession.createSQLQuery(queryString);
-        QueryHelper.setResultTransformer(sqlQuery);
-		QueryHelper.configureParameters(sqlQuery, params);
+        Query namedQuery = currentSession.getNamedQuery(queryName);
+        QueryHelper.setResultTransformer(namedQuery);
+        QueryHelper.configureParameters(namedQuery, params);
+        return namedQuery.executeUpdate();
+    }
+
+    @Override
+    public int executeCustomQueryForUpdate(CustomQuery customQuery) {
+        Map<String, Object> params = new HashMap<String, Object>();
+
+        List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
+        if(customQueryParams != null && !customQueryParams.isEmpty()){
+            for (CustomQueryParam customQueryParam: customQueryParams) {
+                params.put(customQueryParam.getParamName(), customQueryParam.getParamValue());
+            }
+        }
+
+        Query query = null;
+        if(customQuery.isNativeSql()) {
+            query = createNativeQuery(customQuery.getQueryStr(), params);
+        } else {
+            query = createHQLQuery(customQuery.getQueryStr(), params);
+        }
+        return query.executeUpdate();
+    }
+
+    protected Page<Object> executeNativeQuery(String queryString, Map<String, Object> params, Pageable pageable) {
+        SQLQuery sqlQuery = createNativeQuery(queryString, params);
 
         if(pageable!=null)
         {
@@ -87,12 +110,17 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             return new PageImpl(sqlQuery.list());
 	}
 
-	protected Page<Object> executeHQLQuery(String queryString, Map<String, Object> params, Pageable pageable) {
-		Session currentSession = template.getSessionFactory().getCurrentSession();
+    private SQLQuery createNativeQuery(String queryString, Map<String, Object> params) {
+        Session currentSession = template.getSessionFactory().getCurrentSession();
 
-		Query hqlQuery = currentSession.createQuery(queryString);
-        QueryHelper.setResultTransformer(hqlQuery);
-		QueryHelper.configureParameters(hqlQuery, params);
+        SQLQuery sqlQuery = currentSession.createSQLQuery(queryString);
+        QueryHelper.setResultTransformer(sqlQuery);
+        QueryHelper.configureParameters(sqlQuery, params);
+        return sqlQuery;
+    }
+
+    protected Page<Object> executeHQLQuery(String queryString, Map<String, Object> params, Pageable pageable) {
+        Query hqlQuery = createHQLQuery(queryString, params);
 
         if(pageable!=null)
         {
@@ -104,4 +132,13 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         else
             return new PageImpl(hqlQuery.list());
 	}
+
+    private Query createHQLQuery(String queryString, Map<String, Object> params) {
+        Session currentSession = template.getSessionFactory().getCurrentSession();
+
+        Query hqlQuery = currentSession.createQuery(queryString);
+        QueryHelper.setResultTransformer(hqlQuery);
+        QueryHelper.configureParameters(hqlQuery, params);
+        return hqlQuery;
+    }
 }
