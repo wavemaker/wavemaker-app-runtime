@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.datatype.hibernate4.HibernateAnnotationIntrospector;
 
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 /**
  * Created by venuj on 16-06-2014.
@@ -15,7 +14,7 @@ public class WMHibernateAnnotationIntrospector extends HibernateAnnotationIntros
     public boolean hasIgnoreMarker(AnnotatedMember m) {
         boolean ignored = super.hasIgnoreMarker(m);
         if(!ignored) {
-            ignored = (m.hasAnnotation(OneToMany.class)||m.hasAnnotation(OneToOne.class));
+            ignored = (m.hasAnnotation(OneToMany.class));
         }
         return ignored;
     }
