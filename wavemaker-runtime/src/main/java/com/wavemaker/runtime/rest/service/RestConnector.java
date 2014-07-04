@@ -1,16 +1,24 @@
 package com.wavemaker.runtime.rest.service;
 
-import com.wavemaker.runtime.rest.model.RestRequestInfo;
-import com.wavemaker.runtime.rest.model.RestResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -18,9 +26,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.wavemaker.common.util.SSLUtils;
+import com.wavemaker.runtime.rest.model.RestRequestInfo;
+import com.wavemaker.runtime.rest.model.RestResponse;
 
 /**
  * @author Uday Shankar
@@ -38,6 +46,10 @@ public class RestConnector {
 
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
+        String endpointAddress = restRequestInfo.getEndpointAddress();
+        if(endpointAddress.startsWith("https")) {
+            httpClientBuilder.setSSLSocketFactory(new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext()));
+        }
         if(restRequestInfo.getBasicAuth()) {
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(
@@ -75,7 +87,7 @@ public class RestConnector {
         } else {
             requestEntity = new HttpEntity(headersMap);
         }
-        ResponseEntity<String> responseEntity = restTemplate.exchange(restRequestInfo.getEndpointAddress(), httpMethod, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(endpointAddress, httpMethod, requestEntity, String.class);
 
         RestResponse restResponse = new RestResponse();
         restResponse.setResponseBody(responseEntity.getBody());
