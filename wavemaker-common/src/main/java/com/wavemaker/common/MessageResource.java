@@ -246,6 +246,9 @@ public class MessageResource {
     public static final MessageResource PROJECT_USERHOMEDNE = new MessageResource("com.wavemaker.tools$Project_UserHomeDNE");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PROJECT_DIR_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools$ProjectDirDoesNotExist");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource TEMPLATE_DOES_NOT_EXIST = new MessageResource("com.wavemaker.tools$TemplateDoesNotExist");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
@@ -741,6 +744,9 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_READ_WRITE_IN_FILE = new MessageResource("com.wavemaker.tools$FailedToReadWriteInFile");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_VCS_TYPE = new MessageResource("com.wavemaker.vcs$InvalidVcsType");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
