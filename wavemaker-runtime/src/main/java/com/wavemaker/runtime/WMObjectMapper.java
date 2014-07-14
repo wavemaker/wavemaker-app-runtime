@@ -15,11 +15,33 @@
  */
 package com.wavemaker.runtime;
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+
+import org.apache.commons.io.IOUtils;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.wavemaker.runtime.data.json.WMHibernate4Module;
 
 public class WMObjectMapper extends ObjectMapper {
+
     public WMObjectMapper() {
-        configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        WMHibernate4Module hibernate4Module = new WMHibernate4Module();
+        hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+        registerModule(hibernate4Module);
+    }
+
+    public <T> T readValue(InputStream src, JavaType valueType) throws IOException {
+        if(String.class.equals(valueType.getRawClass())) {
+            StringWriter stringWriter = new StringWriter();
+            IOUtils.copy(src, stringWriter);
+            return (T) stringWriter.toString();
+        }
+        return super.readValue(src, valueType);
     }
 }
