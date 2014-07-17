@@ -25,6 +25,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.ContextStoppedEvent;
 import org.springframework.stereotype.Service;
 
 import com.wavemaker.studio.prefab.config.PrefabsConfig;
@@ -125,7 +126,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
             if (event.getSource() == context) {
                 loadPrefabs();
             }
-        } else if (event instanceof ContextClosedEvent) {
+        } else if (event instanceof ContextClosedEvent || event instanceof ContextStoppedEvent) {
             if (event.getSource() == context) {
                 publishEvent(new PrefabsUnloadedEvent(context));
             }
