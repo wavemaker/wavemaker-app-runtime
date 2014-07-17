@@ -8,7 +8,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -36,6 +38,8 @@ import com.wavemaker.runtime.rest.model.RestResponse;
 @Component
 public class RestConnector {
 
+    private final X509HostnameVerifier hostnameVerifier = new AllowAllHostnameVerifier();
+
     public RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
         HttpMethod httpMethod = HttpMethod.valueOf(restRequestInfo.getMethod());
         if(httpMethod == null) {
@@ -48,7 +52,7 @@ public class RestConnector {
 
         String endpointAddress = restRequestInfo.getEndpointAddress();
         if(endpointAddress.startsWith("https")) {
-            httpClientBuilder.setSSLSocketFactory(new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext()));
+            httpClientBuilder.setSSLSocketFactory(new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), hostnameVerifier));
         }
         if(restRequestInfo.getBasicAuth()) {
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
