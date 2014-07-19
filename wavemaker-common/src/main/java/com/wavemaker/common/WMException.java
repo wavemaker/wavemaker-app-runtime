@@ -26,6 +26,10 @@ public abstract class WMException extends Exception {
 
     private final String detailedMessage;
 
+    private MessageResource messageResource;
+
+    private Object args[];
+
     public WMException(Throwable cause) {
         this((String) null, cause);
     }
@@ -65,5 +69,13 @@ public abstract class WMException extends Exception {
 
     public String getDetailedMessage() {
         return this.detailedMessage;
+    }
+
+    public MessageResource getMessageResource() {
+        return messageResource;
+    }
+
+    public Object[] getArgs() {
+        return args;
     }
 }
