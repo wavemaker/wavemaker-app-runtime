@@ -2,6 +2,7 @@ package com.wavemaker.runtime.data.ExceptionResolver;
 
 import com.wavemaker.common.*;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
+import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -35,7 +36,10 @@ public class DataModelRestServiceExceptionResolver extends AbstractHandlerExcept
         } else if (ex instanceof DataIntegrityViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleDMExceptions((DataIntegrityViolationException) ex);
-        }else {
+        }else if (ex instanceof QueryParameterMismatchException) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return handleDMExceptions((QueryParameterMismatchException) ex);
+        } else {
             logger.error("Unknown error for url [" + request.getRequestURI() + "]", ex);
             return handleOtherExceptions(ex,response);
         }
