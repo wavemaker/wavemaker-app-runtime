@@ -29,9 +29,9 @@ import java.sql.Statement;
  *
  * @Author: Sowmya
  */
-public class CloudJeeMySqlIntegration extends LocalSessionFactoryBean {
+public class WavemakerCloudMySqlIntegration extends LocalSessionFactoryBean {
     /*
-     * The test is the default database available in CJ Mysql database which is running at 3306
+     * The test is the default database available in Cloud Mysql database which is running at 3306
      */
     private static final String SCHEMA_URL = "jdbc:mysql://localhost:3306/test";
     private String username;
@@ -40,7 +40,7 @@ public class CloudJeeMySqlIntegration extends LocalSessionFactoryBean {
     private String driverClassName;
     private String schemaName;
 
-    public CloudJeeMySqlIntegration(){
+    public WavemakerCloudMySqlIntegration(){
 
     }
 
