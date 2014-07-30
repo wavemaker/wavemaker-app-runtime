@@ -140,7 +140,7 @@ public class DataServiceConstants {
 
     public static final int DEFAULT_TENANT_ID = 999;
 
-    public static final String SESSION_FACTORY_BEAN_CLASS = "com.wavemaker.runtime.data.spring.ConfigurationAndSessionFactoryBean";
+    public static final String SESSION_FACTORY_BEAN_CLASS = "org.springframework.orm.hibernate4.LocalSessionFactoryBean";
 
     public static final String AUX_BEAN_SUFFIX = "AuxDummy";
 
