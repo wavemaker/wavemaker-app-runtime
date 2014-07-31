@@ -15,14 +15,29 @@
  */
 package com.wavemaker.common.util;
 
+import com.wavemaker.common.WMRuntimeException;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 /**
  * @author Uday Shankar
  */
 public class WMUtils {
 
+    private static final String UTF8 = "UTF-8";
+
     public static String getFileExtensionFromFileName(String fileName) {
         int indexOfDot = fileName.lastIndexOf(".");
         return (indexOfDot == -1) ? "":fileName.substring(indexOfDot + 1);
+    }
+
+    public static String decodeRequestURI(String requestURI) {
+        try {
+            return URLDecoder.decode(requestURI, UTF8);
+        } catch (UnsupportedEncodingException e) {
+            throw new WMRuntimeException("Failed to decode request URI");
+        }
     }
 
 }
