@@ -20,13 +20,13 @@
     <bean id="ldapAuthProvider" class="org.acegisecurity.providers.ldap.LdapAuthenticationProvider">
       <constructor-arg>
         <bean class="org.acegisecurity.providers.ldap.authenticator.BindAuthenticator">
-          <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
+            <constructor-arg ref="initialDirContextFactory"/>
           <property name="userDnPatterns"><list><value>cn={0},ou=people</value></list></property>
         </bean>
       </constructor-arg>
       <constructor-arg>
         <bean class="org.acegisecurity.providers.ldap.populator.DefaultLdapAuthoritiesPopulator">
-          <constructor-arg><ref local="initialDirContextFactory"/></constructor-arg>
+            <constructor-arg ref="initialDirContextFactory"/>
           <constructor-arg><value>ou=groups</value></constructor-arg>
           <property name="groupRoleAttribute"><value>ou</value></property>
           <property name="defaultRole"><value>User</value></property>
