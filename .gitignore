@@ -23,13 +23,8 @@ wavemaker-portal/src/main/webapp/lib/wm/themes/*/*.css
 wavemaker-portal/src/main/webapp/app/scripts/modules/plugins/database/styles/compiled
 
 
-wavemaker-portal/services/*/designtime/
 wavemaker-portal/src/main/webapp/WEB-INF/classes/
-wavemaker-portal/src/main/webapp/WEB-INF/project-managers.xml
-wavemaker-portal/src/main/webapp/WEB-INF/project-services.xml
 wavemaker-portal/src/main/webapp/WEB-INF/lib/
-wavemaker-portal/src/main/webapp/services/
-wavemaker-portal/src/main/webapp/types.js
 
 wavemaker-tools/src/main/webapp/
 wavemaker-common/src/main/webapp/

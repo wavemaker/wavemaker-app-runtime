@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.runtime.rest.RestConstants;
@@ -16,6 +18,7 @@ import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.api.ApiDocument;
 import com.wavemaker.runtime.rest.model.api.DataFormat;
 import com.wavemaker.runtime.rest.model.api.EndPoint;
+import com.wavemaker.runtime.rest.model.api.HTTPMethod;
 import com.wavemaker.runtime.rest.model.api.Operation;
 import com.wavemaker.runtime.rest.model.api.Parameter;
 import com.wavemaker.runtime.rest.model.api.ParameterType;
@@ -52,21 +55,23 @@ public class RestRuntimeService {
         String requestBody = null;
         if(params != null){
             for(Parameter parameter : parameters) {
+                String paramName = parameter.getName();
+                String value = params.get(paramName);
                 if(ParameterType.HEADER.equals(parameter.getParameterType())) {
-                    if(params.containsKey(parameter.getName())) {
-                        headers.put(parameter.getName(), params.get(parameter.getName()));
+                    if(params.containsKey(paramName)) {
+                        headers.put(paramName, value);
                     }
                 } else if(ParameterType.QUERY.equals(parameter.getParameterType())) {
-                    if(params.containsKey(parameter.getName())) {
-                        queryParams.put(parameter.getName(), params.get(parameter.getName()));
+                    if(params.containsKey(paramName)) {
+                        queryParams.put(paramName, value);
                     }
                 } else if(ParameterType.PATH.equals(parameter.getParameterType())) {
-                    if(params.containsKey(parameter.getName())) {
-                        pathParams.put(parameter.getName(), params.get(parameter.getName()));
+                    if(params.containsKey(paramName)) {
+                        pathParams.put(paramName, value);
                     }
                 } else if(ParameterType.BODY.equals(parameter.getParameterType())) {
-                    if(params.containsKey(parameter.getName())) {
-                        requestBody = params.get(parameter.getName());
+                    if(params.containsKey(paramName)) {
+                        requestBody = value;
                     }
                 }   else if(ParameterType.AUTH.equals(parameter.getParameterType())){
                       if(params.containsKey(RestConstants.AUTH_USER_NAME)) {
@@ -118,4 +123,15 @@ public class RestRuntimeService {
         return apiDocumentCache.get(serviceId);
     }
 
+    public void validateOperation(String serviceId, String operationId, String method) throws IOException {
+        ApiDocument apiDocument = getApiDocument(serviceId);
+        Operation operation = getOperationById(apiDocument, operationId);
+        if (operation == null) {
+            throw new WMRuntimeException("Invalid operationId [" + operationId + "]");
+        }
+        HTTPMethod httpMethod = operation.getHttpMethod();
+        if (httpMethod != null && !httpMethod.name().equalsIgnoreCase(method)) {
+            throw new WMRuntimeException("Method [" + method + "] is not allowed to execute the operation [" + operationId + "] in the service [" + serviceId + "]");
+        }
+    }
 }

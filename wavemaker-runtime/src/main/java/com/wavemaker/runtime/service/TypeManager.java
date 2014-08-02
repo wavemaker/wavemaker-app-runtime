@@ -33,7 +33,7 @@ public class TypeManager {
     /**
      * Return a list of all types (as java class names) associated with a given service object.
      * 
-     * @param service
+     * @param serviceId
      * @return
      */
     public List<String> getTypes(String serviceId) {
@@ -49,16 +49,14 @@ public class TypeManager {
      */
     public String getServiceIdForType(String type) throws TypeNotFoundException {
 
-        String foundServiceId = null;
-        entryLoop: for (Entry<String, List<String>> entry : this.types.entrySet()) {
+        for (Entry<String, List<String>> entry : this.types.entrySet()) {
             for (String serviceType : entry.getValue()) {
                 if (serviceType.equals(type)) {
-                    foundServiceId = entry.getKey();
-                    break entryLoop;
+                    return entry.getKey();
                 }
             }
         }
-        return foundServiceId;
+        return null;
     }
 
     /**
