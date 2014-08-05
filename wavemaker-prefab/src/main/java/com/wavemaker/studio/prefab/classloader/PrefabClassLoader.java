@@ -61,7 +61,7 @@ public class PrefabClassLoader
 
 
     public PrefabClassLoader(URL[] urls, String prefabName) {
-        super(urls, ClassLoader.getSystemClassLoader());
+        super(urls, Thread.currentThread().getContextClassLoader());
         setLoaderContext(prefabName);
         if (urls == null) {
             urls = new URL[0];
