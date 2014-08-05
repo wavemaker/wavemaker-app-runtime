@@ -1,8 +1,11 @@
 package com.wavemaker.runtime.data.dao;
 
-import com.wavemaker.common.util.ObjectUtils;
-import com.wavemaker.runtime.data.expression.QueryFilter;
-import com.wavemaker.studio.core.spring.schemas.security.InterceptMethods;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.sql.Date;
+import java.sql.Timestamp;
+
+import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
@@ -14,12 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import javax.annotation.PostConstruct;
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
+import com.wavemaker.runtime.data.expression.QueryFilter;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier>  {
 
