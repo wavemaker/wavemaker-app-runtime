@@ -50,7 +50,7 @@ public class GenericFieldDefinition implements FieldDefinition {
 
     private boolean allowNull;
 
-    private String subType; // salesforce
+    private String subType;
 
     private String name;
 

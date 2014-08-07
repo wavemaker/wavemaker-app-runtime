@@ -24,10 +24,6 @@ public abstract class CommonConstants {
 
     public static final String APP_PROPERTY_FILE = "app.properties";
 
-    public static final String SALESFORCE_SERVICE = "salesforceService";
-
-    public static final String SFLOGIN_SERVICE = "loginService";
-
     public static final String COMMON_LIB = "common/lib";
 
     private CommonConstants() {

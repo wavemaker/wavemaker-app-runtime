@@ -59,11 +59,11 @@ public interface FieldDefinition {
     public boolean isAllowNull();
 
     /**
-     * Sub type for Salesforce.
+     * Sub type
      * 
      * @return Sub type.
      */
-    public String getSubType(); // salesforce
+    public String getSubType();
 
     /**
      * Get the list of operations this field is required for. See the

@@ -244,13 +244,6 @@ public class DataServiceDefinition extends AbstractDeprecatedServiceDefinition i
         return DataServiceUtils.getTypes(entities, helperTypes, this.elementTypeFactory);
     }
 
-    @Override
-    public List<ElementType> getTypes(String username, String password) {
-        Collection<String> entities = this.metaData.getEntityClassNames();
-        Collection<String> helperTypes = this.metaData.getHelperClassNames();
-        return DataServiceUtils.getTypes(entities, helperTypes, this.elementTypeFactory);
-    }
-
     public String outputTypeToString(String operationName) {
         ElementType et = getOutputType(operationName);
         return et.getJavaType();

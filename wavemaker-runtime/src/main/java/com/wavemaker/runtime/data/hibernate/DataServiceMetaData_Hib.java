@@ -60,7 +60,7 @@ import com.wavemaker.runtime.data.util.DataServiceUtils;
  * 
  * @author Simon Toens
  */
-public class DataServiceMetaData_Hib implements DataServiceMetaData { // salesforce
+public class DataServiceMetaData_Hib implements DataServiceMetaData {
 
     private final Configuration cfg;
 
@@ -136,10 +136,6 @@ public class DataServiceMetaData_Hib implements DataServiceMetaData { // salesfo
 
         this.operationManager = new DataServiceOperationManager(fac, useIndividualCRUDOperations);
     }
-
-    @Override
-    public void init() {
-    } // salesforce
 
     @Override
     public void dispose() {

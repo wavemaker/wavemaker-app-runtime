@@ -53,7 +53,7 @@ public class ElementType implements Cloneable {
 
     private boolean supportsQuickData;
 
-    private String subType; // salesforce
+    private String subType;
 
     private List<OperationEnumeration> require = new ArrayList<OperationEnumeration>();
 
@@ -340,7 +340,7 @@ public class ElementType implements Cloneable {
         ret.setRequire(getRequire());
         ret.setName(getName());
         ret.setAllowNull(isAllowNull());
-        ret.setSubType(getSubType()); // salesforce
+        ret.setSubType(getSubType());
 
         return ret;
     }

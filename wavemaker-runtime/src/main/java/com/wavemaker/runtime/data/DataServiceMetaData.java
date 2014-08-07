@@ -32,8 +32,6 @@ public interface DataServiceMetaData {
 
     public void init(Session session, boolean useIndividualCRUDOperations);
 
-    public void init();
-
     public void dispose();
 
     public String getName();

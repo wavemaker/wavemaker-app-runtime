@@ -398,7 +398,7 @@ public class SpringDataServiceManager implements DataServiceManager {
 
     private static DataServiceMetaData initMetaData(String configurationName, Configuration cfg, HibernateTemplate htemp,
                                                     final boolean useIndividualCRUDOperations, final Map<String, String> properties) {
-        final DataServiceMetaData rtn = new DataServiceMetaData_Hib(configurationName, cfg, properties); // salesforce
+        final DataServiceMetaData rtn = new DataServiceMetaData_Hib(configurationName, cfg, properties);
 
         htemp.execute(new HibernateCallback() {
 
@@ -413,7 +413,7 @@ public class SpringDataServiceManager implements DataServiceManager {
     }
 
     @Override
-    public Object invoke(Task task, Map<String, Class<?>> types, boolean named, Object... input) { // salesforce
+    public Object invoke(Task task, Map<String, Class<?>> types, boolean named, Object... input) {
         return null;
     }
 

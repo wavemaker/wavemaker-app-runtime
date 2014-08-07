@@ -96,27 +96,6 @@ public abstract class AbstractDeprecatedServiceDefinition implements DeprecatedS
     }
 
     @Override
-    public List<TypeDefinition> getLocalTypes(String username, String password) { // salesforce
-
-        List<ElementType> types = getTypes(username, password);
-        List<TypeDefinition> ret = new ArrayList<TypeDefinition>(types.size());
-
-        for (ElementType type : types) {
-            FieldDefinition fd = type.toFieldDefinition();
-            if (fd.getTypeDefinition() != null) {
-                ret.add(fd.getTypeDefinition());
-            }
-        }
-
-        return ret;
-    }
-
-    @Override
-    public List<ElementType> getTypes(String username, String password) {
-        return null;
-    }
-
-    @Override
     public String getPartnerName() {
         return null;
     }

@@ -61,7 +61,7 @@ public interface DataServiceManager {
      * @param input Generic input the task may use
      * @return Return value, may be null
      */
-    Object invoke(Task task, Map<String, Class<?>> types, boolean named, Object... input); // salesforce
+    Object invoke(Task task, Map<String, Class<?>> types, boolean named, Object... input);
 
     /**
      * @return The Hibernate Session.
