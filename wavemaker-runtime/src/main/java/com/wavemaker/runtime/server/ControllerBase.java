@@ -28,8 +28,6 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.NDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -56,8 +54,6 @@ import com.wavemaker.runtime.service.ParsedServiceArguments;
 import com.wavemaker.runtime.service.ServiceManager;
 import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.TypedServiceReturn;
-import com.wavemaker.runtime.service.events.ServiceEventNotifier;
-import com.wavemaker.runtime.service.events.ServletEventNotifier;
 import com.wavemaker.runtime.service.response.RootServiceResponse;
 
 /**
@@ -71,10 +67,6 @@ public abstract class ControllerBase extends AbstractController {
     protected ServiceResponse serviceResponse;
 
     private ServiceManager serviceManager;
-
-    private ServiceEventNotifier serviceEventNotifier;
-
-    private ServletEventNotifier servletEventNotifier;
 
     private InternalRuntime internalRuntime;
 
@@ -103,14 +95,10 @@ public abstract class ControllerBase extends AbstractController {
 
             // default responses to the DEFAULT_ENCODING
             response.setCharacterEncoding(ServerConstants.DEFAULT_ENCODING);
-
-            getServletEventNotifier().executeStartRequest();
             initializeRuntime(request, response);
 
             // execute the request
             ret = executeRequest(request, response);
-
-            getServletEventNotifier().executeEndRequest();
         } catch (Throwable t) {
             this.logger.error(t.getMessage(), t);
             String message = t.getMessage();
@@ -226,7 +214,7 @@ public abstract class ControllerBase extends AbstractController {
 
         getInternalRuntime().setDeserializedProperties(args.getGettersCalled());
 
-        return ServerUtils.invokeMethodWithEvents(getServiceEventNotifier(), sw, method, args, jsonState, false, serviceResponse);
+        return ServerUtils.invokeMethodWithEvents(sw, method, args, jsonState, serviceResponse);
     }
 
     @SuppressWarnings("deprecation")
@@ -261,22 +249,6 @@ public abstract class ControllerBase extends AbstractController {
 
     public ServiceManager getServiceManager() {
         return this.serviceManager;
-    }
-
-    public ServletEventNotifier getServletEventNotifier() {
-        return this.servletEventNotifier;
-    }
-
-    public void setServletEventNotifier(ServletEventNotifier servletEventNotifier) {
-        this.servletEventNotifier = servletEventNotifier;
-    }
-
-    public ServiceEventNotifier getServiceEventNotifier() {
-        return this.serviceEventNotifier;
-    }
-
-    public void setServiceEventNotifier(ServiceEventNotifier serviceEventNotifier) {
-        this.serviceEventNotifier = serviceEventNotifier;
     }
 
     public InternalRuntime getInternalRuntime() {

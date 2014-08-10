@@ -17,7 +17,6 @@ package com.wavemaker.runtime.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -256,11 +255,6 @@ public class DataServiceDefinition extends AbstractDeprecatedServiceDefinition i
             rtn.append("list: " + et.isList());
         }
         return rtn.toString();
-    }
-
-    @Override
-    public List<String> getEventNotifiers() {
-        return Collections.emptyList();
     }
 
     @Override

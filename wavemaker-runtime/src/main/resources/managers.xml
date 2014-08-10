@@ -5,13 +5,9 @@ Base manager bean definitions.  These are shared between test and runtime
 and every other time.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:aop="http://www.springframework.org/schema/aop"
-        xmlns:context="http://www.springframework.org/schema/context"
-        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                http://www.springframework.org/schema/beans/spring-beans.xsd
-                http://www.springframework.org/schema/aop
-                http://www.springframework.org/schema/aop/spring-aop.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- ServiceManager bean.  This is autowired to have all the ServiceWires in the
         current configuration. -->
@@ -22,18 +18,6 @@ and every other time.
     <bean id="serviceManagerBeanPostProcessor" class="com.wavemaker.runtime.service.ServiceManagerBeanPostProcessor" scope="singleton">
         <property name="serviceManager">
             <ref bean="serviceManager" />
-        </property>
-    </bean>
-
-    <!-- EventManager bean.  This is autowired to have all the events in the
-        current configuration. -->
-    <bean id="eventManager"
-            class="com.wavemaker.runtime.service.events.EventManager"
-            scope="singleton">
-    </bean>
-    <bean class="com.wavemaker.runtime.service.events.EventManagerBeanPostProcessor">
-        <property name="eventManager">
-            <ref bean="eventManager" />
         </property>
     </bean>
 
@@ -50,23 +34,6 @@ and every other time.
         </property>
     </bean>
 
-
-    <!-- built-in event notifiers -->
-    <bean id="servletEventNotifier"
-            class="com.wavemaker.runtime.service.events.ServletEventNotifier"
-            scope="singleton">
-        <property name="eventManager">
-            <ref bean="eventManager" />
-        </property>
-    </bean>
-    <bean id="serviceEventNotifier"
-            class="com.wavemaker.runtime.service.events.ServiceEventNotifier"
-            scope="singleton">
-        <property name="eventManager">
-            <ref bean="eventManager" />
-        </property>
-    </bean>
-    
     <!-- module manager -->
     <bean id="moduleManager"
             class="com.wavemaker.runtime.module.ModuleManager"

@@ -37,8 +37,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.NDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -51,14 +49,12 @@ import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.ClassLoaderUtils;
 import com.wavemaker.common.util.ClassUtils;
 import com.wavemaker.common.util.StringUtils;
-import com.wavemaker.common.util.SystemUtils;
 import com.wavemaker.json.JSONState;
 import com.wavemaker.runtime.service.ParsedServiceArguments;
 import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.TypedServiceReturn;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.annotations.HideFromClient;
-import com.wavemaker.runtime.service.events.ServiceEventNotifier;
 
 /**
  * Utility methods for the server components.
@@ -263,13 +259,8 @@ public class ServerUtils {
         return params;
     }
 
-    public static TypedServiceReturn invokeMethodWithEvents(ServiceEventNotifier serviceEventNotifier, ServiceWire sw, String method,
-        ParsedServiceArguments args, JSONState jsonState, boolean throwExceptions) throws WMException {
-        return invokeMethodWithEvents(serviceEventNotifier, sw, method, args, jsonState, throwExceptions, null);
-    }
-
-    public static TypedServiceReturn invokeMethodWithEvents(ServiceEventNotifier serviceEventNotifier, ServiceWire sw, String method,
-        ParsedServiceArguments args, JSONState jsonState, boolean throwExceptions, ServiceResponse serviceResponse) throws WMException {
+    public static TypedServiceReturn invokeMethodWithEvents(ServiceWire sw, String method,
+                                                            ParsedServiceArguments args, JSONState jsonState, ServiceResponse serviceResponse) throws WMException {
 
         TypedServiceReturn ret = null;
 
@@ -293,20 +284,8 @@ public class ServerUtils {
                 logMessage.append("]");
                 logger.debug(logMessage.toString());
             }
-
-            args.setArguments(serviceEventNotifier.executePreOperation(sw, method, args.getArguments()));
             try {
                 ret = sw.getServiceType().invokeMethod(sw, method, args, jsonState, serviceResponse);
-            } catch (Throwable t) {
-                if (throwExceptions) {
-                    throw new WMRuntimeException(t);
-                }
-
-                exception = SystemUtils.unwrapInternalException(t);
-            }
-
-            try {
-                ret = serviceEventNotifier.executePostOperation(sw, method, ret, exception);
             } catch (Throwable t) {
                 if (t instanceof WMException) {
                     throw (WMException) t;

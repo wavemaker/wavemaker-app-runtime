@@ -37,12 +37,6 @@
         <property name="serviceManager">
             <ref bean="serviceManager"/>
         </property>
-        <property name="servletEventNotifier">
-            <ref bean="servletEventNotifier"/>
-        </property>
-        <property name="serviceEventNotifier">
-            <ref bean="serviceEventNotifier"/>
-        </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>
         </property>
@@ -62,12 +56,6 @@
         <property name="serviceManager">
             <ref bean="serviceManager"/>
         </property>
-        <property name="servletEventNotifier">
-            <ref bean="servletEventNotifier"/>
-        </property>
-        <property name="serviceEventNotifier">
-            <ref bean="serviceEventNotifier"/>
-        </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>
         </property>
@@ -84,12 +72,6 @@
         <property name="serviceManager">
             <ref bean="serviceManager"/>
         </property>
-        <property name="servletEventNotifier">
-            <ref bean="servletEventNotifier"/>
-        </property>
-        <property name="serviceEventNotifier">
-            <ref bean="serviceEventNotifier"/>
-        </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>
         </property>
@@ -105,12 +87,6 @@
           class="com.wavemaker.runtime.server.FileDownloadController">
         <property name="serviceManager">
             <ref bean="serviceManager"/>
-        </property>
-        <property name="servletEventNotifier">
-            <ref bean="servletEventNotifier"/>
-        </property>
-        <property name="serviceEventNotifier">
-            <ref bean="serviceEventNotifier"/>
         </property>
         <property name="runtimeAccess">
             <ref bean="runtimeAccess"/>

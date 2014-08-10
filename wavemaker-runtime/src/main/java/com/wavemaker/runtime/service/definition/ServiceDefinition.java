@@ -20,7 +20,6 @@ import java.util.List;
 import com.wavemaker.json.type.TypeDefinition;
 import com.wavemaker.runtime.pws.IPwsServiceModifier;
 import com.wavemaker.runtime.service.ServiceType;
-import com.wavemaker.runtime.service.events.EventWire;
 
 /**
  * Represents a service definition.
@@ -76,19 +75,6 @@ public interface ServiceDefinition {
      * @return The service's entry point runtime configuration as a classpath resource.
      */
     public String getRuntimeConfiguration();
-
-    /**
-     * Return a list of all event notifier classes.
-     * 
-     * The return values of this are now ignored; configure {@link EventWire} elements in the bean files for events.
-     * 
-     * @deprecated This has been deprecated in favor of {@link EventWire} entries places into the Spring file. This will
-     *             be removed in the next release.
-     * 
-     * @return
-     */
-    @Deprecated
-    public List<String> getEventNotifiers();
 
     /**
      * Indicates if this service supports LiveDataService access, by implementing
