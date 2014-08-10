@@ -8,12 +8,14 @@ definition of configuration; this is shared between runtime and test-time.
 <beans>
 
     <bean id="messageSource"
-        class="org.springframework.context.support.ResourceBundleMessageSource">
-    <property name="basenames">
-      <list>
-        <value>wm_resource</value>
-      </list>
-    </property>
-  </bean>    
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>wm_resource</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="wmEventPublisher" class="com.wavemaker.common.event.WMEventPublisher"/>
 
 </beans>
