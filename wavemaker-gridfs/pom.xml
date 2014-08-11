@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
     <parent>
-		<groupId>com.wavemaker</groupId>
-		<artifactId>wavemaker-studio</artifactId>
-		<version>7.0.0-BETA-4</version>
-	</parent>
+        <groupId>com.wavemaker</groupId>
+        <artifactId>wavemaker-studio</artifactId>
+        <version>7.0.0-BETA-4</version>
+    </parent>
 
     <artifactId>wavemaker-gridfs</artifactId>
-	<packaging>jar</packaging>
+    <packaging>jar</packaging>
 
-	<properties>
-		<main.basedir>${basedir}/..</main.basedir>
-	</properties>
+    <properties>
+        <main.basedir>${basedir}/..</main.basedir>
+    </properties>
 
-	<dependencies>
+    <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wavemaker-tools</artifactId>
+            <artifactId>wavemaker-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -32,5 +32,5 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
         </dependency>
-	</dependencies>
+    </dependencies>
 </project>
