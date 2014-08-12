@@ -15,10 +15,12 @@
  */
 package com.wavemaker.common.util;
 
-import com.wavemaker.common.WMRuntimeException;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+
+import org.springframework.http.MediaType;
+
+import com.wavemaker.common.WMRuntimeException;
 
 /**
  * @author Uday Shankar
@@ -38,6 +40,10 @@ public class WMUtils {
         } catch (UnsupportedEncodingException e) {
             throw new WMRuntimeException("Failed to decode request URI");
         }
+    }
+
+    public static boolean isXmlMediaType(MediaType mediaType) {
+        return MediaType.APPLICATION_XML.equals(mediaType) || MediaType.TEXT_XML.equals(mediaType) || MediaType.APPLICATION_ATOM_XML.equals(mediaType);
     }
 
 }

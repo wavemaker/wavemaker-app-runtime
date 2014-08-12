@@ -38,19 +38,8 @@ public class RestRuntimeController {
     public RestResponse executeRestCall(@PathVariable("serviceId") String serviceId, @PathVariable("operationId") String operationId,
                                         @RequestBody Map<String, String> params) throws IOException {
         //restRuntimeService.validateOperation(serviceId, operationId, httpServletRequest.getMethod());
-        RestRequestInfo restRequestInfo = restRuntimeService.getRestRequestInfo(serviceId, operationId, params);
-        RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
-        String responseBody = restResponse.getResponseBody();
-        if(restResponse.getContentType() != null) {
-            MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
-            if (MediaType.APPLICATION_XML.getSubtype().equals(responseContentType.getSubtype())) {
-                Tuple.Two<String, JSON> rootKeyVsJsonObject = SchemaConversionHelper.convertXmlToJson(responseBody);
-                restResponse.setConvertedResponse(rootKeyVsJsonObject.v2.toString());
-            }
-        }
-        if(restResponse.getConvertedResponse() != null) {
-            restResponse.setResponseBody(null);
-        }
-        return restResponse;
+        return restRuntimeService.executeRestCall(serviceId, operationId, params);
     }
+
+
 }
