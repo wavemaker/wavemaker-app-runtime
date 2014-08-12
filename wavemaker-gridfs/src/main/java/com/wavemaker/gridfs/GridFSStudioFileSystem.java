@@ -120,20 +120,6 @@ public class GridFSStudioFileSystem extends AbstractStudioFileSystem {
     }
 
     @Override
-    public Resource getDemoDir() {
-        try {
-            return getStudioWebAppRoot().createRelative("../Samples");
-        } catch (IOException ex) {
-            throw new WMRuntimeException(ex);
-        }
-    }
-
-    @Override
-    public Folder getDemoFolder() {
-        return getStudioWebAppRootFolder().getParent().getFolder("Samples");
-    }
-
-    @Override
     public boolean isDirectory(Resource resource) {
         if (!(resource instanceof GFSResource)) {
             return this.delegate.isDirectory(resource);
