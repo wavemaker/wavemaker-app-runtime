@@ -21,9 +21,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.tools.io.Folder;
-import com.wavemaker.tools.io.Resource;
-import com.wavemaker.tools.project.ResourceAdapter;
+import com.wavemaker.platform.io.Folder;
+import com.wavemaker.platform.io.Resource;
+import com.wavemaker.platform.project.ResourceAdapter;
 
 /**
  * Exposes resources stored in a Mongo GridFS database as Spring Resources.

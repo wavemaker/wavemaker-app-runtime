@@ -16,9 +16,9 @@
 package com.wavemaker.gridfs;
 
 import com.mongodb.gridfs.GridFS;
-import com.wavemaker.tools.io.File;
-import com.wavemaker.tools.io.store.FileStore;
-import com.wavemaker.tools.io.store.StoredFile;
+import com.wavemaker.platform.io.File;
+import com.wavemaker.platform.io.store.FileStore;
+import com.wavemaker.platform.io.store.StoredFile;
 
 /**
  * A {@link File} implementation backed by a mongo {@link GridFS}.

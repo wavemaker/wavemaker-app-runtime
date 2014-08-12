@@ -19,10 +19,10 @@ import org.springframework.util.Assert;
 
 import com.mongodb.DB;
 import com.mongodb.gridfs.GridFS;
-import com.wavemaker.tools.io.Folder;
-import com.wavemaker.tools.io.JailedResourcePath;
-import com.wavemaker.tools.io.store.FolderStore;
-import com.wavemaker.tools.io.store.StoredFolder;
+import com.wavemaker.platform.io.Folder;
+import com.wavemaker.platform.io.JailedResourcePath;
+import com.wavemaker.platform.io.store.FolderStore;
+import com.wavemaker.platform.io.store.StoredFolder;
 
 /**
  * A {@link Folder} implementation backed by a mongo {@link GridFS}.

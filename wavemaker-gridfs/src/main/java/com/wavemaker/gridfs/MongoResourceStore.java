@@ -30,16 +30,16 @@ import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
-import com.wavemaker.tools.io.File;
-import com.wavemaker.tools.io.Folder;
-import com.wavemaker.tools.io.JailedResourcePath;
-import com.wavemaker.tools.io.Resource;
-import com.wavemaker.tools.io.ResourcePath;
-import com.wavemaker.tools.io.exception.ResourceException;
-import com.wavemaker.tools.io.exception.ResourceTypeMismatchException;
-import com.wavemaker.tools.io.store.FileStore;
-import com.wavemaker.tools.io.store.FolderStore;
-import com.wavemaker.tools.io.store.ResourceStore;
+import com.wavemaker.platform.io.File;
+import com.wavemaker.platform.io.Folder;
+import com.wavemaker.platform.io.JailedResourcePath;
+import com.wavemaker.platform.io.Resource;
+import com.wavemaker.platform.io.ResourcePath;
+import com.wavemaker.platform.io.exception.ResourceException;
+import com.wavemaker.platform.io.exception.ResourceTypeMismatchException;
+import com.wavemaker.platform.io.store.FileStore;
+import com.wavemaker.platform.io.store.FolderStore;
+import com.wavemaker.platform.io.store.ResourceStore;
 
 /**
  * {@link ResourceStore}s for {@link MongoFile} and {@link MongoFolder}.
