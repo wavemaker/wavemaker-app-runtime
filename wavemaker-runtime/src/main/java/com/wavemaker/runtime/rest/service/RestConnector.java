@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.rest.service;
 
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class RestConnector {
 
     public RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
         HttpMethod httpMethod = HttpMethod.valueOf(restRequestInfo.getMethod());
-        if(httpMethod == null) {
+        if (httpMethod == null) {
             throw new IllegalArgumentException("Invalid method value [" + restRequestInfo.getMethod() + "]");
         }
         RestTemplate restTemplate = new RestTemplate();
@@ -50,15 +51,15 @@ public class RestConnector {
 
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
-        String endpointAddress = restRequestInfo.getEndpointAddress();
-        if(endpointAddress.startsWith("https")) {
+        String endpointAddress = URLDecoder.decode(restRequestInfo.getEndpointAddress());
+        if (endpointAddress.startsWith("https")) {
             httpClientBuilder.setSSLSocketFactory(new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), hostnameVerifier));
         }
-        if(restRequestInfo.getBasicAuth()) {
+        if (restRequestInfo.getBasicAuth()) {
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
             credsProvider.setCredentials(
-                    AuthScope.ANY,
-                    new UsernamePasswordCredentials(restRequestInfo.getUserName(), restRequestInfo.getPassword()));
+                                                AuthScope.ANY,
+                                                new UsernamePasswordCredentials(restRequestInfo.getUserName(), restRequestInfo.getPassword()));
 
             httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
         }
@@ -76,7 +77,7 @@ public class RestConnector {
         }
 
         String contentType = restRequestInfo.getContentType();
-        if(!StringUtils.isBlank(contentType)) {
+        if (!StringUtils.isBlank(contentType)) {
             headersMap.add("Content-Type", contentType);
         }
 
@@ -85,8 +86,8 @@ public class RestConnector {
 
         HttpEntity requestEntity;
 
-        if(HttpMethod.GET != httpMethod) {
-            String requestBody = (restRequestInfo.getRequestBody() == null)?"":restRequestInfo.getRequestBody();
+        if (HttpMethod.GET != httpMethod) {
+            String requestBody = (restRequestInfo.getRequestBody() == null) ? "" : restRequestInfo.getRequestBody();
             requestEntity = new HttpEntity(requestBody, headersMap);
         } else {
             requestEntity = new HttpEntity(headersMap);
@@ -98,13 +99,13 @@ public class RestConnector {
         restResponse.setStatusCode(responseEntity.getStatusCode().value());
         Map<String, List<String>> responseHeaders = new HashMap<String, List<String>>();
         HttpHeaders httpHeaders = responseEntity.getHeaders();
-        for(String responseHeaderKey : httpHeaders.keySet()) {
+        for (String responseHeaderKey : httpHeaders.keySet()) {
             responseHeaders.put(responseHeaderKey, httpHeaders.get(responseHeaderKey));
         }
         MediaType mediaType = responseEntity.getHeaders().getContentType();
-        if(mediaType != null) {
+        if (mediaType != null) {
             String outputContentType = mediaType.toString();
-            if(outputContentType.contains(";")) {
+            if (outputContentType.contains(";")) {
                 outputContentType = outputContentType.substring(0, outputContentType.indexOf(";"));
             }
             restResponse.setContentType(outputContentType);
