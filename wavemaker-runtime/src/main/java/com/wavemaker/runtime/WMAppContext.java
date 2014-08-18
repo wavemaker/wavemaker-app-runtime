@@ -26,9 +26,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletContextResource;
@@ -39,7 +39,7 @@ import com.wavemaker.runtime.data.util.DataServiceConstants;
 
 /**
  * This singleton class is to store any properties in the scope of the application context.
- * 
+ *
  * @author Seung Lee
  * @author Jeremy Grelle
  */
@@ -97,7 +97,7 @@ public class WMAppContext {
             Resource appPropsResource = null;
             try {
                 appPropsResource = new ServletContextResource(this.context, "/WEB-INF/"
-                        + CommonConstants.APP_PROPERTY_FILE);
+                                                                                    + CommonConstants.APP_PROPERTY_FILE);
             } catch (Exception e) {
                 logger.warn("Cannot load app properties resource [" + CommonConstants.APP_PROPERTY_FILE + "]", e);
                 return;
@@ -122,7 +122,7 @@ public class WMAppContext {
             this.tenantFieldName = props.getProperty(DataServiceConstants.TENANT_FIELD_PROPERTY_NAME);
             this.tenantColumnName = props.getProperty(DataServiceConstants.TENANT_COLUMN_PROPERTY_NAME);
             this.defaultTenantID = Integer.parseInt(props
-                    .getProperty(DataServiceConstants.DEFAULT_TENANT_ID_PROPERTY_NAME));
+                                                            .getProperty(DataServiceConstants.DEFAULT_TENANT_ID_PROPERTY_NAME));
         }
     }
 
@@ -200,13 +200,11 @@ public class WMAppContext {
     }
 
     public <T> T getSpringBean(String beanId) {
-        //TODO use ApplicationContext instead of WebApplicationContext
         WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(context);
         return (T) applicationContext.getBean(beanId);
     }
 
     public <T> T getSpringBean(Class<T> c) {
-        //TODO use ApplicationContext instead of WebApplicationContext
         WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(context);
         return applicationContext.getBean(c);
     }
@@ -216,7 +214,7 @@ public class WMAppContext {
     }
 
     public void init(HttpServletRequest httpServletRequest) {
-        if(!initialized) {
+        if (!initialized) {
             applicationHostUrl = httpServletRequest.getServerName();
             applicationHostPort = httpServletRequest.getServerPort();
             secured = httpServletRequest.isSecure();
