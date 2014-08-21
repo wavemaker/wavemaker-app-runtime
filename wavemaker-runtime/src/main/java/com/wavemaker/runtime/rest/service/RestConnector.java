@@ -1,27 +1,18 @@
 package com.wavemaker.runtime.rest.service;
 
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.wavemaker.common.util.SSLUtils;
+import com.wavemaker.runtime.rest.model.RestRequestInfo;
+import com.wavemaker.runtime.rest.model.RestResponse;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.BasicScheme;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -29,9 +20,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import com.wavemaker.common.util.SSLUtils;
-import com.wavemaker.runtime.rest.model.RestRequestInfo;
-import com.wavemaker.runtime.rest.model.RestResponse;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Uday Shankar
@@ -55,14 +47,6 @@ public class RestConnector {
         if (endpointAddress.startsWith("https")) {
             httpClientBuilder.setSSLSocketFactory(new SSLConnectionSocketFactory(SSLUtils.getAllTrustedCertificateSSLContext(), hostnameVerifier));
         }
-        if (restRequestInfo.getBasicAuth()) {
-            CredentialsProvider credsProvider = new BasicCredentialsProvider();
-            credsProvider.setCredentials(
-                                                AuthScope.ANY,
-                                                new UsernamePasswordCredentials(restRequestInfo.getUserName(), restRequestInfo.getPassword()));
-
-            httpClientBuilder.setDefaultCredentialsProvider(credsProvider);
-        }
 
         CloseableHttpClient httpClient = httpClientBuilder.build();
         HttpComponentsClientHttpRequestFactory commonsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -79,6 +63,12 @@ public class RestConnector {
         String contentType = restRequestInfo.getContentType();
         if (!StringUtils.isBlank(contentType)) {
             headersMap.add("Content-Type", contentType);
+        }
+
+        if (restRequestInfo.getBasicAuth()) {
+            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(restRequestInfo.getUserName(), restRequestInfo.getPassword());
+            String authenticate = BasicScheme.authenticate(credentials, "UTF-8");
+            headersMap.add("Authorization", authenticate);
         }
 
         restTemplate.setRequestFactory(commonsClientHttpRequestFactory);
