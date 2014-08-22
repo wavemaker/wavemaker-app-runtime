@@ -747,6 +747,9 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource INVALID_VCS_TYPE = new MessageResource("com.wavemaker.vcs$InvalidVcsType");
+	
+	@ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource MERGE_CONFLICT_DURING_PUSH = new MessageResource("com.wavemaker.vcs$MergeConflictDuringPush");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
