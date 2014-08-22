@@ -39,6 +39,8 @@ import com.wavemaker.runtime.WMAppContext;
  */
 public class EnhancedJdbcDaoImpl extends JdbcDaoImpl {
 
+	private static final String LOGGED_IN_USERNAME = ":LOGGED_IN_USERNAME";
+
 	@Override
 	protected void initDao() {
 		String qryStr = getUsersByUsernameQuery();
@@ -53,6 +55,12 @@ public class EnhancedJdbcDaoImpl extends JdbcDaoImpl {
 
 		
 		this.setUsersByUsernameQuery(qryStr);
+
+		String authoritiesByUsernameQuery = getAuthoritiesByUsernameQuery();
+		if(authoritiesByUsernameQuery != null && authoritiesByUsernameQuery.contains(LOGGED_IN_USERNAME)) {
+		    authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(LOGGED_IN_USERNAME, "?");
+		}
+		this.setAuthoritiesByUsernameQuery(authoritiesByUsernameQuery);
 	}
 
 	private String insertTenantIdField(String str, String colName) {
