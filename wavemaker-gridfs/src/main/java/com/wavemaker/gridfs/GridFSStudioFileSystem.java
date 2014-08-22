@@ -83,18 +83,18 @@ public class GridFSStudioFileSystem extends AbstractStudioFileSystem {
     }
     
     @Override
-    public Folder getTemplatesFolder() {
-        return this.rootFolder.getFolder(AbstractStudioFileSystem.TEMPLATES_DIR).jail();
+    public Folder getTemplatesFolder(String groupId) {
+        return this.rootFolder.getFolder(groupId).getFolder(AbstractStudioFileSystem.TEMPLATES_DIR).jail();
     }
 
     @Override
-    public Folder getPrefabsFolder() {
-        return this.rootFolder.getFolder(AbstractStudioFileSystem.PREFABS_DIR).jail();
+    public Folder getPrefabsFolder(String groupId) {
+        return this.rootFolder.getFolder(groupId).getFolder(AbstractStudioFileSystem.PREFABS_DIR).jail();
     }
 
     @Override
-    public Folder getThemesFolder() {
-        return this.rootFolder.getFolder(AbstractStudioFileSystem.THEMES_DIR).jail();
+    public Folder getThemesFolder(String groupId) {
+        return this.rootFolder.getFolder(groupId).getFolder(AbstractStudioFileSystem.THEMES_DIR).jail();
     }
 
     @Override
