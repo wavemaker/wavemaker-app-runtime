@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.Tuple;
 import com.wavemaker.common.util.WMUtils;
+import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.helper.SchemaConversionHelper;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
@@ -60,9 +61,6 @@ public class RestRuntimeService {
         RestRequestInfo restRequestInfo = new RestRequestInfo();
         StringBuilder endpointAddressStringBuilder = new StringBuilder(apiDocument.getBaseURL() + operation.getRelativePath());
         restRequestInfo.setMethod(operation.getHttpMethod().toString());
-        restRequestInfo.setBasicAuth(operation.isBasicAuth());
-        restRequestInfo.setUserName(operation.getUserName());
-        restRequestInfo.setPassword(operation.getPassword());
         List<DataFormat> consumes = operation.getConsumes();
         Assert.isTrue(consumes.size() <= 1);
         if(!consumes.isEmpty()) {
@@ -94,12 +92,13 @@ public class RestRuntimeService {
                     if(params.containsKey(paramName)) {
                         requestBody = value;
                     }
-                }   else if(ParameterType.AUTH.equals(parameter.getParameterType())){
-                      if(params.containsKey(RestConstants.AUTH_USER_NAME)) {
-                          restRequestInfo.setUserName(params.get(RestConstants.AUTH_USER_NAME));
-                        } else if (params.containsKey(RestConstants.AUTH_PASSWORD)){
-                          restRequestInfo.setPassword(params.get(RestConstants.AUTH_PASSWORD));
-                      }
+                } else if (ParameterType.AUTH.equals(parameter.getParameterType())) {
+                    restRequestInfo.setBasicAuth(true);
+                    if (RestConstants.AUTH_USER_NAME.equals(paramName)) {
+                        restRequestInfo.setUserName(params.get(RestConstants.AUTH_USER_NAME));
+                    } else if (RestConstants.AUTH_PASSWORD.equals(paramName)) {
+                        restRequestInfo.setPassword(params.get(RestConstants.AUTH_PASSWORD));
+                    }
                 }
             }
 
@@ -138,7 +137,7 @@ public class RestRuntimeService {
     private ApiDocument getApiDocument(String serviceId) throws IOException {
         if (!apiDocumentCache.containsKey(serviceId)) {
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
-            ApiDocument apiDocument = new ObjectMapper().readValue(stream, ApiDocument.class);
+            ApiDocument apiDocument = new WMObjectMapper().readValue(stream, ApiDocument.class);
             apiDocumentCache.put(serviceId, apiDocument);
         }
         return apiDocumentCache.get(serviceId);

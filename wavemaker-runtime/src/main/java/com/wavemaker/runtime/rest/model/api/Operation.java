@@ -42,9 +42,6 @@ public class Operation {
     private String returnType;
     private boolean isReturnTypeArray = false;
     private MethodPolicy policy;
-    private boolean basicAuth;
-    private String userName;
-    private String password;
 
 	/**
      * @return the API Method identifier.
@@ -223,30 +220,6 @@ public class Operation {
 	public void setPolicy(MethodPolicy policy) {
 		this.policy = policy;
 	}
-
-    public boolean isBasicAuth() {
-        return basicAuth;
-    }
-
-    public void setBasicAuth(boolean basicAuth) {
-        this.basicAuth = basicAuth;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     @Override
 	public String toString() {
