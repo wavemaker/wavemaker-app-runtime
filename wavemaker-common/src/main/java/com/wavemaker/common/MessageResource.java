@@ -751,6 +751,12 @@ public class MessageResource {
 	@ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource MERGE_CONFLICT_DURING_PUSH = new MessageResource("com.wavemaker.vcs$MergeConflictDuringPush");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource INCORRECT_CREDENTIAL = new MessageResource("com.wavemaker.vcs$IncorrectCredential");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource INCORRECT_DETAIL = new MessageResource("com.wavemaker.vcs$IncorrectDetail");
+
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
     static {
