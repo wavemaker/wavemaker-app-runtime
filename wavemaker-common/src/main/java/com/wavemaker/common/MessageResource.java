@@ -752,10 +752,22 @@ public class MessageResource {
     public static final MessageResource MERGE_CONFLICT_DURING_PUSH = new MessageResource("com.wavemaker.vcs$MergeConflictDuringPush");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource MERGE_CONFLICT_DURING_PULL = new MessageResource("com.wavemaker.vcs$MergeConflictDuringPull");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource INCORRECT_CREDENTIAL = new MessageResource("com.wavemaker.vcs$IncorrectCredential");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource INCORRECT_DETAIL = new MessageResource("com.wavemaker.vcs$IncorrectDetail");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
+    public static final MessageResource VALID_WAVEMAKER_PROJECT = new MessageResource("com.wavemaker.vcs$InvalidProject");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
+    public static final MessageResource INVALID_URL = new MessageResource("com.wavemaker.vcs$InvalidUrl");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
+    public static final MessageResource PROJECT_EXISTS = new MessageResource("com.wavemaker.vcs$ProjectExists");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
