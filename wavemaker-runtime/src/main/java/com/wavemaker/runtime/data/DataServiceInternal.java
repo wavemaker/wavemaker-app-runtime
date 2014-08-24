@@ -35,8 +35,6 @@ public interface DataServiceInternal {
         }
     };
 
-    String getDataPackage();
-
     DataServiceOperation getOperation(String operationName);
 
     void setElementTypeFactory(ElementTypeFactory elementTypeFactory);
