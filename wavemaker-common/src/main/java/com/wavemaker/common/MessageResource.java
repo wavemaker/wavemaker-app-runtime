@@ -475,6 +475,180 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource PUBLISHED_DATA_MODEL_DNE = new MessageResource("com.wavemaker.platform.data$PublishedDataModelDNE");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource NO_DATAMODEL_CHANGES = new MessageResource("com.wavemaker.platform.data$NoDataModelChanges");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_PREPARING_CON_URL = new MessageResource("com.wavemaker.platform.data$FailureInPreparingConUrl");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource INVALID_CONNECTION_PROPERTIES = new MessageResource("com.wavemaker.platform.data$InvalidConnectionProperties");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DATAMODEL_REVERT_FAILURE = new MessageResource("com.wavemaker.platform.data$DataModelRevertFailure");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DATAMODEL_REVERT_NOTPOSSIBLE = new MessageResource("com.wavemaker.platform.data$DataModelRevertNotPossible");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource QUERY_GEN_FAILURE = new MessageResource("com.wavemaker.platform.data$QueryGenFailure");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_QUERY_BUILDER = new MessageResource("com.wavemaker.platform.data$FailureInQueryBuilder");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource DATAMODEL_FILE_DOES_NOT_EXIST = new MessageResource("com.wavemaker.platform.data$DataModelFileDoesNotExist");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_DATAMODEL_DRAFT_DEL = new MessageResource("com.wavemaker.platform.data$FailureDataModelDraftDel");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_FETCHING_PUBLISHED_DM = new MessageResource("com.wavemaker.platform.data$FailureInFetchingPublishedDM");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_FETCHING_DRAFT_DM = new MessageResource("com.wavemaker.platform.data$FailureInFetchingDraftDM");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_FETCHING_QUERY_FILE = new MessageResource("com.wavemaker.platform.data$FailureInFetchingQueryFile");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_DATABASE_MIGRATION = new MessageResource("com.wavemaker.platform.data$FailureInDatabaseMigration");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_SAVING_DRAFT_DM = new MessageResource("com.wavemaker.platform.data$FailureInSavingDraftDM");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_SAVING_QUERY_MODEL = new MessageResource("com.wavemaker.platform.data$FailureInSavingQueryModel");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_SAVING_PUBLISHED_DM = new MessageResource("com.wavemaker.platform.data$FailureInSavingPublishedDM");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DM_ALREADY_EXISTS = new MessageResource("com.wavemaker.platform.data$DMAlreadyExists");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DM_IMPORT_FAILURE = new MessageResource("com.wavemaker.platform.data$DMImportFailure");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource DM_NOT_EXITS = new MessageResource("com.wavemaker.platform.data$DMNotExists");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_REIMPORT = new MessageResource("com.wavemaker.platform.data$FailedToReimport");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_ESTABLISH_CON = new MessageResource("com.wavemaker.platform.data$FailedToEstablishCon");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_EXE_SCRIPT = new MessageResource("com.wavemaker.platform.data$FailedToExeScript");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_DATAMODEL_EXPORT = new MessageResource("com.wavemaker.platform.data$FailureInDataModelExport");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_GETDDL = new MessageResource("com.wavemaker.platform.data$FailedToGetDDL");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_READING_CON_PROPS = new MessageResource("com.wavemaker.platform.data$FailureInReadingConProps");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_WRITE_CON_PROPS = new MessageResource("com.wavemaker.platform.data$FailedToWriteConProps");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource SERVICE_ID_BLANK = new MessageResource("com.wavemaker.platform.data$ServiceIdBlank");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource SRC_FLD_NOT_FOUND = new MessageResource("com.wavemaker.platform.data$SrcFldNotFound");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource SPECIFY_REVENG_FILE = new MessageResource("com.wavemaker.platform.data$SpecifyRevengFile");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource TABLE_DOES_NOT_EXIST = new MessageResource("com.wavemaker.platform.data$TableDoesNotExit");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource TABLE_CANNOT_BE_DEL = new MessageResource("com.wavemaker.platform.data$TableCanbeDel");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource TABLE_ALREADY_EXISTS = new MessageResource("com.wavemaker.platform.data$TableAlreadyExists");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource COL_ALREADY_EXIST = new MessageResource("com.wavemaker.platform.data$ColAlreadyExists");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FOREIGN_KEY_NOT_POSSIBLE = new MessageResource("com.wavemaker.platform.data$ForeingKeyNotPossible");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PK_COL_CANNTBE_DEL = new MessageResource("com.wavemaker.platform.data$PkColCannbeDel");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource DEL_REL_TO_DEL_COLUMN = new MessageResource("com.wavemaker.platform.data$DelRelToDelColumn");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource SQL_MISMATCH = new MessageResource("com.wavemaker.platform.data$SqlMismatch");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource USER_CANTMARK_FOREIGNKEY = new MessageResource("com.wavemaker.platform.data$UserCanntMarkForeignKey");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PK_WITH_REL_EXISTS = new MessageResource("com.wavemaker.platform.data$PkWithRelExists");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PK_HAS_ALREADY_RELATION = new MessageResource("com.wavemaker.platform.data$PKHasAlreadyRelation");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PRIMARY_REL_CANNTBE_DEL = new MessageResource("com.wavemaker.platform.data$PrimaryRelCanntbeDel");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource TARGET_REL_NOTFOUND = new MessageResource("com.wavemaker.platform.data$TargetRelNotFound");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource NON_PRIMARY_REL_CANNTBE_UPDATED = new MessageResource("com.wavemaker.platform.data$NonPrimaryRelCanntBeUpdated");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_UPDATE_REL = new MessageResource("com.wavemaker.platform.data$FailedToUpdateRel");
+
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource RELATION_ALREADY_EXISTS = new MessageResource("com.wavemaker.platform.data$RelationAlreadyExists");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource RELATED_TYPE_DOESNT_EXIST = new MessageResource("com.wavemaker.platform.data$RelatedTypeDoesNtExist");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource ATLEAST_ONE_RELCOL_EXISTS = new MessageResource("com.wavemaker.platform.data$AtleastOneRelColExists");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource RELATED_COL_ALREADY_FK = new MessageResource("com.wavemaker.platform.data$RelatedColAlreadyFk");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource RELATION_WITH_COMPKEY_NOTPOSSIBLE = new MessageResource("com.wavemaker.platform.data$RelationWithComkeyNotpossible");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource RELATEDCOLS_MISMATCH_SIZE = new MessageResource("com.wavemaker.platform.data$RelatedColsMismatchSize");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource RELATEDCOL_HAS_FOREIGNKEY = new MessageResource("com.wavemaker.platform.data$RelatedcolHasForeingkey");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PK_COLS_CNT_NOT_MATCHED = new MessageResource("com.wavemaker.platform.data$PkColsCntNotMatched");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource REL_COLS_CNT_MISMATCH = new MessageResource("com.wavemaker.platform.data$RelColsCntMismatch");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource ONETOZERO_REL_NOTPOSSIBLE = new MessageResource("com.wavemaker.platform.data$OneToZeroRelNotPossibe");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PK_COL_BLOB_NOT_SUPPORTED = new MessageResource("com.wavemaker.platform.data$PkColBlobNotSupported");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PKCOL_LENG_GRT_ZERO = new MessageResource("com.wavemaker.platform.data$PkColLengGrtZero");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PKCOL_LENGT_LESS_TWOFIVEFIVE = new MessageResource("com.wavemaker.platform.data$PkColLengtLessTwoFiveFive");
+
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource COL_LEN_GRT_ZERO = new MessageResource("com.wavemaker.platform.data$ColLenGrtZero");
+
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource JSON_FAILED_PARSING = new MessageResource("com.wavemaker.json$FailedParsing");
 
@@ -768,6 +942,7 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
     public static final MessageResource PROJECT_EXISTS = new MessageResource("com.wavemaker.vcs$ProjectExists");
+
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
