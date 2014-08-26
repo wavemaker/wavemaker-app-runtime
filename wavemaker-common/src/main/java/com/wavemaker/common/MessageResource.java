@@ -942,6 +942,9 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource INVALID_REMOTE = new MessageResource("com.wavemaker.vcs$InvalidRemote");
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
+    public static final MessageResource INVALID_LOGIN = new MessageResource("com.wavemaker.vcs$InvalidLogin");
+
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
