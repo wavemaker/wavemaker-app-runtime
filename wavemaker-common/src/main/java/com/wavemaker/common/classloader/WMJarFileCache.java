@@ -28,7 +28,7 @@ import java.util.jar.JarFile;
 /**
  * @author Dilip Kumar
  */
-class PrefabJarFileCache
+class WMJarFileCache
 {
     private Map<URL, JarFile> fileCache = Collections.synchronizedMap(new HashMap<URL, JarFile>());
     private Map<JarFile, URL> urlCache = Collections.synchronizedMap(new HashMap<JarFile, URL>());

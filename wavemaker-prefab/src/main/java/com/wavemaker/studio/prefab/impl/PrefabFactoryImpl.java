@@ -21,7 +21,7 @@ import java.net.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.wavemaker.common.classloader.PrefabClassLoader;
+import com.wavemaker.common.classloader.WMUrlClassLoader;
 import com.wavemaker.studio.prefab.core.Prefab;
 import com.wavemaker.studio.prefab.core.PrefabFactory;
 import com.wavemaker.studio.prefab.util.PrefabUtils;
@@ -46,7 +46,7 @@ public class PrefabFactoryImpl implements PrefabFactory {
     public Prefab newPrefab(final File prefabDir)
             throws Exception {
         String prefabName = prefabDir.getName();
-        PrefabClassLoader classLoader = new PrefabClassLoader(getPrefabFiles(prefabDir), prefabName);
+        WMUrlClassLoader classLoader = new WMUrlClassLoader(getPrefabFiles(prefabDir), prefabName);
         return new Prefab(prefabName, classLoader);
     }
 }

@@ -54,9 +54,9 @@ import com.wavemaker.common.classloader.jar.ManifestClasspathHelper;
  * @author Dilip Kumar
  */
 
-public class PrefabClassLoader
+public class WMUrlClassLoader
         extends URLClassLoader {
-    private static final Logger logger = LoggerFactory.getLogger(PrefabClassLoader.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(WMUrlClassLoader.class.getName());
     private ResourceFinder mFinder = null;
     private URL[] defaultURLs = null;
     private static final String pathSep = File.pathSeparator;
@@ -72,9 +72,9 @@ public class PrefabClassLoader
     private static final boolean USE_CONNECTION_FOR_STREAM = false;
 
 
-    public PrefabClassLoader(URL[] urls, String prefabName) {
+    public WMUrlClassLoader(URL[] urls, String loaderContext) {
         super(urls, Thread.currentThread().getContextClassLoader());
-        setLoaderContext(prefabName);
+        setLoaderContext(loaderContext);
         if (urls == null) {
             urls = new URL[0];
         }
@@ -83,8 +83,8 @@ public class PrefabClassLoader
         //Child classLoaders are saved with the parent
         ClassLoader parentCL = getParent();
         while (parentCL != null) {
-            if (parentCL instanceof PrefabClassLoader) {
-                ((PrefabClassLoader) parentCL).addChild(this);
+            if (parentCL instanceof WMUrlClassLoader) {
+                ((WMUrlClassLoader) parentCL).addChild(this);
                 break;
             }
 
@@ -141,9 +141,9 @@ public class PrefabClassLoader
 
     public void disassociateFromHierarchy() {
         ClassLoader parent = getParent();
-        if (parent instanceof PrefabClassLoader) {
-            synchronized (((PrefabClassLoader) parent).children) {
-                Iterator itr = ((PrefabClassLoader) parent).children.listIterator();
+        if (parent instanceof WMUrlClassLoader) {
+            synchronized (((WMUrlClassLoader) parent).children) {
+                Iterator itr = ((WMUrlClassLoader) parent).children.listIterator();
                 while (itr.hasNext()) {
                     WeakReference weak = (WeakReference) itr.next();
                     ClassLoader loader = (ClassLoader) weak.get();
@@ -168,7 +168,7 @@ public class PrefabClassLoader
 
     public String getClassPath() {
         URL[] mainURLs = getMainClassPathRecursively();
-        URL[] commonURLs = PrefabClassLoader.commonAppJarsFinder.getURLs();
+        URL[] commonURLs = WMUrlClassLoader.commonAppJarsFinder.getURLs();
         URL[] temp = new URL[mainURLs.length + commonURLs.length];
 
         System.arraycopy(mainURLs, 0, temp, 0, mainURLs.length);
@@ -205,7 +205,7 @@ public class PrefabClassLoader
     public String getOnlyMyClassPath() {
 
         URL[] mainURLs = mFinder.getURLs();
-        URL[] commonURLs = PrefabClassLoader.commonAppJarsFinder.getURLs();
+        URL[] commonURLs = WMUrlClassLoader.commonAppJarsFinder.getURLs();
         URL[] temp = new URL[mainURLs.length + commonURLs.length];
 
         System.arraycopy(mainURLs, 0, temp, 0, mainURLs.length);
@@ -235,8 +235,8 @@ public class PrefabClassLoader
     protected URL[] getMainClassPathRecursively() {
         URL[] myURLs = mFinder.getURLs();
         ClassLoader parentCl = this.getParent();
-        if (parentCl != null && parentCl instanceof PrefabClassLoader) {
-            URL[] parentList = ((PrefabClassLoader) parentCl).getMainClassPathRecursively();
+        if (parentCl != null && parentCl instanceof WMUrlClassLoader) {
+            URL[] parentList = ((WMUrlClassLoader) parentCl).getMainClassPathRecursively();
             for (int i = 0; i < parentList.length; i++) {
                 boolean contains = false;
                 URL url = parentList[i];
@@ -314,7 +314,7 @@ public class PrefabClassLoader
      * @deprecated use <code>getCommonApplicationJarsURLs</code>
      */
     public static List getlistOfCommonApplicationJars() {
-        URL[] urls = PrefabClassLoader.getCommonApplicationJarsURLs();
+        URL[] urls = WMUrlClassLoader.getCommonApplicationJarsURLs();
         String[] list = new String[urls.length];
         for (int i = 0; i < urls.length; i++) {
             list[i] = urls[i].getPath();
@@ -425,7 +425,7 @@ public class PrefabClassLoader
         }
     }
 
-    private void printDebugInfoForHierarchy(PrefabClassLoader initializer, String name) {
+    private void printDebugInfoForHierarchy(WMUrlClassLoader initializer, String name) {
         logger.debug("DUMMY", "Debug begin for class loader hierarchy for class [" + name + "]");
         logger.debug("DUMMY", "\nInitiating Classloader: " + initializer + "\n\nClass [" + name +
                 "] not found in initiating Classloader :" + "\n[" + initializer.getLoaderContext() + "]"
@@ -445,7 +445,7 @@ public class PrefabClassLoader
         logger.debug("DUMMY", "Debug end for class loader hierarchy for class [" + name + "]");
     }
 
-    private boolean lookInChildren(PrefabClassLoader initLoader, PrefabClassLoader loaderNode, String name,
+    private boolean lookInChildren(WMUrlClassLoader initLoader, WMUrlClassLoader loaderNode, String name,
                                    List searchList) {
         boolean foundInChild = false;
         searchList.add(loaderNode);
@@ -454,7 +454,7 @@ public class PrefabClassLoader
              *  Avoiding searching the initiating loader twice (already searched in findClass())
              */
             if (loaderNode != initLoader) {
-                PrefabClassLoader pcl = ((PrefabClassLoader) loaderNode);
+                WMUrlClassLoader pcl = ((WMUrlClassLoader) loaderNode);
                 String resName = name.replace('.', '/') + ".class";
                 String[] paths = pcl.getPathsForResource(resName);
                 if (paths != null) {
@@ -473,7 +473,7 @@ public class PrefabClassLoader
             logger.debug("ERROR:", e);
         }
 
-        List childList = (((PrefabClassLoader) loaderNode).children);
+        List childList = (((WMUrlClassLoader) loaderNode).children);
         if (childList == null || childList.size() == 0) {
             return foundInChild;
         }
@@ -487,7 +487,7 @@ public class PrefabClassLoader
                     itr.remove();
                 } else {
                     foundInChild |=
-                            lookInChildren(initLoader, (PrefabClassLoader) classLoaderInstance, name, searchList);
+                            lookInChildren(initLoader, (WMUrlClassLoader) classLoaderInstance, name, searchList);
                 }
             }
         }
@@ -577,7 +577,7 @@ public class PrefabClassLoader
     }
 
     public boolean equals(Object obj) {
-        if (obj instanceof PrefabClassLoader) {
+        if (obj instanceof WMUrlClassLoader) {
             return (obj.hashCode() == this.hashCode());
         }
         return false;
@@ -661,7 +661,7 @@ public class PrefabClassLoader
 
         private final Map<BufferedZipInputStream, String> openStreams = new WeakHashMap<BufferedZipInputStream,
                 String>();
-        private PrefabJarFileCache jarCache;
+        private WMJarFileCache jarCache;
 
         protected final boolean trackOpenStreams;
         protected final boolean useURLConnectionForStream;
@@ -675,7 +675,7 @@ public class PrefabClassLoader
                 addURL(path);
             }
             if (trackOpenStreams) {
-                jarCache = new PrefabJarFileCache();
+                jarCache = new WMJarFileCache();
             }
         }
 
@@ -1061,7 +1061,7 @@ public class PrefabClassLoader
                 if (!"jar".equals(url.getProtocol())) {
                     throw new IllegalArgumentException(url.getProtocol());
                 }
-                return new PrefabJarURLConnection(url, jarCache);
+                return new WMJarURLConnection(url, jarCache);
             }
         }
 

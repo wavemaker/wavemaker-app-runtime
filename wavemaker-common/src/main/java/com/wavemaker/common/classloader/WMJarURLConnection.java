@@ -30,7 +30,7 @@ import java.util.jar.JarFile;
 /**
  * @author Dilip Kumar
  */
-public class PrefabJarURLConnection
+public class WMJarURLConnection
         extends java.net.JarURLConnection
 {
     private URLConnection jarFileURLConnection;
@@ -38,9 +38,9 @@ public class PrefabJarURLConnection
     private JarEntry jarEntry;
     private JarFile jarFile;
     private String contentType;
-    private final PrefabJarFileCache jarCache;
+    private final WMJarFileCache jarCache;
 
-    public PrefabJarURLConnection(URL url, PrefabJarFileCache jarCache)
+    public WMJarURLConnection(URL url, WMJarFileCache jarCache)
             throws IOException
     {
         super(url);

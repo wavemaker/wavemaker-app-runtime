@@ -28,7 +28,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 
-import com.wavemaker.common.classloader.PrefabClassLoader;
+import com.wavemaker.common.classloader.WMUrlClassLoader;
 import com.wavemaker.studio.prefab.context.PrefabWebApplicationContext;
 import com.wavemaker.studio.prefab.core.Prefab;
 import com.wavemaker.studio.prefab.core.PrefabInstaller;
@@ -150,7 +150,7 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
         if (prefabManager != null) {
             // closing class loader
             for (Prefab prefab : prefabManager.getPrefabs()) {
-                ((PrefabClassLoader) prefab.getClassLoader()).close();
+                ((WMUrlClassLoader) prefab.getClassLoader()).close();
                 prefab.setClassLoader(null);
             }
             prefabManager.deleteAllPrefabs();
