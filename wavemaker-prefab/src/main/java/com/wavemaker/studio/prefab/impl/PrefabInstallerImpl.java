@@ -28,7 +28,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 
-import com.wavemaker.studio.prefab.classloader.PrefabClassLoader;
+import com.wavemaker.common.classloader.PrefabClassLoader;
 import com.wavemaker.studio.prefab.context.PrefabWebApplicationContext;
 import com.wavemaker.studio.prefab.core.Prefab;
 import com.wavemaker.studio.prefab.core.PrefabInstaller;

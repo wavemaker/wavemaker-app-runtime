@@ -21,7 +21,7 @@ import java.net.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.wavemaker.studio.prefab.classloader.PrefabClassLoader;
+import com.wavemaker.common.classloader.PrefabClassLoader;
 import com.wavemaker.studio.prefab.core.Prefab;
 import com.wavemaker.studio.prefab.core.PrefabFactory;
 import com.wavemaker.studio.prefab.util.PrefabUtils;

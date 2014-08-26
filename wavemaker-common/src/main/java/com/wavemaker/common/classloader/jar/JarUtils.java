@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.studio.prefab.classloader.jar;
+package com.wavemaker.common.classloader.jar;
 
 /**
  *  Utility file for Archiving
@@ -21,8 +21,12 @@ package com.wavemaker.studio.prefab.classloader.jar;
  * @author Dilip Kumar
  */
 
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Hashtable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
