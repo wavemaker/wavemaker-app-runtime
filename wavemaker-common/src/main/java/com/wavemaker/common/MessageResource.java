@@ -482,9 +482,6 @@ public class MessageResource {
     public static final MessageResource FAILURE_IN_PREPARING_CON_URL = new MessageResource("com.wavemaker.platform.data$FailureInPreparingConUrl");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource INVALID_CONNECTION_PROPERTIES = new MessageResource("com.wavemaker.platform.data$InvalidConnectionProperties");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource DATAMODEL_REVERT_FAILURE = new MessageResource("com.wavemaker.platform.data$DataModelRevertFailure");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
