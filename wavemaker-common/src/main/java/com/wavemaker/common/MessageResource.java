@@ -940,6 +940,8 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
     public static final MessageResource PROJECT_EXISTS = new MessageResource("com.wavemaker.vcs$ProjectExists");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource INVALID_REMOTE = new MessageResource("com.wavemaker.vcs$InvalidRemote");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 
