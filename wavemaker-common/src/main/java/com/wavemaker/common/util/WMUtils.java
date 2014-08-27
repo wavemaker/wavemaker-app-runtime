@@ -46,4 +46,8 @@ public class WMUtils {
         return MediaType.APPLICATION_XML.equals(mediaType) || MediaType.TEXT_XML.equals(mediaType) || MediaType.APPLICATION_ATOM_XML.equals(mediaType);
     }
 
+    public static boolean isJsonMediaType(MediaType mediaType) {
+        return MediaType.APPLICATION_JSON.equals(mediaType);
+    }
+
 }

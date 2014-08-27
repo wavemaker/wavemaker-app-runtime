@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.Tuple;
 import com.wavemaker.common.util.WMUtils;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.helper.SchemaConversionHelper;
@@ -26,7 +26,6 @@ import com.wavemaker.runtime.rest.model.api.HTTPMethod;
 import com.wavemaker.runtime.rest.model.api.Operation;
 import com.wavemaker.runtime.rest.model.api.Parameter;
 import com.wavemaker.runtime.rest.model.api.ParameterType;
-import net.sf.json.JSON;
 
 /**
  * @author Uday Shankar
@@ -35,6 +34,8 @@ public class RestRuntimeService {
 
     private Map<String, ApiDocument> apiDocumentCache = new HashMap<String, ApiDocument>();
 
+    private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
+
     public RestResponse executeRestCall(String serviceId, String operationId, Map<String, String> params) throws IOException {
         RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationId, params);
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
@@ -42,8 +43,13 @@ public class RestRuntimeService {
         if(restResponse.getContentType() != null) {
             MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
             if (WMUtils.isXmlMediaType(responseContentType)) {
-                Tuple.Two<String, JSON> rootKeyVsJsonObject = SchemaConversionHelper.convertXmlToJson(responseBody);
-                restResponse.setConvertedResponse(rootKeyVsJsonObject.v2.toString());
+                restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
+            } else if(!WMUtils.isJsonMediaType(responseContentType)) {
+                try {//trying if the content is of xml type
+                    restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
+                } catch (Exception e) {
+                    logger.debug("Unable to read the response as xml for the media type [" + responseContentType + "] and convert to json",e);
+                }
             }
         }
         if(restResponse.getConvertedResponse() != null) {
