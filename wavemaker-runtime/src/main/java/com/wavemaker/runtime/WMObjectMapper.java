@@ -29,7 +29,9 @@ import com.wavemaker.runtime.data.json.WMHibernate4Module;
 
 public class WMObjectMapper extends ObjectMapper {
 
-    public WMObjectMapper() {
+    private static WMObjectMapper instance = new WMObjectMapper();
+
+    private WMObjectMapper() {
         configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         WMHibernate4Module hibernate4Module = new WMHibernate4Module();
         hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
@@ -43,5 +45,9 @@ public class WMObjectMapper extends ObjectMapper {
             return (T) stringWriter.toString();
         }
         return super.readValue(src, valueType);
+    }
+
+    public static WMObjectMapper getInstance() {
+        return instance;
     }
 }

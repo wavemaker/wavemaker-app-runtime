@@ -943,7 +943,11 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource INVALID_REMOTE = new MessageResource("com.wavemaker.vcs$InvalidRemote");
 
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource UNEXPECTED_EDN_RESPONSE = new MessageResource("com.wavemaker.saas.unexpectedEDNResponse");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource UNAUTHORIZED_TO_EDN = new MessageResource("com.wavemaker.platform.unAuthorizedToEDN");
 
     private static final Map<MessageResource, ResourceConstraint> annotations;
 

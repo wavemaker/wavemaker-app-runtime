@@ -143,7 +143,7 @@ public class RestRuntimeService {
     private ApiDocument getApiDocument(String serviceId) throws IOException {
         if (!apiDocumentCache.containsKey(serviceId)) {
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
-            ApiDocument apiDocument = new WMObjectMapper().readValue(stream, ApiDocument.class);
+            ApiDocument apiDocument = WMObjectMapper.getInstance().readValue(stream, ApiDocument.class);
             apiDocumentCache.put(serviceId, apiDocument);
         }
         return apiDocumentCache.get(serviceId);
