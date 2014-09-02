@@ -865,15 +865,6 @@ public class MessageResource {
     public static final MessageResource DATABASE_OPERATION_FAILED = new MessageResource("com.wavemaker.runtime.data$DBOperationFailedException");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource APPLICATION_FAILED_TO_START = new MessageResource("com.wavemaker.saas.applicationFailedToStart");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource FAILED_TO_ACTIVATE_USER_CONTAINER = new MessageResource("com.wavemaker.saas.failedToActivateUserContainer");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource FAILED_TO_LOGIN = new MessageResource("com.wavemaker.saas.failedToLogin");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FIELD_SHOULD_NOT_BE_EMPTY = new MessageResource("com.wavemaker.fieldShouldNotBeEmpty");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
@@ -888,15 +879,11 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource UNEXPECTED_WAVEMAKER_CLOUD_RESPONSE = new MessageResource("com.wavemaker.platform.unexpectedWavemakerCloudResponse");
 
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource SAAS_CLIENT_APPLICATION_STARTUP_TIMED_OUT = new MessageResource("com.wavemaker.saas.saasclientApplicationStartupTimedOut");
-
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_CREATE_PREFAB_FILES = new MessageResource("com.wavemaker.platform.failedToCreatePrefabFiles");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_DELETE_PREFAB_DUE_TO_DEPENDENCY = new MessageResource("com.wavemaker.platform.failedToDeletePrefabDueToDependency");
-
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_REGISTER_PREFAB_FOR_PROJECT = new MessageResource("com.wavemaker.platform.failedToRegisterPrefabForProject");
@@ -910,62 +897,25 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource MAX_APPLICATIONS_EXCEEDED = new MessageResource("com.wavemaker.core.MaxApplicationsExceeded");
 
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource REMOTE_CLIENT_SERVER_IS_NOT_RUNNING = new MessageResource("com.wavemaker.saas.remoteClientServerIsNotRunning");
-
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_READ_WRITE_IN_FILE = new MessageResource("com.wavemaker.platform$FailedToReadWriteInFile");
 
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource INVALID_VCS_TYPE = new MessageResource("com.wavemaker.vcs$InvalidVcsType");
-	
-	@ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource MERGE_CONFLICT_DURING_PUSH = new MessageResource("com.wavemaker.vcs$MergeConflictDuringPush");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource MERGE_CONFLICT_DURING_PULL = new MessageResource("com.wavemaker.vcs$MergeConflictDuringPull");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource INCORRECT_CREDENTIAL = new MessageResource("com.wavemaker.vcs$IncorrectCredential");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource INCORRECT_DETAIL = new MessageResource("com.wavemaker.vcs$IncorrectDetail");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
-    public static final MessageResource VALID_WAVEMAKER_PROJECT = new MessageResource("com.wavemaker.vcs$InvalidProject");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
-    public static final MessageResource INVALID_URL = new MessageResource("com.wavemaker.vcs$InvalidUrl");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = true)
-    public static final MessageResource PROJECT_EXISTS = new MessageResource("com.wavemaker.vcs$ProjectExists");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource INVALID_REMOTE = new MessageResource("com.wavemaker.vcs$InvalidRemote");
-
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource UNEXPECTED_EDN_RESPONSE = new MessageResource("com.wavemaker.saas.unexpectedEDNResponse");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource UNAUTHORIZED_TO_EDN = new MessageResource("com.wavemaker.platform.unAuthorizedToEDN");
-
-    private static final Map<MessageResource, ResourceConstraint> annotations;
+    private static final Map<MessageResource, ResourceConstraint> annotations = new HashMap<MessageResource, ResourceConstraint>();
 
     static {
+        List<Field> fields = ClassUtils.getPublicFields(MessageResource.class, MessageResource.class);
+        populateAnnotationsMap(fields);
 
-        Map<MessageResource, ResourceConstraint> m = new HashMap<MessageResource, ResourceConstraint>();
+    }
 
+    protected static void populateAnnotationsMap(List<Field> fields) {
         try {
-            List<Field> fields = ClassUtils.getPublicFields(MessageResource.class, MessageResource.class);
             for (Field f : fields) {
-                m.put((MessageResource) f.get(null), f.getAnnotation(ResourceConstraint.class));
+                annotations.put((MessageResource) f.get(null), f.getAnnotation(ResourceConstraint.class));
             }
         } catch (IllegalAccessException ex) {
             throw new AssertionError(ex);
         }
-
-        annotations = Collections.unmodifiableMap(m);
-
     }
 
     private static final String DETAIL_KEY = "_detail";
@@ -974,7 +924,7 @@ public class MessageResource {
 
     private final String key;
 
-    private MessageResource(String key) {
+    protected MessageResource(String key) {
         if (key == null) {
             throw new IllegalArgumentException("key cannot be null");
         }
