@@ -40,7 +40,7 @@ public class ResourceManager {
 
     private ResourceManager() {
         this.messageSource = new ReloadableResourceBundleMessageSource();
-        ((ReloadableResourceBundleMessageSource) this.messageSource).setBasename("wm_resource");
+        ((ReloadableResourceBundleMessageSource) this.messageSource).setBasenames("wm_resource");
     }
 
     public String getMessage(String key) {
