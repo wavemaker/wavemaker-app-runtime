@@ -16,10 +16,11 @@
 package com.wavemaker.common;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.wavemaker.common.util.ClassUtils;
 
@@ -932,7 +933,11 @@ public class MessageResource {
     }
 
     public Integer getId() {
-        return Integer.parseInt(MessageResource.getMessage(this.key + MessageResource.ID_KEY, 0, (Object[]) null));
+        String message = MessageResource.getMessage(this.key + MessageResource.ID_KEY, 0, (Object[]) null);
+        if(StringUtils.isBlank(message )) {
+            return 0;
+        }
+        return Integer.parseInt(message);
     }
 
     public String getMessage() {
