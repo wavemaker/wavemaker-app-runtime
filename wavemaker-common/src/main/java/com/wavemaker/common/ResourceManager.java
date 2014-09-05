@@ -38,9 +38,9 @@ public class ResourceManager {
         return resourceManager;
     }
 
-    private ResourceManager() {
+    protected ResourceManager() {
         this.messageSource = new ReloadableResourceBundleMessageSource();
-        ((ReloadableResourceBundleMessageSource) this.messageSource).setBasenames("wm_resource");
+        ((ReloadableResourceBundleMessageSource) this.messageSource).setBasenames("wm_resource", "wm_saas_resource");
     }
 
     public String getMessage(String key) {

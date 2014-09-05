@@ -972,7 +972,7 @@ public class MessageResource {
         return annotations.get(this).hasDetailMsg();
     }
 
-    private static String getMessage(String key, int numArgsRequired, Object... args) {
+    protected static String getMessage(String key, int numArgsRequired, Object... args) {
         if (numArgsRequired > 0) {
             if (args == null || args.length != numArgsRequired) {
                 throw new IllegalArgumentException(key + ": " + "args don't match.  msg requires: " + numArgsRequired + " " + "passed in: "
