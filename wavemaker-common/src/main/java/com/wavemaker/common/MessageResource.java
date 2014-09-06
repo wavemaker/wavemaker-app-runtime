@@ -838,15 +838,6 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource USER_DOES_NOT_EXIST_WITH_ID = new MessageResource("com.wavemaker.userDoesNotExistWithId");
 
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource USER_ALREADY_ADDED_FOR_THE_PROJECT = new MessageResource("com.wavemaker.userAlreadyAddedForTheProject");
-
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource USER_NOT_PRESENT_IN_PROJECT_FOR_REMOVAL = new MessageResource("com.wavemaker.userNotPresentInProjectForRemoval");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource CANNOT_REMOVE_OWNER_FROM_PROJECT_USERS = new MessageResource("com.wavemaker.cannotRemoveOwnerFromProjectUsers");
-
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource DATABASE_CONNECTION_EXCEPTION = new MessageResource("com.wavemaker.runtime.data$DBConnectionException");
 
