@@ -75,12 +75,6 @@ public abstract class ControllerBase extends AbstractController {
     @Override
     public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) {
 
-        if (request == null) {
-            throw new WMRuntimeException(MessageResource.SERVER_NOREQUEST);
-        } else if (response == null) {
-            throw new WMRuntimeException(MessageResource.SERVER_NORESPONSE);
-        }
-
         ModelAndView ret;
         try {
             this.runtimeAccess.setStartTime(System.currentTimeMillis());

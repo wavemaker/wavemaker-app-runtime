@@ -15,18 +15,29 @@
  */
 package com.wavemaker.json.type.reflect;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import org.springframework.util.ClassUtils;
+
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.SpringUtils;
 import com.wavemaker.common.util.Tuple;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.JSONMarshaller_Objects.ClassWithEnum;
-import com.wavemaker.json.type.*;
-import org.springframework.util.ClassUtils;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.*;
+import com.wavemaker.json.type.FieldDefinition;
+import com.wavemaker.json.type.ListTypeDefinition;
+import com.wavemaker.json.type.MapTypeDefinition;
+import com.wavemaker.json.type.ObjectTypeDefinition;
+import com.wavemaker.json.type.PrimitiveTypeDefinition;
+import com.wavemaker.json.type.TypeDefinition;
+import com.wavemaker.json.type.TypeState;
 
 /**
  * @author Matt Small
@@ -472,7 +483,7 @@ public class ReflectTypeUtilsTest extends WMTestCase {
             ReflectTypeUtils.getTypeDefinition(NoGenerics.class, new ReflectTypeState(), true);
             fail("expected exception");
         } catch (WMRuntimeException e) {
-            assertEquals(MessageResource.JSON_TYPE_NOGENERICS.getId(), e.getMessageId());
+            assertEquals(MessageResource.JSON_TYPE_NOGENERICS, e.getMessageResource());
         }
     }
 
@@ -493,7 +504,7 @@ public class ReflectTypeUtilsTest extends WMTestCase {
             ReflectTypeUtils.getTypeDefinition(MapNoGenerics.class, new ReflectTypeState(), true);
             fail("expected exception");
         } catch (WMRuntimeException e) {
-            assertEquals(MessageResource.JSON_TYPE_NOGENERICS.getId(), e.getMessageId());
+            assertEquals(MessageResource.JSON_TYPE_NOGENERICS, e.getMessageResource());
         }
     }
 

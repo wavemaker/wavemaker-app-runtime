@@ -13,10 +13,6 @@ public class DatabaseScriptExecutionException extends WMRuntimeException {
         super(resource, cause, args);
     }
 
-    public DatabaseScriptExecutionException(String message) {
-        super(message, (String) null);
-    }
-
     public DatabaseScriptExecutionException(String message, Throwable e) {
         super(message, e);
     }

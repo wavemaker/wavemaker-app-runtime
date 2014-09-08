@@ -300,7 +300,7 @@ public class AlternateJSONTransformerTest extends WMTestCase {
             AlternateJSONTransformer.toObject(jc, jo, HasFile.class);
             fail("expected exception");
         } catch (WMRuntimeException e) {
-            assertEquals(MessageResource.JSON_UNKNOWN_OBJECT_TYPE.getId(), e.getMessageId());
+            assertEquals(MessageResource.JSON_UNKNOWN_OBJECT_TYPE, e.getMessageResource());
         }
 
         jc.setTypeState(new ReflectTypeState());

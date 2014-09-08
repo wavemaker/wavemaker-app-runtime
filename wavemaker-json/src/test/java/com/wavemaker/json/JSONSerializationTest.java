@@ -15,8 +15,6 @@
  */
 package com.wavemaker.json;
 
-import static com.wavemaker.json.util.JsonTestUtils.assertJSONStringsEquals;
-
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -35,6 +33,8 @@ import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.json.type.reflect.converters.DateTypeDefinition;
+
+import static com.wavemaker.json.util.JsonTestUtils.assertJSONStringsEquals;
 
 /**
  * @author Matt Small
@@ -266,7 +266,7 @@ public class JSONSerializationTest extends WMTestCase {
             JSONMarshaller.marshal(a, jc);
             fail("no exception");
         } catch (WMRuntimeException e) {
-            assertEquals(MessageResource.JSON_CYCLE_FOUND.getId(), e.getMessageId());
+            assertEquals(MessageResource.JSON_CYCLE_FOUND, e.getMessageResource());
         }
 
         jc.setCycleHandler(JSONState.CycleHandler.NULL);

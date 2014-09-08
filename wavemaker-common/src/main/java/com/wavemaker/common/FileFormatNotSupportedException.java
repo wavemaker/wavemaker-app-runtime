@@ -20,47 +20,7 @@ package com.wavemaker.common;
  */
 public class FileFormatNotSupportedException extends FormatNotSupportedException{
 
-    public FileFormatNotSupportedException(MessageResource resource) {
-        super(resource);
-    }
-
-    public FileFormatNotSupportedException(MessageResource resource, Throwable cause) {
-        super(resource, cause);
-    }
-
     public FileFormatNotSupportedException(MessageResource resource, Object... args) {
         super(resource, args);
     }
-
-    public FileFormatNotSupportedException(MessageResource resource, Throwable cause, Object... args) {
-        super(resource, cause, args);
-    }
-
-    public FileFormatNotSupportedException(String message) {
-        super(message);
-    }
-
-    public FileFormatNotSupportedException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FileFormatNotSupportedException(String message, String detailedMessage) {
-        super(message, detailedMessage);
-    }
-
-    public FileFormatNotSupportedException(String message, String detailedMessage, Integer msgId) {
-        super(message, detailedMessage, msgId);
-    }
-
-    public FileFormatNotSupportedException(String message, String detailedMessage, Throwable cause) {
-        super(message, detailedMessage, cause);
-    }
-
-    public FileFormatNotSupportedException(String message, String detailedMessage, Integer msgId, Throwable cause) {
-        super(message, detailedMessage, msgId, cause);
-    }
-
-    public FileFormatNotSupportedException(Throwable cause) {
-        super(cause);
-    } 
 }

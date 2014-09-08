@@ -20,48 +20,8 @@ package com.wavemaker.common;
  */
 public class XMLException extends WMRuntimeException{
 
-    public XMLException(MessageResource resource) {
-        super(resource);
-    }
-
-    public XMLException(MessageResource resource, Throwable cause) {
-        super(resource, cause);
-    }
-
-    public XMLException(MessageResource resource, Object... args) {
-        super(resource, args);
-    }
-
-    public XMLException(MessageResource resource, Throwable cause, Object... args) {
-        super(resource, cause, args);
-    }
-
-    public XMLException(String message) {
-        super(message);
-    }
-
-    public XMLException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public XMLException(String message, String detailedMessage) {
-        super(message, detailedMessage);
-    }
-
-    public XMLException(String message, String detailedMessage, Integer msgId) {
-        super(message, detailedMessage, msgId);
-    }
-
-    public XMLException(String message, String detailedMessage, Throwable cause) {
-        super(message, detailedMessage, cause);
-    }
-
-    public XMLException(String message, String detailedMessage, Integer msgId, Throwable cause) {
-        super(message, detailedMessage, msgId, cause);
-    }
-
-    public XMLException(Throwable cause) {
-        super(cause);
+    public XMLException(MessageResource resource, Throwable e) {
+        super(resource, e);
     }
 }
 

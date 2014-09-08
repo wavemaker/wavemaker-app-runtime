@@ -20,48 +20,8 @@ package com.wavemaker.common;
  */
 public class ResourceAlreadyExistException extends WMRuntimeException{
 
-    public ResourceAlreadyExistException(MessageResource resource) {
-        super(resource);
-    }
-
-    public ResourceAlreadyExistException(MessageResource resource, Throwable cause) {
-        super(resource, cause);
-    }
-
     public ResourceAlreadyExistException(MessageResource resource, Object... args) {
         super(resource, args);
-    }
-
-    public ResourceAlreadyExistException(MessageResource resource, Throwable cause, Object... args) {
-        super(resource, cause, args);
-    }
-
-    public ResourceAlreadyExistException(String message) {
-        super(message);
-    }
-
-    public ResourceAlreadyExistException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public ResourceAlreadyExistException(String message, String detailedMessage) {
-        super(message, detailedMessage);
-    }
-
-    public ResourceAlreadyExistException(String message, String detailedMessage, Integer msgId) {
-        super(message, detailedMessage, msgId);
-    }
-
-    public ResourceAlreadyExistException(String message, String detailedMessage, Throwable cause) {
-        super(message, detailedMessage, cause);
-    }
-
-    public ResourceAlreadyExistException(String message, String detailedMessage, Integer msgId, Throwable cause) {
-        super(message, detailedMessage, msgId, cause);
-    }
-
-    public ResourceAlreadyExistException(Throwable cause) {
-        super(cause);
     }
 }
 

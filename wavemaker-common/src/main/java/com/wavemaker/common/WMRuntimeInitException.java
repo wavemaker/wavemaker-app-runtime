@@ -43,13 +43,4 @@ public class WMRuntimeInitException extends WMRuntimeException {
         this.msgId = msgId;
     }
 
-    @Override
-    public String getDetailedMesage() {
-        return this.detailedMessage;
-    }
-
-    @Override
-    public Integer getMessageId() {
-        return this.msgId;
-    }
 }

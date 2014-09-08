@@ -12,7 +12,6 @@ definition of configuration; this is shared between runtime and test-time.
         <property name="basenames">
             <list>
                 <value>wm_resource</value>
-                <value>wm_saas_resource</value>
             </list>
         </property>
     </bean>

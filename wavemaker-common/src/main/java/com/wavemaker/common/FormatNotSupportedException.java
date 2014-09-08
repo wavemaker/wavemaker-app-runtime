@@ -20,48 +20,8 @@ package com.wavemaker.common;
  */
 public class FormatNotSupportedException extends WMRuntimeException{
 
-    public FormatNotSupportedException(MessageResource resource) {
-        super(resource);
-    }
-
-    public FormatNotSupportedException(MessageResource resource, Throwable cause) {
-        super(resource, cause);
-    }
-
     public FormatNotSupportedException(MessageResource resource, Object... args) {
         super(resource, args);
-    }
-
-    public FormatNotSupportedException(MessageResource resource, Throwable cause, Object... args) {
-        super(resource, cause, args);
-    }
-
-    public FormatNotSupportedException(String message) {
-        super(message);
-    }
-
-    public FormatNotSupportedException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public FormatNotSupportedException(String message, String detailedMessage) {
-        super(message, detailedMessage);
-    }
-
-    public FormatNotSupportedException(String message, String detailedMessage, Integer msgId) {
-        super(message, detailedMessage, msgId);
-    }
-
-    public FormatNotSupportedException(String message, String detailedMessage, Throwable cause) {
-        super(message, detailedMessage, cause);
-    }
-
-    public FormatNotSupportedException(String message, String detailedMessage, Integer msgId, Throwable cause) {
-        super(message, detailedMessage, msgId, cause);
-    }
-
-    public FormatNotSupportedException(Throwable cause) {
-        super(cause);
     }
 }
 

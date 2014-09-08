@@ -38,7 +38,7 @@ public class WMUtils {
         try {
             return URLDecoder.decode(requestURI, UTF8);
         } catch (UnsupportedEncodingException e) {
-            throw new WMRuntimeException("Failed to decode request URI");
+            throw new WMRuntimeException("Failed to decode request URI", e);
         }
     }
 

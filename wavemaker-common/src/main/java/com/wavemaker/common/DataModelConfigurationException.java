@@ -14,11 +14,7 @@ public class DataModelConfigurationException extends WMRuntimeException {
     }
 
     public DataModelConfigurationException(String message) {
-        super(message, (String) null);
-    }
-
-    public DataModelConfigurationException(Throwable e, String message) {
-        super(message, e);
+        super(message);
     }
 
 }

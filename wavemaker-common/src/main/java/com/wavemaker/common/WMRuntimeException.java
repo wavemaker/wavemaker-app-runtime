@@ -18,90 +18,76 @@ package com.wavemaker.common;
 /**
  * @author Simon Toens
  */
-@SuppressWarnings("serial")
 public class WMRuntimeException extends RuntimeException {
-
-    private final String detailedMessage;
-
-    private final Integer msgId;
 
     private MessageResource messageResource;
 
     private Object args[];
 
+    private String detailedMessage;
+
     public WMRuntimeException(MessageResource resource) {
-        this(resource.getMessage(), resource.getDetailMessage(), resource.getId());
+        this(resource.getMessageKey());
         this.messageResource = resource;
+    }
+
+    public WMRuntimeException(MessageResource resource, String detailedMessage) {
+        this(resource);
+        this.detailedMessage = detailedMessage;
     }
 
     public WMRuntimeException(MessageResource resource, Throwable cause) {
-        this(resource.getMessage(), resource.getDetailMessage(), resource.getId(), cause);
-        this.messageResource = resource;
+        this(resource, cause, null);
+    }
+
+    public WMRuntimeException(MessageResource resource, String detailedMessage, Throwable cause) {
+        this(resource, detailedMessage, cause, null);
     }
 
     public WMRuntimeException(MessageResource resource, Object... args) {
-        this(resource.getMessage(args), resource.getDetailMessage(args), resource.getId());
+        this(resource.getMessageKey());
         this.messageResource = resource;
         this.args = args;
+    }
+
+    public WMRuntimeException(String detailedMessage, MessageResource resource, Object... args) {
+        this(resource, args);
+        this.detailedMessage = detailedMessage;
     }
 
     public WMRuntimeException(MessageResource resource, Throwable cause, Object... args) {
-        this(resource.getMessage(args), resource.getDetailMessage(args), resource.getId(), cause);
+        this(resource.getMessageKey(), cause);
         this.messageResource = resource;
         this.args = args;
     }
 
-    public WMRuntimeException(String message) {
-        this(message, (String) null);
-    }
-
-    public WMRuntimeException(String message, Throwable cause) {
-        this(message, (String) null, cause);
-    }
-
-    public WMRuntimeException(String message, String detailedMessage) {
-        this(message, detailedMessage, (Throwable) null);
-    }
-
-    public WMRuntimeException(String message, String detailedMessage, Integer msgId) {
-        this(message, detailedMessage, msgId, (Throwable) null);
-    }
-
-    public WMRuntimeException(String message, String detailedMessage, Throwable cause) {
-        this(message, detailedMessage, null, cause);
-    }
-
-    public WMRuntimeException(String message, String detailedMessage, Integer msgId, Throwable cause) {
-        super(message, cause);
+    public WMRuntimeException(MessageResource resource, String detailedMessage, Throwable cause, Object... args) {
+        this(resource, cause, args);
         this.detailedMessage = detailedMessage;
-        this.msgId = msgId;
+    }
+
+    public WMRuntimeException(String message) {
+        super(message);
     }
 
     public WMRuntimeException(Throwable cause) {
-        this((String) null, cause);
+        super(cause);
     }
 
-    public String getDetailedMesage() {
-        return this.detailedMessage;
-    }
-
-    public Integer getMessageId() {
-        return this.msgId;
+    public WMRuntimeException(String message, Throwable cause) {
+        super(message, cause);
+        this.detailedMessage = message;
     }
 
     public MessageResource getMessageResource() {
         return messageResource;
     }
 
-    public void setMessageResource(MessageResource messageResource) {
-        this.messageResource = messageResource;
-    }
-
     public Object[] getArgs() {
         return args;
     }
 
-    public void setArgs(Object[] args) {
-        this.args = args;
+    public String getDetailedMessage() {
+        return detailedMessage;
     }
 }

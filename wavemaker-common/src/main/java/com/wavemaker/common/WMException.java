@@ -16,59 +16,70 @@
 package com.wavemaker.common;
 
 /**
- * The root of ActiveGrid's checked Exception hierarchy.
- * 
  * @author Simon Toens
  */
 public abstract class WMException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private final String detailedMessage;
-
     private MessageResource messageResource;
 
     private Object args[];
 
+    private String detailedMessage;
+
     public WMException(Throwable cause) {
-        this((String) null, cause);
+        super(cause);
     }
 
     public WMException(String message) {
-        this(message, (String) null);
+        super(message);
     }
 
     public WMException(String message, Throwable cause) {
-        this(message, (String) null, cause);
-    }
-
-    public WMException(String message, String detailedMessage) {
-        this(message, detailedMessage, (Throwable) null);
-    }
-
-    public WMException(String message, String detailedMessage, Throwable cause) {
         super(message, cause);
-        this.detailedMessage = detailedMessage;
     }
 
     public WMException(MessageResource resource) {
-        this(resource.getMessage(), resource.getDetailMessage());
+        this(resource.getMessageKey());
+        this.messageResource = resource;
+    }
+
+    public WMException(MessageResource resource, String detailedMessage) {
+        this(resource);
+        this.detailedMessage = detailedMessage;
     }
 
     public WMException(MessageResource resource, Throwable cause) {
-        this(resource.getMessage(), resource.getDetailMessage(), cause);
+        this(resource.getMessageKey(), cause);
+        this.messageResource = resource;
+    }
+
+    public WMException(MessageResource resource, String detailedMessage, Throwable cause) {
+        this(resource, cause);
+        this.detailedMessage = detailedMessage;
     }
 
     public WMException(MessageResource resource, Object... args) {
-        this(resource.getMessage(args), resource.getDetailMessage(args));
+        this(resource.getMessageKey());
+        this.messageResource = resource;
+        this.args = args;
+    }
+
+    public WMException(String detailedMessage, MessageResource resource, Object... args) {
+        this(resource, args);
+        this.detailedMessage = detailedMessage;
     }
 
     public WMException(MessageResource resource, Throwable cause, Object... args) {
-        this(resource.getMessage(args), resource.getDetailMessage(args), cause);
+        this(resource.getMessageKey(), cause);
+        this.messageResource = resource;
+        this.args = args;
     }
 
-    public String getDetailedMessage() {
-        return this.detailedMessage;
+    public WMException(String detailedMessage, MessageResource resource, Throwable cause, Object... args) {
+        this(resource, cause, args);
+        this.detailedMessage = detailedMessage;
     }
 
     public MessageResource getMessageResource() {

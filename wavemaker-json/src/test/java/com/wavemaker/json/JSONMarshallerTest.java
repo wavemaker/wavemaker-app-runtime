@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wavemaker.common.MessageResource;
@@ -248,7 +247,7 @@ public class JSONMarshallerTest extends WMTestCase {
             JSONMarshaller.marshal(map, jc, true);
             fail("no exception");
         } catch (WMRuntimeException e) {
-            assertEquals(MessageResource.JSON_CYCLE_FOUND.getId(), e.getMessageId());
+            assertEquals(MessageResource.JSON_CYCLE_FOUND, e.getMessageResource());
         }
     }
 

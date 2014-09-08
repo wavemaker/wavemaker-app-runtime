@@ -19,8 +19,6 @@ import java.util.List;
 
 import org.springframework.core.NamedThreadLocal;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.JSONState;
 
 /**
@@ -43,7 +41,7 @@ public class InternalRuntime {
     public static InternalRuntime getInstance() {
         InternalRuntime internalRuntime = internalRuntimeThreadLocal.get();
         if (internalRuntime == null) {
-            throw new WMRuntimeException(MessageResource.RUNTIME_UNINITIALIZED);
+            throw new RuntimeException("No InternalRuntime instance found in the thread local");
         }
         return internalRuntime;
     }

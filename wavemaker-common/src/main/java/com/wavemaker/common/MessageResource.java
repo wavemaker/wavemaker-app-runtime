@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.wavemaker.common.util.ClassUtils;
 
 /**
@@ -107,21 +105,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource SERVER_NOMETHODORID = new MessageResource("com.wavemaker.runtime.server$NoMethodIdFound");
 
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource SERVER_NOPARAMNAME = new MessageResource("com.wavemaker.runtime.server$NoParamNameFound");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource SERVER_NOREQUEST = new MessageResource("com.wavemaker.runtime.server$NoRequestFound");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource SERVER_NORESPONSE = new MessageResource("com.wavemaker.runtime.server$NoResponseFound");
-
     @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
     public static final MessageResource JSONPARAMETER_COULD_NOTLLOAD_TYPE = new MessageResource(
             "com.wavemaker.runtime.server$JSONParameterCouldNotLoadType");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource RUNTIME_UNINITIALIZED = new MessageResource("com.wavemaker.runtime.server$RuntimeUninitialized");
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource BOTH_ARGUMENT_TYPES = new MessageResource("com.wavemaker.runtime.server$BothArgumentTypes");
@@ -195,9 +181,6 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource WS_NULL_WSDL_URI = new MessageResource("com.wavemaker.runtime.ws$NullWsdlUri");
-
-    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
-    public static final MessageResource WS_MISSING_TYPEMAPPER = new MessageResource("com.wavemaker.runtime.ws$MissingTypeMapper");
 
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource WS_RPC_ENCODED_NOT_SUPPORTED = new MessageResource("com.wavemaker.runtime.ws$RpcEncodedNotSupported");
@@ -897,7 +880,6 @@ public class MessageResource {
     static {
         List<Field> fields = ClassUtils.getPublicFields(MessageResource.class, MessageResource.class);
         populateAnnotationsMap(fields);
-
     }
 
     protected static void populateAnnotationsMap(List<Field> fields) {
@@ -910,10 +892,6 @@ public class MessageResource {
         }
     }
 
-    private static final String DETAIL_KEY = "_detail";
-
-    private static final String ID_KEY = "_id";
-
     private final String key;
 
     protected MessageResource(String key) {
@@ -923,28 +901,12 @@ public class MessageResource {
         this.key = key;
     }
 
-    public Integer getId() {
-        String message = MessageResource.getMessage(this.key + MessageResource.ID_KEY, 0, (Object[]) null);
-        if(StringUtils.isBlank(message )) {
-            return 0;
-        }
-        return Integer.parseInt(message);
-    }
-
     public String getMessage() {
         return getMessage((Object[]) null);
     }
 
     public String getMessage(Object... args) {
-        return MessageResource.getMessage(this.key, getNumArgsRequired(), args);
-    }
-
-    public String getDetailMessage() {
-        return getDetailMessage((Object[]) null);
-    }
-
-    public String getDetailMessage(Object... args) {
-        return MessageResource.getMessage(this.key + MessageResource.DETAIL_KEY, getNumDetailArgsRequired(), args);
+        return getMessage(this.key, getNumArgsRequired(), args);
     }
 
     public String getMessageKey() {
@@ -955,15 +917,7 @@ public class MessageResource {
         return annotations.get(this).numArgs();
     }
 
-    public int getNumDetailArgsRequired() {
-        return annotations.get(this).numArgs();
-    }
-
-    public boolean hasDetailedMsg() {
-        return annotations.get(this).hasDetailMsg();
-    }
-
-    protected static String getMessage(String key, int numArgsRequired, Object... args) {
+    private String getMessage(String key, int numArgsRequired, Object... args) {
         if (numArgsRequired > 0) {
             if (args == null || args.length != numArgsRequired) {
                 throw new IllegalArgumentException(key + ": " + "args don't match.  msg requires: " + numArgsRequired + " " + "passed in: "
