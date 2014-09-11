@@ -875,6 +875,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_READ_WRITE_IN_FILE = new MessageResource("com.wavemaker.platform$FailedToReadWriteInFile");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource USER_DOES_NOT_HAVE_PERMISSION = new MessageResource("com.wavemaker.platform$UserDoesNotHavePermission");
+
     private static final Map<MessageResource, ResourceConstraint> annotations = new HashMap<MessageResource, ResourceConstraint>();
 
     static {
