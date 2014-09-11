@@ -31,7 +31,7 @@ public class WMRuntimeException extends RuntimeException {
         this.messageResource = resource;
     }
 
-    public WMRuntimeException(MessageResource resource, String detailedMessage) {
+    public WMRuntimeException(String detailedMessage, MessageResource resource) {
         this(resource);
         this.detailedMessage = detailedMessage;
     }
