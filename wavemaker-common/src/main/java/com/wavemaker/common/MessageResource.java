@@ -266,6 +266,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource PAGE_RESOURCE_DNE = new MessageResource("com.wavemaker.platform$Page_Resource_not_exist");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PAGE_RESOURCE_UPDATE_NOT_SUPPORTED = new MessageResource("com.wavemaker.platform$page_resource_update_not_supported");
+
     @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
     public static final MessageResource PROJECT_NEWER_THAN_STUDIO = new MessageResource("com.wavemaker.platform$ProjectNewerThanStudio");
 
