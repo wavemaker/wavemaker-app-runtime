@@ -263,6 +263,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource PAGECP_TARGET_EXISTS = new MessageResource("com.wavemaker.platform$Pages_Copy_TargetExists");
 
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource PAGE_RESOURCE_DNE = new MessageResource("com.wavemaker.platform$Page_Resource_not_exist");
+
     @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
     public static final MessageResource PROJECT_NEWER_THAN_STUDIO = new MessageResource("com.wavemaker.platform$ProjectNewerThanStudio");
 
@@ -924,7 +927,7 @@ public class MessageResource {
         if (numArgsRequired > 0) {
             if (args == null || args.length != numArgsRequired) {
                 throw new IllegalArgumentException(key + ": " + "args don't match.  msg requires: " + numArgsRequired + " " + "passed in: "
-                                                           + (args == null ? "null" : args.length));
+                        + (args == null ? "null" : args.length));
             }
         }
         return ResourceManager.getInstance().getMessage(key, args);
