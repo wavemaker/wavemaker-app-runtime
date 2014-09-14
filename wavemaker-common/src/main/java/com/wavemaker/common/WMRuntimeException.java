@@ -26,6 +26,13 @@ public class WMRuntimeException extends RuntimeException {
 
     private String detailedMessage;
 
+    public WMRuntimeException(WMRuntimeException e) {
+        super(e.getMessage(), e);
+        this.messageResource = e.messageResource;
+        this.args = e.args;
+        this.detailedMessage = e.detailedMessage;
+    }
+
     public WMRuntimeException(MessageResource resource) {
         this(resource.getMessageKey());
         this.messageResource = resource;
