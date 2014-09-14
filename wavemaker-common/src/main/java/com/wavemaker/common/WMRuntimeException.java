@@ -73,6 +73,10 @@ public class WMRuntimeException extends RuntimeException {
         this.detailedMessage = detailedMessage;
     }
 
+    public WMRuntimeException() {
+        super();
+    }
+
     public WMRuntimeException(String message) {
         super(message);
     }
