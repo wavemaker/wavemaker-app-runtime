@@ -164,6 +164,25 @@ public abstract class TypeConversionUtils {
             } else {
                 throw new IllegalArgumentException("Unable to convert " + s + " to " + Date.class.getName());
             }
+        } else if(type == java.sql.Date.class){
+            if (StringUtils.isNumber(s)) {
+                return new java.sql.Date(Long.valueOf(s));
+            } else {
+                throw new IllegalArgumentException("Unable to convert " + s + " to " + java.sql.Date.class.getName());
+            }
+
+        } else if (type == Time.class ) {
+            if (StringUtils.isNumber(s)) {
+                return new Time(Long.valueOf(s));
+            } else {
+                throw new IllegalArgumentException("Unable to convert " + s + " to " + Time.class.getName());
+            }
+        }else if (type == Timestamp.class ) {
+            if (StringUtils.isNumber(s)) {
+                return new Timestamp(Long.valueOf(s));
+            } else {
+                throw new IllegalArgumentException("Unable to convert " + s + " to " + Timestamp.class.getName());
+            }
         } else if (type == Double.class || type == double.class) {
             return Double.valueOf(s);
         } else if (type == Float.class || type == float.class) {
@@ -174,9 +193,11 @@ public abstract class TypeConversionUtils {
             return Long.valueOf(s);
         } else if (type == Short.class || type == short.class) {
             return Short.valueOf(s);
-        } else if (type == String.class) {
+        } else if (type == String.class ||  type == StringBuffer.class ) {
             return s;
-        } else {
+        }  else if (type == Character.class ||  type == char.class ) {
+            return Character.valueOf(s.charAt(0));
+        }   else {
             throw new AssertionError("Unable to convert \"" + s + "\" to " + type + " - unknown type: " + type);
         }
     }

@@ -50,6 +50,13 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource QUERY_REQUIRES_PARAMS = new MessageResource("com.wavemaker.runtime.data$QueryRequiresParams");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource QUERY_CONV_FAILURE = new MessageResource("com.wavemaker.runtime.data$QueryConvFailure");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource CLASS_NOT_FOUND = new MessageResource("com.wavemaker.runtime.data$ClassNotFound");
+
+
     @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
     public static final MessageResource JSONRPC_CONTROLLER_METHOD_NOT_FOUND = new MessageResource("com.wavemaker.runtime.server$MethodNotFound");
 
