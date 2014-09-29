@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import junit.framework.Assert;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PrefabServletConfig.class)
+@Ignore
 public class UtilsTest {
     private static final String SAMPLE_PREFAB_DIR = "/testPrefab";
     private static final String JAR_FILE = SAMPLE_PREFAB_DIR + File.separator + PrefabConstants.PREFAB_DEFAULT_LIB_DIR
