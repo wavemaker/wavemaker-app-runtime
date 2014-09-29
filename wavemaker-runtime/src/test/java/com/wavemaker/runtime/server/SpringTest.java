@@ -55,6 +55,7 @@ public class SpringTest extends WMTestCase {
         XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
         xmlReader.loadBeanDefinitions(new ClassPathResource("com/wavemaker/runtime/server/testspring/one.xml"));
         xmlReader.loadBeanDefinitions(new ClassPathResource("com/wavemaker/runtime/server/testspring/beanclass.xml"));
+        ctx.refresh();
 
         assertNotNull(ctx);
         assertTrue(ctx.containsBean(OBJECT_BEAN1));
@@ -76,6 +77,7 @@ public class SpringTest extends WMTestCase {
         xmlReader.loadBeanDefinitions(new ClassPathResource("com/wavemaker/runtime/server/testspring/one.xml"));
         xmlReader.loadBeanDefinitions(new ClassPathResource("com/wavemaker/runtime/server/testspring/two.xml"));
         xmlReader.loadBeanDefinitions(new ClassPathResource("com/wavemaker/runtime/server/testspring/beanclass.xml"));
+        ctx.refresh();
 
         assertNotNull(ctx);
         assertTrue(ctx.containsBean(BEAN_MAP1_NAME));
@@ -114,6 +116,7 @@ public class SpringTest extends WMTestCase {
         GenericApplicationContext ctx = new GenericApplicationContext();
         XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
         xmlReader.loadBeanDefinitions(new ClassPathResource("com/wavemaker/runtime/server/testspring/test-utilmap.xml"));
+        ctx.refresh();
 
         assertNotNull(ctx);
         assertTrue(ctx.containsBean("utilMapBeanClass"));
@@ -129,10 +132,13 @@ public class SpringTest extends WMTestCase {
         GenericApplicationContext ctx = new GenericApplicationContext();
         XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
         xmlReader.loadBeanDefinitions(new ClassPathResource("com/wavemaker/runtime/server/testspring/circular.xml"));
+        ctx.refresh();
 
         assertNotNull(ctx);
         assertTrue(ctx.containsBean("a"));
         assertTrue(ctx.containsBean("b"));
+
+
         CircularA a = (CircularA) ctx.getBean("a");
         CircularB b = (CircularB) ctx.getBean("b");
 
@@ -145,7 +151,7 @@ public class SpringTest extends WMTestCase {
         GenericApplicationContext ctx = new GenericApplicationContext();
         XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
         xmlReader.loadBeanDefinitions(new ClassPathResource("com/wavemaker/runtime/server/testspring/test-lazybeans.xml"));
-
+        ctx.refresh();
         try {
             ctx.getBean("badConstructor");
             fail("should have failed");
