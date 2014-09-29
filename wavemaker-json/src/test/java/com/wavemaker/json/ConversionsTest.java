@@ -37,15 +37,15 @@ public class ConversionsTest extends WMTestCase {
         JSONState jc = new JSONState();
 
         String s = JSONMarshaller.marshal(hd, jc);
-		String expected = String.format("{\"date\":{\"date\":%d,\"day\":%d,\"hours\":%d,\"minutes\":%d,\"month\":%d,\"seconds\":%d,\"time\":%d,\"timezoneOffset\":%d,\"year\":%d},\"dates\":null,\"foo\":null,\"sqlDate\":null}",
-					date.getDate(), date.getDay(), date.getHours(), date.getMinutes(), date.getMonth(), date.getSeconds(), date.getTime(), date.getTimezoneOffset(), date.getYear());
-		assertEquals(expected, s);
+        String expected = String.format("{\"dates\":null,\"foo\":null,\"date\":{\"time\":%d,\"minutes\":%d,\"seconds\":%d,\"hours\":%d,\"month\":%d,\"year\":%d,\"timezoneOffset\":%d,\"day\":%d,\"date\":%d},\"sqlDate\":null}",
+                date.getTime(), date.getMinutes(), date.getSeconds(), date.getHours(), date.getMonth(), date.getYear(), date.getTimezoneOffset(), date.getDay(), date.getDate());
+        assertEquals(expected, s);
 
         jc.setTypeState(new ReflectTypeState());
         jc.getTypeState().addType(new DateTypeDefinition(java.util.Date.class));
         jc.getTypeState().addType(new DateTypeDefinition(java.sql.Date.class));
         s = JSONMarshaller.marshal(hd, jc);
-        assertEquals("{\"date\":1,\"dates\":null,\"foo\":null,\"sqlDate\":null}", s);
+        assertEquals("{\"dates\":null,\"foo\":null,\"date\":1,\"sqlDate\":null}", s);
     }
 
     public void testListDefaults() throws Exception {
@@ -54,11 +54,11 @@ public class ConversionsTest extends WMTestCase {
         JSONState jc = new JSONState();
 
         String s = JSONMarshaller.marshal(hd, jc);
-        assertEquals("{\"date\":null,\"dates\":null,\"foo\":null,\"sqlDate\":null}", s);
+        assertEquals("{\"dates\":null,\"foo\":null,\"date\":null,\"sqlDate\":null}", s);
 
         // jc.setDefaultSerializerValueConversion(new DefaultSerializerValueConversion());
         s = JSONMarshaller.marshal(hd, jc);
-        assertEquals("{\"date\":null,\"dates\":null,\"foo\":null,\"sqlDate\":null}", s);
+        assertEquals("{\"dates\":null,\"foo\":null,\"date\":null,\"sqlDate\":null}", s);
     }
 
     public void testNumericDefaults() throws Exception {

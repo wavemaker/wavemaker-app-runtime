@@ -94,7 +94,7 @@ public class JSONMarshallerTest extends WMTestCase {
         co.getSimpleObject().setStr("a");
 
         String s = JSONMarshaller.marshal(co);
-        assertEquals("{\"objectWithMap\":null,\"simpleObject\":{\"str\":\"a\"}}", s);
+        assertEquals("{\"simpleObject\":{\"str\":\"a\"},\"objectWithMap\":null}", s);
     }
 
     public void testObject_UnquoteKeys() throws Exception {
@@ -107,7 +107,7 @@ public class JSONMarshallerTest extends WMTestCase {
         js.setUnquoteKeys(true);
 
         String s = JSONMarshaller.marshal(co, js);
-        assertEquals("{objectWithMap:null,simpleObject:{str:\"a\"}}", s);
+        assertEquals("{simpleObject:{str:\"a\"},objectWithMap:null}", s);
     }
 
     public void testList() throws Exception {
@@ -153,9 +153,8 @@ public class JSONMarshallerTest extends WMTestCase {
         owt.setBoolVal(false);
 
         String s = JSONMarshaller.marshal(owt, jc, false);
-        assertEquals("{\"bigDecimal\":12.2,\"bigInteger\":13,\"boolVal\":false,\"floatVal\":13.3,\"intVal\":12}", s);
+        assertEquals("{\"boolVal\":false,\"floatVal\":13.3,\"intVal\":12,\"bigInteger\":13,\"bigDecimal\":12.2}", s);
 
-        assertEquals(s, StringUtils.deleteWhitespace(JSONUnmarshaller.unmarshal(s).toString()));
     }
 
     public void testMap() throws Exception {
@@ -185,7 +184,7 @@ public class JSONMarshallerTest extends WMTestCase {
         a.getCycleB().setBString(s);
 
         String js = JSONMarshaller.marshal(a, jc, true);
-        assertEquals("{\"AString\":\"foo\",\"cycleB\":{\"BString\":\"foo\",\"cycleA\":null}}", js);
+        assertEquals("{\"AString\":\"foo\",\"cycleB\":{\"cycleA\":null,\"BString\":\"foo\"}}", js);
     }
 
     public void testCycles() throws Exception {
@@ -197,7 +196,7 @@ public class JSONMarshallerTest extends WMTestCase {
 
         String js = JSONMarshaller.marshal(a, jc, true);
         assertTrue(js.contains("\"cycleA\""));
-        assertEquals("{\"AString\":\"a\",\"cycleB\":{\"BString\":\"b\",\"cycleA\":null}}", js);
+        assertEquals("{\"AString\":\"a\",\"cycleB\":{\"cycleA\":null,\"BString\":\"b\"}}", js);
 
         jc.setCycleHandler(JSONState.CycleHandler.NO_PROPERTY);
 
@@ -217,7 +216,7 @@ public class JSONMarshallerTest extends WMTestCase {
         jc.setCycleHandler(JSONState.CycleHandler.NO_PROPERTY);
 
         String js = JSONMarshaller.marshal(a, jc, true);
-        assertEquals("{\"AString\":\"a\",\"cycleB\":{\"BString\":\"b\",\"cycleA\":{\"AString\":\"a\"}}}", js);
+        assertEquals("{\"AString\":\"a\",\"cycleB\":{\"cycleA\":{\"AString\":\"a\"},\"BString\":\"b\"}}", js);
     }
 
     public void testCyclesWithRequireAndTrimStackLevel() throws Exception {
@@ -232,7 +231,7 @@ public class JSONMarshallerTest extends WMTestCase {
         jc.setCycleHandler(JSONState.CycleHandler.NO_PROPERTY);
 
         String js = JSONMarshaller.marshal(a, jc, true);
-        assertEquals("{\"AString\":\"a\",\"cycleB\":{\"BString\":\"b\",\"cycleA\":{\"AString\":\"a\"}}}", js);
+        assertEquals("{\"AString\":\"a\",\"cycleB\":{\"cycleA\":{\"AString\":\"a\"},\"BString\":\"b\"}}", js);
     }
 
     public void testMapCyclesStrict() throws Exception {
@@ -277,11 +276,11 @@ public class JSONMarshallerTest extends WMTestCase {
         owa.getList().add(owa2);
 
         String js = JSONMarshaller.marshal(owa, jc, true);
-        assertEquals("{\"list\":[{\"list\":null,\"str\":\"top\"},{\"list\":[],\"str\":\"bot\"}],\"str\":\"top\"}", js);
+        assertEquals("{\"str\":\"top\",\"list\":[{\"str\":\"top\",\"list\":null},{\"str\":\"bot\",\"list\":[]}]}", js);
 
         jc.setCycleHandler(JSONState.CycleHandler.NO_PROPERTY);
         js = JSONMarshaller.marshal(owa, jc, true);
-        assertEquals("{\"list\":[{\"str\":\"top\"},{\"list\":[],\"str\":\"bot\"}],\"str\":\"top\"}", js);
+        assertEquals("{\"str\":\"top\",\"list\":[{\"str\":\"top\"},{\"str\":\"bot\",\"list\":[]}]}", js);
     }
 
     public void testExclusions() throws Exception {
@@ -427,7 +426,7 @@ public class JSONMarshallerTest extends WMTestCase {
         hsp.setShortVal((short) 12);
 
         String js = JSONMarshaller.marshal(hsp);
-        assertEquals("{\"badProp\":21,\"booleanVal\":false,\"charVal\":\"b\",\"shortVal\":12}", js);
+        assertEquals("{\"badProp\":21,\"shortVal\":12,\"booleanVal\":false,\"charVal\":\"b\"}", js);
     }
 
     /**
@@ -563,11 +562,11 @@ public class JSONMarshallerTest extends WMTestCase {
         ha.getListListString().get(0).add("bar");
 
         String s = JSONMarshaller.marshal(ha, state);
-        assertEquals("{\"array\":null,\"listListString\":[[\"foo\",\"bar\"]]}", s);
+        assertEquals("{\"listListString\":[[\"foo\",\"bar\"]],\"array\":null}", s);
 
         ha.setArray(new int[] { 1, 2 });
         s = JSONMarshaller.marshal(ha, state);
-        assertEquals("{\"array\":[1,2],\"listListString\":[[\"foo\",\"bar\"]]}", s);
+        assertEquals("{\"listListString\":[[\"foo\",\"bar\"]],\"array\":[1,2]}", s);
     }
 
     private static CycleA getCycle() {

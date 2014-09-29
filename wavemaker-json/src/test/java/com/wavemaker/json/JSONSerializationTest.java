@@ -61,7 +61,7 @@ public class JSONSerializationTest extends WMTestCase {
         assertJSONStringsEquals(jsonString, "{\"returnPart\":{\"price\":12.2,\"description\":\"foo\",\"id\":1}}");
 
         RequestMessageProduct rmp = (RequestMessageProduct) AlternateJSONTransformer.toObject((JSONObject) JSONUnmarshaller.unmarshal(jsonString),
-            RequestMessageProduct.class);
+                RequestMessageProduct.class);
         assertTrue(rmp instanceof RequestMessageProduct);
         Product retProd = rmp.getReturnPart();
         assertTrue(retProd instanceof Product);
@@ -101,7 +101,7 @@ public class JSONSerializationTest extends WMTestCase {
         hp.setIntVar(12);
 
         String full = JSONMarshaller.marshal(hp, jc);
-        assertEquals("{\"intVar\":12,\"prodVar\":{\"description\":null,\"id\":0,\"price\":null}}", full);
+        assertEquals("{\"intVar\":12,\"prodVar\":{\"id\":0,\"price\":null,\"description\":null}}", full);
 
         jc.getExcludes().add("prodVar");
         String partial = JSONMarshaller.marshal(hp, jc);
@@ -122,8 +122,8 @@ public class JSONSerializationTest extends WMTestCase {
 
         String full = JSONMarshaller.marshal(hps, jc);
         assertEquals(
-            "[{\"intVar\":11,\"prodVar\":{\"description\":null,\"id\":0,\"price\":null}},{\"intVar\":12,\"prodVar\":{\"description\":null,\"id\":0,\"price\":null}}]",
-            full);
+                "[{\"intVar\":11,\"prodVar\":{\"id\":0,\"price\":null,\"description\":null}},{\"intVar\":12,\"prodVar\":{\"id\":0,\"price\":null,\"description\":null}}]",
+                full);
 
         jc.getExcludes().add("prodVar");
 
@@ -147,8 +147,8 @@ public class JSONSerializationTest extends WMTestCase {
 
         String full = JSONMarshaller.marshal(hps, jc);
         assertEquals(
-            "[{\"intVar\":11,\"prodVar\":{\"description\":null,\"id\":0,\"price\":null}},{\"intVar\":12,\"prodVar\":{\"description\":null,\"id\":0,\"price\":null}}]",
-            full);
+                "[{\"intVar\":11,\"prodVar\":{\"id\":0,\"price\":null,\"description\":null}},{\"intVar\":12,\"prodVar\":{\"id\":0,\"price\":null,\"description\":null}}]",
+                full);
 
         jc.getExcludes().add("prodVar");
 
@@ -171,12 +171,12 @@ public class JSONSerializationTest extends WMTestCase {
 
         String full = JSONMarshaller.marshal(pwl, jc);
         assertEquals(
-            "{\"cpoList\":[{\"byteVal\":null,\"shortVal\":null},{\"byteVal\":12,\"shortVal\":null}],\"description\":null,\"id\":0,\"price\":null}",
-            full);
+                "{\"id\":0,\"cpoList\":[{\"shortVal\":null,\"byteVal\":null},{\"shortVal\":null,\"byteVal\":12}],\"price\":null,\"description\":null}",
+                full);
 
         jc.getExcludes().add("cpoList");
         String partial = JSONMarshaller.marshal(pwl, jc);
-        assertEquals("{\"description\":null,\"id\":0,\"price\":null}", partial);
+        assertEquals("{\"id\":0,\"price\":null,\"description\":null}", partial);
     }
 
     public void testDateToLong() throws Exception {
@@ -192,19 +192,19 @@ public class JSONSerializationTest extends WMTestCase {
 
         hd.setDate(new Date(now));
         jsonStr = JSONMarshaller.marshal(hd, jc);
-        assertEquals("{\"date\":" + now + ",\"dates\":null,\"foo\":null,\"sqlDate\":null}", jsonStr);
+        assertEquals("{\"dates\":null,\"foo\":null,\"date\":" + now + ",\"sqlDate\":null}", jsonStr);
 
-        hd.setDates(new Date[] { new Date(now), new Date(now) });
+        hd.setDates(new Date[]{new Date(now), new Date(now)});
         jsonStr = JSONMarshaller.marshal(hd, jc);
-        assertEquals("{\"date\":" + now + ",\"dates\":[" + now + "," + now + "]" + ",\"foo\":null,\"sqlDate\":null}", jsonStr);
+        assertEquals("{\"dates\":[" + now + "," + now + "],\"foo\":null,\"date\":" + now + ",\"sqlDate\":null}", jsonStr);
 
         hd.setFoo("bar");
         jsonStr = JSONMarshaller.marshal(hd, jc);
-        assertEquals("{\"date\":" + now + ",\"dates\":[" + now + "," + now + "],\"foo\":\"bar\",\"sqlDate\":null}", jsonStr);
+        assertEquals("{\"dates\":[" + now + "," + now + "],\"foo\":\"bar\",\"date\":" + now + ",\"sqlDate\":null}", jsonStr);
 
         hd.setSqlDate(new java.sql.Date(now));
         jsonStr = JSONMarshaller.marshal(hd, jc);
-        assertEquals("{\"date\":" + now + ",\"dates\":[" + now + "," + now + "],\"foo\":\"bar\",\"sqlDate\":" + now + "}", jsonStr);
+        assertEquals("{\"dates\":[" + now + "," + now + "],\"foo\":\"bar\",\"date\":" + now + ",\"sqlDate\":" + now + "}", jsonStr);
     }
 
     public void testListDatesToLongs() throws Exception {
@@ -226,7 +226,7 @@ public class JSONSerializationTest extends WMTestCase {
     public void testHasCollections() throws Exception {
 
         HasCollections hsl = new HasCollections();
-        hsl.setStringList(Arrays.asList(new String[] { "a", "b" }));
+        hsl.setStringList(Arrays.asList(new String[]{"a", "b"}));
 
         Set<HasProduct> hpSet = new HashSet<HasProduct>();
         HasProduct hp = new HasProduct();
@@ -481,7 +481,7 @@ public class JSONSerializationTest extends WMTestCase {
 
         HasLoopedList hll = new HasLoopedList();
         HasLoopedList hll2 = new HasLoopedList();
-        HasLoopedList[] hllarr = new HasLoopedList[] { hll2 };
+        HasLoopedList[] hllarr = new HasLoopedList[]{hll2};
 
         hll.setLoopedArray(hllarr);
         hll2.setLoopedArray(hllarr);
