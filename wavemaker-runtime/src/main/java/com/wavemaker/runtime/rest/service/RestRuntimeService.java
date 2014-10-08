@@ -36,7 +36,7 @@ public class RestRuntimeService {
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
-    public RestResponse executeRestCall(String serviceId, String operationId, Map<String, String> params) throws IOException {
+    public RestResponse executeRestCall(String serviceId, String operationId, Map<String, Object> params) throws IOException {
         RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationId, params);
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
         String responseBody = restResponse.getResponseBody();
@@ -58,7 +58,7 @@ public class RestRuntimeService {
         return restResponse;
     }
 
-    private RestRequestInfo getRestRequestInfo(String serviceId, String operationId, Map<String, String> params) throws IOException {
+    private RestRequestInfo getRestRequestInfo(String serviceId, String operationId, Map<String, Object> params) throws IOException {
         ApiDocument apiDocument = getApiDocument(serviceId);
         Operation operation = getOperationById(apiDocument, operationId);
         if (operation == null) {
@@ -74,14 +74,14 @@ public class RestRuntimeService {
             restRequestInfo.setContentType(dataFormat.getFormat());
         }
         List<Parameter> parameters = operation.getParameters();
-        Map<String, String> headers = new HashMap<String, String>();
-        Map<String, String> queryParams = new HashMap<String, String>();
-        Map<String, String> pathParams = new HashMap<String, String>();
+        Map<String, Object> headers = new HashMap<>();
+        Map<String, Object> queryParams = new HashMap<>();
+        Map<String, String> pathParams = new HashMap<>();
         String requestBody = null;
         if(params != null){
             for(Parameter parameter : parameters) {
                 String paramName = parameter.getName();
-                String value = params.get(paramName);
+                Object value = params.get(paramName);
                 if(ParameterType.HEADER.equals(parameter.getParameterType())) {
                     if(params.containsKey(paramName)) {
                         headers.put(paramName, value);
@@ -92,18 +92,18 @@ public class RestRuntimeService {
                     }
                 } else if(ParameterType.PATH.equals(parameter.getParameterType())) {
                     if(params.containsKey(paramName)) {
-                        pathParams.put(paramName, value);
+                        pathParams.put(paramName, (String) value);
                     }
                 } else if(ParameterType.BODY.equals(parameter.getParameterType())) {
                     if(params.containsKey(paramName)) {
-                        requestBody = value;
+                        requestBody = (String) value;
                     }
                 } else if (ParameterType.AUTH.equals(parameter.getParameterType())) {
                     restRequestInfo.setBasicAuth(true);
                     if (RestConstants.AUTH_USER_NAME.equals(paramName)) {
-                        restRequestInfo.setUserName(params.get(RestConstants.AUTH_USER_NAME));
+                        restRequestInfo.setUserName((String) params.get(RestConstants.AUTH_USER_NAME));
                     } else if (RestConstants.AUTH_PASSWORD.equals(paramName)) {
-                        restRequestInfo.setPassword(params.get(RestConstants.AUTH_PASSWORD));
+                        restRequestInfo.setPassword((String) params.get(RestConstants.AUTH_PASSWORD));
                     }
                 }
             }
@@ -111,13 +111,17 @@ public class RestRuntimeService {
         }
         boolean first = true;
         for(String queryParam : queryParams.keySet()) {
-            if(first) {
-                endpointAddressStringBuilder.append("?");
-            } else {
-                endpointAddressStringBuilder.append("&");
+            Object val = queryParams.get(queryParam);
+            String[] strings = WMUtils.getStringList(val);
+            for(String str : strings) {
+                if(first) {
+                    endpointAddressStringBuilder.append("?");
+                } else {
+                    endpointAddressStringBuilder.append("&");
+                }
+                endpointAddressStringBuilder.append(queryParam).append("=").append(str);
+                first = false;
             }
-            endpointAddressStringBuilder.append(queryParam).append("=").append(queryParams.get(queryParam));
-            first = false;
         }
         StrSubstitutor strSubstitutor = new StrSubstitutor(pathParams, "{", "}");
         String endpointAddress = strSubstitutor.replace(endpointAddressStringBuilder.toString());

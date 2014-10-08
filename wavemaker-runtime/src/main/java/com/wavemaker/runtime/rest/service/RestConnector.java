@@ -1,8 +1,10 @@
 package com.wavemaker.runtime.rest.service;
 
-import com.wavemaker.common.util.SSLUtils;
-import com.wavemaker.runtime.rest.model.RestRequestInfo;
-import com.wavemaker.runtime.rest.model.RestResponse;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.BasicScheme;
 import org.apache.commons.lang.StringUtils;
@@ -12,7 +14,12 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,10 +27,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.wavemaker.common.util.SSLUtils;
+import com.wavemaker.common.util.WMUtils;
+import com.wavemaker.runtime.rest.model.RestRequestInfo;
+import com.wavemaker.runtime.rest.model.RestResponse;
 
 /**
  * @author Uday Shankar
@@ -53,10 +60,13 @@ public class RestConnector {
         MultiValueMap headersMap = new LinkedMultiValueMap();
 
         //set headers
-        Map<String, String> headers = restRequestInfo.getHeaders();
+        Map<String, Object> headers = restRequestInfo.getHeaders();
         if (headers != null && !headers.isEmpty()) {
-            for (Map.Entry<String, String> entry : headers.entrySet()) {
-                headersMap.add(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, Object> entry : headers.entrySet()) {
+                String[] stringList = WMUtils.getStringList(entry.getValue());
+                for (String str : stringList) {
+                    headersMap.add(entry.getKey(), str);
+                }
             }
         }
 

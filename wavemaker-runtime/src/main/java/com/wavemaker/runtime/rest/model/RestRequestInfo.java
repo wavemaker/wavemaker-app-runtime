@@ -32,7 +32,7 @@ public class RestRequestInfo {
     private boolean basicAuth;
     private String userName;
     private String password;
-    private Map<String, String> headers;
+    private Map<String, Object> headers;
     private RestResponse sampleRestResponse;
 
     public boolean getBasicAuth() {
@@ -59,11 +59,11 @@ public class RestRequestInfo {
         this.endpointAddress = endpointAddress;
     }
 
-    public Map<String, String> getHeaders() {
+    public Map<String, Object> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Map<String, String> headers) {
+    public void setHeaders(Map<String, Object> headers) {
         this.headers = headers;
     }
 

@@ -36,7 +36,7 @@ public class RestRuntimeController {
     @RequestMapping(value = "/{serviceId}/{operationId}",method = RequestMethod.POST)
     @ResponseBody
     public RestResponse executeRestCall(@PathVariable("serviceId") String serviceId, @PathVariable("operationId") String operationId,
-                                        @RequestBody Map<String, String> params) throws IOException {
+                                        @RequestBody Map<String, Object> params) throws IOException {
         //restRuntimeService.validateOperation(serviceId, operationId, httpServletRequest.getMethod());
         return restRuntimeService.executeRestCall(serviceId, operationId, params);
     }

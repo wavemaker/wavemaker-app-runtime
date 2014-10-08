@@ -17,6 +17,7 @@ package com.wavemaker.common.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.List;
 
 import org.springframework.http.MediaType;
 
@@ -48,6 +49,20 @@ public class WMUtils {
 
     public static boolean isJsonMediaType(MediaType mediaType) {
         return MediaType.APPLICATION_JSON.equals(mediaType);
+    }
+    
+    public static String[] getStringList(Object obj) {
+        if (obj instanceof String) {
+            return new String[]{(String) obj};
+        }
+        if (obj instanceof String[]) {
+            return  (String[]) obj;
+        }
+        if (obj instanceof List) {
+            List o = (List) obj;
+            return (String[]) o.toArray(new String[]{});
+        }
+        throw new WMRuntimeException("obj of type " + obj.getClass() + " not supported by this method");
     }
 
 }
