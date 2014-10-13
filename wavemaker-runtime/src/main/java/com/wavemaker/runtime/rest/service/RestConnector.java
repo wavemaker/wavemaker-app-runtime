@@ -31,6 +31,7 @@ import com.wavemaker.common.util.SSLUtils;
 import com.wavemaker.common.util.WMUtils;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
+import com.wavemaker.runtime.util.WMRuntimeUtils;
 
 /**
  * @author Uday Shankar
@@ -45,7 +46,7 @@ public class RestConnector {
         if (httpMethod == null) {
             throw new IllegalArgumentException("Invalid method value [" + restRequestInfo.getMethod() + "]");
         }
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate(WMRuntimeUtils.getMessageConverters());
 
 
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
