@@ -57,7 +57,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     }
 
     private ModelAndView handleException(RuntimeException ex) {
-        ModelAndView modelAndView = null;
+        ModelAndView modelAndView;
         Error error = new Error();
         error.setMessage(ExceptionUtils.getRootCauseMessage(ex));
         modelAndView = new ModelAndView(new MappingJackson2JsonView());

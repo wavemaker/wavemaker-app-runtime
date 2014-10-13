@@ -80,10 +80,11 @@ public abstract class IOUtils {
             return fileSB.toString();
 
         } finally {
-
-            try {
-                br.close();
-            } catch (Exception ignore) {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception ignore) {
+                }
             }
         }
     }
@@ -120,10 +121,11 @@ public abstract class IOUtils {
             return fileSB.toString();
 
         } finally {
-
-            try {
-                br.close();
-            } catch (Exception ignore) {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception ignore) {
+                }
             }
         }
     }
@@ -135,9 +137,11 @@ public abstract class IOUtils {
             br = new BufferedWriter(new FileWriter(f));
             br.write(s);
         } finally {
-            try {
-                br.close();
-            } catch (Exception ignore) {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (Exception ignore) {
+                }
             }
         }
     }

@@ -176,7 +176,7 @@ public abstract class AbstractReadTask extends BaseTask implements Task {
             Tuple.Two<String, String> t = splitPath(orderByExp);
             Criteria c = getCriteriaForPath(t.v1, criterias);
 
-            Order o = null;
+            Order o;
             if (orderBy.isAsc()) {
                 o = Order.asc(t.v2);
             } else {
@@ -193,7 +193,7 @@ public abstract class AbstractReadTask extends BaseTask implements Task {
     }
 
     protected String[] splitPropertyPath(String propertyPath) {
-        String[] rtn = null;
+        String[] rtn;
         if (propertyPath.indexOf(DataServiceConstants.PROP_SEP) == -1) {
             rtn = new String[]{propertyPath};
         } else {

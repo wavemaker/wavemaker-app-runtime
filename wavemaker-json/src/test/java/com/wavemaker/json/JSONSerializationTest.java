@@ -62,9 +62,7 @@ public class JSONSerializationTest extends WMTestCase {
 
         RequestMessageProduct rmp = (RequestMessageProduct) AlternateJSONTransformer.toObject((JSONObject) JSONUnmarshaller.unmarshal(jsonString),
                 RequestMessageProduct.class);
-        assertTrue(rmp instanceof RequestMessageProduct);
         Product retProd = rmp.getReturnPart();
-        assertTrue(retProd instanceof Product);
         assertEquals(retProd.getDescription(), p.getDescription());
         assertEquals(retProd.getPrice(), p.getPrice());
         assertEquals(retProd.getId(), p.getId());

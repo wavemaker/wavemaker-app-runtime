@@ -76,7 +76,7 @@ public class AlternateJSONTransformer {
             throw new NullArgumentException("fieldDefinition");
         }
 
-        Object ret = null;
+        Object ret;
 
         if (jsonState.getValueTransformer() != null) {
             Tuple.Three<Object, FieldDefinition, Integer> tuple = jsonState.getValueTransformer().transformToJava(obj, fieldDefinition, arrayLevel,
