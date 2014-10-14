@@ -24,9 +24,12 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.ldap.core.ContextSource;
+import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
+
+import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.IOUtils;
 
 /**
  * @author Frankie Fu
@@ -62,9 +65,11 @@ public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
         if (isGroupSearchDisabled()) {
             return new HashSet();
         } else if (this.roleProvider != null && this.roleProvider.equals("Database")) {
+            Connection con = null;
+            ResultSet rs = null;
             try {
                 HashSet roles = new HashSet();
-                Connection con = getDataSource().getConnection();
+                con = getDataSource().getConnection();
                 String sqlStatement = "";
                 if (this.roleQuery != null && !this.roleQuery.equals("")) {
                     sqlStatement = this.roleQuery;
@@ -74,17 +79,18 @@ public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
 
                 PreparedStatement ps = con.prepareStatement(sqlStatement);
                 ps.setString(1, username);
-                ResultSet rs = ps.executeQuery();
+                rs = ps.executeQuery();
                 while (rs.next()) {
                     GrantedAuthorityImpl grantedAuthorityImp = new GrantedAuthorityImpl("ROLE_" + rs.getString(1));
                     roles.add(grantedAuthorityImp);
                 }
                 return roles;
             } catch (SQLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new WMRuntimeException(e);
+            } finally {
+                IOUtils.closeByLogging(con);
+                IOUtils.closeByLogging(rs);
             }
-            return new HashSet();
         } else {
             return super.getGroupMembershipRoles(userDn, username);
         }

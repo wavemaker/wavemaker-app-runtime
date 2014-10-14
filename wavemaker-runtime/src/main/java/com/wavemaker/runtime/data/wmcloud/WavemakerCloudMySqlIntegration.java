@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.data.wmcloud;
 
 import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.runtime.data.util.JDBCUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
@@ -96,18 +97,8 @@ public class WavemakerCloudMySqlIntegration extends LocalSessionFactoryBean {
             throw new WMRuntimeException("Failed to create Database "+this.getSchemaName() , e);
         }
         finally {
-            if(con != null){
-                try {
-                    st.close();
-                } catch (SQLException ignore) {
-                }
-                try {
-
-                    con.close();
-                } catch (SQLException ignore) {
-
-                }
-            }
+            IOUtils.closeByLogging(st);
+            IOUtils.closeByLogging(con);
         }
     }
 

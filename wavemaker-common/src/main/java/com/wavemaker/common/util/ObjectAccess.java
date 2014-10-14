@@ -340,11 +340,11 @@ public class ObjectAccess {
 
         Class<?> methodParams[] = m.getParameterTypes();
 
-        if (paramTypes == null && methodParams.length == 0) {
-            return true;
+        if(methodParams.length == 0) {
+            return (paramTypes == null || paramTypes.length == 0);
         }
 
-        if (methodParams.length != paramTypes.length) {
+        if (paramTypes == null || methodParams.length != paramTypes.length) {
             return false;
         }
 

@@ -17,7 +17,6 @@ package com.wavemaker.common.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,6 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
@@ -45,6 +46,8 @@ import com.wavemaker.common.MessageResource;
  * @author Jeremy Grelle
  */
 public abstract class IOUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(IOUtils.class);
 
     private static final int DEFAULT_BUFFER_SIZE = 1024;
 
@@ -585,11 +588,21 @@ public abstract class IOUtils {
         return DEFAULT_EXCLUSION.contains(file.getName());
     }
 
-    public static void closeSilently(Closeable e) {
+    public static void closeSilently(AutoCloseable e) {
         if (e != null) {
             try {
                 e.close();
-            } catch (IOException exc) {
+            } catch (Exception exc) {
+            }
+        }
+    }
+
+    public static void closeByLogging(AutoCloseable e) {
+        if (e != null) {
+            try {
+                e.close();
+            } catch (Exception exc) {
+                logger.warn("Failed to close the stream", exc);
             }
         }
     }

@@ -203,32 +203,6 @@ public class DataServiceUtils {
         return StringUtils.fq(getOutputPackage(dataPackage), StringUtils.upperCaseFirstLetter(operationName));
     }
 
-    public static Configuration initConfiguration(String hbConfFile) {
-        return initConfiguration(hbConfFile, EMPTY_PROPERTIES);
-    }
-
-    public static Configuration initConfiguration(String hbConfFile, Properties p) {
-        Configuration cfg = null;
-        try {
-//            cfg = new Configuration().configure(hbConfFile);
-        } catch (HibernateException hibernateException) {
-            hibernateException.printStackTrace();
-        }
-        setup(cfg, p);
-        return cfg;
-    }
-
-    public static Configuration initConfiguration(File hbConfFile) {
-        return initConfiguration(hbConfFile, EMPTY_PROPERTIES);
-    }
-
-    public static Configuration initConfiguration(File hbConfFile, Properties p) {
-//        Configuration cfg = new Configuration().configure(hbConfFile);
-        Configuration cfg = new Configuration();
-        setup(cfg, p);
-        return cfg;
-    }
-
     public static Properties toHibernateConnectionProperties(Properties p) {
         Properties rtn = new Properties();
         rtn.putAll(p);

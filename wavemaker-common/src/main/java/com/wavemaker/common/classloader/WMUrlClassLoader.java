@@ -576,14 +576,6 @@ public class WMUrlClassLoader
 
     }
 
-    public boolean equals(Object obj) {
-        if (obj instanceof WMUrlClassLoader) {
-            return (obj.hashCode() == this.hashCode());
-        }
-        return false;
-    }
-
-
     public synchronized InputStream getResourceAsStream(String name) {
         if (delegateToParent) {
             InputStream is = getParent().getResourceAsStream(name);
