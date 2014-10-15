@@ -15,18 +15,13 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import org.slf4j.Logger;
+import com.wavemaker.common.util.*;
+import com.wavemaker.common.util.SystemUtils;
+import com.wavemaker.runtime.data.DataServiceInternal.ElementTypeFactory;
+import com.wavemaker.runtime.data.DataServiceManagerAccess;
+import com.wavemaker.runtime.data.DataServiceMetaData;
+import com.wavemaker.runtime.data.DataServiceRuntimeException;
+import com.wavemaker.runtime.service.ElementType;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -37,19 +32,12 @@ import org.hibernate.exception.SQLGrammarException;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.AssociationType;
 import org.hibernate.type.Type;
+import org.slf4j.Logger;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
-import com.wavemaker.common.util.ObjectAccess;
-import com.wavemaker.common.util.ObjectGraphTraversal;
-import com.wavemaker.common.util.ObjectUtils;
-import com.wavemaker.common.util.StringUtils;
-import com.wavemaker.common.util.SystemUtils;
-import com.wavemaker.common.util.Tuple;
-import com.wavemaker.runtime.data.DataServiceInternal.ElementTypeFactory;
-import com.wavemaker.runtime.data.DataServiceManagerAccess;
-import com.wavemaker.runtime.data.DataServiceMetaData;
-import com.wavemaker.runtime.data.DataServiceRuntimeException;
-import com.wavemaker.runtime.service.ElementType;
+import java.io.File;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * @author Simon Toens
@@ -259,7 +247,7 @@ public class DataServiceUtils {
 
         String q = query.trim().toLowerCase();
 
-        return q.startsWith("update") || q.startsWith("insert") || q.startsWith("delete");
+        return q.startsWith("update") || q.startsWith("insert") || q.startsWith("delete") || q.startsWith("alter");
     }
 
     public static boolean isDynamicInstantiationQuery(String query) {

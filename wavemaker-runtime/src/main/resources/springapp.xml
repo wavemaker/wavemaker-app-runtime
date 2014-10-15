@@ -82,6 +82,7 @@
         <!-- controller configuration -->
         <property name="supportedMethods" value="GET,POST"/>
     </bean>
+    <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.StudioRuntimeController" > </bean>
 
     <bean id="agFileDownloadController"
           class="com.wavemaker.runtime.server.FileDownloadController">

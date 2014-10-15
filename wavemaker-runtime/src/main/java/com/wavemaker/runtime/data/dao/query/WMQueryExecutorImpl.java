@@ -54,14 +54,23 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     @Override
     public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
         Map<String, Object> params = new HashMap<String, Object>();
+         prepareParams(params, customQuery);
 
+        if(customQuery.isNativeSql()) {
+            return executeNativeQuery(customQuery.getQueryStr(), params, pageable);
+        } else {
+            return executeHQLQuery(customQuery.getQueryStr(), params, pageable);
+        }
+    }
+
+    private void prepareParams(Map<String, Object> params, CustomQuery customQuery) {
         List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
         if(customQueryParams != null && !customQueryParams.isEmpty()){
             for (CustomQueryParam customQueryParam: customQueryParams) {
                 Object paramValue = customQueryParam.getParamValue();
                 try{
-                Class loader = Class.forName(customQueryParam.getParamType());
-                paramValue=   TypeConversionUtils.fromString(loader, customQueryParam.getParamValue().toString(), false);
+                    Class loader = Class.forName(customQueryParam.getParamType());
+                    paramValue=   TypeConversionUtils.fromString(loader, customQueryParam.getParamValue().toString(), false);
                 }
                 catch (IllegalArgumentException ex){
                     LOGGER.error("Failed to Convert param value for query", ex);
@@ -74,11 +83,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             }
         }
 
-        if(customQuery.isNativeSql()) {
-            return executeNativeQuery(customQuery.getQueryStr(), params, pageable);
-        } else {
-            return executeHQLQuery(customQuery.getQueryStr(), params, pageable);
-        }
     }
 
     @Override
