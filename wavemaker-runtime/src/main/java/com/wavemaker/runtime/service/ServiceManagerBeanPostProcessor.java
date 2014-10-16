@@ -34,9 +34,7 @@ public class ServiceManagerBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
-        if (bean instanceof ServiceType) {
-            this.serviceManager.addServiceType((ServiceType) bean);
-        } else if (bean instanceof ServiceWire) {
+        if (bean instanceof ServiceWire) {
             this.serviceManager.addServiceWire((ServiceWire) bean);
         }
 
@@ -52,9 +50,5 @@ public class ServiceManagerBeanPostProcessor implements BeanPostProcessor {
 
     public void setServiceManager(ServiceManager serviceManager) {
         this.serviceManager = serviceManager;
-    }
-
-    public ServiceManager getServiceManager() {
-        return this.serviceManager;
     }
 }

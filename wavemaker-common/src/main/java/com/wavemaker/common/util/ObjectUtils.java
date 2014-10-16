@@ -254,7 +254,7 @@ public abstract class ObjectUtils {
             try {
                 Object r1 = m.invoke(o1, (Object[]) null);
                 Object r2 = m.invoke(o2, (Object[]) null);
-                if (r1 == null && r2 != null || !r1.equals(r2)) {
+                if (!WMUtils.areObjectsEqual(r1, r2)) {
                     rtn.append(m.getName()).append(": ").append(r1).append(" != ").append(r2).append("\n");
                 }
             } catch (Exception ex) {

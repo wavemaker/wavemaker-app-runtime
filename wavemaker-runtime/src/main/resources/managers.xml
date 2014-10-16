@@ -33,16 +33,4 @@ and every other time.
             <ref bean="serviceManager" />
         </property>
     </bean>
-
-    <!-- module manager -->
-    <bean id="moduleManager"
-            class="com.wavemaker.runtime.module.ModuleManager"
-            scope="singleton">
-    </bean>
-    <bean class="com.wavemaker.runtime.module.ModuleManagerBeanPostProcessor">
-        <property name="moduleManager">
-            <ref bean="moduleManager" />
-        </property>
-    </bean>
-    <import resource="classpath*:/module-configuration.xml" />
 </beans>

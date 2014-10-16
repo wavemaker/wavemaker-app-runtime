@@ -143,38 +143,11 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource MULTIPLE_SERVICE_BEANS = new MessageResource("com.wavemaker.runtime.service$MultipleServiceBeans");
 
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource TOO_MANY_MODULES_FOR_EXTENSION_POINT = new MessageResource("com.wavemaker.runtime.module$MoreThanOneModule");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource MODULEWIRE_MISSING_NAME = new MessageResource("com.wavemaker.runtime.module$ModuleWireMissingName");
-
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource MODULE_UNKNOWN_RESOURCE_TYPE = new MessageResource("com.wavemaker.runtime.module$ModuleUnknownResourceType");
-
-    @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
-    public static final MessageResource MODULE_BAD_NAME = new MessageResource("com.wavemaker.runtime.module$ModuleBadName");
-
-    @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
-    public static final MessageResource MODULE_DUPLICATE = new MessageResource("com.wavemaker.runtime.module$ModuleDuplicates");
-
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource SERVICEWIRE_ID_DUP = new MessageResource("com.wavemaker.runtime.service$DuplicateServiceIDs");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource EXPECTED_REFLECT_SW = new MessageResource("com.wavemaker.runtime.service.reflect$ExpectedReflectSW");
-
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource MODULE_NOT_FOUND = new MessageResource("com.wavemaker.runtime.module$ModuleNotFound");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource MODULE_UNINITIALIZED = new MessageResource("com.wavemaker.runtime.module$ModuleUninitialized");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource NO_MODULE_LOOKUP = new MessageResource("com.wavemaker.runtime.module$NoModuleLookupForURL");
-
-    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
-    public static final MessageResource NO_MODULE_RESOURCE = new MessageResource("com.wavemaker.runtime.module$NoModuleResourceFound");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource NO_SERVICEWIRE = new MessageResource("com.wavemaker.runtime.service$NoServiceWireForService");

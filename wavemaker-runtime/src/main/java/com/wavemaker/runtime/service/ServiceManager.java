@@ -45,9 +45,7 @@ public class ServiceManager implements ApplicationContextAware {
 
     private ApplicationContext applicationContext = null;
 
-    private final Set<ServiceType> serviceTypes = new HashSet<ServiceType>();
-
-    private final Set<ServiceWire> serviceWires = new HashSet<ServiceWire>();
+    private final Set<ServiceWire> serviceWires = new HashSet<>();
 
     /**
      * Return the service bean for the given service id. Note that if the id refers to a ServiceWire without an
@@ -145,24 +143,6 @@ public class ServiceManager implements ApplicationContextAware {
         return ret;
     }
 
-    /**
-     * Add the new ServiceType only if that service type doesn't already exist.
-     * 
-     * @param serviceType The ServiceType to add.
-     */
-    public void addServiceType(ServiceType serviceType) {
-
-        for (ServiceType st : this.serviceTypes) {
-            if (st.getTypeName().equals(serviceType.getTypeName())) {
-                this.logger.info("redefining ServiceType " + serviceType.getTypeName());
-                return;
-            }
-        }
-
-        this.logger.info("Adding ServiceType " + serviceType.getTypeName());
-        this.serviceTypes.add(serviceType);
-    }
-
     public void addServiceWire(ServiceWire serviceWire) {
 
         if (getServiceWire(serviceWire.getServiceId()) == null) {
@@ -172,14 +152,6 @@ public class ServiceManager implements ApplicationContextAware {
             this.logger.info("Attempt to re-add ServiceWire " + serviceWire);
             this.serviceWires.add(serviceWire);
         }
-    }
-
-    public Set<ServiceType> getServiceTypes() {
-        return this.serviceTypes;
-    }
-
-    protected Set<ServiceWire> getServiceWires() {
-        return this.serviceWires;
     }
 
     @Override

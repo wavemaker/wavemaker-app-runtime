@@ -99,16 +99,6 @@
         <!--property name="supportedMethods" value="GET" /-->
     </bean>
 
-    <bean id="wmModuleController"
-          class="com.wavemaker.runtime.module.ModuleController">
-        <property name="moduleManager">
-            <ref bean="moduleManager"/>
-        </property>
-
-        <!-- controller configuration -->
-        <property name="supportedMethods" value="GET"/>
-    </bean>
-
     <bean id="runtimeAccess"
           class="com.wavemaker.runtime.RuntimeAccess" scope="request">
         <property name="serviceManager">
@@ -132,9 +122,6 @@
     <bean id="fileController"
           class="com.wavemaker.runtime.FileController">
 
-        <property name="moduleManager">
-            <ref bean="moduleManager"/>
-        </property>
         <property name="serviceResponse">
             <ref bean="serviceResponse"/>
         </property>
@@ -152,26 +139,6 @@
             </property>
             <!-- Set this value to your environment's connection timeout. Setting this value to zero means "no timeout" -->
             <property name="connectionTimeout" value="0"/>
-        </bean>
-    </beans>
-    <beans profile="cloud">
-        <bean id="serviceResponse" class="com.wavemaker.runtime.server.ServiceResponse" scope="singleton"
-              lazy-init="true">
-            <property name="runtimeAccess">
-                <ref bean="runtimeAccess"/>
-            </property>
-            <!-- Set this value to your environment's connection timeout. Setting this value to zero means "no timeout" -->
-            <property name="connectionTimeout" value="60"/>
-        </bean>
-    </beans>
-    <beans profile="cloud-test">
-        <bean id="serviceResponse" class="com.wavemaker.runtime.server.ServiceResponse" scope="singleton"
-              lazy-init="true">
-            <property name="runtimeAccess">
-                <ref bean="runtimeAccess"/>
-            </property>
-            <!-- Set this value to your environment's connection timeout. Setting this value to zero means "no timeout" -->
-            <property name="connectionTimeout" value="60"/>
         </bean>
     </beans>
 </beans>

@@ -38,7 +38,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.runtime.data.DataServiceLoggers;
-import com.wavemaker.runtime.module.ModuleManager;
 import com.wavemaker.runtime.server.ServerUtils;
 import com.wavemaker.runtime.server.ServiceResponse;
 
@@ -70,8 +69,6 @@ public final class FileController extends AbstractController {
     private static final String WM_STUDIO_BUILD_URL = "/build/";
 
     private static final String WM_CONFIG_URL = "/config.js";
-
-    private ModuleManager moduleManager;
 
     private ServiceResponse serviceResponse;
 
@@ -207,14 +204,6 @@ public final class FileController extends AbstractController {
 
     protected void setContentType(HttpServletResponse response, File file) {
         response.setContentType(new Tika().detect(file.getName()));
-    }
-
-    public void setModuleManager(ModuleManager moduleManager) {
-        this.moduleManager = moduleManager;
-    }
-
-    public ModuleManager getModuleManager() {
-        return this.moduleManager;
     }
 
     public void setServiceResponse(ServiceResponse serviceResponse) {

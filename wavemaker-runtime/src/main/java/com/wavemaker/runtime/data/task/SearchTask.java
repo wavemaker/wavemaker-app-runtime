@@ -195,7 +195,7 @@ public class SearchTask extends AbstractReadTask implements Task, DefaultRollbac
 
     private static void addRestriction(Criteria c, String propName, Object value, QueryOptions options) {
 
-        if (value == null && options.getExcludeNone()) {
+        if (value == null || options.getExcludeNone()) {
             return;
         }
 
