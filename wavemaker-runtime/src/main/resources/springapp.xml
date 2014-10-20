@@ -100,6 +100,12 @@
         <!--property name="supportedMethods" value="GET" /-->
     </bean>
 
+    <bean id="wmModuleController"
+          class="com.wavemaker.runtime.module.ModuleController">
+        <!-- controller configuration -->
+        <property name="supportedMethods" value="GET"/>
+    </bean>
+
     <bean id="runtimeAccess"
           class="com.wavemaker.runtime.RuntimeAccess" scope="request">
         <property name="serviceManager">
