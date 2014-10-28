@@ -1,23 +1,24 @@
 package com.wavemaker.runtime.data.dao;
 
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.sql.Date;
-import java.sql.Timestamp;
-
-import javax.annotation.PostConstruct;
-
+import com.wavemaker.runtime.data.expression.QueryFilter;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.wavemaker.runtime.data.expression.QueryFilter;
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.Iterator;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier>  {
 
@@ -90,6 +91,17 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             Long count = (Long) countCriteria.uniqueResult();
             criteria.setFirstResult(pageable.getOffset());
             criteria.setMaxResults(pageable.getPageSize());
+            if(pageable.getSort() != null){
+                Iterator<Sort.Order> iterator = pageable.getSort().iterator();
+                while(iterator.hasNext()){
+                  Sort.Order order = iterator.next();
+                  if(order.getDirection().equals(Sort.Direction.DESC)){
+                   criteria.addOrder(Order.desc(order.getProperty()));
+                  }else{
+                    criteria.addOrder(Order.asc(order.getProperty()));
+                  }
+                }
+            }
             return new PageImpl<Entity>(criteria.list(), pageable, count);
 
         }
