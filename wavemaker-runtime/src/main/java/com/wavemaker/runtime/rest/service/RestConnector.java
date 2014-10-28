@@ -25,13 +25,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
 
 import com.wavemaker.common.util.SSLUtils;
 import com.wavemaker.common.util.WMUtils;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
-import com.wavemaker.runtime.util.WMRuntimeUtils;
 
 /**
  * @author Uday Shankar
@@ -46,7 +44,7 @@ public class RestConnector {
         if (httpMethod == null) {
             throw new IllegalArgumentException("Invalid method value [" + restRequestInfo.getMethod() + "]");
         }
-        RestTemplate restTemplate = new RestTemplate(WMRuntimeUtils.getMessageConverters());
+        WMRestTemplate wmRestTemplate = new WMRestTemplate();
 
 
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
@@ -82,8 +80,8 @@ public class RestConnector {
             headersMap.add("Authorization", authenticate);
         }
 
-        restTemplate.setRequestFactory(commonsClientHttpRequestFactory);
-        restTemplate.setErrorHandler(new WMRestServicesErrorHandler());
+        wmRestTemplate.setRequestFactory(commonsClientHttpRequestFactory);
+        wmRestTemplate.setErrorHandler(new WMRestServicesErrorHandler());
 
         HttpEntity requestEntity;
 
@@ -93,7 +91,7 @@ public class RestConnector {
         } else {
             requestEntity = new HttpEntity(headersMap);
         }
-        ResponseEntity<String> responseEntity = restTemplate.exchange(endpointAddress, httpMethod, requestEntity, String.class);
+        ResponseEntity<String> responseEntity = wmRestTemplate.exchange(endpointAddress, httpMethod, requestEntity, String.class);
 
         RestResponse restResponse = new RestResponse();
         restResponse.setResponseBody(responseEntity.getBody());
@@ -112,7 +110,6 @@ public class RestConnector {
             restResponse.setContentType(outputContentType);
         }
         restResponse.setResponseHeaders(responseHeaders);
-        restResponse.setResponseBody(restResponse.getResponseBody());
         return restResponse;
     }
 
