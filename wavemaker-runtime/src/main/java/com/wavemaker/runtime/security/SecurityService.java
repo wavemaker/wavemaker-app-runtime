@@ -68,6 +68,23 @@ public class SecurityService {
         return authentication instanceof AnonymousAuthenticationToken ? null : authentication;
     }
 
+    @ExposeToClient
+    public WMCurrentUser getLoggedInUser() {
+        WMCurrentUser wmCurrentUser = new WMCurrentUser();
+        if(isSecurityEnabled() && isAuthenticated()){
+            wmCurrentUser.setAuthenticated(isAuthenticated());
+            wmCurrentUser.setSecurityEnabled(isSecurityEnabled());
+            wmCurrentUser.setUserId(getUserId());
+            wmCurrentUser.setUserName(getUserName());
+            wmCurrentUser.setTenantId(getTenantId());
+            wmCurrentUser.setUserRoles(getUserRoles());
+        } else {
+            wmCurrentUser.setAuthenticated(isAuthenticated());
+            wmCurrentUser.setSecurityEnabled(isSecurityEnabled());
+        }
+        return wmCurrentUser;
+    }
+
     /**
      * Checks whether the user has been authenticated.
      * 
