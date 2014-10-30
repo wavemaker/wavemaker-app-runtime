@@ -228,6 +228,9 @@ public class MessageResource {
     public static final MessageResource PROJECT_ALREADY_EXIST = new MessageResource("com.wavemaker.platform$ProjectAlreadyExist");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_DELETE_PROJECT = new MessageResource("com.wavemaker.platform$FailedToDeleteProject");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_DELETE_TEMPLATE = new MessageResource("com.wavemaker.platform$FailedToDeleteTemplate");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
