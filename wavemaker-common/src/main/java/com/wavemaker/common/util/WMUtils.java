@@ -15,13 +15,12 @@
  */
 package com.wavemaker.common.util;
 
+import com.wavemaker.common.WMRuntimeException;
+import org.springframework.http.MediaType;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
-
-import org.springframework.http.MediaType;
-
-import com.wavemaker.common.WMRuntimeException;
 
 /**
  * @author Uday Shankar
@@ -50,7 +49,7 @@ public class WMUtils {
     public static boolean isJsonMediaType(MediaType mediaType) {
         return MediaType.APPLICATION_JSON.equals(mediaType);
     }
-    
+
     public static String[] getStringList(Object obj) {
         if (obj instanceof String) {
             return new String[]{(String) obj};
@@ -74,5 +73,24 @@ public class WMUtils {
         }
         return o1.equals(o2);
     }
+
+    public static StringWrapper wrapString(String response)
+    {
+        return new StringWrapper(response);
+    }
+
+    public static class StringWrapper
+    {
+        private String result;
+
+        public StringWrapper(String result) {
+            this.result = result;
+        }
+
+        public String getResult() {
+            return result;
+        }
+    }
+
 
 }
