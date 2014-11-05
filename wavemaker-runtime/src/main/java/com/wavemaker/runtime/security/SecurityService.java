@@ -15,9 +15,12 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.wavemaker.runtime.WMAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -26,7 +29,9 @@ import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.annotations.HideFromClient;
 
@@ -35,24 +40,50 @@ import com.wavemaker.runtime.service.annotations.HideFromClient;
  * 
  * @author Frankie Fu
  */
+@Service
 @HideFromClient
 public class SecurityService {
 
-    static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
-
-    private String rolePrefix;
-
-    private String noRolesMarkerRole;
+    private static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
+    private static final String ROLE_PREFIX = "ROLE_";
 
     private List<String> roles;
-
     private Map<String, List<Rule>> roleMap;
-
     private Boolean securityEnabled;
 
     public SecurityService() {
     }
 
+    public static Logger getLogger() {
+        return logger;
+    }
+
+    @ExposeToClient
+    public Boolean isSecurityEnabled() {
+        if(securityEnabled == null) {
+            try {
+                WMSecurityConfigStore wmSecurityConfigStore = WMAppContext.getInstance().getSpringBean(WMSecurityConfigStore.class);
+                securityEnabled = wmSecurityConfigStore.isEnforceSecurity();
+            } catch (NoSuchBeanDefinitionException e) {
+                securityEnabled = false;
+            }
+        }
+        return securityEnabled;
+    }
+
+    public void setSecurityEnabled(Boolean securityEnabled) {
+        this.securityEnabled = securityEnabled;
+    }
+
+    /**
+     * Checks whether the user has been authenticated.
+     *
+     * @return true if the user was authenticated; otherwise, false.
+     */
+    @ExposeToClient
+    public boolean isAuthenticated() {
+        return getWMUserDetails() != null;
+    }
 
     /**
      * Logs the current principal out. The principal is the one in the security context.
@@ -63,9 +94,15 @@ public class SecurityService {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    private static Authentication getAuthenticatedAuthentication() {
+    private WMUserDetails getWMUserDetails() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication instanceof AnonymousAuthenticationToken ? null : authentication;
+        if (authentication != null) {
+            Object principal = authentication.getPrincipal();
+            if(principal instanceof WMUserDetails) {
+                return (WMUserDetails) principal;
+            }
+        }
+        return null;
     }
 
     @ExposeToClient
@@ -86,16 +123,6 @@ public class SecurityService {
     }
 
     /**
-     * Checks whether the user has been authenticated.
-     * 
-     * @return true if the user was authenticated; otherwise, false.
-     */
-    @ExposeToClient
-    public boolean isAuthenticated() {
-        return getAuthenticatedAuthentication() != null;
-    }
-
-    /**
      * Returns the user name of the principal in the current security context.
      * If the {@link org.springframework.security.core.userdetails.UserDetails} obtained from authentication is an instance of {@link WMUserDetails},then user's long name is returned from WMUserDetails,
      * else returns the username from authentication Object.
@@ -104,13 +131,9 @@ public class SecurityService {
      */
     @ExposeToClient
     public String getUserName() {
-        Authentication authentication = getAuthenticatedAuthentication();
-        if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-            if(principal instanceof WMUserDetails) {
-                return ((WMUserDetails) principal).getUserLongName();
-            }
-            return authentication.getName();
+        WMUserDetails wmUserDetails = getWMUserDetails();
+        if (wmUserDetails != null) {
+            return wmUserDetails.getUsername();
         }
         return null;
     }
@@ -122,16 +145,9 @@ public class SecurityService {
      */
     @ExposeToClient
     public String getUserId() {
-        Authentication authentication = getAuthenticatedAuthentication();
-        if (authentication != null) {
-            Object principal = authentication.getPrincipal();
-            if(principal instanceof WMUserDetails) {
-                return ((WMUserDetails) principal).getUserId();
-            }
-            /**
-             * the below return statement is to handle all non-db cases.
-             */
-            return authentication.getName();
+        WMUserDetails wmUserDetails = getWMUserDetails();
+        if(wmUserDetails != null){
+            return wmUserDetails.getUserId();
         }
         return null;
     }
@@ -152,29 +168,30 @@ public class SecurityService {
         for (GrantedAuthority authority : authorities) {
             String roleName = authority.getAuthority();
             String realRoleName = null;
-            if (this.rolePrefix == null) {
+            if (this.ROLE_PREFIX == null) {
                 realRoleName = roleName;
             } else {
-                if (roleName.startsWith(this.rolePrefix)) {
+                if (roleName.startsWith(this.ROLE_PREFIX)) {
                     // take out the prefix and get the actual role name
-                    realRoleName = roleName.substring(this.rolePrefix.length());
-
+                    realRoleName = roleName.substring(this.ROLE_PREFIX.length());
                 } else {
-                    logger.warn("Role " + roleName + " does not use the prefix " + this.rolePrefix + ". This may cause problems");
+                    logger.warn("Role " + roleName + " does not use the prefix " + this.ROLE_PREFIX + ". This may cause problems");
                     realRoleName = roleName;
                 }
             }
 
-            if(realRoleName.length() > 5 && realRoleName.substring(0,5).equals("ROLE_")) {
-                realRoleName = realRoleName.substring(5, realRoleName.length());
-            }
             // make sure the role is not the maker for no roles
-            if (realRoleName != null && !realRoleName.equals(this.noRolesMarkerRole)) {
+            if (realRoleName != null) {
                 roleNames.add(realRoleName);
             }
         }
 
         return roleNames.toArray(new String[0]);
+    }
+
+    private static Authentication getAuthenticatedAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication instanceof AnonymousAuthenticationToken ? null : authentication;
     }
 
     /**
@@ -262,22 +279,6 @@ public class SecurityService {
         return true;
     }
 
-    public String getRolePrefix() {
-        return this.rolePrefix;
-    }
-
-    public void setRolePrefix(String rolePrefix) {
-        this.rolePrefix = rolePrefix;
-    }
-
-    public String getNoRolesMarkerRole() {
-        return this.noRolesMarkerRole;
-    }
-
-    public void setNoRolesMarkerRole(String noRolesMarkerRole) {
-        this.noRolesMarkerRole = noRolesMarkerRole;
-    }
-
     public List<String> getRoles() {
         return this.roles;
     }
@@ -292,23 +293,6 @@ public class SecurityService {
 
     public void setRoleMap(Map<String, List<Rule>> roleMap) {
         this.roleMap = roleMap;
-    }
-
-    @ExposeToClient
-    public Boolean isSecurityEnabled() {
-        if(securityEnabled == null) {
-            try {
-                WMSecurityConfigStore wmSecurityConfigStore = WMAppContext.getInstance().getSpringBean(WMSecurityConfigStore.class);
-                securityEnabled = wmSecurityConfigStore.isEnforceSecurity();
-            } catch (NoSuchBeanDefinitionException e) {
-                securityEnabled = false;
-            }
-        }
-        return securityEnabled;
-    }
-
-    public void setSecurityEnabled(Boolean securityEnabled) {
-        this.securityEnabled = securityEnabled;
     }
 
 }

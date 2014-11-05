@@ -24,6 +24,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 
@@ -35,13 +37,15 @@ import org.springframework.security.web.access.ExceptionTranslationFilter;
  */
 public class JSONExceptionTranslationFilter extends ExceptionTranslationFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JSONExceptionTranslationFilter.class);
+
     @Override
     protected void sendStartAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, AuthenticationException reason)
         throws ServletException, IOException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestPath = httpRequest.getServletPath();
         if (requestPath != null && requestPath.endsWith(".json")) {
-            SecurityService.logger.error("Access to '" + requestPath + "' is denied.  Reason: " + reason.getMessage());
+            logger.error("Access to '" + requestPath + "' is denied.  Reason: " + reason.getMessage());
 
             // send 403
             ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, requestPath);
