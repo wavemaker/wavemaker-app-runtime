@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <parent>
-		<groupId>com.wavemaker</groupId>
+		<groupId>com.wavemaker.studio</groupId>
 		<artifactId>wavemaker-studio</artifactId>
 		<version>7.0.1</version>
 	</parent>
