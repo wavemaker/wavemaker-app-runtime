@@ -15,6 +15,7 @@
  */
 package com.wavemaker.common.util;
 
+import com.wavemaker.common.StringWrapper;
 import com.wavemaker.common.WMRuntimeException;
 import org.springframework.http.MediaType;
 
@@ -28,6 +29,10 @@ import java.util.List;
 public class WMUtils {
 
     private static final String UTF8 = "UTF-8";
+
+    private static final String SUCCESS = "success";
+
+    public static final StringWrapper SUCCESS_RESPONSE = new StringWrapper(SUCCESS);
 
     public static String getFileExtensionFromFileName(String fileName) {
         int indexOfDot = fileName.lastIndexOf(".");
@@ -78,19 +83,5 @@ public class WMUtils {
     {
         return new StringWrapper(response);
     }
-
-    public static class StringWrapper
-    {
-        private String result;
-
-        public StringWrapper(String result) {
-            this.result = result;
-        }
-
-        public String getResult() {
-            return result;
-        }
-    }
-
 
 }
