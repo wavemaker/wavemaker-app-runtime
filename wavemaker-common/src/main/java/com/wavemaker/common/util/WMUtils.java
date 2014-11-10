@@ -15,6 +15,8 @@
  */
 package com.wavemaker.common.util;
 
+import com.wavemaker.common.BooleanWrapper;
+import com.wavemaker.common.IntegerWrapper;
 import com.wavemaker.common.StringWrapper;
 import com.wavemaker.common.WMRuntimeException;
 import org.springframework.http.MediaType;
@@ -82,6 +84,16 @@ public class WMUtils {
     public static StringWrapper wrapString(String response)
     {
         return new StringWrapper(response);
+    }
+
+    public static IntegerWrapper wrapInteger(Integer response)
+    {
+        return new IntegerWrapper(response);
+    }
+
+    public static BooleanWrapper wrapBoolean(Boolean response)
+    {
+        return new BooleanWrapper(response);
     }
 
 }

@@ -45,10 +45,14 @@ import com.wavemaker.runtime.service.annotations.HideFromClient;
 public class SecurityService {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
-    private static final String ROLE_PREFIX = "ROLE_";
+
+    private String rolePrefix = "ROLE_";
+    private String noRolesMarkerRole;
 
     private List<String> roles;
+
     private Map<String, List<Rule>> roleMap;
+
     private Boolean securityEnabled;
 
     public SecurityService() {
@@ -57,6 +61,7 @@ public class SecurityService {
     public static Logger getLogger() {
         return logger;
     }
+
 
     @ExposeToClient
     public Boolean isSecurityEnabled() {
@@ -135,6 +140,9 @@ public class SecurityService {
         if (wmUserDetails != null) {
             return wmUserDetails.getUsername();
         }
+        if(getAuthenticatedAuthentication()!=null){
+            return getAuthenticatedAuthentication().getName();
+        }
         return null;
     }
 
@@ -148,6 +156,9 @@ public class SecurityService {
         WMUserDetails wmUserDetails = getWMUserDetails();
         if(wmUserDetails != null){
             return wmUserDetails.getUserId();
+        }
+        if(getAuthenticatedAuthentication()!=null){
+            return getAuthenticatedAuthentication().getName();
         }
         return null;
     }
@@ -168,14 +179,14 @@ public class SecurityService {
         for (GrantedAuthority authority : authorities) {
             String roleName = authority.getAuthority();
             String realRoleName = null;
-            if (this.ROLE_PREFIX == null) {
+            if (this.getRolePrefix() == null) {
                 realRoleName = roleName;
             } else {
-                if (roleName.startsWith(this.ROLE_PREFIX)) {
+                if (roleName.startsWith(this.getRolePrefix())) {
                     // take out the prefix and get the actual role name
-                    realRoleName = roleName.substring(this.ROLE_PREFIX.length());
+                    realRoleName = roleName.substring(this.getRolePrefix().length());
                 } else {
-                    logger.warn("Role " + roleName + " does not use the prefix " + this.ROLE_PREFIX + ". This may cause problems");
+                    logger.warn("Role " + roleName + " does not use the prefix " + this.getRolePrefix() + ". This may cause problems");
                     realRoleName = roleName;
                 }
             }
@@ -277,6 +288,22 @@ public class SecurityService {
             }
         }
         return true;
+    }
+
+    public String getRolePrefix() {
+        return rolePrefix;
+    }
+
+    public void setRolePrefix(String rolePrefix) {
+        this.rolePrefix = rolePrefix;
+    }
+
+    public String getNoRolesMarkerRole() {
+        return this.noRolesMarkerRole;
+    }
+
+    public void setNoRolesMarkerRole(String noRolesMarkerRole) {
+        this.noRolesMarkerRole = noRolesMarkerRole;
     }
 
     public List<String> getRoles() {
