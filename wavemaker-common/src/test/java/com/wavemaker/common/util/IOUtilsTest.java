@@ -286,25 +286,6 @@ public class IOUtilsTest extends WMTestCase {
         }
     }
 
-    public void testDeleteOnExit() throws Exception {
-
-        File tempDir = IOUtils.createTempDirectory("testDeleteOnExit", "tmp");
-        assertTrue(tempDir.exists());
-        IOUtils.deleteFileOnShutdown(tempDir);
-
-        // and now, hopefully, we won't see that file ever
-    }
-
-    public void testDeleteOnExitDNE() throws Exception {
-
-        File tempDir = IOUtils.createTempDirectory("testDeleteOnExit", "tmp");
-        assertTrue(tempDir.exists());
-        FileUtils.forceDelete(tempDir);
-        IOUtils.deleteFileOnShutdown(tempDir);
-
-        // and now, hopefully, we won't see that file ever
-    }
-
     public void testExclusionByExactMatch() {
 
         assertTrue(IOUtils.excludeByExactMatch(new File("/foo/bar/" + IOUtils.DEFAULT_EXCLUSION.get(0))));

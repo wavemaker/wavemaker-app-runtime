@@ -1,11 +1,12 @@
 package com.wavemaker.runtime.spring.converters;
 
-import com.wavemaker.common.util.StringUtils;
+import java.util.Date;
+
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 
-import java.util.Date;
+import com.wavemaker.common.util.StringUtils;
 
 /**
  * @Author: sowmyad
@@ -15,45 +16,38 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
     @Override
     protected void installFormatters(FormatterRegistry registry) {
         super.installFormatters(registry);
-        registry.addConverter(getStringToDateConverter());
-        registry.addConverter(getStringToSqlDateConverter());
+        registry.addConverter(new WMStringToDateConverter());
+        registry.addConverter(new WMStringToSqlDateConverter());
     }
 
-    public Converter<String, Date> getStringToDateConverter() {
-        return new Converter<String, Date>() {
+    static class WMStringToDateConverter implements Converter<String, Date> {
 
-            @Override
-            public Date convert(String source) {
-                Date dt = null;
-                if(StringUtils.isNumber(source)){
-                   dt= new Date(new Long(source));
-                } else{
-                    dt = new Date(source);
-                }
-                return dt;
-
+        @Override
+        public Date convert(String source) {
+            Date dt;
+            if(StringUtils.isNumber(source)){
+                dt= new Date(new Long(source));
+            } else{
+                dt = new Date(source);
             }
+            return dt;
 
-        };
+        }
     }
 
+    static class WMStringToSqlDateConverter implements Converter<String, java.sql.Date> {
 
-    public Converter<String, java.sql.Date> getStringToSqlDateConverter() {
-        return new Converter<String, java.sql.Date>() {
-
-            @Override
-            public java.sql.Date convert(String source) {
-                java.sql.Date dt = null;
-                if(StringUtils.isNumber(source)){
-                    dt= new java.sql.Date(new Long(source));
-                } else{
-                    Date utilDate = new Date(new Long(source));
-                    dt = new java.sql.Date(utilDate.getTime());
-                }
-                return  dt;
-
+        @Override
+        public java.sql.Date convert(String source) {
+            java.sql.Date dt;
+            if(StringUtils.isNumber(source)){
+                dt= new java.sql.Date(new Long(source));
+            } else{
+                Date utilDate = new Date(new Long(source));
+                dt = new java.sql.Date(utilDate.getTime());
             }
+            return  dt;
 
-        };
+        }
     }
 }

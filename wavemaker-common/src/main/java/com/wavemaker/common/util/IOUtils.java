@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -236,13 +237,7 @@ public abstract class IOUtils {
                 throw new IOException("Can't copy directory (" + source.getAbsolutePath() + ") to non-directory: " + destination.getAbsolutePath());
             }
 
-            File files[] = source.listFiles(new java.io.FilenameFilter() {
-
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.indexOf("#") == -1 && name.indexOf("~") == -1;
-                }
-            });
+            File files[] = source.listFiles(new WMFileNameFilter());
             for (int i = 0; i < files.length; i++) {
                 copy(files[i], new File(destination, files[i].getName()), excludes);
             }
@@ -267,11 +262,11 @@ public abstract class IOUtils {
     public static void copy(File source, File destination, String includedPattern, String excludedPattern) throws IOException {
         List<String> includedPatterns = null, excludedPatterns = null;
         if (includedPattern != null) {
-            includedPatterns = new ArrayList<String>();
+            includedPatterns = new ArrayList();
             includedPatterns.add(includedPattern);
         }
         if (excludedPattern != null) {
-            excludedPatterns = new ArrayList<String>();
+            excludedPatterns = new ArrayList();
             excludedPatterns.add(excludedPattern);
         }
 
@@ -325,13 +320,7 @@ public abstract class IOUtils {
                 throw new IOException("Can't copy directory (" + source.getAbsolutePath() + ") to non-directory: " + destination.getAbsolutePath());
             }
 
-            File files[] = source.listFiles(new java.io.FilenameFilter() {
-
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.indexOf("#") == -1 && name.indexOf("~") == -1;
-                }
-            });
+            File files[] = source.listFiles(new WMFileNameFilter());
 
             for (int i = 0; i < files.length; i++) {
                 copy(files[i], new File(destination, files[i].getName()), includedPatterns, excludedPatterns);
@@ -401,9 +390,6 @@ public abstract class IOUtils {
         } else if (!dir.mkdir()) {
             throw new IOException("Couldn't mkdir: " + dir);
         }
-
-        deleteFileOnShutdown(dir);
-
         return dir;
     }
 
@@ -424,8 +410,24 @@ public abstract class IOUtils {
      * @throws IOException
      */
     public static void deleteRecursive(File dir) throws IOException {
-
         FileUtils.forceDelete(dir);
+    }
+
+    public static void deleteDirectorySilently(File dir) {
+        deleteDirectorySilently(dir, false);
+    }
+
+    public static void deleteDirectorySilently(File dir, boolean noLogging) {
+        if(dir == null) {
+            return;
+        }
+        try {
+            FileUtils.forceDelete(dir);
+        } catch (IOException e) {
+            if (!noLogging) {
+                logger.warn("Failed to delete the directory {}", dir, e);
+            }
+        }
     }
 
     /**
@@ -551,35 +553,6 @@ public abstract class IOUtils {
     }
 
     /**
-     * Register a File (which can be a directory or a file) for deletion on shutdown.
-     * 
-     * @param file The file to be deleted.
-     */
-    public static void deleteFileOnShutdown(File file) {
-
-        DeleteFileThread dft = new DeleteFileThread(file);
-        Runtime.getRuntime().addShutdownHook(dft);
-    }
-
-    private static class DeleteFileThread extends Thread {
-
-        private final File toBeDeleted;
-
-        public DeleteFileThread(File toBeDeleted) {
-            this.toBeDeleted = toBeDeleted;
-        }
-
-        @Override
-        public void run() {
-            try {
-                FileUtils.forceDelete(this.toBeDeleted);
-            } catch (IOException e) {
-                // ignore; we're on our way out anyways
-            }
-        }
-    }
-
-    /**
      * Return true iff we should exclude file, based on DEFAULT_EXCLUSION. The filename of file must be an exact match,
      * so this is more suitable for use with directories.
      */
@@ -604,6 +577,13 @@ public abstract class IOUtils {
             } catch (Exception exc) {
                 logger.warn("Failed to close the stream", exc);
             }
+        }
+    }
+
+    static class WMFileNameFilter implements FilenameFilter {
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.indexOf("#") == -1 && name.indexOf("~") == -1;
         }
     }
 }

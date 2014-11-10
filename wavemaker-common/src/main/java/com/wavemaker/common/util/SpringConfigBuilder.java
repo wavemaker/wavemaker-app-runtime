@@ -20,6 +20,7 @@ import java.io.FilenameFilter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
@@ -126,13 +127,7 @@ public class SpringConfigBuilder {
         }
 
         public Bean addFiles(String name, String path) {
-            return addFiles(name, path, new FilenameFilter() {
-
-                @Override
-                public boolean accept(File dir, String name) {
-                    return true;
-                }
-            });
+            return addFiles(name, path, TrueFileFilter.INSTANCE);
         }
 
         public Bean addFiles(String name, String path, FilenameFilter filter) {

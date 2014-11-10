@@ -97,7 +97,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         return modelAndView;
     }
 
-    private class Error {
+    private static class Error {
 
         private String message;
 

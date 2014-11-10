@@ -53,11 +53,11 @@ public class ObjectGraphTraversal {
     private boolean propertiesAreBeanProperties = true;
 
     public ObjectGraphTraversal(PropertyFactory propertyFactory) {
-        this(propertyFactory, ObjectVisitor.NONE);
+        this(propertyFactory, NoneObjectVisitor.INSTANCE);
     }
 
     public ObjectGraphTraversal(PropertyFactory propertyFactory, ObjectAccess objectAccess) {
-        this(propertyFactory, ObjectVisitor.NONE, objectAccess);
+        this(propertyFactory, NoneObjectVisitor.INSTANCE, objectAccess);
     }
 
     public ObjectGraphTraversal(PropertyFactory propertyFactory, ObjectVisitor objectVisitor) {
@@ -153,17 +153,6 @@ public class ObjectGraphTraversal {
 
     public interface ObjectVisitor {
 
-        public static final ObjectVisitor NONE = new ObjectVisitor() {
-
-            @Override
-            public void visit(Object o, Context ctx) {
-            }
-
-            @Override
-            public void cycle(Object o, Context ctx) {
-            }
-        };
-
         /**
          * Called for each node that has not yet been visited. Traversing continues after this call, and
          * PropertyFactry.getProperties will be called for this instance.
@@ -176,6 +165,19 @@ public class ObjectGraphTraversal {
          * node is considered a cycle, although visit is not called for the root node.
          */
         void cycle(Object o, Context ctx);
+    }
+
+    static class NoneObjectVisitor implements ObjectVisitor {
+
+        static final ObjectVisitor INSTANCE = new NoneObjectVisitor();
+
+        @Override
+        public void visit(Object o, Context ctx) {
+        }
+
+        @Override
+        public void cycle(Object o, Context ctx) {
+        }
     }
 
     public interface PropertyFactory {

@@ -1,6 +1,7 @@
 package com.wavemaker.common.util;
 
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.SSLContext;
@@ -25,18 +26,7 @@ public class SSLUtils {
         if (allTrustedSSLContext == null) {
 
             // Create a trust manager that does not validate certificate chains
-            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                }
-
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                }
-            }};
-
+            TrustManager[] trustAllCerts = new TrustManager[]{NoCheckTrustManager.INSTANCE};
             // Install the all-trusting trust manager
             SSLContext sc;
             try {
@@ -49,5 +39,26 @@ public class SSLUtils {
             }
         }
         return allTrustedSSLContext;
+    }
+
+    public static class NoCheckTrustManager implements X509TrustManager {
+
+        public static final NoCheckTrustManager INSTANCE = new NoCheckTrustManager();
+
+        private NoCheckTrustManager() {
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
+
+        @Override
+        public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+        }
     }
 }
