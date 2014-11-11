@@ -29,13 +29,20 @@ public class WMUser extends User implements WMUserDetails {
     private final String userLongName;
     private final int tenantId;
     private final String userId;
+    private final long loginTime;
 
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, boolean enabled, boolean accountNonExpired,
-                boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {
+                  boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, long loggedInAt) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
         this.userId = userId;
         this.userLongName = userLongName;
         this.tenantId = tenantId;
+        this.loginTime = loggedInAt;
+    }
+
+    @Override
+    public long getLoginTime() {
+        return loginTime;
     }
 
     @Override

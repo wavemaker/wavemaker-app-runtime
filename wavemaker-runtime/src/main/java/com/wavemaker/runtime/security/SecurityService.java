@@ -15,12 +15,9 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.service.annotations.ExposeToClient;
+import com.wavemaker.runtime.service.annotations.HideFromClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -31,9 +28,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.service.annotations.ExposeToClient;
-import com.wavemaker.runtime.service.annotations.HideFromClient;
+import java.util.*;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
@@ -120,8 +115,10 @@ public class SecurityService {
             wmCurrentUser.setUserName(getUserName());
             wmCurrentUser.setTenantId(getTenantId());
             wmCurrentUser.setUserRoles(getUserRoles());
+            if(getWMUserDetails()!=null){
+                wmCurrentUser.setLoginTime(getWMUserDetails().getLoginTime());
+            }
         } else {
-            wmCurrentUser.setAuthenticated(isAuthenticated());
             wmCurrentUser.setSecurityEnabled(isSecurityEnabled());
         }
         return wmCurrentUser;
@@ -241,6 +238,12 @@ public class SecurityService {
             logger.error("The CASSecurityService.getServiceTicket() has failed", e);
         }
         return ticket;
+    }
+
+    @ExposeToClient
+    public long getLoginTime() {
+        WMUserDetails wmUserDetails = getWMUserDetails();
+        return wmUserDetails.getLoginTime();
     }
 
     /**

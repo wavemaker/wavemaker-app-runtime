@@ -17,6 +17,8 @@ public class WMCurrentUser {
 
     private boolean securityEnabled;
 
+    private long loginTime;
+
     public int getTenantId() {
         return tenantId;
     }
@@ -63,5 +65,13 @@ public class WMCurrentUser {
 
     public void setSecurityEnabled(boolean securityEnabled) {
         this.securityEnabled = securityEnabled;
+    }
+
+    public long getLoginTime() {
+        return loginTime;
+    }
+
+    public void setLoginTime(long loginTime) {
+        this.loginTime = loginTime;
     }
 }

@@ -15,10 +15,7 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
+import com.wavemaker.runtime.WMAppContext;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -26,7 +23,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 
-import com.wavemaker.runtime.WMAppContext;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * In the default <code>org.acegisecurity.userdetails.jdbc.JdbcDaoImpl</code>
@@ -98,13 +97,10 @@ public class EnhancedJdbcDaoImpl extends JdbcDaoImpl {
                     }
                 } catch (Exception ex) {
                 }
-
-                WMUserDetails user = new WMUser(userId, userName, password, userName, tenantId, enabled, true, true,
-                        true, AuthorityUtils.NO_AUTHORITIES);
-
-                return user;
+                long loginTime = System.currentTimeMillis();
+                return new WMUser(userId, userName, password, userName, tenantId, enabled, true, true,
+                                    true, AuthorityUtils.NO_AUTHORITIES, loginTime);
             }
-
         });
     }
 
@@ -121,9 +117,10 @@ public class EnhancedJdbcDaoImpl extends JdbcDaoImpl {
         String userLongName = wmUserDetails.getUserLongName();
         int tenantId = wmUserDetails.getTenantId();
         String userId = wmUserDetails.getUserId();
+        long loginTime = wmUserDetails.getLoginTime();
 
         return new WMUser(userId, returnUsername, userFromUserQuery.getPassword(), userLongName, tenantId, userFromUserQuery.isEnabled(),
-                true, true, true, combinedAuthorities);
+                true, true, true, combinedAuthorities, loginTime);
     }
 
     @Override

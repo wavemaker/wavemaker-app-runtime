@@ -33,4 +33,6 @@ public interface WMUserDetails extends UserDetails {
     String getUserLongName();
 
     int getTenantId();
+
+    long getLoginTime();
 }
