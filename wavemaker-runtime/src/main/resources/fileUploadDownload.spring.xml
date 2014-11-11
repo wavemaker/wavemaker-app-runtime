@@ -7,4 +7,5 @@
         <property name="serviceId" value="FileUploadDownload"/>
         <property name="serviceType" ref="JavaService"/>
     </bean>
+    <bean class="com.wavemaker.runtime.file.controller.RuntimeFileUploadDownloadController"/>
 </beans>
