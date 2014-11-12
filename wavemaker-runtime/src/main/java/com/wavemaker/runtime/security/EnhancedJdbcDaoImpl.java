@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 
@@ -123,5 +124,16 @@ public class EnhancedJdbcDaoImpl extends JdbcDaoImpl {
 
         return new WMUser(userId, returnUsername, userFromUserQuery.getPassword(), userLongName, tenantId, userFromUserQuery.isEnabled(),
                 true, true, true, combinedAuthorities);
+    }
+
+    @Override
+    protected List<GrantedAuthority> loadUserAuthorities(String username) {
+        final String rolePrefix = super.getRolePrefix();
+        return getJdbcTemplate().query(super.getAuthoritiesByUsernameQuery(), new String[] {username}, new RowMapper<GrantedAuthority>() {
+            public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                return new SimpleGrantedAuthority(rolePrefix + rs.getString(rs.getMetaData().getColumnCount()));
+            }
+        });
     }
 }
