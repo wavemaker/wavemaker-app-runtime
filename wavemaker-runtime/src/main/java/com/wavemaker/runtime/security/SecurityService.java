@@ -87,7 +87,7 @@ public class SecurityService {
      */
     @ExposeToClient
     public boolean isAuthenticated() {
-        return getWMUserDetails() != null;
+        return getAuthenticatedAuthentication() != null;
     }
 
     /**
