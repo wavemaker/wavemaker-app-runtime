@@ -272,5 +272,10 @@
             <artifactId>jboss-logging</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
+
     </dependencies>
 </project>
