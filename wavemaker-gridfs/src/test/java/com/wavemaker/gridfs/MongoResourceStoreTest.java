@@ -45,12 +45,12 @@ import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 import com.wavemaker.gridfs.MongoResourceStore.MongoFileStore;
 import com.wavemaker.gridfs.MongoResourceStore.MongoFolderStore;
-import com.wavemaker.platform.io.File;
-import com.wavemaker.platform.io.Folder;
-import com.wavemaker.platform.io.JailedResourcePath;
-import com.wavemaker.platform.io.Resource;
-import com.wavemaker.platform.io.ResourcePath;
-import com.wavemaker.platform.io.exception.ResourceTypeMismatchException;
+import com.wavemaker.studio.core.io.File;
+import com.wavemaker.studio.core.io.Folder;
+import com.wavemaker.studio.core.io.JailedResourcePath;
+import com.wavemaker.studio.core.io.Resource;
+import com.wavemaker.studio.core.io.ResourcePath;
+import com.wavemaker.studio.core.io.exception.ResourceTypeMismatchException;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;

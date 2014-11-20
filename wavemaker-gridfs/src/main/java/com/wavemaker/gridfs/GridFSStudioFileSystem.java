@@ -35,8 +35,8 @@ import com.mongodb.DB;
 import com.mongodb.gridfs.GridFS;
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.IOUtils;
-import com.wavemaker.platform.io.Folder;
-import com.wavemaker.platform.io.ResourcePath;
+import com.wavemaker.studio.core.io.Folder;
+import com.wavemaker.studio.core.io.ResourcePath;
 import com.wavemaker.platform.project.AbstractStudioFileSystem;
 import com.wavemaker.platform.project.LocalStudioFileSystem;
 import com.wavemaker.platform.project.ResourceFilter;
@@ -50,7 +50,7 @@ import com.wavemaker.platform.project.ResourceFilter;
  * @author Matt Small
  * @author Phillip Webb
  * 
- * @deprecated prefer the new wavemaker {@link com.wavemaker.platform.io.Resource} abstraction
+ * @deprecated prefer the new wavemaker {@link com.wavemaker.studio.core.io.Resource} abstraction
  */
 @Deprecated
 public class GridFSStudioFileSystem extends AbstractStudioFileSystem {
@@ -124,7 +124,7 @@ public class GridFSStudioFileSystem extends AbstractStudioFileSystem {
         if (!(resource instanceof GFSResource)) {
             return this.delegate.isDirectory(resource);
         }
-        com.wavemaker.platform.io.Resource existingResource = ((GFSResource) resource).getExistingResource(false);
+        com.wavemaker.studio.core.io.Resource existingResource = ((GFSResource) resource).getExistingResource(false);
         return existingResource != null && existingResource instanceof Folder;
     }
 
@@ -179,10 +179,10 @@ public class GridFSStudioFileSystem extends AbstractStudioFileSystem {
     }
 
     private void collectChildren(List<Resource> children, GFSResource resource, ResourceFilter resourceFilter, boolean allChildren) {
-        com.wavemaker.platform.io.Resource existingResource = resource.getExistingResource(false);
+        com.wavemaker.studio.core.io.Resource existingResource = resource.getExistingResource(false);
         if (existingResource != null && existingResource instanceof Folder) {
             Folder folder = (Folder) existingResource;
-            for (com.wavemaker.platform.io.Resource child : folder.list()) {
+            for (com.wavemaker.studio.core.io.Resource child : folder.list()) {
                 GFSResource childResource = new GFSResource(this.rootFolder, child.toString());
                 if (allChildren && child instanceof Folder) {
                     collectChildren(children, childResource, resourceFilter, allChildren);
@@ -369,7 +369,7 @@ public class GridFSStudioFileSystem extends AbstractStudioFileSystem {
     public boolean deleteFile(Resource resource) {
         Assert.isInstanceOf(Resource.class, resource, "GFS: Expected a Resource");
         GFSResource gfsResource = (GFSResource) resource;
-        com.wavemaker.platform.io.Resource existingResource = gfsResource.getExistingResource(false);
+        com.wavemaker.studio.core.io.Resource existingResource = gfsResource.getExistingResource(false);
         if (existingResource != null) {
             existingResource.delete();
         }

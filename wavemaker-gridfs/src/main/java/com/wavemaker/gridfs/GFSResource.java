@@ -21,8 +21,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.platform.io.Folder;
-import com.wavemaker.platform.io.Resource;
+import com.wavemaker.studio.core.io.Folder;
+import com.wavemaker.studio.core.io.Resource;
 import com.wavemaker.platform.project.ResourceAdapter;
 
 /**
