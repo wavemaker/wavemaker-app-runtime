@@ -15,31 +15,24 @@
  */
 package com.wavemaker.runtime;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.wavemaker.common.MessageResource;
+import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.runtime.server.ServerUtils;
+import com.wavemaker.runtime.server.ServiceResponse;
+import org.apache.commons.io.IOUtils;
+import org.apache.tika.Tika;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.tika.Tika;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.runtime.data.DataServiceLoggers;
-import com.wavemaker.runtime.server.ServerUtils;
-import com.wavemaker.runtime.server.ServiceResponse;
 
 /**
  * Controller (in the MVC sense) providing the studio access to project files. Based off of the old StaticFileServlet.
@@ -112,10 +105,6 @@ public final class FileController extends AbstractController {
 
         if (sendFile == null) {
             sendFile = new File(path, reqPath);
-        }
-
-        if (DataServiceLoggers.fileControllerLogger.isDebugEnabled()) {
-            DataServiceLoggers.fileControllerLogger.debug("FileController: " + sendFile.getAbsolutePath() + "\t (" + reqPath + ")");
         }
 
         if (sendFile != null && !sendFile.exists()) {

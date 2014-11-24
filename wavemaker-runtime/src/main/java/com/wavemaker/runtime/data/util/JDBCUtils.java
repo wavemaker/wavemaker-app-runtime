@@ -19,11 +19,10 @@ import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.util.ClassLoaderUtils;
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.runtime.data.DataServiceRuntimeException;
-import org.slf4j.Logger;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class JDBCUtils {
 
@@ -47,108 +46,6 @@ public class JDBCUtils {
             }
             throw new DataServiceRuntimeException(ex, MessageResource.DATABASE_CONNECTION_EXCEPTION);
         }
-    }
-
-    public static Object runSql(String[] sql, String url, String username, String password, String driverClassName) {
-        return runSql(sql, url, username, password, driverClassName, false);
-    }
-
-    public static Object runSql(String[] sql, String url, String username, String password, String driverClassName, boolean isDDL) {
-        return runSql(sql, url, username, password, driverClassName, null, isDDL);
-    }
-
-    public static Object runSql(String sql[], String url, String username, String password, String driverClassName, Logger logger, boolean isDDL) {
-
-        Connection con = getConnection(url, username, password, driverClassName);
-
-        try {
-            try {
-                con.setAutoCommit(true);
-            } catch (SQLException ex) {
-                throw new DataServiceRuntimeException(ex,MessageResource.DATABASE_COMMIT_EXCEPTION);
-            }
-
-            Statement s = con.createStatement();
-
-            try {
-                try {
-                    for (String stmt : sql) {
-                        if (logger != null && logger.isInfoEnabled()) {
-                            logger.info("Running " + stmt);
-                        }
-                        s.execute(stmt);
-                    }
-                    if (!isDDL) {
-                        ResultSet r = s.getResultSet();
-                        List<Object> rtn = new ArrayList<Object>();
-                        while (r.next()) {
-                            // getting only the first col is pretty unuseful
-                            rtn.add(r.getObject(1));
-                        }
-                        return rtn.toArray(new Object[rtn.size()]);
-                    }
-                } catch (Exception ex) {
-                    if (logger != null && logger.isErrorEnabled()) {
-                        logger.error(ex.getMessage());
-                    }
-                    throw ex;
-                }
-            } finally {
-                try {
-                    s.close();
-                } catch (Exception ignore) {
-                }
-            }
-        } catch (Exception ex) {
-            if (ex instanceof RuntimeException) {
-                throw (RuntimeException) ex;
-            } else {
-                throw new DataServiceRuntimeException(ex,MessageResource.DATABASE_SQL_EXECUTION_EXCEPTION);
-            }
-        } finally {
-            try {
-                con.close();
-            } catch (Exception ignore) {
-            }
-        }
-
-        return null;
-    }
-
-    public static void testMySQLConnection(String url, String username, String password, String driverClassName) {
-
-        runSql(new String[] { "SHOW DATABASES" }, url, username, password, driverClassName);
-    }
-
-    public static void testOracleConnection(String url, String username, String password, String driverClassName) {
-
-        runSql(new String[] { "SELECT TABLE_NAME FROM TABS" }, url, username, password, driverClassName);
-    }
-
-    public static void testSQLServerConnection(String url, String username, String password, String driverClassName) {
-
-        runSql(new String[] { "SELECT NAME FROM master..sysdatabases" }, url, username, password, driverClassName);
-    }
-
-    public static void testHSQLConnection(String url, String username, String password, String driverClassName) {
-
-        if (!url.contains("ifexists")) {
-            if (!url.endsWith(";")) {
-                url += ";";
-            }
-            url += "ifexists=true";
-        }
-
-        Connection con = null;
-        try {
-            con = getConnection(url, username, password, driverClassName);
-        } finally {
-            try {
-                con.close();
-            } catch (Exception ignore) {
-            }
-        }
-
     }
 
     public static String getMySQLDatabaseName(String connectionUrl) {
