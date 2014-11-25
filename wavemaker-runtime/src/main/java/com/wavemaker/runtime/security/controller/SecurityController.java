@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.common.BooleanWrapper;
 import com.wavemaker.common.IntegerWrapper;
@@ -18,7 +19,7 @@ import com.wavemaker.runtime.security.WMCurrentUser;
 /**
  * Created by nileshk on 5/11/14.
  */
-@Controller
+@RestController
 
 @RequestMapping(value = "/security")
 public class SecurityController {
