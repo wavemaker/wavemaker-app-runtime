@@ -27,4 +27,9 @@ once that's complete.
             scope="singleton" lazy-init="false">
     </bean>
 
+    <bean id="SecurityServiceType"
+          class="com.wavemaker.runtime.securityservice.SecurityServiceType"
+          scope="singleton" lazy-init="false">
+    </bean>
+
 </beans>
