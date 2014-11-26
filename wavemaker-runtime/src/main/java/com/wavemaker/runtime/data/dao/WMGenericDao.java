@@ -1,8 +1,9 @@
 package com.wavemaker.runtime.data.dao;
 
-import com.wavemaker.runtime.data.expression.QueryFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.wavemaker.runtime.data.expression.QueryFilter;
 
 public interface WMGenericDao<Entity, Identifier> {
 
@@ -15,6 +16,8 @@ public interface WMGenericDao<Entity, Identifier> {
 	Entity findById(Identifier entityId);
 	
 	Page<Entity> list(Pageable pageable);
+
+    Page getAssociatedObjects(Object value, String entityName, String key, Pageable pageable);
 
 	public Page<Entity> search(QueryFilter queryFilters[], Pageable pageable);
 
