@@ -60,6 +60,8 @@ public class CleanupListener implements ServletContextListener {
 
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            WMAppContext.clearInstance();
         }
     }
 }

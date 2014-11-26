@@ -17,16 +17,12 @@ package com.wavemaker.runtime;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -45,8 +41,6 @@ import com.wavemaker.runtime.data.util.DataServiceConstants;
  */
 public class WMAppContext {
 
-    private static WMAppContext instance;
-
     private int defaultTenantID = DataServiceConstants.DEFAULT_TENANT_ID;
 
     private String tenantFieldName = DataServiceConstants.DEFAULT_TENANT_FIELD;
@@ -57,10 +51,6 @@ public class WMAppContext {
 
     private String appName;
 
-    private JSONObject appTypesObj;
-
-    private Map<String, JSONObject> typesObjMap = new HashMap<String, JSONObject>();
-
     private String applicationHostUrl = null;
 
     private int applicationHostPort = 0;
@@ -70,6 +60,8 @@ public class WMAppContext {
     private boolean initialized = false;
 
     private Boolean studioMode;
+
+    private static WMAppContext instance;
 
     private static final Logger logger = LoggerFactory.getLogger(WMAppContext.class);
 
@@ -83,16 +75,6 @@ public class WMAppContext {
 
         // In Studio, the tenant field and def tenant ID is injected by ProjectManager when a project opens
         if (!studioMode) {
-            // Store types.js contents in memory
-            try {
-                Resource typesResource = new ServletContextResource(this.context, "/types.js");
-                String s = IOUtils.toString(typesResource.getInputStream());
-                this.appTypesObj = new JSONObject(s.substring(11));
-            } catch (Exception e) {
-                logger.warn("Cannot load types.js file for the application [" + appName + "]", e);
-                return;
-            }
-
             // Set up multi-tenant info
             Resource appPropsResource = null;
             try {
@@ -121,8 +103,7 @@ public class WMAppContext {
 
             this.tenantFieldName = props.getProperty(DataServiceConstants.TENANT_FIELD_PROPERTY_NAME);
             this.tenantColumnName = props.getProperty(DataServiceConstants.TENANT_COLUMN_PROPERTY_NAME);
-            this.defaultTenantID = Integer.parseInt(props
-                                                            .getProperty(DataServiceConstants.DEFAULT_TENANT_ID_PROPERTY_NAME));
+            this.defaultTenantID = Integer.parseInt(props.getProperty(DataServiceConstants.DEFAULT_TENANT_ID_PROPERTY_NAME));
         }
     }
 
@@ -136,6 +117,10 @@ public class WMAppContext {
 
     public static synchronized WMAppContext getInstance() {
         return instance;
+    }
+
+    public static void clearInstance() {
+        instance = null;
     }
 
     @Override
@@ -182,21 +167,6 @@ public class WMAppContext {
 
     public String getAppContextRoot() {
         return this.context.getRealPath("");
-    }
-
-    public JSONObject getTypesObject(String projectId) {
-        if (projectId == null) {// Goes inside during application run time
-            return appTypesObj;
-        }
-        return this.typesObjMap.get(projectId);// in studio run time(app design time)
-    }
-
-    public void addTypesObject(String projectId, JSONObject val) {
-        this.typesObjMap.put(projectId, val);
-    }
-
-    public void removeTypesObject(String projectId) {
-        this.typesObjMap.remove(projectId);
     }
 
     public <T> T getSpringBean(String beanId) {
