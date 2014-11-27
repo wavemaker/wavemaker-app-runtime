@@ -1,11 +1,9 @@
 package com.wavemaker.runtime.data.dao.query;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.TypeConversionUtils;
-import com.wavemaker.runtime.data.dao.util.QueryHelper;
-import com.wavemaker.runtime.data.model.CustomQuery;
-import com.wavemaker.runtime.data.model.CustomQueryParam;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -16,9 +14,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.wavemaker.common.MessageResource;
+import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.TypeConversionUtils;
+import com.wavemaker.runtime.data.dao.util.QueryHelper;
+import com.wavemaker.runtime.data.model.CustomQuery;
+import com.wavemaker.runtime.data.model.CustomQueryParam;
 
 public class WMQueryExecutorImpl implements WMQueryExecutor {
 
@@ -37,7 +38,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
 	public Page<Object> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable) {
 		Session currentSession = template.getSessionFactory().getCurrentSession();
-		
 		Query namedQuery = currentSession.getNamedQuery(queryName);
         QueryHelper.setResultTransformer(namedQuery);
 		QueryHelper.configureParameters(namedQuery, params);
