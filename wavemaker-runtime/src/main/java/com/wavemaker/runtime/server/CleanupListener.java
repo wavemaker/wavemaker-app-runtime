@@ -62,6 +62,7 @@ public class CleanupListener implements ServletContextListener {
             e.printStackTrace();
         } finally {
             WMAppContext.clearInstance();
+            System.gc();//TODO Had to add this line to prevent jar lock issue on deleting the undeployed project
         }
     }
 }
