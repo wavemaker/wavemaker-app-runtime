@@ -281,6 +281,10 @@
             <groupId>com.wavemaker.tools</groupId>
             <artifactId>wavemaker-api-tools</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.wavemaker.tools</groupId>
+            <artifactId>wavemaker-api-tools</artifactId>
+        </dependency>
 
     </dependencies>
 </project>
