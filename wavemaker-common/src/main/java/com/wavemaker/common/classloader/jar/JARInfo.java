@@ -76,13 +76,6 @@ public class JARInfo {
         return row;
     }
 
-    void print(){
-        System.out.println(" Name   ::"+Name);
-        System.out.println(" Date   ::"+EntryDate);
-        System.out.println(" Size   ::"+Size);
-        System.out.println(" Packed ::"+Packed);
-        System.out.println(" Path   ::"+Path);
-    }
     public String toString(){
         return(" Name   ::"+Name+" Date ::"+EntryDate+
             " Size  ::"+Size+" Packed  ::"+Packed+" Path   ::"+Path);
