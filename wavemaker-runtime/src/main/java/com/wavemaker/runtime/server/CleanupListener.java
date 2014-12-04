@@ -46,9 +46,16 @@ public class CleanupListener implements ServletContextListener {
         try {
             // remove from the system DriverManager the JDBC drivers registered
             // by this web app
+            /** Adding this line as getDrivers has a side effect of registering drivers
+             * that are visible to this class loader but haven't yet been loaded and the newly registered
+             * drivers are not returned in the call,therefore calling
+             * DriverManager.getDriviers() twice to get the full list including the newly registered drivers
+            **/
+            Enumeration<Driver> ignoreDrivers = DriverManager.getDrivers();
             for (Enumeration<Driver> e = CastUtils.cast(DriverManager.getDrivers()); e.hasMoreElements();) {
                 Driver driver = e.nextElement();
                 if (driver.getClass().getClassLoader() == getClass().getClassLoader()) {
+                    System.out.println("De Registering the driver [" + driver.getClass().getCanonicalName() + "]");
                     DriverManager.deregisterDriver(driver);
                 }
             }
