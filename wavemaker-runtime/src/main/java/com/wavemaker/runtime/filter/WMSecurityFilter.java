@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 import com.wavemaker.runtime.WMAppContext;
@@ -34,17 +35,21 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        if (!isSecurityEnforced() || (appTestRunMode && "true".equals(((HttpServletRequest) servletRequest).getHeader("skipSecurity")))) {
-            // Ignore the DelegatingProxyFilter delegate
-            filterChain.doFilter(servletRequest, servletResponse);
-        } else {
-            // Call the delegate
-            super.doFilter(servletRequest, servletResponse, filterChain);
+        try {
+            if (!isSecurityEnforced() || (appTestRunMode && "true".equals(((HttpServletRequest) servletRequest).getHeader("skipSecurity")))) {
+                // Ignore the DelegatingProxyFilter delegate
+                filterChain.doFilter(servletRequest, servletResponse);
+            } else {
+                // Call the delegate
+                super.doFilter(servletRequest, servletResponse, filterChain);
+            }
+        } finally {
+            SecurityContextHolder.clearContext();//Cleaning any Threadlocal map values if created
         }
     }
 
     private boolean isSecurityEnforced() {
-        if(isSecurityEnforced == null) {
+        if (isSecurityEnforced == null) {
             try {
                 WMSecurityConfigStore wmSecurityConfigStore = WMAppContext.getInstance().getSpringBean(WMSecurityConfigStore.class);
                 isSecurityEnforced = wmSecurityConfigStore.isEnforceSecurity();
