@@ -58,11 +58,11 @@ public class WMMultipartUtils {
     public static <T> T setMultipartsToObject(Map<String, MultipartFile> multiparts, T instance) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         Class aClass = instance.getClass();
         for (String part : multiparts.keySet()) {
+            if (!part.equals(WM_DATA_JSON)) {
             Field field = aClass.getDeclaredField(part);
             field.setAccessible(true);
             String methodName = "set" + StringUtils.capitalize(field.getName());
             Method method = aClass.getMethod(methodName, (Class<?>) field.getType());
-            if (!part.equals(WM_DATA_JSON)) {
                 MultipartFile multipartFile = multiparts.get(part);
                 invokeMethod(instance, multipartFile.getInputStream(), method, field);
             }
