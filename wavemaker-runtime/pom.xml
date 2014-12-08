@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent >
+    <parent>
         <groupId>com.wavemaker.studio</groupId>
         <artifactId>wavemaker-studio</artifactId>
         <version>7.1.2</version>
@@ -275,14 +275,13 @@
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.wavemaker.tools</groupId>
             <artifactId>wavemaker-api-tools</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wavemaker.tools</groupId>
-            <artifactId>wavemaker-api-tools</artifactId>
+            <groupId>net.sf.jmimemagic</groupId>
+            <artifactId>jmimemagic</artifactId>
         </dependency>
 
     </dependencies>

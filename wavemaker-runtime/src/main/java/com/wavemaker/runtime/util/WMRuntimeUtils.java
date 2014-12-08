@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.util;
 
+import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.util.ClassUtils;
+
+import com.wavemaker.common.WMRuntimeException;
 
 /**
  * @author Uday Shankar
@@ -38,6 +41,8 @@ public class WMRuntimeUtils {
                     ClassUtils.isPresent("org.codehaus.jackson.JsonGenerator", WMRuntimeUtils.class.getClassLoader());
 
     private static final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+
+    private static final String BYTE_ARRAY = "byte[]";
 
     static {
         messageConverters.add(new ByteArrayHttpMessageConverter());
@@ -62,5 +67,18 @@ public class WMRuntimeUtils {
 
     public static List<HttpMessageConverter<?>> getMessageConverters() {
         return messageConverters;
+    }
+
+    public static boolean isLob(Class instance, String field) {
+        Field declaredField = null;
+        try {
+            declaredField = instance.getDeclaredField(field);
+        } catch (NoSuchFieldException e) {
+            throw new WMRuntimeException("Filed "+ field + " does not exist in class " + instance.getName(), e);
+        }
+        if (declaredField != null && BYTE_ARRAY.equals(declaredField.getType().getSimpleName())) {
+            return true;
+        }
+        return false;
     }
 }

@@ -1,12 +1,16 @@
 package com.wavemaker.runtime.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -18,6 +22,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wavemaker.common.InvalidInputException;
 import com.wavemaker.common.WMRuntimeException;
+import net.sf.jmimemagic.*;
 
 /**
  * @author sunilp
@@ -77,5 +82,82 @@ public class WMMultipartUtils {
             throw new WMRuntimeException("Casting multipart " + field.getName() + " to " + field.getType().getSimpleName() + " is not supported");
         }
         return instance;
+    }
+
+    /**
+     * get a match from a stream of data
+     *
+     * @param data bytes of data
+     * @return Guessed content type of given bytes
+     * @throws MagicException Failed to Guess!
+     */
+    public static String guessContentType(byte[] data) throws MagicException {
+        return getMagicMatch(data).getMimeType();
+    }
+
+    /**
+     * get a match from a stream of data
+     *
+     * @param data bytes of data
+     * @return Guessed extension of given bytes
+     * @throws MagicException Failed to Guess!
+     */
+    public static String guessExtension(byte[] data) throws MagicException {
+        return getMagicMatch(data).getExtension();
+    }
+
+    /**
+     * Generate Http response for a field in any Instance
+     *
+     * @param instance            any Instance
+     * @param field               name of the field
+     * @param httpServletRequest  to prepare content type
+     * @param httpServletResponse to generate response for the given field
+     */
+    public static <T> void prepareHttpResponseForField(T instance, String field, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        try {
+            String methodName = "get" + StringUtils.capitalize(field);
+            Method method = instance.getClass().getMethod(methodName);
+            byte[] bytes = (byte[]) method.invoke(instance);
+            if (bytes == null) {
+                throw new WMRuntimeException("Data is empty in column " + field);
+            }
+            httpServletResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
+            httpServletResponse.setHeader("Content-Disposition", "filename=" + field + new Random().nextInt(99) + ";size=" + bytes.length);
+            int contentLength = IOUtils.copy(new ByteArrayInputStream(bytes), httpServletResponse.getOutputStream());
+            httpServletResponse.setContentLength(contentLength);
+        } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new WMRuntimeException("Failed to prepare response for column" + field, e);
+        }
+
+    }
+
+    /**
+     * Guess Content type for the given bytes using Magic apis.
+     * If any exception using magic api, then getting content type from request.
+     *
+     * @param bytes stream of bytes
+     * @param httpServletRequest
+     * @return content type for given bytes
+     */
+    private static String getMatchingContentType(byte[] bytes, HttpServletRequest httpServletRequest) {
+        String contentType = null;
+        try {
+            contentType = WMMultipartUtils.guessContentType(bytes);
+        } catch (MagicException e) {
+            //do nothing
+        }
+        if (contentType == null) {
+            contentType = httpServletRequest.getContentType();
+        }
+        return contentType;
+    }
+
+    private static MagicMatch getMagicMatch(byte[] data) throws MagicException {
+        try {
+            return Magic.getMagicMatch(data);
+        } catch (MagicParseException | MagicMatchNotFoundException | MagicException e) {
+            throw new MagicException("Failed to guess magic match for the given bytes", e);
+        }
     }
 }
