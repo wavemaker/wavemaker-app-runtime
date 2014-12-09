@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.gridfs;
+package com.wavemaker.studio.gridfs;
 
 import com.mongodb.gridfs.GridFS;
 import com.wavemaker.studio.core.io.File;

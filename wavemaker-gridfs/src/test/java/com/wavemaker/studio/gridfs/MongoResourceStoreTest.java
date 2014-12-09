@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.gridfs;
+package com.wavemaker.studio.gridfs;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -43,8 +43,8 @@ import com.mongodb.DBObject;
 import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
-import com.wavemaker.gridfs.MongoResourceStore.MongoFileStore;
-import com.wavemaker.gridfs.MongoResourceStore.MongoFolderStore;
+import com.wavemaker.studio.gridfs.MongoResourceStore.MongoFileStore;
+import com.wavemaker.studio.gridfs.MongoResourceStore.MongoFolderStore;
 import com.wavemaker.studio.core.io.File;
 import com.wavemaker.studio.core.io.Folder;
 import com.wavemaker.studio.core.io.JailedResourcePath;
@@ -65,7 +65,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link MongoResourceStore} and subclasses.
+ * Tests for {@link com.wavemaker.studio.gridfs.MongoResourceStore} and subclasses.
  * 
  * @author Phillip Webb
  */
