@@ -51,54 +51,7 @@
         <property name="supportedMethods" value="GET,POST"/>
     </bean>
 
-    <bean id="agFileUploadController"
-          class="com.wavemaker.runtime.server.FileUploadController">
-        <property name="serviceManager">
-            <ref bean="serviceManager"/>
-        </property>
-        <property name="runtimeAccess">
-            <ref bean="runtimeAccess"/>
-        </property>
-        <property name="internalRuntime">
-            <ref bean="internalRuntime"/>
-        </property>
-
-        <!-- controller configuration -->
-        <property name="supportedMethods" value="GET,POST"/>
-    </bean>
-
-    <bean id="agFlashFileUploadController"
-          class="com.wavemaker.runtime.server.FlashFileUploadController">
-        <property name="serviceManager">
-            <ref bean="serviceManager"/>
-        </property>
-        <property name="runtimeAccess">
-            <ref bean="runtimeAccess"/>
-        </property>
-        <property name="internalRuntime">
-            <ref bean="internalRuntime"/>
-        </property>
-
-        <!-- controller configuration -->
-        <property name="supportedMethods" value="GET,POST"/>
-    </bean>
     <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.StudioRuntimeController" > </bean>
-
-    <bean id="agFileDownloadController"
-          class="com.wavemaker.runtime.server.FileDownloadController">
-        <property name="serviceManager">
-            <ref bean="serviceManager"/>
-        </property>
-        <property name="runtimeAccess">
-            <ref bean="runtimeAccess"/>
-        </property>
-        <property name="internalRuntime">
-            <ref bean="internalRuntime"/>
-        </property>
-
-        <!-- controller configuration -->
-        <!--property name="supportedMethods" value="GET" /-->
-    </bean>
 
     <bean id="wmModuleController"
           class="com.wavemaker.runtime.module.ModuleController">

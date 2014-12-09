@@ -122,7 +122,6 @@ protected File getUploadDir() {
      * file : multipart file to be uploaded.
      * relativePath : This is the relative path where file will be uploaded.
      *
-     * RETURNS DojoFileUploaderResponse 
      *   This has the following fields
      *   Path: tells the client where the file was stored so that the client can
      *         identify the file to the server

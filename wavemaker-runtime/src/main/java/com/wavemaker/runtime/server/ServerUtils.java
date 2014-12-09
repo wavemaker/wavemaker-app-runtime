@@ -346,9 +346,6 @@ public class ServerUtils {
      * (or even expectation) that other AOP proxies will be detected. Java (or CGLIB) may have more deterministic ways
      * to find the underlying class.
      * <p>
-     * Used by FileUploadController and FileDownloadController, which to findMethod() on SpringBeans obtained at
-     * runtime.
-     * 
      * @param sClass the class of an object that may be wrapped by a proxy object.
      * @return the underlying Class of the object that was wrapped
      */
