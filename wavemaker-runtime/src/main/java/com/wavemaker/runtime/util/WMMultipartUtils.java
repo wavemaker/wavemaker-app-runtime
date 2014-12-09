@@ -110,24 +110,24 @@ public class WMMultipartUtils {
      * Generate Http response for a field in any Instance
      *
      * @param instance            any Instance
-     * @param field               name of the field
+     * @param fieldName           name of the field
      * @param httpServletRequest  to prepare content type
      * @param httpServletResponse to generate response for the given field
      */
-    public static <T> void prepareHttpResponseForField(T instance, String field, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+    public static <T> void buildHttpResponseForBlob(T instance, String fieldName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            String methodName = "get" + StringUtils.capitalize(field);
+            String methodName = "get" + StringUtils.capitalize(fieldName);
             Method method = instance.getClass().getMethod(methodName);
             byte[] bytes = (byte[]) method.invoke(instance);
             if (bytes == null) {
-                throw new WMRuntimeException("Data is empty in column " + field);
+                throw new WMRuntimeException("Data is empty in column " + fieldName);
             }
             httpServletResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
-            httpServletResponse.setHeader("Content-Disposition", "filename=" + field + new Random().nextInt(99) + ";size=" + bytes.length);
+            httpServletResponse.setHeader("Content-Disposition", "filename=" + fieldName + new Random().nextInt(99) + ";size=" + bytes.length);
             int contentLength = IOUtils.copy(new ByteArrayInputStream(bytes), httpServletResponse.getOutputStream());
             httpServletResponse.setContentLength(contentLength);
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new WMRuntimeException("Failed to prepare response for column" + field, e);
+            throw new WMRuntimeException("Failed to prepare response for fieldName" + fieldName, e);
         }
 
     }
