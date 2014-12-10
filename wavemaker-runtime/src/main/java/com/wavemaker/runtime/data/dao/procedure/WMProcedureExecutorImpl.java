@@ -2,13 +2,12 @@ package com.wavemaker.runtime.data.dao.procedure;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +36,6 @@ import com.wavemaker.runtime.data.model.ProcedureParamType;
 public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
-
     private HibernateTemplate template = null;
     private String serviceId = null;
     private ProcedureModel procedureModel = null;
@@ -60,161 +58,138 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
     @PostConstruct
     protected void init() {
-        URL resourceURL = Thread.currentThread().getContextClassLoader().getResource(serviceId + "-procedures.mappings.json");
-        File mappingFile = new File(resourceURL.getFile());
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            procedureModel=  mapper.readValue(new FileInputStream(mappingFile), ProcedureModel.class);
-        } catch (IOException e) {
+            URL resourceURL = Thread.currentThread().getContextClassLoader().getResource(serviceId + "-procedures.mappings.json");
+            File mappingFile = new File(resourceURL.getFile());
+            ObjectMapper mapper = new ObjectMapper();
+            procedureModel = mapper.readValue(new FileInputStream(mappingFile), ProcedureModel.class);
+        } catch (Exception e) {
             throw new WMRuntimeException("Failed to map the procedures mapping file", e);
         }
     }
 
-   public List<Object> executeNamedProcedure( String procedureName, Map<String, Object> params) {
+    private Procedure getProcedure(String procedureName) {
+        for (Procedure procedure : procedureModel.getProcedures()) {
+            if (procedure.getName().equals(procedureName)) {
+                return procedure;
+            }
+        }
+        throw new WMRuntimeException("Failed to find the named procedure: " + procedureName);
+    }
 
-        String procedureString = "";
-        boolean hasOutParam = false;
+    @Override
+    public List<Object> executeNamedProcedure(String procedureName, Map<String, Object> params) {
 
+        Procedure procedure = getProcedure(procedureName);
         try {
-            Map<String, List<Object>> custParams = new HashMap<String, List<Object>>();
-            for (Procedure procedureWrapper : procedureModel.getProcedures()) {
-                if(procedureWrapper.getName().equals(procedureName)) {
-                    procedureString = procedureWrapper.getProcedure();
-                    for (String key : params.keySet()) {
-                        ProcedureParam procedureParam = getProcedureParam(key, procedureWrapper.getProcedureParams());
-                        Integer position = getProcedureParamPosition(key, procedureWrapper.getProcedureParams());
-                        if(procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam.getProcedureParamType().equals(ProcedureParamType.OUT))
-                        {
-                            hasOutParam = false;
-                        }
-                        List<Object> paramsMap = new ArrayList<Object>();
-                        paramsMap.add(new CustomProcedureParam(procedureParam.getParamName(),params.get(key), procedureParam.getProcedureParamType(), procedureParam.getValueType()));
-                        paramsMap.add(position);
-                        custParams.put(key, paramsMap);
-                    }
-                    break;
-                }
+            List<CustomProcedureParam> customParameters = new ArrayList<CustomProcedureParam>();
 
+            for (ProcedureParam procedureParam : procedure.getProcedureParams()) {
+                CustomProcedureParam customProcedureParam = new CustomProcedureParam(procedureParam.getParamName(), params.get(procedureParam.getParamName()), procedureParam.getProcedureParamType(), procedureParam.getValueType());
+                customParameters.add(customProcedureParam);
             }
-            if(!hasOutParam)
-                return executeNativeProcedure(procedureString, custParams);
-            else
-                return nativeJDBCCall(procedureString, custParams);
 
+            return executeProcedure(procedure.getProcedure(), customParameters);
         } catch (Exception e) {
-            throw  new WMRuntimeException("Failed to execute Named Procedure", e);
-
+            throw new WMRuntimeException("Failed to execute Named Procedure", e);
         }
-
-
     }
 
-    private Integer getProcedureParamPosition(String key, List<ProcedureParam> procedureParams) {
-        for(int i=0; i<procedureParams.size();i++){
-            if(procedureParams.get(i).getParamName().equals(key))
-                return i+1;
-
+    private List<Object> executeProcedure(String procedureString, List<CustomProcedureParam> customParameters) {
+        if (!hasOutParam(customParameters)){
+            return executeNativeProcedure(procedureString, customParameters);
         }
-        return  null;
-
-    }
-
-    private ProcedureParam getProcedureParam(String key, List<ProcedureParam> procedureParams) {
-        for (ProcedureParam procedureParam : procedureParams) {
-            if(procedureParam.getParamName().equals(key)){
-                return procedureParam;
-            }
+        else{
+            return executeNativeJDBCCall(procedureString, customParameters);
         }
-        return null;
     }
 
     @Override
     public List<Object> executeCustomProcedure(CustomProcedure customProcedure) {
-        Map<String, List<Object>> params = new HashMap<String, List<Object>>();
-        prepareParams(params, customProcedure.getProcedureParams());
-        if(!hasOutParam(customProcedure))
-            return executeNativeProcedure(customProcedure.getProcedureStr(), params);
-        else
-            return nativeJDBCCall(customProcedure.getProcedureStr(), params);
+        List<CustomProcedureParam> procedureParams = prepareParams(customProcedure.getProcedureParams());
+        return executeProcedure(customProcedure.getProcedureStr(), procedureParams);
 
     }
+    private boolean hasOutParamType(CustomProcedureParam procedureParam){
+       return procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam.getProcedureParamType().equals(ProcedureParamType.OUT);
+    }
 
-    private List<Object> nativeJDBCCall(String procedureStr, Map<String, List<Object>> params) {
-        Session session = template.getSessionFactory().openSession();
-        Connection conn = ((SessionImpl) session).connection();
-        try{
+    private List<Object> executeNativeJDBCCall(String procedureStr, List<CustomProcedureParam> customParams) {
+        Connection conn = null;
+        try {
+            Session session = template.getSessionFactory().openSession();
+            conn = ((SessionImpl) session).connection();
 
             SQLQuery sqlProcedure = session.createSQLQuery(procedureStr);
             String[] namedParams = sqlProcedure.getNamedParameters();
-            CallableStatement callableStatement = conn.prepareCall(getJDBCString(procedureStr, namedParams));
+            CallableStatement callableStatement = conn.prepareCall(getJDBCConvertedString(procedureStr, namedParams));
 
             List<Integer> outParams = new ArrayList<Integer>();
-            for (String namedParam : namedParams) {
-                List<Object> paramTypes = params.get(namedParam);
+            for (int position = 0; position < customParams.size(); position++) {
+                CustomProcedureParam procedureParam = customParams.get(position);
+                if (hasOutParamType(procedureParam)) {
 
-                CustomProcedureParam procedureParam =(CustomProcedureParam) paramTypes.get(0);
-                if(procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam.getProcedureParamType().equals(ProcedureParamType.OUT)){
+                    LOGGER.info("Found out Parameter " + procedureParam.getParamName());
                     String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).v2;
-                    Integer typeCode = null;
-                    typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer)Types.class.getField(typeName.toUpperCase()).get(null);
-                    callableStatement.registerOutParameter((Integer)paramTypes.get(1), typeCode);
-                    outParams.add((Integer)paramTypes.get(1));
-                }else if(procedureParam.getProcedureParamType().equals(ProcedureParamType.IN) || procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) ){
-                    callableStatement.setObject((Integer)paramTypes.get(1),procedureParam.getParamValue());
+                    Integer typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer) Types.class.getField(typeName.toUpperCase()).get(null);
+                    LOGGER.info("Found type code to be "+ typeCode);
+                    callableStatement.registerOutParameter(position + 1, typeCode);
+                    outParams.add(position + 1);
+                }
+                if (procedureParam.getProcedureParamType().equals(ProcedureParamType.IN) || procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT)) {
+                    callableStatement.setObject(position + 1, procedureParam.getParamValue());
                 }
             }
 
+            LOGGER.info("Executing Procedure [ " + procedureStr +" ]");
             callableStatement.execute();
+
             List<Object> outData = new ArrayList<Object>();
             for (Integer outParam : outParams) {
-                 outData.add(callableStatement.getObject(outParam));
+                outData.add(callableStatement.getObject(outParam));
             }
             return outData;
-        }catch(Exception e){
-          throw  new WMRuntimeException("Faild to execute procedure ", e);
+        } catch (Exception e) {
+            throw new WMRuntimeException("Faild to execute procedure ", e);
+        }finally {
+            if(conn != null){
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    throw new WMRuntimeException("Failed to close connection", e);
+                }
+            }
         }
-
-
     }
 
-    private String getJDBCString(String procedureStr, String[] namedParams) {
+
+    private String getJDBCConvertedString(String procedureStr, String[] namedParams) {
         String targetString = procedureStr;
         for (String namedParam : namedParams) {
-            targetString = targetString.replace(":"+namedParam, "?");
+            targetString = targetString.replace(":" + namedParam, "?");
         }
         return targetString;
-
     }
 
-    private boolean hasOutParam(CustomProcedure customProcedure){
-        for (CustomProcedureParam customProcedureParam : customProcedure.getProcedureParams()) {
-            if(customProcedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || customProcedureParam.getProcedureParamType().equals(ProcedureParamType.OUT)){
+    private boolean hasOutParam(List<CustomProcedureParam> customProcedureParams) {
+        for (CustomProcedureParam customProcedureParam : customProcedureParams) {
+            if (hasOutParamType(customProcedureParam)) {
                 return true;
             }
         }
         return false;
     }
 
-    private void prepareParams(Map<String, List<Object>> params, List<CustomProcedureParam> customProcedureParams) {
-
+    private List<CustomProcedureParam> prepareParams(List<CustomProcedureParam> customProcedureParams) {
         if (customProcedureParams != null && !customProcedureParams.isEmpty()) {
-            for (int i=0; i<customProcedureParams.size();i++) {
-                CustomProcedureParam customProcedureParam = customProcedureParams.get(i);
-                List<Object> paramMetaData = new ArrayList<Object>();
-
-
-                Object paramValue = customProcedureParam.getParamValue();
-                Object processParamValue = getValueObject(customProcedureParam);
-                if(processParamValue != null){
-                    paramValue = processParamValue;
+            for (CustomProcedureParam customProcedureParam : customProcedureParams) {
+                Object processedParamValue = getValueObject(customProcedureParam);
+                if (processedParamValue != null) {
+                    customProcedureParam.setParamValue(processedParamValue);
                 }
-                customProcedureParam.setParamValue(paramValue);
-                paramMetaData.add(customProcedureParam);
-                paramMetaData.add(i+1);
-                params.put(customProcedureParam.getParamName(), paramMetaData);
             }
         }
-
+        return customProcedureParams;
     }
 
     private Object getValueObject(CustomProcedureParam customProcedureParam) {
@@ -231,16 +206,11 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         return paramValue;
     }
 
-    protected List<Object> executeNativeProcedure(String procedureString, Map<String, List<Object>> params) {
-        SQLQuery sqlProcedure = createNativeProcedure(procedureString, params);
-        return sqlProcedure.list();
-    }
-
-    private SQLQuery createNativeProcedure(String procedureString, Map<String, List<Object>> params) {
+    protected List<Object> executeNativeProcedure(String procedureString, List<CustomProcedureParam> params) {
         Session currentSession = template.getSessionFactory().getCurrentSession();
         SQLQuery sqlProcedure = currentSession.createSQLQuery(procedureString);
         ProcedureHelper.configureParameters(sqlProcedure, params);
-        return sqlProcedure;
+        return sqlProcedure.list();
     }
 
 
