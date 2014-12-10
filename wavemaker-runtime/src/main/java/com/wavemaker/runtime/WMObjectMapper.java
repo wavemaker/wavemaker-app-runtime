@@ -21,9 +21,11 @@ import java.io.StringWriter;
 
 import org.apache.commons.io.IOUtils;
 
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.wavemaker.runtime.data.json.WMHibernate4Module;
 
@@ -36,6 +38,11 @@ public class WMObjectMapper extends ObjectMapper {
         WMHibernate4Module hibernate4Module = new WMHibernate4Module();
         hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
         registerModule(hibernate4Module);
+
+        SimpleModule module = new SimpleModule("ByteArraySerializeModule",new Version(1, 0, 0, null));
+        ByteArraySerializeModule byteArrayDeserializerModule =  new ByteArraySerializeModule();
+        module.addSerializer(byte[].class, byteArrayDeserializerModule);
+        registerModule(module);
     }
 
     public <T> T readValue(InputStream src, JavaType valueType) throws IOException {
@@ -50,4 +57,5 @@ public class WMObjectMapper extends ObjectMapper {
     public static WMObjectMapper getInstance() {
         return instance;
     }
+
 }
