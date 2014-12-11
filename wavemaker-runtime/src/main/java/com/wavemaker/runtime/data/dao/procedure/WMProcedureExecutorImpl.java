@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.internal.SessionImpl;
+import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -32,6 +33,7 @@ import com.wavemaker.runtime.data.model.Procedure;
 import com.wavemaker.runtime.data.model.ProcedureModel;
 import com.wavemaker.runtime.data.model.ProcedureParam;
 import com.wavemaker.runtime.data.model.ProcedureParamType;
+import com.wavemaker.runtime.data.util.ProceduresUtils;
 
 public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
@@ -96,7 +98,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     }
 
     private List<Object> executeProcedure(String procedureString, List<CustomProcedureParam> customParameters) {
-        if (!hasOutParam(customParameters)){
+        if (!ProceduresUtils.hasOutParam(customParameters)){
             return executeNativeProcedure(procedureString, customParameters);
         }
         else{
@@ -109,9 +111,6 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         List<CustomProcedureParam> procedureParams = prepareParams(customProcedure.getProcedureParams());
         return executeProcedure(customProcedure.getProcedureStr(), procedureParams);
 
-    }
-    private boolean hasOutParamType(CustomProcedureParam procedureParam){
-       return procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam.getProcedureParamType().equals(ProcedureParamType.OUT);
     }
 
     private List<Object> executeNativeJDBCCall(String procedureStr, List<CustomProcedureParam> customParams) {
@@ -127,7 +126,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             List<Integer> outParams = new ArrayList<Integer>();
             for (int position = 0; position < customParams.size(); position++) {
                 CustomProcedureParam procedureParam = customParams.get(position);
-                if (hasOutParamType(procedureParam)) {
+                if (ProceduresUtils.hasOutParamType(procedureParam)) {
 
                     LOGGER.info("Found out Parameter " + procedureParam.getParamName());
                     String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).v2;
@@ -171,14 +170,6 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         return targetString;
     }
 
-    private boolean hasOutParam(List<CustomProcedureParam> customProcedureParams) {
-        for (CustomProcedureParam customProcedureParam : customProcedureParams) {
-            if (hasOutParamType(customProcedureParam)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     private List<CustomProcedureParam> prepareParams(List<CustomProcedureParam> customProcedureParams) {
         if (customProcedureParams != null && !customProcedureParams.isEmpty()) {
@@ -210,6 +201,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         Session currentSession = template.getSessionFactory().getCurrentSession();
         SQLQuery sqlProcedure = currentSession.createSQLQuery(procedureString);
         ProcedureHelper.configureParameters(sqlProcedure, params);
+        sqlProcedure.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         return sqlProcedure.list();
     }
 

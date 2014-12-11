@@ -34,10 +34,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.data.dao.procedure.WMProcedureExecutor;
 import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
+import com.wavemaker.runtime.data.model.CustomProcedure;
+import com.wavemaker.runtime.data.model.CustomProcedureParam;
 import com.wavemaker.runtime.data.model.CustomQuery;
+import com.wavemaker.runtime.data.model.ProcedureResponse;
 import com.wavemaker.runtime.data.model.QueryResponse;
 import com.wavemaker.runtime.data.util.DataServiceUtils;
+import com.wavemaker.runtime.data.util.ProceduresUtils;
 
 /**
  * @author Sowmya
@@ -48,6 +53,7 @@ public class StudioRuntimeController {
 
     String queryExecutorBeanName = "{serviceId}WMQueryExecutor";
     String transactionManagerBeanName = "{serviceId}TransactionManager";
+    String procedureExecutorBeanName = "{serviceId}WMProcedureExecutor";
 
 
     @RequestMapping(value="/{serviceId}/queries/wm_querymetadata" , method = RequestMethod.POST)
@@ -78,6 +84,53 @@ public class StudioRuntimeController {
             }
         });
     }
+    @RequestMapping(value="/{serviceId}/procedures/wm_proceduremetadata" , method = RequestMethod.POST)
+    @ResponseBody
+    public ProcedureResponse createMetaDataForProcedures(@RequestBody final CustomProcedure customProcedure, @PathVariable("serviceId") String serviceId)   {
+
+
+        procedureExecutorBeanName =  procedureExecutorBeanName.replaceAll("\\{serviceId\\}",serviceId);
+        transactionManagerBeanName =  transactionManagerBeanName.replaceAll("\\{serviceId\\}", serviceId);
+        PlatformTransactionManager transactionManager = WMAppContext.getInstance().getSpringBean(transactionManagerBeanName);
+        TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+        txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        return txTemplate.execute(new TransactionCallback<ProcedureResponse>() {
+            @Override
+            public ProcedureResponse doInTransaction(TransactionStatus status) {
+
+                ProcedureResponse procedureResponse = new ProcedureResponse();
+
+                WMProcedureExecutor wmProcedureExecutor = WMAppContext.getInstance().getSpringBean(procedureExecutorBeanName);
+
+                List<Object> response =  wmProcedureExecutor.executeCustomProcedure(customProcedure);
+
+                procedureResponse.setProcedureResult(response);
+
+                if(ProceduresUtils.hasOutParam(customProcedure.getProcedureParams())){
+                    procedureResponse.setMetaData(prepareFromOutParams(customProcedure));
+
+                }else{
+                 procedureResponse.setMetaData(prepareMetaData(response));
+                }
+
+                return procedureResponse;
+            }
+
+
+        });
+    }
+
+    private Map<String, String> prepareFromOutParams(CustomProcedure customProcedure) {
+        Map<String, String> metaData = new HashMap<>();
+        for (CustomProcedureParam customProcedureParam : customProcedure.getProcedureParams()) {
+            if(ProceduresUtils.hasOutParamType(customProcedureParam)){
+                metaData.put(customProcedureParam.getParamName(), customProcedureParam.getValueType()) ;
+
+            }
+        }
+        return metaData;
+    }
+
 
     private Map prepareMetaData(List response) {
         Map<String, String> result = new HashMap<String, String>();
