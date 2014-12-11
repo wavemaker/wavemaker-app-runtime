@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 
 import com.wavemaker.common.classloader.WMUrlClassLoader;
+import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.studio.prefab.context.PrefabWebApplicationContext;
 import com.wavemaker.studio.prefab.core.Prefab;
 import com.wavemaker.studio.prefab.core.PrefabInstaller;
@@ -50,7 +51,7 @@ import com.wavemaker.studio.prefab.event.PrefabsUnloadedEvent;
 public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextAware,
         ApplicationListener<PrefabEvent>, ServletContextAware {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PrefabInstallerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(PrefabInstallerImpl.class);
 
     @Override
     public void installPrefab(final Prefab prefab) {
@@ -150,7 +151,8 @@ public class PrefabInstallerImpl implements PrefabInstaller, ApplicationContextA
         if (prefabManager != null) {
             // closing class loader
             for (Prefab prefab : prefabManager.getPrefabs()) {
-                ((WMUrlClassLoader) prefab.getClassLoader()).close();
+                WMUrlClassLoader wmUrlClassLoader = (WMUrlClassLoader) prefab.getClassLoader();
+                IOUtils.closeByLogging(wmUrlClassLoader);
                 prefab.setClassLoader(null);
             }
             prefabManager.deleteAllPrefabs();

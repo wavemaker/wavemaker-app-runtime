@@ -31,10 +31,17 @@ public class PrefabWebApplicationContext extends XmlWebApplicationContext {
                                        final ServletContext servletContext) {
         setId(prefab.getName());
         setParent(parent);
-        setClassLoader(prefab.getClassLoader());
+        ClassLoader prefabClassLoader = prefab.getClassLoader();
+        setClassLoader(prefabClassLoader);
         setServletContext(servletContext);
         setDisplayName("Prefab Context [" + prefab.getName() + "]");
         setConfigLocations(new String[]{"classpath:" + prefab.getName() + "-prefab-services.xml"});
-        refresh();
+        ClassLoader currentLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(prefabClassLoader);
+            refresh();
+        } finally {
+            Thread.currentThread().setContextClassLoader(currentLoader);
+        }
     }
 }
