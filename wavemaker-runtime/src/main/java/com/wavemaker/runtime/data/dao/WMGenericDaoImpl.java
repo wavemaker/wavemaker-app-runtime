@@ -199,7 +199,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                         break;
 
                     case TIME:
-                        queryFilter.setAttributeValue(new Timestamp(((Number) queryFilter.getAttributeValue()).longValue()));
+                        queryFilter.setAttributeValue(TimeType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
                         break;
                     case TIMESTAMP:
                         queryFilter.setAttributeValue(new Timestamp(((Number) queryFilter.getAttributeValue()).longValue()));
