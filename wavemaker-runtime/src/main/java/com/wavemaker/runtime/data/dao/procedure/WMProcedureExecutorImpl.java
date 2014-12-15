@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -145,7 +146,9 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
             List<Object> outData = new ArrayList<Object>();
             for (Integer outParam : outParams) {
-                outData.add(callableStatement.getObject(outParam));
+                Map<String, Object> response = new HashMap<String , Object>();
+                response.put(customParams.get(outParam-1).getParamName(), callableStatement.getObject(outParam));
+                outData.add(response);
             }
             return outData;
         } catch (Exception e) {
