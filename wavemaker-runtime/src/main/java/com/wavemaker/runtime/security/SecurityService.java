@@ -243,7 +243,9 @@ public class SecurityService {
     @ExposeToClient
     public long getLoginTime() {
         WMUserDetails wmUserDetails = getWMUserDetails();
-        return wmUserDetails.getLoginTime();
+        if(wmUserDetails != null)
+            return wmUserDetails.getLoginTime();
+        return 0L;
     }
 
     /**
