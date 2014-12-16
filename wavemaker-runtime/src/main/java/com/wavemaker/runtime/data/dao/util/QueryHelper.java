@@ -3,7 +3,7 @@ package com.wavemaker.runtime.data.dao.util;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.transform.Transformers;

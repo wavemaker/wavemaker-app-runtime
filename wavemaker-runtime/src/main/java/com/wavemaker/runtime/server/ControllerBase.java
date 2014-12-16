@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.apache.log4j.NDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,7 +191,7 @@ public abstract class ControllerBase extends AbstractController {
         if (jsonArgs != null && mapParams != null) {
             throw new WMRuntimeException(MessageResource.BOTH_ARGUMENT_TYPES, jsonArgs, mapParams);
         } else if (sw == null) {
-            throw new NullArgumentException("sw");
+            throw new IllegalArgumentException("sw cannot be null");
         }
 
         sw.getServiceType().setup(sw, this.internalRuntime, this.runtimeAccess);

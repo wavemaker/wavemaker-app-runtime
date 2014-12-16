@@ -9,7 +9,7 @@ lexer grammar json;
 @header {
 package com.wavemaker.json.core;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 }
 
 BEGIN_ARRAY : '[' ;

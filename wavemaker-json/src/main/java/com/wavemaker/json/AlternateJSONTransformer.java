@@ -21,8 +21,7 @@ import java.util.Map.Entry;
 import java.util.Stack;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +72,7 @@ public class AlternateJSONTransformer {
         int arrayLevel, Stack<String> setterQueue) {
 
         if (fieldDefinition == null) {
-            throw new NullArgumentException("fieldDefinition");
+            throw new IllegalArgumentException("fieldDefinition cannot be null");
         }
 
         Object ret;
@@ -129,7 +128,7 @@ public class AlternateJSONTransformer {
         NoSuchMethodException {
 
         if (fieldDefinition == null) {
-            throw new NullArgumentException("fieldDefinition");
+            throw new IllegalArgumentException("fieldDefinition cannot be null");
         } else if (fieldDefinition.getTypeDefinition() == null) {
             throw new WMRuntimeException(MessageResource.JSON_TYPEDEF_REQUIRED);
         } else if (!(fieldDefinition.getTypeDefinition() instanceof ObjectTypeDefinition)) {
@@ -172,7 +171,7 @@ public class AlternateJSONTransformer {
         int arrayLevel, Stack<String> setterQueue) throws InstantiationException, IllegalAccessException {
 
         if (fieldDefinition == null) {
-            throw new NullArgumentException("fieldDefinition");
+            throw new IllegalArgumentException("fieldDefinition cannot be null");
         }
 
         ListTypeDefinition ltd = fieldDefinition.getArrayTypes().get(arrayLevel);
@@ -195,7 +194,7 @@ public class AlternateJSONTransformer {
         NoSuchMethodException {
 
         if (fieldDefinition == null) {
-            throw new NullArgumentException("fieldDefinition");
+            throw new IllegalArgumentException("fieldDefinition cannot be null");
         }
 
         // upgrade to concrete types

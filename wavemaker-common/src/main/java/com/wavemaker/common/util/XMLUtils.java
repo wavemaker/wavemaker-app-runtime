@@ -22,7 +22,7 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * @author Simon Toens

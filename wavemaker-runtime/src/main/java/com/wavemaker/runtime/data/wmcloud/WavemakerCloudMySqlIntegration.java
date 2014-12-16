@@ -15,16 +15,16 @@
  */
 package com.wavemaker.runtime.data.wmcloud;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
+
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.runtime.data.util.JDBCUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  *

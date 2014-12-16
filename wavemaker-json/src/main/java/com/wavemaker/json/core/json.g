@@ -38,7 +38,7 @@ tokens {
 @lexer::header {
 package com.wavemaker.json.core;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 }
 
 @parser::header {

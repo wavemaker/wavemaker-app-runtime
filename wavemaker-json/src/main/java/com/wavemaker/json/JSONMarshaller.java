@@ -15,28 +15,37 @@
  */
 package com.wavemaker.json;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.EntryComparator;
-import com.wavemaker.common.util.Tuple;
-import com.wavemaker.json.type.*;
-import com.wavemaker.json.type.converters.WriteObjectConverter;
-import com.wavemaker.json.type.reflect.ObjectReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.wavemaker.common.MessageResource;
+import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.EntryComparator;
+import com.wavemaker.common.util.Tuple;
+import com.wavemaker.json.type.FieldDefinition;
+import com.wavemaker.json.type.GenericFieldDefinition;
+import com.wavemaker.json.type.MapTypeDefinition;
+import com.wavemaker.json.type.ObjectTypeDefinition;
+import com.wavemaker.json.type.PrimitiveTypeDefinition;
+import com.wavemaker.json.type.TypeState;
+import com.wavemaker.json.type.converters.WriteObjectConverter;
+import com.wavemaker.json.type.reflect.ObjectReflectTypeDefinition;
+import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 
 /**
  * @author Matt Small
@@ -199,7 +208,7 @@ public final class JSONMarshaller {
         boolean prettyPrint, int level, Logger logger) throws IOException {
 
         if (fieldDefinition == null) {
-            throw new NullArgumentException("fieldDefinition");
+            throw new IllegalArgumentException("fieldDefinition cannot be null");
         }
 
         touchedObjects.push(obj);
@@ -301,7 +310,7 @@ public final class JSONMarshaller {
         throws IOException {
 
         if (fieldDefinition == null) {
-            throw new NullArgumentException("fieldDefinition");
+            throw new IllegalArgumentException("fieldDefinition cannot be null");
         }
 
         writer.write('{');
@@ -369,7 +378,7 @@ public final class JSONMarshaller {
         TypeState typeState, boolean prettyPrint, int level, Logger logger) throws IOException {
 
         if (fieldDefinition == null) {
-            throw new NullArgumentException("fieldDefinition");
+            throw new IllegalArgumentException("fieldDefinition cannot be null");
         }
 
         propertyNames.push(key);

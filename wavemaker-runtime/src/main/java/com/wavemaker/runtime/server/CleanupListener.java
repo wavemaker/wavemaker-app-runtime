@@ -23,8 +23,6 @@ import java.util.Enumeration;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.commons.logging.LogFactory;
-
 import com.wavemaker.common.util.CastUtils;
 import com.wavemaker.runtime.WMAppContext;
 
@@ -59,8 +57,6 @@ public class CleanupListener implements ServletContextListener {
                     DriverManager.deregisterDriver(driver);
                 }
             }
-
-            LogFactory.releaseAll();
 
             // flush all of the Introspector's internal caches
             Introspector.flushCaches();

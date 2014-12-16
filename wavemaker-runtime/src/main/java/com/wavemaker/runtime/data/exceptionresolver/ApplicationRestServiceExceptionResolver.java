@@ -1,12 +1,12 @@
 package com.wavemaker.runtime.data.exceptionresolver;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.ObjectUtils;
-import com.wavemaker.runtime.data.exception.EntityNotFoundException;
-import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +16,12 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.ObjectUtils;
+import com.wavemaker.runtime.data.exception.EntityNotFoundException;
+import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 
 /**
  * @author sunilp
