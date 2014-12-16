@@ -145,14 +145,14 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             callableStatement.execute();
 
             List<Object> outData = new ArrayList<Object>();
+            Map<String, Object> response = new HashMap<String , Object>();
             for (Integer outParam : outParams) {
-                Map<String, Object> response = new HashMap<String , Object>();
                 response.put(customParams.get(outParam-1).getParamName(), callableStatement.getObject(outParam));
-                outData.add(response);
             }
+            outData.add(response);
             return outData;
         } catch (Exception e) {
-            throw new WMRuntimeException("Faild to execute procedure ", e);
+            throw new WMRuntimeException("Failed to execute procedure ", e);
         }finally {
             if(conn != null){
                 try {
