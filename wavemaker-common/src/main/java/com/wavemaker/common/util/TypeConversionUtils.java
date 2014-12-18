@@ -59,6 +59,7 @@ public abstract class TypeConversionUtils {
         PRIMITIVE_WRAPPERS.add(BigInteger.class);
         PRIMITIVE_WRAPPERS.add(Boolean.class);
         PRIMITIVE_WRAPPERS.add(Byte.class);
+        PRIMITIVE_WRAPPERS.add(Character.class);
         PRIMITIVE_WRAPPERS.add(Double.class);
         PRIMITIVE_WRAPPERS.add(Float.class);
         PRIMITIVE_WRAPPERS.add(Integer.class);

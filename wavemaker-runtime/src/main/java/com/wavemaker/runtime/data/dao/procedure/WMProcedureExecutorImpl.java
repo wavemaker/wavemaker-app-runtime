@@ -1,14 +1,17 @@
 package com.wavemaker.runtime.data.dao.procedure;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +19,7 @@ import javax.annotation.PostConstruct;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.dialect.OracleTypesHelper;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
@@ -37,8 +41,8 @@ import com.wavemaker.runtime.data.model.ProcedureParamType;
 import com.wavemaker.runtime.data.util.ProceduresUtils;
 
 public class WMProcedureExecutorImpl implements WMProcedureExecutor {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
+    private static final String CURSOR = "cursor";
     private HibernateTemplate template = null;
     private String serviceId = null;
     private ProcedureModel procedureModel = null;
@@ -119,6 +123,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         try {
             Session session = template.getSessionFactory().openSession();
             conn = ((SessionImpl) session).connection();
+            List<Integer> cursorPostion = new ArrayList<Integer>();
 
             SQLQuery sqlProcedure = session.createSQLQuery(procedureStr);
             String[] namedParams = sqlProcedure.getNamedParameters();
@@ -131,10 +136,16 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
                     LOGGER.info("Found out Parameter " + procedureParam.getParamName());
                     String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).v2;
-                    Integer typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer) Types.class.getField(typeName.toUpperCase()).get(null);
+                    Integer typeCode = getTypeCode(typeName);
                     LOGGER.info("Found type code to be "+ typeCode);
                     callableStatement.registerOutParameter(position + 1, typeCode);
-                    outParams.add(position + 1);
+
+                    if(typeName.equalsIgnoreCase(CURSOR)){
+                        cursorPostion.add(position + 1);
+
+                    }else{
+                        outParams.add(position + 1);
+                    }
                 }
                 if (procedureParam.getProcedureParamType().equals(ProcedureParamType.IN) || procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT)) {
                     callableStatement.setObject(position + 1, procedureParam.getParamValue());
@@ -150,6 +161,10 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 response.put(customParams.get(outParam-1).getParamName(), callableStatement.getObject(outParam));
             }
             outData.add(response);
+            for(Integer cursorIndex :cursorPostion){
+              outData.addAll(processCursor(callableStatement.getObject(cursorIndex)));
+            }
+
             return outData;
         } catch (Exception e) {
             throw new WMRuntimeException("Failed to execute procedure ", e);
@@ -162,6 +177,38 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 }
             }
         }
+    }
+
+    private List<Object> processCursor(Object resultSet) {
+        ResultSet rset = (ResultSet)resultSet;
+        List<Object> result = new ArrayList<Object>();
+
+        // Dump the cursor
+        try {
+            while (rset.next ()){
+                Map<String,Object> rowData = new LinkedHashMap<String,Object>();
+                int colCount = rset.getMetaData().getColumnCount();
+                for (int i=1; i <= colCount; i++) {
+                   rowData.put(rset.getMetaData().getColumnName(i) ,rset.getObject(i));
+                }
+                result.add(rowData);
+            }
+        } catch (SQLException e) {
+
+            throw new WMRuntimeException("Failed to process cursor ", e);
+        }
+
+        return result;
+    }
+
+    private Integer getTypeCode(String typeName) throws IllegalAccessException, NoSuchFieldException {
+        Integer typeCode;
+        if(typeName.equalsIgnoreCase(CURSOR)){
+           typeCode = OracleTypesHelper.INSTANCE.getOracleCursorTypeSqlType();
+        } else{
+          typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer) Types.class.getField(typeName.toUpperCase()).get(null);
+        }
+        return typeCode;
     }
 
 
@@ -177,6 +224,8 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     private List<CustomProcedureParam> prepareParams(List<CustomProcedureParam> customProcedureParams) {
         if (customProcedureParams != null && !customProcedureParams.isEmpty()) {
             for (CustomProcedureParam customProcedureParam : customProcedureParams) {
+                if(StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).v2.equalsIgnoreCase(CURSOR))
+                    continue;
                 Object processedParamValue = getValueObject(customProcedureParam);
                 if (processedParamValue != null) {
                     customProcedureParam.setParamValue(processedParamValue);
