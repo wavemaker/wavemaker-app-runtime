@@ -86,9 +86,6 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
 			}
 			System.out.println("redirect URL IS: " + redirectURL);
 			RedirectStrategy rs = getRedirectStrategy();
-			if(rs instanceof WMHashAwareRedirectStrategy){
-				redirectURL = ((WMHashAwareRedirectStrategy)rs).getHashAwareRedirectUrl(request,redirectURL);
-			}
 			Map<String,String> urlMap = new HashMap<String, String>();
 			urlMap.put("url", redirectURL);
 			
