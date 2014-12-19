@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,17 +154,18 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             LOGGER.info("Executing Procedure [ " + procedureStr +" ]");
             callableStatement.execute();
 
-            List<Object> outData = new ArrayList<Object>();
-            Map<String, Object> response = new HashMap<String , Object>();
+            Map<String,Object> outData = new LinkedHashMap<String, Object>();
             for (Integer outParam : outParams) {
-                response.put(customParams.get(outParam-1).getParamName(), callableStatement.getObject(outParam));
-            }
-            outData.add(response);
-            for(Integer cursorIndex :cursorPostion){
-              outData.addAll(processCursor(callableStatement.getObject(cursorIndex)));
+                outData.put(customParams.get(outParam-1).getParamName(), callableStatement.getObject(outParam));
             }
 
-            return outData;
+            for(Integer cursorIndex :cursorPostion){
+              outData.put(customParams.get(cursorIndex-1).getParamName(), processCursor(callableStatement.getObject(cursorIndex)));
+            }
+
+            List responseWrapper = new ArrayList<Object>();
+            responseWrapper.add(outData);
+            return responseWrapper;
         } catch (Exception e) {
             throw new WMRuntimeException("Failed to execute procedure ", e);
         }finally {
