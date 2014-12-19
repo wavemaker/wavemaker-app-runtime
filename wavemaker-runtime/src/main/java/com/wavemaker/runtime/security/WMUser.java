@@ -15,10 +15,12 @@
  */
 package com.wavemaker.runtime.security;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-
+import java.util.ArrayList;
 import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
 /**
  *
@@ -31,6 +33,18 @@ public class WMUser extends User implements WMUserDetails {
     private final String userId;
     private final long loginTime;
 
+    public WMUser(String username, String password, Collection<String> roles) {
+        this(username, username, password, username, 0, roles);
+    }
+
+    public WMUser(String userId, String username, String password, String userLongName, int tenantId, Collection<String> roles) {
+        super(username, password, true, true, true, true, getGrantedAuthorities(roles));
+        this.userId = userId;
+        this.userLongName = userLongName;
+        this.tenantId = tenantId;
+        this.loginTime = System.currentTimeMillis();
+    }
+
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, boolean enabled, boolean accountNonExpired,
                   boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, long loggedInAt) {
         super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
@@ -38,6 +52,14 @@ public class WMUser extends User implements WMUserDetails {
         this.userLongName = userLongName;
         this.tenantId = tenantId;
         this.loginTime = loggedInAt;
+    }
+
+    private static Collection<? extends  GrantedAuthority> getGrantedAuthorities(Collection<String> roles) {
+        Collection<GrantedAuthority> grantedAuthorities = new ArrayList();
+        for (String role : roles) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(role));
+        }
+        return grantedAuthorities;
     }
 
     @Override
