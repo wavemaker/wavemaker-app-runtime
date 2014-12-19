@@ -15,15 +15,16 @@
  */
 package com.wavemaker.common.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.List;
+
+import org.springframework.http.MediaType;
+
 import com.wavemaker.common.BooleanWrapper;
 import com.wavemaker.common.IntegerWrapper;
 import com.wavemaker.common.StringWrapper;
 import com.wavemaker.common.WMRuntimeException;
-import org.springframework.http.MediaType;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.List;
 
 /**
  * @author Uday Shankar
@@ -32,7 +33,7 @@ public class WMUtils {
 
     private static final String UTF8 = "UTF-8";
 
-    private static final String SUCCESS = "success";
+    public static final String SUCCESS = "success";
 
     public static final StringWrapper SUCCESS_RESPONSE = new StringWrapper(SUCCESS);
 
