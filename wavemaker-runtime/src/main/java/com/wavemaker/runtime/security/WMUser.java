@@ -20,6 +20,8 @@ import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.core.userdetails.User;
 
 /**
@@ -33,21 +35,19 @@ public class WMUser extends User implements WMUserDetails {
     private final String userId;
     private final long loginTime;
 
+    private static GrantedAuthoritiesMapper authoritiesMapper = new SimpleAuthorityMapper();
+
     public WMUser(String userId, String userName, Collection<String> roles) {
         this(userId, userName, userName, userName, 0, roles);
     }
 
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, Collection<String> roles) {
-        super(username, password, true, true, true, true, getGrantedAuthorities(roles));
-        this.userId = userId;
-        this.userLongName = userLongName;
-        this.tenantId = tenantId;
-        this.loginTime = System.currentTimeMillis();
+        this(userId, username, password, userLongName, tenantId, true, true, true, true, getGrantedAuthorities(roles), System.currentTimeMillis());
     }
 
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, boolean enabled, boolean accountNonExpired,
                   boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities, long loggedInAt) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authoritiesMapper.mapAuthorities(authorities));
         this.userId = userId;
         this.userLongName = userLongName;
         this.tenantId = tenantId;
