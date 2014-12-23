@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import com.wavemaker.common.CommonConstants;
 import com.wavemaker.runtime.ws.HTTPBindingSupport.HTTPRequestMethod;
 import com.wavemaker.runtime.ws.util.Constants;
 
@@ -160,7 +161,7 @@ public class RESTService {
             if (index > -1) {
                 try {
                     String v = entry.getValue() != null ? entry.getValue().toString() : "";
-                    v = URLEncoder.encode(v, "UTF-8");
+                    v = URLEncoder.encode(v, CommonConstants.UTF8);
                     // java.net.URLEncoder.encode() encodes space " " as "+"
                     // instead of "%20".
                     v = v.replaceAll("\\+", "%20");

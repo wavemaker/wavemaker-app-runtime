@@ -21,17 +21,12 @@ import java.util.List;
 
 import org.springframework.http.MediaType;
 
-import com.wavemaker.common.BooleanWrapper;
-import com.wavemaker.common.IntegerWrapper;
-import com.wavemaker.common.StringWrapper;
-import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.*;
 
 /**
  * @author Uday Shankar
  */
 public class WMUtils {
-
-    private static final String UTF8 = "UTF-8";
 
     public static final String SUCCESS = "success";
 
@@ -44,7 +39,7 @@ public class WMUtils {
 
     public static String decodeRequestURI(String requestURI) {
         try {
-            return URLDecoder.decode(requestURI, UTF8);
+            return URLDecoder.decode(requestURI, CommonConstants.UTF8);
         } catch (UnsupportedEncodingException e) {
             throw new WMRuntimeException("Failed to decode request URI", e);
         }

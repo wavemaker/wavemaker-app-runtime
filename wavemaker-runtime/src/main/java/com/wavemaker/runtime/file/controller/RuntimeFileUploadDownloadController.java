@@ -1,6 +1,11 @@
 package com.wavemaker.runtime.file.controller;
 
-import com.wavemaker.runtime.server.upload.FileUploadDownload;
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -9,10 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.Map;
+import com.wavemaker.common.CommonConstants;
+import com.wavemaker.runtime.server.upload.FileUploadDownload;
 
 /**
  * @author Uday Shankar
@@ -26,7 +29,7 @@ public class RuntimeFileUploadDownloadController {
     @RequestMapping(value = "/resources/upload",method = RequestMethod.POST)
     public void uploadFile(@RequestParam(value = "relativePath", required = false) String relativePath,
                            HttpServletRequest httpServletRequest) throws IOException {
-        relativePath = URLDecoder.decode(relativePath, "UTF-8");
+        relativePath = URLDecoder.decode(relativePath, CommonConstants.UTF8);
         MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) httpServletRequest;
         Map<String, MultipartFile> fileMap = multipartHttpServletRequest.getFileMap();
         for (String fileName : fileMap.keySet()) {

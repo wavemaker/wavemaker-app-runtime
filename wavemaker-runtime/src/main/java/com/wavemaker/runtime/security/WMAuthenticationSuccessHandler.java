@@ -32,6 +32,8 @@ import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.util.StringUtils;
 
+import com.wavemaker.common.CommonConstants;
+
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler  {
 
 	private RequestCache requestCache = new HttpSessionRequestCache();
@@ -89,7 +91,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
 			Map<String,String> urlMap = new HashMap<String, String>();
 			urlMap.put("url", redirectURL);
 			
-			request.setCharacterEncoding("UTF-8");
+			request.setCharacterEncoding(CommonConstants.UTF8);
 			response.setContentType("text/plain;charset=utf-8");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setDateHeader("Expires", 0);

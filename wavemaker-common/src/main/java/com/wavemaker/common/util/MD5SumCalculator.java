@@ -15,6 +15,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.wavemaker.common.CommonConstants;
+
 public class MD5SumCalculator
 {
     private static final MD5SumCalculator instance = new MD5SumCalculator();
@@ -44,7 +46,7 @@ public class MD5SumCalculator
     public String checksum(String txt)
     {
         try {
-            return checksum(txt.getBytes("UTF-8"));
+            return checksum(txt.getBytes(CommonConstants.UTF8));
         } catch (UnsupportedEncodingException e) {
             throw new AssertionError("UTF-8 should be a supported encoding");
         }

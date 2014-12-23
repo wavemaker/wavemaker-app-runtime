@@ -53,6 +53,7 @@ import org.springframework.http.MediaType;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
+import com.wavemaker.common.CommonConstants;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.pws.IPwsResponseProcessor;
 import com.wavemaker.runtime.pws.PwsResponseProcessorBeanFactory;
@@ -102,7 +103,7 @@ public class HTTPBindingSupport {
             {
                 responseString = convertJSONToXML(responseString,serviceName);
             }
-            is = new BufferedInputStream(IOUtils.toInputStream(responseString, "UTF-8"));
+            is = new BufferedInputStream(IOUtils.toInputStream(responseString, CommonConstants.UTF8));
             bytes = IOUtils.toByteArray(is);
         } catch (IOException e) {
             throw new WebServiceException(e);
@@ -149,7 +150,7 @@ public class HTTPBindingSupport {
         if (msg != null) {
             try {
                 StringBuffer sb = new StringBuffer(msg);
-                is = new ByteArrayInputStream(sb.toString().getBytes("UTF-8"));
+                is = new ByteArrayInputStream(sb.toString().getBytes(CommonConstants.UTF8));
             } catch (UnsupportedEncodingException e) {
                 throw new WebServiceException(e);
             }

@@ -19,6 +19,7 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 
+import com.wavemaker.common.CommonConstants;
 import com.wavemaker.common.WMRuntimeException;
 
 /**
@@ -46,7 +47,7 @@ public class WMRuntimeUtils {
 
     static {
         messageConverters.add(new ByteArrayHttpMessageConverter());
-        messageConverters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
+        messageConverters.add(new StringHttpMessageConverter(Charset.forName(CommonConstants.UTF8)));
         messageConverters.add(new ResourceHttpMessageConverter());
         messageConverters.add(new SourceHttpMessageConverter<Source>());
         messageConverters.add(new AllEncompassingFormHttpMessageConverter());
