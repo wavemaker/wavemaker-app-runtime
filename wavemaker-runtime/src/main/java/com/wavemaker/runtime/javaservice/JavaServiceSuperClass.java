@@ -20,8 +20,6 @@ import java.io.File;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.runtime.WMAppContext;
@@ -47,10 +45,6 @@ public class JavaServiceSuperClass {
     public static final int DEBUG = 4;
 
     public static final String[] LEVELS = { "FATAL", "ERROR", "WARN", "INFO", "DEBUG" };
-
-    public static final String OPEN_PROJECT_SESSION_NAME = "agOpenProjectName";
-
-    public static final String PROJECTHOME_KEY = "wm.projectsDir";
 
     public JavaServiceSuperClass() {
         init(ERROR);
@@ -78,8 +72,8 @@ public class JavaServiceSuperClass {
             } else {
             }
 
-            String startLogLine = "START_WM_LOG_LINE %d{ABSOLUTE}";
-            String endLogLine = "END_WM_LOG_LINE";
+            String startLogLine = "[ %d{ABSOLUTE}";
+            String endLogLine = "]";
 
             File logFolder = new File(System.getProperty("catalina.home") + "/logs/ProjectLogs");
             if (!isDeployedApp) {
