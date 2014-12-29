@@ -23,6 +23,8 @@ import java.util.Enumeration;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.hsqldb.DatabaseManager;
+
 import com.wavemaker.common.util.CastUtils;
 import com.wavemaker.runtime.WMAppContext;
 
@@ -42,6 +44,10 @@ public class CleanupListener implements ServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent event) {
         try {
+            shutDownHSQLTimerThreadIfAny();
+
+            //shutDownAnyOtherThreads();
+
             // remove from the system DriverManager the JDBC drivers registered
             // by this web app
             /** Adding this line as getDrivers has a side effect of registering drivers
@@ -67,4 +73,29 @@ public class CleanupListener implements ServletContextListener {
             WMAppContext.clearInstance();
         }
     }
+
+    private void shutDownHSQLTimerThreadIfAny() {
+        try {
+            DatabaseManager.getTimer().shutDown();
+        } catch (Exception e) {
+            System.out.println("Failed to shutdown HSQL-Timer thread");
+            e.printStackTrace();
+        }
+    }
+
+    /*private void shutDownAnyOtherThreads() throws InterruptedException {
+        Set<Thread> threads = Thread.getAllStackTraces().keySet();
+        for(Thread thread : threads) {
+            if(thread.isAlive() && !(thread == Thread.currentThread())
+                    && thread.getContextClassLoader() == CleanupListener.class.getClassLoader()) {
+                System.out.println(new Date() + ":Waiting for clean up of thread [" + thread.getName() + "]");
+                thread.join(20000);//Waiting for 20 seconds for all the cleanup threads to be cleared
+                if(!thread.isAlive()) {
+                    System.out.println(new Date() +":Thread [" + thread.getName() + "] got dead");
+                } else {
+                    System.out.println(new Date() +":Thread [" + thread.getName() + "] is still alive");
+                }
+            }
+        }
+    }*/
 }
