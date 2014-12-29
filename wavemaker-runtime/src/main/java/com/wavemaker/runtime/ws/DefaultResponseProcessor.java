@@ -20,8 +20,8 @@ import java.io.IOException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
+import com.wavemaker.common.util.JAXBUtils;
 import com.wavemaker.runtime.pws.IPwsResponseProcessor;
 import com.wavemaker.runtime.pws.PwsException;
 
@@ -40,9 +40,7 @@ public class DefaultResponseProcessor implements IPwsResponseProcessor {
                 String responseString = HTTPBindingSupport.convertStreamToString(is);
                 return responseType.cast(responseString);
             } else {
-                JAXBContext context = JAXBContext.newInstance(responseType);
-                Unmarshaller unmarshaller = context.createUnmarshaller();
-                Object object = unmarshaller.unmarshal(is);
+                Object object = JAXBUtils.unMarshall(JAXBContext.newInstance(responseType), is);
                 return responseType.cast(object);
             }
         } catch (IOException e) {
