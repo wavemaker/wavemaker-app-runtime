@@ -31,7 +31,7 @@ import com.wavemaker.runtime.WMAppContext;
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
  * shutdown.
- * 
+ *
  * @author Frankie Fu
  */
 public class CleanupListener implements ServletContextListener {
@@ -75,11 +75,13 @@ public class CleanupListener implements ServletContextListener {
     }
 
     private void shutDownHSQLTimerThreadIfAny() {
-        try {
-            DatabaseManager.getTimer().shutDown();
-        } catch (Exception e) {
-            System.out.println("Failed to shutdown HSQL-Timer thread");
-            e.printStackTrace();
+        if(DatabaseManager.class.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
+            try {
+                DatabaseManager.getTimer().shutDown();
+            } catch (Exception e) {
+                System.out.println("Failed to shutdown HSQL-Timer thread");
+                e.printStackTrace();
+            }
         }
     }
 
