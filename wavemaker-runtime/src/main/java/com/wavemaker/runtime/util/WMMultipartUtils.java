@@ -1,5 +1,18 @@
 package com.wavemaker.runtime.util;
 
+import com.wavemaker.common.InvalidInputException;
+import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.json.JSONUtils;
+import net.sf.jmimemagic.*;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,26 +21,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Random;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wavemaker.common.InvalidInputException;
-import com.wavemaker.common.WMRuntimeException;
-
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicException;
-import net.sf.jmimemagic.MagicMatch;
-import net.sf.jmimemagic.MagicMatchNotFoundException;
-import net.sf.jmimemagic.MagicParseException;
 
 /**
  * @author sunilp
@@ -56,8 +49,7 @@ public class WMMultipartUtils {
     }
 
     public static <T> T toObject(MultipartFile multipartFile, Class<T> instance) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(multipartFile.getInputStream(), instance);
+        return JSONUtils.toObject(multipartFile.getInputStream(), instance);
     }
 
     public static <T> T setMultipartsToObject(Map<String, MultipartFile> multiparts, T instance) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
