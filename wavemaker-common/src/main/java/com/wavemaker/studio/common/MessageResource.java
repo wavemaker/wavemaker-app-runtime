@@ -215,6 +215,12 @@ public class MessageResource {
     public static final MessageResource PROJECT_DIR_DOES_NOT_EXIST = new MessageResource("com.wavemaker.platform$ProjectDirDoesNotExist");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_CREATE_DIR = new MessageResource("com.wavemaker.platform.FailedToCreateDir");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource FAILED_TO_CREATE_FILE = new MessageResource("com.wavemaker.platform.FailedToCreateFile");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource TEMPLATE_DOES_NOT_EXIST = new MessageResource("com.wavemaker.platform$TemplateDoesNotExist");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
