@@ -19,8 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import com.wavemaker.infra.WMTestCase;
 
 /**
@@ -176,7 +174,7 @@ public class IOUtilsTest extends WMTestCase {
         dest.deleteOnExit();
         assertFalse(dest.exists());
 
-        FileUtils.writeStringToFile(source, "foo");
+        WMFileUtils.writeStringToFile(source, "foo");
 
         IOUtils.copy(source, dest);
         assertTrue(dest.exists());
@@ -192,7 +190,7 @@ public class IOUtilsTest extends WMTestCase {
         dest.deleteOnExit();
         assertFalse(dest.exists());
 
-        FileUtils.writeStringToFile(source, "foo");
+        WMFileUtils.writeStringToFile(source, "foo");
 
         List<String> excludes = new ArrayList<String>();
         excludes.add(source.getName());
@@ -212,11 +210,11 @@ public class IOUtilsTest extends WMTestCase {
             assertFalse(dest.exists());
 
             File sourceFile = new File(source, "foo");
-            FileUtils.writeStringToFile(sourceFile, "foo");
+            WMFileUtils.writeStringToFile(sourceFile, "foo");
             File sourceDir = new File(source, "bar");
             sourceDir.mkdir();
             File sourceDirFile = new File(sourceDir, "barfile");
-            FileUtils.writeStringToFile(sourceDirFile, "foobarbaz");
+            WMFileUtils.writeStringToFile(sourceDirFile, "foobarbaz");
 
             IOUtils.copy(source, dest);
             assertTrue(dest.exists());
@@ -253,15 +251,15 @@ public class IOUtilsTest extends WMTestCase {
             assertFalse(dest.exists());
 
             File sourceFile = new File(source, "foo");
-            FileUtils.writeStringToFile(sourceFile, "foo");
+            WMFileUtils.writeStringToFile(sourceFile, "foo");
             File sourceDir = new File(source, "bar");
             sourceDir.mkdir();
             File sourceDirFile = new File(sourceDir, "barfile");
-            FileUtils.writeStringToFile(sourceDirFile, "foobarbaz");
+            WMFileUtils.writeStringToFile(sourceDirFile, "foobarbaz");
             File sourceExcludeDir = new File(source, excludeName);
             sourceExcludeDir.mkdir();
             File sourceExcludeFile = new File(sourceDir, excludeName);
-            FileUtils.writeStringToFile(sourceExcludeFile, "a");
+            WMFileUtils.writeStringToFile(sourceExcludeFile, "a");
 
             IOUtils.copy(source, dest, excludes);
             assertTrue(dest.exists());

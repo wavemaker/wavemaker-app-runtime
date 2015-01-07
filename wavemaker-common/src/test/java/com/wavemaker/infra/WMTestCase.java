@@ -20,13 +20,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import junit.framework.TestCase;
-
-import org.apache.commons.io.FileUtils;
-
 import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.common.util.SpringUtils;
+import com.wavemaker.common.util.WMFileUtils;
+
+import junit.framework.TestCase;
 
 /**
  * @author Simon Toens
@@ -112,8 +111,8 @@ public abstract class WMTestCase extends TestCase {
         if (expected.equals(actual)) {
             // pass
         } else if (expected.isFile() && actual.isFile()) {
-            String expectedStr = FileUtils.readFileToString(expected);
-            String actualStr = FileUtils.readFileToString(actual);
+            String expectedStr = WMFileUtils.readFileToString(expected);
+            String actualStr = WMFileUtils.readFileToString(actual);
 
             assertEquals(msg, expectedStr, actualStr);
         } else if (expected.isDirectory() && actual.isDirectory()) {
