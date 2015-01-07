@@ -1,9 +1,7 @@
 package com.wavemaker.runtime.data.dao.procedure;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
+import java.io.InputStream;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,6 +26,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.common.util.TypeConversionUtils;
 import com.wavemaker.runtime.data.dao.util.ProcedureHelper;
@@ -64,13 +63,21 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
     @PostConstruct
     protected void init() {
+        InputStream resourceStream = null;
         try {
-            URL resourceURL = Thread.currentThread().getContextClassLoader().getResource(serviceId + "-procedures.mappings.json");
-            File mappingFile = new File(resourceURL.getFile());
-            ObjectMapper mapper = new ObjectMapper();
-            procedureModel = mapper.readValue(new FileInputStream(mappingFile), ProcedureModel.class);
+            resourceStream = WMProcedureExecutorImpl.class.getClassLoader().getResourceAsStream(serviceId + "-procedures.mappings.json");
+            if (resourceStream != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                procedureModel = mapper.readValue(resourceStream, ProcedureModel.class);
+            } else {
+                throw new WMRuntimeException(serviceId + "-procedures.mappings.json is not found in the class loader: " + WMProcedureExecutorImpl.class.getClassLoader());
+            }
+        } catch (WMRuntimeException e) {
+            throw e;
         } catch (Exception e) {
             throw new WMRuntimeException("Failed to map the procedures mapping file", e);
+        } finally {
+            IOUtils.closeSilently(resourceStream);
         }
     }
 
@@ -160,7 +167,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             }
 
             for(Integer cursorIndex :cursorPostion){
-              outData.put(customParams.get(cursorIndex-1).getParamName(), processCursor(callableStatement.getObject(cursorIndex)));
+                outData.put(customParams.get(cursorIndex-1).getParamName(), processCursor(callableStatement.getObject(cursorIndex)));
             }
 
             List responseWrapper = new ArrayList<Object>();
@@ -189,7 +196,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 Map<String,Object> rowData = new LinkedHashMap<String,Object>();
                 int colCount = rset.getMetaData().getColumnCount();
                 for (int i=1; i <= colCount; i++) {
-                   rowData.put(rset.getMetaData().getColumnName(i) ,rset.getObject(i));
+                    rowData.put(rset.getMetaData().getColumnName(i) ,rset.getObject(i));
                 }
                 result.add(rowData);
             }
@@ -204,9 +211,9 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     private Integer getTypeCode(String typeName) throws IllegalAccessException, NoSuchFieldException {
         Integer typeCode;
         if(typeName.equalsIgnoreCase(CURSOR)){
-           typeCode = OracleTypesHelper.INSTANCE.getOracleCursorTypeSqlType();
+            typeCode = OracleTypesHelper.INSTANCE.getOracleCursorTypeSqlType();
         } else{
-          typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer) Types.class.getField(typeName.toUpperCase()).get(null);
+            typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer) Types.class.getField(typeName.toUpperCase()).get(null);
         }
         return typeCode;
     }
