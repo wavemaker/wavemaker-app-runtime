@@ -45,6 +45,8 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     private String serviceId = null;
     private ProcedureModel procedureModel = null;
 
+    private static final Logger logger = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
+
     public HibernateTemplate getTemplate() {
         return template;
     }
@@ -65,13 +67,23 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     protected void init() {
         InputStream resourceStream = null;
         try {
-            resourceStream = WMProcedureExecutorImpl.class.getClassLoader().getResourceAsStream(serviceId + "-procedures.mappings.json");
+            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+            ClassLoader webAppClassLoader = WMProcedureExecutorImpl.class.getClassLoader();
+            resourceStream = contextClassLoader.getResourceAsStream(serviceId + "-procedures.mappings.json");
             if (resourceStream != null) {
-                ObjectMapper mapper = new ObjectMapper();
-                procedureModel = mapper.readValue(resourceStream, ProcedureModel.class);
+                logger.info("Using the file {}-procedures.mappings.json from context classLoader {}", serviceId, contextClassLoader);
             } else {
-                throw new WMRuntimeException(serviceId + "-procedures.mappings.json is not found in the class loader: " + WMProcedureExecutorImpl.class.getClassLoader());
+                logger.warn("Could not find {}-procedures.mappings.json in context classLoader {}", serviceId, contextClassLoader);
+                resourceStream = webAppClassLoader.getResourceAsStream(serviceId + "-procedures.mappings.json");
+                if(resourceStream != null) {
+                    logger.warn("Using the file {}-procedures.mappings.json from webApp classLoader {}", serviceId, webAppClassLoader);
+                } else {
+                    logger.warn("Could not find {}-procedures.mappings.json in webApp classLoader {} also", serviceId, webAppClassLoader);
+                    throw new WMRuntimeException(serviceId + "-procedures.mappings.json file is not found in either of webAppClassLoader or contextClassLoader");
+                }
             }
+            ObjectMapper mapper = new ObjectMapper();
+            procedureModel = mapper.readValue(resourceStream, ProcedureModel.class);
         } catch (WMRuntimeException e) {
             throw e;
         } catch (Exception e) {
