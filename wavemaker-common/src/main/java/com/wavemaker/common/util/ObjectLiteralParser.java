@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.classloader.ClassLoaderUtils;
 
 /**
  * Parses an object literal (javascript syntax) into an object graph.

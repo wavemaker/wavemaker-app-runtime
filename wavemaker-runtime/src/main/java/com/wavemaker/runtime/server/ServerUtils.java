@@ -46,7 +46,7 @@ import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
 import com.wavemaker.common.MessageResource;
 import com.wavemaker.common.WMException;
 import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.ClassLoaderUtils;
+import com.wavemaker.common.classloader.ClassLoaderUtils;
 import com.wavemaker.common.util.ClassUtils;
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.json.JSONState;

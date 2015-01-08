@@ -1,4 +1,4 @@
-package com.wavemaker.common;
+package com.wavemaker.common.wrapper;
 
 /**
  * Created by nileshk on 11/11/14.

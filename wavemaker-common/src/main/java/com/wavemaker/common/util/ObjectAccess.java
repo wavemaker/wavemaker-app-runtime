@@ -32,6 +32,7 @@ import java.util.Map;
 
 import com.wavemaker.common.MethodNotFoundRuntimeException;
 import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.common.classloader.ClassLoaderUtils;
 
 /**
  * Encapsulates logic for Class/instance access using reflection.

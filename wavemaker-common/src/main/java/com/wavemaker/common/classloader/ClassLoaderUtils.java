@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.common.util;
+package com.wavemaker.common.classloader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +23,8 @@ import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.List;
 
+import com.wavemaker.common.util.ConversionUtils;
+import com.wavemaker.common.util.TypeConversionUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 

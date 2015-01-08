@@ -19,6 +19,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 
+import com.wavemaker.common.wrapper.BooleanWrapper;
+import com.wavemaker.common.wrapper.IntegerWrapper;
+import com.wavemaker.common.wrapper.StringWrapper;
 import org.springframework.http.MediaType;
 
 import com.wavemaker.common.*;

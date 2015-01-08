@@ -18,6 +18,7 @@ package com.wavemaker.common.util;
 import java.io.File;
 import java.io.InputStream;
 
+import com.wavemaker.common.classloader.ClassLoaderUtils;
 import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 

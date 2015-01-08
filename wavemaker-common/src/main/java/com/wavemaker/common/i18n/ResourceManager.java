@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.common;
+package com.wavemaker.common.i18n;
 
 import java.util.Locale;
 

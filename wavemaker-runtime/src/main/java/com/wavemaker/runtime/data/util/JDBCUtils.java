@@ -16,7 +16,7 @@
 package com.wavemaker.runtime.data.util;
 
 import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.util.ClassLoaderUtils;
+import com.wavemaker.common.classloader.ClassLoaderUtils;
 import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.runtime.data.DataServiceRuntimeException;
 

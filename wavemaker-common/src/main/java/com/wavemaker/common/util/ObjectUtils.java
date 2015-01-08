@@ -15,18 +15,11 @@
  */
 package com.wavemaker.common.util;
 
+import com.wavemaker.common.WMRuntimeException;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.ObjectGraphTraversal.Context;
+import java.util.*;
 
 /**
  * @author Simon Toens
@@ -187,54 +180,6 @@ public abstract class ObjectUtils {
     public static String objectToString(Object o) {
         ObjectAccess a = ObjectAccess.getInstance();
         return a.objectToString(o);
-    }
-
-    public static String objectToStringRecursive(Object o) {
-
-        final StringBuilder sb = new StringBuilder();
-
-        if (o instanceof Collection) {
-            Collection<?> c = (Collection<?>) o;
-            int i = 0;
-            for (Object item : c) {
-                sb.append("element ").append(i).append(" in root Collection:\n");
-                sb.append(objectToStringRecursive(item));
-                sb.append("\n");
-            }
-            return sb.toString();
-        }
-
-        sb.append("root: " + objectToString(o));
-
-        if (o == null) {
-            return sb.toString();
-        }
-
-        final ObjectAccess oa = ObjectAccess.getInstance();
-
-        ObjectGraphTraversal.ObjectVisitor v = new ObjectGraphTraversal.ObjectVisitor() {
-
-            @Override
-            public void visit(Object o, Context ctx) {
-                sb.append("\n" + ctx.getPropertyPath() + ": " + objectToString(o));
-            }
-
-            @Override
-            public void cycle(Object o, Context ctx) {
-                sb.append("\n" + ctx.getPropertyPath() + ": Cycle");
-            }
-        };
-        ObjectGraphTraversal.PropertyFactory p = new ObjectGraphTraversal.PropertyFactory() {
-
-            @Override
-            public List<String> getProperties(Object o, Context ctx) {
-                return oa.getPropertyNames(o.getClass());
-            }
-        };
-
-        new ObjectGraphTraversal(p, v).traverse(o);
-
-        return sb.toString();
     }
 
     /**

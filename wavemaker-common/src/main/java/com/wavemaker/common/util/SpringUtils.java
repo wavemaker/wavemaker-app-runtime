@@ -30,22 +30,11 @@ import org.springframework.core.io.Resource;
  */
 public abstract class SpringUtils {
 
-    public static final String VALUE_ELEMENT = "value";
-
     private SpringUtils() {
     }
 
-    public static Object getRuntimeBean(File webAppRoot, String beanName) {
-        GenericApplicationContext ctx = new GenericApplicationContext();
-        XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
-        File f = new File(webAppRoot, "WEB-INF/project-springapp.xml");
-        xmlReader.loadBeanDefinitions(new FileSystemResource(f));
-        ctx.refresh();
-        return ctx.getBean(beanName);
-    }
-
     /**
-     * Initializes Spring with config.xml. Statically initializes com.wavemaker.common.ResourceManager, used for msg
+     * Initializes Spring with config.xml. Statically initializes com.wavemaker.common.i18n.ResourceManager, used for msg
      * lookup.
      * 
      * When running outside of a webapp container, this method needs to run once at startup before accessing Resources

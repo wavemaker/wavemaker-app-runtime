@@ -13,26 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.common.util;
+package com.wavemaker.common.i18n;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Attempting to override an existing Entry throws an IllegalStateException.
- * 
  * @author Simon Toens
  */
-public class ImmutableEntryMap<K, V> extends HashMap<K, V> implements Map<K, V> {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ResourceConstraint {
 
-    private static final long serialVersionUID = 6377256648563139903L;
+    int numArgs() default 0;
 
-    @Override
-    public V put(K key, V value) {
-        if (containsKey(key)) {
-            throw new IllegalStateException("Entry for key \"" + key + "\" already exists");
-        }
-        return super.put(key, value);
-    }
-
+    boolean hasDetailMsg() default false;
 }

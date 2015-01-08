@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wavemaker.common.i18n.ResourceConstraint;
+import com.wavemaker.common.i18n.ResourceManager;
 import com.wavemaker.common.util.ClassUtils;
 
 /**
