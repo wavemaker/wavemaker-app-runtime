@@ -19,11 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -65,6 +61,50 @@ public abstract class TypeConversionUtils {
         PRIMITIVE_WRAPPERS.add(Integer.class);
         PRIMITIVE_WRAPPERS.add(Long.class);
         PRIMITIVE_WRAPPERS.add(Short.class);
+    }
+
+    private static Set<String> primitivaDataTypes;
+
+    static {
+        primitivaDataTypes = new HashSet<String>();
+        constructPrimitiveDataTypeSet();
+    }
+
+    private static void constructPrimitiveDataTypeSet() {
+        primitivaDataTypes.add("int");
+        primitivaDataTypes.add("Integer");
+
+        primitivaDataTypes.add("String");
+
+        primitivaDataTypes.add("float");
+        primitivaDataTypes.add("Float");
+
+        primitivaDataTypes.add("boolean");
+        primitivaDataTypes.add("Boolean");
+
+        primitivaDataTypes.add("char");
+        primitivaDataTypes.add("Character");
+
+        primitivaDataTypes.add("byte");
+        primitivaDataTypes.add("Byte");
+
+        primitivaDataTypes.add("short");
+        primitivaDataTypes.add("Short");
+
+        primitivaDataTypes.add("long");
+        primitivaDataTypes.add("Long");
+
+        primitivaDataTypes.add("double");
+        primitivaDataTypes.add("Double");
+
+        primitivaDataTypes.add("Date");
+
+    }
+
+    public static boolean isPrimitive (String dataType){
+        if(primitivaDataTypes.contains(dataType))
+            return true;
+        return  false;
     }
 
     public static Class<?> primitiveForName(String className) {
