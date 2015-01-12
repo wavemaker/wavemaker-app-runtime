@@ -23,10 +23,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.wavemaker.common.WMRuntimeInitException;
 import com.wavemaker.runtime.service.ServiceManager;
 import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.reflect.ReflectServiceWire;
+import com.wavemaker.studio.common.WMRuntimeInitException;
 
 /**
  * Runtime bean. Provides an interface to the session, request and response objects, and other WaveMaker interfaces.
@@ -107,7 +107,7 @@ public class RuntimeAccess {
      * @param serviceId
      *            The service ID to look for.
      * @return The service bean (if a bean with the id exists).
-     * @throws com.wavemaker.common.WMRuntimeException
+     * @throws com.wavemaker.studio.common.WMRuntimeException
      *             If a bean with the specified id is not found, or if Spring has not yet initialized this bean.
      */
     @SuppressWarnings("deprecation")
@@ -123,7 +123,7 @@ public class RuntimeAccess {
      * @param serviceType
      *            The class of the service to search for.
      * @return The service bean.
-     * @throws com.wavemaker.common.WMRuntimeException
+     * @throws com.wavemaker.studio.common.WMRuntimeException
      *             If a bean with the specified class is not found, more than one bean with the specified class is
      *             found, or if Spring has not yet initialized this bean.
      */
@@ -143,7 +143,7 @@ public class RuntimeAccess {
      * @param serviceId
      *            The id of the service to search for.
      * @return The service bean.
-     * @throws com.wavemaker.common.WMRuntimeException
+     * @throws com.wavemaker.studio.common.WMRuntimeException
      *             If a bean with the specified class is not found, more than one bean with the specified class is
      *             found, or if Spring has not yet initialized this bean.
      */

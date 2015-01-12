@@ -24,12 +24,12 @@ import javax.activation.MimetypesFileTypeMap;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.javaservice.JavaServiceSuperClass;
 import com.wavemaker.runtime.server.DownloadResponse;
 import com.wavemaker.runtime.server.FileUploadResponse;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
+import com.wavemaker.studio.common.util.IOUtils;
 
 /**
  * This is a client-facing service class.  All

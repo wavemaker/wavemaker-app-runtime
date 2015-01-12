@@ -19,11 +19,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import com.wavemaker.common.util.SpringUtils;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.json.type.reflect.ReflectTypeUtilsTest.BasicMapTypes;
 import com.wavemaker.json.type.reflect.ReflectTypeUtilsTest.MapListType;
+import com.wavemaker.studio.common.util.SpringUtils;
 
 /**
  * @author Matt Small

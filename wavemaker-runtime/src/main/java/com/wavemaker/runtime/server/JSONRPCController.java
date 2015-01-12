@@ -15,9 +15,16 @@
  */
 package com.wavemaker.runtime.server;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMException;
-import com.wavemaker.common.WMRuntimeException;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.JsonView;
+
 import com.wavemaker.json.JSONArray;
 import com.wavemaker.json.JSONObject;
 import com.wavemaker.json.JSONUnmarshaller;
@@ -26,14 +33,9 @@ import com.wavemaker.runtime.server.view.TypedView;
 import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.TypedServiceReturn;
 import com.wavemaker.runtime.service.response.ErrorResponse;
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.JsonView;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMException;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * Controller (in the MVC sense) implementing a JSON interface and view onto the AG framework.

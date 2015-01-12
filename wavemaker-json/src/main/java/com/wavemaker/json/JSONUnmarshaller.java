@@ -19,10 +19,10 @@ import org.antlr.runtime.ANTLRStringStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.core.jsonLexer;
 import com.wavemaker.json.core.jsonParser;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Matt Small

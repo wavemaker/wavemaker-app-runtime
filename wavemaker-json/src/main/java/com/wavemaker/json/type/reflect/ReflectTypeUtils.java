@@ -15,20 +15,34 @@
  */
 package com.wavemaker.json.type.reflect;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.Tuple;
-import com.wavemaker.json.JSON;
-import com.wavemaker.json.core.JSONUtils;
-import com.wavemaker.json.type.*;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.*;
-import java.util.*;
+import com.wavemaker.json.JSON;
+import com.wavemaker.json.core.JSONUtils;
+import com.wavemaker.json.type.FieldDefinition;
+import com.wavemaker.json.type.GenericFieldDefinition;
+import com.wavemaker.json.type.ListTypeDefinition;
+import com.wavemaker.json.type.TypeDefinition;
+import com.wavemaker.json.type.TypeState;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.Tuple;
 
 /**
  * Type utility methods. Includes methods for creating types & fields.

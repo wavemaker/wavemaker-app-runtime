@@ -15,8 +15,9 @@
  */
 package com.wavemaker.json;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 

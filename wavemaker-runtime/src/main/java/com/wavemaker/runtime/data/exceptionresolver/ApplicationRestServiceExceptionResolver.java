@@ -18,10 +18,10 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.ObjectUtils;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.ObjectUtils;
 
 /**
  * @author sunilp

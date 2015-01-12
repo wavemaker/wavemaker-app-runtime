@@ -33,10 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.EntryComparator;
-import com.wavemaker.common.util.Tuple;
 import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.json.type.GenericFieldDefinition;
 import com.wavemaker.json.type.MapTypeDefinition;
@@ -46,6 +42,10 @@ import com.wavemaker.json.type.TypeState;
 import com.wavemaker.json.type.converters.WriteObjectConverter;
 import com.wavemaker.json.type.reflect.ObjectReflectTypeDefinition;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.EntryComparator;
+import com.wavemaker.studio.common.util.Tuple;
 
 /**
  * @author Matt Small

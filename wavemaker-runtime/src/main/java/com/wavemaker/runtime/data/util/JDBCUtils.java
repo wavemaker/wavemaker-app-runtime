@@ -15,14 +15,14 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.classloader.ClassLoaderUtils;
-import com.wavemaker.common.util.StringUtils;
-import com.wavemaker.runtime.data.DataServiceRuntimeException;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import com.wavemaker.runtime.data.DataServiceRuntimeException;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
+import com.wavemaker.studio.common.util.StringUtils;
 
 public class JDBCUtils {
 

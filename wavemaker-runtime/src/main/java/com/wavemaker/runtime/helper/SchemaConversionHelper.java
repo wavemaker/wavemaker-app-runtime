@@ -6,8 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.Tuple;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.Tuple;
 
 /**
  * @author Uday Shankar

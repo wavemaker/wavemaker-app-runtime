@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.IOUtils;
-import com.wavemaker.common.util.SpringUtils;
-import com.wavemaker.common.util.WMFileUtils;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.studio.common.util.SpringUtils;
+import com.wavemaker.studio.common.util.WMFileUtils;
 
 import junit.framework.TestCase;
 

@@ -33,13 +33,13 @@ import org.springframework.util.PathMatcher;
 
 import com.mongodb.DB;
 import com.mongodb.gridfs.GridFS;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.IOUtils;
-import com.wavemaker.studio.core.io.Folder;
-import com.wavemaker.studio.core.io.ResourcePath;
 import com.wavemaker.platform.project.AbstractStudioFileSystem;
 import com.wavemaker.platform.project.LocalStudioFileSystem;
 import com.wavemaker.platform.project.ResourceFilter;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.studio.core.io.Folder;
+import com.wavemaker.studio.core.io.ResourcePath;
 
 /**
  * Implementation of {@link com.wavemaker.platform.project.StudioFileSystem} backed by {@link GridFS}.

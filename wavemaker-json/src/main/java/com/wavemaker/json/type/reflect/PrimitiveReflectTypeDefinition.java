@@ -25,10 +25,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.core.JSONUtils;
 import com.wavemaker.json.type.PrimitiveTypeDefinition;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Matt Small

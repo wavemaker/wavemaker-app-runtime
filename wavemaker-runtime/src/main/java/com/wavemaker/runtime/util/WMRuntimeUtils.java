@@ -19,8 +19,8 @@ import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConvert
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.common.CommonConstants;
-import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Uday Shankar

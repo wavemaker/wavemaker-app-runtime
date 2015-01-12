@@ -22,9 +22,9 @@ import java.sql.Statement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.runtime.data.util.JDBCUtils;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.IOUtils;
 
 /**
  *

@@ -28,8 +28,8 @@ import org.springframework.ldap.core.ContextSource;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.IOUtils;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.IOUtils;
 
 /**
  * @author Frankie Fu

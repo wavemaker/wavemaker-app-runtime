@@ -26,10 +26,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
-import com.wavemaker.common.util.SSLUtils;
-import com.wavemaker.common.util.WMUtils;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
+import com.wavemaker.studio.common.util.SSLUtils;
+import com.wavemaker.studio.common.util.WMUtils;
 
 /**
  * @author Uday Shankar

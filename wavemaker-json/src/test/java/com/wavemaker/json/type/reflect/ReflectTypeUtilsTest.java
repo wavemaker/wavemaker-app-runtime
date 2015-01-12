@@ -25,10 +25,6 @@ import java.util.Set;
 
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.SpringUtils;
-import com.wavemaker.common.util.Tuple;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.JSONMarshaller_Objects.ClassWithEnum;
 import com.wavemaker.json.type.FieldDefinition;
@@ -38,6 +34,10 @@ import com.wavemaker.json.type.ObjectTypeDefinition;
 import com.wavemaker.json.type.PrimitiveTypeDefinition;
 import com.wavemaker.json.type.TypeDefinition;
 import com.wavemaker.json.type.TypeState;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.SpringUtils;
+import com.wavemaker.studio.common.util.Tuple;
 
 /**
  * @author Matt Small

@@ -15,24 +15,30 @@
  */
 package com.wavemaker.runtime;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.runtime.server.ServerUtils;
-import com.wavemaker.runtime.server.ServiceResponse;
-import org.apache.commons.io.IOUtils;
-import org.apache.tika.Tika;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.tika.Tika;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+import com.wavemaker.runtime.server.ServerUtils;
+import com.wavemaker.runtime.server.ServiceResponse;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * Controller (in the MVC sense) providing the studio access to project files. Based off of the old StaticFileServlet.

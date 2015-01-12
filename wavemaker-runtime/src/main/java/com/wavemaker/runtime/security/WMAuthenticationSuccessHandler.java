@@ -32,7 +32,7 @@ import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.util.StringUtils;
 
-import com.wavemaker.common.CommonConstants;
+import com.wavemaker.studio.common.CommonConstants;
 
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler  {
 

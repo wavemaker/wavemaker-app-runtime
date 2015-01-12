@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.wavemaker.common.util.SpringUtils;
 import com.wavemaker.infra.WMTestCase;
+import com.wavemaker.studio.common.util.SpringUtils;
 
 /**
  * @author Matt Small

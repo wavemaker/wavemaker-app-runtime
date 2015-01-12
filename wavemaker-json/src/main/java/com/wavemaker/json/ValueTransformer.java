@@ -15,9 +15,9 @@
  */
 package com.wavemaker.json;
 
-import com.wavemaker.common.util.Tuple;
 import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.json.type.TypeState;
+import com.wavemaker.studio.common.util.Tuple;
 
 /**
  * Provides a mechanism for end-users to transform values before they are serialized or de-serialized. These transforms

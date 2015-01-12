@@ -6,7 +6,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 
-import com.wavemaker.common.util.StringUtils;
+import com.wavemaker.studio.common.util.StringUtils;
 
 /**
  * @Author: sowmyad

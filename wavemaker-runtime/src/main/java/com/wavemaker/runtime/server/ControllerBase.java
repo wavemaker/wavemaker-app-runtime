@@ -34,10 +34,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMException;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.IOUtils;
 import com.wavemaker.json.JSONArray;
 import com.wavemaker.json.JSONState;
 import com.wavemaker.json.type.FieldDefinition;
@@ -54,6 +50,10 @@ import com.wavemaker.runtime.service.ServiceManager;
 import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.TypedServiceReturn;
 import com.wavemaker.runtime.service.response.RootServiceResponse;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMException;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.IOUtils;
 
 /**
  * @author Matt Small

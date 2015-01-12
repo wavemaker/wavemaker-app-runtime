@@ -15,9 +15,9 @@
  */
 package com.wavemaker.runtime.ws;
 
-import com.wavemaker.common.classloader.ClassLoaderUtils;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.JSONMarshaller;
+import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
 
 /**
  * @author Frankie Fu

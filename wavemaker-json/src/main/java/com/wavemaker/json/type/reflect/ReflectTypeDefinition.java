@@ -15,8 +15,8 @@
  */
 package com.wavemaker.json.type.reflect;
 
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.type.TypeDefinition;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Matt Small

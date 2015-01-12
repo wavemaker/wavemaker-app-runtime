@@ -25,9 +25,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMException;
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.AlternateJSONTransformer;
 import com.wavemaker.json.JSONArray;
 import com.wavemaker.json.JSONObject;
@@ -37,6 +34,9 @@ import com.wavemaker.json.type.TypeState;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.server.JSONParameterTypeField;
 import com.wavemaker.runtime.service.ParsedServiceArguments;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMException;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * JSON utility methods.

@@ -15,7 +15,7 @@
  */
 package com.wavemaker.runtime.service;
 
-import com.wavemaker.common.util.ObjectUtils;
+import com.wavemaker.studio.common.util.ObjectUtils;
 
 /**
  * @author Simon Toens

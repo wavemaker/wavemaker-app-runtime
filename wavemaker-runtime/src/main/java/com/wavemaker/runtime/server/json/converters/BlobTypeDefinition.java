@@ -15,23 +15,24 @@
  */
 package com.wavemaker.runtime.server.json.converters;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.Blob;
+import java.sql.SQLException;
+
+import org.apache.commons.io.IOUtils;
+import org.hibernate.engine.jdbc.BinaryStream;
+import org.hibernate.engine.jdbc.BlobImplementer;
+import org.hibernate.engine.jdbc.internal.BinaryStreamImpl;
+
 import com.wavemaker.json.JSONArray;
 import com.wavemaker.json.JSONMarshaller;
 import com.wavemaker.json.type.converters.ReadObjectConverter;
 import com.wavemaker.json.type.converters.WriteObjectConverter;
 import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
-import org.apache.commons.io.IOUtils;
-import org.hibernate.engine.jdbc.BinaryStream;
-import org.hibernate.engine.jdbc.BlobImplementer;
-import org.hibernate.engine.jdbc.internal.BinaryStreamImpl;
-
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.Blob;
-import java.sql.SQLException;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * TypeDefinition for types extending from {@link Blob}.

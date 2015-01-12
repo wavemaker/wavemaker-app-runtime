@@ -12,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.WMUtils;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.helper.SchemaConversionHelper;
 import com.wavemaker.runtime.rest.RestConstants;
@@ -26,6 +24,8 @@ import com.wavemaker.runtime.rest.model.api.HTTPMethod;
 import com.wavemaker.runtime.rest.model.api.Operation;
 import com.wavemaker.runtime.rest.model.api.Parameter;
 import com.wavemaker.runtime.rest.model.api.ParameterType;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.WMUtils;
 
 /**
  * @author Uday Shankar

@@ -15,22 +15,23 @@
  */
 package com.wavemaker.runtime.server.json.converters;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.json.JSONMarshaller;
-import com.wavemaker.json.type.converters.ReadObjectConverter;
-import com.wavemaker.json.type.converters.WriteObjectConverter;
-import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import java.io.IOException;
+import java.io.Writer;
+import java.sql.Clob;
+import java.sql.SQLException;
+
 import org.apache.commons.io.IOUtils;
 import org.hibernate.engine.jdbc.CharacterStream;
 import org.hibernate.engine.jdbc.ClobImplementer;
 import org.hibernate.engine.jdbc.internal.CharacterStreamImpl;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.sql.Clob;
-import java.sql.SQLException;
+import com.wavemaker.json.JSONMarshaller;
+import com.wavemaker.json.type.converters.ReadObjectConverter;
+import com.wavemaker.json.type.converters.WriteObjectConverter;
+import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
+import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * TypeDefinition for types extending from {@link Clob}.

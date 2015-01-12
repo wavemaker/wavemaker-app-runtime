@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.SpringUtils;
-import com.wavemaker.common.util.Tuple;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.AlternateJSONTransformerTest.IsNested.IsNestedDeeper;
 import com.wavemaker.json.AlternateJSONTransformerTest.IsNested.IsNestedDeeper.IsNestedEvenDeeper;
@@ -42,6 +38,10 @@ import com.wavemaker.json.type.reflect.ReflectTypeState;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.json.type.reflect.converters.DateTypeDefinition;
 import com.wavemaker.json.type.reflect.converters.FileTypeDefinition;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.SpringUtils;
+import com.wavemaker.studio.common.util.Tuple;
 
 /**
  * @author Matt Small

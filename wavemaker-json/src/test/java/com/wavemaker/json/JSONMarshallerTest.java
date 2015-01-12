@@ -29,9 +29,6 @@ import java.util.Stack;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.Tuple;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.AlternateJSONTransformerTest.HasSomePrimitives;
 import com.wavemaker.json.JSONMarshaller_Objects.ClassWithEnum;
@@ -57,6 +54,9 @@ import com.wavemaker.json.type.TypeState;
 import com.wavemaker.json.type.reflect.ReflectTypeState;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.json.type.reflect.converters.DateTypeDefinition;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.Tuple;
 
 /**
  * @author Matt Small

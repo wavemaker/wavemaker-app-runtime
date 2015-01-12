@@ -15,8 +15,8 @@
  */
 package com.wavemaker.runtime.ws;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMException;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMException;
 
 /**
  * @author Frankie Fu

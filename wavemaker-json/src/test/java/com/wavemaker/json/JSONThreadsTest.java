@@ -18,9 +18,9 @@ package com.wavemaker.json;
 import java.io.IOException;
 import java.util.Date;
 
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.type.reflect.converters.DateTypeDefinition;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Matt Small

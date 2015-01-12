@@ -16,6 +16,6 @@ definition of configuration; this is shared between runtime and test-time.
         </property>
     </bean>
 
-    <bean id="wmEventPublisher" class="com.wavemaker.common.event.WMEventPublisher"/>
+    <bean id="wmEventPublisher" class="com.wavemaker.studio.common.event.WMEventPublisher"/>
 
 </beans>

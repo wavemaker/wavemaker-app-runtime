@@ -19,11 +19,11 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
-import com.wavemaker.common.util.StringUtils;
-import com.wavemaker.common.util.SystemUtils;
 import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
+import com.wavemaker.studio.common.util.StringUtils;
+import com.wavemaker.studio.common.util.SystemUtils;
 
 /**
  * @author Simon Toens

@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wavemaker.common.wrapper.BooleanWrapper;
-import com.wavemaker.common.wrapper.IntegerWrapper;
-import com.wavemaker.common.wrapper.StringWrapper;
-import com.wavemaker.common.util.WMUtils;
 import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.security.WMCurrentUser;
+import com.wavemaker.studio.common.util.WMUtils;
+import com.wavemaker.studio.common.wrapper.BooleanWrapper;
+import com.wavemaker.studio.common.wrapper.IntegerWrapper;
+import com.wavemaker.studio.common.wrapper.StringWrapper;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 

@@ -34,7 +34,7 @@ package com.wavemaker.json.core;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * Provides useful methods on java objects and JSON values.

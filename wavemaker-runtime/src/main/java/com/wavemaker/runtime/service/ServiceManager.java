@@ -26,11 +26,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.CastUtils;
-import com.wavemaker.common.util.SpringUtils;
 import com.wavemaker.runtime.RuntimeAccess;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.CastUtils;
+import com.wavemaker.studio.common.util.SpringUtils;
 
 /**
  * The ServiceManager provides access to the system's current services. As this is a Spring-managed bean, access should

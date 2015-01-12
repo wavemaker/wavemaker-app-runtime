@@ -21,13 +21,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
 import com.wavemaker.json.JSONMarshaller;
 import com.wavemaker.json.type.converters.ReadObjectConverter;
 import com.wavemaker.json.type.converters.WriteObjectConverter;
 import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * Date primitive type. This includes all known subclasses of {@link Date}, including {@link java.sql.Date},

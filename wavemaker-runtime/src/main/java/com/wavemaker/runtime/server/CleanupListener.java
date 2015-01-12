@@ -25,8 +25,8 @@ import javax.servlet.ServletContextListener;
 
 import org.hsqldb.DatabaseManager;
 
-import com.wavemaker.common.util.CastUtils;
 import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.studio.common.util.CastUtils;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app

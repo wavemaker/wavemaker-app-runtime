@@ -20,12 +20,12 @@ import java.util.List;
 
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.common.util.SpringUtils;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.json.type.ObjectTypeDefinition;
 import com.wavemaker.json.type.OperationEnumeration;
 import com.wavemaker.json.type.TypeDefinition;
+import com.wavemaker.studio.common.util.SpringUtils;
 
 /**
  * @author Matt Small

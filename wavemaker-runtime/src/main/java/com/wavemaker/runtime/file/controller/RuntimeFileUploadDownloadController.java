@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.wavemaker.common.CommonConstants;
 import com.wavemaker.runtime.server.upload.FileUploadDownload;
+import com.wavemaker.studio.common.CommonConstants;
 
 /**
  * @author Uday Shankar

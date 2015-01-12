@@ -15,14 +15,15 @@
  */
 package com.wavemaker.json.type.reflect;
 
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.json.type.TypeDefinition;
-import com.wavemaker.json.type.TypeState;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.springframework.util.ClassUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.wavemaker.json.type.TypeDefinition;
+import com.wavemaker.json.type.TypeState;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Matt Small

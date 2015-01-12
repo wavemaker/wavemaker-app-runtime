@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.wavemaker.common.ConfigurationException;
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.util.SpringUtils;
+import com.wavemaker.studio.common.ConfigurationException;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.util.SpringUtils;
 
 /**
  * @author Seung Lee

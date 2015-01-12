@@ -18,7 +18,7 @@ package com.wavemaker.json;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.wavemaker.common.WMRuntimeException;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Matt Small

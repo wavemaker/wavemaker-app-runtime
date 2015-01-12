@@ -43,18 +43,18 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMException;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.classloader.ClassLoaderUtils;
-import com.wavemaker.common.util.ClassUtils;
-import com.wavemaker.common.util.StringUtils;
 import com.wavemaker.json.JSONState;
 import com.wavemaker.runtime.service.ParsedServiceArguments;
 import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.TypedServiceReturn;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.annotations.HideFromClient;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMException;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
+import com.wavemaker.studio.common.util.ClassUtils;
+import com.wavemaker.studio.common.util.StringUtils;
 
 /**
  * Utility methods for the server components.

@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.SpringUtils;
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.json.type.reflect.converters.DateTypeDefinition;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.SpringUtils;
 
 import static com.wavemaker.json.util.JsonTestUtils.assertJSONStringsEquals;
 

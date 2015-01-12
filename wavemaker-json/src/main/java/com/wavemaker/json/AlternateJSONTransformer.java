@@ -25,9 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.common.MessageResource;
-import com.wavemaker.common.WMRuntimeException;
-import com.wavemaker.common.util.Tuple;
 import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.json.type.ListTypeDefinition;
 import com.wavemaker.json.type.MapTypeDefinition;
@@ -36,6 +33,9 @@ import com.wavemaker.json.type.PrimitiveTypeDefinition;
 import com.wavemaker.json.type.TypeState;
 import com.wavemaker.json.type.converters.ReadObjectConverter;
 import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import com.wavemaker.studio.common.MessageResource;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.Tuple;
 
 /**
  * Alternate JSONObject -&gt; Object transformers.

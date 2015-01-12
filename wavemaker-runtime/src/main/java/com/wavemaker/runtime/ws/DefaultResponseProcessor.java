@@ -21,9 +21,9 @@ import java.io.IOException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import com.wavemaker.common.util.JAXBUtils;
 import com.wavemaker.runtime.pws.IPwsResponseProcessor;
 import com.wavemaker.runtime.pws.PwsException;
+import com.wavemaker.studio.common.util.JAXBUtils;
 
 /**
  * Default Http Response processor

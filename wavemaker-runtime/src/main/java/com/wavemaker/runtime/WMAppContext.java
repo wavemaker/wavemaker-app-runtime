@@ -30,8 +30,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.wavemaker.common.CommonConstants;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
+import com.wavemaker.studio.common.CommonConstants;
 
 /**
  * This singleton class is to store any properties in the scope of the application context.
