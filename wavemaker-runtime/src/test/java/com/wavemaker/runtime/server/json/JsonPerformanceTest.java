@@ -15,16 +15,21 @@
  */
 package com.wavemaker.runtime.server.json;
 
-import com.wavemaker.infra.WMTestCase;
-import com.wavemaker.json.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.wavemaker.infra.WMTestCase;
+import com.wavemaker.studio.json.AlternateJSONTransformer;
+import com.wavemaker.studio.json.JSONMarshaller;
+import com.wavemaker.studio.json.JSONObject;
+import com.wavemaker.studio.json.JSONState;
+import com.wavemaker.studio.json.JSONUnmarshaller;
 
 /**
  * Test JSON performance, make sure nothing is worse.

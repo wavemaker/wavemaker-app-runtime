@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.springframework.core.NamedThreadLocal;
 
-import com.wavemaker.json.JSONState;
+import com.wavemaker.studio.json.JSONState;
 
 /**
  * Provides request-scoped runtime information; for internal use only.

@@ -15,7 +15,7 @@
  */
 package com.wavemaker.runtime.service;
 
-import com.wavemaker.json.type.FieldDefinition;
+import com.wavemaker.studio.json.type.FieldDefinition;
 
 /**
  * This is an optional return type for services which would like to indicate their return type (instead of using

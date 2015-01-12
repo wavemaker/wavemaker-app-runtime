@@ -34,13 +34,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.wavemaker.json.JSONArray;
-import com.wavemaker.json.JSONState;
-import com.wavemaker.json.type.FieldDefinition;
-import com.wavemaker.json.type.GenericFieldDefinition;
-import com.wavemaker.json.type.reflect.MapReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.ReflectTypeState;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.interceptor.RequestInitInterceptor;
@@ -54,6 +47,13 @@ import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMException;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.studio.json.JSONArray;
+import com.wavemaker.studio.json.JSONState;
+import com.wavemaker.studio.json.type.FieldDefinition;
+import com.wavemaker.studio.json.type.GenericFieldDefinition;
+import com.wavemaker.studio.json.type.reflect.MapReflectTypeDefinition;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeState;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeUtils;
 
 /**
  * @author Matt Small

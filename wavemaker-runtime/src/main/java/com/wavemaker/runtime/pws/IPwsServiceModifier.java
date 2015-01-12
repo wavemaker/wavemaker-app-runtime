@@ -17,10 +17,10 @@ package com.wavemaker.runtime.pws;
 
 import java.util.List;
 
-import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.runtime.service.ElementType;
 import com.wavemaker.runtime.service.definition.DeprecatedServiceDefinition;
 import com.wavemaker.runtime.service.definition.ServiceOperation;
+import com.wavemaker.studio.json.type.FieldDefinition;
 
 /**
  * This interface defines methods to modify the service definition before generating the service definition file and the

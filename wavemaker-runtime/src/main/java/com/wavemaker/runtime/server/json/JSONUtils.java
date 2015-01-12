@@ -25,18 +25,18 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.json.AlternateJSONTransformer;
-import com.wavemaker.json.JSONArray;
-import com.wavemaker.json.JSONObject;
-import com.wavemaker.json.JSONState;
-import com.wavemaker.json.type.FieldDefinition;
-import com.wavemaker.json.type.TypeState;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.server.JSONParameterTypeField;
 import com.wavemaker.runtime.service.ParsedServiceArguments;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMException;
 import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.json.AlternateJSONTransformer;
+import com.wavemaker.studio.json.JSONArray;
+import com.wavemaker.studio.json.JSONObject;
+import com.wavemaker.studio.json.JSONState;
+import com.wavemaker.studio.json.type.FieldDefinition;
+import com.wavemaker.studio.json.type.TypeState;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeUtils;
 
 /**
  * JSON utility methods.

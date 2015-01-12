@@ -26,9 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.servlet.view.AbstractView;
 
-import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.runtime.server.Downloadable;
 import com.wavemaker.runtime.server.ServerConstants;
+import com.wavemaker.studio.json.type.FieldDefinition;
 
 /**
  * Provides a suitable view for download servlets. If a DownloadObject is present, it will send the pieces from that; if

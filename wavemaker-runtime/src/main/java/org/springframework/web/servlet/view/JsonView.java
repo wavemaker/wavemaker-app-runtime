@@ -22,11 +22,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.wavemaker.json.JSONMarshaller;
-import com.wavemaker.json.JSONState;
-import com.wavemaker.json.type.FieldDefinition;
 import com.wavemaker.runtime.server.ServerConstants;
 import com.wavemaker.runtime.server.view.TypedView;
+import com.wavemaker.studio.json.JSONMarshaller;
+import com.wavemaker.studio.json.JSONState;
+import com.wavemaker.studio.json.type.FieldDefinition;
 
 /**
  * A View that renders its model as a JSON object.

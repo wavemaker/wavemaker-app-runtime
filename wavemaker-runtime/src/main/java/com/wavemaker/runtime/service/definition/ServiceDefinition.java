@@ -17,9 +17,9 @@ package com.wavemaker.runtime.service.definition;
 
 import java.util.List;
 
-import com.wavemaker.json.type.TypeDefinition;
 import com.wavemaker.runtime.pws.IPwsServiceModifier;
 import com.wavemaker.runtime.service.ServiceType;
+import com.wavemaker.studio.json.type.TypeDefinition;
 
 /**
  * Represents a service definition.

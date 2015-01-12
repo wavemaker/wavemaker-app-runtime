@@ -15,8 +15,8 @@
  */
 package com.wavemaker.runtime.service;
 
-import com.wavemaker.json.type.TypeDefinition;
 import com.wavemaker.runtime.service.response.LiveDataServiceResponse;
+import com.wavemaker.studio.json.type.TypeDefinition;
 
 /**
  * This interface defines a LiveData/CRUD service. These services must provide standard CRUD operations (Create, Read,

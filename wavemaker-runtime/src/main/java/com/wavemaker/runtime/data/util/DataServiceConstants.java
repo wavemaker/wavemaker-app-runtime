@@ -15,7 +15,7 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import com.wavemaker.json.AlternateJSONTransformer;
+import com.wavemaker.studio.json.AlternateJSONTransformer;
 
 /**
  * @author Simon Toens

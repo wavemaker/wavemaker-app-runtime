@@ -17,7 +17,7 @@ package com.wavemaker.runtime.server.view;
 
 import org.springframework.web.servlet.View;
 
-import com.wavemaker.json.type.FieldDefinition;
+import com.wavemaker.studio.json.type.FieldDefinition;
 
 /**
  * @author Matt Small

@@ -19,9 +19,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import com.wavemaker.json.JSONArray;
-import com.wavemaker.json.JSONState;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.server.InternalRuntime;
 import com.wavemaker.runtime.server.ServerUtils;
@@ -33,6 +30,9 @@ import com.wavemaker.runtime.service.ServiceWire;
 import com.wavemaker.runtime.service.TypedServiceReturn;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.json.JSONArray;
+import com.wavemaker.studio.json.JSONState;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeUtils;
 
 /**
  * @author Matt Small

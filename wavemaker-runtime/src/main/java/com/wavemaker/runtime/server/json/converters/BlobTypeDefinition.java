@@ -25,14 +25,14 @@ import org.hibernate.engine.jdbc.BinaryStream;
 import org.hibernate.engine.jdbc.BlobImplementer;
 import org.hibernate.engine.jdbc.internal.BinaryStreamImpl;
 
-import com.wavemaker.json.JSONArray;
-import com.wavemaker.json.JSONMarshaller;
-import com.wavemaker.json.type.converters.ReadObjectConverter;
-import com.wavemaker.json.type.converters.WriteObjectConverter;
-import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.json.JSONArray;
+import com.wavemaker.studio.json.JSONMarshaller;
+import com.wavemaker.studio.json.type.converters.ReadObjectConverter;
+import com.wavemaker.studio.json.type.converters.WriteObjectConverter;
+import com.wavemaker.studio.json.type.reflect.PrimitiveReflectTypeDefinition;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeUtils;
 
 /**
  * TypeDefinition for types extending from {@link Blob}.

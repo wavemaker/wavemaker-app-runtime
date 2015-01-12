@@ -18,11 +18,11 @@ package com.wavemaker.runtime.service.definition;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wavemaker.json.type.FieldDefinition;
-import com.wavemaker.json.type.TypeDefinition;
 import com.wavemaker.runtime.pws.IPwsServiceModifier;
 import com.wavemaker.runtime.service.ElementType;
 import com.wavemaker.runtime.ws.RESTInputParam;
+import com.wavemaker.studio.json.type.FieldDefinition;
+import com.wavemaker.studio.json.type.TypeDefinition;
 
 /**
  * An abstract ReflectServiceDefinition with the new methods implemented, to help aid in the transition.

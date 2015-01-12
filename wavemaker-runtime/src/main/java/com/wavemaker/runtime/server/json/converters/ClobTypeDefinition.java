@@ -25,13 +25,13 @@ import org.hibernate.engine.jdbc.CharacterStream;
 import org.hibernate.engine.jdbc.ClobImplementer;
 import org.hibernate.engine.jdbc.internal.CharacterStreamImpl;
 
-import com.wavemaker.json.JSONMarshaller;
-import com.wavemaker.json.type.converters.ReadObjectConverter;
-import com.wavemaker.json.type.converters.WriteObjectConverter;
-import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.json.JSONMarshaller;
+import com.wavemaker.studio.json.type.converters.ReadObjectConverter;
+import com.wavemaker.studio.json.type.converters.WriteObjectConverter;
+import com.wavemaker.studio.json.type.reflect.PrimitiveReflectTypeDefinition;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeUtils;
 
 /**
  * TypeDefinition for types extending from {@link Clob}.

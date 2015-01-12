@@ -25,16 +25,16 @@ import java.util.List;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.json.type.FieldDefinition;
-import com.wavemaker.json.type.GenericFieldDefinition;
-import com.wavemaker.json.type.ListTypeDefinition;
-import com.wavemaker.json.type.OperationEnumeration;
-import com.wavemaker.json.type.reflect.ListReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.ObjectReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.PrimitiveReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.ReflectTypeDefinition;
-import com.wavemaker.json.type.reflect.ReflectTypeState;
-import com.wavemaker.json.type.reflect.ReflectTypeUtils;
+import com.wavemaker.studio.json.type.FieldDefinition;
+import com.wavemaker.studio.json.type.GenericFieldDefinition;
+import com.wavemaker.studio.json.type.ListTypeDefinition;
+import com.wavemaker.studio.json.type.OperationEnumeration;
+import com.wavemaker.studio.json.type.reflect.ListReflectTypeDefinition;
+import com.wavemaker.studio.json.type.reflect.ObjectReflectTypeDefinition;
+import com.wavemaker.studio.json.type.reflect.PrimitiveReflectTypeDefinition;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeDefinition;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeState;
+import com.wavemaker.studio.json.type.reflect.ReflectTypeUtils;
 
 /**
  * Used by <code>ServiceDefinition</code> representing the operation's input and output type.
@@ -282,7 +282,7 @@ public class ElementType implements Cloneable {
 
     /**
      * Transforms this ElementType into a FieldDefinition, to make the transition easier. This uses the default
-     * reflection-based TypeDefinition classes ({@link com.wavemaker.json.type.reflect}).
+     * reflection-based TypeDefinition classes ({@link com.wavemaker.studio.json.type.reflect}).
      * 
      * @return
      */

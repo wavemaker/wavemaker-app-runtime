@@ -17,12 +17,12 @@ package com.wavemaker.runtime.service;
 
 import java.util.Map;
 
-import com.wavemaker.json.JSONArray;
-import com.wavemaker.json.JSONState;
 import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.server.InternalRuntime;
 import com.wavemaker.runtime.server.ServiceResponse;
 import com.wavemaker.runtime.server.json.JSONUtils;
+import com.wavemaker.studio.json.JSONArray;
+import com.wavemaker.studio.json.JSONState;
 
 /**
  * Interface specifying the runtime component for a ServiceType.

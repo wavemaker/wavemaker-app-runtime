@@ -25,14 +25,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.wavemaker.json.JSONState;
-import com.wavemaker.json.type.reflect.converters.DateTypeDefinition;
-import com.wavemaker.json.type.reflect.converters.FileTypeDefinition;
 import com.wavemaker.runtime.RuntimeAccess;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.server.InternalRuntime;
 import com.wavemaker.runtime.server.json.converters.BlobTypeDefinition;
 import com.wavemaker.runtime.server.json.converters.ClobTypeDefinition;
+import com.wavemaker.studio.json.JSONState;
+import com.wavemaker.studio.json.type.reflect.converters.DateTypeDefinition;
+import com.wavemaker.studio.json.type.reflect.converters.FileTypeDefinition;
 
 /**
  * @author Uday Shankar
