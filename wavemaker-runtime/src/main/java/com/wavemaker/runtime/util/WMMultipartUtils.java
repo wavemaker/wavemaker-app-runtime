@@ -75,7 +75,7 @@ public class WMMultipartUtils {
     }
 
     private static <T> T invokeMethod(T instance, InputStream inputStream, Method method, Field field) throws IOException, IllegalAccessException, InvocationTargetException {
-        if (field.getType().isInstance(new String())) {
+        if (field.getType().isInstance("")) {
             String content = IOUtils.toString(inputStream);
             method.invoke(instance, content);
         } else if (field.getType().getSimpleName().equals("byte[]")) {
