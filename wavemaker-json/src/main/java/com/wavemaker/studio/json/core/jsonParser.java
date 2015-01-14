@@ -129,12 +129,6 @@ public class jsonParser extends Parser {
     }
 
     // these only exist to remove unused import warnings
-    Class<?> IGNORE_listClass = List.class;
-
-    Class<?> IGNORE_arrayListClass = ArrayList.class;
-
-    Class<?> IGNORE_stackClass = Stack.class;
-
     // $ANTLR start "json"
     // src/com/wavemaker/studio/json/core/json.g:83:1: json returns [JSON value] : ( object | array );
     public final JSON json() throws RecognitionException {

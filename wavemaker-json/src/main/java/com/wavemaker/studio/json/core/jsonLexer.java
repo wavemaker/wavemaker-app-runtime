@@ -97,12 +97,6 @@ public class jsonLexer extends Lexer {
     public static final int HEXDIGIT = 30;
 
     // these only exist to remove unused import warnings
-    Class<?> IGNORE_listClass = List.class;
-
-    Class<?> IGNORE_arrayListClass = ArrayList.class;
-
-    Class<?> IGNORE_stackClass = Stack.class;
-
     // delegates
     // delegators
 

@@ -25,8 +25,6 @@ import org.apache.commons.beanutils.PropertyUtilsBean;
  */
 public class WMPropertyUtilsBean extends PropertyUtilsBean {
 
-    private String name = null;
-
     //Convert the first letter of the field name to upper case if appropriate
     @Override
     public PropertyDescriptor[] getPropertyDescriptors(Class klass) {
