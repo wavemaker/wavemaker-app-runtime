@@ -26,7 +26,7 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
         public Date convert(String source) {
             Date dt;
             if(StringUtils.isNumber(source)){
-                dt= new Date(Long.valueOf(source));
+                dt= new Date(Long.parseLong(source));
             } else{
                 dt = new Date(source);
             }
@@ -41,7 +41,7 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
         public java.sql.Date convert(String source) {
             java.sql.Date dt;
             if(StringUtils.isNumber(source)){
-                dt= new java.sql.Date(Long.valueOf(source));
+                dt= new java.sql.Date(Long.parseLong(source));
             } else{
                 Date utilDate = new Date(new Long(source));
                 dt = new java.sql.Date(utilDate.getTime());

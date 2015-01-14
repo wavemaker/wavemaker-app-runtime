@@ -206,7 +206,7 @@ public abstract class TypeConversionUtils {
             return Byte.valueOf(s);
         } else if (type == Date.class) {
             if (StringUtils.isNumber(s)) {
-                return new Date(Long.valueOf(s));
+                return new Date(Long.parseLong(s));
             } else {
                 throw new IllegalArgumentException("Unable to convert " + s + " to " + Date.class.getName());
             }
