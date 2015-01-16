@@ -627,6 +627,12 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource PKCOL_LENGT_LESS_TWOFIVEFIVE = new MessageResource("com.wavemaker.platform.data$PkColLengtLessTwoFiveFive");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PKCOL_SEQUENCE_TYPE_INVALID = new MessageResource("com.wavemaker.platform.data$PkColSequnceTypeInvalid");
+
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource PKCOL_SEQUENCE_VALUE_EMPTY = new MessageResource("com.wavemaker.platform.data$PkColSequenceValueEmpty");
+
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource COL_LEN_GRT_ZERO = new MessageResource("com.wavemaker.platform.data$ColLenGrtZero");
 
