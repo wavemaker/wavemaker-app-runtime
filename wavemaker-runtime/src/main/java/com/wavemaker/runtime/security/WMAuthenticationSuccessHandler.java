@@ -87,7 +87,6 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
 				throw new IOException("Unable to determine a redirect URL");
 			}
 			System.out.println("redirect URL IS: " + redirectURL);
-			RedirectStrategy rs = getRedirectStrategy();
 			Map<String,String> urlMap = new HashMap<String, String>();
 			urlMap.put("url", redirectURL);
 			
