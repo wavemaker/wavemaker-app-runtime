@@ -15,9 +15,12 @@
  */
 package com.wavemaker.runtime.security;
 
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.service.annotations.ExposeToClient;
-import com.wavemaker.runtime.service.annotations.HideFromClient;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -28,7 +31,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import com.wavemaker.runtime.WMAppContext;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
@@ -36,7 +39,6 @@ import java.util.*;
  * @author Frankie Fu
  */
 @Service
-@HideFromClient
 public class SecurityService {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
@@ -57,8 +59,11 @@ public class SecurityService {
         return logger;
     }
 
-
-    @ExposeToClient
+    /**
+     * Checks whether the security is enabled or not. It returns true if it is enable, else, false.
+     *
+     * @return true if the security is enabled; otherwise, false.
+     */
     public Boolean isSecurityEnabled() {
         if(securityEnabled == null) {
             try {
@@ -76,20 +81,19 @@ public class SecurityService {
     }
 
     /**
-     * Checks whether the user has been authenticated.
+     * Checks whether the user has been authenticated or not depending on authentication object.
      *
      * @return true if the user was authenticated; otherwise, false.
      */
-    @ExposeToClient
     public boolean isAuthenticated() {
         return getAuthenticatedAuthentication() != null;
     }
 
     /**
      * Logs the current principal out. The principal is the one in the security context.
-     * 
+     *
+     * @return void (nothing).
      */
-    @ExposeToClient
     public void logout() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
@@ -105,7 +109,13 @@ public class SecurityService {
         return null;
     }
 
-    @ExposeToClient
+    /**
+     * Get Current LoggedIn User.
+     * If security is enabled and user is authenticated then other fields like userId,
+     * userName, tenantId, userRoles etc are also set, otherwise, only securityEnabled value is set.
+     *
+     * @return WMCurrentUser type.
+     */
     public WMCurrentUser getLoggedInUser() {
         WMCurrentUser wmCurrentUser = new WMCurrentUser();
         if(isSecurityEnabled() && isAuthenticated()){
@@ -131,7 +141,6 @@ public class SecurityService {
      * Second case happens when services like ldap are used to authenticate
      * @return The user name.
      */
-    @ExposeToClient
     public String getUserName() {
         WMUserDetails wmUserDetails = getWMUserDetails();
         if (wmUserDetails != null) {
@@ -144,11 +153,10 @@ public class SecurityService {
     }
 
     /**
-     * Returns the user id of the principal in the current security context.
+     * Returns the user id of the principal in the current security context, otherwise, it returns name of the authenticated user..
      * 
-     * @return The user id.
+     * @return String value, which will contain userId.
      */
-    @ExposeToClient
     public String getUserId() {
         WMUserDetails wmUserDetails = getWMUserDetails();
         if(wmUserDetails != null){
@@ -161,11 +169,10 @@ public class SecurityService {
     }
 
     /**
-     * Returns the user roles of the principal in the current security context.
+     * If authentication is null then it returns empty String array. If not then it will retrieve the authority and process the roleName in the spring format before returning and then return.
      * 
-     * @return The user roles.
+     * @return String array with roles or empty depending on authentication object.
      */
-    @ExposeToClient
     public String[] getUserRoles() {
         Authentication authentication = getAuthenticatedAuthentication();
         if (authentication == null) {
@@ -203,11 +210,10 @@ public class SecurityService {
     }
 
     /**
-     * Returns the tenant Id for the logged in user.
+     * If authentication is null then it returns 0. Otherwise, it retrieves tenantId from the authentication cobject and return that value.
      *
-     * @return The tenant Id.
+     * @return The tenant Id or 0 if authentication is null.
      */
-    @ExposeToClient
     public static int getTenantId() {
         Authentication authentication = getAuthenticatedAuthentication();
         if (authentication != null) {
@@ -226,7 +232,6 @@ public class SecurityService {
      * @param serviceUrl The url of the service, protected by CAS, that you want to call.
      * @return A 'use once' proxy service ticket, or null if a ticket cannot be retrieved.
      */
-    @ExposeToClient
     public static String getCASProxyTicket(String serviceUrl) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String ticket = null;
@@ -240,7 +245,11 @@ public class SecurityService {
         return ticket;
     }
 
-    @ExposeToClient
+    /**
+     * It returns Login Time of the current user when userDetail object in current security context is not null, otherwise, it returns 0.
+     *
+     * @return login tine in milliseconds (long value).
+     */
     public long getLoginTime() {
         WMUserDetails wmUserDetails = getWMUserDetails();
         if(wmUserDetails != null)
