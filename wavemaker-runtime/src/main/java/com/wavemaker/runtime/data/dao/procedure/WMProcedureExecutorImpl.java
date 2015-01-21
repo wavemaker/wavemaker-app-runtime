@@ -18,12 +18,10 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.OracleTypesHelper;
 import org.hibernate.internal.SessionImpl;
-import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.wavemaker.runtime.data.dao.util.ProcedureHelper;
 import com.wavemaker.runtime.data.model.CustomProcedure;
 import com.wavemaker.runtime.data.model.CustomProcedureParam;
 import com.wavemaker.runtime.data.model.Procedure;
@@ -120,12 +118,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     }
 
     private List<Object> executeProcedure(String procedureString, List<CustomProcedureParam> customParameters) {
-        if (!ProceduresUtils.hasOutParam(customParameters)){
-            return executeNativeProcedure(procedureString, customParameters);
-        }
-        else{
-            return executeNativeJDBCCall(procedureString, customParameters);
-        }
+       return executeNativeJDBCCall(procedureString, customParameters);
     }
 
     @Override
@@ -170,7 +163,16 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             }
 
             LOGGER.info("Executing Procedure [ " + procedureStr +" ]");
-            callableStatement.execute();
+            boolean resultType = callableStatement.execute();
+
+            List responseWrapper = new ArrayList<Object>();
+            /* If not cursor and not out params */
+            if(outParams.isEmpty() && cursorPostion.isEmpty()){
+                if(resultType){
+                      return processResultSet(callableStatement.getResultSet());
+                  }
+                return responseWrapper;
+            }
 
             Map<String,Object> outData = new LinkedHashMap<String, Object>();
             for (Integer outParam : outParams) {
@@ -178,10 +180,9 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             }
 
             for(Integer cursorIndex :cursorPostion){
-                outData.put(customParams.get(cursorIndex-1).getParamName(), processCursor(callableStatement.getObject(cursorIndex)));
+                outData.put(customParams.get(cursorIndex-1).getParamName(), processResultSet(callableStatement.getObject(cursorIndex)));
             }
 
-            List responseWrapper = new ArrayList<Object>();
             responseWrapper.add(outData);
             return responseWrapper;
         } catch (Exception e) {
@@ -197,7 +198,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         }
     }
 
-    private List<Object> processCursor(Object resultSet) {
+    private List<Object> processResultSet(Object resultSet) {
         ResultSet rset = (ResultSet)resultSet;
         List<Object> result = new ArrayList<Object>();
 
@@ -267,13 +268,6 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         return paramValue;
     }
 
-    protected List<Object> executeNativeProcedure(String procedureString, List<CustomProcedureParam> params) {
-        Session currentSession = template.getSessionFactory().getCurrentSession();
-        SQLQuery sqlProcedure = currentSession.createSQLQuery(procedureString);
-        ProcedureHelper.configureParameters(sqlProcedure, params);
-        sqlProcedure.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        return sqlProcedure.list();
-    }
 
 
 }
