@@ -15,12 +15,7 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.wavemaker.runtime.WMAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -31,7 +26,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.wavemaker.runtime.WMAppContext;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
@@ -43,20 +40,11 @@ public class SecurityService {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityService.class);
 
-    private String rolePrefix = "ROLE_";
-    private String noRolesMarkerRole;
-
+    private static final String ROLE_PREFIX = "ROLE_";
     private List<String> roles;
-
-    private Map<String, List<Rule>> roleMap;
-
     private Boolean securityEnabled;
 
     public SecurityService() {
-    }
-
-    public static Logger getLogger() {
-        return logger;
     }
 
     /**
@@ -76,10 +64,6 @@ public class SecurityService {
         return securityEnabled;
     }
 
-    public void setSecurityEnabled(Boolean securityEnabled) {
-        this.securityEnabled = securityEnabled;
-    }
-
     /**
      * Checks whether the user has been authenticated or not depending on authentication object.
      *
@@ -91,8 +75,6 @@ public class SecurityService {
 
     /**
      * Logs the current principal out. The principal is the one in the security context.
-     *
-     * @return void (nothing).
      */
     public void logout() {
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -183,16 +165,12 @@ public class SecurityService {
         for (GrantedAuthority authority : authorities) {
             String roleName = authority.getAuthority();
             String realRoleName = null;
-            if (this.getRolePrefix() == null) {
-                realRoleName = roleName;
+            if (roleName.startsWith(ROLE_PREFIX)) {
+                // take out the prefix and get the actual role name
+                realRoleName = roleName.substring(ROLE_PREFIX.length());
             } else {
-                if (roleName.startsWith(this.getRolePrefix())) {
-                    // take out the prefix and get the actual role name
-                    realRoleName = roleName.substring(this.getRolePrefix().length());
-                } else {
-                    logger.warn("Role " + roleName + " does not use the prefix " + this.getRolePrefix() + ". This may cause problems");
-                    realRoleName = roleName;
-                }
+                logger.warn("Role " + roleName + " does not use the prefix " + ROLE_PREFIX + ". This may cause problems");
+                realRoleName = roleName;
             }
 
             // make sure the role is not the maker for no roles
@@ -257,83 +235,12 @@ public class SecurityService {
         return 0L;
     }
 
-    /**
-     * Checks if the Principal is allowed to perform the specified action on the specified resources. The Principal is
-     * obtained from the SecurityContext in the current execution thread.
-     * 
-     * @param resources A set of resources.
-     * @param action The action to be checked.
-     * @return True if the Principal is allowed to perform such action; false otherwise.
-     */
-    public boolean isAllowed(Set<Resource> resources, String action) {
-        String[] roleNames = getUserRoles();
-        for (String roleName : roleNames) {
-            if (!isAllowed(roleName, resources, action)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Checks if the specified role has permission to perform the specified action on the specified resources.
-     * 
-     * @param roleName The name of the role to be checked for permission.
-     * @param resources A set of resources.
-     * @param action The action to be checked.
-     * @return True if the role is allowed to perform such action; false otherwise.
-     */
-    public boolean isAllowed(String roleName, Set<Resource> resources, String action) {
-        List<Rule> rules = this.roleMap.get(roleName);
-        if (rules != null) {
-            for (Rule rule : rules) {
-                if (action.equals(rule.getAction())) {
-                    for (Resource ruleResource : rule.getResources()) {
-                        for (Resource queryResource : resources) {
-                            if (queryResource.matchResource(ruleResource)) {
-                                if (!rule.isAllowed()) {
-                                    // deny wins, so simply returns false
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    public String getRolePrefix() {
-        return rolePrefix;
-    }
-
-    public void setRolePrefix(String rolePrefix) {
-        this.rolePrefix = rolePrefix;
-    }
-
-    public String getNoRolesMarkerRole() {
-        return this.noRolesMarkerRole;
-    }
-
-    public void setNoRolesMarkerRole(String noRolesMarkerRole) {
-        this.noRolesMarkerRole = noRolesMarkerRole;
-    }
-
     public List<String> getRoles() {
         return this.roles;
     }
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
-    }
-
-    public Map<String, List<Rule>> getRoleMap() {
-        return this.roleMap;
-    }
-
-    public void setRoleMap(Map<String, List<Rule>> roleMap) {
-        this.roleMap = roleMap;
     }
 
 }
