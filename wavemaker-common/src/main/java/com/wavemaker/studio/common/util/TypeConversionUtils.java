@@ -19,12 +19,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -37,6 +32,17 @@ public abstract class TypeConversionUtils {
     }
 
     private static final Map<String, Class<?>> PRIMITIVES = new HashMap<String, Class<?>>(8);
+
+    /**
+     * List of primitive wrappers (Integer, etc), including Atomic numbers. All standard subclasses of Number are
+     * included, and Boolean.
+     */
+    private static final Collection<Class<?>> PRIMITIVE_WRAPPERS = new HashSet<Class<?>>(11);
+
+    private static Set<String> PRIMITIVE_DATA_TYPES = new HashSet<String>();;
+
+    private static Set<String> SERVLET_CLASSES = new HashSet<String>();
+
     static {
         PRIMITIVES.put(boolean.class.getName(), boolean.class);
         PRIMITIVES.put(byte.class.getName(), byte.class);
@@ -46,14 +52,7 @@ public abstract class TypeConversionUtils {
         PRIMITIVES.put(int.class.getName(), int.class);
         PRIMITIVES.put(long.class.getName(), long.class);
         PRIMITIVES.put(short.class.getName(), short.class);
-    }
 
-    /**
-     * List of primitive wrappers (Integer, etc), including Atomic numbers. All standard subclasses of Number are
-     * included, and Boolean.
-     */
-    private static final Collection<Class<?>> PRIMITIVE_WRAPPERS = new HashSet<Class<?>>(11);
-    static {
         PRIMITIVE_WRAPPERS.add(AtomicInteger.class);
         PRIMITIVE_WRAPPERS.add(AtomicLong.class);
         PRIMITIVE_WRAPPERS.add(BigDecimal.class);
@@ -66,48 +65,47 @@ public abstract class TypeConversionUtils {
         PRIMITIVE_WRAPPERS.add(Integer.class);
         PRIMITIVE_WRAPPERS.add(Long.class);
         PRIMITIVE_WRAPPERS.add(Short.class);
+
+        PRIMITIVE_DATA_TYPES.add("int");
+        PRIMITIVE_DATA_TYPES.add("Integer");
+
+        PRIMITIVE_DATA_TYPES.add("String");
+
+        PRIMITIVE_DATA_TYPES.add("float");
+        PRIMITIVE_DATA_TYPES.add("Float");
+
+        PRIMITIVE_DATA_TYPES.add("boolean");
+        PRIMITIVE_DATA_TYPES.add("Boolean");
+
+        PRIMITIVE_DATA_TYPES.add("char");
+        PRIMITIVE_DATA_TYPES.add("Character");
+
+        PRIMITIVE_DATA_TYPES.add("byte");
+        PRIMITIVE_DATA_TYPES.add("Byte");
+
+        PRIMITIVE_DATA_TYPES.add("short");
+        PRIMITIVE_DATA_TYPES.add("Short");
+
+        PRIMITIVE_DATA_TYPES.add("long");
+        PRIMITIVE_DATA_TYPES.add("Long");
+
+        PRIMITIVE_DATA_TYPES.add("double");
+        PRIMITIVE_DATA_TYPES.add("Double");
+
+        PRIMITIVE_DATA_TYPES.add("Date");
+
+        //servlet related classes...
+        SERVLET_CLASSES.add("HttpServletRequest");
+        SERVLET_CLASSES.add("HttpServletResponse");
+        SERVLET_CLASSES.add("MultipartHttpServletRequest");
     }
 
-    private static Set<String> primitivaDataTypes;
-
-    static {
-        primitivaDataTypes = new HashSet<String>();
-        constructPrimitiveDataTypeSet();
-    }
-
-    private static void constructPrimitiveDataTypeSet() {
-        primitivaDataTypes.add("int");
-        primitivaDataTypes.add("Integer");
-
-        primitivaDataTypes.add("String");
-
-        primitivaDataTypes.add("float");
-        primitivaDataTypes.add("Float");
-
-        primitivaDataTypes.add("boolean");
-        primitivaDataTypes.add("Boolean");
-
-        primitivaDataTypes.add("char");
-        primitivaDataTypes.add("Character");
-
-        primitivaDataTypes.add("byte");
-        primitivaDataTypes.add("Byte");
-
-        primitivaDataTypes.add("short");
-        primitivaDataTypes.add("Short");
-
-        primitivaDataTypes.add("long");
-        primitivaDataTypes.add("Long");
-
-        primitivaDataTypes.add("double");
-        primitivaDataTypes.add("Double");
-
-        primitivaDataTypes.add("Date");
-
+    public static boolean isServletClass(String className) {
+        return SERVLET_CLASSES.contains(className);
     }
 
     public static boolean isPrimitive (String dataType){
-        if(primitivaDataTypes.contains(dataType))
+        if(PRIMITIVE_DATA_TYPES.contains(dataType))
             return true;
         return  false;
     }
