@@ -525,6 +525,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource FAILURE_IN_DATAMODEL_EXPORT = new MessageResource("com.wavemaker.platform.data$FailureInDataModelExport");
 
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource FAILURE_IN_DATAMODEL_EXPORT_TASK = new MessageResource("com.wavemaker.platform.data$FailureInDataModelExportTask");
+
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource FAILED_TO_GETDDL = new MessageResource("com.wavemaker.platform.data$FailedToGetDDL");
 
