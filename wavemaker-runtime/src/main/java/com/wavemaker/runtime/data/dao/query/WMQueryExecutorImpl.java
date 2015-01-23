@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.dao.query;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,21 +69,42 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         if(customQueryParams != null && !customQueryParams.isEmpty()){
             for (CustomQueryParam customQueryParam: customQueryParams) {
                 Object paramValue = customQueryParam.getParamValue();
-                try{
-                    Class loader = Class.forName(customQueryParam.getParamType());
-                    paramValue=   TypeConversionUtils.fromString(loader, customQueryParam.getParamValue().toString(), false);
+                if(customQueryParam.isList() ){
+                    if(!(paramValue instanceof List)){
+                        throw new WMRuntimeException(customQueryParam.getParamName() + " should have list value ");
+                    }
+                    params.put(customQueryParam.getParamName(), validateAndPrepareObject(customQueryParam));
+                    continue;
                 }
-                catch (IllegalArgumentException ex){
-                    LOGGER.error("Failed to Convert param value for query", ex);
-                    throw new WMRuntimeException(MessageResource.QUERY_CONV_FAILURE, ex);
-                }
-                catch (ClassNotFoundException ex){
-                    throw new WMRuntimeException(MessageResource.CLASS_NOT_FOUND, ex, customQueryParam.getParamType());
-                }
+                paramValue = validateObject(customQueryParam.getParamType(),customQueryParam.getParamValue());
                 params.put(customQueryParam.getParamName(), paramValue);
             }
         }
 
+    }
+
+    private Object validateAndPrepareObject(CustomQueryParam customQueryParam) {
+        List<Object> objectList = new ArrayList<Object>();
+        List<Object> listParams = (List)customQueryParam.getParamValue();
+        for (Object listParam : listParams) {
+            objectList.add(validateObject(customQueryParam.getParamType(), listParam));
+        }
+        return  objectList;
+    }
+
+    private Object validateObject(String paramType, Object paramValue) {
+        try{
+            Class loader = Class.forName(paramType);
+            paramValue=   TypeConversionUtils.fromString(loader, paramValue.toString(), false);
+        }
+        catch (IllegalArgumentException ex){
+            LOGGER.error("Failed to Convert param value for query", ex);
+            throw new WMRuntimeException(MessageResource.QUERY_CONV_FAILURE, ex);
+        }
+        catch (ClassNotFoundException ex){
+            throw new WMRuntimeException(MessageResource.CLASS_NOT_FOUND, ex, paramType);
+        }
+        return paramValue;
     }
 
     @Override
@@ -103,17 +125,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         if(customQueryParams != null && !customQueryParams.isEmpty())
             for (CustomQueryParam customQueryParam : customQueryParams) {
                 Object paramValue = customQueryParam.getParamValue();
-                try{
-                    Class loader = Class.forName(customQueryParam.getParamType());
-                    paramValue=   TypeConversionUtils.fromString(loader, customQueryParam.getParamValue().toString(), false);
-                }
-                catch (IllegalArgumentException ex){
-                    LOGGER.error("Failed to Convert param value for query", ex);
-                    throw new WMRuntimeException(MessageResource.QUERY_CONV_FAILURE, ex);
-                }
-                catch (ClassNotFoundException ex){
-                    throw new WMRuntimeException(MessageResource.CLASS_NOT_FOUND, ex, customQueryParam.getParamType());
-                }
+                paramValue = validateObject(customQueryParam.getParamType(), paramValue);
                 params.put(customQueryParam.getParamName(), paramValue);
             }
 

@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.data.dao.util;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +34,11 @@ public class QueryHelper {
                 Object val = params.get(namedParameter);
                 if(val == null)
                     throw new RuntimeException("No value provided for parameter name: " + namedParameter);
-                query.setParameter(namedParameter, val);
+                if(val instanceof List)
+                    query.setParameterList(namedParameter, (List)val);
+                else
+                    query.setParameter(namedParameter, val);
+
             }
         }
     }

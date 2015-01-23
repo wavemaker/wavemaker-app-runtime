@@ -5,6 +5,7 @@ public class CustomQueryParam {
 	private String paramName = null;
     private String paramType = null;
     private Object paramValue = null;
+    private boolean isList = false;
         
 	public CustomQueryParam() {
 		super();
@@ -38,7 +39,15 @@ public class CustomQueryParam {
 		this.paramValue = paramValue;
 	}
 
-	@Override
+    public boolean isList() {
+        return isList;
+    }
+
+    public void setList(boolean list) {
+        isList = list;
+    }
+
+    @Override
 	public String toString() {
 		return "CustomQueryParam [paramName=" + paramName + ", paramType="
 				+ paramType + ", paramValue=" + paramValue + "]";
