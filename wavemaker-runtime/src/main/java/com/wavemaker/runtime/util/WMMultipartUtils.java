@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Random;
 
@@ -14,20 +16,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.studio.common.InvalidInputException;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.json.JSONUtils;
-
-import net.sf.jmimemagic.Magic;
-import net.sf.jmimemagic.MagicException;
-import net.sf.jmimemagic.MagicMatch;
-import net.sf.jmimemagic.MagicMatchNotFoundException;
-import net.sf.jmimemagic.MagicParseException;
+import net.sf.jmimemagic.*;
 
 /**
  * @author sunilp
@@ -38,7 +39,15 @@ public class WMMultipartUtils {
 
     public static final String WM_DATA_JSON = "wm_data_json";
 
+    public static final String BYTE_ARRAY = "byte[]";
+
+    public static final String BLOB = "Blob";
+
     public static <T> T toObject(MultipartHttpServletRequest multipartHttpServletRequest, Class<T> instance) {
+        return toObject(multipartHttpServletRequest, instance, null);
+    }
+
+    public static <T> T toObject(MultipartHttpServletRequest multipartHttpServletRequest, Class<T> instance, String serviceId) {
         T t = null;
         try {
             MultipartFile multipartFile = multipartHttpServletRequest.getFile(WM_DATA_JSON);
@@ -47,9 +56,9 @@ public class WMMultipartUtils {
                 throw new InvalidInputException("Invalid Input : wm_data_json part can not be NULL or Empty");
             }
             t = toObject(multipartFile, instance);
-            setMultipartsToObject(multipartHttpServletRequest.getFileMap(), t);
-        } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException e) {
-            LOGGER.error("Exception while creating a new employee with information: {}", t);
+            setMultipartsToObject(multipartHttpServletRequest.getFileMap(), t, serviceId);
+        } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException | SQLException e) {
+            LOGGER.error("Exception while creating a new Instance with information: {}", t);
             throw new WMRuntimeException("Exception while preparing multipart request");
         }
         return t;
@@ -59,28 +68,40 @@ public class WMMultipartUtils {
         return JSONUtils.toObject(multipartFile.getInputStream(), instance);
     }
 
-    public static <T> T setMultipartsToObject(Map<String, MultipartFile> multiparts, T instance) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    private static <T> T setMultipartsToObject(Map<String, MultipartFile> multiparts, T instance, String serviceId) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, SQLException {
         Class aClass = instance.getClass();
         for (String part : multiparts.keySet()) {
             if (!part.equals(WM_DATA_JSON)) {
-            Field field = aClass.getDeclaredField(part);
-            field.setAccessible(true);
-            String methodName = "set" + StringUtils.capitalize(field.getName());
-            Method method = aClass.getMethod(methodName, (Class<?>) field.getType());
+                Field field = aClass.getDeclaredField(part);
+                field.setAccessible(true);
+                String methodName = "set" + StringUtils.capitalize(field.getName());
+                Method method = aClass.getMethod(methodName, (Class<?>) field.getType());
                 MultipartFile multipartFile = multiparts.get(part);
-                invokeMethod(instance, multipartFile.getInputStream(), method, field);
+                invokeMethod(instance, multipartFile.getInputStream(), method, field, serviceId);
             }
         }
         return instance;
     }
 
-    private static <T> T invokeMethod(T instance, InputStream inputStream, Method method, Field field) throws IOException, IllegalAccessException, InvocationTargetException {
+    private static <T> T invokeMethod(T instance, InputStream inputStream, Method method, Field field, String serviceId) throws IOException, IllegalAccessException, InvocationTargetException, SQLException {
+        byte[] byteArray = IOUtils.toByteArray(inputStream);
         if (field.getType().isInstance("")) {
             String content = IOUtils.toString(inputStream);
             method.invoke(instance, content);
-        } else if (field.getType().getSimpleName().equals("byte[]")) {
-            byte[] byteArray = IOUtils.toByteArray(inputStream);
+        } else if (BYTE_ARRAY.equals(field.getType().getSimpleName())) {
             method.invoke(instance, byteArray);
+        } else if (BLOB.equals(field.getType().getSimpleName())) {
+            SessionFactory sessionFactory = WMAppContext.getInstance().getSpringBean(serviceId + "SessionFactory");
+            Session session = sessionFactory.openSession();
+            try {
+                session = sessionFactory.openSession();
+                Blob blob = Hibernate.getLobCreator(session).createBlob(new ByteArrayInputStream(byteArray), new Long(byteArray.length));
+                method.invoke(instance, blob);
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+            }
         } else {
             LOGGER.error("Casting multipart " + field.getName() + " to " + field.getType().getSimpleName() + " is not supported");
             throw new WMRuntimeException("Casting multipart " + field.getName() + " to " + field.getType().getSimpleName() + " is not supported");
@@ -122,7 +143,17 @@ public class WMMultipartUtils {
         try {
             String methodName = "get" + StringUtils.capitalize(fieldName);
             Method method = instance.getClass().getMethod(methodName);
-            byte[] bytes = (byte[]) method.invoke(instance);
+            byte[] bytes = null;
+            if (BLOB.equals(method.getReturnType().getSimpleName())) {
+                Blob blob = (Blob) method.invoke(instance);
+                try {
+                    bytes = (blob != null) ? IOUtils.toByteArray(blob.getBinaryStream()) : null;
+                } catch (SQLException e) {
+                    throw new WMRuntimeException("Failed to cast Blob content ", e);
+                }
+            } else if (BYTE_ARRAY.equals(method.getReturnType().getSimpleName())) {
+                bytes = (byte[]) method.invoke(instance);
+            }
             if (bytes == null) {
                 throw new WMRuntimeException("Data is empty in column " + fieldName);
             }
@@ -140,7 +171,7 @@ public class WMMultipartUtils {
      * Guess Content type for the given bytes using Magic apis.
      * If any exception using magic api, then getting content type from request.
      *
-     * @param bytes stream of bytes
+     * @param bytes              stream of bytes
      * @param httpServletRequest
      * @return content type for given bytes
      */

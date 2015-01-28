@@ -45,6 +45,9 @@ public class WMRuntimeUtils {
 
     private static final String BYTE_ARRAY = "byte[]";
 
+    private static final String BLOB = "Blob";
+
+
     static {
         messageConverters.add(new ByteArrayHttpMessageConverter());
         messageConverters.add(new StringHttpMessageConverter(Charset.forName(CommonConstants.UTF8)));
@@ -77,7 +80,7 @@ public class WMRuntimeUtils {
         } catch (NoSuchFieldException e) {
             throw new WMRuntimeException("Filed "+ field + " does not exist in class " + instance.getName(), e);
         }
-        if (declaredField != null && BYTE_ARRAY.equals(declaredField.getType().getSimpleName())) {
+        if (declaredField != null && ( BYTE_ARRAY.equals(declaredField.getType().getSimpleName()) || BLOB.equals(declaredField.getType().getSimpleName()))) {
             return true;
         }
         return false;
