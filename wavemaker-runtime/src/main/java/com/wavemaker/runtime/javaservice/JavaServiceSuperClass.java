@@ -15,24 +15,18 @@
  */
 package com.wavemaker.runtime.javaservice;
 
-import java.io.File;
-
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.annotations.HideFromClient;
-import com.wavemaker.studio.common.util.IOUtils;
 
 /**
  * @author Michael Kantor
  */
 @ExposeToClient
+@Deprecated
 public class JavaServiceSuperClass {
-
-    private Logger logger;
 
     public static final int FATAL = 0;
 
@@ -44,69 +38,12 @@ public class JavaServiceSuperClass {
 
     public static final int DEBUG = 4;
 
-    public static final String[] LEVELS = { "FATAL", "ERROR", "WARN", "INFO", "DEBUG" };
+    private static final Logger logger = LoggerFactory.getLogger(JavaServiceSuperClass.class);
 
     public JavaServiceSuperClass() {
-        init(ERROR);
     }
 
     public JavaServiceSuperClass(int logLevel) {
-        init(logLevel);
-    }
-
-    private void init(int logLevel) {
-        this.logger = LoggerFactory.getLogger(this.getClass().getName());
-
-        // Am I running within studio with a logged on user, within studio but in a non-cloud configuration, or in my
-        // own context (testrun or fully deployed)?
-
-        try {
-
-            // Determine if we're in live layout, test run or deployed
-            String currentPath = WMAppContext.getInstance().getContext().getRealPath("");
-            File webAppRoot = new File(currentPath);
-            boolean isDeployedApp = false;
-            if (new File(webAppRoot, "app/deploy.js").exists()) {
-            } else if (new File(webAppRoot, "lib/dojo").exists()) {
-                isDeployedApp = true;
-            } else {
-            }
-
-            String startLogLine = "[ %d{ABSOLUTE}";
-            String endLogLine = "]";
-
-            File logFolder = new File(System.getProperty("catalina.home") + "/logs/ProjectLogs");
-            if (!isDeployedApp) {
-                String projectName = webAppRoot.getParentFile().getName();
-                logFolder = new File(logFolder, projectName);
-            }
-            IOUtils.makeDirectories(logFolder, new File(System.getProperty("catalina.home")));
-
-            if (isDeployedApp) {
-                startLogLine = "";
-                endLogLine = "";
-            }
-
-            System.out.println("LOG FOLDER: " + logFolder.toString() + " | " + logFolder.exists());
-
-            java.util.Properties props = new java.util.Properties();
-            props.setProperty("log4j.logger." + this.getClass().getName(), LEVELS[logLevel] + ", WebServiceLogger1, WebServiceLogger2");
-            props.setProperty("log4j.appender.WebServiceLogger1", "org.apache.log4j.RollingFileAppender");
-            props.setProperty("log4j.appender.WebServiceLogger1.File", logFolder.toString() + "/" + this.getClass().getName() + ".log");
-            props.setProperty("log4j.appender.WebServiceLogger1.MaxFileSize", "50KB");
-            props.setProperty("log4j.appender.WebServiceLogger1.layout", "org.apache.log4j.PatternLayout");
-            props.setProperty("log4j.appender.WebServiceLogger1.layout.ConversionPattern", startLogLine + " %5p (%F:%L) "
-                + (isDeployedApp ? "%d" : "%d{HH:mm:ss}") + " - %m " + endLogLine + "%n");
-            props.setProperty("log4j.appender.WebServiceLogger2", "org.apache.log4j.RollingFileAppender");
-            props.setProperty("log4j.appender.WebServiceLogger2.File", logFolder.toString() + "/project.log");
-            props.setProperty("log4j.appender.WebServiceLogger2.MaxFileSize", "50KB");
-            props.setProperty("log4j.appender.WebServiceLogger2.layout", "org.apache.log4j.PatternLayout");
-            props.setProperty("log4j.appender.WebServiceLogger2.layout.ConversionPattern", startLogLine + " %5p (%F:%L) %d{HH:mm:ss} - %m "
-                + endLogLine + "%n");
-            PropertyConfigurator.configure(props);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     protected void log(int level, String message, Exception e) {
