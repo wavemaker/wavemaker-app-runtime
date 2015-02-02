@@ -41,6 +41,8 @@ import org.springframework.util.PathMatcher;
 
 import com.wavemaker.studio.common.MessageResource;
 
+import javax.xml.stream.XMLStreamReader;
+
 /**
  * @author Simon Toens
  * @author Matt Small
@@ -561,10 +563,19 @@ public abstract class IOUtils {
         return DEFAULT_EXCLUSION.contains(file.getName());
     }
 
-    public static void closeSilently(AutoCloseable e) {
-        if (e != null) {
+    public static void closeXmlReaderSilently(XMLStreamReader reader) {
+        if (reader != null) {
             try {
-                e.close();
+                reader.close();
+            } catch (Exception exc) {
+            }
+        }
+    }
+
+    public static void closeSilently(AutoCloseable stream) {
+        if (stream != null) {
+            try {
+                stream.close();
             } catch (Exception exc) {
             }
         }
