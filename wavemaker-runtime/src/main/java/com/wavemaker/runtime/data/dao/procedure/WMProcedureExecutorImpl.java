@@ -39,11 +39,10 @@ import com.wavemaker.studio.common.util.TypeConversionUtils;
 public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
     private static final String CURSOR = "cursor";
+    private static final Logger logger = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
     private HibernateTemplate template = null;
     private String serviceId = null;
     private ProcedureModel procedureModel = null;
-
-    private static final Logger logger = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
 
     public HibernateTemplate getTemplate() {
         return template;
@@ -73,7 +72,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             } else {
                 logger.warn("Could not find {}-procedures.mappings.json in context classLoader {}", serviceId, contextClassLoader);
                 resourceStream = webAppClassLoader.getResourceAsStream(serviceId + "-procedures.mappings.json");
-                if(resourceStream != null) {
+                if (resourceStream != null) {
                     logger.warn("Using the file {}-procedures.mappings.json from webApp classLoader {}", serviceId, webAppClassLoader);
                 } else {
                     logger.warn("Could not find {}-procedures.mappings.json in webApp classLoader {} also", serviceId, webAppClassLoader);
@@ -118,7 +117,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     }
 
     private List<Object> executeProcedure(String procedureString, List<CustomProcedureParam> customParameters) {
-       return executeNativeJDBCCall(procedureString, customParameters);
+        return executeNativeJDBCCall(procedureString, customParameters);
     }
 
     @Override
@@ -147,13 +146,13 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                     LOGGER.info("Found out Parameter " + procedureParam.getParamName());
                     String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).v2;
                     Integer typeCode = getTypeCode(typeName);
-                    LOGGER.info("Found type code to be "+ typeCode);
+                    LOGGER.info("Found type code to be " + typeCode);
                     callableStatement.registerOutParameter(position + 1, typeCode);
 
-                    if(typeName.equalsIgnoreCase(CURSOR)){
+                    if (typeName.equalsIgnoreCase(CURSOR)) {
                         cursorPostion.add(position + 1);
 
-                    }else{
+                    } else {
                         outParams.add(position + 1);
                     }
                 }
@@ -162,33 +161,33 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 }
             }
 
-            LOGGER.info("Executing Procedure [ " + procedureStr +" ]");
+            LOGGER.info("Executing Procedure [ " + procedureStr + " ]");
             boolean resultType = callableStatement.execute();
 
             List responseWrapper = new ArrayList<Object>();
-            /* If not cursor and not out params */
-            if(outParams.isEmpty() && cursorPostion.isEmpty()){
-                if(resultType){
-                      return processResultSet(callableStatement.getResultSet());
-                  }
+            /* if of type result set */
+            if (resultType) {
+                return processResultSet(callableStatement.getResultSet());
+                /* If not cursor and not out params */
+            } else if (!resultType && outParams.isEmpty() && cursorPostion.isEmpty())
                 return responseWrapper;
-            }
 
-            Map<String,Object> outData = new LinkedHashMap<String, Object>();
+
+            Map<String, Object> outData = new LinkedHashMap<String, Object>();
             for (Integer outParam : outParams) {
-                outData.put(customParams.get(outParam-1).getParamName(), callableStatement.getObject(outParam));
+                outData.put(customParams.get(outParam - 1).getParamName(), callableStatement.getObject(outParam));
             }
 
-            for(Integer cursorIndex :cursorPostion){
-                outData.put(customParams.get(cursorIndex-1).getParamName(), processResultSet(callableStatement.getObject(cursorIndex)));
+            for (Integer cursorIndex : cursorPostion) {
+                outData.put(customParams.get(cursorIndex - 1).getParamName(), processResultSet(callableStatement.getObject(cursorIndex)));
             }
 
             responseWrapper.add(outData);
             return responseWrapper;
         } catch (Exception e) {
             throw new WMRuntimeException("Failed to execute procedure ", e);
-        }finally {
-            if(conn != null){
+        } finally {
+            if (conn != null) {
                 try {
                     conn.close();
                 } catch (SQLException e) {
@@ -199,16 +198,16 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     }
 
     private List<Object> processResultSet(Object resultSet) {
-        ResultSet rset = (ResultSet)resultSet;
+        ResultSet rset = (ResultSet) resultSet;
         List<Object> result = new ArrayList<Object>();
 
         // Dump the cursor
         try {
-            while (rset.next ()){
-                Map<String,Object> rowData = new LinkedHashMap<String,Object>();
+            while (rset.next()) {
+                Map<String, Object> rowData = new LinkedHashMap<String, Object>();
                 int colCount = rset.getMetaData().getColumnCount();
-                for (int i=1; i <= colCount; i++) {
-                    rowData.put(rset.getMetaData().getColumnName(i) ,rset.getObject(i));
+                for (int i = 1; i <= colCount; i++) {
+                    rowData.put(rset.getMetaData().getColumnName(i), rset.getObject(i));
                 }
                 result.add(rowData);
             }
@@ -222,14 +221,13 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
     private Integer getTypeCode(String typeName) throws IllegalAccessException, NoSuchFieldException {
         Integer typeCode;
-        if(typeName.equalsIgnoreCase(CURSOR)){
+        if (typeName.equalsIgnoreCase(CURSOR)) {
             typeCode = OracleTypesHelper.INSTANCE.getOracleCursorTypeSqlType();
-        } else{
+        } else {
             typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer) Types.class.getField(typeName.toUpperCase()).get(null);
         }
         return typeCode;
     }
-
 
     private String getJDBCConvertedString(String procedureStr, String[] namedParams) {
         String targetString = procedureStr;
@@ -239,11 +237,10 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         return targetString;
     }
 
-
     private List<CustomProcedureParam> prepareParams(List<CustomProcedureParam> customProcedureParams) {
         if (customProcedureParams != null && !customProcedureParams.isEmpty()) {
             for (CustomProcedureParam customProcedureParam : customProcedureParams) {
-                if(StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).v2.equalsIgnoreCase(CURSOR))
+                if (StringUtils.splitPackageAndClass(customProcedureParam.getValueType()).v2.equalsIgnoreCase(CURSOR))
                     continue;
                 Object processedParamValue = getValueObject(customProcedureParam);
                 if (processedParamValue != null) {
@@ -267,7 +264,6 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         }
         return paramValue;
     }
-
 
 
 }
