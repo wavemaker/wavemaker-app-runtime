@@ -266,6 +266,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
     public static final MessageResource PROJECT_NEWER_THAN_STUDIO = new MessageResource("com.wavemaker.platform$ProjectNewerThanStudio");
 
+    @ResourceConstraint(numArgs = 3, hasDetailMsg = false)
+    public static final MessageResource PREFAB_NEWER_THAN_STUDIO = new MessageResource("com.wavemaker.platform$PrefabNewerThanStudio");
+
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource NO_DATA_SERVICE_MGR_BEAN_FOUND = new MessageResource("com.wavemaker.platform$NoDataServiceMgrBeanFound");
 
@@ -283,6 +286,9 @@ public class MessageResource {
 
     @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
     public static final MessageResource PROJECT_TOO_OLD_FOR_UPGRADE = new MessageResource("com.wavemaker.platform$ProjectTooOldForUpgrade");
+
+    @ResourceConstraint(numArgs = 2, hasDetailMsg = false)
+    public static final MessageResource PREFAB_TOO_OLD_FOR_UPGRADE = new MessageResource("com.wavemaker.platform$PrefabTooOldForUpgrade");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource UTIL_FILEUTILS_PATHDNE = new MessageResource("com.wavemaker.studio.common.util$FileUtils_PathDNE");
