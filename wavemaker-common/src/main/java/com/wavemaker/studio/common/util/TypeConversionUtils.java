@@ -19,7 +19,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -68,31 +73,41 @@ public abstract class TypeConversionUtils {
 
         PRIMITIVE_DATA_TYPES.add("int");
         PRIMITIVE_DATA_TYPES.add("Integer");
+        PRIMITIVE_DATA_TYPES.add("java.lang.Integer");
 
         PRIMITIVE_DATA_TYPES.add("String");
+        PRIMITIVE_DATA_TYPES.add("java.lang.String");
 
         PRIMITIVE_DATA_TYPES.add("float");
         PRIMITIVE_DATA_TYPES.add("Float");
+        PRIMITIVE_DATA_TYPES.add("java.lang.Float");
 
         PRIMITIVE_DATA_TYPES.add("boolean");
         PRIMITIVE_DATA_TYPES.add("Boolean");
+        PRIMITIVE_DATA_TYPES.add("java.lang.Boolean");
 
         PRIMITIVE_DATA_TYPES.add("char");
         PRIMITIVE_DATA_TYPES.add("Character");
+        PRIMITIVE_DATA_TYPES.add("java.lang.Character");
 
         PRIMITIVE_DATA_TYPES.add("byte");
         PRIMITIVE_DATA_TYPES.add("Byte");
+        PRIMITIVE_DATA_TYPES.add("java.lang.Byte");
 
         PRIMITIVE_DATA_TYPES.add("short");
         PRIMITIVE_DATA_TYPES.add("Short");
+        PRIMITIVE_DATA_TYPES.add("java.lang.Short");
 
         PRIMITIVE_DATA_TYPES.add("long");
         PRIMITIVE_DATA_TYPES.add("Long");
+        PRIMITIVE_DATA_TYPES.add("java.lang.Long");
 
         PRIMITIVE_DATA_TYPES.add("double");
         PRIMITIVE_DATA_TYPES.add("Double");
+        PRIMITIVE_DATA_TYPES.add("java.lang.Double");
 
         PRIMITIVE_DATA_TYPES.add("Date");
+        PRIMITIVE_DATA_TYPES.add("java.util.Date");
 
         //servlet related classes...
         SERVLET_CLASSES.add("HttpServletRequest");
