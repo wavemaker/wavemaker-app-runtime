@@ -15,15 +15,28 @@
  */
 package com.wavemaker.runtime;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
@@ -33,29 +46,201 @@ public class WMObjectMapper extends ObjectMapper {
 
     private static WMObjectMapper instance = new WMObjectMapper();
 
+    private WMObjectReadMapper readMapper = null;
+    private WMObjectwritMapper writeMapper = null;
+
     private WMObjectMapper() {
-        configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        WMHibernate4Module hibernate4Module = new WMHibernate4Module();
-        hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
-        registerModule(hibernate4Module);
-
-        SimpleModule module = new SimpleModule("ByteArraySerializeModule",new Version(1, 0, 0, null));
-        ByteArraySerializeModule byteArrayDeserializerModule =  new ByteArraySerializeModule();
-        module.addSerializer(byte[].class, byteArrayDeserializerModule);
-        registerModule(module);
-    }
-
-    public <T> T readValue(InputStream src, JavaType valueType) throws IOException {
-        if(String.class.equals(valueType.getRawClass())) {
-            StringWriter stringWriter = new StringWriter();
-            IOUtils.copy(src, stringWriter);
-            return (T) stringWriter.toString();
-        }
-        return super.readValue(src, valueType);
+        readMapper = new WMObjectReadMapper();
+        writeMapper = new WMObjectwritMapper();
     }
 
     public static WMObjectMapper getInstance() {
         return instance;
+    }
+
+    /**
+     * Method that can be used to serialize any Java value as
+     * JSON output, written to File provided.
+     */
+    public void writeValue(File resultFile, Object value)
+            throws IOException, JsonGenerationException, JsonMappingException {
+        writeMapper.writeValue(resultFile, value);
+    }
+
+    public void writeValue(OutputStream out, Object value)
+            throws IOException, JsonGenerationException, JsonMappingException {
+        writeMapper.writeValue(out, value);
+    }
+
+    public void writeValue(Writer w, Object value)
+            throws IOException, JsonGenerationException, JsonMappingException {
+        writeMapper.writeValue(w, value);
+    }
+
+    public String writeValueAsString(Object value)
+            throws JsonProcessingException {
+        return writeMapper.writeValueAsString(value);
+    }
+
+    public byte[] writeValueAsBytes(Object value)
+            throws JsonProcessingException {
+        return writeMapper.writeValueAsBytes(value);
+    }
+
+    @Override
+    public void writeTree(JsonGenerator jgen, TreeNode rootNode) throws IOException, JsonProcessingException {
+         writeMapper.writeTree(jgen, rootNode);
+    }
+
+    @Override
+    public void writeValue(JsonGenerator jgen, Object value) throws IOException, JsonGenerationException, JsonMappingException {
+        writeMapper.writeValue(jgen, value);
+    }
+
+    @Override
+    public void writeTree(JsonGenerator jgen, JsonNode rootNode) throws IOException, JsonProcessingException {
+        writeMapper.writeValue(jgen, rootNode);
+    }
+
+
+    public <T> T readValue(File src, Class<T> valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(File src, TypeReference valueTypeRef)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueTypeRef);
+    }
+
+    public <T> T readValue(File src, JavaType valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(URL src, Class<T> valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(URL src, TypeReference valueTypeRef)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueTypeRef);
+    }
+
+    public <T> T readValue(URL src, JavaType valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(String content, Class<T> valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(content, valueType);
+    }
+
+    public <T> T readValue(String content, TypeReference valueTypeRef)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(content, valueTypeRef);
+    }
+
+    public <T> T readValue(String content, JavaType valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(content, valueType);
+    }
+
+    public <T> T readValue(Reader src, Class<T> valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(Reader src, TypeReference valueTypeRef)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueTypeRef);
+    }
+
+    public <T> T readValue(Reader src, JavaType valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(InputStream src, Class<T> valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(InputStream src, TypeReference valueTypeRef)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueTypeRef);
+    }
+
+    public <T> T readValue(byte[] src, Class<T> valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(byte[] src, int offset, int len,
+                           Class<T> valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, offset, len, valueType);
+    }
+
+    public <T> T readValue(byte[] src, TypeReference valueTypeRef)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueTypeRef);
+    }
+
+    public <T> T readValue(byte[] src, int offset, int len,
+                           TypeReference valueTypeRef)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, offset, len, valueTypeRef);
+    }
+
+    public <T> T readValue(byte[] src, JavaType valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, valueType);
+    }
+
+    public <T> T readValue(byte[] src, int offset, int len,
+                           JavaType valueType)
+            throws IOException, JsonParseException, JsonMappingException {
+        return readMapper.readValue(src, offset, len, valueType);
+    }
+
+    public <T> T readValue(InputStream src, JavaType valueType) throws IOException {
+        if (String.class.equals(valueType.getRawClass())) {
+            StringWriter stringWriter = new StringWriter();
+            IOUtils.copy(src, stringWriter);
+            return (T) stringWriter.toString();
+        }
+        return readMapper.readValue(src, valueType);
+    }
+
+    private static class WMObjectReadMapper extends ObjectMapper {
+
+        WMObjectReadMapper() {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            SimpleModule module = new SimpleModule("ByteArraySerializeModule", new Version(1, 0, 0, null));
+            ByteArraySerializeModule byteArrayDeserializerModule = new ByteArraySerializeModule();
+            module.addSerializer(byte[].class, byteArrayDeserializerModule);
+            registerModule(module);
+        }
+    }
+
+    private static class WMObjectwritMapper extends ObjectMapper {
+
+        WMObjectwritMapper() {
+            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            WMHibernate4Module hibernate4Module = new WMHibernate4Module();
+            hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+            registerModule(hibernate4Module);
+
+            SimpleModule module = new SimpleModule("ByteArraySerializeModule",new Version(1, 0, 0, null));
+            ByteArraySerializeModule byteArrayDeserializerModule =  new ByteArraySerializeModule();
+            module.addSerializer(byte[].class, byteArrayDeserializerModule);
+            registerModule(module);
+        }
+
     }
 
 }
