@@ -893,6 +893,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource USER_DOES_NOT_HAVE_PERMISSION = new MessageResource("com.wavemaker.platform$UserDoesNotHavePermission");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource THEME_MUST_CONTAIN_PROPERTY_FILE = new MessageResource("com.wavemaker.platform$ThemeMustContainPropertyFile");
+
     private static final Map<MessageResource, ResourceConstraint> annotations = new HashMap<MessageResource, ResourceConstraint>();
 
     static {
