@@ -15,6 +15,7 @@
  */
 package com.wavemaker.studio.common.util;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
@@ -136,6 +137,16 @@ public abstract class TypeConversionUtils {
             }
         }
         return null;
+    }
+
+    public static boolean isPrimitiveOrEnum(Type type) {
+        if(type instanceof Class) {
+            Class klass = (Class) type;
+            if (isPrimitive(klass.getName()) || klass.isEnum()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

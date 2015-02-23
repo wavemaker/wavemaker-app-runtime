@@ -15,8 +15,12 @@
  */
 package com.wavemaker.studio.common.util;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +96,37 @@ public class ClassUtils {
 
     public static String getPropertySetterName(String propertyName) {
         return "set" + StringUtils.upperCaseFirstLetter(propertyName);
+    }
+
+    public static boolean isPrimitivesWrapper(Type type) {
+        if (!(type instanceof Class)) {
+            return false;
+        }
+        Class<Object> klass = (Class) type;
+        List<PropertyDescriptor> propertyDescriptors = getPropertyDescriptors(klass);
+        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            Class<?> propertyType = propertyDescriptor.getPropertyType();
+            if(!TypeConversionUtils.isPrimitive(propertyType.getName()) && !propertyType.isEnum()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static List<PropertyDescriptor> getPropertyDescriptors(Class klass) {
+        try {
+            PropertyDescriptor[] propertyDescriptors = Introspector.getBeanInfo(klass).getPropertyDescriptors();
+            List<PropertyDescriptor> propertyDescriptorList = new ArrayList<>();
+            for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+                if(Object.class.equals(propertyDescriptor.getReadMethod().getDeclaringClass())) {
+                    continue;
+                }
+                propertyDescriptorList.add(propertyDescriptor);
+            }
+            return propertyDescriptorList;
+        } catch (IntrospectionException e) {
+            throw new WMRuntimeException("Failed to introspect class [" + klass + "]", e);
+        }
     }
 
     private ClassUtils() {
