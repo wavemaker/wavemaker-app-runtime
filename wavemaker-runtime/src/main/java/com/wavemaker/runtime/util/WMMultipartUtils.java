@@ -68,6 +68,37 @@ public class WMMultipartUtils {
         return JSONUtils.toObject(multipartFile.getInputStream(), instance);
     }
 
+    /**
+     * This Api is used to update blob content from old instance to new instance when blob type content is NULL in the new instance
+     * @param oldInstance : persisted instance.
+     * @param newInstance : changes in the persisted instance.
+     * @param <T>
+     * @return returns newInstance with updated blob content
+     */
+    public static <T> T updateLobsContent(T oldInstance, T newInstance) {
+        Field[] fields = newInstance.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            String type = field.getType().getSimpleName();
+            if (BYTE_ARRAY.equals(type) || BLOB.equals(type)) {
+                String getMethodName = "get" + StringUtils.capitalize(field.getName());
+                try {
+                    Method getMethod = newInstance.getClass().getMethod(getMethodName, new Class<?>[]{});
+                    Object object = getMethod.invoke(newInstance, new Object[]{});
+                    if (object == null || (object instanceof byte[] && ((byte[])object).length == 0)) {
+                        String setMethodName = "set" + StringUtils.capitalize(field.getName());
+                        Method setMethod = newInstance.getClass().getMethod(setMethodName, field.getType());
+                        Object oldObject = getMethod.invoke(oldInstance, new Object[]{});
+                        setMethod.invoke(newInstance, oldObject);
+                    }
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    LOGGER.error("Failed to update blob content", e);
+                    throw new WMRuntimeException("Failed to update blob content", e);
+                }
+            }
+        }
+        return newInstance;
+    }
+
     private static <T> T setMultipartsToObject(Map<String, MultipartFile> multiparts, T instance, String serviceId) throws IOException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, SQLException {
         Class aClass = instance.getClass();
         for (String part : multiparts.keySet()) {
