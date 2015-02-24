@@ -21,7 +21,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
  * Created by nileshk on 5/11/14.
  */
 @RestController
-@Api(value = "/security", description = "Exposes Apis to work with application security services")
+@Api(value = "/security", description = "Exposes APIs to work with application security services")
 @RequestMapping(value = "/security")
 public class SecurityController {
 
