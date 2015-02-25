@@ -99,7 +99,7 @@ public class ClassUtils {
     }
 
     public static boolean isPrimitivesWrapper(Type type) {
-        if (!(type instanceof Class)) {
+        if (!(type instanceof Class) || ((Class) type).isArray()) {
             return false;
         }
         Class<Object> klass = (Class) type;

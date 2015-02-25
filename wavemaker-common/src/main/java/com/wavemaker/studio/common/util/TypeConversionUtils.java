@@ -140,7 +140,7 @@ public abstract class TypeConversionUtils {
     }
 
     public static boolean isPrimitiveOrEnum(Type type) {
-        if(type instanceof Class) {
+        if(type instanceof Class && !((Class) type).isArray()) {
             Class klass = (Class) type;
             if (isPrimitive(klass.getName()) || klass.isEnum()) {
                 return true;
