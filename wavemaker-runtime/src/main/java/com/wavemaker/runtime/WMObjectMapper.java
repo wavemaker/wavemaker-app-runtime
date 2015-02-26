@@ -38,6 +38,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.wavemaker.runtime.data.json.WMHibernate4Module;
@@ -45,6 +48,7 @@ import com.wavemaker.runtime.data.json.WMHibernate4Module;
 public class WMObjectMapper extends ObjectMapper {
 
     private static WMObjectMapper instance = new WMObjectMapper();
+    private static WMPropertyNamingStrategy PROPERTY_NAMING_STRATEGY = new WMPropertyNamingStrategy();
 
     private WMObjectReadMapper readMapper = null;
     private WMObjectwritMapper writeMapper = null;
@@ -224,6 +228,7 @@ public class WMObjectMapper extends ObjectMapper {
             ByteArraySerializeModule byteArrayDeserializerModule = new ByteArraySerializeModule();
             module.addSerializer(byte[].class, byteArrayDeserializerModule);
             registerModule(module);
+            setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
     }
 
@@ -239,8 +244,46 @@ public class WMObjectMapper extends ObjectMapper {
             ByteArraySerializeModule byteArrayDeserializerModule =  new ByteArraySerializeModule();
             module.addSerializer(byte[].class, byteArrayDeserializerModule);
             registerModule(module);
+            setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
+        }
+    }
+
+    private static class WMPropertyNamingStrategy extends PropertyNamingStrategy {
+
+        private static final String[] POSSIBLE_GET_METHOD_START_NAMES = new String[] {"get", "is"};
+        private static final String[] POSSIBLE_SET_METHOD_START_NAMES = new String[] {"set"};
+
+        @Override
+        public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName) {
+            return getPossibleFieldName(method, defaultName, POSSIBLE_GET_METHOD_START_NAMES);
         }
 
+        @Override
+        public String nameForSetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName) {
+            return getPossibleFieldName(method, defaultName, POSSIBLE_SET_METHOD_START_NAMES);
+        }
+
+        private String getPossibleFieldName(AnnotatedMethod method, String defaultName, String[] possibleMethodStartNames) {
+            String name = method.getName();
+            for (int i=0; i< possibleMethodStartNames.length; i++) {
+                String possibleStartName = possibleMethodStartNames[i];
+                if (name.startsWith(possibleStartName)) {
+                    String remPart = name.substring(possibleStartName.length());
+                    if (remPart.length() == 0) {
+                        break;
+                    }
+                    char upper = remPart.charAt(0);
+                    char lower = Character.toLowerCase(upper);
+                    if (lower == upper) {
+                        break;
+                    }
+                    StringBuilder sb = new StringBuilder(remPart);
+                    sb.setCharAt(0, lower);
+                    return sb.toString();
+                }
+            }
+            return defaultName;
+        }
     }
 
 }
