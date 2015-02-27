@@ -896,6 +896,9 @@ public class MessageResource {
     @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
     public static final MessageResource THEME_MUST_CONTAIN_PROPERTY_FILE = new MessageResource("com.wavemaker.platform$ThemeMustContainPropertyFile");
 
+    @ResourceConstraint(numArgs = 0, hasDetailMsg = false)
+    public static final MessageResource RPC_ENCODED_STYLE_NOT_SUPPORTED = new MessageResource("com.wavemaker.runtime.ws$RpcEncodedNotSupported");
+
     private static final Map<MessageResource, ResourceConstraint> annotations = new HashMap<MessageResource, ResourceConstraint>();
 
     static {
