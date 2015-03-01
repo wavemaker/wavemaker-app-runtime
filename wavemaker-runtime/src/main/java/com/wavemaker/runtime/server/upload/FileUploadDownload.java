@@ -179,10 +179,8 @@ protected File getUploadDir() {
             
             /* Write the file to the filesystem */
             FileOutputStream fos = new FileOutputStream(outputFile);            
-            IOUtils.copy(file.getInputStream(), fos);
-            file.getInputStream().close();                          
-            fos.close();
-            
+            IOUtils.copy(file.getInputStream(), fos, true, true);
+
             /* Setup the return object */
             ret.setPath(outputFile.getPath());
             ret.setError("");

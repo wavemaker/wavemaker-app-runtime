@@ -229,11 +229,7 @@ public abstract class ControllerBase extends AbstractController {
         InputStream content = resource.getInputStream();
         String contentType = URLConnection.getFileNameMap().getContentTypeFor(requestedURI);
         response.setContentType(contentType);
-        try {
-            IOUtils.copy(content, response.getOutputStream());
-        } finally {
-            content.close();
-        }
+        IOUtils.copy(content, response.getOutputStream(), true, false);
     }
 
     public void setServiceManager(ServiceManager spm) {

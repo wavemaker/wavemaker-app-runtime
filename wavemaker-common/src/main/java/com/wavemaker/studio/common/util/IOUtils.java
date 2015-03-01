@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +42,6 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 import com.wavemaker.studio.common.MessageResource;
-
-import javax.xml.stream.XMLStreamReader;
 
 /**
  * @author Simon Toens
@@ -86,12 +86,7 @@ public abstract class IOUtils {
             return fileSB.toString();
 
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (Exception ignore) {
-                }
-            }
+            closeSilently(br);
         }
     }
 
@@ -127,12 +122,7 @@ public abstract class IOUtils {
             return fileSB.toString();
 
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (Exception ignore) {
-                }
-            }
+            closeSilently(br);
         }
     }
 
@@ -143,12 +133,7 @@ public abstract class IOUtils {
             br = new BufferedWriter(new FileWriter(f));
             br.write(s);
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (Exception ignore) {
-                }
-            }
+            closeSilently(br);
         }
     }
 
@@ -192,14 +177,24 @@ public abstract class IOUtils {
 
     /**
      * Read content of InputStream is into OutputStream os.
-     * 
      * @param is InputStream to read from.
      * @param os OutputStream to write to.
+     * @param closeInputStream if true,closes input stream in both success/failure scenarios
+     * @param closeOutputStream if true,closes output stream in both success/failure scenarios
      * @return returns the number of bytes actually written
      * @throws IOException
      */
-    public static int copy(InputStream is, OutputStream os) throws IOException {
-        return org.apache.commons.io.IOUtils.copy(is, os);
+    public static int copy(InputStream is, OutputStream os, boolean closeInputStream, boolean closeOutputStream) throws IOException {
+        try {
+            return org.apache.commons.io.IOUtils.copy(is, os);
+        } finally {
+            if (closeInputStream) {
+                closeSilently(is);
+            }
+            if(closeOutputStream) {
+                closeSilently(os);
+            }
+        }
     }
 
     /**
@@ -251,10 +246,7 @@ public abstract class IOUtils {
             InputStream in = new FileInputStream(source);
             OutputStream out = new FileOutputStream(destination);
 
-            copy(in, out);
-
-            in.close();
-            out.close();
+            copy(in, out, true, true);
 
         } else {
             throw new IOException("Don't know how to copy " + source.getAbsolutePath() + "; it's neither a directory nor a file");
@@ -335,11 +327,7 @@ public abstract class IOUtils {
             InputStream in = new FileInputStream(source);
             OutputStream out = new FileOutputStream(destination);
 
-            copy(in, out);
-
-            in.close();
-            out.close();
-
+            copy(in, out, true, true);
         } else {
             throw new IOException("Don't know how to copy " + source.getAbsolutePath() + "; it's neither a directory nor a file");
         }
@@ -522,35 +510,6 @@ public abstract class IOUtils {
             fw.close();
         } else {
             f.setLastModified(System.currentTimeMillis());
-        }
-    }
-
-    public static long getMostRecentModificationTime(File f) {
-        return getMostRecentModificationTime(f, ".svn");
-    }
-
-    public static long getMostRecentModificationTime(File f, String... excludes) {
-        if (!f.exists()) {
-            throw new IllegalArgumentException("File doesn't exist: " + f);
-        }
-
-        if (f.isFile()) {
-            return f.lastModified();
-        } else {
-            long rtn = -1;
-            for (String s : f.list()) {
-                for (String exclude : excludes) {
-                    if (s.equals(exclude)) {
-                        continue;
-                    }
-                }
-                File f2 = new File(f, s);
-                long l = getMostRecentModificationTime(f2);
-                if (l > rtn) {
-                    rtn = l;
-                }
-            }
-            return rtn;
         }
     }
 
