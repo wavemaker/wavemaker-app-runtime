@@ -14,6 +14,10 @@ wavemaker-portal/npm-debug.log
 wavemaker-portal/src/main/webapp/node_modules
 wavemaker-portal/src/main/webapp/dest
 wavemaker-portal/src/main/webapp/app/components
+wavemaker-portal/src/main/webapp/app/runtime/node_modules
+wavemaker-portal/src/main/webapp/app/runtime/dest
+wavemaker-portal/src/main/webapp/app/runtime/components
+wavemaker-portal/src/main/webapp/app/runtime/tp
 wavemaker-portal/src/main/webapp/docs
 wavemaker-portal/src/main/webapp/app/wmdocs
 wavemaker-portal/src/main/webapp/app/styles/compiled
