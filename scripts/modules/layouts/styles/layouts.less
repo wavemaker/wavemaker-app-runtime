@@ -1,0 +1,498 @@
+/*jslint todo: true */
+
+/*Returns Width and Height of an element*/
+.width-height(@width: 100%, @height: 100%) {
+  width: @width;
+  height: @height;
+}
+/*====================================================================================================================
+  START: Classes for 1 Column Layout
+====================================================================================================================*/
+/*START: Variables**************************************************************************************************/
+@app-standard-padding: 8px;
+@app-standard-margin: 8px;
+
+/*END: Variables**************************************************************************************************/
+
+/* for dialog which gets created in new view*/
+.app-view {
+  position: absolute;
+  /* Studio specific styles */
+  min-height: 100%;
+  height: inherit;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  z-index: 1010;
+  .app-dialog {
+    z-index: 1000;
+  }
+  &.active-container {
+    z-index: 1015;
+  }
+}
+
+/********************************************************************************
+********************************* Container classes *****************************
+*********************************************************************************/
+
+.app-ng-transclude {
+  position: relative;
+  height: 100%;
+}
+
+.app-panel {
+  position: relative;
+  .panel-body {
+    position: relative;
+    overflow: auto;
+    width: 100%;
+    height: 100%;
+  }
+  .panel-heading {
+    position: relative;
+    overflow: inherit;
+    .panel-icon {
+      float: left;
+    }
+    .panel-title > a {
+      text-decoration: none;
+      display: block;
+      white-space: pre-wrap;
+      height: 1.2em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      padding-right:2em;
+    }
+   .heading{
+      margin: 0 0.4em;
+    }
+    .description {
+      font-style: italic;
+      margin-right: 0.8em;
+    }
+    .panel-actions{
+      float: right;
+      right: 0;
+      top: 0;
+      position: absolute;
+      margin-right: 0.2em;
+      .app-menu .app-button, .panel-action {
+        background: transparent;
+        box-shadow: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        margin: 0.5em 0.25em;
+        font-size: inherit;
+      }
+    }
+  }
+  .panel-content {
+    height: 100%;
+    position: relative;
+  }
+  .panel-help-message {
+    overflow: auto;
+    display: none;
+    background: @app-panel-help-background;
+    border-left: 1px @app-panel-border-color solid;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20%;
+    height: 100%;
+    z-index: 1000;
+    .panel-help-header {
+      background: @app-panel-help-header-color;
+      font-weight: bold;
+      border-bottom: 1px @app-panel-border-color solid;
+      padding: 0.5em;
+      margin: 0;
+    }
+    .panel-help-content {
+      padding: 0.5em;
+    }
+  }
+  &.show-help {
+    .panel-help-message {
+      display: block;
+    }
+    .panel-body {
+      width: 79%;
+    }
+    .panel-actions .glyphicon-question-sign {
+      color: #333;
+    }
+  }
+}
+
+/********************************************************************************
+********************************* Application layout classes *****************************
+*********************************************************************************/
+
+.wm-app {
+  height: 100%;
+  #wm-app-content {
+    .width-height();
+    /***targeting the pages to have a minimum height****/
+    > .app-page > .app-content {
+      min-height: 80vh;
+    }
+  }
+
+  .app-page, .app-partial {
+    .width-height();
+    position: relative;
+  }
+
+  #wm-common-content {
+    height: 0;
+    .app-content-column {
+      min-height: 0;
+    }
+  }
+  .app-included-page {
+    position: relative;
+  }
+  /*********************************************************************************************************************/
+  /***********************************overriding the bootstrap styles*************************************************/
+  /*********************************************************************************************************************/
+  .container {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  .row {
+    margin: 0;
+  }
+  /*********************application header********************/
+  .app-header {
+    position: relative;
+    .app-header-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .app-grid-layout .app-grid-row .app-grid-column {
+      overflow: inherit;
+    }
+    .app-search {
+      margin-top: 1em;
+    }
+  }
+  /*********************application footer********************/
+  .app-footer {
+    position: relative;
+    .app-grid-layout .app-grid-row .app-grid-column {
+      overflow: inherit;
+    }
+  }
+  /*********************application content********************/
+  .app-content {
+    position: relative;
+    clear: both;
+    height: 80%;
+    width: 100%;
+    display: table;
+    .app-content-row {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: table;
+      .app-content-column {
+        height: 100%;
+        position: relative;
+        vertical-align: top;
+        display: table-cell;
+        float: none;
+      }
+      > .app-row {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: table-row;
+        > .app-column {
+          height: 100%;
+          position: relative;
+          vertical-align: top;
+          display: table-cell;
+          float: none;
+        }
+      }
+    }
+
+  }
+  /*********************application left panel********************/
+  .app-left-panel {
+    height: 100%;
+    padding: 0;
+    vertical-align: top;
+    display: table-cell;
+    float: none;
+    .nav li {
+      margin: 0;
+      padding: 0;
+      word-break: break-word;
+    }
+  }
+  /*********************application right panel********************/
+  .app-right-panel {
+    height: 100%;
+    padding: 0;
+    vertical-align: top;
+    display: table-cell;
+    float: none;
+    .nav li {
+      margin: 0;
+      padding: 0;
+      word-break: break-word;
+    }
+  }
+  /*********************application top nav********************/
+  .app-top-nav {
+    position: relative;
+  }
+
+/********************************* Nav classes *****************************/
+  .app-nav {
+    position: relative;
+    min-height: 20px;
+    .app-nav-item {
+      position: relative;
+    }
+    .app-nav-item > .dropdown {
+      display: block;
+      cursor: pointer;
+      > a.dropdown-toggle {
+        text-decoration: none;
+        display: block;
+        padding: 10px 15px;
+        border: none;
+      }
+      .dropdown-menu {
+        width: auto;
+      }
+    }
+    &.nav-pills > li > a {
+      border-radius: 4px;
+    }
+  }
+  .app-navbar {
+    .navbar-brand {
+      .brand-image {
+        display: inline-block;
+        margin-right: 8px;
+      }
+    }
+    .app-nav-item > .dropdown {
+      > a.dropdown-toggle {
+        padding: 15px;
+      }
+      &.open {
+        > a {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+
+/*********************************************************************************************************************/
+  /***********************************grid styles***********************************************************************/
+  /*********************************************************************************************************************/
+  .app-grid-layout {
+    width: 100%;
+    position: relative;
+    empty-cells: show;
+    .app-grid-row {
+      width: 100%;
+      position: relative;
+      .app-grid-column {
+        position: relative;
+        padding: 0;
+        vertical-align: top;
+        height: 100%;
+        overflow: inherit;
+        border-width: 0;
+      }
+    }
+  }
+
+  /***********************************Form styles***********************************************************************/
+  .app-form, .app-liveform {
+    position: relative;
+    overflow: inherit;
+    border-collapse: separate;
+    .app-label {
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+    }
+    &.align-left .app-label {
+      text-align: left;
+    }
+    &.align-center .app-label {
+      text-align: center;
+    }
+    &.align-right .app-label {
+      text-align: right;
+    }
+    &.position-top .app-label {
+      display: block;
+      width: 100%;
+    }
+    &.position-left {
+      direction: ltr;
+    }
+    &.position-right {
+      direction: rtl;
+      label {
+        float: right;
+      }
+    }
+    input:focus.ng-invalid {
+      border: 1px solid crimson;
+    }
+    input:focus.ng-valid {
+      border: 1px solid rgb(40, 160, 122);
+    }
+    .file-readonly {
+      pointer-events: none;
+    }
+    .form-header {
+      position: relative;
+      i {
+        top: 5px;
+      }
+    }
+    .form-action.btn-group {
+      text-align: right;
+      width: 100%;
+      .btn {
+        margin: 0 0 0 4px;
+        float: none;
+        border-radius: 4px;
+      }
+    }
+
+    .control-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-wrap: break-word;
+      padding-top: 7px;
+    }
+    .form-control-static {
+      font-weight: normal;
+    }
+
+    .ng-hide-animate {
+      display: none !important;
+    }
+    .app-message {
+      .close {
+        font-size: 16px;
+      }
+      &.form-inline {
+        label {
+          float: none;
+          width: auto;
+        }
+      }
+  }
+
+
+  .full-width {
+    width: 100%;
+  }
+  .full-height {
+    height: 100%;
+  }
+
+  }
+  /************** Composite Widget - Caption Position Styles ****************/
+  .caption-left, .caption-right {
+    > .app-currency, > .app-colorpicker {
+      direction: inherit; // To maintain positions of currency ($) on left hand side and text box on right hand side
+    }
+  }
+
+  .caption-left {
+    > * {
+      direction: ltr;
+      float: left;
+    }
+  }
+
+  .caption-right {
+    > * {
+      direction: rtl;
+      float: right;
+      left: auto; // To override col-md-push-2 inherited from bootstrap
+    }
+  }
+
+  .caption-top {
+    > .app-label {
+      width: 100%;
+    }
+  }
+  /************** Composite Widget - Caption Position Styles(to override style inside form) ****************/
+  .app-form, .app-liveform {
+
+    .caption-left.app-composite-widget, .caption-right.app-composite-widget {
+      > .app-currency, > .app-colorpicker {
+        direction: inherit; // To maintain positions of currency ($) on left hand side and text box on right hand side
+      }
+    }
+
+    .caption-left.app-composite-widget {
+      > * {
+        float: left;
+      }
+    }
+
+    .caption-right.app-composite-widget {
+      > * {
+        float: right;
+        left: auto; // To override col-md-push-2 inherited from bootstrap
+      }
+    }
+
+    .caption-top.app-composite-widget {
+      > .app-label {
+        width: 100%;
+      }
+    }
+    /*To remove the animation caused by ng-show/ng-hide*/
+    .ng-hide-add, .ng-hide-remove {
+      transition: 0s linear all;
+    }
+  }
+  .app-search {
+    .app-textbox.ng-hide-animate {
+      display: none !important;
+    }
+  }
+  .app-checkbox {
+    width: auto;
+  }
+}
+
+
+/**************************default theme ***************************************/
+@app-background-color: #fff;
+@app-panel-help-header-color: #eee;
+@app-panel-border-color: #ddd;
+@app-panel-help-background: #FFFED0;
+@app-search-container-bg-color: #f8f8f8;
+
+.wm-app {
+  background-color: @app-background-color;
+  label {
+    font-weight: normal;
+  }
+  .navbar {
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+}

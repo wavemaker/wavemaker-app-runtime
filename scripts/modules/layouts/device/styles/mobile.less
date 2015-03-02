@@ -1,0 +1,259 @@
+.mobile-common(){
+/* Styles */
+  .wm-app {
+
+    #wm-mobile-display {
+      display: block;
+    }
+
+    #wm-app-content  > .app-page > .app-content {
+    }
+    .app-header {
+      height: 4em !important;
+      width: 100%;
+      position: fixed;
+      z-index: 99999;
+      top: 0;
+      .app-search {
+        display: none;
+      }
+      .app-picture {
+        max-height: 3em;
+        margin-left: 3em;
+      }
+      .application-name {
+        display: none;
+      }
+    /*Search widget container (available only in Mobile)*/
+      .app-search{
+        z-index: 99999;
+        position: fixed;
+        top: 4em;
+        display: none;
+        margin: 0;
+        right: 0;
+        background-color: @app-search-container-bg-color;
+        padding: @app-standard-padding;
+        border-bottom: 1px @app-standard-border-color solid;
+        width: 100% !important;
+        .dropdown-menu {
+          width: 95%;
+        }
+      }
+      /***enabling the mobile actions****/
+      .app-mobile-header {
+        display: block;
+        height: 100%;
+        font-size: 2em;
+        position: absolute;
+        a {
+          display: inline-block;
+          z-index: 99999;
+          text-decoration: none;
+          vertical-align: middle;
+          position: absolute;
+          color: #ccc;
+          top: 0.5em;
+        }
+
+        .glyphicon-menu-hamburger {
+          left: 0.25em;
+        }
+
+        .glyphicon-option-vertical {
+          right: 0.25em;
+        }
+
+        .glyphicon-search {
+          right: 1em;
+        }
+      }
+    }
+    /***setting back the behavior of bootstrap for mobile****/
+    .app-grid-layout{
+      height: auto !important;
+    }
+
+  /***specificity for layout on column*******/
+    .layout-one-column {
+      .app-picture {
+        margin-left: 0;
+      }
+
+      .app-header {
+        .app-picture {
+          margin-left: 3em;
+        }
+      }
+    }
+    /***making the height of the datagrid auto****/
+    .app-datagrid {
+      .table-container {
+        height: auto !important;
+        .table {
+         table-layout: auto;
+        }
+      }
+    }
+    .app-left-panel {
+      display: none;
+      position: fixed;
+      top: 4em;
+      bottom: 0;
+      left: 0;
+      width: 60%;
+      z-index: 9999;
+    }
+
+    .app-right-panel {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    /****panel classes*****/
+    .app-panel{
+      &.show-help {
+        .panel-help-message {
+          display: block;
+          width: 50%;
+        }
+        .panel-body {
+          width: 100%;
+        }
+      }
+    }
+
+    .app-content {
+      width: 100%;
+      display: block;
+      padding: 0;
+      height: auto;
+    /***setting back the behavior of bootstrap for mobile****/
+      .app-content-row {
+        display: block;
+        width: 100%;
+        clear: both;
+        .app-content-column {
+          display: block;
+          width: 100%;
+        }
+        /********old projects*******/
+        > .app-row {
+          display: block;
+          width: 100%;
+          clear: both;
+          > .app-column {
+            display: block;
+          }
+        }
+      }
+
+
+    }
+    .modal {
+      z-index: 999999 !important;
+    }
+    .app-top-nav {
+      margin-top: 4em;
+      color: #999;
+      .navbar-toggle {
+       border: none;
+        &:hover, &:active {
+          background-color: transparent;
+        }
+      }
+      .app-list {
+        display: block;
+        .app-nav-item {
+          display: block;
+          .app-button, .app-anchor{
+            text-align: left;
+            display: block;
+            width: 100%;
+          }
+          .app-menu{
+            width: 100%;
+            .caret {
+              position: absolute;
+              right: 0.5em;
+              top: 1em;
+            }
+            ul.dropdown-menu {
+              display: block;
+              position: relative;
+            }
+          }
+        }
+      }
+}
+}
+}
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px) {
+    .mobile-common()
+}
+/* Small web screens(portrait and landscape) ----------- */
+@media only screen
+and (min-width : 320px)
+and (max-width : 480px) {
+    .mobile-common()
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen
+and (min-width : 321px) {
+/* Styles */
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen
+and (max-width : 320px) {
+/* Styles */
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px) {
+/* Styles */
+}
+
+/* iPads (landscape) ----------- */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : landscape) {
+/* Styles */
+}
+
+/* iPads (portrait) ----------- */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : portrait) {
+/* Styles */
+}
+
+/* Desktops and laptops ----------- */
+@media only screen
+and (min-width : 1224px) {
+/* Styles */
+}
+
+/* Large screens ----------- */
+@media only screen
+and (min-width : 1824px) {
+/* Styles */
+}
+
+/* iPhone 4 ----------- */
+@media
+only screen and (-webkit-min-device-pixel-ratio : 1.5),
+only screen and (min-device-pixel-ratio : 1.5) {
+/* Styles */
+}
+
+

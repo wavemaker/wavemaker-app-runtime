@@ -1,0 +1,90 @@
+.rtl {
+  direction: rtl;
+  *{
+    direction: rtl;
+  }
+  .app-grid-layout {
+    .app-grid-row{
+      .app-grid-column{
+        float: right;
+        &[horizontalalign="right"]{
+          text-align: left !important;
+        }
+      }
+    }
+  }
+  .app-top-nav{
+    [class^='col-']{
+      float: right;
+      &[horizontalalign="right"]{
+        text-align: left !important;
+      }
+    }
+  }
+  .form-group {
+    .control-label {
+      float: right;
+    }
+    .form-control{
+      float: right;
+    }
+  }
+  .app-left-panel{
+    .app-list{
+      .app-list-item{
+        .app-button{
+          text-align: right;
+        }
+      }
+    }
+  }
+  .app-right-panel{
+    .app-list{
+      .app-list-item{
+        .app-anchor{
+          text-align: right;
+        }
+      }
+    }
+  }
+  .nav-tabs{
+    padding-right: 0;
+    > li{
+      float: right;
+      margin-bottom: -2px;
+      margin-right: -2px;
+    }
+  }
+  .nav-tabs.nav-stacked {
+    float: right;
+    > li {
+      float: none;
+      &.wm-widget-toolbar{
+        margin-bottom: 4px;
+      }
+      &.active > a{
+        border-radius: 0 4px 4px 0;
+      }
+    }
+  }
+
+  .app-accordion {
+    .app-accordion-panel {
+      .panel-title {
+        .panel-open-true, .panel-open-false {
+          left: 10px;
+          right: auto;
+        }
+      }
+    }
+  }
+  .app-dialog {
+    .app-dialog-close{
+      left: -8px;
+      right: auto;
+    }
+    .app-dialog-footer {
+      text-align: left;
+    }
+  }
+}
