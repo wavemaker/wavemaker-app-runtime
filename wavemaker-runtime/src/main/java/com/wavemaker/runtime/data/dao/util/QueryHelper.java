@@ -79,7 +79,10 @@ public class QueryHelper {
             query = template.getSessionFactory().getCurrentSession().createSQLQuery(strQuery);
         else
             query=template.getSessionFactory().getCurrentSession().createQuery(strQuery);
-        return ((Number) query.uniqueResult()).longValue();
+        configureParameters(query, params);
+        Object result = query.uniqueResult();
+        long countVal = result == null ? 0 : ((Number)result).longValue();
+        return countVal;
         }
         catch(Exception ex)
         {
@@ -89,21 +92,7 @@ public class QueryHelper {
     }
     private static String getCountQuery(String query, Map<String, Object> params, boolean isNative) {
         LOGGER.debug("Getting count query for query {} with params {}", query, params);
-        if (params != null) {
-            for (String key : params.keySet()) {
-                String queryParamName = key.toString();
-                Object queryParamValue = params.get(key);
-                String parameterPlaceholder = new StringBuilder(":").append(
-                        queryParamName).toString();
-                if (!query.contains(parameterPlaceholder)) {
-                    continue;
-                } else {
-                    query = StringUtils.replace(query, parameterPlaceholder,
-                            String.valueOf(queryParamValue));
-                }
-            }
-        }
-        LOGGER.debug("Got query string after placing params {}", query);
+
         query = query.trim();
         if (isNative) {
             String countQuery = SELECT_COUNT + query + ALIAS;
