@@ -15,19 +15,15 @@
  */
 package com.wavemaker.runtime.data.util;
 
+import com.wavemaker.runtime.data.DataServiceRuntimeException;
+import com.wavemaker.studio.common.util.SystemUtils;
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
-
-import com.wavemaker.runtime.data.DataServiceRuntimeException;
-import com.wavemaker.studio.common.util.StringUtils;
-import com.wavemaker.studio.common.util.SystemUtils;
 
 /**
  * @author Simon Toens
  */
 public class DataServiceUtils {
-
-    private static final String WRAPPER_TYPE_SUFFX = "RtnType";
 
     public static RuntimeException unwrap(Throwable th) {
         if (th instanceof DataServiceRuntimeException) {
@@ -56,18 +52,6 @@ public class DataServiceUtils {
                 return new DataServiceRuntimeException(th);
             }
         }
-    }
-
-    public static String getOutputPackage(String dataPackage) {
-        return StringUtils.fq(dataPackage, DataServiceConstants.OUTPUT_PACKAGE_NAME);
-    }
-
-    public static String getOutputType(String dataPackage, String operationName) {
-        return getOldOutputType(dataPackage, operationName) + WRAPPER_TYPE_SUFFX;
-    }
-
-    public static String getOldOutputType(String dataPackage, String operationName) {
-        return StringUtils.fq(getOutputPackage(dataPackage), StringUtils.upperCaseFirstLetter(operationName));
     }
 
     public static boolean isDML(String query) {

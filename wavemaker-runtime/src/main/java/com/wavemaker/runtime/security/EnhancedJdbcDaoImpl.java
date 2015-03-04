@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.security;
 
-import com.wavemaker.runtime.WMAppContext;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -43,40 +42,11 @@ public class EnhancedJdbcDaoImpl extends JdbcDaoImpl {
 
 	@Override
 	protected void initDao() {
-		String qryStr = getUsersByUsernameQuery();
-		try {
-			WMAppContext wmApp = WMAppContext.getInstance();
-			if (wmApp != null && WMAppContext.getInstance().isMultiTenant()) {
-				qryStr = insertTenantIdField(getUsersByUsernameQuery(),
-						wmApp.getTenantColumnName());
-			}
-		} catch (Exception ex) {
-		}
-
-		
-		this.setUsersByUsernameQuery(qryStr);
-
 		String authoritiesByUsernameQuery = getAuthoritiesByUsernameQuery();
 		if(authoritiesByUsernameQuery != null && authoritiesByUsernameQuery.contains(LOGGED_IN_USERNAME)) {
 		    authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(LOGGED_IN_USERNAME, "?");
 		}
 		this.setAuthoritiesByUsernameQuery(authoritiesByUsernameQuery);
-	}
-
-	private String insertTenantIdField(String str, String colName) {
-		StringBuffer sb = new StringBuffer(str);
-
-		int indx = sb.lastIndexOf("FROM");
-		if (indx < 0) {
-			indx = sb.lastIndexOf("from");
-		}
-		if (indx < 0) {
-			return str;
-		}
-
-		sb.insert(indx, ", " + colName + " ");
-
-		return sb.toString();
 	}
 
     @Override
@@ -89,14 +59,6 @@ public class EnhancedJdbcDaoImpl extends JdbcDaoImpl {
                 String userName = rs.getString(4);
 
                 int tenantId = -1;
-                try {
-
-                    WMAppContext wmApp = WMAppContext.getInstance();
-                    if (wmApp != null && wmApp.isMultiTenant()) {
-                        tenantId = rs.getInt(5);
-                    }
-                } catch (Exception ex) {
-                }
                 long loginTime = System.currentTimeMillis();
                 return new WMUser(userId, userName, password, userName, tenantId, enabled, true, true,
                                     true, AuthorityUtils.NO_AUTHORITIES, loginTime);
@@ -128,7 +90,6 @@ public class EnhancedJdbcDaoImpl extends JdbcDaoImpl {
         final String rolePrefix = super.getRolePrefix();
         return getJdbcTemplate().query(super.getAuthoritiesByUsernameQuery(), new String[] {username}, new RowMapper<GrantedAuthority>() {
             public GrantedAuthority mapRow(ResultSet rs, int rowNum) throws SQLException {
-
                 return new SimpleGrantedAuthority(rolePrefix + rs.getString(rs.getMetaData().getColumnCount()));
             }
         });
