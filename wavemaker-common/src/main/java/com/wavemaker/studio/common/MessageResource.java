@@ -379,12 +379,6 @@ public class MessageResource {
     public static final MessageResource UNKNOWN_DEPLOYMENT_TARGET = new MessageResource("com.wavemaker.platform.deployment$UnknownDeploymentTarget");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource UNKNOWN_PWS_TOOLS_MANAGER = new MessageResource("com.wavemaker.platform.pwst$UnknownPwsToolsManager");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
-    public static final MessageResource UNKNOWN_PWS_LOGIN_MANAGER = new MessageResource("com.wavemaker.platform.pwst$UnknownPwsLoginManager");
-
-    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource UNKNOWN_CLOUDSERVER_MGR = new MessageResource("com.wavemaker.platform.cloudmgr$UnknownCloudServerMgr");
 
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)

@@ -53,10 +53,8 @@ import org.springframework.http.MediaType;
 
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.encoding.xml.XMLMessage;
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.pws.IPwsResponseProcessor;
-import com.wavemaker.runtime.pws.PwsResponseProcessorBeanFactory;
 import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.studio.common.util.JAXBUtils;
 
 import net.sf.json.JSON;
 import net.sf.json.JSONSerializer;
@@ -121,17 +119,26 @@ public class HTTPBindingSupport {
             }
         }
 
-        IPwsResponseProcessor respProcessor;
-        if (partnerName == null || partnerName.length() == 0) {
-            respProcessor = new DefaultResponseProcessor();
-        } else {
-            PwsResponseProcessorBeanFactory factory = WMAppContext.getInstance().getSpringBean("pwsResponseProcessorBeanFactory");
-            respProcessor = factory.getPwsResponseProcessor(partnerName);
+        return processServiceResponse(bytes, responseType);
+    }
+
+    private static <T extends Object> T processServiceResponse(byte[] bytes, Class<T> responseType) throws WebServiceException {
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        try {
+            if (responseType == Void.class) {
+                return null;
+            } else if (responseType == String.class) {
+                String responseString = HTTPBindingSupport.convertStreamToString(is);
+                return responseType.cast(responseString);
+            } else {
+                Object object = JAXBUtils.unMarshall(JAXBContext.newInstance(responseType), is);
+                return responseType.cast(object);
+            }
+        } catch (IOException e) {
+            throw new WebServiceException(e);
+        } catch (JAXBException e) {
+            throw new WebServiceException(e);
         }
-
-        respProcessor.detectExceptionsBeforeProcess(bytes);
-
-        return respProcessor.processServiceResponse(bytes, responseType);
     }
 
     public static String convertToXMLString(Object o) {

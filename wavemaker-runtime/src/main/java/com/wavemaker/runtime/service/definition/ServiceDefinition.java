@@ -17,7 +17,6 @@ package com.wavemaker.runtime.service.definition;
 
 import java.util.List;
 
-import com.wavemaker.runtime.pws.IPwsServiceModifier;
 import com.wavemaker.runtime.service.ServiceType;
 import com.wavemaker.studio.json.type.TypeDefinition;
 
@@ -50,16 +49,6 @@ public interface ServiceDefinition {
     public List<ServiceOperation> getServiceOperations();
 
     /**
-     * Get a list of all the service operations.
-     * 
-     * @param serviceModifier the instance of service modifier
-     * 
-     * @return the list of all service operations
-     */
-    @Deprecated
-    public List<ServiceOperation> getServiceOperations(IPwsServiceModifier serviceModifier);
-
-    /**
      * Get all types associated with this service (instead of referenced in other services).
      * 
      * @return The list of types contained within this service.
@@ -84,10 +73,4 @@ public interface ServiceDefinition {
      */
     public boolean isLiveDataService();
 
-    /**
-     * Gets the web service partner name
-     * 
-     * @return the partner name
-     */
-    public String getPartnerName();
 }

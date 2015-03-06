@@ -18,7 +18,6 @@ package com.wavemaker.runtime.service.definition;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wavemaker.runtime.pws.IPwsServiceModifier;
 import com.wavemaker.runtime.service.ElementType;
 import com.wavemaker.runtime.ws.RESTInputParam;
 import com.wavemaker.studio.json.type.FieldDefinition;
@@ -33,13 +32,6 @@ public abstract class AbstractDeprecatedServiceDefinition implements DeprecatedS
 
     @Override
     public List<ServiceOperation> getServiceOperations() {
-        return getServiceOperations(null);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public List<ServiceOperation> getServiceOperations(IPwsServiceModifier serviceModifier) {
-
         List<String> operationNames = getOperationNames();
         List<ServiceOperation> ret = new ArrayList<ServiceOperation>(operationNames.size());
 
@@ -54,24 +46,13 @@ public abstract class AbstractDeprecatedServiceDefinition implements DeprecatedS
 
             List<FieldDefinition> fdPT = new ArrayList<FieldDefinition>();
             so.setParameterTypes(fdPT);
-            if (serviceModifier == null) {
-                if (getInputTypes(operationName) != null) {
-                    List<ElementType> parameterTypes = getInputTypes(operationName);
+            if (getInputTypes(operationName) != null) {
+                List<ElementType> parameterTypes = getInputTypes(operationName);
 
-                    for (ElementType et : parameterTypes) {
-                        fdPT.add(et.toFieldDefinition());
-                    }
-                }
-            } else {
-                if (serviceModifier.getInputTypes(this, operationName) != null) {
-                    List<ElementType> parameterTypes = serviceModifier.getInputTypes(this, operationName);
-
-                    for (ElementType et : parameterTypes) {
-                        fdPT.add(et.toFieldDefinition());
-                    }
+                for (ElementType et : parameterTypes) {
+                    fdPT.add(et.toFieldDefinition());
                 }
             }
-
             so.setOperationType(getOperationType(operationName));
         }
 
@@ -93,11 +74,6 @@ public abstract class AbstractDeprecatedServiceDefinition implements DeprecatedS
         }
 
         return ret;
-    }
-
-    @Override
-    public String getPartnerName() {
-        return null;
     }
 
     @Override
