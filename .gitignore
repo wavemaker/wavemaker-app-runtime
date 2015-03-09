@@ -33,7 +33,6 @@ wavemaker-runtime/src/main/webapp/
 wavemaker-prefab/src/main/webapp/
 wavemaker-core/src/main/webapp/
 wavemaker-platform/src/main/webapp/
-wavemaker-gridfs/src/main/webapp/
 wavemaker-soap2rest/src/main/webapp/
 /src
 
