@@ -38,6 +38,8 @@ public class WMActiveDirectoryAuthenticationProvider extends SpringActiveDirecto
     private String roleTable;
     private String roleProperty;
     private String roleUsername;
+
+    private boolean useRolesQuery;
     private String roleQuery;
 
     @JsonIgnore
@@ -54,7 +56,7 @@ public class WMActiveDirectoryAuthenticationProvider extends SpringActiveDirecto
 
     @PostConstruct
     protected void init() {
-        if (this.roleQuery != null && !this.roleQuery.equals("")) {
+        if (this.useRolesQuery) {
             authoritiesByUsernameQuery = this.roleQuery;
         } else {
             authoritiesByUsernameQuery = "SELECT " + this.roleProperty + " FROM " + this.roleTable + " WHERE " + this.roleUsername + " = ?";
@@ -203,5 +205,21 @@ public class WMActiveDirectoryAuthenticationProvider extends SpringActiveDirecto
 
     public void setGroupSearchDisabled(boolean groupSearchDisabled) {
         this.groupSearchDisabled = groupSearchDisabled;
+    }
+
+    public String getGroupRoleAttribute() {
+        return groupRoleAttribute;
+    }
+
+    public void setGroupRoleAttribute(String groupRoleAttribute) {
+        this.groupRoleAttribute = groupRoleAttribute;
+    }
+
+    public boolean isUseRolesQuery() {
+        return useRolesQuery;
+    }
+
+    public void setUseRolesQuery(boolean useRolesQuery) {
+        this.useRolesQuery = useRolesQuery;
     }
 }

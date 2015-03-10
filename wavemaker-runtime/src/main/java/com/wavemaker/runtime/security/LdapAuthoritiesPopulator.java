@@ -48,6 +48,8 @@ public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
     private String roleTable;
     private String roleProperty;
     private String roleUsername;
+
+    private boolean useRolesQuery;
     private String roleQuery;
     private DataSource dataSource;
 
@@ -60,7 +62,7 @@ public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
 
     @PostConstruct
     protected void init() {
-        if (this.roleQuery != null && !this.roleQuery.equals("")) {
+        if (useRolesQuery) {
             authoritiesByUsernameQuery = this.roleQuery;
         } else {
             authoritiesByUsernameQuery = "SELECT " + this.roleProperty + " FROM " + this.roleTable + " WHERE " + this.roleUsername + " = ?";
@@ -178,5 +180,13 @@ public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    public boolean isUseRolesQuery() {
+        return useRolesQuery;
+    }
+
+    public void setUseRolesQuery(boolean useRolesQuery) {
+        this.useRolesQuery = useRolesQuery;
     }
 }
