@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.wavemaker.runtime.feed.model.FeedConfigDetails;
 import com.wavemaker.runtime.feed.model.Feed;
-import com.wavemaker.runtime.feed.service.SyndFeedService;
+import com.wavemaker.runtime.feed.service.FeedService;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**
@@ -16,10 +16,10 @@ import com.wordnik.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping(value = "/feed")
-public class FeedServiceRuntimeController {
+public class FeedServiceController {
 
     @Autowired
-    private SyndFeedService feedService;
+    private FeedService feedService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ApiOperation(value = "Reads from the InputStream of the specified URL and builds the feed object from the returned XML.")

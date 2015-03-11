@@ -17,14 +17,14 @@ package com.wavemaker.runtime.ws;
 
 import com.wavemaker.infra.WMTestCase;
 import com.wavemaker.runtime.feed.model.Feed;
-import com.wavemaker.runtime.feed.service.SyndFeedService;
+import com.wavemaker.runtime.feed.service.FeedService;
 import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
 import com.wavemaker.studio.json.JSONMarshaller;
 
 /**
  * @author Frankie Fu
  */
-public class SyndFeedServiceTest extends WMTestCase {
+public class FeedServiceTest extends WMTestCase {
 
     /**
      * URL: http://www.wavemaker.com/rss/wavemaker.xml Type: RSS 0.91
@@ -67,7 +67,7 @@ public class SyndFeedServiceTest extends WMTestCase {
     private static final String DiggFeed = "com/wavemaker/runtime/ws/Digg.xml";
 
     private static Feed getFeed(String resource) {
-        SyndFeedService feedService = new SyndFeedService();
+        FeedService feedService = new FeedService();
         Feed feed = feedService.getFeed(ClassLoaderUtils.getResource(resource));
         assertNotNull(feed);
         return feed;

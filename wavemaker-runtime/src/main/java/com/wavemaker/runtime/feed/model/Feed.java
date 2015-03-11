@@ -20,7 +20,7 @@ import java.util.Date;
 /**
  * The class represents a Feed object for all types of feeds.
  * 
- * @see com.wavemaker.runtime.feed.service.SyndFeedService#getFeed(String)
+ * @see com.wavemaker.runtime.feed.service.FeedService#getFeed(String)
  * 
  * @author Frankie Fu
  */

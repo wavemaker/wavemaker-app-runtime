@@ -39,7 +39,7 @@ import com.wavemaker.runtime.ws.WebServiceInvocationException;
  * @author Frankie Fu
  */
 @HideFromClient
-public class SyndFeedService {
+public class FeedService {
 
     private static final String USER_AGENT_KEY = "User-Agent";
 
@@ -49,7 +49,7 @@ public class SyndFeedService {
 
     private static final String BASIC_AUTH_VALUE_PREFIX = "Basic ";
 
-    public SyndFeedService() {
+    public FeedService() {
     }
 
     /**
