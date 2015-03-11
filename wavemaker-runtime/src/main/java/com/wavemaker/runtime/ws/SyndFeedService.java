@@ -32,7 +32,7 @@ import com.wavemaker.runtime.service.annotations.HideFromClient;
 
 /**
  * This service is used to consume RSS and Atom feeds.
- * 
+ *
  * @author Frankie Fu
  */
 @HideFromClient
@@ -40,47 +40,33 @@ public class SyndFeedService {
 
     private static final String USER_AGENT_KEY = "User-Agent";
 
-    private static final String USER_AGENT_VALUE = "WaveMaker http://dev.wavemaker.com";
+    private static final String USER_AGENT_VALUE = "WaveMaker www.wavemakeronline.com";
 
     private static final String BASIC_AUTH_KEY = "Authorization";
 
     private static final String BASIC_AUTH_VALUE_PREFIX = "Basic ";
-
-    private BindingProperties bindingProperties;
 
     public SyndFeedService() {
     }
 
     /**
      * Reads from the InputStream of the specified URL and builds the feed object from the returned XML.
-     * 
+     *
      * @param feedURL The URL to read feed from.
      * @return A feed object.
      */
     @ExposeToClient
     public Feed getFeed(String feedURL) {
-        String httpBasicAuthUsername = null;
-        String httpBasicAuthPassword = null;
-        int connectionTimeout = 0;
-
-        if (this.bindingProperties != null) {
-            connectionTimeout = this.bindingProperties.getConnectionTimeout();
-
-            httpBasicAuthUsername = this.bindingProperties.getHttpBasicAuthUsername();
-            if (httpBasicAuthUsername != null) {
-                httpBasicAuthPassword = this.bindingProperties.getHttpBasicAuthPassword();
-            }
-        }
-        return getFeedWithHttpConfig(feedURL, httpBasicAuthUsername, httpBasicAuthPassword, connectionTimeout);
+        return getFeedWithHttpConfig(feedURL, null, null, 0);
     }
 
     /**
      * Reads from the InputStream of the specified URL and builds the feed object from the returned XML.
-     * 
-     * @param feedURL The URL to read feed from.
+     *
+     * @param feedURL               The URL to read feed from.
      * @param httpBasicAuthUsername The username for HTTP Basic Authentication.
      * @param httpBasicAuthPassword The password for HTTP Basic Authentication.
-     * @param connectionTimeout HTTP connection timeout.
+     * @param connectionTimeout     HTTP connection timeout.
      * @return A feed object.
      */
     @ExposeToClient
@@ -119,24 +105,6 @@ public class SyndFeedService {
         } catch (IOException e) {
             throw new WebServiceInvocationException(e);
         }
-    }
-
-    /**
-     * Returns the binding properties.
-     * 
-     * @return The bindingProperties.
-     */
-    public BindingProperties getBindingProperties() {
-        return this.bindingProperties;
-    }
-
-    /**
-     * Sets the binding properties.
-     * 
-     * @param bindingProperties The bindingProperties to set.
-     */
-    public void setBindingProperties(BindingProperties bindingProperties) {
-        this.bindingProperties = bindingProperties;
     }
 
 }
