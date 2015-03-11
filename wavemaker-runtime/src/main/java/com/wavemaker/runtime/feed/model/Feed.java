@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.ws;
+package com.wavemaker.runtime.feed.model;
 
 import java.util.Date;
 
 /**
  * The class represents a Feed object for all types of feeds.
  * 
- * @see com.wavemaker.runtime.ws.SyndFeedService#getFeed(String)
+ * @see com.wavemaker.runtime.feed.service.SyndFeedService#getFeed(String)
  * 
  * @author Frankie Fu
  */

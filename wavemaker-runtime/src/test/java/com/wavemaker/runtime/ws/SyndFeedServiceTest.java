@@ -16,6 +16,8 @@
 package com.wavemaker.runtime.ws;
 
 import com.wavemaker.infra.WMTestCase;
+import com.wavemaker.runtime.feed.model.Feed;
+import com.wavemaker.runtime.feed.service.SyndFeedService;
 import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
 import com.wavemaker.studio.json.JSONMarshaller;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.ws;
+package com.wavemaker.runtime.feed.service;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -27,8 +27,11 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+import com.wavemaker.runtime.feed.model.Feed;
+import com.wavemaker.runtime.feed.model.FeedBuilder;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.annotations.HideFromClient;
+import com.wavemaker.runtime.ws.WebServiceInvocationException;
 
 /**
  * This service is used to consume RSS and Atom feeds.

@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.wavemaker.runtime.feed.model.FeedConfigDetails;
-import com.wavemaker.runtime.ws.Feed;
-import com.wavemaker.runtime.ws.SyndFeedService;
+import com.wavemaker.runtime.feed.model.Feed;
+import com.wavemaker.runtime.feed.service.SyndFeedService;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 /**

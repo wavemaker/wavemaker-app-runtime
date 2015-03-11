@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.ws;
+package com.wavemaker.runtime.feed.model;
 
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
-
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndLink;
 
 /**
  * This represents the feed entry.
