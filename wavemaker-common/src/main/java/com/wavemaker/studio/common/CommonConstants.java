@@ -26,7 +26,9 @@ public abstract class CommonConstants {
 
     public static final String COMMON_LIB = "common/lib";
 
-    public static final String SECURITY_SERVICE_CONTROLLER_PACKAGE = "com.wavemaker.runtime.security.controller.SecurityController";
+    public static final String SECURITY_SERVICE_CONTROLLER_CLAZZ = "com.wavemaker.runtime.security.controller.SecurityController";
+
+    public static final String FEED_SERVICE_CONTROLLER_CLAZZ = "com.wavemaker.runtime.feed.controller.FeedServiceController";
 
     public static final String UTF8 = "UTF-8";
 
