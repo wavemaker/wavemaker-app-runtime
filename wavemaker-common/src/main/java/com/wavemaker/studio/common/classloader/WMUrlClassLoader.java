@@ -19,19 +19,16 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 public class WMUrlClassLoader extends URLClassLoader {
-    private String loaderContext = "";
+    private String loaderContext;
 
 
     public WMUrlClassLoader(URL[] urls, String loaderContext) {
         super(urls, Thread.currentThread().getContextClassLoader());
-        setLoaderContext(loaderContext);
-    }
-
-    public String getLoaderContext() {
-        return loaderContext;
-    }
-
-    public void setLoaderContext(String loaderContext) {
         this.loaderContext = loaderContext;
+    }
+
+    @Override
+    public String toString() {
+        return "WMUrlClassLoader{loaderContext='" + loaderContext + '\'' +"} ";
     }
 }
