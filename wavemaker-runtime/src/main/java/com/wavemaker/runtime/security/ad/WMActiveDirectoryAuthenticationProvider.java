@@ -1,8 +1,18 @@
 package com.wavemaker.runtime.security.ad;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.studio.common.util.IOUtils;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ldap.core.DirContextOperations;
@@ -11,13 +21,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.util.IOUtils;
 
 /**
  * Created by nileshk on 3/3/15.
@@ -66,7 +72,7 @@ public class WMActiveDirectoryAuthenticationProvider extends SpringActiveDirecto
             authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(LOGGED_IN_USERNAME, "?");
         }
 
-        if(groupRoleAttribute == null && groupRoleAttribute.equals("")) {
+        if(groupRoleAttribute == null || groupRoleAttribute.equals("")) {
             groupRoleAttribute = "memberOf";
         }
     }
