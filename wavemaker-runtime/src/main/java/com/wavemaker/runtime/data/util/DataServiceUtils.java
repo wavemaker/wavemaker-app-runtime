@@ -15,10 +15,11 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import com.wavemaker.runtime.data.DataServiceRuntimeException;
-import com.wavemaker.studio.common.util.SystemUtils;
 import org.hibernate.exception.SQLGrammarException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+
+import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
+import com.wavemaker.studio.common.util.SystemUtils;
 
 /**
  * @author Simon Toens

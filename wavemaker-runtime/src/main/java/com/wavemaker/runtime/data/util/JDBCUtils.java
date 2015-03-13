@@ -19,7 +19,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.wavemaker.runtime.data.DataServiceRuntimeException;
+import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
 import com.wavemaker.studio.common.util.StringUtils;

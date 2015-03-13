@@ -49,6 +49,7 @@ import com.wavemaker.studio.common.WMRuntimeInitException;
  * 
  * @author Matt Small
  */
+@Deprecated
 public class RuntimeAccess {
 
     private static ThreadLocal<RuntimeAccess> runtimeThreadLocal = new NamedThreadLocal<RuntimeAccess>("Wavemaker Runtime");
