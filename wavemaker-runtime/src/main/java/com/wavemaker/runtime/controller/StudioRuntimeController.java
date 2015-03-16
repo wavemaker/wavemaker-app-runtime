@@ -15,34 +15,25 @@
  */
 package com.wavemaker.runtime.controller;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.data.dao.procedure.WMProcedureExecutor;
+import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
+import com.wavemaker.runtime.data.model.*;
+import com.wavemaker.runtime.data.util.DataServiceUtils;
+import com.wavemaker.runtime.data.util.ProceduresUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.data.dao.procedure.WMProcedureExecutor;
-import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
-import com.wavemaker.runtime.data.model.CustomProcedure;
-import com.wavemaker.runtime.data.model.CustomProcedureParam;
-import com.wavemaker.runtime.data.model.CustomQuery;
-import com.wavemaker.runtime.data.model.ProcedureResponse;
-import com.wavemaker.runtime.data.model.QueryResponse;
-import com.wavemaker.runtime.data.util.DataServiceUtils;
-import com.wavemaker.runtime.data.util.ProceduresUtils;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Sowmya
@@ -51,10 +42,9 @@ import com.wavemaker.runtime.data.util.ProceduresUtils;
 @RequestMapping("/")
 public class StudioRuntimeController {
 
-    String queryExecutorBeanName = "{serviceId}WMQueryExecutor";
-    String transactionManagerBeanName = "{serviceId}TransactionManager";
-    String procedureExecutorBeanName = "{serviceId}WMProcedureExecutor";
-
+    private static final String QUERY_EXECUTOR_BEAN_NAME = "{serviceId}WMQueryExecutor";
+    private static final String TRANSACTION_MANAGER_BEAN_NAME = "{serviceId}TransactionManager";
+    private static final String PROCEDURE_EXECUTOR_BEAN_NAME = "{serviceId}WMProcedureExecutor";
 
     @RequestMapping(value="/{serviceId}/queries/wm_querymetadata" , method = RequestMethod.POST)
     @ResponseBody
@@ -62,8 +52,9 @@ public class StudioRuntimeController {
         if(DataServiceUtils.isDML(customQuery.getQueryStr())){
             return new QueryResponse();
         }
-        queryExecutorBeanName =  queryExecutorBeanName.replaceAll("\\{serviceId\\}",serviceId);
-        transactionManagerBeanName =  transactionManagerBeanName.replaceAll("\\{serviceId\\}", serviceId);
+
+        final String queryExecutorBeanName =  QUERY_EXECUTOR_BEAN_NAME.replaceAll("\\{serviceId\\}",serviceId);
+        final String transactionManagerBeanName =  TRANSACTION_MANAGER_BEAN_NAME.replaceAll("\\{serviceId\\}", serviceId);
         PlatformTransactionManager transactionManager = WMAppContext.getInstance().getSpringBean(transactionManagerBeanName);
         TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -71,26 +62,23 @@ public class StudioRuntimeController {
             @Override
             public QueryResponse doInTransaction(TransactionStatus status) {
 
-                QueryResponse queryResponse = new QueryResponse();
-
                 WMQueryExecutor queryExecutor = WMAppContext.getInstance().getSpringBean(queryExecutorBeanName);
-
                 Page<Object> pageResponse =  queryExecutor.executeCustomQuery(customQuery, null);
 
+                QueryResponse queryResponse = new QueryResponse();
                 queryResponse.setPages(pageResponse);
                 queryResponse.setMetaData(prepareMetaData(pageResponse.getContent()));
-
                 return queryResponse;
             }
         });
     }
+
     @RequestMapping(value="/{serviceId}/procedures/wm_proceduremetadata" , method = RequestMethod.POST)
     @ResponseBody
     public ProcedureResponse createMetaDataForProcedures(@RequestBody final CustomProcedure customProcedure, @PathVariable("serviceId") String serviceId)   {
+        final String procedureExecutorBeanName =  PROCEDURE_EXECUTOR_BEAN_NAME.replaceAll("\\{serviceId\\}",serviceId);
+        String transactionManagerBeanName =  TRANSACTION_MANAGER_BEAN_NAME.replaceAll("\\{serviceId\\}", serviceId);
 
-
-        procedureExecutorBeanName =  procedureExecutorBeanName.replaceAll("\\{serviceId\\}",serviceId);
-        transactionManagerBeanName =  transactionManagerBeanName.replaceAll("\\{serviceId\\}", serviceId);
         PlatformTransactionManager transactionManager = WMAppContext.getInstance().getSpringBean(transactionManagerBeanName);
         TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
         txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -98,25 +86,19 @@ public class StudioRuntimeController {
             @Override
             public ProcedureResponse doInTransaction(TransactionStatus status) {
 
-                ProcedureResponse procedureResponse = new ProcedureResponse();
-
                 WMProcedureExecutor wmProcedureExecutor = WMAppContext.getInstance().getSpringBean(procedureExecutorBeanName);
-
                 List<Object> response =  wmProcedureExecutor.executeCustomProcedure(customProcedure);
 
+                ProcedureResponse procedureResponse = new ProcedureResponse();
                 procedureResponse.setProcedureResult(response);
 
                 if(ProceduresUtils.hasOutParam(customProcedure.getProcedureParams())){
                     procedureResponse.setMetaData(prepareFromOutParams(customProcedure));
-
                 }else{
-                 procedureResponse.setMetaData(prepareMetaData(response));
+                    procedureResponse.setMetaData(prepareMetaData(response));
                 }
-
                 return procedureResponse;
             }
-
-
         });
     }
 
@@ -125,12 +107,10 @@ public class StudioRuntimeController {
         for (CustomProcedureParam customProcedureParam : customProcedure.getProcedureParams()) {
             if(ProceduresUtils.hasOutParamType(customProcedureParam)){
                 metaData.put(customProcedureParam.getParamName(), customProcedureParam.getValueType()) ;
-
             }
         }
         return metaData;
     }
-
 
     private Map prepareMetaData(List response) {
         Map<String, String> result = new HashMap<String, String>();
@@ -149,14 +129,15 @@ public class StudioRuntimeController {
         }
         return result;
     }
+
     private void prepareBaseOnType(Object queryResonse, Map<String, String> result){
         if(queryResonse instanceof Map){
             prepareFromMap((Map)queryResonse, result);
         }else{
             prepareFromObject(queryResonse, result);
         }
-
     }
+
     private void prepareFromMap(Map queryResMap, Map result){
 
         Set<Map.Entry> mapSet = queryResMap.entrySet();
@@ -164,23 +145,17 @@ public class StudioRuntimeController {
             String type = entr.getValue() == null ? String.class.getName() : entr.getValue().getClass().getName();
             result.put(entr.getKey().toString(),type);
         }
-
     }
 
     private void prepareFromObject(Object queryResponse, Map result){
-
         Field[] fields = queryResponse.getClass().getDeclaredFields();
         for(Field field : fields){
             String fieldName = field.getName();
             if(result.containsKey(field.getName())){
                 fieldName = queryResponse.getClass().getSimpleName() + "." + fieldName;
-
             }
             result.put(fieldName, field.getType().getName());
         }
-
-
     }
-
 
 }

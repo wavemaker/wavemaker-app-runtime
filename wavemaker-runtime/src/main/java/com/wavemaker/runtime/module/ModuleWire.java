@@ -21,6 +21,7 @@ package com.wavemaker.runtime.module;
  * 
  * @author Matt Small
  */
+@Deprecated
 public class ModuleWire {
 
     private String extensionPoint;

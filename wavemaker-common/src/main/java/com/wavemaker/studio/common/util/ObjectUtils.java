@@ -183,11 +183,6 @@ public abstract class ObjectUtils {
         return rtn;
     }
 
-    public static String objectToString(Object o) {
-        ObjectAccess a = ObjectAccess.getInstance();
-        return a.objectToString(o);
-    }
-
     /**
      * Simple Object diffing for debugging.
      */

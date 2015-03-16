@@ -17,6 +17,7 @@ public  class ProceduresUtils {
         }
         return false;
     }
+
     public  static boolean hasOutParamType(CustomProcedureParam procedureParam){
         return procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam.getProcedureParamType().equals(ProcedureParamType.OUT);
     }

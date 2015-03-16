@@ -37,6 +37,7 @@ import com.wavemaker.studio.json.type.reflect.converters.FileTypeDefinition;
 /**
  * @author Uday Shankar
  */
+@Deprecated
 public class RequestInitInterceptor implements HandlerInterceptor {
 
 
