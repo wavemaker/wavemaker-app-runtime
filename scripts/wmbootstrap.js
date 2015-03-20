@@ -168,6 +168,7 @@ var Application = WM.module('Application',
                                             $rootScope.userRoles = roles;
                                             if ($rootScope.Variables && $rootScope.Variables.loggedInUser) {
                                                 $rootScope.Variables.loggedInUser.dataSet.roles = roles;
+                                                $rootScope.Variables.loggedInUser.dataSet.isSecurityEnabled = true;
                                             }
                                         }
                                         loadPage(pageName);
@@ -241,6 +242,7 @@ var Application = WM.module('Application',
                             /* if logged-in user variable present, get user info and persist */
                             if ($rootScope.isUserAuthenticated && loggedInUser) {
                                 /* TODO: merge the userInfo service calls into a single call */
+                                loggedInUser.dataSet.isAuthenticated = $rootScope.isUserAuthenticated;
                                 loggedInUser.dataSet.roles = $rootScope.userRoles;
                                 SecurityService.getUserName(function (name) {
                                     loggedInUser.dataSet.name = name;
