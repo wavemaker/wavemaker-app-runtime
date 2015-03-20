@@ -37,8 +37,8 @@ public class WMUser extends User implements WMUserDetails {
 
     private static GrantedAuthoritiesMapper authoritiesMapper = new SimpleAuthorityMapper();
 
-    public WMUser(String userId, String userName, Collection<String> roles) {
-        this(userId, userName, userName, userName, 0, roles);
+    public WMUser(String userName, String password, Collection<String> roles) {
+        this(userName, userName, password, userName, 0, roles);
     }
 
     public WMUser(String userId, String username, String password, String userLongName, int tenantId, Collection<String> roles) {
