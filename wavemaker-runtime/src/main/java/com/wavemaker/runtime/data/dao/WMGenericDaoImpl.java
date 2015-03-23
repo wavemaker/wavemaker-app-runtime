@@ -15,12 +15,12 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.*;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.expression.QueryFilter;
+import com.wavemaker.runtime.data.spring.WMPageImpl;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
@@ -65,15 +65,15 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         if (pageable != null) {
             Long count = getRowCount(countCriteria);
             criteria = prepareCriteriaForPageable(criteria, pageable);
-            return new PageImpl(criteria.list(), pageable, count);
+            return new WMPageImpl(criteria.list(), pageable, count);
 
         } else
-            return new PageImpl(criteria.list());
+            return new WMPageImpl(criteria.list());
 
     }
 
     public Page<Entity> list() {
-        return new PageImpl<Entity>(getTemplate().loadAll(entityClass));
+        return new WMPageImpl<Entity>(getTemplate().loadAll(entityClass));
     }
 
     public Page<Entity> search(QueryFilter queryFilters[], Pageable pageable) {
@@ -107,10 +107,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         if (pageable != null) {
             Long count = getRowCount(countCriteria);
             criteria = prepareCriteriaForPageable(criteria, pageable);
-            return new PageImpl<Entity>(criteria.list(), pageable, count);
+            return new WMPageImpl<Entity>(criteria.list(), pageable, count);
 
         } else
-            return new PageImpl<Entity>(criteria.list());
+            return new WMPageImpl<Entity>(criteria.list());
     }
 
     private Long getRowCount(Criteria countCriteria) {

@@ -11,13 +11,13 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.CustomQueryParam;
+import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.TypeConversionUtils;
@@ -46,10 +46,10 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         {
             namedQuery.setFirstResult(pageable.getOffset());
             namedQuery.setMaxResults(pageable.getPageSize());
-            return new PageImpl(namedQuery.list(), pageable, UNKNOWN_COUNT);
+            return new WMPageImpl(namedQuery.list(), pageable, UNKNOWN_COUNT);
         }
         else
-            return new PageImpl(namedQuery.list());
+            return new WMPageImpl(namedQuery.list());
 	}
 
     @Override
@@ -146,10 +146,10 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
             sqlQuery.setFirstResult(pageable.getOffset());
             sqlQuery.setMaxResults(pageable.getPageSize());
-            return new PageImpl(sqlQuery.list(), pageable, count);
+            return new WMPageImpl(sqlQuery.list(), pageable, count);
         }
         else
-            return new PageImpl(sqlQuery.list());
+            return new WMPageImpl(sqlQuery.list());
 	}
 
     private SQLQuery createNativeQuery(String queryString, Map<String, Object> params) {
@@ -169,10 +169,10 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             Long count = QueryHelper.getQueryResultCount(queryString, params, false, template);
             hqlQuery.setFirstResult(pageable.getOffset());
             hqlQuery.setMaxResults(pageable.getPageSize());
-            return new PageImpl(hqlQuery.list(), pageable, count);
+            return new WMPageImpl(hqlQuery.list(), pageable, count);
         }
         else
-            return new PageImpl(hqlQuery.list());
+            return new WMPageImpl(hqlQuery.list());
 	}
 
     private Query createHQLQuery(String queryString, Map<String, Object> params) {
