@@ -12,8 +12,10 @@ public class WMSQLServerDialect extends SQLServer2012Dialect {
 
     public WMSQLServerDialect() {
         super();
-        registerHibernateType(Types.NCHAR, StandardBasicTypes.CHARACTER.getName());
+        registerHibernateType(Types.NCHAR, StandardBasicTypes.STRING.getName());
         registerHibernateType(Types.LONGNVARCHAR, StandardBasicTypes.TEXT.getName());
         registerHibernateType(Types.NVARCHAR, StandardBasicTypes.STRING.getName());
+
+        registerColumnType(Types.CHAR, "nchar(1)");
     }
 }
