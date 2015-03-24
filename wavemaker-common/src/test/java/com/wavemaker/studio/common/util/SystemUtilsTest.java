@@ -16,8 +16,6 @@
 package com.wavemaker.studio.common.util;
 
 import com.wavemaker.infra.WMTestCase;
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Matt Small
@@ -39,17 +37,5 @@ public class SystemUtilsTest extends WMTestCase {
         e = SystemUtils.encrypt(s);
         assertTrue(SystemUtils.isEncrypted(e));
         assertEquals(s, SystemUtils.decrypt(e));
-    }
-
-    public void testUnwrap() {
-
-        Exception e = new Exception("foobar");
-        Throwable t = SystemUtils.unwrapInternalException(e);
-        assertEquals(e, t);
-
-        Exception wrapped = new WMRuntimeException("foo");
-        e = new WMRuntimeException(MessageResource.CANNOT_ROLLBACK_TX, wrapped);
-        t = SystemUtils.unwrapInternalException(e);
-        assertEquals(wrapped, t);
     }
 }

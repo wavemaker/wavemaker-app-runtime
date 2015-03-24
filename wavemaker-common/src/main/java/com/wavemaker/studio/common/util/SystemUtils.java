@@ -122,23 +122,6 @@ public abstract class SystemUtils {
         return rtn;
     }
 
-    /**
-     * Remove all wrapping Exceptions that have been "artificially" added to the top-level root Exception.
-     */
-    public static Throwable unwrapInternalException(Throwable th) {
-
-        while (th instanceof WMRuntimeException || th instanceof WMException) {
-
-            if (th.getCause() != null) {
-                th = th.getCause();
-            } else {
-                break;
-            }
-        }
-
-        return th;
-    }
-
     public static Throwable getRootException(Throwable th) {
 
         while (th.getCause() != null) {
