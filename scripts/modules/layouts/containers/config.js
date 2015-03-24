@@ -89,6 +89,18 @@ WM.module('wm.widgets')
             "canBeCopied": true,
             "isPageContainer": false
         });
+        /* register the wm-breadcrumb widget with its properties */
+        WidgetPropertiesProvider.register("wm-breadcrumb", {
+            "widgetType": "wm-breadcrumb",
+            "template": "<wm-breadcrumb dataset='Home, Page'></wm-breadcrumb>",
+            "isContainer": true,
+            "isResizable": false,
+            "isMovableInsideCanvas": true,
+            "isDroppable": false,
+            "isDeletable": true,
+            "canBeCopied": true,
+            "isPageContainer": false
+        });
 
 
         /* register the wm-form widget with its properties */
@@ -415,6 +427,13 @@ WM.module('wm.widgets')
                         "name": "Tile",
                         "namekey": "LABEL_WIDGET_TILE",
                         "iconclass": "tile",
+                        "isDraggable": true
+                    },
+                    {
+                        "widgetType": "wm-breadcrumb",
+                        "name": "Breadcrumb",
+                        "namekey": "LABEL_WIDGET_BREADCRUMB",
+                        "iconclass": "breadcrumb",
                         "isDraggable": true
                     }
                 ]

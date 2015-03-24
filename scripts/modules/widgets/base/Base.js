@@ -818,6 +818,15 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                     "layout":  {"type": "list", "options": ["inline", "vertical"], "value": "vertical"}
                 },
+                'wm.layouts.breadcrumb': {
+                    "height": {"type": "string"},
+                    "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
+                    "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
+                    "scopedataset": {"type": "string"},
+                    "itemicon": {"type": "list", "options": [""]},
+                    "itemlabel": {"type": "list", "options": [""]},
+                    "itemlink": {"type": "list", "options": [""]}
+                },
                 'wm.layouts.nav': {
                     "height": {"type": "string"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},

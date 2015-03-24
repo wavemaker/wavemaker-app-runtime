@@ -141,6 +141,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/layouts/containers/form/form.js',
                         '<%= config.scripts %>/modules/layouts/containers/grid/layoutgrid.js',
                         '<%= config.scripts %>/modules/layouts/containers/list/list.js',
+                        '<%= config.scripts %>/modules/layouts/containers/breadcrumb/breadcrumb.js',
                         '<%= config.scripts %>/modules/layouts/containers/nav/nav.js',
                         '<%= config.scripts %>/modules/layouts/containers/navbar/navbar.js',
                         '<%= config.scripts %>/modules/layouts/containers/panel/panel.js',
