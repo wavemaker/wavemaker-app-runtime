@@ -32,13 +32,13 @@ wm.variables.services.Variables = [
                     "collectionType": "call",
                     "category": "wm.NavigationVariable",
                     "labelKey": "LABEL_VARIABLE_NAVIGATION",
-                    "defaultName": "notificationVariable"
+                    "defaultName": "navigationVariable"
                 },
                 {
                     "collectionType": "call",
                     "category": "wm.NotificationVariable",
                     "labelKey": "LABEL_VARIABLE_NOTIFICATION",
-                    "defaultName": "navigationVariable"
+                    "defaultName": "notificationVariable"
                 },
                 {
                     "collectionType": "data",
