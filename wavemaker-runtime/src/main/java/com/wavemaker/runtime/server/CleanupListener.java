@@ -15,18 +15,17 @@
  */
 package com.wavemaker.runtime.server;
 
+import com.mysql.jdbc.AbandonedConnectionCleanupThread;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.studio.common.util.CastUtils;
+import org.hsqldb.DatabaseManager;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import java.beans.Introspector;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import org.hsqldb.DatabaseManager;
-
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.studio.common.util.CastUtils;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -45,8 +44,9 @@ public class CleanupListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent event) {
         try {
             shutDownHSQLTimerThreadIfAny();
+            shutDownMySQLThreadIfAny();
 
-            //shutDownAnyOtherThreads();
+            // shutDownAnyOtherThreads();
 
             // remove from the system DriverManager the JDBC drivers registered
             // by this web app
@@ -75,11 +75,26 @@ public class CleanupListener implements ServletContextListener {
     }
 
     private void shutDownHSQLTimerThreadIfAny() {
-        if(DatabaseManager.class.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
+        if (DatabaseManager.class.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
             try {
                 DatabaseManager.getTimer().shutDown();
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 System.out.println("Failed to shutdown HSQL-Timer thread");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Added by akritim on 3/23/2015.
+     * To stop mysql thread, if any and resolve issue of "Abandoned connection cleanup thread" not stopping
+     */
+    private void shutDownMySQLThreadIfAny() {
+        if (AbandonedConnectionCleanupThread.class.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
+            try {
+                AbandonedConnectionCleanupThread.shutdown();
+            } catch (Throwable e) {
+                System.out.println("Failed to shutdown My SQL thread");
                 e.printStackTrace();
             }
         }
