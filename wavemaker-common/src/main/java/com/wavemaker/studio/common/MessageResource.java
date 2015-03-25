@@ -15,14 +15,14 @@
  */
 package com.wavemaker.studio.common;
 
-import com.wavemaker.studio.common.i18n.ResourceConstraint;
-import com.wavemaker.studio.common.i18n.ResourceManager;
-import com.wavemaker.studio.common.util.ClassUtils;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.wavemaker.studio.common.i18n.ResourceConstraint;
+import com.wavemaker.studio.common.i18n.ResourceManager;
+import com.wavemaker.studio.common.util.ClassUtils;
 
 /**
  * All known resources defined in our resource bundles. These constants are meant to be used when instantiating a
@@ -78,6 +78,18 @@ public class MessageResource {
     // input: service id
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
     public static final MessageResource UNKNOWN_SERVICE = new MessageResource("com.wavemaker.runtime.service$UnknownService");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource UNEXPECTED_ERROR = new MessageResource("com.wavemaker.studio.json$UnexpectedError");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource UNRECOGNIZED_FIELD = new MessageResource("com.wavemaker.studio.json$UnrecognizedField");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource INVALID_JSON = new MessageResource("com.wavemaker.studio.json$InvalidJsonObject");
+
+    @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
+    public static final MessageResource MESSAGE_NOT_READABLE = new MessageResource("com.wavemaker.studio.json$MessageNotReadable");
 
     // input: service type
     @ResourceConstraint(numArgs = 1, hasDetailMsg = false)
