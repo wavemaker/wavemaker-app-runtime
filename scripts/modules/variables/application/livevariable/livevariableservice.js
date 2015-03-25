@@ -29,15 +29,15 @@ wm.variables.services.$liveVariable = [
     "VARIABLE_CONSTANTS",
     "ProjectService",
     "DB_CONSTANTS",
-    "DataModelDesignManager",
     "wmToaster",
-    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, DataModelDesignManager, wmToaster) {
+    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster) {
         "use strict";
 
         /*Set a flag based on whether the project is deployed or not.
          * 1. In the RUN mode, project is deployed.
          * 2. In the STUDIO mode, project has to be explicitly deployed.*/
         var isProjectDeployed = (CONSTANTS.isRunMode),
+            DataModelDesignManager = isProjectDeployed && Utils.getService('DataModelDesignManager'),
             isProjectDeployInProgress = false,
             projectDeployReqQueue,
             callbackParams = [],

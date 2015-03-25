@@ -1,7 +1,7 @@
 /*global WM, wm, document*/
 /*Directive for prefabs */
 
-WM.module('wm.widgets.prefabs')
+WM.module('wm.prefabs')
 /**
  * @ngdoc directive
  * @name wm.prefab.directive:wmPrefab

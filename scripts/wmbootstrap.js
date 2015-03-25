@@ -371,7 +371,6 @@ Application.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
 /* dummy service to avoid exceptions in run mode */
 Application.service('PrefabService', WM.noop);
 
-
 Application.config(['$controllerProvider', '$httpProvider', function ($controllerProvider, $httpProvider) {
     "use strict";
 

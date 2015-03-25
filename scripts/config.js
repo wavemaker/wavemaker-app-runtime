@@ -27,7 +27,8 @@ WM.module('wm.widgets.dialog', ['ui.bootstrap.modal']);
 WM.module('wm.widgets.grid', []);
 WM.module('wm.widgets.live', []);
 WM.module('wm.widgets.advanced', []);
-WM.module('wm.widgets.prefabs', []);
+WM.module('wm.prefabs', ['wm.widgets.base']);
+WM.module('wm.themes', ['wm.widgets.base']);
 
 WM.module('wm.layouts', ['wm.layouts.page', 'wm.layouts.containers', 'wm.layouts.device']);
 
@@ -38,6 +39,5 @@ WM.module('wm.widgets', [
     'wm.widgets.dialog',
     'wm.widgets.grid',
     'wm.widgets.live',
-    'wm.widgets.advanced',
-    'wm.widgets.prefabs'
+    'wm.widgets.advanced'
 ]);
