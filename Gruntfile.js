@@ -22,7 +22,6 @@ module.exports = function (grunt) {
                         dot: true,
                         src: [
                             '<%= config.dest %>/*',
-                            '<%= config.components %>/*'
                         ]
                     }
                 ]
@@ -44,7 +43,7 @@ module.exports = function (grunt) {
                     layout: 'byComponent',
                     install: true,
                     verbose: false,
-                    cleanTargetDir: true,
+                    cleanTargetDir: false,
                     cleanBowerDir: false
                 }
             }
@@ -242,7 +241,7 @@ module.exports = function (grunt) {
     });
 
     /*grunt task for production*/
-    grunt.registerTask('build', [
+    grunt.registerTask('build-production', [
         'clean',
         'bower',
         'less',
@@ -250,5 +249,14 @@ module.exports = function (grunt) {
         'concat:wm-loader',
         'uglify',
         'cssmin'
+    ]);
+
+    /*grunt task for development*/
+    grunt.registerTask('build', [
+        'clean',
+        'bower',
+        'less',
+        'concat',
+        'concat:wm-loader',
     ]);
 };
