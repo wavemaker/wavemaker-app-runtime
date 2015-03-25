@@ -12,7 +12,8 @@ module.exports = function (grunt) {
         styles: 'styles',
         components: 'components',
         app: '../'
-    }
+    };
+
     grunt.initConfig({
         config: wmBuildConfig,
         clean: {
@@ -21,7 +22,7 @@ module.exports = function (grunt) {
                     {
                         dot: true,
                         src: [
-                            '<%= config.dest %>/*',
+                            '<%= config.dest %>/*'
                         ]
                     }
                 ]
@@ -251,6 +252,6 @@ module.exports = function (grunt) {
         'bower',
         'less',
         'concat',
-        'concat:wm-loader',
+        'concat:wm-loader'
     ]);
 };
