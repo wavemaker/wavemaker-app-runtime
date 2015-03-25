@@ -37,7 +37,7 @@ wm.variables.services.$liveVariable = [
          * 1. In the RUN mode, project is deployed.
          * 2. In the STUDIO mode, project has to be explicitly deployed.*/
         var isProjectDeployed = (CONSTANTS.isRunMode),
-            DataModelDesignManager = isProjectDeployed && Utils.getService('DataModelDesignManager'),
+            DataModelDesignManager = CONSTANTS.isStudioMode && Utils.getService('DataModelDesignManager'),
             isProjectDeployInProgress = false,
             projectDeployReqQueue,
             callbackParams = [],
