@@ -374,6 +374,7 @@
   "MESSAGE_SUCCESS_QUERY_EXECUTE": "Abfrage erfolgreich ausgeführt.",
   "MESSAGE_SUCCESS_PROCEDURE_INVOKE":"Vorgehensweise erfolgreich aufgerufen.",
   "MESSAGE_DATA_NOT_FOUND_RUN_QUERY":"Keine Daten gefunden. Bitte führen Sie die Abfrage.",
+  "MESSAGE_DATA_NOT_FOUND_RUN_QUERY_AGAIN":"Keine Einträge gefunden. Bitte führen Sie eine Abfrage der Rückkehr atleast einen Datensatz , um die Abfrage zu speichern."
   "MESSAGE_ERROR_NO_PROCEDURE_PARAMETER":"Bitte geben Sie eine gültige Werte für die Parameter.",
   "MESSAGE_NO_DATA_FOUND": "Keine Daten gefunden.",
   "MESSAGE_ERROR_RELATION_NONMATCHING_COLUMN_TYPES": "Relation kann nicht erstellt werden, da die Spaltentypen stimmen nicht überein.",
@@ -873,7 +874,7 @@
   "ICONTITLE_DATABASE_QUERY_RUN": "Abfrage ausführen",
   "ICONTITLE_DATABASE_QUERY_VALIDATE": "Validate Abfrage",
   "ICONTITLE_DATABASE_PROCEDURE_EXECUTE":"Prozedur ausführen",
-  "ICONTITLE_DATABASE_PROCEDURE_EXECUTE_TO_SAVE":"Bitte testen Sie führen Sie das Verfahren, um sparen zu ermöglichen.",
+  "ICONTITLE_DATABASE_PROCEDURE_EXECUTE_TO_SAVE":"Bitte testen Sie führen Sie das Verfahren / Abfrage speichern aktivieren .",
   "MESSAGE_WORKSPACE_AUTOSAVED": "automatisch gespeicherte",
   "MESSAGE_WORKSPACE_LAST_SAVE": "Vor Minuten",
   "LABEL_UPGRADE_PREFAB_DIALOG_TITLE": "Update Prefab",
