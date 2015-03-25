@@ -49,6 +49,19 @@ WM.module('wm.widgets')
             "canBeCopied": true
         });
 
+        /* register the wm-popover widget with its properties */
+        WidgetPropertiesProvider.register("wm-popover", {
+            "widgetType": "wm-popover",
+            "template": "<wm-popover></wm-popover>",
+            "isContainer": false,
+            "isResizable": false,
+            "isMovableInsideCanvas": true,
+            "isDroppable": false,
+            "isDeletable": true,
+            "canBeCopied": true,
+            "isPageContainer": true
+        });
+
         /* register the wm-audio widget with its properties */
         WidgetPropertiesProvider.register("wm-audio", {
             "widgetType": "wm-audio",
@@ -1056,6 +1069,13 @@ WM.module('wm.widgets')
                         "name": "Anchor",
                         "namekey": "LABEL_WIDGET_ANCHOR",
                         "iconclass": "anchor",
+                        "isDraggable": true
+                    },
+                    {
+                        "widgetType": "wm-popover",
+                        "name": "Popover",
+                        "namekey": "LABEL_WIDGET_POPOVER",
+                        "iconclass": "popover",
                         "isDraggable": true
                     },
                     {

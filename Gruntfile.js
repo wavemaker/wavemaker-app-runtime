@@ -172,6 +172,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/widgets/basic/label/label.js',
                         '<%= config.scripts %>/modules/widgets/basic/message/message.js',
                         '<%= config.scripts %>/modules/widgets/basic/picture/picture.js',
+                        '<%= config.scripts %>/modules/widgets/basic/popover/popover.js',
                         '<%= config.scripts %>/modules/widgets/basic/video/video.js',
                         '<%= config.scripts %>/modules/widgets/basic/audio/audio.js',
                         '<%= config.scripts %>/modules/widgets/basic/search/search.js',

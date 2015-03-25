@@ -289,8 +289,9 @@
         margin-right: 8px;
       }
     }
-    .app-nav-item > .dropdown {
-      > a.dropdown-toggle {
+    .app-nav-item >.dropdown,
+    .app-nav-item >.app-popover {
+      > a.dropdown-toggle, >a.app-popover-link {
         padding: 15px;
       }
       &.open {

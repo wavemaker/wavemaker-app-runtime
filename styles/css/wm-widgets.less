@@ -226,6 +226,50 @@ html, body {
   }
 }
 
+.app-popover{
+    display : inline-block;
+    margin : 0px;
+    padding : 0px;
+    border : 0px;
+    cursor : pointer;
+    .app-popover-link{
+        display : block;
+    }
+    >.popover{
+        display : none;
+        max-width : none;
+        min-width : 250px;
+        min-height : 100px;
+        .arrow {
+            margin : 0px;
+        }
+        &.left,&.right{
+            .arrow{
+                &.top{
+                    top : 0.5em;
+                    bottom : auto;
+                }
+                &.bottom{
+                    top : auto;
+                    bottom : 0.5em;
+                }
+            }
+        }
+        &.top,&.bottom{
+            .arrow{
+                &.left{
+                    left : 0.5em;
+                    right : auto;
+                }
+                &.right{
+                    left : auto;
+                    right : 0.5em;
+                }
+            }
+        }
+    }
+}
+
 .app-tree {
   position: relative;
   .user-select-none();
