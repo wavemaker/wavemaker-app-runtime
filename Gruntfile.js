@@ -31,7 +31,8 @@ module.exports = function (grunt) {
         less: {
             dev: {
                 files: {
-                    '<%= config.dest %>/application/css/wm-style.css': '<%= config.styles %>/css/wm-runtime.less'
+                    '<%= config.dest %>/application/css/wm-style.css': '<%= config.styles %>/css/wm-runtime.less',
+                    '<%= config.dest %>/studio/styles/css/wm-widgets.css': '<%= config.styles %>/css/wm-widgets.less'
                 }
             }
         },
