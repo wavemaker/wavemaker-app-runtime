@@ -11,8 +11,7 @@
         <version>7.4.1</version>
     </parent>
 
-    <artifactId>wavemaker-prefab</artifactId>
-    <name>wavemaker-prefab</name>
+    <artifactId>wavemaker-app-runtime-prefab</artifactId>
 
     <properties>
         <main.basedir>${basedir}/..</main.basedir>

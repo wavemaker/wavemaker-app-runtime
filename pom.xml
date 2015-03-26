@@ -66,9 +66,9 @@
 
     <modules>
         <module>wavemaker-common</module>
-        <module>runtime-json</module>
-        <module>runtime-prefab</module>
-        <module>runtime-core</module>
+        <module>wavemaker-app-runtime-json</module>
+        <module>wavemaker-app-runtime-prefab</module>
+        <module>wavemaker-app-runtime-core</module>
     </modules>
 
     <build>
@@ -496,7 +496,7 @@
                 <artifactId>wavemaker-api-tools</artifactId>
                 <version>${wavemaker-api-tools.version}</version>
                 <exclusions>
-                    <exclusion><!-- TODO Doing this as version is different from that found in MANIFEST file in wavemaker-runtime -->
+                    <exclusion><!-- TODO Doing this as version is different from that found in MANIFEST file in wavemaker-app-runtime-core -->
                         <groupId>org.springframework.data</groupId>
                         <artifactId>spring-data-commons</artifactId>
                     </exclusion>

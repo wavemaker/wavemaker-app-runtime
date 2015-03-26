@@ -11,7 +11,7 @@
         <version>7.4.1</version>
     </parent>
 
-    <artifactId>wavemaker-runtime</artifactId>
+    <artifactId>wavemaker-app-runtime-core</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -21,12 +21,12 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wavemaker-prefab</artifactId>
+            <artifactId>wavemaker-app-runtime-prefab</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wavemaker-json</artifactId>
+            <artifactId>wavemaker-app-runtime-json</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

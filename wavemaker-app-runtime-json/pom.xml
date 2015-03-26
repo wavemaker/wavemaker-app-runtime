@@ -11,7 +11,7 @@
 		<version>7.4.1</version>
 	</parent>
 
-    <artifactId>wavemaker-json</artifactId>
+    <artifactId>wavemaker-app-runtime-json</artifactId>
 	<packaging>jar</packaging>
 
     <properties>
