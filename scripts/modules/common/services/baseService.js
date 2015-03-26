@@ -26,6 +26,7 @@ wm.modules.wmCommon.services.BaseService = [
             isUnAuthorized,
         /*to store the failed function calls due to 401 error*/
             errorCallStack = [],
+            localeObject,
         /*Function to log actions performed; using the wmLogger*/
             logAction = function (type, message, description) {
                 /*Return if wmLogger does not exist*/
@@ -47,8 +48,13 @@ wm.modules.wmCommon.services.BaseService = [
                     break;
                 }
             },
+        /*Gets the locale object*/
+            getLocaleObject = function () {
+                return $rootScope.locale || $rootScope.appLocale;
+            },
         /*Function to display messages using the wmToaster*/
             displayMessage = function (type, messageTitle, messageDescription) {
+                localeObject = localeObject || getLocaleObject();
                 /*Return if wmToaster does not exist*/
                 if (!wmToaster) {
                     return;
@@ -132,14 +138,14 @@ wm.modules.wmCommon.services.BaseService = [
         /* replace the parameters from service-error message*/
             parseError = function (errorDetails) {
                 var errMsg;
-
+                localeObject = localeObject || getLocaleObject();
                 /*Check for local resources and code in the resource */
-                if (!$rootScope.locale || !$rootScope.locale[errorDetails.code]) {
+                if (!localeObject || !localeObject[errorDetails.code]) {
                     return;
                 }
 
                 /*Assigning the error message*/
-                errMsg = WM.copy($rootScope.locale[errorDetails.code]);
+                errMsg = WM.copy(localeObject[errorDetails.code]);
                 /*Replace the parameters in the error code with the actual strings.*/
                 errMsg = Utils.replace(errMsg, errorDetails.data);
                 return errMsg;
@@ -185,10 +191,10 @@ wm.modules.wmCommon.services.BaseService = [
                     return;
                 }
                 /*check if 'locale' resource is loaded*/
-                if ($rootScope.locale) {
+                if (localeObject) {
                     /*assigning default error messages */
-                    errTitle = $rootScope.locale["MESSAGE_ERROR_HTTP_ERROR_TITLE"];
-                    errMsg = $rootScope.locale["MESSAGE_ERROR_HTTP_STATUS_ERROR_DESC"];
+                    errTitle = localeObject["MESSAGE_ERROR_HTTP_ERROR_TITLE"];
+                    errMsg = localeObject["MESSAGE_ERROR_HTTP_STATUS_ERROR_DESC"];
                 } else {
                     /*assigning default error messages */
                     errTitle = "Error!";
@@ -269,7 +275,7 @@ wm.modules.wmCommon.services.BaseService = [
                 }
 
                 /* display error */
-                displayMessage('failure', $rootScope.locale["MESSAGE_ERROR_HTTP_ERROR_TITLE"], $rootScope.locale["MESSAGE_ERROR_HTTP_CONFIG_ERROR_DESC"]);
+                displayMessage('failure', localeObject["MESSAGE_ERROR_HTTP_ERROR_TITLE"], localeObject["MESSAGE_ERROR_HTTP_CONFIG_ERROR_DESC"]);
             },
 
         /* function to execute the action*/
