@@ -6,8 +6,9 @@ WM.module('wm.widgets.dialog')
         "use strict";
         $templateCache.put("template/widget/dialog/logindialog.html",
             '<div class="app-dialog modal-dialog app-login-dialog" init-widget data-ng-show="show" ' +
-                ' data-ng-style="{width: dialogWidth, height: dialogHeight}"' +
-                ' wmtransclude>' +
+                ' data-ng-style="{width: dialogWidth, height: dialogHeight}">' +
+                ' <div class="modal-content" wmtransclude>' +
+                ' </div>' +
                 ' </div>'
             );
         $templateCache.put("template/widget/dialog/logindialogcontainer.html",
@@ -85,7 +86,6 @@ WM.module('wm.widgets.dialog')
 
                         if (CONSTANTS.isStudioMode) {
                             element.append($compile(transcludedContent)(scope));
-                            element.addClass('modal-content');
                         }
                         scope = scope || element.isolateScope();
                         scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};
@@ -189,14 +189,14 @@ WM.module('wm.widgets.dialog')
  *                  show is a bindable property. <br>
  *                  This property will be used to show/hide the dialog on the web page. <br>
  *                  Default value: `true`.
- * @param {string=} iconname
- *                  Icon sets the icon for dialog header
+ * @param {string=} iconclass
+ *                  Icon class for the icon in dialog header
  *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <wm-view name="view1" class="dialog-view">
- *               <wm-logindialog modal="false" iconname="log-in" title="Login" name="logindialog1" on-error="logindialog1Error($event, $scope)" on-success="logindialog1Success($event, $scope)">
+ *               <wm-logindialog modal="false" iconclass="glyphicon glyphicon-log-in" title="Login" name="logindialog1" on-error="logindialog1Error($event, $scope)" on-success="logindialog1Success($event, $scope)">
  *                  <wm-dialogheader name="dialogheader1"></wm-dialogheader>
  *                  <wm-dialogcontent name="dialogcontent1">
  *                      <wm-form name="form1">

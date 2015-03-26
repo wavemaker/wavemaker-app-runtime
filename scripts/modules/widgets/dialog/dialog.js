@@ -30,7 +30,7 @@ WM.module('wm.widgets.dialog')
             '<div data-ng-show="show" class="app-dialog-footer modal-footer" data-identifier="actions" init-widget wmtransclude></div>'
             );
 
-    }]).directive('wmDialog', ['PropertiesFactory', 'WidgetUtilService', 'DialogService', '$rootScope', "$templateCache", '$compile', 'CONSTANTS', '$window', function (PropertiesFactory, WidgetUtilService, DialogService, $rootScope, $templateCache, $compile, CONSTANTS, $window) {
+    }]).directive('wmDialog', ['PropertiesFactory', 'WidgetUtilService', 'DialogService', "$templateCache", '$compile', 'CONSTANTS', '$window', function (PropertiesFactory, WidgetUtilService, DialogService, $templateCache, $compile, CONSTANTS, $window) {
         'use strict';
         var transcludedContent = "",
             id,
@@ -110,7 +110,6 @@ WM.module('wm.widgets.dialog')
 
                         if (CONSTANTS.isStudioMode) {
                             element.append($compile(transcludedContent)(scope));
-                            element.addClass('modal-content');
                         }
                         scope = scope || element.isolateScope();
                         scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};

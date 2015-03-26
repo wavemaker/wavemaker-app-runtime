@@ -23,24 +23,24 @@ WM.module('wm.widgets.dialog')
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
-                case "height":
-                    if (scope.height) {
-                        //set the height for the Run Mode
-                        if(newVal.indexOf('%') > 0 ){
-                            scope.bodyHeight = ($window.innerHeight*(parseInt(newVal)/100) - 112);
-                        } else {
-                            scope.bodyHeight = parseInt(newVal - 112);
-                        }
+            case "height":
+                if (scope.height) {
+                    //set the height for the Run Mode
+                    if (newVal.indexOf('%') > 0) {
+                        scope.bodyHeight = ($window.innerHeight * (parseInt(newVal, 10) / 100) - 112);
+                    } else {
+                        scope.bodyHeight = parseInt(newVal - 112, 10);
                     }
-                    break;
-                case "width":
-                    if(scope.width && CONSTANTS.isRunMode){
-                        //update the modal element in the UI for getting shadow and width set
-                        element.closest('.modal-dialog').css('width', newVal);
-                    }else if(CONSTANTS.isStudioMode){
-                        scope.dialogWidth = newVal;
-                    }
-                    break;
+                }
+                break;
+            case "width":
+                if (scope.width && CONSTANTS.isRunMode) {
+                    //update the modal element in the UI for getting shadow and width set
+                    element.closest('.modal-dialog').css('width', newVal);
+                } else if (CONSTANTS.isStudioMode) {
+                    scope.dialogWidth = newVal;
+                }
+                break;
             }
         }
         return {
@@ -79,9 +79,6 @@ WM.module('wm.widgets.dialog')
                             scope.okButtonHandler = function () {
                                 dialogCtrl._OkButtonHandler(attrs.onOk);
                             };
-                        }
-                        if (CONSTANTS.isStudioMode) {
-                            element.addClass('modal-content');
                         }
                         /* register the property change handler */
                         if (scope.propertyManager) {

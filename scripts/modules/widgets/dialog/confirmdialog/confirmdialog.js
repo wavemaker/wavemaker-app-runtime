@@ -127,10 +127,6 @@ WM.module('wm.widgets.dialog')
                             WM.element(element.find('button')[0]).addClass(scope.cancelbuttonclass);
                         }
 
-                        if (CONSTANTS.isStudioMode) {
-                            element.addClass('modal-content');
-                        }
-
                         /* register the property change handler */
                         if (scope.propertyManager) {
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
