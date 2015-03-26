@@ -1212,6 +1212,9 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
                     "tabindex": {"type": "string"}
                 },
+                "wm.layouts.carousel" : {
+                    "animationinterval" : {"type" : "number", "value" : "3"}
+                },
                 "wm.livelist": {
                     "name": {"type": "string"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -1448,7 +1451,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "lock", "freeze", "autoscroll", "closable", "actions", "expanded",  "destroyable", "showDirtyFlag", "link",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "showpreview", "updatemode", "errormessage", "tooltips", "showlegend", "showvalues",
                      "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                     "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding","popoverplacement", "popoverarrow", "popoverautoclose","animation"], "parent": "properties"},
+                     "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding","popoverplacement", "popoverarrow", "popoverautoclose","animation", "animationinterval"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "confirmdelete", "deletemessage", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},

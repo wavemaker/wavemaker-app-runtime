@@ -146,6 +146,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/layouts/containers/container/container.js',
                         '<%= config.scripts %>/modules/layouts/containers/tile/tile.js',
                         '<%= config.scripts %>/modules/layouts/containers/tabs/tabs.js',
+                        '<%= config.scripts %>/modules/layouts/containers/carousel/carousel.js',
                         '<%= config.scripts %>/modules/layouts/device/services/mobileevent.js',
                         '<%= config.scripts %>/modules/layouts/device/services/deviceview.js',
                         '<%= config.scripts %>/modules/layouts/page/service/viewservice.js',
