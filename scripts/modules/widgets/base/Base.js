@@ -147,6 +147,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 }
             }
         ],
+        animationOptions = [" ", "bounce", "flash", "pulse", "rubberBand", "shake", "swing", "tada", "wobble", "bounceIn", "bounceInDown", "bounceInLeft", "bounceInRight", "bounceInUp", "bounceOut", "bounceOutDown", "bounceOutLeft", "bounceOutRight", "bounceOutUp", "fadeIn", "fadeInDown", "fadeInDownBig", "fadeInLeft", "fadeInLeftBig", "fadeInRight", "fadeInRightBig", "fadeInUp", "fadeInUpBig", "fadeOut", "fadeOutDown", "fadeOutDownBig", "fadeOutLeft", "fadeOutLeftBig", "fadeOutRight", "fadeOutRightBig", "fadeOutUp", "fadeOutUpBig", "flipInX", "flipInY", "flipOutX", "flipOutY", "lightSpeedIn", "lightSpeedOut", "rotateIn", "rotateInDownLeft", "rotateInDownRight", "rotateInUpLeft", "rotateInUpRight", "rotateOut", "rotateOutDownLeft", "rotateOutDownRight", "rotateOutUpLeft", "rotateOutUpRight", "hinge", "rollIn", "rollOut", "zoomIn", "zoomInDown", "zoomInLeft", "zoomInRight", "zoomInUp", "zoomOut", "zoomOutDown", "zoomOutLeft", "zoomOutRight", "zoomOutUp", "slideInDown", "slideInLeft", "slideInRight", "slideInUp", "slideOutDown", "slideOutLeft", "slideOutRight", "slideOutUp"],
         visibilityOptions = ["visible", "hidden", "collapse", "initial", "inherit"],
         displayOptions = ["inline", "block", "flex", "inline-block", "inline-flex", "inline-table", "list-item", "run-in", "table", "table-caption", "table-column-group", "table-header-group", "table-footer-group", "table-row-group", "table-cell", "table-column", "table-row", "none", "initial", "inherit"],
         result = {
@@ -290,7 +291,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.icon": {
                     "title": {"type": "string", "bindable": "in-out-bound"},
-                    "iconclass": {"type": "string", "value": "glyphicon glyphicon-star-empty", "widget": "selecticon", "bindable": "in-out-bound"}
+                    "iconclass": {"type": "string", "value": "glyphicon glyphicon-star-empty", "widget": "selecticon", "bindable": "in-out-bound"},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
                 "wm.iframe": {
                     "iframesrc": {"type": "string", "bindable": "in-bound", "widget": "string"},
@@ -312,7 +314,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "disabled": {"type": "boolean", "bindable": "in-bound"},
                     "type": {"type": "list", "options": ["button", "reset", "submit"]},
                     "tabindex": {"type": "string"},
-                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
+                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
 
                 "wm.buttongroup": {
@@ -490,7 +493,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 "wm.message": {
                     "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
                     "caption": {"type": "string", "value": "Message", "bindable": "in-out-bound"},
-                    "onClose": {"type": "event", "options": widgetEventOptions, "widget": "list"}
+                    "onClose": {"type": "event", "options": widgetEventOptions, "widget": "list"},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
 
                 "wm.composite": {
@@ -647,7 +651,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                     "caption": {"type": "date, string, number", "widget": "string", "value": "Label", "bindable": "in-out-bound"},
                     "required": {"type": "boolean"},
-                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
+                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
 
                 "wm.picture": {
@@ -657,7 +662,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "disabled": {"type": "boolean", "bindable": "in-bound"},
                     "tabindex": {"type": "string"},
                     "shape":  {"type": "list", "options": ["", "rounded", "circle", "thumbnail"]},
-                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
+                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
 
                 "wm.textarea": {
@@ -680,7 +686,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "iconheight": {"type": "string"},
                     "iconmargin": {"type": "string"},
                     "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                    "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
                 "wm.dialog.dialogheader": {
                     "caption": {"type": "string", "value": "Form", "show": false},
@@ -785,7 +792,6 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "fontweight": {"type": "string", "options": ["bold"], "hidelabel": true, "widget": "icons_checkbox"},
                     "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size"},
                     "fontunit": {"type": "string", "options": ["em", "px"], "value": "px", "hidelabel": true, "widget": "icons_radio"},
-//                    "verticalalign": {"type": "list", "options": ["top", "middle", "bottom"]},
                     "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_radio"},
                     "textdecoration": {"type": "string", "options": ["underline"], "hidelabel": true, "widget": "icons_checkbox"},
                     "fontstyle": {"type": "string", "options": ["italic"], "hidelabel": true, "widget": "icons_checkbox"},
@@ -899,7 +905,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                    "onActionsclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    "onActionsclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
                 'wm.layouts.container': {
                     "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
@@ -916,7 +923,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                    "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
                 'wm.layouts.tile': {
                     "width": {"type": "string"},
@@ -935,7 +943,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                    "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
                 'wm.layouts.footer': {
                     "height": {"type": "string"}
@@ -972,7 +981,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 'wm.layouts.view': {
                     "show": {"type": "boolean", "value": true},
-                    "viewgroup": {"type": "string", "value": "default"}
+                    "viewgroup": {"type": "string", "value": "default"},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
                 'wm.layouts.form': {
                     "class": {"type": "string"},
@@ -1118,7 +1128,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "opacity": {"type": "string", "widget": "slider"},
                     "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                     "zindex": {"type": "string"},
-                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'}
+                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
                 "wm.popover": {
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
@@ -1138,7 +1149,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "popoverplacement": {"type": "list", "options": ["bottom", "left", "right", "top"], "value": "bottom"},
                     "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                     "zindex": {"type": "string"},
-                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'}
+                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
                 "wm.prefabs": {
                     "margin": {"type": "string", "widget": "box"},
@@ -1146,7 +1158,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "width": {"type": "string"},
                     "height": {"type": "string"},
                     "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                    "onDestroy": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    "onDestroy": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "animation": {"type": "list", "options": animationOptions}
                 },
 
                 "wm.accordion": {
@@ -1435,7 +1448,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "lock", "freeze", "autoscroll", "closable", "actions", "expanded",  "destroyable", "showDirtyFlag", "link",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "showpreview", "updatemode", "errormessage", "tooltips", "showlegend", "showvalues",
                      "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                     "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding","popoverplacement", "popoverarrow", "popoverautoclose"], "parent": "properties"},
+                     "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding","popoverplacement", "popoverarrow", "popoverautoclose","animation"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "confirmdelete", "deletemessage", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
@@ -2662,6 +2675,11 @@ base.services.WidgetUtilService = ['$filter', '$parse', '$rootScope', 'CONSTANTS
                         element.addClass(deviceSizeArray[value].class + (scope.widgetProps.showindevice.displaytype || 'block'));
                     });
                 }
+            }
+        } else if (key === "animation") {
+            /*add the animated class only in the run mode since it will break the ui in design mode*/
+            if (CONSTANTS.isRunMode) {
+                element.addClass("animated " + newVal);
             }
         }
 

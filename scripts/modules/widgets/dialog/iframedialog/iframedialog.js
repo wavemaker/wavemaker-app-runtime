@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/iframedialog.html",
-            '<div class="app-dialog app-iframe-dialog" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}">' +
+            '<div class="app-dialog modal-dialog app-iframe-dialog" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
                 '<wm-dialogheader iconclass={{iconclass}}  iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}} caption={{title}}></wm-dialogheader>' +
                 '<div class="app-dialog-body modal-body" data-ng-style="{height:bodyHeight}">' +
                     '<wm-iframe iframesrc="{{iframeurl}}" wm-widget-overlay height="100%" width="100%"></wm-iframe>' +
@@ -13,7 +13,7 @@ WM.module('wm.widgets.dialog')
                 '<div class="app-dialog-footer modal-footer">' +
                     '<wm-button class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                 '</div>' +
-            '</div>'
+            '</div></div>'
             );
     }]).directive('wmIframedialog',["$templateCache", 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$sce', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $sce, $window) {
         'use strict';

@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/logindialog.html",
-            '<div class="app-dialog app-login-dialog" init-widget data-ng-show="show" ' +
+            '<div class="app-dialog modal-dialog app-login-dialog" init-widget data-ng-show="show" ' +
                 ' data-ng-style="{width: dialogWidth, height: dialogHeight}"' +
                 ' wmtransclude>' +
                 ' </div>'

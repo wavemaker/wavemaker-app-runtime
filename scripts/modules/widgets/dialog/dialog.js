@@ -6,8 +6,11 @@ WM.module('wm.widgets.dialog')
         DEFAULT_DIALOG_HEADER_ICON_SIZE: "21px"
     }).run(["$templateCache", function ($templateCache) {
         "use strict";
+        $templateCache.put("template/widget/dialog/dialog-template.html",
+            '<div tabindex="-1" role="dialog"  class="modal default" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)" modal-transclude ></div>'
+            );
         $templateCache.put("template/widget/dialog/dialog.html",
-            '<div class="app-dialog" init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}" wmtransclude></div>'
+            '<div class="modal-dialog app-dialog" init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}" ><div class="modal-content" wmtransclude></div></div>'
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",
             '<div data-ng-show="show" data-identifier="dialog-header" class="app-dialog-header modal-header" init-widget title="{{hint}}">' +
@@ -245,7 +248,7 @@ WM.module('wm.widgets.dialog')
                             onCloseEventName,
                             onOpenedEventName;
 
-                        parentEl = element.parent();
+                        parentEl = element.closest('.app-dialog');
 
                         /* accessing the onClose from parent scope*/
                         scope.onClose = scope.$parent.onClose;

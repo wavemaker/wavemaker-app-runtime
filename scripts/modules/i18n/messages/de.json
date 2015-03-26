@@ -1714,6 +1714,8 @@
   "MESSAGE_HELP_PROPERTY_SHOWNAVIGATION": ". Diese Eigenschaft steuert, ob Navigationselemente werden für die Live-Liste angezeigt werden",
   "LABEL_PROPERTY_UPDATEMODE": "Update Mode",
   "MESSAGE_HELP_PROPERTY_UPDATEMODE": "Diese Eigenschaft steuert, ob Live-Formular finden Sie auf Update oder nicht",
+  "LABEL_PROPERTY_ANIMATION":"Animation",
+  "MESSAGE_HELP_PROPERTY_ANIMATION": "Diese Eigenschaft steuert die Animation eines Elements. Die Animation wird von den CSS-Klassen und arbeitet nur im Betriebsmodus.",
   "LABEL_PROPERTY_EDITCOLUMN": "Spalten bearbeiten",
   "LABEL_PROPERTY_EDITFILTERS": "Edit Filter",
   "LABEL_PROPERTY_EDITFIELDS": "Felder bearbeiten",

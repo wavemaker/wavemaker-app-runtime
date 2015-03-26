@@ -1714,6 +1714,8 @@
     "MESSAGE_HELP_PROPERTY_SHOWNAVIGATION": "This property controls whether or not navigation controls are displayed for the live-list.",
     "LABEL_PROPERTY_UPDATEMODE":"Update mode",
     "MESSAGE_HELP_PROPERTY_UPDATEMODE": "This property controls whether live form is on updatemode or not",
+    "LABEL_PROPERTY_ANIMATION":"Animation",
+    "MESSAGE_HELP_PROPERTY_ANIMATION": "This property controls the animation of an element. The animation is based on the css classes and works only in the run mode.",
     "LABEL_PROPERTY_EDITCOLUMN":"Edit Columns",
     "LABEL_PROPERTY_EDITFILTERS":"Edit Filters",
     "LABEL_PROPERTY_EDITFIELDS":"Edit Fields",

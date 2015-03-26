@@ -104,6 +104,7 @@ WM.module('wm.widgets.dialog')
                     controller: controller || dialogId + "Controller",
                     backdrop: backdrop,
                     keyboard: keyboard,
+                    windowTemplateUrl: "template/widget/dialog/dialog-template.html",
                     resolve: params.resolve || null,
                     scope: params.scope || (CONSTANTS.isStudioMode ? $rootScope : WM.element("[data-ng-controller='AppController']").scope()),
                     windowClass: windowClass || params.windowClass || ""
@@ -273,7 +274,8 @@ WM.module('wm.widgets.dialog')
                     keyboard: keyboard,
                     resolve: params.resolve || null,
                     scope: params.scope || $rootScope,
-                    windowClass: windowClass || params.windowClass || ""
+                    windowClass: windowClass || params.windowClass || "",
+                    windowTemplateUrl: "template/widget/dialog/dialog-template.html"
                 });
 
                 $modalInstances[dialogId].result.then(null,

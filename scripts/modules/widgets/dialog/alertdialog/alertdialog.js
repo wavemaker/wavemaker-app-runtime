@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/alertdialog.html",
-            '<div class="app-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}">' +
+            '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
                 '<wm-dialogheader iconclass={{iconclass}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}} caption={{title}}></wm-dialogheader>' +
                 '<div class="app-dialog-body modal-body" data-ng-style="{height:bodyHeight}">' +
                     '<p class="app-dialog-message text-{{alerttype}}"> {{message}}</p>' +
@@ -13,7 +13,7 @@ WM.module('wm.widgets.dialog')
                 '<div class="app-dialog-footer modal-footer">' +
                     '<wm-button  class="btn-primary"  caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                 '</div>' +
-            '</div>'
+            '</div></div>'
             );
     }]).directive('wmAlertdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window) {
         'use strict';

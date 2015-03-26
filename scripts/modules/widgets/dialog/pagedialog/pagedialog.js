@@ -5,13 +5,13 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/pagedialog.html",
-            '<div class="app-dialog app-page-dialog" dialogclass init-widget data-ng-show="show" page-container  data-ng-style="{width: dialogWidth}">' +
+            '<div class="app-dialog modal-dialog app-page-dialog" dialogclass init-widget data-ng-show="show" page-container  data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
                 '<wm-dialogheader iconclass={{iconclass}} caption={{title}}  iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
                 '<div class="app-dialog-body modal-body" data-ng-style="{height:bodyHeight}" page-container-target></div>' +
                 '<div class="app-dialog-footer modal-footer">' +
                     '<wm-button  class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                 '</div>' +
-            '</div>'
+            '</div></div>'
             );
     }]).directive('wmPagedialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window) {
         'use strict';
