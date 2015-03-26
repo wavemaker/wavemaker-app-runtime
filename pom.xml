@@ -85,9 +85,6 @@
                 <filtering>false</filtering>
             </resource>
         </resources>
-        <filters>
-            <filter>${project.props.file}</filter>
-        </filters>
         <pluginManagement>
             <plugins>
                 <plugin>
