@@ -66,9 +66,9 @@
 
     <modules>
         <module>wavemaker-common</module>
-        <module>wavemaker-json</module>
-        <module>wavemaker-runtime</module>
-        <module>wavemaker-prefab</module>
+        <module>runtime-json</module>
+        <module>runtime-prefab</module>
+        <module>runtime-core</module>
     </modules>
 
     <build>
