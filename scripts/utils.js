@@ -1186,6 +1186,22 @@ WM.module('wm.utils', [])
             return random() + '-' + random() + '-' + random();
         }
 
+        /*to check duplicate names*/
+        function checkDuplicateName(list, newName) {
+            var retVal, i;
+            /* if list or name doesn't exist, return  */
+            retVal = !list || !newName;
+
+            for (i = 0; i < list.length; i += 1) {
+                /* if name found in list, return the index */
+                if (list[i].toLowerCase() === newName.toLowerCase()) {
+                    retVal = true;
+                    break;
+                }
+            }
+            return retVal;
+        }
+
         return {
             camelCase: WM.element.camelCase,
             initCaps: initCaps,
@@ -1265,6 +1281,7 @@ WM.module('wm.utils', [])
             parseCombinedPageContent: parseCombinedPageContent,
             extractType: extractType,
             isDeleteResourceAllowed: isDeleteResourceAllowed,
-            generateGUId: generateGUId
+            generateGUId: generateGUId,
+            checkDuplicateName: checkDuplicateName
         };
     }]);
