@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wavemaker-common</artifactId>
+            <artifactId>wavemaker-studio-common-util</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
