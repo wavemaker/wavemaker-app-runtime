@@ -8,12 +8,12 @@ WM.module('wm.widgets.basic')
 
         $templateCache.put('template/widget/basic/popover.html',
             '<div init-widget page-container class="app-popover {{showPopover ? \'open\' : \'\'}}" >'+
-                '<a data-identifier="popover" class="app-popover-link" init-widget data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" ' +$rootScope.getWidgetStyles() + ' >' +
+                '<a data-identifier="popover" class="app-popover-link" init-widget data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" ' +$rootScope.getWidgetStyles('shell') + ' >' +
                     '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}"  data-ng-show="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +
                 '</a>'+
-                 '<div class="app-popover popover {{popoverplacement}}">'+
+                 '<div class="app-popover popover {{popoverplacement}}"  data-ng-style="{\'width\' : popoverwidth, \'height\' : popoverheight}">'+
                     '<div class="arrow" data-ng-show="{{popoverarrow}}"></div>'+
                     '<div class="popover-content">'+
                         '<div page-container-target data-ng-show="show"></div>'+
@@ -24,7 +24,7 @@ WM.module('wm.widgets.basic')
     .directive('wmPopover', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', "CONSTANTS", function (PropertiesFactory, WidgetUtilService, $sce, Utils, CONSTANTS) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.popover', ['wm.base']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.popover', ['wm.base', 'wm.base.editors']),
             notifyFor = {
                 'iconclass': true,
                 'iconurl': true,
@@ -218,6 +218,10 @@ WM.module('wm.widgets.basic')
  *                  Default value: `true`. <br>
  * @param {string=} iconclass
  *                  CSS class for the icon
+ * @param {string=} popoverwidth
+ *                  defines the width of the popover.
+ * @param {string=} popoverheight
+ *                  defines the height of the popover.
  * @param {string=} popoverplacement
  *                  defines the position of the popover ['top', 'bottom', 'left', 'right']
  * @param {boolean=} popoverarrow
@@ -238,13 +242,18 @@ WM.module('wm.widgets.basic')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-popover name="popover1"
- *                       caption="User"
+ *              <br>
+ *               <wm-popover caption="Click me to see the popover"
  *                       content="dropdownMenu"
+ *                       popoverwidth="500"
+ *                       popoverheight="200"
  *                       popoverautoclose="true"
  *                       popoverplacement="top"
  *                       popoverarrow="true"></wm-popover>
  *           </div>
+ *       </file>
+ *       <file name="script.js">
+ *           function Ctrl($scope) {}
  *       </file>
  *   </example>
  */

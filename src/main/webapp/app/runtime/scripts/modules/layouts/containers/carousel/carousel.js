@@ -193,22 +193,21 @@ WM.module('wm.layouts.containers')
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the carousel on the web page. <br>
  *                  Default value: `true`.
- * @param {string=} animationinterval
+ * @param {number=} animationinterval
  *                  Defines the time interval (in seconds) between two slide transitions.  <br>
  *                  Default value: `3`.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <br>
- *               <wm-carousel height="400" name="carousel2" animationinterval="5" width="640">
- *                    <wm-carousel-content name="carousel_content5">
+ *               <wm-carousel animationinterval="5" height="100%">
+ *                    <wm-carousel-content>
  *                        <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
  *                    </wm-carousel-content>
- *                    <wm-carousel-content name="carousel_content7">
+ *                    <wm-carousel-content>
  *                        <wm-picture width="100%" name="picture5" picturesource="https://farm6.staticflickr.com/5002/5237179864_552d6098f5_z_d.jpg"></wm-picture>
  *                    </wm-carousel-content>
- *                    <wm-carousel-content name="carousel_content8">
+ *                    <wm-carousel-content>
  *                        <wm-picture name="picture6" width="100%" picturesource="https://farm4.staticflickr.com/3024/3103220799_16f3b1db98_z_d.jpg"></wm-picture>
  *                    </wm-carousel-content>
  *                </wm-carousel>
@@ -216,7 +215,7 @@ WM.module('wm.layouts.containers')
  *       </file>
  *       <file name="script.js">
  *           function Ctrl($scope) {
- *
+ *              $scope.demo = true;
  *           }
  *       </file>
  *   </example>
@@ -234,7 +233,6 @@ WM.module('wm.layouts.containers')
   *
   * @scope
   *
-  * @requires $interval
   * @requires PropertiesFactory
   * @requires $templateCache
   * @requires CONSTANTS
@@ -249,18 +247,15 @@ WM.module('wm.layouts.containers')
   *   <example module="wmCore">
   *       <file name="index.html">
   *           <div data-ng-controller="Ctrl" class="wm-app">
-  *               <br>
-  *               <wm-carousel height="400" name="carousel2" animationinterval="5" width="640">
-  *                    <wm-carousel-content name="carousel_content5">
+  *               <wm-carousel animationinterval="5" height="100%">
+  *                    <wm-carousel-content>
   *                        <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
   *                    </wm-carousel-content>
   *                </wm-carousel>
   *           </div>
   *       </file>
   *       <file name="script.js">
-  *           function Ctrl($scope) {
-  *
-  *           }
+  *           function Ctrl($scope) {}
   *       </file>
   *   </example>
   */

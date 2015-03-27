@@ -59,7 +59,7 @@ WM.module('wm.layouts.containers')
  * @restrict E
  * @element ANY
  * @description
- * The 'wmTile' directive defines a tile in the page.
+ * The 'wmTile' directive defines a tile in the page. 'wmTile' and 'wmContainer' are same from UI perspective, but 'wmTile' uses panel classes.
  * @scope
  *
  * @requires PropertiesFactory
@@ -93,18 +93,19 @@ WM.module('wm.layouts.containers')
  *
  *
  * @example
- <example module="wmCore">
- <file name="index.html">
- <wm-tile>
- <wm-composite widget="text">
- <wm-label></wm-label>
- <wm-text></wm-text>
- </wm-composite>
- <wm-composite widget="textarea">
- <wm-label></wm-label>
- <wm-textarea></wm-textarea>
- </wm-composite>
- </wm-tile>
- </file>
- </example>
+ * <example module="wmCore">
+ * <file name="index.html">
+ *  <div data-ng-controller="Ctrl" class="wm-app">
+ *      <br>
+ *      <wm-tile width="400" margintop="10" marginright="10" marginleft="10" marginbottom="10" backgroundcolor="#2F80E7" color="#fff"  paddingtop="10" paddingleft="10" paddingbottom="10" paddingright="10">
+ *           <wm-icon iconsize="2em" iconclass="glyphicon glyphicon-user"></wm-icon>
+ *           <wm-label width="100%" textalign="center" fontsize="3" fontunit="em" fontweight="bold" caption="12680"></wm-label>
+ *           <wm-label width="100%" caption="Signups" textalign="center" fontweight="bold"></wm-label>
+ *       </wm-tile>
+ *  </div>
+ * </file>
+ * <file name="script.js">
+ *   function Ctrl($scope) {}
+ * </file>
+ * </example>
  */

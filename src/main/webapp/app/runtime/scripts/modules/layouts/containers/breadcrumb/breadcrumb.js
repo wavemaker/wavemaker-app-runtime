@@ -105,12 +105,17 @@ WM.module('wm.layouts.containers')
  * @description
  * The 'wmBreadcrumb' directive defines a breadcrumb bar in the layout.
  * @example
- <example>
- <file name="index.html">
- <wm-breadcrumb>
- </wm-breadcrumb>
- </file>
- </example>
+ * <example module="wmCore">
+ * <file name="index.html">
+ *  <div data-ng-controller="Ctrl" class="wm-app">
+ *    <br>
+ *      <wm-breadcrumb dataset="Home, products, product" name="breadcrumb1"></wm-breadcrumb>
+ *  </div>
+ * </file>
+ * <file name="script.js">
+ *   function Ctrl($scope) {}
+ * </file>
+ * </example>
  */
 
 
