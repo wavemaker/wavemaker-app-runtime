@@ -735,7 +735,7 @@ WM.module('wm.widgets.grid')
                     return properties.every(function (prop, index) {
                         data = record[prop];
                         /* If fieldDefs are missing, show all columns in data. */
-                        isDisplayed = ($scope.fieldDefs.length && (CONSTANTS.isMobile ?
+                        isDisplayed = ($scope.fieldDefs.length && WM.isDefined($scope.fieldDefs[index]) && (CONSTANTS.isMobile ?
                             $scope.fieldDefs[index].mobileDisplay : $scope.fieldDefs[index].pcDisplay)) ||
                             true;
                         /*Validating only the displayed fields*/
@@ -1224,6 +1224,7 @@ WM.module('wm.widgets.grid')
                 isBoundToLiveVariable = undefined;
                 isBoundToLiveVariableRoot = undefined;
                 isBoundToServiceVariable = undefined;
+                $scope.gridVariable = '';
 
                 //Converting newval to object if it is an Object that comes as a string "{"data" : 1}"
                 if (result) {
