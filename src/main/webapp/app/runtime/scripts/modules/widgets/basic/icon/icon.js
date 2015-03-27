@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
     'use strict';
     $templateCache.put('template/widget/icon.html',
-        '<i init-widget class="app-icon"  data-ng-class="iconclass" data-ng-show="show"></i>'
+        '<i init-widget class="app-icon"  data-ng-class="iconclass" data-ng-show="show"  data-ng-style="{\'font-size\' : iconsize}"></i>'
     );
 }])
     .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', '$sce', function (PropertiesFactory, WidgetUtilService, $sce) {

@@ -292,6 +292,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 "wm.icon": {
                     "title": {"type": "string", "bindable": "in-out-bound"},
                     "iconclass": {"type": "string", "value": "glyphicon glyphicon-star-empty", "widget": "selecticon", "bindable": "in-out-bound"},
+                    "iconsize": {"type": "string"},
                     "animation": {"type": "list", "options": animationOptions}
                 },
                 "wm.iframe": {
@@ -1454,7 +1455,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                      "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding","popoverplacement", "popoverarrow", "popoverautoclose","animation", "animationinterval"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "confirmdelete", "deletemessage", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
-                {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
+                {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
                 {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "rows", "columns", "columnwidth", "taborder"], "parent": "properties"},
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["submitbutton", "resetbutton"], "parent": "properties"},
