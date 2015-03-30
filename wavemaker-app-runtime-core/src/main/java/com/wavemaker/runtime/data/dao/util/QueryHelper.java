@@ -74,6 +74,9 @@ public class QueryHelper {
     private static Long getCountFromCountStringQuery(String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template) {
         try{
         String strQuery = getCountQuery(queryStr, params, isNative);
+         if(strQuery == null){
+            return -1L;
+         }
         Query query=null;
         if(isNative)
             query = template.getSessionFactory().getCurrentSession().createSQLQuery(strQuery);
