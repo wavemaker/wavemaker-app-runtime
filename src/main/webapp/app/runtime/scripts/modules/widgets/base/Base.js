@@ -1025,7 +1025,6 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string"},
                     "name": {"type": "string"},
                     "novalidate": {"type": "boolean", "value": true},
-                    "scopedataset": {"type": "string"},
                     "show": {"type": "boolean", "value": true},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
                     "updatemode": {"type": "boolean", "value": false},

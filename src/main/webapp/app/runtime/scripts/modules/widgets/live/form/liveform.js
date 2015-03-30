@@ -29,7 +29,6 @@ WM.module('wm.widgets.live')
             restrict: 'E',
             replace: true,
             scope: {
-                "scopedataset": '=?',
                 //"onSuccess": "&",
                 //"onError": "&",
                 "onBeforeservicecall": "&",
@@ -305,8 +304,7 @@ WM.module('wm.widgets.live')
                             return;
                         }
                         if (isTimeStampType(dataValue)) {
-                            dataValue.datevalue = Date.now();
-                            dataValue.timevalue = Date.now();
+                            dataValue.datevalue = dataValue.timevalue = Date.now();
                         }
                         if (dataValue.type === "time") {
                             dataValue.timevalue = Date.now();
@@ -364,6 +362,8 @@ WM.module('wm.widgets.live')
                     if (fieldObj.defaultValue && fieldObj.defaultValue !== "null") {
                         if (fieldObj.type === 'integer') {
                             fieldObj.value = isNaN(Number(fieldObj.defaultValue)) ? '' : Number(fieldObj.defaultValue);
+                        } else if (fieldObj.type === 'timestamp') {
+                            fieldObj.timevalue = fieldObj.datevalue = new Date(Number(fieldObj.defaultValue) || fieldObj.defaultValue);
                         } else if (!fieldObj.isRelated) {
                             fieldObj.value = fieldObj.defaultValue;
                         } else if (fieldObj.isRelated) {
@@ -581,8 +581,7 @@ WM.module('wm.widgets.live')
                             return;
                         }
                         if (isTimeStampType(value)) {
-                            value.datevalue = dataObj[value.key];
-                            value.timevalue = dataObj[value.key];
+                            value.datevalue = value.timevalue = dataObj[value.key];
                         }
                         if (value.type === "time") {
                             date = (new Date()).toDateString();
@@ -607,8 +606,7 @@ WM.module('wm.widgets.live')
                         return;
                     }
                     if (isTimeStampType(fieldDef)) {
-                        fieldDef.datevalue = dataObj[fieldDef.key];
-                        fieldDef.timevalue = dataObj[fieldDef.key];
+                        fieldDef.datevalue = fieldDef.timevalue = dataObj[fieldDef.key];
                     }
                     if (fieldDef.type === "time") {
                         date = (new Date()).toDateString();
@@ -636,9 +634,10 @@ WM.module('wm.widgets.live')
                                     parseExpression = function (string, name, column) {
                                         var regexExpr = new RegExp("\\b" + name + "\\b", "g");
                                         return string.replace(regexExpr, column[name]);
-                                    };
+                                    },
+                                    relatedColumnArray;
                                 if (fieldDef.displayvalue  && $scope.dataset.relatedData[fieldDef.key]) {
-                                    var relatedColumnArray = Object.keys($scope.dataset.relatedData[fieldDef.key][0]);
+                                    relatedColumnArray = Object.keys($scope.dataset.relatedData[fieldDef.key][0]);
                                     $scope.dataset.relatedData[fieldDef.key].forEach(function (column) {
                                         var newStr =  fieldDef.displayvalue;
                                         relatedColumnArray.forEach(function (columnname) {
@@ -653,12 +652,7 @@ WM.module('wm.widgets.live')
                     }
                 };
             },
-            compile: function (tElement, tAttr) {
-                /* in run mode there is separate controller for live-form widget but not in studio mode, to prevent errors in studio mode create and empty function
-                 * with particular controller name */
-                if (CONSTANTS.isStudioMode) {
-                    window[tAttr.name + "Controller"] = WM.noop;
-                }
+            compile: function () {
                 return {
                     pre: function (scope, element, attrs) {
                         /*Applying widget properties to directive scope*/
@@ -771,9 +765,10 @@ WM.module('wm.widgets.live')
                                                         parseExpression = function (string, name, column) {
                                                             var regexExpr = new RegExp("\\b" + name + "\\b", "g");
                                                             return string.replace(regexExpr, column[name]);
-                                                        };
+                                                        },
+                                                        relatedColumnArray;
                                                     if (fieldObject.displayvalue  && newVal.relatedData[fieldObject.key]) {
-                                                        var relatedColumnArray = Object.keys(newVal.relatedData[fieldObject.key][0]);
+                                                        relatedColumnArray = Object.keys(newVal.relatedData[fieldObject.key][0]);
                                                         newVal.relatedData[fieldObject.key].forEach(function (column) {
                                                             var newStr =  fieldObject.displayvalue;
                                                             relatedColumnArray.forEach(function (columnname) {
@@ -912,12 +907,6 @@ WM.module('wm.widgets.live')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
 
-                        scope.$watch('scopedataset', function (newVal, oldVal) {
-                            /*to prevent the action in studio mode as the array is not available */
-                            if (CONSTANTS.isRunMode && newVal && (newVal !== oldVal)) {
-                                //scope.constructForm(newVal, element);
-                            }
-                        });
                         if (scope.widgetid) {
                             /* event emitted on building new markup from canvasDom */
                             handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup, newVal, fromDesigner) {
