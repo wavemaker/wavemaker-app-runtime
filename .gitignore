@@ -12,5 +12,5 @@ target/
 
 src/main/webapp/app/runtime/node_modules
 src/main/webapp/app/runtime/components
-src/main/webapp/app/runtime/dest
+src/main/webapp/app/runtime/build
 src/main/webapp/app/runtime/tp

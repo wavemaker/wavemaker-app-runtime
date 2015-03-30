@@ -1,0 +1,31 @@
+<project name="Test" default="run-js-commands" basedir=".">
+    <description>
+        Grunt and other js utilities which are run with ant
+    </description>
+
+    <target name="cmd-template">
+        <condition property="cmd.executable" value="cmd" else="${cmd.name}"><os family="windows" /></condition>
+        <condition property="cmd.argline" value="/c ${cmd.name} ${cmd.arg}" else="${cmd.arg}"><os family="windows" /></condition>
+
+        <exec executable="${cmd.executable}" dir="${cmd.executable.dir}" failonerror="true">
+            <arg line="${cmd.argline}"/>
+        </exec>
+        <echo>Ran command "${cmd.executable}" with args "${cmd.argline}" in directory ${cmd.executable.dir}</echo>
+    </target>
+
+    <target name="run-js-commands">
+
+        <antcall target="cmd-template">
+            <param name="cmd.name" value="npm"/>
+            <param name="cmd.arg" value="install"/>
+            <param name="cmd.executable.dir" value="../src/main/webapp/app/runtime"/>
+        </antcall>
+
+        <antcall target="cmd-template">
+            <param name="cmd.name" value="grunt"/>
+            <param name="cmd.arg" value="build --no-color"/>
+            <param name="cmd.executable.dir" value="../src/main/webapp/app/runtime"/>
+        </antcall>
+
+    </target>
+</project>

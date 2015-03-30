@@ -8,21 +8,20 @@ module.exports = function (grunt) {
     // configurable paths
     var wmBuildConfig = {
         scripts: 'scripts',
-        dest: 'dest',
+        build: 'build',
         styles: 'styles',
-        components: 'components',
-        app: '../'
+        components: 'components'
     };
 
     grunt.initConfig({
         config: wmBuildConfig,
         clean: {
-            dest: {
+            build: {
                 files: [
                     {
                         dot: true,
                         src: [
-                            '<%= config.dest %>/*'
+                            '<%= config.build %>/*'
                         ]
                     }
                 ]
@@ -31,8 +30,8 @@ module.exports = function (grunt) {
         less: {
             dev: {
                 files: {
-                    '<%= config.dest %>/application/css/wm-style.css': '<%= config.styles %>/css/wm-runtime.less',
-                    '<%= config.dest %>/studio/styles/css/wm-widgets.css': '<%= config.styles %>/css/wm-widgets.less'
+                    '<%= config.build %>/application/css/wm-style.css': '<%= config.styles %>/css/wm-runtime.less',
+                    '<%= config.build %>/studio/styles/css/wm-widgets.css': '<%= config.styles %>/css/wm-widgets.less'
                 }
             }
         },
@@ -58,7 +57,7 @@ module.exports = function (grunt) {
                     report: 'min'
                 },
                 files: {
-                    '<%= config.dest %>/application/wm-libs.js': ['<%= config.dest %>/application/wm-libs.js']
+                    '<%= config.build %>/application/wm-libs.js': ['<%= config.build %>/application/wm-libs.js']
                 }
             },
             'min-mangle-false' : {
@@ -68,8 +67,8 @@ module.exports = function (grunt) {
                     report: 'min'
                 },
                 files: {
-                    '<%= config.dest %>/application/runtimeloader.js' : ['<%= config.dest %>/application/runtimeloader.js'],
-                    '<%= config.dest %>/application/wm-loader.js' : ['<%= config.dest %>/application/wm-loader.js']
+                    '<%= config.build %>/application/runtimeloader.js' : ['<%= config.build %>/application/runtimeloader.js'],
+                    '<%= config.build %>/application/wm-loader.js' : ['<%= config.build %>/application/wm-loader.js']
                 }
             }
         },
@@ -80,7 +79,7 @@ module.exports = function (grunt) {
                     report: 'min'
                 },
                 'files': {
-                    '<%= config.dest %>/application/css/wm-style.css': '<%= config.dest %>/application/css/wm-style.css'
+                    '<%= config.build %>/application/css/wm-style.css': '<%= config.build %>/application/css/wm-style.css'
                 }
             }
         },
@@ -88,9 +87,9 @@ module.exports = function (grunt) {
             'wm-loader': {
                 nonull: true,
                 files: {
-                    '<%= config.dest %>/application/placeholders.js': ['<%= config.components %>/placeholders/lib/utils.js', '<%= config.components %>/placeholders/lib/main.js'],
-                    '<%= config.dest %>/application/wm-loader.js': ['<%= config.dest %>/application/runtimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
-                    '<%= config.dest %>/application/wm-libs.js': [
+                    '<%= config.build %>/application/placeholders.js': ['<%= config.components %>/placeholders/lib/utils.js', '<%= config.components %>/placeholders/lib/main.js'],
+                    '<%= config.build %>/application/wm-loader.js': ['<%= config.build %>/application/runtimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
+                    '<%= config.build %>/application/wm-libs.js': [
                         '<%= config.components %>/underscore/underscore.js',
                         '<%= config.components %>/jquery/jquery.js',
                         '<%= config.components %>/jquery-ui/js/jquery-ui.js',
@@ -117,7 +116,7 @@ module.exports = function (grunt) {
             'runtime-files': {
                 nonull: true,
                 files: {
-                    '<%= config.dest %>/application/runtimeloader.js': [
+                    '<%= config.build %>/application/runtimeloader.js': [
                         '<%= config.scripts %>/config.js',
                         '<%= config.scripts %>/utils.js',
                         '<%= config.scripts %>/formatUtils.js',
