@@ -42,16 +42,22 @@ WM.module('wm.widgets.basic')
  *
  * @requires PropertiesFactory
  * @requires WidgetUtilService
- * @requires Utils
+ * @requires $sce
  *
  * @param {string=} name
  *                  Name of the container widget.
+ * @param {string=} title
+ *                  Title of the container widget.
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the icon widget on the web page. <br>
+ *                  Default value: `true`. <br>
+ * @param {string=} animation
+ *                  This property controls the animation of the icon widget. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
  * @param {string=} iconclass
  *                  class name of the icon.
- * @param {string=} show
- *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the chart widget on the web page. <br>
- *                  Default value: `true`. <br>
  *
  *
  * @example

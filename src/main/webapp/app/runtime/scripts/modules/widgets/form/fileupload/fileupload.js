@@ -541,30 +541,55 @@ WM.module('wm.widgets.form')
  * @requires $location
  * @requires $compile
  * @requires $timeout
+ * @requires $parse
+ * @requires DialogService
+ * @requires Utils
+ * @requires wmToaster
  *
  * @param {string=} name
  *                  Name of the fileupload widget.
+ * @param {string=} caption
+ *                  Caption/Label for the fileupload widget. <br>
+ *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
+ * @param {string=} width
+ *                  Width of the fileupload widget.
+ * @param {string=} height
+ *                  Height of the file upload widget.
  * @param {string=} title
  *                  Title of the Fileuplaod widget. <br>
  *                  Default value: `Drop your files here to start uploading`
  * @param {string=} message
  *                  Message of the Fileuplaod widget. <br>
  *                  Default value: `You can also browse for files`
+ * @param {boolean=} singlefileupload
+ *                  Switch to single to multiple or multiple to single  file upload widgets. <br>
+ *                  Default value: `false`.
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the file upload widget on the web page. <br>
+ *                  Default value: `true`. <br>
+ * @param {string=} filtertype
+ *                  filters for the file input. <br>
+ *                  Possible values are `all`, `audio`, `image`, and `video`. <br>
+ *                  Default value: `all`.
  * @param {string=} uploadpath
  *                  path to the folder in server where to store. <br>
  *                  By default it stores in 'resources' folder in server.
- * @param {string=} singlefileupload
- *                  Switch to single to multiple or multiple to single  file upload widgets. <br>
- * @param {string=} width
- *                  Width of the fileupload widget.
- * @param {string=} height
- *                  Height of the file upload widget.
- * @param {boolean=} show
- *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the button widget on the web page. <br>
- *                  Default value: `true`. <br>
- * @param {boolean=} filtertype
- *                  filters for the file input. <br>
+ * @param {string=} iconclass
+ *                  This property defines the class of the icon that is applied to the button.
+ * @param {string=} on-success
+ *                  Callback function which will be triggered when the file upload is success.
+ * @param {string=} on-error
+ *                  Callback function which will be triggered when the file upload results in an error.
+ * @param {string=} on-select
+ *                  Callback function which will be triggered when the tab is selected.
+ * @param {string=} on-progress
+ *                  Callback function which will be triggered when the file upload operation is in progress.
+ * @param {string=} on-abort
+ *                  Callback function which will be triggered when the file upload operation is aborted.
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

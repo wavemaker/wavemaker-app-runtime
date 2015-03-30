@@ -204,40 +204,54 @@ WM.module('wm.widgets.basic')
  *
  * @requires PropertiesFactory
  * @requires WidgetUtilService
+ * @requires $sce
  * @requires Utils
+ * @requires CONSTANTS
  *
  * @param {string=} name
  *                  Name of the popover.
  * @param {string=} hint
- *                  Title/hint for th anchor. It can be bound to a variable as well so that it takes the value of the variable.
+ *                  Title/hint for the anchor. <br>
+ *                  It can be bound to a variable as well so that it takes the value of the variable.
  * @param {string=} caption
- *                  Content of the popover. It can be bound to a variable as well so that it takes the value of the variable.
+ *                  Content of the popover. <br>
+ *                  It can be bound to a variable as well so that it takes the value of the variable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
+ * @param {string=} content
+ *                  This property specifies the content of the popover widget. <br>
+ *                  Possible values are `Inline content` and `Page's content`. <br>
+ *                  Page's content values are `login`, `footer`, `header`, `lefnav`, `rightnav`, and `topnav`.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the anchor on the web page. <br>
+ *                  This property will be used to show/hide the popover on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {string=} popoverplacement
+ *                  This property defines the position of the popover <br>
+ *                  Possible values are 'top', 'bottom', 'left', and 'right'. <br>
+ *                  Default value: `bottom`.
+ * @param {boolean=} popoverarrow
+ *                  If set true, then a arrow pointer will be shown. <br>
+ *                  Default value: `true`.
+ * @param {boolean=} popoverautoclose
+ *                  If set true, then a click on the document (except popover content) will automatically close the popover. <br>
+ *                  Default value: `true`.
+ * @param {string=} animation
+ *                  This property controls the animation of the popover widget. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
  * @param {string=} iconclass
  *                  CSS class for the icon
- * @param {string=} popoverwidth
- *                  defines the width of the popover.
- * @param {string=} popoverheight
- *                  defines the height of the popover.
- * @param {string=} popoverplacement
- *                  defines the position of the popover ['top', 'bottom', 'left', 'right']
- * @param {boolean=} popoverarrow
- *                  If set true, then a arrow pointer will be shown.
- * @param {boolean=} popoverautoclose
- *                  If set true, then a click on the document (except popover content) will automatically close the popover.
  * @param {string=} iconurl
  *                  url of the icon.
  * @param {string=} iconwidth
- *                  width of the icon.
+ *                  Width of the icon. <br>
  *                  Default value: 16px
  * @param {string=} iconheight
- *                  height of the icon.
+ *                  Height of the icon. <br>
  *                  Default value: 16px
  * @param {string=} iconmargin
- *                  margin of the icon.
+ *                  Margin of the icon.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

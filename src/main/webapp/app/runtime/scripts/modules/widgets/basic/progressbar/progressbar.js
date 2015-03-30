@@ -254,6 +254,9 @@ WM.module('wm.widgets.basic')
  *
  * @requires PropertiesFactory
  * @requires WidgetUtilService
+ * @requires $interval
+ * @requires Utils
+ * @requires CONSTANTS
  *
  * @param {string=} name
  *                  Name of the progressbar widget.
@@ -262,7 +265,7 @@ WM.module('wm.widgets.basic')
  *                  This property is bindable.
  * @param {string=} type
  *                  type of the bar to be displayed. <br>
- *                  possible values are: 'default', 'default-striped', 'success', 'success-striped', 'info', 'info-striped', 'warning', 'warning-striped', 'danger', 'danger-striped'. <br>
+ *                  possible values are: `default`, `default-striped`, `success`, `success-striped`, `info`, `info-striped`, `warning`, `warning-striped`, `danger`, `danger-striped`. <br>
  *                  Default value: `value`. <br>
  * @param {string=} width
  *                  Width of the progressbar.
@@ -275,18 +278,29 @@ WM.module('wm.widgets.basic')
  *                  minvalue of the progressbar.
  * @param {number=} maxvalue
  *                  maxvalue of the progressbar.
+ * @param {string=} displayformat
+ *                  Format(Absolute/Percentage) in which the progress needs to be displayed.
+ * @param {number=} pollinterval
+ *                  Time interval in milli seconds to poll the service.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the progressbar widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} on-click
- *                  Callback function for `click` event.
+ *                  Callback function which will be triggered when the widget is clicked.
  * @param {string=} on-dblclick
- *                  Callback function for `dblclick` event.
+ *                  Callback function which will be triggered when the widget is double-clicked.
  * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
+ *                  Callback function which will be triggered when the mouse enters the widget.
  * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the mouse leaves the widget.
+ * @param {string=} on-start
+ *                  Callback function which will be triggered on the start of the progress.
+ * @param {string=} on-complete
+ *                  Callback function which will be triggered on the completion of the progress.
+ * @param {string=} on-beforeupdate
+ *                  Callback function which will be triggered before the update of the progress.
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

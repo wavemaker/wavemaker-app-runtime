@@ -90,18 +90,20 @@ WM.module('wm.widgets.basic')
  * @requires $templateCache
  * @requires WidgetUtilService
  * @requires $sce
+ * @requires CONSTANTS
+ * @requires $location
  *
  * @param {string=} name
  *                  Name of the iframe widget.
  * @param {string=} hint
  *                  Title/hint for the iframe widget.<br>
  *                  hint is a bindable property. <br>
+ * @param {string=} source
+ *                  External URL that needs to be embedded within the iframe.
  * @param {string=} width
  *                  Width of the iframe widget.
  * @param {string=} height
  *                  Height of the iframe widget.
- * @param {string=} source
- *                  External URL that needs to be embedded within the iframe.
  * @param {boolean=} show
  *                  This property will be used to show/hide the iframe widget on the web page. <br>
  *                  Show is a bindable property. <br>

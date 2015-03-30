@@ -74,34 +74,45 @@ WM.module('wm.widgets.basic')
  * @requires $templateCache
  * @requires WidgetUtilService
  * @requires Utils
+ * @requires $sce
+ * @requires CONSTANTS
  *
  * @param {string=} name
  *                  Name of the audio widget.
  * @param {string=} hint
  *                  Title/hint for the audio. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
  * @param {string=} width
  *                  Width of the audio.
  * @param {string=} height
  *                  Height of the audio.
  * @param {string=} mp3format
  *                  mp3 format of the audio.
- * @param {boolean=} controls
- *                  enable the controls for the audio.
- * @param {boolean=} autoplay
- *                  enable the autoplay for the audio.
- * @param {boolean=} loop
- *                  enable the loop for the audio.
- * @param {boolean=} muted
- *                  disable the sound for the audio.
  * @param {string=} audiopreload
- *                  audiopreload options for the audio. The values are none/metadata/auto.
+ *                  audiopreload options for the audio. <br>
+ *                  Possible values are `none`, `metadata`, and `auto`. <br>
+ *                  Default value: `none`.
  * @param {string=} audiosupportmessage
  *                  The message shown to the user when the Html5 audio is not supported.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the audio widget on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {boolean=} controls
+ *                  If true, this property will enable the controls for the audio. <br>
+ *                  Default value: `true`.
+ * @param {boolean=} autoplay
+ *                  If true, this property will enable the autoplay for the audio. <br>
+ *                  Default value: `false`.
+ * @param {boolean=} loop
+ *                  If true, this property will enable the loop for the audio. <br>
+ *                  Default value: `false`.
+ * @param {boolean=} muted
+ *                  If true, this property will disable the sound for the audio. <br>
+ *                  Default value: `false`.
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

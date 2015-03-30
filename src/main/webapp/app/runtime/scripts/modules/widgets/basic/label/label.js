@@ -80,20 +80,24 @@ WM.module('wm.widgets.basic')
  *                  Height of the label.
  * @param {boolean=} required
  *                  required is a bindable property. <br>
- *                  if the required property is set to true, `required` class is applied to the label[an asterik will be displayed next to the content of the label']. <br>
+ *                  if the required property is set to true, `required` class is applied to the label [an asterik will be displayed next to the content of the label]. <br>
  *                  Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the label widget on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {string=} animation
+ *                  This property controls the animation of the label. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
  * @param {string=} on-click
- *                  Callback function for `click` event.
+ *                  Callback function which will be triggered when the widget is clicked.
  * @param {string=} on-dblclick
- *                  Callback function for `dblclick` event.
+ *                  Callback function which will be triggered when the widget is double-clicked.
  * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
+ *                  Callback function which will be triggered when the mouse enters the widget.
  * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
@@ -121,11 +125,11 @@ WM.module('wm.widgets.basic')
  *               </wm-composite>
  *               <wm-composite>
  *                   <wm-label caption="show:"></wm-label>
- *                   <wm-checkbox scopedatavalue="show"></wm-text>
+ *                   <wm-checkbox scopedatavalue="show"></wm-checkbox>
  *               </wm-composite>
  *               <wm-composite>
  *                   <wm-label caption="required:"></wm-label>
- *                   <wm-checkbox scopedatavalue="required"></wm-text>
+ *                   <wm-checkbox scopedatavalue="required"></wm-checkbox>
  *               </wm-composite>
  *               <wm-composite>
  *                   <wm-label caption="width:"></wm-label>

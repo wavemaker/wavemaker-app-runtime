@@ -238,21 +238,34 @@ WM.module('wm.widgets.basic')
  * @requires PropertiesFactory
  * @requires $templateCache
  * @requires WidgetUtilService
+ * @requires CONSTANTS
  *
  * @param {string=}  name
  *                   Name of the search widget.
+ * @param {string=}  placeholder
+ *                   Placeholder for the search widget.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
  * @param {string=}  dataset
  *                   The data to be provided the search widget from a live variable or the property panel, that can be searched onto. <br>
  * @param {string=}  scopedataset
  *                   The script variable that contains the data to be provided the search widget, that can be searched onto.
+ * @param {string=}  limit
+ *                   Limits the search results to be displayed in the auto-complete.
  * @param {string=}  searchkey
  *                   The key to be search in the data provided to the search widget.
  * @param {string=}  displaylabel
  *                   The property to be displayed in the search auto-complete.
+ * @param {string=}  imagesource
+ *                  This property sets the image to be displayed in the search results.
+ * @param {string=}  datafield
+ *                   This property sets the dataValue to be returned by a select editor when the list is populated using the dataSet property.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the label widget on the web page. <br>
+ *                  This property will be used to show/hide the search widget on the web page. <br>
  *                  Default value: `true`.
+ * @param {string=}  on-submit
+ *                  Callback function which will be triggered when the search icon is clicked.
  *
  * @example
  *   <example module="wmCore">

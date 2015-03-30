@@ -99,50 +99,67 @@ WM.module('wm.widgets.basic')
  *
  * @requires PropertiesFactory
  * @requires WidgetUtilService
+ * @requires $sce
  * @requires Utils
  * @requires CONSTANTS
  *
  * @param {string=} name
  *                  Name of the anchor.
  * @param {string=} hint
- *                  Title/hint for th anchor. It can be bound to a variable as well so that it takes the value of the variable.
+ *                  Title/hint for the anchor. <br>
+ *                  It can be bound to a variable as well so that it takes the value of the variable.
  * @param {string=} caption
- *                  Content of the anchor. It can be bound to a variable as well so that it takes the value of the variable.
+ *                  Content of the anchor. <br>
+ *                  It can be bound to a variable as well so that it takes the value of the variable.
+ * @param {string=} badgevalue
+ *                  Value to be displayed as badge for the anchor.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
+ * @param {string=} target
+ *                  Target property of the anchor. <br>
+ *                  Possible values are: <br>
+ *                  `_blank` : Opens the linked document in a new window. <br>
+ *                  `_self`  : Opens the linked document in the same frame as it was clicked (this is default). <br>
+ *                  `_parent`: Opens the linked document in the parent frameset. <br>
+ *                  `_top`   : Opens the linked document in the full body of the window. <br>
+ * @param {string=} width
+ *                  Width of the anchor.
+ * @param {string=} height
+ *                  Height of the anchor.
  * @param {string=} hyperlink
  *                  href of the anchor.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the anchor on the web page. <br>
  *                  Default value: `true`. <br>
- * @param {string=} target
- *                  Target property of the anchor. <br>
- *                  possible values: <br>
- *                  `_blank` : Opens the linked document in a new window. <br>
- *                  `_self`  : Opens the linked document in the same frame as it was clicked (this is default). <br>
- *                  `_parent`: Opens the linked document in the parent frameset. <br>
- *                  `_top`   : Opens the linked document in the full body of the window. <br>
+ * @param {string=} animation
+ *                  This property controls the animation of the anchor. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
  * @param {string=} iconclass
  *                  CSS class for the icon
  * @param {string=} iconurl
  *                  url of the icon.
  * @param {string=} iconwidth
- *                  width of the icon.
+ *                  Width of the icon. <br>
  *                  Default value: 16px
  * @param {string=} iconheight
- *                  height of the icon.
+ *                  Height of the icon.  <br>
  *                  Default value: 16px
  * @param {string=} iconmargin
- *                  margin of the icon.
+ *                  Margin of the icon.
  * @param {string=} on-click
- *                  Callback function for `click` event.
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-dblclick
+ *                  Callback function which will be triggered when the widget is double-clicked.
  * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
+ *                  Callback function which will be triggered when the mouse enters the widget.
  * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

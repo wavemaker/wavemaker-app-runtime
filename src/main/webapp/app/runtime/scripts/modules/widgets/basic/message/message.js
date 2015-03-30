@@ -164,19 +164,22 @@ WM.module('wm.widgets.basic')
  *                  Name of the message widget.
  * @param {string=} type
  *                  Type of the message. <br>
- *                  Valid value is: success/error/warn/info. <br>
+ *                  Possible values are `success`, `error`, `warn`, and `info`. <br>
  *                  Default value: `success`. <br>
  * @param {string=} caption
  *                  Content of the message. <br>
  *                  This property is bindable.
- * @param {string=} scopedataset
- *                  This property accepts the options to create the message widget from a script/scope variable. <br>
- * @param {string=} dataset
- *                  This property accepts the options to create the message widget from a wavemaker studio variable.<br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the message widget on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {string=} animation
+ *                  This property controls the animation of the anchor. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
+ * @param {string=} on-close
+ *                  Callback function which will be triggered when message widget is closed.
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

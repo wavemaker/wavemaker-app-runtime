@@ -96,11 +96,18 @@ WM.module('wm.widgets.basic')
  *                  This property will be used to show/hide the html-widget on the web page. <br>
  *                  Show is a bindable property. <br>
  *                  Default value: `true`. <br>
- * @param {string=} autoscroll
- *                  This property defines if the element should be allowed to scroll automatically. <br>
+ * @param {boolean=} autoscroll
+ *                  This property defines if the html-widget should be allowed to scroll automatically. <br>
  *                  Default value: `false`. <br>
  * @param {string=} on-click
- *                  Callback function for `click` event.
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-dblclick
+ *                  Callback function which will be triggered when the widget is double-clicked.
+ * @param {string=} on-mouseenter.
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

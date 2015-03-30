@@ -106,13 +106,31 @@ WM.module('wm.widgets.form')
  * @param {string=}  name
  *                   Name of the rich-text-editor widget.
  * @param {string=}  placeholder
- *                   initial text in the editor.
+ *                   Initial text in the editor.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
+ * @param {string=} width
+ *                  Width of the label.
+ * @param {string=} height
+ *                  Height of the label.
+ * @param {string=} scopedatavalue
+ *                  The script variable that contains the data to be displayed on rich-text-editor widget.
+ * @param {string=} datavalue
+ *                  This is the default value to  be displayed on rich-text-editor widget. <br>
+ *                  Note that the display value is just what the user sees initially, and is not always the dataValue returned by the widget. <br>
+ *                  This property is bindable.
+ * @param {boolean=} readonly
+ *                   Selecting this checkbox property prevents the user from being able to change the data value of a widget. <br>
+ *                   Default value: `false`.
  * @param {boolean=} show
  *                   Show is a bindable property. <br>
- *                   This property will be used to show/hide the label widget on the web page. <br>
+ *                   This property will be used to show/hide the rich-text-editor widget on the web page. <br>
  *                   Default value: `true`.
  * @param {boolean=} showpreview
- *                   To show or hide the preview part of the editor.
+ *                   To show or hide the preview part of the editor. <br>
+ *                   Default value: `false`.
+ * @param {string=}  on-change
+ *                   Callback function which will be triggered when the widget value is changed.
  *
  * @example
  *   <example module="wmCore">

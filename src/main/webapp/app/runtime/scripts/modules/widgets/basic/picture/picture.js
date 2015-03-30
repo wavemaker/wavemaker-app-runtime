@@ -86,6 +86,8 @@ WM.module('wm.widgets.basic')
  * @param {string=} hint
  *                  Title/hint for the picture. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
  * @param {string=} width
  *                  Width of the picture.
  * @param {string=} height
@@ -98,6 +100,13 @@ WM.module('wm.widgets.basic')
  *                      `V`: image is resized so that the height of the image is the same as the height of the picture widget. <br>
  *                      `Both`: image is resized so that the height and width of the image are same as the height and width of the picture widget. <br>
  *                  Default value is: `None`
+ * @param {string=} shape
+ *                  This property controls the shape of the picture. <br>
+ *                  Valid values are: <br>
+ *                      `None`: the image is displayed in its original shape. <br>
+ *                      `rounded`: adds rounded corners to an image. <br>
+ *                      `circle`: shapes the image to a circle. <br>
+ *                      `thumbnail`: shapes the image to a thumbnail.
  * @param {string=} picturesource
  *                  This property specifies the source for the picture. <br>
  *                  This property is bindable. <br>
@@ -110,12 +119,18 @@ WM.module('wm.widgets.basic')
  *                  This property will be used to disable/enable the picture widget on the web page. <br>
  *                  Disabled is a bindable property. <br>
  *                  Default value: `false`.
+ * @param {string=} animation
+ *                  This property controls the animation of the picture widget. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
  * @param {string=} on-click
- *                  Callback function for `click` event.
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-dblclick
+ *                  Callback function which will be triggered when the widget is double-clicked.
  * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
+ *                  Callback function which will be triggered when the mouse enters the widget.
  * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

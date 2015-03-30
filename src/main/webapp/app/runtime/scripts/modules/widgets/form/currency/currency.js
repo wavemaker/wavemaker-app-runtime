@@ -1186,26 +1186,37 @@ WM.module('wm.widgets.form')
  *
  * @param {string=} name
  *                  Name of the currency widget.
+ * @param {string=} placeholder
+ *                  Placeholder for the currency.
+ * @param {string=} currency
+ *                  Currency symbol to be shown in the currency<br>
+ *                  Default value: `USD`. <br>
  * @param {string=} hint
  *                  Title/hint for the currency. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
  * @param {string=} width
  *                  Width of the currency.
  * @param {string=} height
  *                  Height of the currency.
- * @param {string=} placeholder
- *                  Placeholder for the currency.
- * @param {number=} minvalue
- *                  Minimum value for currency
- * @param {number=} maxvalue
- *                  Maximum value for currency
  * @param {string=} scopedatavalue
- *                  variable defined in controller scope. The value of this variable is set as the value to be shown in the currency
+ *                  variable defined in controller scope. The value of this variable is set as the value to be shown in the currency.
  * @param {string=} datavalue
- *                  Value to be shown in the currency
- * @param {string=} currency
- *                  Currency symbol to be shown in the currency<br>
- *                  Default value: `USD`. <br>
+ *                  Value to be shown in the currency.
+ * @param {number=} minvalue
+ *                  Minimum value for currency.
+ * @param {number=} maxvalue
+ *                  Maximum value for currency.
+ * @param {boolean=} required
+ *                  Required is a bindable property. <br>
+ *                  This property defines if the currency is a required field while form submission. <br>
+ *                  Default value: `false`. <br>
+ *                  The value of this variable is set as the value to be shown in the currency.
+ * @param {boolean=} readonly
+ *                  Readonly is a bindable property. <br>
+ *                  This property will be used to make the currency widget readonly on the web page. <br>
+ *                  Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the currency widget on the web page. <br>
@@ -1214,27 +1225,18 @@ WM.module('wm.widgets.form')
  *                  Disabled is a bindable property. <br>
  *                  This property will be used to disable/enable the currency widget on the web page. <br>
  *                  Default value: `false`. <br>
- * @param {boolean=} readonly
- *                  Readonly is a bindable property. <br>
- *                  This property will be used to make the currency widget readonly on the web page. <br>
- *                  Default value: `false`. <br>
- * @param {boolean=} required
- *                  Required is a bindable property. <br>
- *                  This property defines if the currency is a required field while form submission. <br>
- *                  Default value: `false`. <br>
- *                  The value of this variable is set as the value to be shown in the currency
- * @param {string=} on-click
- *                  Callback function for `click` event.
  * @param {string=} on-change
- *                  Callback function for `change` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter.
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

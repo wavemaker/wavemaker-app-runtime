@@ -247,8 +247,9 @@ WM.module('wm.widgets.basic')
  *
  * @requires PropertiesFactory
  * @requires $rootScope
- * @requires $templateCache
  * @requires WidgetUtilService
+ * @requires $timeout
+ * @requires Utils
  *
  * @param {string=} name
  *                  Name of the tree widget.
@@ -256,14 +257,26 @@ WM.module('wm.widgets.basic')
  *                  Width of the tree.
  * @param {string=} height
  *                  Height of the tree.
- * @param {object=} value
+ * @param {string=} treeicons
+ *                  This property sets expand-collapse icons on the tree. <br>
+ *                  Possible values are `folder`, `plus-minus`, `circle-plus-minus`, `chevron`, `menu`, `triangle` and `expand-collapse`. <br>
+ *                  Default value: `triangle`. <br>
+ * @param {string=} scopedataset
+ *                  The script variable that contains the data to be displayed on the tree widget.
+ * @param {object=} dataset
  *                  Set this property to a variable to populate the list of values to display.
+ * @param {string=} nodelabel
+ *                  This property from the dataset will be used to display label for the tree node.
+ * @param {string=} nodeicon
+ *                  This property from the dataset will be used to display icon for the tree node.
+ * @param {string=} nodechildren
+ *                  This property from the dataset will be used to display children for the tree node.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the chart widget on the web page. <br>
+ *                  This property will be used to show/hide the tree widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} on-select
- *                  Callback function for `select` event
+ *                  Callback function which will be triggered on selection of the widget.
  *
  *
  * @example

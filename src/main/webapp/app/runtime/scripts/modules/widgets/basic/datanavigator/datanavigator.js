@@ -406,19 +406,37 @@ WM.module("wm.widgets.basic")
  * @requires WidgetUtilService
  * @requires Utils
  * @requires Variables
+ * @requires wmToaster
+ * @requires CONSTANTS
  *
+ * @param {string=}  name
+ *                   Name of the data-navigator widget.
  * @param {string=} width
  *                  Width of the data navigator.
  * @param {string=} height
  *                  Height of the data navigator.
- * @param {boolean=} show
- *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the data navigator on the web page. <br>
- *                  default value: `true`.
  * @param {string=} dataset
  *                  Sets the data for the data navigator.<br>
  *                  This property supports binding with variables.<br>
  *                  When bound to a variable, the data associated with the variable becomes the basis for pagination.
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the data navigator on the web page. <br>
+ *                  default value: `true`.
+ * @param {boolean=} showrecordcount
+ *                  This property controls whether the total record count is displayed in the data navigator or not. <br>
+ *                  default value: `false`.
+ * @param {string=} horizontalalign
+ *                  This property used to set text alignment horizontally. <br>
+ *                  Possible values are `left`, `center` and `right`. <br>
+ *                  default value: `right`.
+ * @param {string=} verticalalign
+ *                  This property used to set text alignment vertically. <br>
+ *                  Possible values are `bottom`, `middle` and `top`. <br>
+ *                  default value: `middle`.
+ * @param {string=} on-setrecord
+ *                  Callback function which will be triggered when the record is set using the data-navigator.
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

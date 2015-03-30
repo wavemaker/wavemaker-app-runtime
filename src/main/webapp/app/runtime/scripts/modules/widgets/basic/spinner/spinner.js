@@ -74,16 +74,23 @@ WM.module('wm.widgets.basic')
  * @requires PropertiesFactory
  * @requires $templateCache
  * @requires WidgetUtilService
+ * @requires Utils
  *
  * @param {string=}  name
  *                   Name of the spinner widget.
+ * @param {string=}  caption
+ *                   Loading text to be displayed when the spinner is active. <br>
+ * @param {string=}  trackvariable
+ *                   This property allows you to bind to the service variable for which you want to show the loading dialog.
  * @param {string=}  image
  *                   Source path of the image in the widget.
- * @param {string=}  backgroundimage
- *                   Source path of the background-image for the container in the widget.
+ * @param {string=} width
+ *                  Width of the spinner.
+ * @param {string=} height
+ *                  Height of the spinner.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the label widget on the web page. <br>
+ *                  This property will be used to show/hide the spinner widget on the web page. <br>
  *                  Default value: `true`.
  *
  * @example

@@ -100,40 +100,55 @@ WM.module('wm.widgets.basic')
  * @requires $templateCache
  * @requires WidgetUtilService
  * @requires Utils
+ * @requires $sce
+ * @requires CONSTANTS
  *
  * @param {string=} name
  *                  Name of the video widget.
  * @param {string=} hint
  *                  Title/hint for the video. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of an element.
  * @param {string=} width
  *                  Width of the video.
  * @param {string=} height
  *                  Height of the video.
+ * @param {string=} videoposter
+ *                  poster of the video.
  * @param {string=} mp4format
  *                  mp4 format of the video.
  * @param {string=} oggformat
  *                  ogg format of the video.
  * @param {string=} webmformat
  *                  webm format of the video.
- * @param {string=} videoposter
- *                  poster of the video.
- * @param {boolean=} controls
- *                  enable the controls for the video.
- * @param {boolean=} autoplay
- *                  enable the autoplay for the video.
- * @param {boolean=} loop
- *                  enable the loop for the video.
- * @param {boolean=} muted
- *                  disable the sound for the video.
  * @param {string=} videopreload
- *                  videopreload options for the video. The values are none/metadata/auto.
+ *                  Preload options for the video. <br>
+ *                  The possible values are `none`, `metadata` and `auto`. <br>
+ *                  Default value: `none`.
  * @param {string=} videosupportmessage
  *                  The message shown to the user when the Html5 video is not supported.
+ * @param {string=} subtitlesource
+ *                  This property allows to set the source url for the subtitle in the .vtt format.
+ * @param {string=} subtitlelang
+ *                  This property allows to set the language for the subtitle.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the video widget on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {boolean=} controls
+ *                  If set true, this property will enable the controls for the video. <br>
+ *                  Default value: `true`.
+ * @param {boolean=} autoplay
+ *                  If set true, this property will enable the autoplay for the video. <br>
+ *                  Default value: `false`.
+ * @param {boolean=} loop
+ *                  If set true, this property will enable the loop for the video. <br>
+ *                  Default value: `false`.
+ * @param {boolean=} muted
+ *                  If set true, this property will disable the sound for the video. <br>
+ *                  Default value: `false`.
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
