@@ -472,13 +472,13 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "disabled": {"type": "boolean"},
                     "mindate": {"type": "date"},
                     "maxdate": {"type": "date"},
-                    "datepattern": {"value": "dd-MM-yyyy", "type": "list", "options": ['dd-MM-yyyy', 'EEE MMM dd hh:mm:ss Z yyyy', 'yyyy-MM-dd T HH:mm:ss', 'yyyy-M-dd', 'dd-M-yyyy', 'M-dd-yyyy', 'yyyy-MM-dd hh:mm:ss:sss Z', 'yyyy-MM-dd hh:mm:ss:sss a', 'yyyy-MM-dd HH:mm:ss:sss', 'yyyy-MM-dd HH:mm', 'yyyy-MM-dd hh:mm a', 'yyyy-MM-dd hh:mm:ss a', 'EEEE, MMMM dd, yyyy', 'EEE, dd MMM yyyy HH:mm:ss Z', 'yyyy, dd MMMM', 'yyyy, MMM dd', 'MM-dd-yy hh:mm:ss a Z', 'MM-dd-yy hh:mm:ss a', 'yyyy-MM-dd', 'yyyyMMdd', 'MM/dd/yyyy', 'M/d/yyyy', 'dd/MM/yyyy', 'dd.MM.yyyy'], "widget": "datetimepatterns"},
+                    "datepattern": {"value": "dd-MM-yyyy", "type": "list", "options": [], "widget": "datetimepatterns"},
                     "datavalue": {"type": "date, string, number", "widget": "date", "bindable": "in-out-bound"}
                 },
                 "wm.calendar": {
                     "autofocus": {"type": "boolean"},
                     "disabled": {"type": "boolean", "value": false},
-                    "datepattern": {"value": "dd-MMMM-yyyy", "type": "list", "options": ['dd-MMMM-yyyy', 'EEE MMM dd hh:mm:ss Z yyyy', 'yyyy-M-dd', 'M-dd-yyyy', 'yyyy-MM-dd hh:mm:ss:sss Z', 'yyyy-MM-dd hh:mm:ss:sss a', 'yyyy-MM-dd HH:mm:ss:sss', 'yyyy-MM-dd HH:mm', 'yyyy-MM-dd hh:mm a', 'yyyy-MM-dd hh:mm:ss a', 'EEEE, MMMM dd, yyyy', 'EEE, dd MMM yyyy HH:mm:ss Z', 'yyyy, dd MMMM', 'yyyy, MMM dd', 'MM-dd-yy hh:mm:ss a Z', 'MM-dd-yy hh:mm:ss a', 'yyyy-MM-dd', 'MM/dd/yyyy', 'M/d/yyyy'], "widget": "datetimepatterns"},
+                    "datepattern": {"value": "dd-MMMM-yyyy", "type": "list", "options": [], "widget": "calendarpatterns"},
                     "datavalue": {"type": "date, string, number", "widget": "date", "bindable": "in-out-bound"}
                 },
                 "wm.time": {
@@ -2014,19 +2014,23 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
 
         function handleAppCustomEvent(iScope, scope, isAnchor, $evt, customEvtName) {
 
+            var parts;
+
             /* For anchor elements suppressing the default action to refresh the page */
             if (isAnchor) {
                 $evt.preventDefault();
             }
 
-            if (Utils.stringEndsWith(customEvtName, '.show')) {
-                DialogService.showDialog(customEvtName.substr(0, customEvtName.indexOf('.')));
-                return;
-            }
+            parts = customEvtName.split('.');
 
-            if (Utils.stringEndsWith(customEvtName, '.hide')) {
-                DialogService.hideDialog(customEvtName.substr(0, customEvtName.indexOf('.')));
-                return;
+            if (parts.length === 2) {
+                if (parts[1] === 'show') {
+                    DialogService.showDialog(parts[0]);
+                    return;
+                } else if (parts[1] === 'hide') {
+                    DialogService.hideDialog(parts[0]);
+                    return;
+                }
             }
 
             /* Emit the event in a timeout, so that any variable watching on current widget is updated with its value */

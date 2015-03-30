@@ -13,7 +13,7 @@ WM.module('wm.prefabs')
  * @requires PropertiesFactory
  * @description
  * The 'wmPrefab' directive defines a prefab in editors. It is draggable over the canvas.
- */
+*/
     .directive('wmPrefab', [
         'PrefabManager',
         'Utils',
@@ -23,8 +23,10 @@ WM.module('wm.prefabs')
         'CONSTANTS',
         '$timeout',
         'WIDGET_CONSTANTS',
+        '$rootScope',
+        'DialogService',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rootScope, DialogService) {
             'use strict';
 
             var prefabDefaultProps = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -32,7 +34,8 @@ WM.module('wm.prefabs')
                 propertyGroups,
                 propertiesGroup,
                 eventsGroup,
-                prefabWidgetPropsMap = {};
+                prefabWidgetPropsMap = {},
+                prefabMethodsMap = {};
 
             if (CONSTANTS.isStudioMode) {
                 (function () {
@@ -52,46 +55,54 @@ WM.module('wm.prefabs')
                 }());
             }
 
-            function onConfigLoad(scope, details) {
+            function onConfigLoad(iScope, details) {
 
-                if (prefabWidgetPropsMap[scope.prefabname]) {
-                    scope.widgetProps = WM.copy(prefabWidgetPropsMap[scope.prefabname]);
+                if (prefabWidgetPropsMap[iScope.prefabname]) {
+                    iScope.widgetProps = WM.copy(prefabWidgetPropsMap[iScope.prefabname]);
+                    iScope._methodsMap = prefabMethodsMap[iScope.prefabname];
                     return;
                 }
 
                 var prefabProperties,
                     prefabEvents,
-                    widgetProps = {};
+                    widgetProps = {},
+                    userDefinedProps,
+                    methodsMap = {};
 
                 if (CONSTANTS.isStudioMode) {
                     prefabProperties = [];
                     prefabEvents = [];
 
                     propertiesGroup.subGroups.splice(1, 0, {
-                        'boundPrefabName': scope.prefabname,
-                        'name': scope.prefabname + '_' + 'properties',
+                        'boundPrefabName': iScope.prefabname,
+                        'name': iScope.prefabname + '_' + 'properties',
                         'parent': 'properties',
                         'properties': prefabProperties
                     });
 
                     eventsGroup.subGroups.push({
-                        'boundPrefabName': scope.prefabname,
-                        'name': scope.prefabname + '_' + 'events',
+                        'boundPrefabName': iScope.prefabname,
+                        'name': iScope.prefabname + '_' + 'events',
                         'parent': 'events',
                         'properties': prefabEvents
                     });
                 }
 
-                scope.userDefinedProps = details.properties || {};
-                scope.prefabid = details.id;
+                userDefinedProps = details.properties || {};
+                iScope.prefabid = details.id;
 
-                WM.forEach(scope.userDefinedProps, function (prop, key) {
+                WM.forEach(userDefinedProps, function (prop, key) {
 
                     widgetProps[key] = prop;
 
                     if (Utils.stringStartsWith(prop.value, 'bind:')) {
                         prop.__value = prop.value;
                         prop.value = undefined;
+                    }
+
+                    if (prop.type === 'method') {
+                        methodsMap[key] = prop;
+                        return;
                     }
 
                     if (CONSTANTS.isStudioMode) {
@@ -120,7 +131,6 @@ WM.module('wm.prefabs')
                         } else {
                             prop.label = Utils.initCaps(key);
                         }
-
                     }
                 });
 
@@ -130,9 +140,11 @@ WM.module('wm.prefabs')
                     }
                 });
 
-                prefabWidgetPropsMap[scope.prefabname] = widgetProps;
+                prefabWidgetPropsMap[iScope.prefabname] = widgetProps;
+                prefabMethodsMap[iScope.prefabname] = methodsMap;
 
-                scope.widgetProps = WM.copy(prefabWidgetPropsMap[scope.prefabname]);
+                iScope.widgetProps = WM.copy(prefabWidgetPropsMap[iScope.prefabname]);
+                iScope._methodsMap = prefabMethodsMap[iScope.prefabname];
             }
 
             return {
@@ -153,64 +165,101 @@ WM.module('wm.prefabs')
                     '</section>',
                 'compile': function () {
                     return {
-                        'pre': function (scope, element, attrs) {
+                        'pre': function (iScope, element, attrs) {
                             if (CONSTANTS.isStudioMode && attrs.registrationRequired !== undefined) {
                                 PrefabManager.registerPrefab(
-                                    scope.prefabname,
+                                    iScope.prefabname,
                                     PrefabManager.loadAppPrefabConfig.bind(
                                         undefined,
-                                        scope.prefabname,
-                                        onConfigLoad.bind(undefined, scope)
+                                        iScope.prefabname,
+                                        onConfigLoad.bind(undefined, iScope)
                                     )
                                 );
                             } else {
-                                PrefabManager.loadAppPrefabConfig(scope.prefabname, onConfigLoad.bind(undefined, scope));
+                                PrefabManager.loadAppPrefabConfig(iScope.prefabname, onConfigLoad.bind(undefined, iScope));
                             }
                         },
 
-                        'post': function (scope, element, attrs) {
-                            var prefabName = scope.prefabname;
+                        'post': function (iScope, element, attrs) {
+                            var prefabName = iScope.prefabname;
 
-                            scope.__compileWithIScope = true;
+                            iScope.__compileWithIScope = true;
 
-                            Object.defineProperty(scope, "appLocale", {
+                            Object.defineProperty(iScope, 'appLocale', {
                                 get: function () {
-                                    return scope.$root.appLocale;
+                                    return iScope.$root.appLocale;
                                 }
                             });
+
+                            function listenerFn(event, eventName) {
+                                var parts, methodProps, fn, fnName, subParts, dialogId;
+                                if (!eventName) {
+                                    return;
+                                }
+
+                                // split the event name by dot.
+                                // If the first part is event Name process the event, ignore otherwise
+                                parts = eventName.split('.');
+                                if (parts[0] === iScope.name) {
+                                    if (parts.length === 2) { // eventName should not have more than two parts when split with dot
+                                        if (iScope._methodsMap[parts[1]]) {
+                                            event.stopPropagation(); // This is a method of THIS prefab, do not let other prefabs to process the same event.
+                                            methodProps = iScope._methodsMap[parts[1]]; // get the properties related to the method
+                                            fnName = methodProps.method; // function to be invoked
+                                            fn = iScope.ctrlScope[fnName]; // get the function reference
+                                            if (WM.isFunction(fn)) { // if function is defined on prefab's controller, invoke it
+                                                Utils.triggerFn(fn);
+                                            } else { // if it is custom event
+                                                subParts = fnName.split('.');
+                                                if (subParts.length === 2) { // check if it is related to dialogs placed inside prefab
+                                                    dialogId = subParts[0];
+                                                    if (subParts[1] === 'show') { // handle dialog related events
+                                                        DialogService.showDialog(dialogId);
+                                                    } else if (subParts[1] === 'hide') {
+                                                        DialogService.hideDialog(dialogId);
+                                                    }
+                                                } else { // Handle other events.
+                                                    $rootScope.$emit('invoke-service', fnName, {'scope': iScope.ctrlScope});
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            iScope.$on('$destroy', $rootScope.$on('invoke-service', listenerFn));
 
                             /* called on load of the prefab template*/
                             function onTemplateLoad() {
                                 var pfScope = element.find('[data-ng-controller]').scope();
                                 /* scope of the controller */
 
-                                WM.forEach(scope.widgetProps, function (propDetails, propName) {
+                                WM.forEach(iScope.widgetProps, function (propDetails, propName) {
                                     if (propDetails.__value && !attrs.hasOwnProperty(propName)) {
                                         var key = propDetails.__value.replace('bind:', '');
-                                        scope._watchers[propName] = pfScope.$watch(key, function (nv) {
-                                            scope[propName + '__updateFromWatcher'] = true;
-                                            scope[propName] = nv;
+                                        iScope._watchers[propName] = pfScope.$watch(key, function (nv) {
+                                            iScope[propName + '__updateFromWatcher'] = true;
+                                            iScope[propName] = nv;
                                         });
                                     }
                                 });
-                                WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                                WidgetUtilService.postWidgetCreate(iScope, element, attrs);
 
                                 Utils.triggerFn(pfScope.onInitPrefab);
                                 if (CONSTANTS.isRunMode) {
-                                    Utils.triggerFn(scope.onLoad);
+                                    Utils.triggerFn(iScope.onLoad);
 
-                                    scope.$on('$destroy', scope.onDestroy);
+                                    iScope.$on('$destroy', iScope.onDestroy);
                                 }
 
-                                scope.ctrlScope = pfScope;
+                                iScope.ctrlScope = pfScope;
                             }
 
                             function compileTemplate(prefabContent) {
                                 var prefabEle = WM.element('<div class="full-width full-height">' + prefabContent + '</div>');
                                 element.append(prefabEle);
-                                $compile(element.children())(scope);
+                                $compile(element.children())(iScope);
                                 $timeout(onTemplateLoad);
-                                //scope.$root.$safeApply(scope);
                             }
 
                             if (!depsMap[prefabName]) {
