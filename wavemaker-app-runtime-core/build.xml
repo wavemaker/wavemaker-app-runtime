@@ -13,7 +13,7 @@
         <echo>Ran command "${cmd.executable}" with args "${cmd.argline}" in directory ${cmd.executable.dir}</echo>
     </target>
 
-    <target name="run-js-commands">
+    <target name="run-js-commands" if="isDesktopBuild">
 
         <antcall target="cmd-template">
             <param name="cmd.name" value="npm"/>
