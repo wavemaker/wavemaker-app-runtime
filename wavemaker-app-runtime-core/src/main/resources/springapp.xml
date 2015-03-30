@@ -14,8 +14,7 @@
                 http://www.springframework.org/schema/aop/spring-aop.xsd">
     <import resource="config.xml"/>
     <import resource="managers.xml"/>
-    <import resource="security.xml"/>
-    <import resource="services.xml"/>
+    <import resource="servicetypes.xml"/>
 
     <bean id="requestInitInterceptor" class="com.wavemaker.runtime.interceptor.RequestInitInterceptor">
         <property name="runtimeAccess">
