@@ -46,7 +46,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         {
             namedQuery.setFirstResult(pageable.getOffset());
             namedQuery.setMaxResults(pageable.getPageSize());
-            return new WMPageImpl(namedQuery.list(), pageable, UNKNOWN_COUNT);
+            Long count = QueryHelper.getQueryResultCount(namedQuery.getQueryString(), params, namedQuery instanceof  SQLQuery, template);
+            return new WMPageImpl(namedQuery.list(), pageable, count);
         }
         else
             return new WMPageImpl(namedQuery.list());
