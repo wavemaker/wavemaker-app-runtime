@@ -93,28 +93,41 @@ WM.module('wm.widgets.form')
  *                  Name of the colorpicker widget.
  * @param {string=} placeholder
  *                  Placeholder text for the widget. <br>
+ * @param {number=} tabindex
+ *                 This property specifies the tab order of Colorpicker widget. <br>
+ *                  Default value : 0
  * @param {string=} scopedatavalue
  *                  This property accepts the value for the colorpicker widget from a variable defined in the script workspace. <br>
  *                  The scope variable is updated whenever there is a change in the colorpicker value.
  * @param {string=} datavalue
  *                  Value of the colorpicker widget. Accepts the value from a studio variable or from another widget's value.<br>
  *                  This property is bindable.
+ * @param {boolean=} readonly
+ *                   Readonly is a bindable property. <br>
+ *                   This property will be used to make the colorpicker widget non-editable on the web page. <br>
+ *                   Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the colorpicker widget on the web page. <br>
  *                  Default value: `true`. <br>
- * @param {string=} on-click
- *                  Callback function for `click` event.
+ * @param {boolean=} disabled
+ *                  Disabled is a bindable property. <br>
+ *                  This property will be used to disable/enable the widget on the web page. <br>
+ *                  Default value: `false`.
  * @param {string=} on-change
- *                  Callback function for `change` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-dblclick
+ *                  Callback function which will be triggered when the widget is double clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

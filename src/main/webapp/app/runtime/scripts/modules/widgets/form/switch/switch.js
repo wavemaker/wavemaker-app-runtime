@@ -263,37 +263,50 @@ WM.module('wm.widgets.form')
  * @param {string=} hint
  *                  Title/hint for the switch. <br>
  *                  This property is bindable.
- * @param {string=} caption
- *                  This property defines two states of switch.Comma separated values example: On, Off <br>
- *                  Default value: `On, Off`. <br>
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of switch widget. <br>
+ *                  Default value : 0
  * @param {string=} width
  *                  Width of the switch.
  * @param {string=} height
  *                  Height of the switch.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the initial value for the switch widget from a variable defined in the script workspace. <br>
+ * @param {string=} datavalue
+ *                  This property will be used to set the initial state of the switch widget. <br>
+ *                  Possible values are 'on' , 'off'
+ *                  Default value: `on`. <br>
+ * @param {string=} scopedataset
+ *                  This property accepts the value for the switch widget from a variable defined in the script workspace. <br>
+ * @param {string=} dataset
+ *                  This property defines two states of switch. Comma separated values example: On, Off <br>
+ *                  Default value: `On, Off`. <br>
+ * @param {string=} datafield
+ *                  This property sets the dataValue to be returned by a switch widget when the list is populated using the dataSet property.
+ * @param {string=} displayfield
+ *                  This property sets the displayValue to show in the switch widget when the list is populated using the dataSet property.
+ * @param {boolean=} required
+ *                   This property will be used to validate the state of the switch widget when used inside a form widget.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the switch widget on the web page. <br>
  *                  Default value: `true`. <br>
- * @param {boolean=} checked
- *                   This property will be used to set the initial state of the switch widget. <br>
+ * @param {boolean=} disabled
+ *                   Disabled is a bindable property. <br>
+ *                   This property will be used to disable/enable the switch widget on the web page. <br>
  *                   Default value: `false`. <br>
- * @param {string=} checkedvalue
- *                  This property defines the value of the switch widget when the element is in the checked state. Mandatory for displaying widget value.<br>
- *                  Default value: `false`. <br>
- * @param {string=} scopedatavalue
- *                  This property accepts the value for the switch widget from a variable defined in the script workspace. <br>
- * @param {string=} on-click
- *                  Callback function for `click` event.
  * @param {string=} on-change
- *                  Callback function for `change` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

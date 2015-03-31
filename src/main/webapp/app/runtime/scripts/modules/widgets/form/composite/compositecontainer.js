@@ -101,7 +101,9 @@ WM.module('wm.widgets.form')
  *                  This property will be used to show/hide the container and the widgets inside, on the web page. <br>
  *                  Default value: `true`.
  * @param {string=} horizontalalign
- *                  Sets the alignment for the widgets inside the container.
+ *                  Sets the alignment for the widgets inside the container. <br>
+ *                  Possible values are ["left", "center", "top"] <br>
+ *                  Default Value : 'left'
  *  @example
  *   <example module="wmCore">
  *       <file name="index.html">

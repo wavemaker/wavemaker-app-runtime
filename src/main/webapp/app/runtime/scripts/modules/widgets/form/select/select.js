@@ -371,10 +371,40 @@ WM.module('wm.widgets.form')
  * @param {string=} hint
  *                  Title/hint for the select. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of select widget. <br>
+ *                  Default value : 0
  * @param {string=} width
  *                  Width of the select.
  * @param {string=} height
  *                  Height of the select.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the initial value for the select widget from a variable defined in the script workspace. <br>
+ * @param {string=} datavalue
+ *                  This property defines the initial selected value of the select widget.
+ * @param {array||string=} scopedataset
+ *                  This property accepts the options to create the select widget from a variable defined in the script workspace.<br>
+ *                  Defined variable can be a comma separated string or an array.
+ * @param {string=} dataset
+ *                  This property accepts the options to create the select widget from a wavemaker studio variable which is of datatype entry.
+ * @param {string=} datafield
+ *                  This property sets the dataValue to be returned by the select widget when the list is populated using the dataSet property.
+ * @param {string=} displayfield
+ *                  This property sets the displayValue to show in the select widget when the list is populated using the dataSet property.
+ * @param {expression=} displayexpression
+ *                      This is an advanced property that gives more control over what is displayed in the  select widget drop-down list. <br>
+ *                      A Display Expression uses a Javascript expression to format exactly what is shown. <br>
+ *                      This property is bindable.
+ * @param {boolean=} required
+ *                  This property will be used to validate the state of the select widget when used inside a form widget.
+ * @param {boolean=} autofocus
+ *                   This property makes the widget get focused automatically when the page loads.
+ * @param {boolean=} readonly
+ *                  Readonly is a bindable property. <br>
+ *                  This property will be used to make the select widget non-editable on the web page. <br>
+ *                  Default value: `false`. <br>
+ * @param {boolean=} multiple
+ *                  When this value is set to true multiple options can be selected from select widget.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the select widget on the web page. <br>
@@ -383,29 +413,18 @@ WM.module('wm.widgets.form')
  *                  Disabled is a bindable property. <br>
  *                  This property will be used to disable/enable the select widget on the web page. <br>
  *                  Default value: `false`. <br>
- * @param {boolean=} required
- *                  This property will be used to validate the state of the select widget when used inside a form widget.
- * @param {string=} datavalue
- *                  This property defines the value of the select widget.
- * @param {string=} scopedatavalue
- *                  This property accepts the value for the select widget from a variable defined in the script workspace. <br>
- * @param {string=} dataset
- *                  This property accepts the options to create the select widget from a wavemaker studio variable which is of datatype entry.
- * @param {array||string=} scopedataset
- *                  This property accepts the options to create the select widget from a variable defined in the script workspace.<br>
- *                  Defined variable can be a comma separated string or an array.
- * @param {string=} on-click
- *                  Callback function for `click` event.
  * @param {string=} on-change
- *                  Callback function for `change` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

@@ -62,20 +62,31 @@ WM.module('wm.widgets.form')
  *
  * @param {string=} name
  *                  Name of the slider widget.
- * @param {string=} type
- *                  Type of the slider widget. <br>
- *                  valid value is: slider/submit/reset <br>
- *                  Default value: `slider`
  * @param {string=} hint
  *                  Title/hint for the slider. <br>
- *                  This property is bindable.
- * @param {string=} caption
- *                  Content of the Slider. <br>
  *                  This property is bindable.
  * @param {string=} width
  *                  Width of the slider.
  * @param {string=} height
  *                  Height of the slider.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the value for the slider widget from a variable defined in the script workspace. <br>
+ *                  The scope variable is updated whenever there is a change in the slider value.
+ * @param {string=} datavalue
+ *                  Value of the slider widget. Accepts the value from a studio variable or from another widget's value.<br>
+ *                  This property is bindable.
+ * @param {number=} minvalue
+ *                  This property represents the start value of slider. <br>
+ *                  This property is bindable.
+ * @param {number=} maxvalue
+ *                  This property represents the end value of slider. <br>
+ *                  This property is bindable.
+ * @param {number=} step
+ *                  This property represents the no of steps the range is divided.
+ * @param {boolean=} readonly
+ *                   Readonly is a bindable property. <br>
+ *                   This property will be used to make the slider widget non-editable on the web page. <br>
+ *                   Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the slider widget on the web page. <br>
@@ -84,22 +95,8 @@ WM.module('wm.widgets.form')
  *                  Disabled is a bindable property. <br>
  *                  This property will be used to disable/enable the slider widget on the web page. <br>
  *                  Default value: `false`. <br>
- * @param {string=} iconname
- *                  Name of the icon.
- * @param {string=} iconurl
- *                  url of the icon.
- * @param {string=} iconwidth
- *                  width of the icon.
- *                  Default value: 16px
- * @param {string=} iconheight
- *                  height of the icon.
- *                  Default value: 16px
- * @param {string=} iconmargin
- *                  margin of the icon.
- * @param {string=} on-focus
- *                  Callback function for `focus` event.
- * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ * @param {string=} on-change
+ *                  Callback function which will be triggered when the widget value is changed.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

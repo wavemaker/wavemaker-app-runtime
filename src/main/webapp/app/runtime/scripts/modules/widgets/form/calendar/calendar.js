@@ -97,9 +97,19 @@ WM.module('wm.widgets.form')
  *
  * @param {string=} name
  *                  Name of the calendar widget.
+ * @param {string=} placeholder
+ *                  Placeholder for the Calendar widget.
  * @param {string=} hint
  *                  Title/hint for the date <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of Calendar widget. <br>
+ *                  Default value : 0
+ * @param {string=} scopedatavalue
+ *                  This property accepts the initial value for the Calendar widget from a variable defined in the script workspace. <br>
+ * @param {string=} datavalue
+ *                  This property defines the current selected value of the Calendar widget. <br>
+ *                  This property is bindable
  * @param {string=} datepattern
  *                  display pattern of dates. <br>
  *                  This property is bindable.
@@ -107,20 +117,28 @@ WM.module('wm.widgets.form')
  *                  required is a bindable property. <br>
  *                  if the required property is set to true, `required` class is applied to the label[an asterik will be displayed next to the content of the label']. <br>
  *                  Default value: `false`.
+ * @param {boolean=} autofocus
+ *                   This property makes the Calendar widget get focused automatically when the page loads.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the widget on the web page. <br>
  *                  Default value: `true`.
- * @param {string=} on-click
- *                  Callback function for `click` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ * @param {boolean=} disabled
+ *                  Disabled is a bindable property. <br>
+ *                  This property will be used to disable/enable the widget on the web page. <br>
+ *                  Default value: `false`.
+ * @param {string=} on-change
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

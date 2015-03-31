@@ -178,8 +178,16 @@ WM.module('wm.widgets.form')
  * @param {string=} placeholder
  *                  Placeholder for the input field
  * @param {string=} hint
- *                  Title/hint for the widget <br>
+ *                  Title/hint for the time widget <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of time widget. <br>
+ *                  Default value : 0
+ * @param {string=} scopedatavalue
+ *                  This property accepts the value for the  widget from a variable defined in the script workspace. <br>
+ * @param {string=} datavalue
+ *                  This property defines the value of the time widget. <br>
+ *                  This property is bindable
  * @param {string=} ismeridian
  *                  whether do display 12H or 24H. <br>
  * @param {string=} hourstep
@@ -190,20 +198,32 @@ WM.module('wm.widgets.form')
  *                  required is a bindable property. <br>
  *                  if the required property is set to true, `required` class is applied to the label[an asterik will be displayed next to the content of the label']. <br>
  *                  Default value: `false`.
+ * @param {boolean=} autofocus
+ *                   This property makes the widget get focused automatically when the page loads.
+ * @param {boolean=} readonly
+ *                   Readonly is a bindable property. <br>
+ *                   This property will be used to make the time widget readonly on the web page. <br>
+ *                   Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the widget on the web page. <br>
  *                  Default value: `true`.
- * @param {string=} on-click
- *                  Callback function for `click` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ * @param {boolean=} disabled
+ *                  Disabled is a bindable property. <br>
+ *                  This property will be used to disable/enable the widget on the web page. <br>
+ *                  Default value: `false`.
+ * @param {string=} on-change
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

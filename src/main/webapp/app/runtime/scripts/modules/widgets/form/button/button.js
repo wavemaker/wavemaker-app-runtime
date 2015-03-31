@@ -89,6 +89,12 @@ WM.module('wm.widgets.form')
  * @requires WidgetUtilService
  * @requires $sce
  *
+ * @param {string=} caption
+ *                  This property specifies the label of the button. <br>
+ *                  This property is bindable.
+ * @param {string=} badgevalue
+ *                  This Property specifies inline Value to be displayed along with the label of the button. <br>
+ *                  This property is bindable.
  * @param {string=} name
  *                  Name of the button widget.
  * @param {string=} type
@@ -98,9 +104,8 @@ WM.module('wm.widgets.form')
  * @param {string=} hint
  *                  Title/hint for the button. <br>
  *                  This property is bindable.
- * @param {string=} caption
- *                  Content of the button. <br>
- *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of the Button Widget. <br>
  * @param {string=} width
  *                  Width of the button.
  * @param {string=} height
@@ -113,6 +118,10 @@ WM.module('wm.widgets.form')
  *                  Disabled is a bindable property. <br>
  *                  This property will be used to disable/enable the button widget on the web page. <br>
  *                  Default value: `false`. <br>
+ * @param {string=} animation
+ *                  This property controls the animation of Button widget. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  possible values are "bounce", "flash", "pulse", "rubberBand", "shake" etc.
  * @param {string=} iconclass
  *                  CSS class of the icon.
  * @param {string=} iconurl
@@ -125,18 +134,19 @@ WM.module('wm.widgets.form')
  *                  Default value: 16px
  * @param {string=} iconmargin
  *                  margin of the icon.
- * @param {string=} on-click
- *                  Callback function for `click` event.
- * @param {string=} on-dblclick
- *                  Callback function for `dblclick` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-dblclick
+ *                  Callback function which will be triggered when the widget is double clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
+ .
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

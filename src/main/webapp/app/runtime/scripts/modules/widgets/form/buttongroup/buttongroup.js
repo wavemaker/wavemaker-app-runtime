@@ -62,7 +62,7 @@ WM.module('wm.widgets.form')
  *                  Determines whether the buttons should be vertical or not.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the chart widget on the web page. <br>
+ *                  This property will be used to show/hide the Button Group widget on the web page. <br>
  *                  Default value: `true`. <br>
  *
  * @example
