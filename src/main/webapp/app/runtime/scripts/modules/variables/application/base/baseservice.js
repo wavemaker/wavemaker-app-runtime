@@ -658,7 +658,7 @@ wm.variables.services.Variables = [
             },
 
            /* function to create default non-conflicting name for a variable */
-            generateUniqueName = function (category, name) {
+            generateUniqueName = function (category, name, overWrite) {
                 var defaultName;
 
                 if (name) {
@@ -667,7 +667,7 @@ wm.variables.services.Variables = [
                     defaultName = variableCategoryToNameMap[category] + self.variableNameIterator[category];
                 }
 
-                if (!isExists(defaultName)) {
+                if (!isExists(defaultName) || overWrite) {
                     return defaultName;
                 }
 
@@ -749,7 +749,7 @@ wm.variables.services.Variables = [
                 return variables;
             },
         /*function to create a variable*/
-            create = function (type, options, name) {
+            create = function (type, options, name, overWrite) {
                 /* type sanity checking */
                 type = type || "wm.Variable";
                 var variableObj = {},
@@ -759,7 +759,7 @@ wm.variables.services.Variables = [
 
                 /* if name prefix provided, create another category and iterator for that category*/
                 if (name) {
-                    defaultName = generateUniqueName(type, name);
+                    defaultName = generateUniqueName(type, name, overWrite);
                 } else {
                     defaultName = generateUniqueName(type);
                 }
@@ -1431,7 +1431,7 @@ wm.variables.services.Variables = [
              * creates a service variable based on the specified details
              * @params {object} variable details
              */
-            createServiceVariable: function (variableDetails) {
+            createServiceVariable: function (variableDetails, overWrite) {
                 /* call base service function to create the variable */
                 var variableCategory = "wm.ServiceVariable",
                     defaultName = variableDetails.name || variableDetails.service.charAt(0).toUpperCase() + variableDetails.service.slice(1) + variableDetails.operation.charAt(0).toUpperCase() + variableDetails.operation.slice(1),
@@ -1441,8 +1441,8 @@ wm.variables.services.Variables = [
 
                 /*If the default variable does not exist, create it.
                  * Else, simply return the variable name.*/
-                if (!isExists(defaultName)) {
-                    createdVariable = create(variableCategory, {owner: variableDetails.owner || "Page"}, defaultName);
+                if (!isExists(defaultName) || overWrite) {
+                    createdVariable = create(variableCategory, {owner: variableDetails.owner || "Page"}, defaultName, overWrite);
                     variableName = createdVariable.name;
                     variableOwner = (createdVariable.owner === VARIABLE_CONSTANTS.OWNER.PAGE) ? $rootScope.activePageName : null;
 
