@@ -70,20 +70,20 @@ WM.module('wm.widgets.basic')
  *                  Name of the label widget.
  * @param {string=} hint
  *                  Title/hint for the label. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {string=} caption
  *                  Content of the label. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {string=} width
  *                  Width of the label.
  * @param {string=} height
  *                  Height of the label.
  * @param {boolean=} required
- *                  required is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  if the required property is set to true, `required` class is applied to the label [an asterik will be displayed next to the content of the label]. <br>
  *                  Default value: `false`. <br>
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the label widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} animation

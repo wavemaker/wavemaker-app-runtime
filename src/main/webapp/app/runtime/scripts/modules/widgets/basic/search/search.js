@@ -245,11 +245,12 @@ WM.module('wm.widgets.basic')
  * @param {string=}  placeholder
  *                   Placeholder for the search widget.
  * @param {number=} tabindex
- *                  This property specifies the tab order of an element.
- * @param {string=}  dataset
- *                   The data to be provided the search widget from a live variable or the property panel, that can be searched onto. <br>
+ *                  This property specifies the tab order of the search widget.
  * @param {string=}  scopedataset
  *                   The script variable that contains the data to be provided the search widget, that can be searched onto.
+ * @param {string=}  dataset
+ *                   The data to be provided the search widget from a live variable or the property panel, that can be searched onto. <br>
+ *                   This is a bindable property.
  * @param {string=}  limit
  *                   Limits the search results to be displayed in the auto-complete.
  * @param {string=}  searchkey
@@ -261,7 +262,7 @@ WM.module('wm.widgets.basic')
  * @param {string=}  datafield
  *                   This property sets the dataValue to be returned by a select editor when the list is populated using the dataSet property.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the search widget on the web page. <br>
  *                  Default value: `true`.
  * @param {string=}  on-submit

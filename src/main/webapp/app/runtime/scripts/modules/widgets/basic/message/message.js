@@ -166,11 +166,12 @@ WM.module('wm.widgets.basic')
  *                  Type of the message. <br>
  *                  Possible values are `success`, `error`, `warn`, and `info`. <br>
  *                  Default value: `success`. <br>
+ *                  This is a bindable property.
  * @param {string=} caption
  *                  Content of the message. <br>
  *                  This property is bindable.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the message widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} animation

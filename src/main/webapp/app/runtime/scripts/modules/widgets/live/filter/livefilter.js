@@ -606,6 +606,29 @@ WM.module('wm.widgets.live')
  * @requires Utils
  * @requires CONSTANTS
  *
+ * @param {string=} name
+ *                  Name of the filter widget.
+ * @param {string=} width
+ *                  Width of the filter widget.
+ * @param {string=} height
+ *                  Height of the filter widget.
+ * @param {string=} layout
+ *                  This property controls how contained widgets are displayed within the widget container. <br>
+ *                  Possible values are `One Column`, `Two Column`, `Three Column`, and `Four Column`. <br>
+ *                  Default value is `One Column`.
+ * @param {string=} scopedataset
+ *                  This property sets a variable to populate the data required to display the list of values.
+ * @param {string=} dataset
+ *                  This property sets the data to show in the filter. <br>
+ *                  This is a bindable property.
+ * @param {boolean=} show
+ *                  This is a bindable property. <br>
+ *                  This property will be used to show/hide the filter on the web page. <br>
+ *                  default value: `true`.
+ * @param {string=} horizontalalign
+ *                  This property used to set text alignment horizontally. <br>
+ *                  Possible values are `left`, `center` and `right`.
+ *
  * @example
  <example module="wmCore">
  <file name="index.html">

@@ -370,28 +370,50 @@ WM.module('wm.widgets.live')
  * @requires WidgetUtilService
  * @requires $compile
  * @requires CONSTANTS
+ * @requires Utils
+ * @requires $compile
  *
+ * @param {string=} name
+ *                  Name of the list container.
  * @param {string=} width
  *                  Width of the list container.
  * @param {string=} height
  *                  Height of the list container.
- * @param {boolean=} show
- *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the list on the web page. <br>
- *                  default value: `true`.
+ * @param {string=} itemsperrow
+ *                  This property controls the number of widgets displayed within this widget container for a horizontal layout. <br>
+ *                  Possible values are `1`, `2`, `3`, `4`, `6`, and `12`. <br>
+ *                  default value: `1`.
  * @param {string=} dataset
  *                  Sets the data for the list.<br>
- *                  This property supports binding with variables.<br>
+ *                  This is a bindable property.<br>
  *                  When bound to a variable, the data associated with the variable is displayed in the list.
  * @param {object=} scopedataset
  *                  Populate data for the list which is defined in the script<br>
  *                  The data is visible only in the run mode.<br>
+ * @param {boolean=} show
+ *                  This is a bindable property. <br>
+ *                  This property will be used to show/hide the list on the web page. <br>
+ *                  default value: `true`.
+ * @param {number=} pagesize
+ *                  This property sets the number of items to show in the drop-down list.
+ * @param {boolean=} shownavigation
+ *                  This property controls whether or not navigation controls are displayed for the live-list.
+ *                  default value: `false`.
+ * @param {boolean=} showrecordcount
+ *                  This property controls whether the total record count is displayed in the data navigator or not.
+ *                  default value: `false`.
  * @param {string=} on-click
- *                  Callback function for `click` event.
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-dbclick
+ *                  Callback function which will be triggered when the widget is double-clicked.
  * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
+ *                  Callback function which will be triggered when the mouse enters the widget.
  * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the mouse leaves the widget.
+ * @param {string=} on-enterkeypress
+ *                  Callback function which will be triggered when the user hits ENTER/Return while focus is in this editor.
+ * @param {string=} on-setrecord
+ *                  Callback function which will be triggered when the record is set using the data-navigator.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

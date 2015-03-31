@@ -85,16 +85,17 @@ WM.module('wm.widgets.basic')
  *                  Name of the html-widget.
  * @param {string=} hint
  *                  Title/hint for the html-widget.<br>
- *                  hint is a bindable property. <br>
+ *                  This is a bindable property. <br>
  * @param {string=} width
  *                  Width of the html-widget.
  * @param {string=} height
  *                  Height of the html-widget.
  * @param {string=} content
- *                  Content of the html-widget.
+ *                  Content of the html-widget. <br>
+ *                  This is a bindable property.
  * @param {boolean=} show
  *                  This property will be used to show/hide the html-widget on the web page. <br>
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  Default value: `true`. <br>
  * @param {boolean=} autoscroll
  *                  This property defines if the html-widget should be allowed to scroll automatically. <br>

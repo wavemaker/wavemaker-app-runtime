@@ -107,21 +107,25 @@ WM.module('wm.widgets.basic')
  *                  Name of the video widget.
  * @param {string=} hint
  *                  Title/hint for the video. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {number=} tabindex
- *                  This property specifies the tab order of an element.
+ *                  This property specifies the tab order of the video widget.
  * @param {string=} width
  *                  Width of the video.
  * @param {string=} height
  *                  Height of the video.
  * @param {string=} videoposter
- *                  poster of the video.
+ *                  poster of the video. <br>
+ *                  This is a bindable property.
  * @param {string=} mp4format
- *                  mp4 format of the video.
+ *                  mp4 format of the video. <br>
+ *                  This is a bindable property.
  * @param {string=} oggformat
- *                  ogg format of the video.
+ *                  ogg format of the video. <br>
+ *                  This is a bindable property.
  * @param {string=} webmformat
- *                  webm format of the video.
+ *                  webm format of the video. <br>
+ *                  This is a bindable property.
  * @param {string=} videopreload
  *                  Preload options for the video. <br>
  *                  The possible values are `none`, `metadata` and `auto`. <br>
@@ -129,11 +133,13 @@ WM.module('wm.widgets.basic')
  * @param {string=} videosupportmessage
  *                  The message shown to the user when the Html5 video is not supported.
  * @param {string=} subtitlesource
- *                  This property allows to set the source url for the subtitle in the .vtt format.
+ *                  This property allows to set the source url for the subtitle in the .vtt format. <br>
+ *                  This is a bindable property.
  * @param {string=} subtitlelang
- *                  This property allows to set the language for the subtitle.
+ *                  This property allows to set the language for the subtitle. <br>
+ *                  This is a bindable property.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the video widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {boolean=} controls

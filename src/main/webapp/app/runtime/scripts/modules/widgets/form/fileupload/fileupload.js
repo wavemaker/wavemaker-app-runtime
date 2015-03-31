@@ -550,9 +550,9 @@ WM.module('wm.widgets.form')
  *                  Name of the fileupload widget.
  * @param {string=} caption
  *                  Caption/Label for the fileupload widget. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {number=} tabindex
- *                  This property specifies the tab order of an element.
+ *                  This property specifies the tab order of the fileupload widget.
  * @param {string=} width
  *                  Width of the fileupload widget.
  * @param {string=} height
@@ -567,7 +567,7 @@ WM.module('wm.widgets.form')
  *                  Switch to single to multiple or multiple to single  file upload widgets. <br>
  *                  Default value: `false`.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the file upload widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} filtertype
@@ -576,9 +576,11 @@ WM.module('wm.widgets.form')
  *                  Default value: `all`.
  * @param {string=} uploadpath
  *                  path to the folder in server where to store. <br>
- *                  By default it stores in 'resources' folder in server.
+ *                  By default it stores in 'resources' folder in server. <br>
+ *                  This is a bindable property.
  * @param {string=} iconclass
- *                  This property defines the class of the icon that is applied to the button.
+ *                  This property defines the class of the icon that is applied to the button. <br>
+ *                  This is a bindable property.
  * @param {string=} on-success
  *                  Callback function which will be triggered when the file upload is success.
  * @param {string=} on-error

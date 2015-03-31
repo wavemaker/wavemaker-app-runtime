@@ -83,13 +83,14 @@ WM.module('wm.widgets.basic')
  * @param {string=}  trackvariable
  *                   This property allows you to bind to the service variable for which you want to show the loading dialog.
  * @param {string=}  image
- *                   Source path of the image in the widget.
+ *                   Source path of the image in the widget. <br>
+ *                   This is a bindable property.
  * @param {string=} width
  *                  Width of the spinner.
  * @param {string=} height
  *                  Height of the spinner.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the spinner widget on the web page. <br>
  *                  Default value: `true`.
  *

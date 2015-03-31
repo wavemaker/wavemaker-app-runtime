@@ -106,28 +106,28 @@ WM.module('wm.widgets.form')
  * @param {string=}  name
  *                   Name of the rich-text-editor widget.
  * @param {string=}  placeholder
- *                   Initial text in the editor.
+ *                   Initial text in the rich-text-editor widget.
  * @param {number=} tabindex
- *                  This property specifies the tab order of an element.
+ *                  This property specifies the tab order of the rich-text-editor widget.
  * @param {string=} width
- *                  Width of the label.
+ *                  Width of the rich-text-editor widget.
  * @param {string=} height
- *                  Height of the label.
+ *                  Height of the rich-text-editor widget.
  * @param {string=} scopedatavalue
  *                  The script variable that contains the data to be displayed on rich-text-editor widget.
  * @param {string=} datavalue
  *                  This is the default value to  be displayed on rich-text-editor widget. <br>
  *                  Note that the display value is just what the user sees initially, and is not always the dataValue returned by the widget. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {boolean=} readonly
  *                   Selecting this checkbox property prevents the user from being able to change the data value of a widget. <br>
  *                   Default value: `false`.
  * @param {boolean=} show
- *                   Show is a bindable property. <br>
+ *                   This is a bindable property. <br>
  *                   This property will be used to show/hide the rich-text-editor widget on the web page. <br>
  *                   Default value: `true`.
  * @param {boolean=} showpreview
- *                   To show or hide the preview part of the editor. <br>
+ *                   To show or hide the preview part of the rich-text-editor widget. <br>
  *                   Default value: `false`.
  * @param {string=}  on-change
  *                   Callback function which will be triggered when the widget value is changed.

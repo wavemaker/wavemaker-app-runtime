@@ -1193,9 +1193,9 @@ WM.module('wm.widgets.form')
  *                  Default value: `USD`. <br>
  * @param {string=} hint
  *                  Title/hint for the currency. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {number=} tabindex
- *                  This property specifies the tab order of an element.
+ *                  This property specifies the tab order of the currency widget.
  * @param {string=} width
  *                  Width of the currency.
  * @param {string=} height
@@ -1203,26 +1203,25 @@ WM.module('wm.widgets.form')
  * @param {string=} scopedatavalue
  *                  variable defined in controller scope. The value of this variable is set as the value to be shown in the currency.
  * @param {string=} datavalue
- *                  Value to be shown in the currency.
+ *                  Value to be shown in the currency. <br>
+ *                  This is a bindable property.
  * @param {number=} minvalue
  *                  Minimum value for currency.
  * @param {number=} maxvalue
  *                  Maximum value for currency.
  * @param {boolean=} required
- *                  Required is a bindable property. <br>
  *                  This property defines if the currency is a required field while form submission. <br>
  *                  Default value: `false`. <br>
  *                  The value of this variable is set as the value to be shown in the currency.
  * @param {boolean=} readonly
- *                  Readonly is a bindable property. <br>
  *                  This property will be used to make the currency widget readonly on the web page. <br>
  *                  Default value: `false`. <br>
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the currency widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {boolean=} disabled
- *                  Disabled is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to disable/enable the currency widget on the web page. <br>
  *                  Default value: `false`. <br>
  * @param {string=} on-change

@@ -417,10 +417,10 @@ WM.module("wm.widgets.basic")
  *                  Height of the data navigator.
  * @param {string=} dataset
  *                  Sets the data for the data navigator.<br>
- *                  This property supports binding with variables.<br>
+ *                  This is a bindable property..<br>
  *                  When bound to a variable, the data associated with the variable becomes the basis for pagination.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the data navigator on the web page. <br>
  *                  default value: `true`.
  * @param {boolean=} showrecordcount

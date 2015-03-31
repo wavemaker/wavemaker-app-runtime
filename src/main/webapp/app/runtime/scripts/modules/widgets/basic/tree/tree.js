@@ -264,7 +264,8 @@ WM.module('wm.widgets.basic')
  * @param {string=} scopedataset
  *                  The script variable that contains the data to be displayed on the tree widget.
  * @param {object=} dataset
- *                  Set this property to a variable to populate the list of values to display.
+ *                  Set this property to a variable to populate the list of values to display. <br>
+ *                  This is a bindable property.
  * @param {string=} nodelabel
  *                  This property from the dataset will be used to display label for the tree node.
  * @param {string=} nodeicon
@@ -272,7 +273,7 @@ WM.module('wm.widgets.basic')
  * @param {string=} nodechildren
  *                  This property from the dataset will be used to display children for the tree node.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the tree widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} on-select

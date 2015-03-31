@@ -85,9 +85,9 @@ WM.module('wm.widgets.basic')
  *                  Name of the picture widget.
  * @param {string=} hint
  *                  Title/hint for the picture. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {number=} tabindex
- *                  This property specifies the tab order of an element.
+ *                  This property specifies the tab order of the picture widget.
  * @param {string=} width
  *                  Width of the picture.
  * @param {string=} height
@@ -109,15 +109,15 @@ WM.module('wm.widgets.basic')
  *                      `thumbnail`: shapes the image to a thumbnail.
  * @param {string=} picturesource
  *                  This property specifies the source for the picture. <br>
- *                  This property is bindable. <br>
+ *                  This is a bindable property. <br>
  *                  Default value is: `resources/images/imagelists/default-image.png`.
  * @param {boolean=} show
  *                  This property will be used to show/hide the picture widget on the web page. <br>
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  Default value: `true`.
  * @param {boolean=} disabled
  *                  This property will be used to disable/enable the picture widget on the web page. <br>
- *                  Disabled is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  Default value: `false`.
  * @param {string=} animation
  *                  This property controls the animation of the picture widget. <br>

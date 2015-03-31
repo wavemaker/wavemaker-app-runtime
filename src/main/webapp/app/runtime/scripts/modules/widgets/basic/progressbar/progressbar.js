@@ -262,7 +262,7 @@ WM.module('wm.widgets.basic')
  *                  Name of the progressbar widget.
  * @param {string=} hint
  *                  Title/hint for the progressbar. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {string=} type
  *                  type of the bar to be displayed. <br>
  *                  possible values are: `default`, `default-striped`, `success`, `success-striped`, `info`, `info-striped`, `warning`, `warning-striped`, `danger`, `danger-striped`. <br>
@@ -273,17 +273,20 @@ WM.module('wm.widgets.basic')
  *                  Height of the progressbar.
  * @param {number=} datavalue
  *                  value of the progressbar.<br>
- *                  array of objects(with keyes `type` and `value`) for multiple-bar, a number otherwise
+ *                  array of objects(with keyes `type` and `value`) for multiple-bar, a number otherwise. <br>
+ *                  This is a bindable property.
  * @param {number=} minvalue
- *                  minvalue of the progressbar.
+ *                  minvalue of the progressbar. <br>
+ *                  This is a bindable property.
  * @param {number=} maxvalue
- *                  maxvalue of the progressbar.
+ *                  maxvalue of the progressbar. <br>
+ *                  This is a bindable property.
  * @param {string=} displayformat
  *                  Format(Absolute/Percentage) in which the progress needs to be displayed.
  * @param {number=} pollinterval
  *                  Time interval in milli seconds to poll the service.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the progressbar widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} on-click

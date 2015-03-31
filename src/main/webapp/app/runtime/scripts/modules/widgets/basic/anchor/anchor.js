@@ -107,14 +107,15 @@ WM.module('wm.widgets.basic')
  *                  Name of the anchor.
  * @param {string=} hint
  *                  Title/hint for the anchor. <br>
- *                  It can be bound to a variable as well so that it takes the value of the variable.
+ *                  This is a bindable property.
  * @param {string=} caption
  *                  Content of the anchor. <br>
- *                  It can be bound to a variable as well so that it takes the value of the variable.
+ *                  This is a bindable property.
  * @param {string=} badgevalue
- *                  Value to be displayed as badge for the anchor.
+ *                  Value to be displayed as badge for the anchor. <br>
+ *                  This is a bindable property.
  * @param {number=} tabindex
- *                  This property specifies the tab order of an element.
+ *                  This property specifies the tab order of the anchor.
  * @param {string=} target
  *                  Target property of the anchor. <br>
  *                  Possible values are: <br>
@@ -127,9 +128,10 @@ WM.module('wm.widgets.basic')
  * @param {string=} height
  *                  Height of the anchor.
  * @param {string=} hyperlink
- *                  href of the anchor.
+ *                  href of the anchor. <br>
+ *                  This is a bindable property.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the anchor on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} animation
@@ -137,9 +139,11 @@ WM.module('wm.widgets.basic')
  *                  The animation is based on the css classes and works only in the run mode. <br>
  *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
  * @param {string=} iconclass
- *                  CSS class for the icon
+ *                  CSS class for the icon. <br>
+ *                  This is a bindable property.
  * @param {string=} iconurl
- *                  url of the icon.
+ *                  url of the icon. <br>
+ *                  This is a bindable property.
  * @param {string=} iconwidth
  *                  Width of the icon. <br>
  *                  Default value: 16px

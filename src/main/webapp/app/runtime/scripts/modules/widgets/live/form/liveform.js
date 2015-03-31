@@ -1301,30 +1301,72 @@ WM.module('wm.widgets.live')
  * @requires $compile
  * @requires $rootScope
  * @requires CONSTANTS
+ * @requires $controller
+ * @requires Utils
  *
+ * @param {string=} name
+ *                  Name of the form widget.
+ * @param {string=} title
+ *                  Title of the form widget.
+ * @param {string=} width
+ *                  Width of the form widget.
+ * @param {string=} height
+ *                  Height of the form widget.
+ * @param {string=} layout
+ *                  This property controls how contained widgets are displayed within the widget container. <br>
+ *                  Possible values are `One Column`, `Two Column`, `Three Column`, and `Four Column`. <br>
+ *                  Default value is `One Column`.
+ * @param {string=} formdata
+ *                  This property sets the data to show in the form. <br>
+ *                  This is a bindable property.
+ * @param {string=} dataset
+ *                  This property sets a variable to populate the data required to display the list of values. <br>
+ *                  This is a bindable property.
+ * @param {boolean=} novalidate
+ *                  This property sets novalidate option for the form. <br>
+ *                  default value: `true`.
+ * @param {string=} insertmessage
+ *                  This property sets the message to be displayed in toaster, when data is inserted in liveform. <br>
+ *                  default value: `Record added successfully`. <br>
+ *                  This is a bindable property.
+ * @param {string=} updatemessage
+ *                  This property sets the message to be displayed in toaster, when data is updated in liveform. <br>
+ *                  default value: `Record updated successfully`. <br>
+ *                  This is a bindable property.
+ * @param {boolean=} show
+ *                  This is a bindable property. <br>
+ *                  This property will be used to show/hide the form on the web page. <br>
+ *                  default value: `true`.
+ * @param {boolean=} autocomplete
+ *                  Sets autocomplete for the form.  <br>
+ *                  Default value is `true`.
+ * @param {boolean=} updatemode
+ *                  This property controls whether live form is on updatemode or not.  <br>
+ *                  Default value is `false`.
  * @param {string=} captionalign
- *                  Defines the alignment of the caption elements of widgets inside the form.<br>
+ *                  Defines the alignment of the caption elements of widgets inside the form. <br>
+ *                  Possible values are `left`, `center`, and `right`. <br>
  *                  Default value for captionalign is `left`.
  * @param {string=} captionposition
  *                  Defines the position of the caption elements of widgets inside the form.<br>
+ *                  Possible values are `left`, `center`, and `right`. <br>
  *                  Default value for captionposition is `left`.
- * @param {string=} autocomplete
- *                  Sets autocomplete for the form.
- *                  Default value for autocomplete is `on`.
- * @param {string=} action
- *                  Sets action for the form.
- * @param {string=} method
- *                  Sets method for the form.
- * @param {string=} invalidate
- *                  Sets invalidate option for the form.
- * @param {string=} model
- *                  Model expects an array of objects for fields example
- *   `[
- *       {"key": "nid", "value": "22", "type": "integer", "required": true, "readonly": false},
- *       {"key": "name", "value": "userName", "type": "string", "required": true, "readonly": false},
- *       {"key": "date", "value": "04-02-1980", "type": "date", "required": true, "readonly": false},
- *       {"key": "isChecked", "value": "false", "type": "boolean", "required": true, "readonly": false}
- *   ]`
+ * @param {string=} captionsize
+ *                  This property sets the width of the caption.
+ * @param {string=} iconclass
+ *                  This property defines the class of the icon that is applied to the button. <br>
+ *                  This is a bindable property.
+ * @param {string=} horizontalalign
+ *                  This property used to set text alignment horizontally. <br>
+ *                  Possible values are `left`, `center` and `right`.
+ * @param {string=} on-success
+ *                  Callback function which will be triggered when the form submit is success.
+ * @param {string=} on-error
+ *                  Callback function which will be triggered when the form submit results in an error.
+ * @param {string=} on-result
+ *                  Callback function which will be triggered when the form submitted.
+ * @param {string=} on-beforeservicecall
+ *                  Callback function which will be triggered before the service call.
  *
  * @example
      <example module="wmCore">

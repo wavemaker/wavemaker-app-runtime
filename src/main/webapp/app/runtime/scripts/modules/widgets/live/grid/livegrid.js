@@ -222,13 +222,21 @@ WM.module('wm.widgets.live')
  * @requires $compile
  * @requires $controller
  * @requires $timeout
+ * @requires DialogService
+ * @requires Utils
  *
+ * @param {string=} name
+ *                  Name of the live grid.
  * @param {string=} width
  *                  Sets the width of the live grid.
  * @param {string=} height
  *                  Sets the height of the live grid.
+ * @param {string=} formlayout
+ *                  This property controls how the form appears. <br>
+ *                  Possible values are `inline` and `dialog`. <br>
+ *                  Default value is `inline`.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the button widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} confirmdelete
@@ -242,6 +250,7 @@ WM.module('wm.widgets.live')
  * @param {object=} dataset
  *                  Sets the data for the grid.<br>
  *                  The data is visible only in the run mode.<br>
+ *                  This is a bindable property. <br>
  *                  When bound to a variable, the data associated with the variable is displayed in the grid.
  * @param {boolean=} showheader
  *                  Sets the display property of the grid header.<br>

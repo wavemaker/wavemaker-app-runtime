@@ -97,16 +97,17 @@ WM.module('wm.widgets.basic')
  *                  Name of the iframe widget.
  * @param {string=} hint
  *                  Title/hint for the iframe widget.<br>
- *                  hint is a bindable property. <br>
+ *                  This is a bindable property. <br>
  * @param {string=} source
- *                  External URL that needs to be embedded within the iframe.
+ *                  External URL that needs to be embedded within the iframe. <br>
+ *                  This is a bindable property.
  * @param {string=} width
  *                  Width of the iframe widget.
  * @param {string=} height
  *                  Height of the iframe widget.
  * @param {boolean=} show
  *                  This property will be used to show/hide the iframe widget on the web page. <br>
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  Default value: `true`. <br>
  * @example
  *   <example module="wmCore">

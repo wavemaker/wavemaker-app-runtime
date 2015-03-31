@@ -47,9 +47,10 @@ WM.module('wm.widgets.basic')
  * @param {string=} name
  *                  Name of the container widget.
  * @param {string=} title
- *                  Title of the container widget.
+ *                  Title of the container widget. <br>
+ *                  This is a bindable property.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the icon widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {string=} animation
@@ -57,7 +58,8 @@ WM.module('wm.widgets.basic')
  *                  The animation is based on the css classes and works only in the run mode. <br>
  *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, `etc`.
  * @param {string=} iconclass
- *                  class name of the icon.
+ *                  class name of the icon. <br>
+ *                  This is a bindable property.
  *
  *
  * @example

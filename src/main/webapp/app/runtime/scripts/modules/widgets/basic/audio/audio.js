@@ -81,15 +81,16 @@ WM.module('wm.widgets.basic')
  *                  Name of the audio widget.
  * @param {string=} hint
  *                  Title/hint for the audio. <br>
- *                  This property is bindable.
+ *                  This is a bindable property.
  * @param {number=} tabindex
- *                  This property specifies the tab order of an element.
+ *                  This property specifies the tab order of the audio widget.
  * @param {string=} width
  *                  Width of the audio.
  * @param {string=} height
  *                  Height of the audio.
  * @param {string=} mp3format
- *                  mp3 format of the audio.
+ *                  mp3 format of the audio. <br>
+ *                  This is a bindable property.
  * @param {string=} audiopreload
  *                  audiopreload options for the audio. <br>
  *                  Possible values are `none`, `metadata`, and `auto`. <br>
@@ -97,7 +98,7 @@ WM.module('wm.widgets.basic')
  * @param {string=} audiosupportmessage
  *                  The message shown to the user when the Html5 audio is not supported.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the audio widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {boolean=} controls
