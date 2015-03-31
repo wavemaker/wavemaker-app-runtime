@@ -220,6 +220,18 @@ WM.module('wm.layouts.containers')
  * @requires WidgetUtilService
  * @requires $rootScope
  *
+ * @param {string=} name
+ *                  Name of the grid.
+ * @param {string=} insert
+ *                  Inserts a row in the grid.
+ * @param {boolean=} width
+ *                  Width for the grid.
+ * @param {boolean=} height
+ *                  Height for the grid.
+ * @param {boolean=} horizontalalign
+ *                  Align the content of the geid to left/right/center. <br>
+ *                  Default value: `left`. <br>
+ *
  * @example
  <example module="wmCore">
      <file name="index.html">

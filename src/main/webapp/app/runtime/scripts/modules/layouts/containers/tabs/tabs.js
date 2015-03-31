@@ -332,7 +332,7 @@ WM.module('wm.layouts.containers')
                 'paneicon': true
             };
 
-        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+        /*Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
             case 'paneicon':
@@ -468,6 +468,8 @@ WM.module('wm.layouts.containers')
  * @param {string=} horizontalalign
  *                  Align the content of the tab to left/right/center. <br>
  *                  Default value: `left`. <br>
+ * @param {string=} taborder
+ *                  Set the order of the tabs. <br>
  *
  * @example
  *   <example module="wmCore">
@@ -711,14 +713,22 @@ WM.module('wm.layouts.containers')
  * @requires WidgetUtilService
  *
  * @param {string=} name
- *                  Name of the tabcontent.
+ *                  Name of the tabs widget.
+ * @param {string=} width
+ *                  Width of the tabs widget.
+ * @param {string=} height
+ *                  Height of the tabs widget.
+ * @param {boolean=} vertical
+ *                  `vertical="true"` aligns the tabs vertically.
+ *                  Default value: `false`
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the tab on the web page. <br>
+ *                  This property will be used to show/hide the tabs on the web page. <br>
  *                  Default value: `true`.
  * @param {string=} horizontalalign
- *                  Align the content of the tab to left/right/center.
- *                  Default value: `left`.
+ *                  Align the content of the tab to left/right/center. <br>
+ *                  Default value: `left`. <br>
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

@@ -1,5 +1,5 @@
 /*global WM*/
-/*Directive for Container*/
+/* Directive for Container */
 
 WM.module('wm.layouts.containers')
     .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
@@ -67,31 +67,49 @@ WM.module('wm.layouts.containers')
  * @param {string=} name
  *                  Name of the container widget.
  * @param {string=} width
- *                  Width of the container.
+ *                  Width of the container widget.
  * @param {string=} height
- *                  height of the container.
+ *                  Height of the container widget.
  * @param {string=} content
  *                  Sets content for the container. <br>
  *                  It can be Inline content(incase of html widget) or Page's content(incase of page container widgets) will be included in the widget.<br>
  *                  Default value: `Inline Content`. <br>
- * @param {string=} show
+ * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the chart widget on the web page. <br>
+ *                  This property will be used to show/hide the container widget on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {string=} animation
+ *                  This property controls the animation of the container widget. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, etc.
  * @param {string=} horizontalalign
- *                  Align the content in the right container to left/right/center.<br>
- * @param {string=} on-swipeup
- *                  Callback function for `swipeup` event.
- * @param {string=} on-swipedown
- *                  Callback function for `swipedown` event.
- * @param {string=} on-swiperight
- *                  Callback function for `swiperight` event.
- * @param {string=} on-swipeleft
- *                  Callback function for `swipeleft` event.
- * @param {string=} on-pinchin
- *                  Callback function for `pinchin` event.
- * @param {string=} on-pinchdown
- *                  Callback function for `pinchdown` event.
+ *                  Align the content in the container to left/right/center.<br>
+ * @param {string=} click
+ *                  Callback function which will be triggered when the container widget is clicked.
+ * @param {string=} double-click
+ *                  Callback function which will be triggered when the container widget is double clicked.
+ * @param {string=} mouse-over
+ *                  Callback function which will be triggered when mouse moves over the container widget.
+ * @param {string=} mouse-out
+ *                  Callback function which will be triggered when mouse moves away from the container widget.
+ * @param {string=} mouse-enter
+ *                  Callback function which will be triggered when mouse enters inside the container widget.
+ * @param {string=} mouse-leave
+ *                  Callback function which will be triggered when mouse leaves the container widget.
+ * @param {string=} enter-key-press
+ *                  Callback function which will be triggered when enter key is pressed.
+ * @param {string=} swipeup
+ *                  Callback function which will be triggered when the container widget is swiped out.
+ * @param {string=} swipedown
+ *                  Callback function which will be triggered when the container widget is swiped down.
+ * @param {string=} swiperight
+ *                  Callback function which will be triggered when the container widget is swiped right.
+ * @param {string=} swipeleft
+ *                  Callback function which will be triggered when the container widget is swiped left.
+ * @param {string=} pinchin
+ *                  Callback function which will be triggered when the container widget is pinched in.
+ * @param {string=} pinchout
+ *                  Callback function which will be triggered when the container widget is pinched out.
  *
  *
  * @example

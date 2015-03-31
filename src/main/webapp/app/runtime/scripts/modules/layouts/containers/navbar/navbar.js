@@ -50,7 +50,7 @@ WM.module('wm.layouts.containers')
 
                     'post': function (scope, element, attrs) {
 
-                        /* register the property change handler */
+                        /* Register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                         /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
                          * style declarations.*/
@@ -69,6 +69,21 @@ WM.module('wm.layouts.containers')
  * @description
  * The 'wmNavbar' directive defines a dynamic navigation bar in the layout.
  * wmNavbar is internally used by wmTopNav.
+ *
+ * @param {string=} title
+ *                  Title of the navabr. This property is a bindable property.
+ * @param {string=} name
+ *                  Name of the navbar.
+ * @param {string=} height
+ *                  Height of the navabr.
+ * @param {string=} imagesource
+ *                  This property sets the image source for the navbar. This property is a bindable property.
+ * @param {string=} show
+ *                  This property determines whether or not the navbar is visible. This property is a bindable property.
+ * @param {boolean=} horizontalalign
+ *                  This property aligns the content of the navbar to left/right/center. <br>
+ *                  Default value: `left`. <br>
+ *
  * @example
  <example>
  <file name="index.html">

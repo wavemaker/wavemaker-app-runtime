@@ -69,28 +69,45 @@ WM.module('wm.layouts.containers')
  * @param {string=} name
  *                  Name of the tile widget.
  * @param {string=} width
- *                  Width of the tile.
+ *                  Width of the tile widget.
  * @param {string=} height
- *                  height of the tile.
- * @param {string=} show
+ *                  Height of the tile widget.
+ * @param {boolean=} Show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the chart widget on the web page. <br>
+ *                  This property will be used to show/hide the tile widget on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {string=} animation
+ *                  This property controls the animation of the tile widget. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, etc.
  * @param {string=} horizontalalign
- *                  Align the content in the right container to left/right/center.<br>
- * @param {string=} on-swipeup
- *                  Callback function for `swipeup` event.
- * @param {string=} on-swipedown
- *                  Callback function for `swipedown` event.
- * @param {string=} on-swiperight
- *                  Callback function for `swiperight` event.
- * @param {string=} on-swipeleft
- *                  Callback function for `swipeleft` event.
- * @param {string=} on-pinchin
- *                  Callback function for `pinchin` event.
- * @param {string=} on-pinchdown
- *                  Callback function for `pinchdown` event.
- *
+ *                  Align the content in the tile widget to left/right/center.<br>
+ * @param {string=} click
+ *                  Callback function which will be triggered when the tile widget is clicked.
+ * @param {string=} double-click
+ *                  Callback function which will be triggered when the tile widget is double-clicked.
+ * @param {string=} mouse-over
+ *                  Callback function which will be triggered when the mouse moves over the tile widget.
+ * @param {string=} mouse-out
+ *                  Callback function which will be triggered when the mouse moves away from the tile widget.
+ * @param {string=} mouse-enter
+ *                  Callback function which will be triggered when the mouse enters inside the tile widget.
+ * @param {string=} mouse-leave
+ *                  Callback function which will be triggered when the mouse leaves the tile widget.
+ * @param {string=} enter-key-press
+ *                  Callback function which will be triggered when the tile enter key is pressed.
+ * @param {string=} swipeup
+ *                  Callback function which will be triggered when the tile widget is swiped up.
+ * @param {string=} swipedown
+ *                  Callback function which will be triggered when the tile widget is swiped down.
+ * @param {string=} swiperight
+ *                  Callback function which will be triggered when the tile widget is swiped right.
+ * @param {string=} swipeleft
+ *                  Callback function which will be triggered when the tile widget is swiped left.
+ * @param {string=} pinchin
+ *                  Callback function which will be triggered when the tile widget is pinched in.
+ * @param {string=} pinchout
+ *                  Callback function which will be triggered when the tile widget is pinched out.
  *
  * @example
  * <example module="wmCore">

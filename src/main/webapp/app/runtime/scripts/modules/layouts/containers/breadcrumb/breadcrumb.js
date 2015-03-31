@@ -85,7 +85,7 @@ WM.module('wm.layouts.containers')
 
                 'post': function (scope, element, attrs) {
                     var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
-                    /* register the property change handler */
+                    /* Register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
@@ -104,6 +104,28 @@ WM.module('wm.layouts.containers')
  * @element ANY
  * @description
  * The 'wmBreadcrumb' directive defines a breadcrumb bar in the layout.
+ *
+ * @param {string=} name
+ *                  Name of the breadcrumb.
+ * @param {string=} height
+ *                  Height of the breadcrumb.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the value for the breadcrumb widget from a variable defined in the page controller. <br>
+ * @param {string=} value
+ *                  This property displays the list of values to display in the breadcrumb widget. It is a bindable property.
+ * @param {string=} itemicon
+ *                  This property defines the value to be used as key for the icon from the list of values bound to the breadcrumb widget as an array of objects of different values.
+ * @param {string=} itemlabel
+ *                  This property defines the value to be used as key for the label from the list of values bound to the breadcrumb widget as an array of objects of different values.
+ * @param {string=} itemlink
+ *                  This property defines the value to be used as key for the link from the list of values bound to the breadcrumb widget as an array of objects of different values.
+ * @param {boolean=} show
+ *                  This property determines whether the breadcrumb widget is visible or not. It is a bindable property.
+ *                  Default value: `true`. <br>
+ * @param {boolean=} horizontalalign
+ *                  Align the content of the breadcrumb widget to left/right/center. <br>
+ *                  Default value: `left`. <br>
+ *
  * @example
  * <example module="wmCore">
  * <file name="index.html">

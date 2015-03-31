@@ -193,7 +193,38 @@ WM.module('wm.layouts.containers')
  * @description
  * The 'wmNav' directive defines a dynamic navigation in the layout.
  * The 'wmNav' directive defines a nav in the layout to contain nav items.
+ *
+ * * *
+ * @param {string=} name
+ *                  Name of the nav widget.
+ * @param {string=} type
+ *                  Type of the nav widget. [Options: navbar, pills, tabs]
+ * @param {string=} height
+ *                  Height of the nav widget.
+ * @param {string=} layout
+ *                  This property controls how contained widgets are displayed within this widget container. [Options: Stacked, Justified]
+ * @param {string=} scopedatavalue
+ *                  This property accepts the value for the nav widget from a variable defined in the controller page. <br>
+ * @param {string=} value
+ *                  This property sets a variable to populate the list of values to display. This property is a bindable property.
+ * @param {string=} itemicon
+ *                  This property defines the value to be used as key for the icon from the list of values bound to the nav widget as an array of objects of different values.
+ * @param {string=} itemlabel
+ *                  This property defines the value to be used as key for the label from the list of values bound to the nav widget as an array of objects of different values.
+ * @param {string=} itemlink
+ *                  This property defines the value to be used as key for the link from the list of values bound to the nav widget as an array of objects of different values.
+ * @param {string=} itemchildren
+ *                  This property specifies the sub-menu items
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the nav widget on the web page. <br>
+ *                  Default value: `true`.
+ * @param {string=} horizontalalign
+ *                  This property aligns the content of the nav to left/right/center.
+ *                  Default value: `left`.
+
  * @example
+
  *       <example module="wmCore">
  *          <file name="index.html">
  *              <div class="wm-app" data-ng-controller="Ctrl">

@@ -64,6 +64,21 @@ WM.module('wm.layouts.containers')
  * @description
  * The 'wmList' directive defines a dynamic list in the layout.
  * wmList is internally used by wmTopNav.
+ *
+ * @param {string=} name
+ *                  Sets the name of the list.
+ * @param {boolean=} height
+ *                  Sets the height for the list.
+ * @param {boolean=} layout
+ *                  Sets the layout for the list.
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the list widget on the web page. <br>
+ *                  Default value: `true`.
+ * @param {boolean=} horizontalalign
+ *                  Align the content of the list to left/right/center. <br>
+ *                  Default value: `left`. <br>
+ *
  * @example
  <example>
  <file name="index.html">

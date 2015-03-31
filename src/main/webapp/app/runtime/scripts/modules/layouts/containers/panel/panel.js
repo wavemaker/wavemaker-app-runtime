@@ -89,7 +89,7 @@ WM.module('wm.layouts.containers')
                                 scope.helpClass = scope.helpClass ? null : 'show-help';
                             }
                         };
-                        /* close the panel */
+                        /* Close the panel */
                         scope.closePanel = function () {
                             scope.show = false;
                         };
@@ -126,36 +126,74 @@ WM.module('wm.layouts.containers')
  * @requires Utils
  * @requires CONSTANTS
  *
+ * @param {string=} title
+ *                  Title of the panel widget. This property is a bindable property.
  * @param {string=} name
  *                  Name of the panel widget.
+ * @param {string=} description
+ *                  Description for the panel widget. This property is a bindable property.
  * @param {string=} width
- *                  Width of the panel.
+ *                  Width of the panel widget.
  * @param {string=} height
- *                  height of the panel.
+ *                  Height of the panel widget.
+ * @param {boolean=} showheader
+ *                  Show/Hide header of the panel widget.
  * @param {string=} content
- *                  Sets content for the panel. <br>
- *                  It can be Inline content(incase of html widget) or Page's content(incase of page container widgets) will be included in the widget.<br>
+ *                  Sets content for the panel widget. <br>
+ *                  Page's content will be included in the widget.<br>
  *                  Default value: `Inline Content`. <br>
- * @param {string=} show
+ * @param {string=} helptext
+ *                  To show help text for the panel widget. Help panel on the right is shown only when help text is given. This property is a bindable property.
+ * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the chart widget on the web page. <br>
+ *                  This property will be used to show/hide the panel widget on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {boolean=} collapsible
+ *                  To enable control for collapsing/expanding the panel widget.
+ * @param {boolean=} closable
+ *                  To apply close button in the panel widget.
+ * @param {string=} actions
+ *                  To set the actions for the panel widget. This property is a bindable property.
+ * @param {boolean=} expanded
+ *                  To set the default state for the panel widget, whether it is expanded or collapsed.
+ * @param {string=} animation
+ *                  This property controls the animation of the panel widget. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are `bounce`, `flash`, `pulse`, `rubberBand`, `shake`, etc.
+ * @param {string=} iconclass
+ *                  To define class of icon applied to the button for the panel widget. This property is a bindable property.
  * @param {string=} horizontalalign
- *                  Align the content in the right panel to left/right/center.<br>
- * @param {string=} on-swipeup
- *                  Callback function for `swipeup` event.
- * @param {string=} on-swipedown
- *                  Callback function for `swipedown` event.
- * @param {string=} on-swiperight
- *                  Callback function for `swiperight` event.
- * @param {string=} on-swipeleft
- *                  Callback function for `swipeleft` event.
- * @param {string=} on-pinchin
- *                  Callback function for `pinchin` event.
- * @param {string=} on-pinchdown
- *                  Callback function for `pinchdown` event.
- *
- *
+ *                  Align the content in the panel to left/right/center.<br>
+ * @param {string=} mouseover
+ *                  Callback function which will be triggered when the mouse moves over the panel.
+ * @param {string=} mouseout
+ *                  Callback function which will be triggered when the mouse away from the panel.
+ * @param {string=} mouseenter
+ *                  Callback function which will be triggered when the mouse enters inside the panel.
+ * @param {string=} mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the panel.
+ * @param {string=} enterkeypress
+ *                  Callback function which will be triggered when the user hits the ENTER/Return while the focus is on this editor.
+ * @param {string=} swipeup
+ *                  Callback function which will be triggered when the panel is swiped up.
+ * @param {string=} swipedown
+ *                  Callback function which will be triggered when the panel is swiped down.
+ * @param {string=} swiperight
+ *                  Callback function which will be triggered when the panel is swiped right.
+ * @param {string=} swipeleft
+ *                  Callback function which will be triggered when the panel is swiped left.
+ * @param {string=} pinchin
+ *                  Callback function which will be triggered when the panel is pinched in.
+ * @param {string=} pinchout
+ *                  Callback function which will be triggered when the panel is pinched out.
+ * @param {string=} on-close
+ *                  Callback function which will be triggered when the panel is closed.
+ * @param {string=} on-expand
+ *                  Callback function which will be triggered when the panel is expanded.
+ * @param {string=} on-collapse
+ *                  Callback function which will be triggered when the panel is collapsed.
+ * @param {string=} on-actions-click
+ *                  Callback function which will be triggered when the action icon is clicked.
  * @example
  <example module="wmCore">
     <file name="index.html">

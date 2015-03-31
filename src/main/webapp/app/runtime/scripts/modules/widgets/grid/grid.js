@@ -20,41 +20,76 @@
  * @requires CONSTANTS
  * @requires $rootScope
  *
+ * @param {string=} caption
+ *                  Caption of the grid.
+ * @param {string=} name
+ *                  Sets the name of the grid.
  * @param {string=} width
  *                  Sets the width of the grid.
  * @param {string=} height
  *                  Sets the height of the live grid.
- * @param {boolean=} show
- *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the button widget on the web page. <br>
- *                  Default value: `true`. <br>
- * @param {string=} confirmdelete
- *                  Sets the text to be displayed before delete operation on  any of the grid rows.<br>
- * @param {boolean=} gridfirstrowselect
- *                  When enabled, the first row of the grid is highlighted by default.<br>
- * @param {boolean=} deleterow
- *                  When enabled, this displays Delete buttons in each row.<br>
- *                  When clicked on the button, the corresponding row is deleted.
- * @param {string=} scopedataset
- *                  Sets the data for the grid.<br>
- *                  This property supports binding with variables.<br>
- *                  When bound to a variable, the data associated with the variable is displayed in the grid.
- * @param {object=} dataset
- *                  Sets the data for the grid.<br>
- *                  The data is visible only in the run mode.<br>
- *                  When bound to a variable, the data associated with the variable is displayed in the grid.
  * @param {boolean=} showheader
- *                  Sets the display property of the grid header.<br>
- *                  When enabled, the grid header is not displayed.
- * @param {boolean=} shownavigation
- *                  When enabled, paging is enabled for the grid to navigate across pages.<br>
- *                  Default value for `shownavigation` is `false`.
- * @param {boolean=} gridsearch
- *                  When enabled, search is enabled for the grid to search through the grid data.<br>
- *                  The value entered in the Search text box is searched in the grid and the relevant rows are displayed.<br>
- *                  Default value for `gridsearch` is `false`.
+ *                  This property determines if the header has to be shown/hidden. <br>
+ *                  Defualt value: `true`. <br>
+ * @param {string=} scopedataset
+ *                  This property accepts the value for the grid widget from a variable defined in the controller page. <br>
+ * @param {string=} dataset
+ *                  This property determines the list of values to display for the grid. It is a bindable property.
+ * @param {string=} editcolumns
+ *                  This property determines the columns to edit for the grid.
+ * @param {boolean=} readonlygrid
+ *                  This property determines if the grid has read-only behaviour. <br>
+ *                  Default value: `true`. <br>
+ * @param {boolean=} show
+ *                  This property determines whether the grid widget is visible or not. It is a bindable property.
+ *                  Default value: `true`. <br>
+ * @param {boolean=} showtotalrecords
+ *                  This property controls whether the total record count is displayed in the data navigator or not. <br>
+ *                  Default value: `true`. <br>
+ * @param {boolean=} multiselect
+                    Show a multiselect checkbox column in grid widget.
+ * @param {boolean=} radiocolumn
+ *                  Show a radio column in grid widget.
+ * @param {boolean=} enablesearch
+ *                  Show search box for searching in grid widget.
+ * @param {boolean=} searchlabel
+ *                  The search label to show for the search box.
+ * @param {boolean=} showrowindex
+ *                  Show row index column in the grid widget
+ * @param {boolean=} selectfirstrecord
+ *                  If this property is checked, the first record of the grid will be selected automatically when the grid is displayed.
+ * @param {string=} click
+ *                  Callback function which will be triggered on clicking the grid.
+ * @param {string=} enterpresskey
+ *                  Callback function which will be triggered on pressing the Enter key.
+ * @param {string=} show
+ *                  Callback function which will be triggered  any time a widget is shown due to changes in its parent's state.
+ * @param {string=} hide
+ *                  Callback function which will be triggered  any time a widget is hidden due to changes in its parent's state
+ * @param {string=} onselect
+ *                  Callback function which will be triggered when the grid is selected.
+ * @param {string=} ondeselect
+ *                  Callback function which will be triggered when the grid is unselected.
+ * @param {string=} datasort
+ *                  Callback function which will be triggered when the user clicks the grid headers to sort your grid.
+ * @param {string=} headerclick
+ *                  Callback function which will be triggered when the user clicks the grid headers.
+ * @param {string=} rowclick
+ *                  Callback function which will be triggered when the user clicks the rows in the grid.
+ * @param {string=} columnselect
+ *                  Callback function which will be triggered when the user selects a column.
+ * @param {string=} columndeselect
+ *                  Callback function which will be triggered when the user deselects a column.
+ * @param {string=} recorddelete
+ *                  Callback function which will be triggered when the user deletes a row.
+ * @param {string=} beforerecordinsert
+ *                  Callback function which will be triggered before a new row in inserted into the grid.
+ * @param {string=} afterrecordinsert
+ *                  Callback function which will be triggered after a new row in inserted into the grid.
+ * @param {string=} beforerecordsupdate
+ *                  Callback function which will be triggered when the record is set using the data-navigator.
  * @example
- * <example module="wmCore">
+ * <example module= "wmCore">
  *    <file name="index.html">
  *        <div data-ng-controller="Ctrl" class="wm-app">
  *            <wm-grid dataset="gridVariable" gridsearch="true">

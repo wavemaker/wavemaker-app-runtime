@@ -270,6 +270,8 @@ WM.module('wm.layouts.containers')
  *
  * @param {string=} name
  *                  Name of the accordion.
+ * @param {string=} tabindex
+ *                  The tabindex attribute specifies the tab order of an element.
  * @param {string=} width
  *                  Width of the accordion.
  * @param {string=} height
@@ -282,9 +284,6 @@ WM.module('wm.layouts.containers')
  *                  True value for closeothers property will collapse the panes that are expanded on expand of a pane. <br>
  *                  False value for closeothers property will not collapse the expaneded panes on expand of a pane. <br>
  *                  Default value: `true`.
- * @param {string=} horizontalalign
- *                  Align the content of the accordion to left/right/center. <br>
- *                  Default value: `left`. <br>
  *
  * @example
  *   <example module="wmCore">

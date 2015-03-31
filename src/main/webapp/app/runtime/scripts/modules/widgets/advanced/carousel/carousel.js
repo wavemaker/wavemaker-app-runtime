@@ -173,7 +173,7 @@ WM.module('wm.widgets.advanced')
         };
     }]).directive('wmCarouselContent', ['PropertiesFactory', '$templateCache',function (PropertiesFactory, $templateCache) {
         'use strict';
-        /* get the properties related to the carousel-content */
+        /* Get the properties related to the carousel-content */
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']);
         return {
             'restrict': 'E',

@@ -37,10 +37,10 @@ WM.module('wm.layouts.containers')
                 });
                 break;
             case 'captionalign':
-                scope.captionAlignClass = "align-"+ newVal;
+                scope.captionAlignClass = "align-" + newVal;
                 break;
             case 'captionposition':
-                scope.captionPositionClass = "position-"+ newVal;
+                scope.captionPositionClass = "position-" + newVal;
                 break;
             case 'novalidate':
                 if (newVal === true || newVal === 'true') {
@@ -93,7 +93,7 @@ WM.module('wm.layouts.containers')
                         WM.forEach(fileTypeInputs, function (input) {
                             files = input.files;
                             serializedArray.push({name: input.name, value: files});
-                        })
+                        });
                     }
                     return scope.onSubmit({$event: event, $scope: scope, $formData: serializedArray});
                 }
@@ -148,27 +148,41 @@ WM.module('wm.layouts.containers')
  * @requires WidgetUtilService
  * @requires $compile
  *
+ * @param {string=} title
+ *                  Title of the form. This property is a bindable property.
+ * @param {string=} name
+ *                  Name of the form.
+ * @param {string=} target
+ *                  Defines the target for the form.
+ * @param {string=} width
+ *                  Width of the form.
+ * @param {string=} height
+ *                  Height of the form.
+ * @param {string=} layout
+ *                  Defines the layout of the form.
+ * @param {string=} method
+ *                  Defines the method to be used for submission of the form to the server [GET, POST].
+ * @param {string=} action
+ *                  Defines the action to be performed on successful submission of the form. This property is a bindable property.
+ * @param {string=} enctype
+ *                  enctype for form submit, i.e, encryption type for data submission, Example:"application/x-www-form-urlencoded", "multipart/form-data", "text/plain"
+ * @param {string=} novalidate
+ *                  Sets novalidate option for the form
+ * @param {string=} autocomplete
+ *                  Sets autocomplete for the form.
  * @param {string=} captionalign
  *                  Defines the alignment of the caption elements of widgets inside the form.<br>
  *                  Default value for captionalign is `left`.
  * @param {string=} captionposition
  *                  Defines the position of the caption elements of widgets inside the form.<br>
  *                  Default value for captionposition is `left`.
- * @param {string=} autocomplete
- *                  Sets autocomplete for the form.
+ * @param {string=} captionsize
+ *                  Defines the size of the caption displayed inside the form.<br>
+ *                  Default value for captionalign is `left`.
+ * @param {string=} horizontalalign
+ *                  Align the content of the accordion-content to left/right/center.
+ *                  Default value: `left`.
  *                  Default value for autocomplete is `on`.
- * @param {string=} action
- *                  Sets action for the form.
- * @param {string=} method
- *                  Sets method for the form.
- * @param {string=} invalidate
- *                  Sets invalidate option for the form.
- * @param {string=} submitbutton
- *                  Adds a submit button to the form.
- * @param {string=} resetbutton
- *                  Adds a reset button to the form.
- * @param {string=} on-submit
- *                  Callback function for `submit` event.
  * @param {string=} on-swipeup
  *                  Callback function for `swipeup` event.
  * @param {string=} on-swipedown
@@ -179,8 +193,10 @@ WM.module('wm.layouts.containers')
  *                  Callback function for `swipeleft` event.
  * @param {string=} on-pinchin
  *                  Callback function for `pinchin` event.
- * @param {string=} on-pinchdown
- *                  Callback function for `pinchdown` event.
+ * @param {string=} on-pinchout
+ *                  Callback function for `pinchout` event.
+ * @param {string=} on-submit
+ *                  Callback function for `submit` event.
  *
  *
  * @example
