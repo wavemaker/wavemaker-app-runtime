@@ -239,11 +239,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.wordnik</groupId>
             <artifactId>swagger-annotations</artifactId>
         </dependency>
@@ -264,6 +259,7 @@
             <artifactId>sqljdbc4</artifactId>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>

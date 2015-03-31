@@ -28,7 +28,6 @@
         <spring.retry.version>1.0.3.RELEASE</spring.retry.version>
 
         <hibernate.version>4.3.5.Final</hibernate.version>
-        <hibernate.tools.version>4.3.1.CR1</hibernate.tools.version>
         <hibernate.validator.version>4.2.0.Final</hibernate.validator.version>
 
         <commons.beanutils.version>1.9.1</commons.beanutils.version>
@@ -42,7 +41,6 @@
         <commons.collections.version>3.2.1</commons.collections.version>
 
         <guava.version>14.0.1</guava.version>
-        <freemarker.version>2.3.20</freemarker.version>
 
         <db.hsql.driver.version>2.3.2</db.hsql.driver.version>
         <db.oracle.driver.version>11.2.0</db.oracle.driver.version>
@@ -53,17 +51,12 @@
         <fasterxml.json.version>2.4.0-rc3</fasterxml.json.version>
         <wm.jackson.databind.version>2.4.0-rc3-wm1</wm.jackson.databind.version>
 
-        <swaggerdocs.version>0.0.4</swaggerdocs.version>
         <wavemaker-api-tools.version>0.1.3</wavemaker-api-tools.version>
         <mimemagic.version>0.1.3</mimemagic.version>
-        <jsoup.version>1.8.1</jsoup.version>
         <cxf-tools-wsdlto-databinding-jaxb.version>2.7.11</cxf-tools-wsdlto-databinding-jaxb.version>
         <cxf-tools-wsdlto-frontend-jaxws.version>2.7.11</cxf-tools-wsdlto-frontend-jaxws.version>
         <cxf-tools-common.version>2.7.11</cxf-tools-common.version>
         <commons-validator.version>1.3.1</commons-validator.version>
-        <maven.embedder.version>3.1.1</maven.embedder.version>
-        <aether.connector.wagon.version>0.9.0.M2</aether.connector.wagon.version>
-        <wagon.http.lightweight.version>2.5</wagon.http.lightweight.version>
     </properties>
 
     <modules>
@@ -88,33 +81,6 @@
         </resources>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>properties-maven-plugin</artifactId>
-                    <version>1.0-alpha-2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>1.2</version>
-                    <executions>
-                        <execution>
-                            <id>generate-buildnumber</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>create</goal>
-                            </goals>
-                            <configuration>
-                                <buildNumberPropertiesFileLocation>${main.basedir}/buildNumber.properties
-                                </buildNumberPropertiesFileLocation>
-                                <format>{0,number}</format>
-                                <items>
-                                    <item>buildNumber</item>
-                                </items>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
                 <plugin>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>1.7</version>
@@ -176,16 +142,12 @@
                     </executions>
                     <configuration>
                         <archive>
+                            <addMavenDescriptor>false</addMavenDescriptor>
                             <manifest>
                                 <addClasspath>true</addClasspath>
                             </manifest>
                         </archive>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>2.1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -241,38 +203,10 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.bsc.maven</groupId>
-                    <artifactId>maven-processor-plugin</artifactId>
-                    <version>2.0.5</version>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>tomcat-maven-plugin</artifactId>
                     <version>1.1</version>
                 </plugin>
-                <!--<plugin>
-                    <groupId>com.wavemaker.gateway</groupId>
-                    <artifactId>swaggerdocs-maven-plugin</artifactId>
-                    <version>${swaggerdocs.version}</version>
-                    <executions>
-                        <execution>
-                            <id>default-cli</id>
-                            <phase>install</phase>
-                            <configuration>
-                                <basePath>/services</basePath>
-                                <docTitle>WaveMaker Studio API Docs</docTitle>
-                                <docOutDir>${project.build.directory}/apidocs</docOutDir>
-                                <includeJarFolders>
-                                    <includeJarFolder>WEB-INF/classes</includeJarFolder>
-                                    <includeJarFolder>WEB-INF/lib</includeJarFolder>
-                                </includeJarFolders>
-                            </configuration>
-                            <goals>
-                                <goal>document</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>-->
             </plugins>
         </pluginManagement>
     </build>
@@ -335,53 +269,6 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-core</artifactId>
                 <version>${hibernate.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate</groupId>
-                <artifactId>hibernate-tools</artifactId>
-                <version>${hibernate.tools.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.beanshell</groupId>
-                        <artifactId>bsh</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>ant</groupId>
-                        <artifactId>ant</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.jboss.spec.javax.transaction</groupId>
-                        <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.jboss.logging</groupId>
-                        <artifactId>jboss-logging-annotations</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.jboss</groupId>
-                        <artifactId>jandex</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.tycho</groupId>
-                        <artifactId>org.eclipse.jdt.core</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse</groupId>
-                        <artifactId>text</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.core</groupId>
-                        <artifactId>runtime</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.eclipse.equinox</groupId>
-                        <artifactId>common</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>freemarker</groupId>
-                        <artifactId>freemarker</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -490,11 +377,6 @@
                 <version>${guava.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.freemarker</groupId>
-                <artifactId>freemarker</artifactId>
-                <version>${freemarker.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.wavemaker.tools</groupId>
                 <artifactId>wavemaker-api-tools</artifactId>
                 <version>${wavemaker-api-tools.version}</version>
@@ -504,11 +386,6 @@
                         <artifactId>spring-data-commons</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.javaparser</groupId>
-                <artifactId>javaparser</artifactId>
-                <version>1.0.11</version>
             </dependency>
 
             <dependency>
@@ -647,32 +524,6 @@
                 <version>3.1.3</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.ant</groupId>
-                <artifactId>ant</artifactId>
-                <version>1.9.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-launcher</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat</groupId>
-                <artifactId>catalina-ant</artifactId>
-                <version>6.0.41</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>coyote</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.tomcat</groupId>
-                        <artifactId>catalina</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.xmlbeans</groupId>
                 <artifactId>xmlbeans</artifactId>
                 <version>2.4.0</version>
@@ -681,11 +532,6 @@
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>woodstox-core-asl</artifactId>
                 <version>4.2.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jdt.core.compiler</groupId>
-                <artifactId>ecj</artifactId>
-                <version>4.4</version>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -716,11 +562,6 @@
                 <groupId>wsdl4j</groupId>
                 <artifactId>wsdl4j</artifactId>
                 <version>1.6.2</version>
-            </dependency>
-            <dependency>
-                <groupId>com.googlecode.flyway</groupId>
-                <artifactId>flyway-core</artifactId>
-                <version>2.3</version>
             </dependency>
             <dependency>
                 <groupId>org.jsoup</groupId>
@@ -763,13 +604,6 @@
                 <version>1.3.10</version>
             </dependency>
 
-
-            <dependency>
-                <groupId>org.jboss.logging</groupId>
-                <artifactId>jboss-logging</artifactId>
-                <version>3.1.3.GA</version>
-            </dependency>
-
             <dependency>
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>
@@ -804,24 +638,6 @@
                 <groupId>commons-validator</groupId>
                 <artifactId>commons-validator</artifactId>
                 <version>${commons-validator.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-embedder</artifactId>
-                <version>${maven.embedder.version}</version>
-            </dependency>
-            <!-- responsible for uploads/downloads to/from a certain kind of remote repository-->
-            <dependency>
-                <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-connector-wagon</artifactId>
-                <version>${aether.connector.wagon.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-http-lightweight</artifactId>
-                <version>${wagon.http.lightweight.version}</version>
             </dependency>
 
             <!-- Test Dependencies -->
@@ -861,12 +677,6 @@
                 <version>1.8.5</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.apache.geronimo.specs</groupId>
-                <artifactId>geronimo-servlet_3.0_spec</artifactId>
-                <version>1.0</version>
-                <scope>test</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -896,17 +706,10 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_3.0_spec</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
