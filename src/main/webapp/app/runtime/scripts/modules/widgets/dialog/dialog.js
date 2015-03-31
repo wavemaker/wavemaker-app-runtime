@@ -328,7 +328,6 @@ WM.module('wm.widgets.dialog')
         };
     }]);
 
-
 /**
  * @ngdoc directive
  * @name wm.widgets.dialog.directive:wmDialog
@@ -418,6 +417,29 @@ WM.module('wm.widgets.dialog')
  *
  * @param {string=} name
  *                  Name of the dialogheader.
+ * @param {string=} hint
+ *                  Any text or html you enter for this property will be shown as a tooltip if the mouse hovers over this widget.
+ * @param {string=} width
+ *                  Width of the dialog.
+ * @param {string=} height
+ *                  Height of the dialog.
+ * @param {list=} animation
+ *                  This property controls the animation of the anchor. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are "bounce", "flash", "pulse", "rubberBand", "shake", etc.
+ * @param {string=} iconclass
+ *                  iconclass sets the icon for dialog header
+ * @param {string=} iconwidth
+ *                  Optional, This sets the width of the icon in dialog header.
+ * @param {string=} iconheight
+ *                  Optional, This sets the height of the icon in dialog header.
+ * @param {string=} iconmargin
+ *                  Optional, This sets the margin of the icon in dialog header.
+ * @param {string=} on-close
+ *                  Callback function which will be triggered when the dialog is closed.
+ * @param {string=} on-opened
+ *                  Callback function which will be triggered after the dialog is opened.
+ *
  *
  * @example
  *   <example module="wmCore">
@@ -445,6 +467,9 @@ WM.module('wm.widgets.dialog')
  *                  $scope.onCloseCallBack = function () {
  *                      console.log("inside close callback");
  *                  }
+ *                  $scope.onOpenedCallBack = function () {
+ *                      console.log("inside opened callback");
+ *                  }
  *              }
  *       </file>
  *   </example>
@@ -470,6 +495,10 @@ WM.module('wm.widgets.dialog')
  *
  * @param {string=} name
  *                  Name of the dialogcontent.
+ * @param {boolean=} show
+ *                  show is a bindable property. <br>
+ *                  This property will be used to show/hide the dialog on the web page. <br>
+ *                  Default value: `true`.
  *
  * @example
  *   <example module="wmCore">
@@ -521,6 +550,10 @@ WM.module('wm.widgets.dialog')
  *
  * @param {string=} name
  *                  Name of the dialogaction.
+ * @param {boolean=} show
+ *                  show is a bindable property. <br>
+ *                  This property will be used to show/hide the dialog on the web page. <br>
+ *                  Default value: `true`.
  *
  * @example
  *   <example module="wmCore">

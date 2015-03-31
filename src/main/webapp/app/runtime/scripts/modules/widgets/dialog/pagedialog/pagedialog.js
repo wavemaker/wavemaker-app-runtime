@@ -108,29 +108,44 @@ WM.module('wm.widgets.dialog')
  * @requires CONSTANTS
  * @requires $routeParams
  *
- * @param {string=} name
- *                  Name of the dialog.
  * @param {string=} title
  *                  title of the dialog.
- * @param {string=} height
- *                  Height of the dialog.
- * @param {string=} width
- *                  Width of the dialog.
+ * @param {string=} name
+ *                  Name of the dialog.
  * @param {string=} oktext
  *                  oktext is a bindable property. <br>
  *                  Text to be shown in dialog's Ok button.
+ * @param {string=} width
+ *                  Width of the dialog.
+ * @param {string=} height
+ *                  Height of the dialog.
  * @param {boolean=} show
  *                  show is a bindable property. <br>
  *                  This property will be used to show/hide the dialog on the web page. <br>
  *                  Default value:`true`.
  * @param {string=} page
- *                  page sets the page from the project whose content needs to be shown in the page dialog
- * @param {string=} iconname
- *                  iconname sets the icon for dialog header
- * @param {string=} on-close
- *                  Callback function which will be triggered when the dialog is closed.
+ *                  page sets the page from the project whose content needs to be shown in the page dialog.
+ * @param {list=} content
+ *                  This property will be include any other page/partial in this widget.
+ *                  Possible values are 'login', 'header', 'footer', etc.
+ * @param {list=} animation
+ *                  This property controls the animation of the dialog. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are "bounce", "flash", "pulse", "rubberBand", "shake", etc.
+ * @param {string=} iconclass
+ *                  iconclass sets the icon for dialog header.
+ * @param {string=} iconwidth
+ *                  Optional, This sets the width of the icon in dialog header.
+ * @param {string=} iconheight
+ *                  Optional, This sets the height of the icon in dialog header.
+ * @param {string=} iconmargin
+ *                  Optional, This sets the margin of the icon in dialog header.
  * @param {string=} on-ok
  *                  Callback function which will be triggered when the ok button for the dialog is clicked.
+ * @param {string=} on-cancel
+ *                  Callback function which will be triggered when the cancel button for the dialog is clicked.
+ * @param {string=} on-opened
+ *                  Callback function which will be triggered after the dialog is opened.
  *
  * @example
  *    <example module="wmCore">
@@ -148,6 +163,9 @@ WM.module('wm.widgets.dialog')
  *              }
  *              $scope.onOkCallBack = function () {
  *                  console.log("inside ok callback");
+ *              }
+ *              $scope.onOpenedCallBack = function () {
+ *                  console.log("inside opened callback");
  *              }
  *          }
  *       </file>

@@ -155,14 +155,10 @@ WM.module('wm.widgets.dialog')
  * @requires $templateCache
  * @requires CONSTANTS
  *
- * @param {string=} name
- *                  Name of the dialog.
  * @param {string=} title
  *                  title of the dialog.
- * @param {string=} height
- *                  Height of the dialog.
- * @param {string=} width
- *                  Width of the dialog.
+ * @param {string=} name
+ *                  Name of the dialog.
  * @param {string=} message
  *                  message is a bindable property. <br>
  *                  Message to be shown in the dialog.
@@ -172,18 +168,34 @@ WM.module('wm.widgets.dialog')
  * @param {string=} canceltext
  *                  canceltext is a bindable property. <br>
  *                  Text to be shown in dialog's Cancel button.
+ * @param {string=} width
+ *                  Width of the dialog.
+ * @param {string=} height
+ *                  Height of the dialog.
  * @param {boolean=} show
  *                  show is a bindable property. <br>
  *                  This property will be used to show/hide the accordion on the web page. <br>
  *                  Default value: `true`.
+ * @param {list=} animation
+ *                  This property controls the animation of the dialog. <br>
+ *                  The animation is based on the css classes and works only in the run mode. <br>
+ *                  Possible values are "bounce", "flash", "pulse", "rubberBand", "shake", etc.
  * @param {string=} iconclass
  *                  iconclass sets the icon for dialog header
+ * @param {string=} iconwidth
+ *                  Optional, This sets the width of the icon in dialog header
+  * @param {string=} iconheight
+ *                  Optional, This sets the height of the icon in dialog header
+ * @param {string=} iconmargin
+ *                  Optional, This sets the margin of the icon in dialog header
  * @param {string=} on-close
  *                  Callback function which will be triggered when the dialog is closed.
  * @param {string=} on-ok
  *                  Callback function which will be triggered when the ok button for the dialog is clicked.
  * @param {string=} on-cancel
  *                  Callback function which will be triggered when the cancel button for the dialog is clicked.
+ * @param {string=} on-opened
+ *                  Callback function which will be triggered after the dialog is opened.
  *
  * @example
  *    <example module="wmCore">
@@ -204,6 +216,9 @@ WM.module('wm.widgets.dialog')
  *               }
  *               $scope.onCancelCallBack = function () {
  *                   console.log("inside cancel callback");
+ *               }
+ *               $scope.onOpenedCallBack = function () {
+ *                   console.log("inside opened callback");
  *               }
  *           }
  *        </file>

@@ -1821,12 +1821,14 @@ WM.module('wm.widgets.basic')
  *                  Sets the data for the chart.<br>
  *                  This property supports binding with variables.<br>
  *                  When bound to a variable, the data associated with the variable becomes the basis for data for plotting the chart.
+ * @param {list=} groupby
+ *                  Shows the options to group the data.<br>
  * @param {list=} aggregation
  *                  Shows the options to aggregate the data in the chart.<br>
  * @param {list=} aggregationcolumn
  *                  Shows the options to aggregate the data in the chart.<br>
- * @param {list=} groupby
- *                  Shows the options to group the data.<br>
+ * @param {list=} orderby
+ *                  Shows the options to order the data.<br>
  * @param {list=} xaxisdatakey
  *                  The key of the object, i.e x-axis variable, on the chart.<br>
  * @param {string=} xaxislabel
@@ -1839,6 +1841,8 @@ WM.module('wm.widgets.basic')
  *                  Shows the options to format the date type in x axis.<br>
  * @param {number=} xaxislabeldistance
  *                  This property controls the distance between the x axis and its label.<br>
+ * @param {number=} xaxisunits
+ *                  This property controls the distance between the x axis and its label.
  * @param {list=} yaxisdatakey
  *                  The key of the object, i.e y-axis variable, on the chart.<br>
  * @param {string=} yaxislabel
@@ -1851,14 +1855,24 @@ WM.module('wm.widgets.basic')
  *                  Shows the options to format the date type in x axis.<br>
  * @param {number=} yaxislabeldistance
  *                  This property controls the distance between the x axis and its label.<br>
+ * @param {number=} yaxisunits
+ *                  Specifies the units for the y axis.<br>
+ * @param {list=} tooltipcolumns
+ *                  This property controls in configuring the columns to be shown in tooltip.
  * @param {boolean=} show
- *                  Show is a bindable property. <br>
+ *                  Show isa bindable property. <br>
  *                  This property will be used to show/hide the chart widget on the web page. <br>
  *                  Default value: `true`. <br>
- *@param {boolean=} tooltips
+ * @param {string=} nodatamessage
+ *                  This message will be displayed in grid, when there is no data to display. <br>
+ * @param {boolean=} tooltips
  *                  This property controls whether to show the tooltip on hover. <br>
- *@param {boolean=} showlegend
+ * @param {boolean=} showlegend
  *                  This property controls whether to show the legends. <br>
+ * @param {list=} legendposition
+ *                  This property controls where to show the legends. <br>
+ *                  Possible values are Top, Bottom.
+ *                  Default value: `Top`. <br>
  *@param {boolean=} showvalues
  *                  This property controls showing of values on the bars. <br>
  *@param {boolean=} showlabels
@@ -1878,9 +1892,14 @@ WM.module('wm.widgets.basic')
  *                  This property controls the radius and value ranges from 0.1 to 1. <br>
  *@param {boolean=} showlabelsoutside
  *                  This property controls the labels should be outside or inside. <br>
+ * @param {number=} bubblesize
+ *                  This property controls the size of the bubble.<br>
+ * @param {number=} showxdistance
+ *                  This property enables showing the distance from the x axis.<br>
+ * @param {number=} showydistance
+ *                  This property enables showing the distance from the y axis.<br>
  * @param {string=} on-transform
  *                  Callback function for `transform` event.
- *
  *
  *
  *
@@ -1896,6 +1915,41 @@ WM.module('wm.widgets.basic')
  *                  tooltips="false"
  *                  staggerlabels="true"
  *                  barspacing="0.2">
+ *              </wm-chart>
+ *              <wm-chart
+ *                  type="Line"
+ *                  name="chart2"
+ *                  tooltips="false">
+ *              </wm-chart>
+ *              <wm-chart
+ *                  type="Area"
+ *                  name="chart3"
+ *                  tooltips="false">
+ *              </wm-chart>
+ *              <wm-chart
+ *                  type="Pie"
+ *                  name="chart4"
+ *                  tooltips="false">
+ *              </wm-chart>
+ *              <wm-chart
+ *                  type="Bar"
+ *                  name="chart5"
+ *                  tooltips="false">
+ *              </wm-chart>
+ *              <wm-chart
+ *                  type="Cumulative Line"
+ *                  name="chart6"
+ *                  tooltips="false">
+ *              </wm-chart>
+ *              <wm-chart
+ *                  type="Donut"
+ *                  name="chart7"
+ *                  tooltips="false">
+ *              </wm-chart>
+ *              <wm-chart
+ *                  type="Bubble"
+ *                  name="chart8"
+ *                  tooltips="false">
  *              </wm-chart>
  *           </div>
  *       </file>

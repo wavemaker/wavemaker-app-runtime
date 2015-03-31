@@ -126,6 +126,10 @@ WM.module("wm.widgets.advanced")
 
  * @param {string=}  name
  *                   Name of the login widget.
+ * @param {string=} width
+ *                  Width of the login widget.
+ * @param {string=} height
+ *                  Height of the login widget.
  * @param {boolean=} show
  *                   Show is a bindable property. <br>
  *                   This property will be used to show/hide the login widget on the web page. <br>
@@ -136,6 +140,9 @@ WM.module("wm.widgets.advanced")
  *                   Callback function for `success` event.
  * @param {string=}  on-error
  *                   Callback function for `error` event.
+ * @param {string=}  on-submit
+ *                   Callback function for `submit` event.
+ *
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

@@ -90,6 +90,12 @@ WM.module('wm.widgets.form')
  * @param {string=} hint
  *                  Title/hint for the container <br>
  *                  This property is bindable.
+ * @param {boolean=} required
+ *                  Required is a bindable property. <br>
+ *                  This property determines required validation for a field. <br>
+ *                  Default value: `false`.
+ * @param {list=} captionposition
+ *                 This property determines where is caption appears with respect to the field. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the container and the widgets inside, on the web page. <br>
