@@ -1,56 +1,56 @@
 /*global WM, */
 /*jslint todo: true */
-/*Directive for crousel */
-WM.module('wm.layouts.containers')
-    .run(['$rootScope', '$templateCache', function ($rootScope, $templateCache){
-         'use strict';
-         $templateCache.put('template/layout/container/carousel/carousel.html',
-                            '<div init-widget class="app-carousel carousel slide" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' >'+
-                                '<ol class="carousel-indicators">'+
-                                    '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': selectedContent === $index}" data-ng-click="goTo($index)"></li>'+
-                                '</ol>'+
-                                '<div class="carousel-inner" wmtransclude>'+
-                                '</div>'+
-                                '<a class="left carousel-control" data-ng-click="previous()">'+
-                                    '<i class="glyphicon glyphicon-chevron-left"></i>'+
-                                '</a>'+
-                                '<a class="right carousel-control" data-ng-click="next()">'+
-                                    '<i class="glyphicon glyphicon-chevron-right"></i>'+
-                                '</a>'+
+/*Directive for carousel */
+WM.module('wm.widgets.advanced')
+    .run(['$rootScope', '$templateCache', function ($rootScope, $templateCache) {
+        'use strict';
+        $templateCache.put('template/widget/advanced/carousel/carousel.html',
+                            '<div init-widget class="app-carousel carousel slide" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' >' +
+                                '<ol class="carousel-indicators">' +
+                                    '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': selectedContent === $index}" data-ng-click="goTo($index)"></li>' +
+                                '</ol>' +
+                                '<div class="carousel-inner" wmtransclude>' +
+                                '</div>' +
+                                '<a class="left carousel-control" data-ng-click="previous()">' +
+                                    '<i class="glyphicon glyphicon-chevron-left"></i>' +
+                                '</a>' +
+                                '<a class="right carousel-control" data-ng-click="next()">' +
+                                    '<i class="glyphicon glyphicon-chevron-right"></i>' +
+                                '</a>' +
                             '</div>');
-         $templateCache.put('template/layout/container/carousel/design/carousel.html',
-                             '<div init-widget class="app-carousel carousel slide" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' >'+
-                                 '<div class="carousel-inner" wmtransclude></div>'+
-                                 '<div class="carousel-actions">'+
-                                    '<ul class="pagination" >'+
-                                        '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': selectedContent === $index}"">'+
-                                            '<a href="javascript:void(0);" data-ng-click="goTo($index)">{{$index + 1}}</a>'+
-                                        '</li>'+
-                                        '<li>'+
-                                            '<a  href="javascript:void(0);" data-ng-click="add()">'+
-                                                '<i class="glyphicon glyphicon-plus"></i>'+
-                                            '</a>'+
-                                        '</li>'+
-                                    '</ul>'+
-                                 '</div>'+
+        $templateCache.put('template/widget/advanced/carousel/design/carousel.html',
+                             '<div init-widget class="app-carousel carousel slide" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' >' +
+                                 '<div class="carousel-inner" wmtransclude></div>' +
+                                 '<div class="carousel-actions">' +
+                                    '<ul class="pagination" >' +
+                                        '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': selectedContent === $index}"">' +
+                                            '<a href="javascript:void(0);" data-ng-click="goTo($index)">{{$index + 1}}</a>' +
+                                        '</li>' +
+                                        '<li>' +
+                                            '<a  href="javascript:void(0);" data-ng-click="add()">' +
+                                                '<i class="glyphicon glyphicon-plus"></i>' +
+                                            '</a>' +
+                                        '</li>' +
+                                    '</ul>' +
+                                 '</div>' +
                              '</div>');
-         $templateCache.put('template/layout/container/carousel/carousel-content.html',
+        $templateCache.put('template/widget/advanced/carousel/carousel-content.html',
                              '<div class="app-carousel-item item " data-ng-class="transition"' +
                                 $rootScope.getWidgetStyles() +
-                                ' init-widget wmtransclude>'+
+                                ' init-widget wmtransclude>' +
                              '</div>');
     }]).directive('wmCarousel', ['$interval', 'PropertiesFactory', '$templateCache', 'CONSTANTS', function ($interval, PropertiesFactory, $templateCache, CONSTANTS) {
         'use strict';
         /* get the properties related to the carousel */
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.carousel', ['wm.base', 'wm.containers']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base', 'wm.containers']);
         return {
             'restrict' : 'E',
             'scope' : {},
             'transclude': true,
-            'template': $templateCache.get('template/layout/container/carousel'+(CONSTANTS.isStudioMode ? '/design/' : '/')+'carousel.html'),
+            'template': $templateCache.get('template/widget/advanced/carousel' + (CONSTANTS.isStudioMode ? '/design/' : '/') + 'carousel.html'),
             'replace' : true,
-            'controller': function ($scope, $element) {
-                this.register = function(contentScope){
+            'controller': function ($scope) {
+                this.register = function (contentScope) {
                     $scope.contents.push(contentScope);
                     $scope.last();
                 };
@@ -65,112 +65,114 @@ WM.module('wm.layouts.containers')
                     $scope.goTo($scope.selectedContent);
                 };
             },
-            'compile' : function(tElement, tAttrs, transclude){
+            'compile' : function () {
                 return {
-                    'pre': function (scope, element, attrs) {
+                    'pre': function (scope) {
                         /* save the reference to widgetProps in scope */
                         scope.widgetProps = widgetProps;
                         scope.contents = [];
                         scope.selectedContent = 0;
-                        scope.goTo = function(index){
-                            if(scope.selectedContent >= 0 && scope.selectedContent < scope.contents.length){
+                        scope.goTo = function (index) {
+                            if (scope.selectedContent >= 0 && scope.selectedContent < scope.contents.length) {
                                 scope.contents[scope.selectedContent].moveOut();
                             }
-                            if(index >= 0 &&  index < scope.contents.length){
+                            if (index >= 0 &&  index < scope.contents.length) {
                                 scope.contents[index].moveIn();
                                 scope.selectedContent  = index;
                             }
                         };
-                        scope.next = function(){
-                            if(scope.selectedContent > scope.contents.length - 2){
+                        scope.next = function () {
+                            if (scope.selectedContent > scope.contents.length - 2) {
                                 scope.goTo(0);
                             } else {
                                 scope.goTo(scope.selectedContent + 1);
                             }
                         };
-                        scope.previous = function(){
-                            if(scope.selectedContent < 1){
+                        scope.previous = function () {
+                            if (scope.selectedContent < 1) {
                                 scope.goTo(0);
                             } else {
                                 scope.goTo(scope.selectedContent - 1);
                             }
                         };
-                        scope.first = function(){
+                        scope.first = function () {
                             scope.goTo(0);
                         };
-                        scope.last = function(){
-                            scope.goTo(scope.contents.length -1);
+                        scope.last = function () {
+                            scope.goTo(scope.contents.length - 1);
                         };
-                        if(CONSTANTS.isStudioMode){
-                            scope.add = function(){
+                        if (CONSTANTS.isStudioMode) {
+                            scope.add = function () {
                                 scope.$root.$emit('canvas-add-widget', {
-                                                    'parentId': scope.widgetid,
-                                                    'widgetType': 'wm-carousel-content'
-                                                });
+                                    'parentId': scope.widgetid,
+                                    'widgetType': 'wm-carousel-content'
+                                });
                             };
-                        } else if(CONSTANTS.isRunMode) {
-                            scope.play = function(){
-                                if(!scope.autoPlay){
+                        } else if (CONSTANTS.isRunMode) {
+                            scope.play = function () {
+                                if (!scope.autoPlay) {
                                     scope.next();
-                                    scope.autoPlay = $interval(function(){scope.next()}, scope.animationinterval * 1000);
+                                    scope.autoPlay = $interval(function () {
+                                        scope.next();
+                                    }, scope.animationinterval * 1000);
                                 }
                             };
-                            scope.stop = function(){
-                                if(scope.autoPlay){
+                            scope.stop = function () {
+                                if (scope.autoPlay) {
                                     $interval.cancel(scope.autoPlay);
                                 }
                                 scope.autoPlay = undefined;
                             };
                         }
-                     },
-                    'post': function (scope, iElement, iAttrs, controller) {
-                        if(CONSTANTS.isRunMode) {
+                    },
+                    'post': function (scope) {
+                        if (CONSTANTS.isRunMode) {
                             scope.play();
                         }
                         scope.goTo(0);
                     }
-                }
-            },
+                };
+            }
         };
-    }]).directive('wmCarouselContent', ['PropertiesFactory', '$templateCache', 'CONSTANTS', function (PropertiesFactory, $templateCache, CONSTANTS) {
+    }]).directive('wmCarouselContent', ['PropertiesFactory', '$templateCache', function (PropertiesFactory, $templateCache) {
         'use strict';
         /* get the properties related to the carousel-content */
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.carouselcontent', ['wm.base', 'wm.layouts']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']);
         return {
-           'restrict' : 'E',
-           'scope' : {},
-           'transclude': true,
-           'template': $templateCache.get('template/layout/container/carousel/carousel-content.html'),
-           'replace' : true,
-           'require': '^wmCarousel',
-           'compile' : function(tElement, tAttrs){
-               return {
-                   'pre': function (scope, element, attrs, controller) {
-                       scope.transition = '';
+            'restrict': 'E',
+            'scope': {},
+            'transclude': true,
+            'template': $templateCache.get('template/widget/advanced/carousel/carousel-content.html'),
+            'replace': true,
+            'require': '^wmCarousel',
+            'compile': function () {
+                return {
+                    'pre': function (scope) {
+                        scope.transition = '';
                         /* save the reference to widgetProps in scope */
                         scope.widgetProps = widgetProps;
                     },
-                   'post': function (scope, element, attrs, controller) {
-                        scope.moveIn = function(){
+                    'post': function (scope, element, attrs, controller) {
+                        scope.moveIn = function () {
                             scope.transition = 'active';
                         };
-                        scope.moveOut = function(){
+                        scope.moveOut = function () {
                             scope.transition = '';
                         };
                         scope.$on('$destroy', function () {
-                           controller.unregister(scope);
+                            controller.unregister(scope);
                         });
-                       controller.register(scope);
+                        controller.register(scope);
 
-                   }
-               }
-           },
+                    }
+                };
+            }
         };
     }]);
 
 /**
  * @ngdoc directive
- * @name wm.layouts.containers.directive:wmCarousel
+ * @name wm.widgets.advanced.directive:wmCarousel
  * @restrict E
  *
  * @description
@@ -223,7 +225,7 @@ WM.module('wm.layouts.containers')
 
  /**
   * @ngdoc directive
-  * @name wm.layouts.containers.directive:wmCarouselContent
+  * @name wm.widgets.advanced.directive:wmCarouselContent
   * @restrict E
   *
   * @description

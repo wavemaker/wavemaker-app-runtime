@@ -1214,7 +1214,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
                     "tabindex": {"type": "string"}
                 },
-                "wm.layouts.carousel" : {
+                "wm.carousel" : {
                     "animationinterval" : {"type" : "number", "value" : "3"}
                 },
                 "wm.livelist": {
