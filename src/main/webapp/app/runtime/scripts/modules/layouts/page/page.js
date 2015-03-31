@@ -191,6 +191,15 @@ WM.module('wm.layouts.page')
                                 containerScope.Widgets = scope.Widgets;
                             }
                         }
+
+                        if (CONSTANTS.isStudioMode) {
+                            containerScope = scope.$parent.Widgets && scope.$parent.Widgets[scope.$parent.partialcontainername];
+                            if (containerScope && WM.isDefined(containerScope.Widgets)) {
+                                scope.Widgets = {};
+                                containerScope.Widgets = scope.Widgets;
+                            }
+                        }
+
                         Variables.getPageVariables(pageName, function (variables) {
                             Variables.register(pageName, variables, true, variableScope);
 

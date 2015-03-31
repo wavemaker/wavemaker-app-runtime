@@ -1753,6 +1753,7 @@ base.directives.pageContainer = [
                 if (!loadedPartials[newVal]) {
                     //checking if it is a studio mode then remove the button element from the toolbar
                     if (CONSTANTS.isStudioMode) {
+                        iScope.Widgets = {};
                         bindEvtHandler(element);
                         addToolBar = WM.isDefined(attrs.widgetid);
 
@@ -1784,6 +1785,7 @@ base.directives.pageContainer = [
                 }
             } else {
                 if (CONSTANTS.isStudioMode) {
+                    iScope.Widgets = undefined;
                     if (iScope.widgettype === 'wm-top-nav' && !element.children().length) {
                         $rootScope.$emit('canvas-add-widget', {
                             widgetType: 'wm-list',
@@ -2330,7 +2332,7 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
             if (key === 'name') {
                 if (attrs.widgetid) {
                     $rootScope.$emit('name-change', attrs.widgetid, newVal, oldVal, iScope);
-                } else if (CONSTANTS.isRunMode && scope.Widgets) {
+                } else if (scope.Widgets) {
                     scope.Widgets[attrs.name] = iScope;
                 }
             }
@@ -3047,6 +3049,18 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
                     "wm-tree",
                     "wm-liveform"
                     ];
+            } else if (types === 'page-container-widgets') {
+                types = [
+                    'wm-accordionpane',
+                    'wm-container',
+                    'wm-panel',
+                    'wm-tabcontent',
+                    'wm-footer',
+                    'wm-header',
+                    'wm-left-panel',
+                    'wm-right-panel',
+                    'wm-top-nav'
+                ]
             } else {
                 types = types.split(",");
             }
