@@ -35,6 +35,10 @@
       "themes/images": "themes/base/images/*.*",
       "js": "jquery-ui.js"
     },
+    "bootstrap" : {
+      "less": "less/",
+      ".": ["dist/css/*.css", "fonts/*"]
+    },
     "placeholders": {
       "js": "lib/*.js"
     },
