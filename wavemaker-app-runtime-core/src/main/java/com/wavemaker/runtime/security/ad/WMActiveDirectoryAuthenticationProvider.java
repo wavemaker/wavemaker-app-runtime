@@ -110,7 +110,7 @@ public class WMActiveDirectoryAuthenticationProvider extends SpringActiveDirecto
         ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(groups.length);
 
         for (String group : groups) {
-            authorities.add(new SimpleGrantedAuthority(new DistinguishedName(group).removeLast().getValue()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_"+new DistinguishedName(group).removeLast().getValue()));
         }
 
         return authorities;
