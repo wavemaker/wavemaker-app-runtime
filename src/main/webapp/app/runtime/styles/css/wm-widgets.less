@@ -128,7 +128,7 @@ html, body {
 *********************************************************************************/
 .app-search {
   width: 15em;
-  display: inline-table;
+  display: inline-table !important;
   position: relative;
   input {
     height: 100%;
@@ -667,6 +667,8 @@ body.modal-open {
 }
 .modal-backdrop {
   height: 100%;
+  bottom: 0;
+  position: fixed;
 }
 /********************************************************************************
 *********************************File upload classes*****************************
