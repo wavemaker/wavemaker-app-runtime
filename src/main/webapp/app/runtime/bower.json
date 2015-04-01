@@ -35,9 +35,12 @@
       "themes/images": "themes/base/images/*.*",
       "js": "jquery-ui.js"
     },
+    "animate.css": {
+      "." : ["dist/*.css"]
+    },
     "bootstrap" : {
       "less": "less/",
-      ".": ["dist/css/*.css"],
+      ".": ["dist/css/*.css", "dist/css/*.map"],
       "fonts": "fonts/"
     },
     "placeholders": {
