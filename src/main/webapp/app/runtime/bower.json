@@ -37,7 +37,8 @@
     },
     "bootstrap" : {
       "less": "less/",
-      ".": ["dist/css/*.css", "fonts/*"]
+      ".": ["dist/css/*.css"],
+      "fonts": "fonts/"
     },
     "placeholders": {
       "js": "lib/*.js"
