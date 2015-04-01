@@ -433,7 +433,12 @@ WM.module('wm.prefabs')
                     });
 
                     styleFiles = styleFiles.map(function (file) {
-                        return Utils.preventCachingOf(resourcePath + file);
+                        if (!Utils.stringEndsWith(file, '/pages/Main/Main.css')) {
+                            return Utils.preventCachingOf(resourcePath + file);
+                        }
+                        return undefined;
+                    }).filter(function (file) {
+                        return !!file;
                     });
 
                     Utils.loadStyleSheets(styleFiles);
