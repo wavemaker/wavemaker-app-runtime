@@ -3,6 +3,7 @@ package com.wavemaker.runtime.web.filter;
 import com.sun.syndication.feed.impl.ToStringBean;
 import com.sun.xml.bind.v2.ClassFactory;
 import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
+import net.sf.cglib.core.AbstractClassGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -30,8 +31,10 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
+            this.clearThreadLocalActivityCorrelator();
             this.clearThreadLocalServiceInterceptorFactory();
             this.clearThreadLocalToStringBean();
+            this.clearThreadLocalAbstractClassGenerator();
             cleanClassFactoryCache();
         }
     }
@@ -69,6 +72,35 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
             }
         } catch (Throwable e) {
             logger.warn("Failed to cleanup ToStringBean Thread Local", e);
+        }
+    }
+
+    private void clearThreadLocalActivityCorrelator() {
+        try {
+            Class klass = WMRequestCleanupFilter.class.getClassLoader().loadClass("com.microsoft.sqlserver.jdbc.ActivityCorrelator");
+            Field activityIdTls = klass.getDeclaredField("ActivityIdTls");
+            activityIdTls.setAccessible(true);
+
+            ThreadLocal threadLocal = (ThreadLocal) activityIdTls.get(null);
+            if (threadLocal != null) {
+                threadLocal.remove();
+            }
+        } catch (Throwable e) {
+            logger.warn("Failed to cleanup ActivityCorrelator Thread Local", e);
+        }
+    }
+
+    private void clearThreadLocalAbstractClassGenerator() {
+        try {
+            Field CURRENT = AbstractClassGenerator.class.getDeclaredField("CURRENT");
+            CURRENT.setAccessible(true);
+
+            ThreadLocal threadLocal = (ThreadLocal) CURRENT.get(null);
+            if (threadLocal != null) {
+                threadLocal.remove();
+            }
+        } catch (Throwable e) {
+            logger.warn("Failed to cleanup AbstractClassGenerator Thread Local", e);
         }
     }
 }

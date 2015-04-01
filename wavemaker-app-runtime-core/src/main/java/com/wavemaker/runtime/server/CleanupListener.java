@@ -15,17 +15,27 @@
  */
 package com.wavemaker.runtime.server;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.ClassKey;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.LRUMap;
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
+import com.sun.naming.internal.ResourceManager;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.studio.common.util.CastUtils;
+import org.apache.commons.logging.LogFactory;
 import org.hsqldb.DatabaseManager;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.beans.Introspector;
+import java.lang.reflect.Field;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.ResourceBundle;
+import java.util.WeakHashMap;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -45,6 +55,7 @@ public class CleanupListener implements ServletContextListener {
         try {
             shutDownHSQLTimerThreadIfAny();
             shutDownMySQLThreadIfAny();
+            TypeFactoryClearTypeCache();
 
             // shutDownAnyOtherThreads();
 
@@ -54,15 +65,18 @@ public class CleanupListener implements ServletContextListener {
              * that are visible to this class loader but haven't yet been loaded and the newly registered
              * drivers are not returned in the call,therefore calling
              * DriverManager.getDriviers() twice to get the full list including the newly registered drivers
-            **/
+             **/
             Enumeration<Driver> ignoreDrivers = DriverManager.getDrivers();
-            for (Enumeration<Driver> e = CastUtils.cast(DriverManager.getDrivers()); e.hasMoreElements();) {
+            for (Enumeration<Driver> e = CastUtils.cast(DriverManager.getDrivers()); e.hasMoreElements(); ) {
                 Driver driver = e.nextElement();
                 if (driver.getClass().getClassLoader() == getClass().getClassLoader()) {
                     System.out.println("De Registering the driver [" + driver.getClass().getCanonicalName() + "]");
                     DriverManager.deregisterDriver(driver);
                 }
             }
+
+            //Release all open references for logging
+            LogFactory.release(this.getClass().getClassLoader());
 
             // flush all of the Introspector's internal caches
             Introspector.flushCaches();
@@ -71,13 +85,22 @@ public class CleanupListener implements ServletContextListener {
             e.printStackTrace();
         } finally {
             WMAppContext.clearInstance();
+            System.out.println("Clean Up Completed!");
         }
     }
 
     private void shutDownHSQLTimerThreadIfAny() {
         if (DatabaseManager.class.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
             try {
-                DatabaseManager.getTimer().shutDown();
+                if (DatabaseManager.getTimer() != null) {
+                    DatabaseManager.getTimer().shutDown();
+                    if (DatabaseManager.getTimer().getThread().isAlive()) {
+                        System.out.println("Joining HSQL-Timer thread: " + DatabaseManager.getTimer().getThread().getName());
+                        DatabaseManager.getTimer().getThread().join();
+                    }
+                }
+            } catch (NullPointerException e) {
+                System.out.println("No active HSQL-Timer thread found");
             } catch (Throwable e) {
                 System.out.println("Failed to shutdown HSQL-Timer thread");
                 e.printStackTrace();
@@ -99,6 +122,50 @@ public class CleanupListener implements ServletContextListener {
             }
         }
     }
+
+    /**
+     * Added by akritim on 3/28/2015.
+     * To clear TypeFactory's TypeCache
+     */
+    private void TypeFactoryClearTypeCache() {
+        try {
+            Field typeCache = TypeFactory.class.getDeclaredField("_typeCache");
+            typeCache.setAccessible(true);
+            LRUMap<ClassKey, JavaType> cache = (LRUMap<ClassKey, JavaType>) typeCache.get(TypeFactory.defaultInstance());
+            if (cache != null) {
+                cache.clear();
+            }
+        } catch (NullPointerException e) {
+            System.out.println("No active TypeCache To clear");
+        } catch (Throwable e) {
+            System.out.println("Failed to ClearTypeCache from TypeFactory");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Added by akritim on 3/28/2015.
+     * To clear TypeFactory's TypeCache
+     */
+    private void ResouceManagerClearPropertiesCache() {
+        if(ResourceManager.class.getClassLoader() == CleanupListener.class.getClassLoader()){
+            try {
+                Field propertiesCache = ResourceManager.class.getDeclaredField("propertiesCache");
+                propertiesCache.setAccessible(true);
+                WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache.get(null);
+                if (map != null) {
+                    map.clear();
+                }
+            } catch (NullPointerException e) {
+                System.out.println("No active propertiesCache To clear");
+            } catch (Throwable e) {
+                System.out.println("Failed to clear propertiesCache from ResouceManager");
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 
     /*private void shutDownAnyOtherThreads() throws InterruptedException {
         Set<Thread> threads = Thread.getAllStackTraces().keySet();
