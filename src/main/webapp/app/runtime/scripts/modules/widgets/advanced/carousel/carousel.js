@@ -92,6 +92,9 @@ WM.module('wm.widgets.advanced')
                         }
                         /** function for slide  to move to a specific slide index**/
                         scope.goTo = function (index) {
+                            if(!scope.contents[scope.activeIndex]){
+                                return;
+                            }
                             var oldElement = scope.contents[scope.activeIndex].getElement(),
                                 newElement = scope.contents[index].getElement(),
                                 type = 'next';
