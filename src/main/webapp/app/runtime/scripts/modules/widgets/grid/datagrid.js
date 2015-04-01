@@ -718,7 +718,9 @@ $.widget('wm.datagrid', {
             }
             break;
         case 'dataStates':
-            this.setStatus('nodata', this.dataStatus['nodata']);
+            if (this.dataStatus.state === 'nodata') {
+                this.setStatus('nodata', this.dataStatus['nodata']);
+            }
             break;
         case 'multiselect': // Fallthrough
         case 'showRadioColumn':
