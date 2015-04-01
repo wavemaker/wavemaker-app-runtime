@@ -128,7 +128,7 @@ html, body {
 *********************************************************************************/
 .app-search {
   width: 15em;
-  display: inline-table !important;
+  display: inline-table;
   position: relative;
   input {
     height: 100%;
@@ -227,10 +227,8 @@ html, body {
 }
 
 .app-popover{
+    position: relative;
     display : inline-block;
-    margin : 0px;
-    padding : 0px;
-    border : 0px;
     cursor : pointer;
     .app-popover-link{
         display : block;
@@ -241,7 +239,7 @@ html, body {
         min-width : 250px;
         min-height : 100px;
         .arrow {
-            margin : 0px;
+            margin : 0;
         }
         &.left,&.right{
             .arrow{
@@ -417,42 +415,6 @@ html, body {
     .ellipsis(70%);
   }
 }
-
-.tab-order {
-  float: left;
-  width: 80%;
-  cursor: pointer;
-  li button{
-    padding: 0;
-    cursor: inherit;
-  }
-  .arrowUp{
-    float: left;
-    padding-left: 6px;
-  }
-  .arrowDown{
-    float: left;
-    padding-left: 7px;
-  }
-  .activetabwidget{
-    background-color: #FAF2CC !important;
-    border: 1px solid #FAF2CC !important;
-  }
-  li span{
-    display: inline-block;
-    .ellipsis(50%);
-    float: left;
-    margin-top: 0.2em;
-    cursor: inherit;
-  }
-  li label{
-    white-space: normal;
-  /*Applying the min-height 16px because the icon is of height 16px*/
-    min-height: 16px;
-    cursor: inherit;
-  }
-}
-
 
 /**toggle-button**/
 .app-switch {
@@ -1411,43 +1373,25 @@ If the height and width are not specified the video takes the height of the post
       display: block;
     }
   }
-
-  .nav.nav-stacked {
-    width: 15%;
-    border: none;
-    > li > a {
-      border-radius: 4px 0 0 4px;
-      border-color: #ccc;
-      border-right-color: transparent !important;
-      margin: 0 0 2px 0;
-    }
-    > li.active > a {
-      border-radius: 4px 0 0 4px;
-      border-color: #ccc;
-      border-right-color: transparent !important;
-      z-index: 1;
-      margin-right: -1px;
-    }
-  }
-
-
-/*Vertical tabs*/
+  /*Vertical tabs*/
   .nav.nav-stacked {
     width: 20%;
     float: left;
-
-    > li + li {
-      margin-top: 0;
-    }
-
+    border: none;
     > li > a {
+      border-color: #ccc;
+      border-right-color: transparent !important;
       margin: 0;
       .border-radius(0);
     }
-
     > li.active > a {
-      border-right: 1px solid #FFFFFF;
+      border-radius: 4px 0 0 4px;
       border-bottom-color: @app-tabs-tab-body-border-color;
+      z-index: 1;
+      margin-right: -1px;
+    }
+    > li + li {
+      margin-top: 0;
     }
 
 ~ .tab-content {
@@ -1464,18 +1408,15 @@ If the height and width are not specified the video takes the height of the post
 /********************************************************************************
 ************************* Chart widget classes ***********************************
 *********************************************************************************/
-@app-chart-border-color: #eaeaea;
 
 .app-chart {
-  border: 1px solid @app-chart-border-color;
   position: relative;
-  .border-radius(0.286em);
   > svg {
     width: 100%;
     height: 100%;
   }
   .tooltip-container {
-    padding: 5px;
+    padding: 0.5em;
   }
   .nvd3 {
     text {
