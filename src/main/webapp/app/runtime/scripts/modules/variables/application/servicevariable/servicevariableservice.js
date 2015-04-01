@@ -428,7 +428,7 @@ wm.variables.services.$servicevariable = ['Variables',
             },
         /*function to create the service operation info in the variable object, to create the parameter info
         * for the selected operation of the service*/
-            getServiceOperationInfo = function (selectedOperation, selectedService, success, error) {
+            getServiceOperationInfo = function (selectedOperation, selectedService, success, error, forceReload) {
                 var operationInfo = {},
                     i,
                     endPoint,
@@ -453,7 +453,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 }, function (errMsg) {
                     /*handle error response*/
                     Utils.triggerFn(error, errMsg);
-                });
+                }, forceReload);
             },
         /* properties of a service variable - should contain methods applicable on this particular object */
             methods = {
