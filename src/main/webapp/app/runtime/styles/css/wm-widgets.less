@@ -128,7 +128,6 @@ html, body {
 *********************************************************************************/
 .app-search {
   width: 15em;
-  display: inline-table;
   position: relative;
   input {
     height: 100%;
@@ -156,6 +155,10 @@ html, body {
       line-height: 1em;
     }
   }
+}
+/*To override the bootstrap style to app-search class, specificity has been increased*/
+.wm-app .input-group.app-search {
+  display: inline-table;
 }
 
 /********************************************************************************
@@ -633,7 +636,7 @@ body.modal-open {
 .modal-backdrop {
   height: 100%;
   bottom: 0;
-  position: fixed;
+  position: fixed !important;
 }
 /********************************************************************************
 *********************************File upload classes*****************************
