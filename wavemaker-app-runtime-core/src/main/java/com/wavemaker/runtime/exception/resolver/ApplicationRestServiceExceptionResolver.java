@@ -37,16 +37,16 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
         if (ex instanceof EntityNotFoundException) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return handleException((EntityNotFoundException) ex, response);
+            return handleRuntimeException((EntityNotFoundException) ex);
         } else if (ex instanceof ConstraintViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return handleException((ConstraintViolationException) ex, response);
+            return handleRuntimeException((ConstraintViolationException) ex);
         } else if (ex instanceof DataIntegrityViolationException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return handleException((DataIntegrityViolationException) ex, response);
+            return handleRuntimeException((DataIntegrityViolationException) ex);
         } else if (ex instanceof QueryParameterMismatchException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return handleException((QueryParameterMismatchException) ex, response);
+            return handleRuntimeException((QueryParameterMismatchException) ex);
         } else if (ex instanceof WMRuntimeException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return handleWMExceptions((WMRuntimeException) ex);
@@ -54,11 +54,21 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             return handleHttpMessageNotReadableException((HttpMessageNotReadableException) ex, response);
         } else {
             logger.error("Unknown error for url [" + request.getRequestURI() + "]", ex);
-            return handleException((RuntimeException) ex, response);
+            return handleException(ex, response);
         }
     }
 
-    private ModelAndView handleException(RuntimeException ex, HttpServletResponse response) {
+    private ModelAndView handleRuntimeException(RuntimeException ex) {
+        ModelAndView modelAndView = null;
+        ErrorDetails errorDetails = null;
+        String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
+        errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
+        modelAndView = new ModelAndView(new MappingJackson2JsonView());
+        modelAndView.addObject(errorDetails);
+        return modelAndView;
+    }
+
+    private ModelAndView handleException(Exception ex, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         ModelAndView modelAndView = null;
         ErrorDetails errorDetails = null;
