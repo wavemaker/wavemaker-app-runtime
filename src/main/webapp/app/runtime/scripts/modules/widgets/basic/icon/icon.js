@@ -2,32 +2,32 @@
 /*Directive for Icon*/
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
-    'use strict';
-    $templateCache.put('template/widget/icon.html',
-        '<i init-widget class="app-icon"  data-ng-class="iconclass" data-ng-show="show"  data-ng-style="{\'font-size\' : iconsize}"></i>'
-    );
-}])
-    .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', '$sce', function (PropertiesFactory, WidgetUtilService, $sce) {
-    'use strict';
-    var widgetProps = PropertiesFactory.getPropertiesOf('wm.icon', ['wm.base']);
-    return {
-        'restrict': 'E',
-        'scope': {},
-        'replace': true,
-        'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/icon.html'),
-        'compile': function () {
-            return {
-                'pre': function (scope) {
-                    scope.widgetProps = widgetProps;
-                },
-                'post': function (scope, element, attrs) {
-                    /* register the property change handler */
-                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                }
-            };
-        }
-    };
+    .run(['$templateCache', function ($templateCache) {
+        'use strict';
+        $templateCache.put('template/widget/icon.html',
+            '<i init-widget class="app-icon"  data-ng-class="iconclass" data-ng-show="show"  data-ng-style="{\'font-size\' : iconsize, \'color\' : color, \'opacity\' : opacity}"></i>'
+            );
+    }])
+        .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+        'use strict';
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.icon', ['wm.base']);
+        return {
+            'restrict': 'E',
+            'scope': {},
+            'replace': true,
+            'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/icon.html'),
+            'compile': function () {
+                return {
+                    'pre': function (scope) {
+                        scope.widgetProps = widgetProps;
+                    },
+                    'post': function (scope, element, attrs) {
+                        /* register the property change handler */
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    }
+                };
+            }
+        };
 }]);
 
 
@@ -42,7 +42,6 @@ WM.module('wm.widgets.basic')
  *
  * @requires PropertiesFactory
  * @requires WidgetUtilService
- * @requires $sce
  *
  * @param {string=} name
  *                  Name of the container widget.

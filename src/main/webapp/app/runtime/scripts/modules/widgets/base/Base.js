@@ -293,7 +293,9 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "title": {"type": "string", "bindable": "in-out-bound"},
                     "iconclass": {"type": "string", "value": "glyphicon glyphicon-star-empty", "widget": "selecticon", "bindable": "in-out-bound"},
                     "iconsize": {"type": "string"},
-                    "animation": {"type": "list", "options": animationOptions}
+                    "animation": {"type": "list", "options": animationOptions},
+                    "color": {"type": "string", "widget": "color"},
+                    "opacity": {"type": "string", "widget": "slider"}
                 },
                 "wm.iframe": {
                     "iframesrc": {"type": "string", "bindable": "in-bound", "widget": "string"},
