@@ -1191,16 +1191,24 @@ WM.module('wm.utils', [])
         }
 
         /*to check duplicate names*/
-        function checkDuplicateName(list, newName) {
-            var retVal, i;
+        function isDuplicateName(list, newName, caseSensitive) {
+            var retVal = false,
+                i;
             /* if list or name doesn't exist, return  */
-            retVal = !list || !newName;
-
-            for (i = 0; i < list.length; i += 1) {
-                /* if name found in list, return the index */
-                if (list[i].toLowerCase() === newName.toLowerCase()) {
+            if (!list || !newName) {
+                return retVal;
+            }
+            if (caseSensitive) {
+                for (i = 0; i < list.length; i += 1) {
+                    /* if name found in list, return true */
+                    if (list[i].toLowerCase() === newName.toLowerCase()) {
+                        retVal = true;
+                        break;
+                    }
+                }
+            } else {
+                if (list.indexOf(newName) !== -1) {
                     retVal = true;
-                    break;
                 }
             }
             return retVal;
@@ -1286,6 +1294,6 @@ WM.module('wm.utils', [])
             extractType: extractType,
             isDeleteResourceAllowed: isDeleteResourceAllowed,
             generateGUId: generateGUId,
-            checkDuplicateName: checkDuplicateName
+            isDuplicateName: isDuplicateName
         };
     }]);
