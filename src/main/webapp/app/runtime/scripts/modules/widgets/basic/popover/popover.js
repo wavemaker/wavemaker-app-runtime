@@ -7,18 +7,18 @@ WM.module('wm.widgets.basic')
         'use strict';
 
         $templateCache.put('template/widget/basic/popover.html',
-            '<div init-widget page-container class="app-popover {{showPopover ? \'open\' : \'\'}}" >'+
-                '<a data-identifier="popover" class="app-popover-link" init-widget data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" ' +$rootScope.getWidgetStyles('shell') + ' >' +
+            '<div init-widget page-container class="app-popover {{showPopover ? \'open\' : \'\'}}" >' +
+                '<a data-identifier="popover" class="app-popover-link" init-widget data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" ' + $rootScope.getWidgetStyles('shell') + ' >' +
                     '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}"  data-ng-show="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +
-                '</a>'+
-                 '<div class="app-popover popover {{popoverplacement}}"  data-ng-style="{\'width\' : popoverwidth, \'height\' : popoverheight}">'+
-                    '<div class="arrow" data-ng-show="{{popoverarrow}}"></div>'+
-                    '<div class="popover-content">'+
-                        '<div page-container-target data-ng-show="show"></div>'+
-                    '</div>'+
-                 '</div>'+
+                '</a>' +
+                 '<div class="popover {{popoverplacement}}">' +
+                    '<div class="arrow" data-ng-show="{{popoverarrow}}"></div>' +
+                    '<div class="popover-content" data-ng-style="{\'width\' : popoverwidth, \'height\' : popoverheight}">' +
+                        '<div page-container-target data-ng-show="show"></div>' +
+                    '</div>' +
+                 '</div>' +
             '</div>');
     }])
     .directive('wmPopover', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', "CONSTANTS", function (PropertiesFactory, WidgetUtilService, $sce, Utils, CONSTANTS) {
@@ -48,52 +48,52 @@ WM.module('wm.widgets.basic')
                 break;
             case 'caption':
                 if (WM.isObject(newVal)) {
-                  element.find('a span.anchor-caption').text(JSON.stringify(newVal));
+                    element.find('a span.anchor-caption').text(JSON.stringify(newVal));
                 } else {
-                  element.find('a span.anchor-caption').html(($sce.trustAs($sce.HTML, newVal.toString()).toString()));
+                    element.find('a span.anchor-caption').html(($sce.trustAs($sce.HTML, newVal.toString()).toString()));
                 }
                 break;
             }
         }
 
-        function buildPopoverToggleHandler(scope, element, config){
-            var AutoClose = function(target){
+        function buildPopoverToggleHandler(scope, element, config) {
+            var AutoClose = function (target) {
                 var self = this;
                 this.enable = false;
-                this.eventName  = 'click.autoclose' + new Date().getTime();
+                this.eventName = 'click.autoclose' + new Date().getTime();
                 this.target = target;
-                this.start = function(onClose){
-                    this.target.on(this.eventName, function(){
+                this.start = function (onClose) {
+                    this.target.on(this.eventName, function () {
                         self.enable = false;
                     });
-                    WM.element('body').on(this.eventName, function(){
-                       if(self.enable && onClose){
-                          self.stop();
-                          onClose();
-                       }
-                       self.enable = true;
+                    WM.element('body').on(this.eventName, function () {
+                        if (self.enable && onClose) {
+                            self.stop();
+                            onClose();
+                        }
+                        self.enable = true;
                     });
                 };
-                this.stop = function(){
+                this.stop = function () {
                     target.off(self.eventName);
                     WM.element('body').off(self.eventName);
                 };
             };
-            var toggleHandler = new (function(){
+            var toggleHandler = new (function () {
                 this.popover = element.find('>.popover:first');
                 this.config = config;
                 this.element = element;
                 this.autoclose = this.config.enableAutoClose ? new AutoClose(this.popover) : false;
-                this.handle = function(){
+                this.handle = function () {
                     var self = this;
-                    if(scope.showPopover){
+                    if (scope.showPopover) {
                         this.setPopoverPosition();
                     }
                     this.popover.toggle();
-                    if(this.autoclose) {
-                        if(scope.showPopover){
+                    if (this.autoclose) {
+                        if (scope.showPopover) {
                             this.autoclose.enable = false;
-                            this.autoclose.start(function(){
+                            this.autoclose.start(function () {
                                 self.popover.hide();
                                 /*changing showPopover to false is not hiding the popover*/
                                 scope.showPopover = false;
@@ -103,13 +103,13 @@ WM.module('wm.widgets.basic')
                         }
                     }
                 };
-                this.getDimensions = function(ele){
+                this.getDimensions = function (ele) {
                     return {
                         'width' : Math.abs(ele.width()),
                         'height' : Math.abs(ele.height())
-                    }
+                    };
                 };
-                this.setPopoverPosition = function(){
+                this.setPopoverPosition = function () {
                     var popoverDims = this.getDimensions(this.popover),
                         arrow = this.element.find('.arrow'),
                         placement = this.config.placement,
@@ -118,33 +118,33 @@ WM.module('wm.widgets.basic')
                         targetDims = this.getDimensions(this.element),
                         targetPosition = this.element.position(),
                         tipOffset = {
-                            'width' : -arrowDims.width/2,
-                            'height' : -arrowDims.height/2
+                            'width': -arrowDims.width / 2,
+                            'height': -arrowDims.height / 2
                         },
                         popoverPosition = {
                             'left' : targetPosition.left + tipOffset.width,
                             'top'  : targetPosition.top + tipOffset.height
                         };
                     arrow.removeClass('top bottom left right');
-                    if(placement == 'left' || placement == 'right'){
-                        if(placement == 'left'){
+                    if (placement === 'left' || placement === 'right') {
+                        if (placement === 'left') {
                             popoverPosition.left += (-1 * (popoverDims.width + arrowDims.width));
                         } else {
                             popoverPosition.left += targetDims.width + arrowDims.width;
                         }
-                        if (this.element.offset().top + popoverDims.height <= documentDims.height){
+                        if (this.element.offset().top + popoverDims.height <= documentDims.height) {
                             arrow.addClass('top');
                         } else {
                             popoverPosition.top = targetPosition.top + targetDims.height - popoverDims.height;
                             arrow.addClass('bottom');
                         }
-                    } else if(placement == 'top' || placement == 'bottom'){
-                        if(placement == 'top'){
+                    } else if (placement === 'top' || placement === 'bottom') {
+                        if (placement === 'top') {
                             popoverPosition.top += (-1 * popoverDims.height);
                         } else {
                             popoverPosition.top += targetDims.height + arrowDims.height;
                         }
-                        if (this.element.offset().left + popoverDims.width <= documentDims.width){
+                        if (this.element.offset().left + popoverDims.width <= documentDims.width) {
                             arrow.addClass('left');
                         } else {
                             popoverPosition.left = targetPosition.left + targetDims.width - popoverDims.width;
@@ -154,9 +154,9 @@ WM.module('wm.widgets.basic')
                     this.popover.css(popoverPosition);
                 };
             })();
-            return function(){
+            return function () {
                 toggleHandler.handle();
-            }
+            };
         }
 
         return {
@@ -176,14 +176,15 @@ WM.module('wm.widgets.basic')
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         var popoverConfig = {
-                                        'enableAutoClose' : scope.popoverautoclose,
-                                        'showArrow' : scope.popoverarrow,
-                                        'placement' : scope.popoverplacement
-                                        };
-                        if(CONSTANTS.isRunMode){
+                            'enableAutoClose': scope.popoverautoclose,
+                            'showArrow': scope.popoverarrow,
+                            'placement': scope.popoverplacement
+                        };
+                        if (CONSTANTS.isRunMode) {
                             scope.handlePopoverToggle = buildPopoverToggleHandler(scope, element, popoverConfig);
                         } else {
-                            scope.handlePopoverToggle =  function(){};
+                            scope.handlePopoverToggle = function () {
+                            };
                         }
                     }
                 };
