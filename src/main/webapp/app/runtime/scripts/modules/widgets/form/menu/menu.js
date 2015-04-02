@@ -216,17 +216,31 @@ WM.module('wm.widgets.form')
  * @requires $templateCache
  * @requires WidgetUtilService
  *
+ * @param {string=} caption
+ *                  Content / Lebel of the Menu widget. <br>
+ *                  This property is bindable.
  * @param {string=} name
  *                  Name of the menu widget.
- * @param {string=} caption
- *                  Content of the message. <br>
- *                  This property is bindable.
+ * @param {string=} position
+ *                  This property defined the Position of the Menu dropdown - up/down <br>
+ *                  Possible values are ["up" ,"down"] <br>
+ *                  Default value : "down"
  * @param {string=} width
  *                  Width of the menu.
  * @param {string=} height
  *                  Height of the menu.
- * @param {object=} value
- *                  Set this property to a variable to populate the list of values to display.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the value for the Menu widget from a variable defined in the script workspace. <br>
+ * @param {string=} dataset
+ *                  This property accepts the options to create the Menu widget from a wavemaker studio variable (live or static) which can hold object, array or string data.
+ * @param {string=} datafield
+ *                  This property sets the dataValue to be returned by a menu widget when the list is populated using the dataSet property.
+ * @param {string=} displayfield
+ *                  This property sets the displayValue to show in the menu widget when the list is populated using the dataSet property.
+ * @param {expression=} displayexpression
+ *                      This is an advanced property that gives more control over what is displayed in the Menu widget. <br>
+ *                      A Display Expression uses a Javascript expression to format exactly what is shown. <br>
+ *                      This property is bindable.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the chart widget on the web page. <br>
@@ -234,9 +248,7 @@ WM.module('wm.widgets.form')
  * @param {string=} iconclass
  *                  CSS class of the icon.
  * @param {string=} on-select
- *                  Callback function for `select` event
- *
- *
+ *                  Callback function which is executed when a Menu value is selected.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

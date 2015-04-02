@@ -73,23 +73,40 @@ WM.module('wm.widgets.form')
  *
  * @param {string=} name
  *                  Name of the textarea widget.
+ * @param {string=} placeholder
+ *                  Placeholder /hint for the textarea.
  * @param {string=} hint
  *                  Title/hint for the textarea. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of textarea widget <br>
+ *                  Default value : 0
  * @param {string=} width
  *                  Width of the textarea.
  * @param {string=} height
  *                  Height of the textarea.
- * @param {string=} placeholder
- *                  Placeholder for the textarea.
- * @param {string=} hint
- *                  Hint for the textarea
  * @param {string=} scopedatavalue
- *                  variable defined in controller scope. The value of this variable is set as the value to be shown in the textarea
+ *                  This property accepts the initial value for the textarea widget from a variable defined in the script workspace. <br>
  * @param {string=} datavalue
- *                  Value to be shown in the textarea
+ *                  Value to be shown in the textarea widget <br>
+ *                  This property is bindable.
+ * @param {string=} updateon
+ *                  Possible values are "blur" and "default" <br>
+ *                  If the selected value is `blur`: datavalue will be updated on blur event, `default`: datavalue will be updated on keyup.
+ * @param {number=} updatedelay
+ *                  The amount of delay in milliseconds to update the datavalue.
+ * @param {boolean=} required
+ *                  Required is a bindable property. <br>
+ *                  This property defines if the textarea is a required field while form submission. <br>
+ *                  Default value: `false`. <br>
  * @param {number=} maxchars
  *                  Maximum characters allowed in the textarea
+ * @param {boolean=} autofocus
+ *                   This property makes the widget get focused automatically when the page loads.
+ * @param {boolean=} readonly
+ *                  Readonly is a bindable property. <br>
+ *                  This property will be used to make the textarea widget readonly on the web page. <br>
+ *                  Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the textarea widget on the web page. <br>
@@ -98,27 +115,18 @@ WM.module('wm.widgets.form')
  *                  Disabled is a bindable property. <br>
  *                  This property will be used to disable/enable the textarea widget on the web page. <br>
  *                  Default value: `false`. <br>
- * @param {boolean=} readonly
- *                  Readonly is a bindable property. <br>
- *                  This property will be used to make the textarea widget readonly on the web page. <br>
- *                  Default value: `false`. <br>
- * @param {boolean=} required
- *                  Required is a bindable property. <br>
- *                  This property defines if the textarea is a required field while form submission. <br>
- *                  Default value: `false`. <br>
- *                  The value of this variable is set as the value to be shown in the textarea
- * @param {string=} on-click
- *                  Callback function for `click` event.
  * @param {string=} on-change
- *                  Callback function for `change` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

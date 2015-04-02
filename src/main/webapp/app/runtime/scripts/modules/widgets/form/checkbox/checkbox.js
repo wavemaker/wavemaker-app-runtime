@@ -127,15 +127,38 @@ WM.module('wm.widgets.form')
  * @requires WidgetUtilService
  * @requires CONSTANTS
  *
+ * @param {string=} caption
+ *                  Caption / Label for the Checkbox widget. <br>
+ *                  This property is bindable
  * @param {string=} name
  *                  Name of the checkbox widget.
  * @param {string=} hint
  *                  Title/hint for the checkbox. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of Checkbox widget. <br>
+ *                  Default value : 0
  * @param {string=} width
  *                  Width of the checkbox.
  * @param {string=} height
  *                  Height of the checkbox.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the initial value for the checkbox widget from a variable defined in the script workspace. <br>
+ * $param {string=} datavalue
+ *                  The value of the Checkbox widget <br>
+ *                  This property is bindable.
+ *                  Default value : 'false'
+ * @param {string=} checkedvalue
+ *                  This property defines the value of the checkbox widget when the widget is in the checked state.<br>
+ *                  Default value: `false`. <br>
+ * @param {string=} uncheckedvalue
+ *                  This property defines the value of the checkbox widget when the widget is in the unchecked state.<br>
+ * @param {boolean=} required
+ *                   This property will be used to validate the state of the checkbox widget when used inside a form widget. <br>
+ *                   Default value: `false`. <br>
+ * @param {boolean=} startchecked
+ *                   This property will be used to set the initial state of the checkbox widget. <br>
+ *                   Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the checkbox widget on the web page. <br>
@@ -144,29 +167,18 @@ WM.module('wm.widgets.form')
  *                   Disabled is a bindable property. <br>
  *                   This property will be used to disable/enable the checkbox widget on the web page. <br>
  *                   Default value: `false`. <br>
- * @param {boolean=} checked
- *                   This property will be used to set the initial state of the checkbox widget. <br>
- *                   Default value: `false`. <br>
- * @param {boolean=} required
- *                   This property will be used to validate the state of the checkbox widget when used inside a form widget. <br>
- *                   Default value: `false`. <br>
- * @param {string=} checkedvalue
- *                  This property defines the value of the checkbox widget when the element is in the checked state. Mandatory for displaying widget value.<br>
- *                  Default value: `false`. <br>
- * @param {string=} scopedatavalue
- *                  This property accepts the value for the checkbox widget from a variable defined in the script workspace. <br>
- * @param {string=} on-click
- *                  Callback function for `click` event.
  * @param {string=} on-change
- *                  Callback function for `change` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

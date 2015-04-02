@@ -108,15 +108,37 @@ WM.module('wm.widgets.form')
  * @requires PropertiesFactory
  * @requires WidgetUtilService
  *
+ * @param {string=} caption
+ *                  Caption / Label of the Radio widget <br>
+ *                  This property is bindable
  * @param {string=} name
  *                  Name of the radio widget.
  * @param {string=} hint
  *                  Title/hint for the radio. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of Radio widget. <br>
+ *                  Default value : 0
  * @param {string=} width
  *                  Width of the radio.
  * @param {string=} height
  *                  Height of the radio.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the initial value for the Radio widget from a variable defined in the script workspace. <br>
+ *                  The scope variable is updated whenever there is a change in the radio value.
+ * @param {string=} datavalue
+ *                  This property populates the value for the radio widget. <br>
+ *                  This property is bindable
+ * @param {string=} checkedvalue
+ *                  This property defines the value of the Radio widget when the widget is in the checked state. Mandatory for displaying widget value.<br>
+ *                  Default value: `false`. <br>
+ * @param {boolean=} required
+ *                  This property will be used to validate the state of the Radio widget when used inside a form widget.
+ * @param {string=} radiogroup
+ *                  This property allows you to assign several radioButton widgets to the same group. <br>
+ *                  The radiogroup property will be the same for all the radioButtons that have the same radiogroup property value.
+ * @param {boolean=} autofocus
+ *                   This property makes the Radio widget get focused automatically when the page loads.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the radio widget on the web page. <br>
@@ -125,29 +147,18 @@ WM.module('wm.widgets.form')
  *                  Disabled is a bindable property. <br>
  *                  This property will be used to disable/enable the radio widget on the web page. <br>
  *                  Default value: `false`. <br>
- * @param {boolean=} required
- *                  This property will be used to validate the state of the radio widget when used inside a form widget.
- * @param {string=} checkedvalue
- *                  This property defines the value of the checkbox widget when the element is in the checked state. Mandatory for displaying widget value.<br>
- *                  Default value: `false`. <br>
- * @param {string=} scopedatavalue
- *                  This property accepts the value for the radio widget from a variable defined in the script workspace. <br>
- *                  The scope variable is updated whenever there is a change in the radio value.
- * @param {string=} radiogroup
- *                  This property allows you to assign several radioButton widgets to the same group. <br>
- *                  The radiogroup property will be the same for all the radioButtons that have the same radiogroup property value.
- * @param {string=} on-click
- *                  Callback function for `click` event.
  * @param {string=} on-change
- *                  Callback function for `change` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">

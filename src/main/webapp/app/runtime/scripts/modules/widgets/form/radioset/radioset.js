@@ -338,41 +338,59 @@ WM.module('wm.widgets.form')
  * @param {string=} hint
  *                  Title/hint for the radioset. <br>
  *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of Radioset widget. <br>
+ *                  Default value : 0
  * @param {string=} width
  *                  Width of the radioset.
  * @param {string=} height
  *                  Height of the radioset.
+ * @param {string=} layout
+ *                  This property controls how contained widgets are displayed within this widget container. <br>
+ *                  Possible values are "inline", "stacked".
+ * @param {string=} scopedatavalue
+ *                  This property accepts the initial value for the Radioset widget from a variable defined in the script workspace. <br>
+ * @param {string=} selectedvalue
+ *                  This property defines the initial selected value of the Radioset widget.
+ * @param {boolean=} usekeys
+ *                   Use the keys of the live variable object as Radioset options.
+ * @param {array||string=} scopedataset
+ *                  This property accepts the options to create the Radioset widget from a variable defined in the script workspace.<br>
+ *                  Defined variable can hold a comma separated string or an array.
+ * @param {string=} dataset
+ *                  This property accepts the options to create the Radioset widget from a wavemaker studio variable (live or static) which can hold object, array or string data.
+ * @param {string=} datafield
+ *                  This property sets the dataValue to be returned by a Radioset widget when the list is populated using the dataSet property.
+ * @param {string=} displayfield
+ *                  This property sets the displayValue to show in the Radioset widget when the list is populated using the dataSet property.
+ * @param {expression=} displayexpression
+ *                      This is an advanced property that gives more control over what is displayed in the Radioset widget. <br>
+ *                      A Display Expression uses a Javascript expression to format exactly what is shown. <br>
+ *                      This property is bindable.
+ * @param {boolean=} readonly
+ *                   Readonly is a bindable property. <br>
+ *                   This property will be used to make the radio widget readonly on the web page. <br>
+ *                   Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the radioset widget on the web page. <br>
+ *                  This property will be used to show/hide the Radioset widget on the web page. <br>
  *                  Default value: `true`. <br>
  * @param {boolean=} disabled
  *                  Disabled is a bindable property. <br>
- *                  This property will be used to disable/enable the radioset widget on the web page. <br>
+ *                  This property will be used to disable/enable the Radioset widget on the web page. <br>
  *                  Default value: `false`. <br>
- * @param {boolean=} required
- *                  This property will be used to validate the state of the radioset widget when used inside a form widget.
- * @param {string=} datavalue
- *                  This property defines the value of the radioset widget.
- * @param {string=} scopedatavalue
- *                  This property accepts the value for the radioset widget from a variable defined in the script workspace. <br>
- * @param {string=} dataset
- *                  This property accepts the options to create the radioset widget from a wavemaker studio variable (live or static) which can hold object, array or string data.
- * @param {array||string=} scopedataset
- *                  This property accepts the options to create the radioset widget from a variable defined in the script workspace.<br>
- *                  Defined variable can hold a comma separated string or an array.
- * @param {string=} on-click
- *                  Callback function for `click` event.
  * @param {string=} on-change
- *                  Callback function for `change` event.
- * @param {string=} on-mouseenter.
- *                  Callback function for `mouseenter` event.
- * @param {string=} on-mouseleave
- *                  Callback function for `mouseleave` event.
+ *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
- *                  Callback function for `focus` event.
+ *                  Callback function which will be triggered when the widget gets focused.
  * @param {string=} on-blur
- *                  Callback function for `blur` event.
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
