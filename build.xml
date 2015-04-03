@@ -1,4 +1,4 @@
-<project name="Test" default="run-js-commands" basedir=".">
+<project name="Test" default="run-js-commands" basedir="wavemaker-app-runtime-core">
     <description>
         Grunt and other js utilities which are run with ant
     </description>
@@ -18,13 +18,13 @@
         <antcall target="cmd-template">
             <param name="cmd.name" value="npm"/>
             <param name="cmd.arg" value="install"/>
-            <param name="cmd.executable.dir" value="../src/main/webapp/app/runtime"/>
+            <param name="cmd.executable.dir" value="src/main/webapp/app/runtime"/>
         </antcall>
 
         <antcall target="cmd-template">
             <param name="cmd.name" value="grunt"/>
             <param name="cmd.arg" value="build --no-color"/>
-            <param name="cmd.executable.dir" value="../src/main/webapp/app/runtime"/>
+            <param name="cmd.executable.dir" value="src/main/webapp/app/runtime"/>
         </antcall>
 
     </target>
