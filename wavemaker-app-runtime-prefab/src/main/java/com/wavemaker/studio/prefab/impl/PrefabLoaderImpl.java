@@ -135,7 +135,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
 
     protected File[] readPrefabDirs() {
         if (prefabDirectory == null) {
-            LOGGER.warn("Prefabs directory is not defined or accessible, cannot load prefabs.");
+            LOGGER.info("No Prefabs found in the context");
             return PrefabConstants.ZERO_FILES;
         }
         return prefabUtils.listPrefabDirectories(prefabDirectory);
