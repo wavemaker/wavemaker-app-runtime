@@ -430,7 +430,7 @@ WM.module('wm.widgets.live')
                 template = template +
                     '<wm-composite widget="slider" show="{{filterFields[' + index + '].show}}">' +
                     '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                    '<input class="col-md-8" type="range"/>' +
+                    '<div class="col-md-8"><input type="range"/></div>' +
                     '</wm-composite>';
                 break;
             case 'select':
@@ -440,14 +440,14 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<wm-select class="col-md-4" name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-select>' +
-                        '<wm-select class="col-md-4" name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-select>' +
+                        '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-select></div>' +
+                        '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-select></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     template = template + '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-select>' +
+                        '<div class="col-md-8"><wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-select></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -459,15 +459,15 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<wm-text class="col-md-4" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text>' +
-                        '<wm-text class="col-md-4" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     type = (fieldDef.type === "integer") ? "number" : "string";
                     template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<wm-text class="col-md-8" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text>' +
+                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -479,15 +479,15 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<wm-date class="col-md-4" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-date>' +
-                        '<wm-date class="col-md-4" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-date>' +
+                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-date></div>' +
+                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-date></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     type = 'date';
                     template = template + '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<wm-date class="col-md-8" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-date>' +
+                        '<div class="col-md-8"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-date></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -496,19 +496,19 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<wm-text class="col-md-4" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text>' +
-                        '<wm-text class="col-md-4" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
                         '</wm-composite>';
                 } else {
                     template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<wm-text class="col-md-8" name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text>' +
+                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
                         '</wm-composite>';
                 }
                 break;
             }
             return template;
-            };
+        };
 
         return {
             "restrict": 'E',
