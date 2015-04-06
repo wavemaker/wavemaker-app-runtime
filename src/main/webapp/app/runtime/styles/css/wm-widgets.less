@@ -632,6 +632,9 @@ html, body {
 /*overriding bootstrap styles to avoid UI flicker on dialog open.*/
 body.modal-open {
   margin-right: 0;
+  .modal {
+    overflow-y: auto;
+  }
 }
 .modal-backdrop {
   height: 100%;
