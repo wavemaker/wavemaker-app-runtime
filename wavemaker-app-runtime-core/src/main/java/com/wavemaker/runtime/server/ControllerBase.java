@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.server;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
@@ -223,13 +224,17 @@ public abstract class ControllerBase extends AbstractController {
         String appContextRoot = WMAppContext.getInstance().getAppContextRoot();
         appContextRoot = appContextRoot.endsWith("/")?appContextRoot:appContextRoot+"/";
         String requestedURI = request.getRequestURI().substring(request.getContextPath().length());
-        Resource resource = new FileSystemResource(appContextRoot);
-        resource = resource.createRelative(requestedURI);
+        try {
+            Resource resource = new FileSystemResource(appContextRoot);
+            resource = resource.createRelative(requestedURI);
 
-        InputStream content = resource.getInputStream();
-        String contentType = URLConnection.getFileNameMap().getContentTypeFor(requestedURI);
-        response.setContentType(contentType);
-        IOUtils.copy(content, response.getOutputStream(), true, false);
+            InputStream content = resource.getInputStream();
+            String contentType = URLConnection.getFileNameMap().getContentTypeFor(requestedURI);
+            response.setContentType(contentType);
+            IOUtils.copy(content, response.getOutputStream(), true, false);
+        } catch (FileNotFoundException e) {
+            logger.warn("File not found for the requestedURI {}", requestedURI);
+        }
     }
 
     public void setServiceManager(ServiceManager spm) {
