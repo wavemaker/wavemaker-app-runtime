@@ -26,7 +26,7 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabcontent directive */
         $templateCache.put('template/layout/container/tab-content.html',
-            '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget></div>');
+            '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget'  + $rootScope.getWidgetStyles() + '></div>');
 
     }])
     .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$compile', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $compile, CONSTANTS) {
