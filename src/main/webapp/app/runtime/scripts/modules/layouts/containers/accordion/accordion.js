@@ -91,17 +91,6 @@ WM.module('wm.layouts.containers')
                         defaultPane = _.find(ctrl.panes, function (pane) { return pane.isdefaultpane; }) || ctrl.panes[0];
                         defaultPane.expand();
 
-                        /* In studio mode, on canvas resize, unset initialized flags for inactive accordions, so the redrawable contents can be redrawn */
-                        if (CONSTANTS.isStudioMode) {
-                            scope.$on('$destroy', scope.$root.$on('canvas-resize', function () {
-                                ctrl.panes.forEach(function (pane) {
-                                    if (!pane.active) {
-                                        pane.initialized = false;
-                                    }
-                                });
-                            }));
-                        }
-
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
@@ -145,13 +134,10 @@ WM.module('wm.layouts.containers')
                             scope.active = !scope.active;
                             if (scope.active) {
                                 /* some widgets like charts needs to be redrawn when a accordion pane becomes active for the first time */
-                                if (!scope.initialized) {
-                                    scope.initialized = true;
-                                    element.find('.ng-isolate-scope')
-                                        .each(function () {
-                                            Utils.triggerFn(WM.element(this).isolateScope().redraw);
-                                        });
-                                }
+                                element.find('.ng-isolate-scope')
+                                    .each(function () {
+                                        Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                    });
                                 /* trigger the onExpand call back */
                                 scope.onExpand();
                                 panesCtrl.closeOthers(scope);
