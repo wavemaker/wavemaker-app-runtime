@@ -404,7 +404,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 },
                 config: {
                     "url": connectionParams.url
-                }
+                },
+                "byPassResult": true
             }, successCallback, failureCallback);
         },
 
@@ -432,7 +433,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 },
                 config: {
                     "url": connectionParams.url
-                }
+                },
+                "byPassResult": true
             }, successCallback, failureCallback);
         },
 
@@ -502,7 +504,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                     method: params.method,
                     headers: params.headers
                 },
-                data: params.dataParams || undefined
+                data: params.dataParams || undefined,
+                "byPassResult": true
             }, successCallback, failureCallback);
         }
     };

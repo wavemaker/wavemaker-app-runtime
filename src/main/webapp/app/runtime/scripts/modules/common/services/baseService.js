@@ -129,6 +129,9 @@ wm.modules.wmCommon.services.BaseService = [
                         config.headers = serviceParams.headers;
                     }
 
+                    /* set byPassResult flag */
+                    config.byPassResult = serviceParams.byPassResult;
+
                     return config;
                 }
 
@@ -165,7 +168,7 @@ wm.modules.wmCommon.services.BaseService = [
             successHandler = function (config, successCallback, response) {
                 var returnVal;
                 isUnAuthorized = false;
-                if (response.data.hasOwnProperty('result')) {
+                if (!config.byPassResult && response.data.hasOwnProperty('result')) {
                     Utils.triggerFn(successCallback, response.data.result);
                     returnVal = response.data.result;
                 } else {
