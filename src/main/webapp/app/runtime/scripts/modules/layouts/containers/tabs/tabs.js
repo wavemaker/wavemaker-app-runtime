@@ -74,7 +74,7 @@ WM.module('wm.layouts.containers')
                  * if there is any activeTab, set the active flag on it to false and trigger onDeselect callback of it
                  * trigger the onSelect callback of the selected tab
                  */
-                this.selectTab = function (tab) {
+                this.selectTab = function (tab, skipOnSelect) {
                     var _tab = $scope.activeTab,
                         i,
                         tabs = $scope.tabs;
@@ -90,7 +90,11 @@ WM.module('wm.layouts.containers')
                             break;
                         }
                     }
-                    tab.onSelect();
+
+                    if (!skipOnSelect) {
+                        tab.onSelect();
+                    }
+
                 };
 
                 /* make selectedTab method available to the isolateScope of the tabs directive. */
@@ -143,10 +147,7 @@ WM.module('wm.layouts.containers')
                         /*Set active only if at least one is present*/
                         if (activeTab) {
                             activeTab.isActive = true;
-
-                            /* select the default tab */
-                            activeTab.initialized = true;
-                            scope.selectTab(activeTab);
+                            scope.selectTab(activeTab, true);
                         }
                         /**
                          * @ngdoc function
@@ -232,17 +233,6 @@ WM.module('wm.layouts.containers')
                             addNewBtnTemplate.appendTo(toolTipTarget);
                         }
 
-                        /* In studio mode, on canvas resize, unset initialized flags for inactive tabs, so the redrawable contents can be redrawn */
-                        if (CONSTANTS.isStudioMode) {
-                            scope.$on('$destroy', scope.$root.$on('canvas-resize', function () {
-                                scope.tabs.forEach(function (tab) {
-                                    if (!tab.isActive) {
-                                        tab.initialized = false;
-                                    }
-                                });
-                            }));
-                        }
-
                         /* initialize the widget */
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
@@ -307,13 +297,10 @@ WM.module('wm.layouts.containers')
                             }
 
                             /* some widgets like charts needs to be redrawn when a tab becomes active for the first time */
-                            if (!scope.initialized) {
-                                scope.initialized = true;
-                                element.find('.ng-isolate-scope')
-                                    .each(function () {
-                                        Utils.triggerFn(WM.element(this).isolateScope().redraw);
-                                    });
-                            }
+                            element.find('.ng-isolate-scope')
+                                .each(function () {
+                                    Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                });
                             scope.isActive = true;
                             ctrl.selectTab(scope);
                         };

@@ -44,21 +44,11 @@ WM.module('wm.layouts.page')
                             }
                         }
                         scope.initialize = function () {
-                            if (!scope.initialized) {
-                                scope.initialized = true;
-                                element.find('.ng-isolate-scope')
-                                    .each(function () {
-                                        Utils.triggerFn(WM.element(this).isolateScope().redraw);
-                                    });
-                            }
+                            element.find('.ng-isolate-scope')
+                                .each(function () {
+                                    Utils.triggerFn(WM.element(this).isolateScope().redraw);
+                                });
                         };
-
-                        /* In studio mode, on canvas resize, unset initialized flags for hidden views, so the redrawable contents can be redrawn */
-                        if (CONSTANTS.isStudioMode) {
-                            scope.$on('$destroy', scope.$root.$on('canvas-resize', function () {
-                                scope.initialized = false;
-                            }));
-                        }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         element.on('$destroy', function () {
