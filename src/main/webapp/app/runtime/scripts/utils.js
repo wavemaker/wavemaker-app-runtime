@@ -223,14 +223,18 @@ WM.module('wm.utils', [])
                 if (noModifyTitle) {
                     modifiedTitle = title;
                 } else {
-                    /*capitalize the initial Letter*/
-                    modifiedTitle = initCaps(title);
-                    /*Convert camel case words to separated words*/
-                    modifiedTitle = spaceSeparate(modifiedTitle);
-                    /*Replace '.' with space and capitalize the next letter*/
-                    modifiedTitle = periodSeparate(modifiedTitle);
-                    modifiedTitle = deHyphenate(modifiedTitle);
-                    modifiedTitle = namePrefix ? initCaps(namePrefix) + " " + modifiedTitle : modifiedTitle;
+                    if (WM.isString(title)) {
+                        /*capitalize the initial Letter*/
+                        modifiedTitle = initCaps(title);
+                        /*Convert camel case words to separated words*/
+                        modifiedTitle = spaceSeparate(modifiedTitle);
+                        /*Replace '.' with space and capitalize the next letter*/
+                        modifiedTitle = periodSeparate(modifiedTitle);
+                        modifiedTitle = deHyphenate(modifiedTitle);
+                        modifiedTitle = namePrefix ? initCaps(namePrefix) + " " + modifiedTitle : modifiedTitle;
+                    } else {
+                        modifiedTitle = title;
+                    }
                 }
                 title = namePrefix ? namePrefix + "." + title : title;
                 var defObj = propObj.setBindingField ? {'displayName': modifiedTitle, 'field': title} : {'displayName': modifiedTitle};

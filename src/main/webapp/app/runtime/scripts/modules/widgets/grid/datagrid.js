@@ -700,6 +700,11 @@ $.widget('wm.datagrid', {
         case 'data':
             this.refreshGridData();
             break;
+        case 'enableSort':
+            !this.options.enableSort &&
+            this.gridHeader &&
+            this.gridHeader.find('th .sort-buttons-container').hide();
+            break;
         case 'caption':
             if (this.gridCaption) {
                 if (!value.length) {
