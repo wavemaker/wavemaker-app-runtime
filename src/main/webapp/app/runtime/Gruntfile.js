@@ -87,7 +87,7 @@ module.exports = function (grunt) {
             'wm-loader': {
                 nonull: true,
                 files: {
-                    '<%= config.build %>/application/placeholders.js': ['<%= config.components %>/placeholders/lib/utils.js', '<%= config.components %>/placeholders/lib/main.js'],
+                    '<%= config.build %>/application/placeholders.js': ['<%= config.components %>/placeholders/js/utils.js', '<%= config.components %>/placeholders/js/main.js'],
                     '<%= config.build %>/application/wm-loader.js': ['<%= config.build %>/application/runtimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
                     '<%= config.build %>/application/wm-libs.js': [
                         '<%= config.components %>/underscore/underscore.js',
