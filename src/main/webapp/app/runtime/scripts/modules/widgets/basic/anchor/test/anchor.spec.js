@@ -1,131 +1,118 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
-describe("Anchor", function () {
+/*Testing for a Anchor*/
+describe("Testing Basic Widget: Anchor", function () {
+    "use strict";
+    var $compile,
+        $rootScope,
+        $unCompiled,
+        $element,
+        iScope,
+        widget = {},
+        markup =
+            '<wm-anchor caption="Anchor link" badgevalue="Anchor badge"  name="Anchor name" ' +
+            'hint="Anchor hint" tabindex="2" target="_parent" width="200px" height="200px" ' +
+            'hyperlink="www.wavemaker.com" show="true" animation="bounce"' +
+            'iconclass="glyphicon glyphicon-star-empty"iconwidth="20px" iconheight="20px" iconmargin="5px" ' +
+            'iconurl="http://pngimg.com/upload/star_PNG1592.png" class="btn-primary" ' +
+            'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
+            'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
+            'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png"' +
+            'backgroundrepeat="repeat" backgroundposition="left" backgroundsize="200px, 200px" backgroundattachment="fixed"' +
+            'bordercolor="#d92953" borderstyle="solid" bordertop="3" borderleft="3" borderright="3" ' +
+            'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
+            'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
+            'visibility="visible" display="inline"' +
+            'on-click="eventHandler()" on-dblclick="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
+            'on-blur="eventHandler()" on-focus="eventHandler()">' +
+            '</wm-anchor>';
 
-    'use strict';
-    var $compile, $rootScope, element, scope;
+    widget.type = 'wm-anchor'; // type of the widget
+    widget.widgetSelector = 'element'; // perform common widget tests on this element
+    widget.$unCompiled = WM.element(markup);
 
-    beforeEach(function () {
-        module('wm.widgets');
-        module('wmCore');
-        inject(function (_$compile_, _$rootScope_) {
-            $compile = _$compile_;
-            $rootScope = _$rootScope_;
-            element = $compile('<wm-anchor></wm-anchor>')($rootScope);
-            $rootScope.$digest();
-            scope = $rootScope;
+    // map of eventName-selector. events target will be the element which satisfies the given selector.
+    // this selector should be relative to widgetSelector
+    widget.basicEvents = {
+        'click': 'element',
+        'dblclick': 'element',
+        'mouseenter': 'element',
+        'mouseleave': 'element',
+        'blur': 'element',
+        'focus': 'element'
+    };
+
+    commonWidgetTests_verifyInitPropsInWidgetScope(widget);
+    commonWidgetTests_verifyCommonProperties(widget);
+    commonWidgetTests_verifyStyles(widget);
+    commonWidgetTests_verifyBasicEvents(widget);
+
+    /*Custom Test Suite for wm-anchor widget.*/
+    describe('Executing widget specific tests: ' + widget.type, function () {
+        beforeEach(function () {
+
+            /*Include the required modules.*/
+            module('wm.common');
+            module('wm.utils');
+            module('wm.widgets');
+
+            inject(function (_$compile_, _$rootScope_) {
+                $compile = _$compile_;
+                $rootScope = _$rootScope_;
+                $element = $compile(widget.$unCompiled.clone())($rootScope);
+
+                // if the widgetSelector is other than `element`,
+                // find the widget and its isolateScope using widgetSelector
+                if (widget.widgetSelector && widget.widgetSelector !== 'element') {
+                    $element = $element.find(widget.widgetSelector).first();
+                }
+                iScope = $element.isolateScope();
+                iScope.$apply();
+            });
+        });
+
+        describe("properties", function () {
+            //check for the target property
+            it("should change the target as put in property panel", function () {
+                expect($element.attr('target')).toBe(iScope.target);
+
+                iScope.target = "_Self";
+                iScope.$apply();
+                expect($element.attr('target')).toBe(iScope.target);
+            });
+
+            //check for the hyperlink property
+            it("should change the hyperlink as put in property panel", function () {
+                expect($element.attr('href')).toBe(iScope.hyperlink);
+
+                iScope.hyperlink = "www.google.com";
+                iScope.$apply();
+                expect($element.attr('href')).toBe(iScope.hyperlink);
+            });
+
+            //check for the iconclass property
+            it("should change the iconclass as put in property panel", function () {
+                expect($element.find('i').hasClass(iScope.iconclass)).toBe(true);
+            });
+
+            //check for the iconwidth property
+            it("should change the iconwidth as put in property panel", function () {
+                expect($element.find('i').css('width')).toBe(iScope.iconwidth);
+            });
+
+            //check for the iconheight property
+            it("should change the iconheight as put in property panel", function () {
+                expect($element.find('i').css('height')).toBe(iScope.iconheight);
+            });
+
+            //check for the iconmargin property
+            it("should change the iconmargin as put in property panel", function () {
+                expect($element.find('i').css('margin')).toBe(iScope.iconmargin);
+            });
+
+            //check for the iconurl property
+            it("should change the iconurl as put in property panel", function () {
+                expect($element.find('img').attr('src')).toBe(iScope.iconurl);
+            });
         });
     });
-
-    describe("styles", function () {
-        it("should change margin style to be 10PX 5PX 3PX 2PX", function () {
-            element.isolateScope().margintop = 10;
-            element.isolateScope().marginright = 5;
-            element.isolateScope().marginbottom = 3;
-            element.isolateScope().marginleft = 2;
-            element.isolateScope().$apply();
-            expect(element.css('margin')).toBe('10px 5px 3px 2px');
-        });
-        it("should change padding style to be 10PX 5PX 3PX 2PX", function () {
-            element.isolateScope().paddingtop = 10;
-            element.isolateScope().paddingright = 5;
-            element.isolateScope().paddingbottom = 3;
-            element.isolateScope().paddingleft = 2;
-            element.isolateScope().$apply();
-            expect(element.css('padding')).toBe('10px 5px 3px 2px');
-        });
-
-        it("should change color style to be red", function () {
-            element.isolateScope().color = '#FF0000';
-            element.isolateScope().$apply();
-            expect(element.css('color')).toBe('rgb(255, 0, 0)');
-        });
-
-        it("should change font-family to be arial", function () {
-            element.isolateScope().fontfamily = 'arial';
-            element.isolateScope().$apply();
-            expect(element.css('font-family')).toBe('arial');
-        });
-        it("should change font-weight to be lighter", function () {
-            element.isolateScope().fontweight = 'lighter';
-            element.isolateScope().$apply();
-            expect(element.css('font-weight')).toBe('lighter');
-        });
-        it("should change font-size to be large", function () {
-            element.isolateScope().fontsize = 14;
-            element.isolateScope().$apply();
-            expect(element.css('font-size')).toBe('14px');
-        });
-        it("should change font-style to be italic", function () {
-            element.isolateScope().fontstyle = 'italic';
-            element.isolateScope().$apply();
-            expect(element.css('font-style')).toBe('italic');
-        });
-
-        it("should change text-align to be center", function () {
-            element.isolateScope().textalign = 'center';
-            element.isolateScope().$apply();
-            expect(element.css('text-align')).toBe('center');
-        });
-
-        it("should change white-space to be nowrap", function () {
-            element.isolateScope().whitespace = 'nowrap';
-            element.isolateScope().$apply();
-            expect(element.css('white-space')).toBe('nowrap');
-        });
-        it("should change text-decoration to be underline", function () {
-            element.isolateScope().textdecoration = 'underline';
-            element.isolateScope().$apply();
-            expect(element.css('text-decoration')).toBe('underline');
-        });
-    });
-
-    describe("properties", function () {
-        it("should change the caption as put in property panel", function () {
-            expect(element.text()).toMatch(/link/i);
-            element.isolateScope().caption = "sample";
-            element.isolateScope().$apply();
-            expect(element.text()).toMatch(/sample/i);
-        });
-
-        it("should have default show property as true", function () {
-            expect(element.isolateScope().show).toBeTruthy();
-        });
-        it("should hide the element", function () {
-            element.isolateScope().show = false;
-            element.isolateScope().$apply();
-            expect(element.hasClass('ng-hide')).toBeTruthy();
-        });
-
-        it("should have default caption property as link", function () {
-            expect(element.isolateScope().caption).toMatch(/link/i);
-        });
-    });
-
-    describe("behavior", function () {
-        it("should trigger assigned click event", function () {
-            var testVariable = 1;
-            element.isolateScope().onClick = function () {
-                testVariable = 2;
-            };
-            element.click();
-            expect(testVariable).toBe(2);
-        });
-        it("should trigger assigned mouseenter event", function () {
-            var testVariable = 1;
-            element.isolateScope().onMouseenter = function () {
-                testVariable = 2;
-            };
-            element.mouseenter();
-            expect(testVariable).toBe(2);
-        });
-        it("should trigger assigned mouseleave event", function () {
-            var testVariable = 1;
-            element.isolateScope().onMouseleave = function () {
-                testVariable = 2;
-            };
-            element.mouseleave();
-            expect(testVariable).toBe(2);
-        });
-    });
-
 });

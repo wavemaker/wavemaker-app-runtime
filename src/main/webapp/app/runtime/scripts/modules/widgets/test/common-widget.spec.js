@@ -210,6 +210,30 @@ function commonWidgetTests_verifyCommonProperties(widget) {
             iScope.$apply();
             expect($element.attr('title')).toBe(iScope.hint);
         });
+
+        // check for animation property
+        it('should have given animation', function () {
+            if (!widgetProps.animation) {
+                return;
+            }
+            expect($element.attr('animation')).toBe(iScope.animation);
+        });
+
+        // check for tab index property
+        it('should have given tab index', function () {
+            if (!widgetProps.tabindex) {
+                return;
+            }
+            expect($element.attr('tabindex')).toBe(iScope.tabindex);
+        });
+
+        // check for badge value property
+        it('should have given badge value', function () {
+            if (!widgetProps.badgevalue) {
+                return;
+            }
+            expect($element.attr('badgevalue')).toBe(iScope.badgevalue);
+        });
     });
 }
 
@@ -570,6 +594,134 @@ function commonWidgetTests_verifyStyles(widget) {
             iScope.$apply();
             expect($element.css(cssName)).toBe('100');
         });
+
+        // check for visible style
+        it('should have given visible style', function () {
+            var cssName = 'visibility',
+                propName = cssName.toLowerCase(),
+                initValue = widget.$unCompiled.attr(propName);
+
+            if (!widgetProps[propName]) {
+                return;
+            }
+
+            if (initValue) {
+                expect($element.css(cssName)).toBe(initValue);
+            }
+            iScope[propName] = 'hidden';
+            iScope.$apply();
+            expect($element.css(cssName)).toBe('hidden');
+        });
+
+        // check for display style
+        it('should have given display style', function () {
+            var cssName = 'display',
+                propName = cssName.toLowerCase(),
+                initValue = widget.$unCompiled.attr(propName);
+
+            if (!widgetProps[propName]) {
+                return;
+            }
+
+            if (initValue) {
+                expect($element.css(cssName)).toBe(initValue);
+            }
+            iScope[propName] = 'block';
+            iScope.$apply();
+            expect($element.css(cssName)).toBe('block');
+        });
+
+        // check for backgroundimage style
+        it('should have given backgroundimage', function () {
+            var cssName = 'background-image',
+                propName = 'backgroundimage',
+                initValue = widget.$unCompiled.attr(propName);
+
+            if (!widgetProps[propName]) {
+                return;
+            }
+
+            if (initValue) {
+                expect($element.css(cssName)).toBe('url(' + initValue + ')');
+            }
+            iScope[propName] = 'https://www.google.com/logos/2013/doodle_4_google_2013_-_greece_winner-1735005-hp.jpg';
+            iScope.$apply();
+            expect($element.css(cssName)).toBe('url(https://www.google.com/logos/2013/doodle_4_google_2013_-_greece_winner-1735005-hp.jpg)');
+        });
+
+        // check for backgroundrepeat style
+        it('should have given backgroundrepeat', function () {
+            var cssName = 'background-repeat',
+                propName = 'backgroundrepeat',
+                initValue = widget.$unCompiled.attr(propName);
+
+            if (!widgetProps[propName]) {
+                return;
+            }
+
+            if (initValue) {
+                expect($element.css(cssName)).toBe(initValue);
+            }
+            iScope[propName] = 'no-repeat';
+            iScope.$apply();
+            expect($element.css(cssName)).toBe('no-repeat');
+        });
+
+        // check for backgroundposition style
+        it('should have given backgroundposition', function () {
+            var cssName = 'background-position',
+                propName = 'backgroundposition',
+                initValue = widget.$unCompiled.attr(propName);
+
+            if (!widgetProps[propName]) {
+                return;
+            }
+
+            if (initValue) {
+                expect($element.css(cssName)).toBe('0% 50%');
+            }
+            iScope[propName] = 'top';
+            iScope.$apply();
+            expect($element.css(cssName)).toBe('50% 0%');
+        });
+
+        // check for backgroundsize style
+        it('should have given backgroundsize', function () {
+            var cssName = 'background-size',
+                propName = 'backgroundsize',
+                initValue = widget.$unCompiled.attr(propName);
+
+            if (!widgetProps[propName]) {
+                return;
+            }
+
+            if (initValue) {
+                expect($element.css(cssName)).toBe(initValue);
+            }
+            iScope[propName] = '300px, 300px';
+            iScope.$apply();
+            expect($element.css(cssName)).toBe('300px, 300px');
+        });
+
+        // check for backgroundattachment style
+        it('should have given backgroundattachment', function () {
+            var cssName = 'background-attachment',
+                propName = 'backgroundattachment',
+                initValue = widget.$unCompiled.attr(propName);
+
+            if (!widgetProps[propName]) {
+                return;
+            }
+
+            if (initValue) {
+                expect($element.css(cssName)).toBe(initValue);
+            }
+            iScope[propName] = 'scroll';
+            iScope.$apply();
+            expect($element.css(cssName)).toBe('scroll');
+        });
+
+
     });
 }
 
