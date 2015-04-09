@@ -49,6 +49,13 @@ module.exports = function (grunt) {
                 }
             }
         },
+        karma: {
+            unit: {
+                configFile: './test/karma-unit.config.js',
+                autoWatch: false,
+                singleRun: true
+            }
+        },
         uglify: {
             'min-mangle-true': {
                 options: {
@@ -255,4 +262,6 @@ module.exports = function (grunt) {
         'concat',
         'concat:wm-loader'
     ]);
+
+    grunt.registerTask('unitTest', ['build', 'karma:unit']);
 };
