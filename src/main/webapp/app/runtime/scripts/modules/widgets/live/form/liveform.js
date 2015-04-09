@@ -133,8 +133,9 @@ WM.module('wm.widgets.live')
                 $scope.formSave = function (event) {
                     var data,
                         prevData,
-                        requestData,
-                        variable = $scope.element.scope().Variables[$scope.variableName],
+                        requestData = {},
+                        elScope = $scope.element.scope(),
+                        variable = elScope.Variables[$scope.variableName],
                         isValid;
                     if ($scope.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
@@ -171,18 +172,20 @@ WM.module('wm.widgets.live')
                             return;
                         }
                     }
+                    requestData = {
+                        "row": data,
+                        "transform": true,
+                        "multipartData": $scope.multipartData
+                    };
+                    /*Pass in the prefab scope if the liveForm is present in a prefab, as the bound variable is available in the prefab scope only*/
+                    if (elScope.prefabname) {
+                        requestData.scope = elScope;
+                    }
                     /*Based on the operationType decide the action*/
                     switch ($scope.operationType) {
                     case "update":
-                        requestData = {
-                            "row": data,
-                            "rowData": $scope.rowdata,
-                            "transform": true,
-                            "prevData": prevData
-                        };
-                        if ($scope.multipartData) {
-                            requestData.multipartData = true;
-                        }
+                        requestData.rowData = $scope.rowdata;
+                        requestData.prevData = prevData;
                         Variables.call("updateRecord", $scope.variableName, requestData, function (response) {
                             /*Display appropriate error message in case of error.*/
                             if (response.error) {
@@ -209,22 +212,14 @@ WM.module('wm.widgets.live')
                         });
                         break;
                     case "insert":
-                        requestData = {};
-                        requestData = {
-                            "row": data,
-                            "transform": true
-                        };
-                        if ($scope.multipartData) {
-                            requestData.multipartData = true;
-                        }
                         Variables.call("insertRecord", $scope.variableName, requestData, function (response) {
                             /*Display appropriate error message in case of error.*/
                             if (response.error) {
                                 wmToaster.show('error', 'ERROR', response.error);
                                 onResult(response, false, event);
                             } else {
-                                onResult(response, true, event);
                                 wmToaster.show('success', 'SUCCESS', $scope.insertmessage);
+                                onResult(response, true, event);
                                 /* if successfully inserted  change editable mode to false */
                                 if ($scope.ctrl) {
                                     /* highlight the current updated row */
@@ -249,11 +244,7 @@ WM.module('wm.widgets.live')
                                 return;
                             }
                         }
-
-                        Variables.call("deleteRecord", $scope.variableName, {
-                            "row": data,
-                            "transform": true
-                        }, function (success) {
+                        Variables.call("deleteRecord", $scope.variableName, requestData, function (success) {
                             /* check the response whether the data successfully deleted or not , if any error occurred show the
                              * corresponding error , other wise remove the row from grid */
                             if (success && success.error) {
@@ -406,7 +397,7 @@ WM.module('wm.widgets.live')
 
                     if (isFormDataSupported) {
                         /* Angular does not bind file values so using native object to send files */
-                        formData = formData || new FormData();
+                        formData = new FormData();
                     }
                     dataArray.forEach(function (field) {
                         var date,
