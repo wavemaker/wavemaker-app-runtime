@@ -701,9 +701,11 @@ $.widget('wm.datagrid', {
             this.refreshGridData();
             break;
         case 'enableSort':
-            !this.options.enableSort &&
-            this.gridHeader &&
-            this.gridHeader.find('th .sort-buttons-container').hide();
+            if (!this.options.enableSort) {
+                this.gridHeader && this.removeSort();
+            } else {
+                this.refreshGrid();
+            }
             break;
         case 'caption':
             if (this.gridCaption) {
