@@ -1,21 +1,19 @@
 package com.wavemaker.runtime.web.filter;
 
-import com.sun.syndication.feed.impl.ToStringBean;
-import com.sun.xml.bind.v2.ClassFactory;
-import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
-import net.sf.cglib.core.AbstractClassGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.GenericFilterBean;
+import java.io.IOException;
+import java.lang.reflect.Field;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.GenericFilterBean;
+
+import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
 
 /**
  * Created by akritim on 3/23/2015.
@@ -35,13 +33,16 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
             this.clearThreadLocalServiceInterceptorFactory();
             this.clearThreadLocalToStringBean();
             this.clearThreadLocalAbstractClassGenerator();
-            cleanClassFactoryCache();
+            this.cleanClassFactoryCache();
         }
     }
 
     private void cleanClassFactoryCache() {
         try {
-            ClassFactory.cleanCache();
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "com.sun.xml.bind.v2.ClassFactory");
+            if (klass != null) {
+                klass.getMethod("cleanCache").invoke(null);
+            }
         } catch (Throwable e) {
             logger.warn("Failed to clean ClassFactory Cache", e);
         }
@@ -49,12 +50,14 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
 
     private void clearThreadLocalServiceInterceptorFactory() {
         try {
-            Field privateThreadLocalFactoriesField = ServiceInterceptorFactory.class.getDeclaredField("threadLocalFactories");
-            privateThreadLocalFactoriesField.setAccessible(true);
-
-            ThreadLocal<Set<ServiceInterceptorFactory>> threadLocal = (ThreadLocal<Set<ServiceInterceptorFactory>>) privateThreadLocalFactoriesField.get(null);
-            if (threadLocal != null) {
-                threadLocal.remove();
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "com.sun.xml.ws.api.client.ServiceInterceptorFactory");
+            if (klass != null) {
+                Field privateThreadLocalFactoriesField = klass.getDeclaredField("threadLocalFactories");
+                privateThreadLocalFactoriesField.setAccessible(true);
+                ThreadLocal threadLocal = (ThreadLocal) privateThreadLocalFactoriesField.get(null);
+                if (threadLocal != null) {
+                    threadLocal.remove();
+                }
             }
         } catch (Throwable e) {
             logger.warn("Failed to cleanup ServiceInterceptorFactory Thread Local", e);
@@ -63,12 +66,14 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
 
     private void clearThreadLocalToStringBean() {
         try {
-            Field privatePREFIX_TLField = ToStringBean.class.getDeclaredField("PREFIX_TL");
-            privatePREFIX_TLField.setAccessible(true);
-
-            ThreadLocal threadLocal = (ThreadLocal) privatePREFIX_TLField.get(null);
-            if (threadLocal != null) {
-                threadLocal.remove();
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "com.sun.syndication.feed.impl.ToStringBean");
+            if (klass != null) {
+                Field privatePREFIX_TLField = klass.getDeclaredField("PREFIX_TL");
+                privatePREFIX_TLField.setAccessible(true);
+                ThreadLocal threadLocal = (ThreadLocal) privatePREFIX_TLField.get(null);
+                if (threadLocal != null) {
+                    threadLocal.remove();
+                }
             }
         } catch (Throwable e) {
             logger.warn("Failed to cleanup ToStringBean Thread Local", e);
@@ -77,13 +82,14 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
 
     private void clearThreadLocalActivityCorrelator() {
         try {
-            Class klass = WMRequestCleanupFilter.class.getClassLoader().loadClass("com.microsoft.sqlserver.jdbc.ActivityCorrelator");
-            Field activityIdTls = klass.getDeclaredField("ActivityIdTls");
-            activityIdTls.setAccessible(true);
-
-            ThreadLocal threadLocal = (ThreadLocal) activityIdTls.get(null);
-            if (threadLocal != null) {
-                threadLocal.remove();
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "com.microsoft.sqlserver.jdbc.ActivityCorrelator");
+            if (klass != null) {
+                Field activityIdTls = klass.getDeclaredField("ActivityIdTls");
+                activityIdTls.setAccessible(true);
+                ThreadLocal threadLocal = (ThreadLocal) activityIdTls.get(null);
+                if (threadLocal != null) {
+                    threadLocal.remove();
+                }
             }
         } catch (Throwable e) {
             logger.warn("Failed to cleanup ActivityCorrelator Thread Local", e);
@@ -92,12 +98,14 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
 
     private void clearThreadLocalAbstractClassGenerator() {
         try {
-            Field CURRENT = AbstractClassGenerator.class.getDeclaredField("CURRENT");
-            CURRENT.setAccessible(true);
-
-            ThreadLocal threadLocal = (ThreadLocal) CURRENT.get(null);
-            if (threadLocal != null) {
-                threadLocal.remove();
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "net.sf.cglib.core.AbstractClassGenerator");
+            if (klass != null) {
+                Field CURRENT = klass.getDeclaredField("CURRENT");
+                CURRENT.setAccessible(true);
+                ThreadLocal threadLocal = (ThreadLocal) CURRENT.get(null);
+                if (threadLocal != null) {
+                    threadLocal.remove();
+                }
             }
         } catch (Throwable e) {
             logger.warn("Failed to cleanup AbstractClassGenerator Thread Local", e);
