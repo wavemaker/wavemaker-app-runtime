@@ -15,27 +15,23 @@
  */
 package com.wavemaker.runtime.server;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.ClassKey;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.LRUMap;
-import com.mysql.jdbc.AbandonedConnectionCleanupThread;
-import com.sun.naming.internal.ResourceManager;
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.studio.common.util.CastUtils;
-import org.apache.commons.logging.LogFactory;
-import org.hsqldb.DatabaseManager;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import java.beans.Introspector;
 import java.lang.reflect.Field;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.ResourceBundle;
+import java.util.Map;
 import java.util.WeakHashMap;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
+import org.apache.commons.logging.LogFactory;
+
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
+import com.wavemaker.studio.common.util.CastUtils;
 
 /**
  * Listener that flushes all of the Introspector's internal caches and de-registers all JDBC drivers on web app
@@ -90,21 +86,23 @@ public class CleanupListener implements ServletContextListener {
     }
 
     private void shutDownHSQLTimerThreadIfAny() {
-        if (DatabaseManager.class.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
-            try {
-                if (DatabaseManager.getTimer() != null) {
-                    DatabaseManager.getTimer().shutDown();
-                    if (DatabaseManager.getTimer().getThread().isAlive()) {
-                        System.out.println("Joining HSQL-Timer thread: " + DatabaseManager.getTimer().getThread().getName());
-                        DatabaseManager.getTimer().getThread().join();
+        String className = "org.hsqldb.DatabaseManager";
+        try {
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            if (klass != null && klass.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
+                Object hsqlTimer = klass.getMethod("getTimer").invoke(null);
+                if (hsqlTimer != null) {
+                    hsqlTimer.getClass().getMethod("shutDown").invoke(hsqlTimer);
+                    Thread hsqlTimerThread = (Thread) hsqlTimer.getClass().getMethod("getThread").invoke(hsqlTimer);
+                    if (hsqlTimerThread != null && hsqlTimerThread.isAlive()) {
+                        System.out.println("Joining HSQL-Timer thread: " + hsqlTimerThread.getName());
+                        hsqlTimerThread.join();
                     }
                 }
-            } catch (NullPointerException e) {
-                System.out.println("No active HSQL-Timer thread found");
-            } catch (Throwable e) {
-                System.out.println("Failed to shutdown HSQL-Timer thread");
-                e.printStackTrace();
             }
+        } catch (Throwable e) {
+            System.out.println("Failed to shutdown hsql timer thread " + className);
+            e.printStackTrace();
         }
     }
 
@@ -113,32 +111,14 @@ public class CleanupListener implements ServletContextListener {
      * To stop mysql thread, if any and resolve issue of "Abandoned connection cleanup thread" not stopping
      */
     private void shutDownMySQLThreadIfAny() {
-        if (AbandonedConnectionCleanupThread.class.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
-            try {
-                AbandonedConnectionCleanupThread.shutdown();
-            } catch (Throwable e) {
-                System.out.println("Failed to shutdown My SQL thread");
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Added by akritim on 3/28/2015.
-     * To clear TypeFactory's TypeCache
-     */
-    private void TypeFactoryClearTypeCache() {
+        String className = "com.mysql.jdbc.AbandonedConnectionCleanupThread";
         try {
-            Field typeCache = TypeFactory.class.getDeclaredField("_typeCache");
-            typeCache.setAccessible(true);
-            LRUMap<ClassKey, JavaType> cache = (LRUMap<ClassKey, JavaType>) typeCache.get(TypeFactory.defaultInstance());
-            if (cache != null) {
-                cache.clear();
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            if (klass != null && klass.getClassLoader() == CleanupListener.class.getClassLoader()) {//Shutdown the thread only if the class is loaded by web-app
+                klass.getMethod("shutdown").invoke(null);
             }
-        } catch (NullPointerException e) {
-            System.out.println("No active TypeCache To clear");
         } catch (Throwable e) {
-            System.out.println("Failed to ClearTypeCache from TypeFactory");
+            System.out.println("Failed to shutdown mysql thread " + className);
             e.printStackTrace();
         }
     }
@@ -147,22 +127,44 @@ public class CleanupListener implements ServletContextListener {
      * Added by akritim on 3/28/2015.
      * To clear TypeFactory's TypeCache
      */
-    private void ResouceManagerClearPropertiesCache() {
-        if(ResourceManager.class.getClassLoader() == CleanupListener.class.getClassLoader()){
-            try {
-                Field propertiesCache = ResourceManager.class.getDeclaredField("propertiesCache");
+    private void TypeFactoryClearTypeCache() {
+        String className = "com.fasterxml.jackson.databind.type.TypeFactory";
+        try {
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            if (klass != null) {
+                Object defaultInstance = klass.getMethod("defaultInstance").invoke(null);
+                Field typeCache = klass.getDeclaredField("_typeCache");
+                typeCache.setAccessible(true);
+                Map cache = (Map) typeCache.get(defaultInstance);
+                if (cache != null) {
+                    cache.clear();
+                }
+            }
+        } catch (Throwable e) {
+            System.out.println("Failed to Clear TypeCache from " + className);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Added by akritim on 3/28/2015.
+     * To clear TypeFactory's TypeCache
+     */
+    private void ResourceManagerClearPropertiesCache() {
+        String className = "com.sun.naming.internal.ResourceManager";
+        try {
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            if(klass != null && klass.getClassLoader() == CleanupListener.class.getClassLoader()){
+                Field propertiesCache = klass.getDeclaredField("propertiesCache");
                 propertiesCache.setAccessible(true);
                 WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache.get(null);
                 if (map != null) {
                     map.clear();
                 }
-            } catch (NullPointerException e) {
-                System.out.println("No active propertiesCache To clear");
-            } catch (Throwable e) {
-                System.out.println("Failed to clear propertiesCache from ResouceManager");
-                e.printStackTrace();
             }
-
+        } catch (Throwable e) {
+            System.out.println("Failed to clear propertiesCache from " + className);
+            e.printStackTrace();
         }
     }
 
