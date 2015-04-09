@@ -25,8 +25,9 @@ WM.module('wm.layouts.containers')
                         '<div class="panel-body" wmtransclude page-container-target data-ng-style="{height: height, overflow: overflow,paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}" ></div>' +
                         '<aside class="panel-help-message"><h5 class="panel-help-header">{{::$root.appLocale.LABEL_HELP}}</h5><div class="panel-help-content" data-ng-bind-html="helptext"></div></aside>' +
                     '</div>' +
-                    '</div>'
+                '</div>'
             );
+        $templateCache.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" wmtransclude></div>');
     }])
     .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
@@ -60,13 +61,18 @@ WM.module('wm.layouts.containers')
                 }
                 return template[0].outerHTML;
             },
+            'controller': function () {
+                this.registerFooter = function (footer) {
+                    this.footer = footer;
+                }
+            },
             'compile': function () {
                 return {
                     'pre': function (scope) {
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = WM.copy(widgetProps);
                     },
-                    'post': function (scope, element, attrs) {
+                    'post': function (scope, element, attrs, panelCtrl) {
                         if (scope.expanded === undefined) {
                             scope.expanded = true;
                         }
@@ -106,10 +112,27 @@ WM.module('wm.layouts.containers')
                                 }
                             };
                         }
+
+                        if (panelCtrl.footer) {
+                            element.append(panelCtrl.footer);
+                        }
                     }
                 };
             }
         };
+    }])
+    .directive('wmPanelFooter', ['$templateCache', function ($templateCache) {
+        return {
+            'restrict': 'E',
+            'replace': true,
+            'scope': {},
+            'transclude': true,
+            'require': '^wmPanel',
+            'template': $templateCache.get('template/layout/container/panel-footer.html'),
+            'link': function (scope, element, attrs, panelCtrl) {
+                panelCtrl.registerFooter(element);
+            }
+        }
     }]);
 
 /**
