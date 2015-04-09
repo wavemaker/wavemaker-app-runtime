@@ -258,6 +258,20 @@ WM.module('wm.widgets.grid')
 
                         scope.actions = [];
 
+                        /* Event to update "insertrow", "updaterow" and "deleterow" properties based on "readonlygrid" value.
+                         * NOTE: This is not handled in propertyChangeHandler because we have to update these properties only
+                         * when user explicitly clicks readonlygrid checkbox. */
+                        handlers.push($rootScope.$on('grid-action-properties-modified', function (event, readonlygrid) {
+                            scope.deleterow = !readonlygrid;
+                            scope.updaterow = !readonlygrid;
+                            scope.insertrow = !readonlygrid;
+                            $rootScope.$emit('set-markup-attr', scope.widgetid, {
+                                'insertrow': scope.insertrow,
+                                'updaterow': scope.updaterow,
+                                'deleterow': scope.deleterow
+                            });
+                        }));
+
                         /* event emitted on building new markup from canvasDom */
                         handlers.push($rootScope.$on('compile-grid-columns', function (event, scopeId, markup) {
                             /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
@@ -393,40 +407,24 @@ WM.module('wm.widgets.grid')
                                 }
                                 break;
                             case 'readonlygrid':
-                                // Set delete, update and insert row to false if readonly grid is true.
-                                if (newVal) {
-                                    scope.deleterow = false;
-                                    scope.updaterow = false;
-                                    scope.insertrow = false;
-                                    /* If readonlygrid is true, then update the markup
-                                     * setting insert, update and delete row to false.*/
+                                /* For backward compatibility, if "readonlygrid" attribute is not there,
+                                 * add it to the markup and save. Also set related properties - insertrow,
+                                 * updaterow and deleterow to whatever their value is.
+                                 * */
+                                if (readOnlyGridAttrUpdated) {
+                                    scope.insertrow = WM.isDefined(scope.insertrow) ? scope.insertrow : false;
+                                    scope.updaterow = WM.isDefined(scope.updaterow) ? scope.updaterow : false;
+                                    scope.deleterow = WM.isDefined(scope.deleterow) ? scope.deleterow : false;
                                     if (CONSTANTS.isStudioMode) {
                                         $rootScope.$emit('set-markup-attr', scope.widgetid, {
-                                            'insertrow': false,
-                                            'updaterow': false,
-                                            'deleterow': false
+                                            'readonlygrid': false,
+                                            'insertrow': scope.insertrow,
+                                            'updaterow': scope.updaterow,
+                                            'deleterow': scope.deleterow
                                         });
+                                        $rootScope.$emit('save-workspace', undefined, true);
                                     }
-                                } else {
-                                    if (readOnlyGridAttrUpdated) {
-                                        /* For backward compatibility, if "readonlygrid" attribute is not there,
-                                         * add it to the markup and save. Also set related properties - insertrow,
-                                         * updaterow and deleterow to whatever their value is.
-                                         * */
-                                        scope.insertrow = WM.isDefined(scope.insertrow) ? scope.insertrow : false;
-                                        scope.updaterow = WM.isDefined(scope.updaterow) ? scope.updaterow : false;
-                                        scope.deleterow = WM.isDefined(scope.deleterow) ? scope.deleterow : false;
-                                        if (CONSTANTS.isStudioMode) {
-                                            $rootScope.$emit('set-markup-attr', scope.widgetid, {
-                                                'readonlygrid': false,
-                                                'insertrow': scope.insertrow,
-                                                'updaterow': scope.updaterow,
-                                                'deleterow': scope.deleterow
-                                            });
-                                            $rootScope.$emit('save-workspace', undefined, true);
-                                        }
-                                        readOnlyGridAttrUpdated = undefined;
-                                    }
+                                    readOnlyGridAttrUpdated = undefined;
                                 }
                                 if (CONSTANTS.isStudioMode) {
                                     scope.widgetProps.deleterow.show = !newVal;
