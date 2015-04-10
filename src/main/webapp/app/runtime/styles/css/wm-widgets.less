@@ -227,6 +227,34 @@ html, body {
     cursor: pointer;
     display: inline-block;
   }
+  .dropdown-submenu:hover {
+    position: relative;
+    > .dropdown-menu{
+        display: block;
+        left: 100%;
+        top: 0px;
+        margin-top: -2px;
+        margin-left: -2px;
+    }
+    &.pull-left{
+        > .dropdown-menu{
+            display: block;
+            left: -100%;
+            bottom: 0px;
+            margin-bottom: -2px;
+        }
+    }
+  }
+  &.dropup .dropdown-submenu:hover{
+    > .dropdown-menu{
+        display: block;
+        left: 100%;
+        top : auto;
+        bottom: 0px;
+        margin-bottom: -2px;
+        margin-left: -2px;
+    }
+  }
 }
 
 .app-popover{

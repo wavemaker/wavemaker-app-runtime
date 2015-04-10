@@ -13,52 +13,50 @@ WM.module('wm.widgets.form')
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
                     '</button>' +
-                    '<ul class="dropdown-menu">' +
-                        '<li data-ng-repeat="item in menuItems" data-ng-class="{\'disabled\': item.disabled}">' +
-                            '<a title="{{item.label}}">' +
-                                '<i class="{{item.icon}}"></i>' +
-                                '{{item.label}}' +
-                            '</a>' +
-                        '</li>' +
-                    '</ul>' +
+                    '<wm-menu-dropdown items="menuItems"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
                 '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown>' +
-                    '<a class="app-anchor dropdown-toggle {{menuclass}}" dropdown-toggle' +
-                        $rootScope.getWidgetStyles() +
-                        '><i class="{{iconclass}}"></i>' +
+                    '<a class="app-anchor dropdown-toggle {{menuclass}}" dropdown-toggle' + $rootScope.getWidgetStyles() + '><i class="{{iconclass}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
                     '</a>' +
-                    '<ul class="dropdown-menu">' +
-                        '<li data-ng-repeat="item in menuItems" data-ng-class="{\'disabled\': item.disabled}">' +
-                            '<a title="{{item.label}}">' +
-                                '<i class="{{item.icon}}"></i>' +
-                                '{{item.label}}' +
-                            '</a>' +
-                        '</li>' +
-                    '</ul>' +
+                    '<wm-menu-dropdown items="menuItems"/>' +
                 '</div>'
             );
+        $templateCache.put('template/widget/form/menu/dropdown.html',
+                '<ul class="dropdown-menu">' +
+                    '<wm-menu-dropdown-item data-ng-repeat="item in items" item="item"/>' +
+                '</ul>'
+            );
+        $templateCache.put('template/widget/form/menu/dropdownItem.html',
+                '<li data-ng-class="{\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}">' +
+                    '<a title="{{item.label}}">' +
+                        '<i class="{{item.icon}}"></i>' +
+                        '{{item.label}}' +
+                    '</a>' +
+                '</li>'
+            );
     }])
-    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'CONSTANTS', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, CONSTANTS) {
+    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base.editors', 'wm.base.editors.dataseteditors']),
             ALLFIELDS = 'All Fields',
             notifyFor = {
-                'iconname' : true,
+                'iconname': true,
                 'scopedataset': true,
                 'dataset': true,
                 'dropposition': true
             };
 
         function getMenuItems(newVal, scope) {
-            var menuItems = [];
+            var menuItems = [],
+                transformFn;
             if (WM.isString(newVal)) {
-                menuItems = newVal.split(",").map(function (item) {
+                menuItems = newVal.split(',').map(function (item) {
                     var _val = item && item.trim();
                     return {
                         'label': _val,
@@ -67,14 +65,16 @@ WM.module('wm.widgets.form')
                 });
             } else if (WM.isArray(newVal)) {
                 if (WM.isObject(newVal[0])) {
-                    menuItems = newVal.map(function (item) {
+                    transformFn = function (item) {
                         return {
                             'label': scope.displayfield ? item[scope.displayfield] : item.label,
                             'icon': item.icon,
                             'disabled': item.disabled,
-                            'value': scope.datafield ? (scope.datafield === 'All Fields' ? item : item[scope.datafield]) : item
+                            'value': scope.datafield ? (scope.datafield === 'All Fields' ? item : item[scope.datafield]) : item,
+                            'children' : (item.children || []).map(transformFn)
                         };
-                    });
+                    };
+                    menuItems = newVal.map(transformFn);
                 } else {
                     menuItems = newVal.map(function (item) {
                         return {
@@ -156,18 +156,12 @@ WM.module('wm.widgets.form')
                 'onSelect': '&'
             },
             'template': function (tElement, tAttrs) {
-
-                var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
-                    template = WM.element($templateCache.get('template/widget/form/menu.html'));
+                var template = '';
                 if (tAttrs.type && tAttrs.type === 'anchor') {
                     template = WM.element($templateCache.get('template/widget/form/anchormenu.html'));
+                } else {
+                    template = WM.element($templateCache.get('template/widget/form/menu.html'));
                 }
-                if (!isWidgetInsideCanvas) {
-                    if (tAttrs.hasOwnProperty('onSelect')) {
-                        template.find('.dropdown-menu > li').attr('data-ng-click', 'onSelect({$event: $event, $scope: this, $item: item.value || item.label })');
-                    }
-                }
-
                 return template[0].outerHTML;
             },
             'replace': true,
@@ -196,6 +190,53 @@ WM.module('wm.widgets.form')
                             }, 0, true);
                         }
                     }
+                };
+            }
+        };
+    }])
+    .directive('wmMenuDropdown', ['$templateCache', function ($templateCache) {
+        'use strict';
+        return {
+            'restrict': "E",
+            'replace': true,
+            'scope': {
+                'items': '='
+            },
+            'template': $templateCache.get('template/widget/form/menu/dropdown.html'),
+            'compile': function () {
+                return {
+                    'post': function (scope) {
+                        scope.onSelect = function (args) {
+                            scope.$parent.onSelect(args);
+                        };
+                    }
+                };
+            }
+        };
+    }])
+    .directive('wmMenuDropdownItem', ['$templateCache', '$compile', 'CONSTANTS',  function ($templateCache, $compile, CONSTANTS) {
+        'use strict';
+        return {
+            'restrict': "E",
+            'replace': true,
+            'scope': {
+                'item': '='
+            },
+            'template': function () {
+                var template = WM.element($templateCache.get('template/widget/form/menu/dropdownItem.html'));
+                if (!CONSTANTS.isStudioMode) {
+                    template.attr('data-ng-click', 'onSelect({$event: $event, $scope: this, $item: item.value || item.label })');
+                }
+                return template[0].outerHTML;
+            },
+            'link': function (scope, element) {
+                if (scope.item.children && scope.item.children.length > 0) {
+                    element.append('<wm-menu-dropdown items="item.children"/>');
+                    element.off('click');
+                    $compile(element.contents())(scope);
+                }
+                scope.onSelect = function (args) {
+                    scope.$parent.onSelect(args);
                 };
             }
         };
@@ -253,26 +294,39 @@ WM.module('wm.widgets.form')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *              <wm-menu scopedataset="nodes"></wm-menu>
+ *              <wm-menu scopedataset="nodes" caption="Menu" iconclass="glyphicon glyphicon-align-justify"></wm-menu>
  *           </div>
  *       </file>
  *       <file name="script.js">
  *          function Ctrl($scope) {
- *          $scope.nodes = [
- *              {
- *                  "label": "item1",
- *                  "icon": "glyphicon glyphicon-euro"
- *              }, {
- *                  "label": "item2",
- *                  "icon": "glyphicon glyphicon-euro"
- *              }, {
- *                  "label": "item3",
- *                  "icon": "glyphicon glyphicon-euro"
- *              }, {
- *                  "label": "item4",
- *                  "icon": "glyphicon glyphicon-euro"
- *              }
- *          ];
+ *              $scope.nodes = [
+ *                  {
+ *                      "label": "item1",
+ *                      "icon": "glyphicon glyphicon-euro"
+ *                  },
+ *                  {
+ *                      "label": "item2",
+ *                      "icon": "glyphicon glyphicon-euro"
+ *                  },
+ *                  {
+ *                      "label": "item3",
+ *                      "icon": "glyphicon glyphicon-euro"
+ *                  },
+ *                  {
+ *                      "label": "item4",
+ *                      "icon": "glyphicon glyphicon-euro",
+ *                      "children" : [
+ *                          {
+ *                              "label": "sub-menu-item1",
+ *                              "icon": "glyphicon glyphicon-euro"
+ *                          },
+ *                          {
+ *                              "label": "sub-menu-item2",
+ *                              "icon": "glyphicon glyphicon-euro"
+ *                          }
+ *                      ]
+ *                  }
+ *              ];
  *          }
  *       </file>
  *   </example>
