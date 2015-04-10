@@ -93,16 +93,16 @@ WM.module('wm.prefabs')
 
                 WM.forEach(userDefinedProps, function (prop, key) {
 
+                    if (prop.type === 'method') {
+                        methodsMap[key] = prop;
+                        return;
+                    }
+
                     widgetProps[key] = prop;
 
                     if (Utils.stringStartsWith(prop.value, 'bind:')) {
                         prop.__value = prop.value;
                         prop.value = undefined;
-                    }
-
-                    if (prop.type === 'method') {
-                        methodsMap[key] = prop;
-                        return;
                     }
 
                     if (CONSTANTS.isStudioMode) {

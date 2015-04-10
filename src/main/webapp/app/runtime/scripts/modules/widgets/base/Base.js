@@ -2049,12 +2049,14 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
 
         function overrideEventHandlers(iScope, scope, element, attrs) {
 
-            var events = ['onSwipeup', 'onSwipedown', 'onSwipeleft', 'onSwiperight', 'onPinchin', 'onPinchout', 'onClick', 'onDblclick', 'onChange', 'onMouseenter', 'onMouseleave', 'onMouseover', 'onMouseout', 'onFocus', 'onBlur', 'onSubmit', 'onClose', 'onOpened', 'onRowclick', 'onColumnselect', 'onColumndeselect', 'onSuccess', 'onError', 'onSelect', 'onStart', 'onComplete', 'onBeforeupdate', 'onLoad', 'onDestroy'],
-                overrideFlg,
+            var overrideFlg,
                 getParentMethod,
                 fn;
 
-            events
+            Object.keys(iScope.widgetProps)
+                .filter(function (key) {
+                    return iScope.widgetProps[key].type === 'event';
+                })
                 .forEach(function (evt) {
                     overrideFlg = false;
                     if (!attrs[evt]) {
@@ -2081,6 +2083,7 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                     if (overrideFlg) {
                         getParentMethod = $parse(fn);
                         iScope[evt] = function (locals) {
+                            locals = locals || {};
                             locals.iScope = iScope;
                             locals.scope = element.scope();
                             return getParentMethod(scope, locals);
