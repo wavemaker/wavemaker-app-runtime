@@ -151,7 +151,7 @@ wm.modules.wmCommon.services.ProjectService = function ($location, BaseService, 
         }, successCallback, failureCallback);
     }
 
-    function exportAsTemplate(details, successCallback, failureCallback) {
+    function exportAsProjectShell(details, successCallback, failureCallback) {
 
         BaseService.execute({
             target: "Project",
@@ -501,7 +501,7 @@ wm.modules.wmCommon.services.ProjectService = function ($location, BaseService, 
         export: exportProject,
         /**
          * @ngdoc function
-         * @name wm.common.$ProjectService#exportAsTemplate
+         * @name wm.common.$ProjectService#exportAsProjectShell
          * @methodOf wm.common.$ProjectService
          * @function
          *
@@ -512,7 +512,7 @@ wm.modules.wmCommon.services.ProjectService = function ($location, BaseService, 
          * @param {function} successCallback to called on success
          * @param {function} failureCallback to called on failure
          */
-        exportAsTemplate: exportAsTemplate,
+        exportAsProjectShell: exportAsProjectShell,
         /**
          * @ngdoc function
          * @name wm.common.$ProjectService#downloadZip

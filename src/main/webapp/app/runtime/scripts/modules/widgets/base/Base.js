@@ -816,7 +816,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "width": {"type": "string"},
                     "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
                     "visibility": {"type": "list", "options": visibilityOptions},
-                    "display": {"type": "list", "options": displayOptions}
+                    "display": {"type": "list", "options": displayOptions},
+                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
                 },
 
                 'wm.layouts.header': {
@@ -1455,7 +1456,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "lock", "freeze", "autoscroll", "closable", "actions", "expanded",  "destroyable", "showDirtyFlag", "link",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "showpreview", "updatemode", "errormessage", "tooltips", "showlegend", "showvalues",
                      "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                     "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding","popoverplacement", "popoverarrow", "popoverautoclose","animation", "animationinterval"], "parent": "properties"},
+                     "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "confirmdelete", "deletemessage", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},

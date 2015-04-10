@@ -36,12 +36,12 @@ wm.modules.wmCommon.constant('CONSTANTS', {
     FILE_EXTENSION_SCRIPT: ".js",
     FILE_EXTENSION_STYLE: ".css",
     FILE_EXTENSION_VARIABLES: ".variables.json",
-    DEFAULT_TEMPLATE: {
+    DEFAULT_PROJECT_SHELL: {
         "id": "",
         "name": "default_project",
         "description": null
     },
-    DEFAULT_TEMPLATE_NAMES : {
+    DEFAULT_PROJECT_SHELL_NAMES : {
         'DEFAULT': 'default',
         'PREFAB' : 'prefab',
         'ESHOP'  : 'eshop'
