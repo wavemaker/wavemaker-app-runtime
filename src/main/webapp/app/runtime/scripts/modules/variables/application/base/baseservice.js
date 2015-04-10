@@ -609,8 +609,22 @@ wm.variables.services.Variables = [
             },
 
            /* function to check if variable with specified name exists in the collection*/
-            isExists = function (variableName) {
-                return !!getVariableByName(variableName);
+            isExists = function (variableName, caseSensitive) {
+                var variables = self.variableCollection,
+                    arrOfVariables = [],
+                    item,
+                    iter = 0;
+                if (variables[VARIABLE_CONSTANTS.OWNER.APP]) {
+                    for (item in variables[VARIABLE_CONSTANTS.OWNER.APP]) {
+                        arrOfVariables[iter++] = item;
+                    }
+                }
+                if (variables[$rootScope.activePageName]) {
+                    for (item in variables[$rootScope.activePageName]) {
+                        arrOfVariables[iter++] = item;
+                    }
+                }
+                return Utils.isDuplicateName(arrOfVariables, variableName, caseSensitive);
             },
 
             /* function exposed to call method available with a variable */
@@ -667,7 +681,7 @@ wm.variables.services.Variables = [
                     defaultName = variableCategoryToNameMap[category] + self.variableNameIterator[category];
                 }
 
-                if (!isExists(defaultName) || overWrite) {
+                if (!isExists(defaultName, true) || overWrite) {
                     return defaultName;
                 }
 
