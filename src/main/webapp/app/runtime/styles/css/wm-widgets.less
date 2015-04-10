@@ -939,8 +939,7 @@ If the height and width are not specified the video takes the height of the post
 @app-disabled-text-color: #AAAAAA;
 @app-grid-border-color: #D4D4D4;
 @app-grid-header-border-color: #B9B9B9;
-@app-grid-row-selected-color: #67A0E0;
-@app-grid-row-selected-text-color: #fff;
+@app-grid-row-selected-color: #E2F7FF;
 
 .app-grid {
   position: relative;
@@ -967,9 +966,8 @@ If the height and width are not specified the video takes the height of the post
   }
   }
 
-  .table-footer {
-    padding-left: 0;
-    padding-right: 0;
+  .table-footer.well {
+    margin: 0;
     .app-datagrid-actions {
       text-align: right;
     }
@@ -991,7 +989,7 @@ If the height and width are not specified the video takes the height of the post
   }
   .table {
     table-layout: fixed;
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
     thead th {
       position: relative;
       .header-data {
@@ -1053,7 +1051,6 @@ If the height and width are not specified the video takes the height of the post
         &.active {
           > td, > th {
             background-color: @app-grid-row-selected-color;
-            color: @app-grid-row-selected-text-color;
           }
         }
         td {
