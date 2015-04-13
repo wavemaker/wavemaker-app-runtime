@@ -13,7 +13,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmForm', ['PropertiesFactory', 'WidgetUtilService', '$compile', function (PropertiesFactory, WidgetUtilService, $compile) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.layouts', 'wm.base.events.touch']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
                 'captionsize': true,
                 'novalidate': true,

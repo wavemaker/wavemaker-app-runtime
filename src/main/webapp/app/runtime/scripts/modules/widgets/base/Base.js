@@ -340,7 +340,6 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "name": {"type": "string"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                     "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
-                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'},
                     "scopedataset": {"type": "string"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Menu Item 1, Menu Item 2, Menu Item 3"},
                     "caption": {"type": "string", "bindable": "in-out-bound"},
@@ -826,7 +825,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 'wm.layouts.list': {
                     "height": {"type": "string"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
-                    "layout":  {"type": "list", "options": ["inline", "vertical"], "value": "vertical"}
+                    "layout":  {"type": "list", "options": ["inline", "vertical"], "value": "vertical"},
+                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
                 },
                 'wm.layouts.breadcrumb': {
                     "height": {"type": "string"},
@@ -989,8 +989,6 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "animation": {"type": "list", "options": animationOptions}
                 },
                 'wm.layouts.form': {
-                    "class": {"type": "string"},
-                    "name": {"type": "string"},
                     "title": {"type": "string",  "bindable": "in-bound"},
                     "novalidate": {"type": "boolean", "value": false},
                     "autocomplete": {"type": "boolean", "value": true},
@@ -1224,8 +1222,6 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "name": {"type": "string"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                     "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
-                    "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'},
-
                     "pagesize": {"type": "number"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                     "scopedataset": {"type": "string"},
@@ -1686,7 +1682,7 @@ base.directives.pageContainer = [
             var target = iScope.target,
                 scope;
 
-            /* set the partial-page variables (will be resgisterd by the partial) */
+            /* set the partial-page variables (will be registered by the partial) */
             Variables.setPageVariables(partialName, loadedPartials[partialName].variables);
 
             /* append the pageContentMarkup to original markup, to compile it manually*/
@@ -3066,7 +3062,7 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
                     'wm-left-panel',
                     'wm-right-panel',
                     'wm-top-nav'
-                ]
+                ];
             } else {
                 types = types.split(",");
             }
