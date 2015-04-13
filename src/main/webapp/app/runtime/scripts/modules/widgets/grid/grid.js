@@ -1022,10 +1022,9 @@ WM.module('wm.widgets.grid')
                 }
             };
 
-            var colDefs = WM.copy($scope.fieldDefs);
             $scope.gridOptions = {
                 data: [],
-                colDefs: colDefs,
+                colDefs: $scope.fieldDefs,
                 startRowIndex: 1,
                 onRowSelect: function (rowData, e) {
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
