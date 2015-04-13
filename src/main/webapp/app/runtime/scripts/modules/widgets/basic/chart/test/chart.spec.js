@@ -237,6 +237,7 @@ describe("Chart", function () {
 
             });
 
+            /* This logic has to refactor based on commonWidgetTests_verifyBasicEvents method and implement the event tests
             it("test the onTransform event for: " + chart.chartName + "chart", function () {
                 testVariable = "Before Transform";
                 $element.onTransform = function () {
@@ -246,6 +247,7 @@ describe("Chart", function () {
                 $element.onTransform();
                 expect(testVariable).toBe("After Transform");
             });
+            */
 
         });
     });
