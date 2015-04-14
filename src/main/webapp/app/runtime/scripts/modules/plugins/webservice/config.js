@@ -104,6 +104,10 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
         },
         invokeRuntimeRestCall: {
             url: ''
+        },
+        buildApiRestService: {
+            url: "../services/restservices/create",
+            method: "POST"
         }
     }
 });
