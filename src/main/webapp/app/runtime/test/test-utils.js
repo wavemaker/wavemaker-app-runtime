@@ -1,0 +1,1 @@
+WM.module('wm.utils').constant('CONSTANTS', {"isRunMode": true})

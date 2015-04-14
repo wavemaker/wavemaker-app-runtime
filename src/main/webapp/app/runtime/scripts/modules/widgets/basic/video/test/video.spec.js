@@ -1,6 +1,6 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
-/*Testing for a Audio*/
-describe("Testing Basic Widget: Audio", function () {
+/*Testing for a Video*/
+describe("Testing Basic Widget: Video", function () {
     "use strict";
     var $compile,
         $rootScope,
@@ -9,13 +9,15 @@ describe("Testing Basic Widget: Audio", function () {
         iScope,
         widget = {},
         markup =
-            '<wm-audio name="Audio name" hint="Audio hint" tabindex="1"  width="200px" height="200px" mp3format="horse.mp3"' +
-            'audiopreload="none" audiosupportmessage="Your browser does not support the audio tag." show="true" ' +
-            'controls="controls" autoplay="true"  loop="loop" muted="false"' +
-            'class="sample class" visibility="visible" display="inline">' +
-            '</wm-audio>';
+            '<wm-video controls="true" videopreload="none" name="Video name" ' +
+            'videoposter="http://superbwebsitebuilders.com/wp-content/uploads/2013/06/Google.jpg" ' +
+            'mp4format="http://techslides.com/demos/sample-videos/small.mp4" show="true" ' +
+            'oggformat="http://techslides.com/demos/sample-videos/small.ogv"' +
+            'webmformat="http://techslides.com/demos/sample-videos/small.webm" ' +
+            'autoplay="true" loop="true" muted="true" width="300px" height="300px" hint="Video hint">' +
+            '</wm-video>';
 
-    widget.type = 'wm-audio'; // type of the widget
+    widget.type = 'wm-video'; // type of the widget
     widget.widgetSelector = 'element'; // perform common widget tests on this element
     widget.$unCompiled = WM.element(markup);
 
@@ -23,7 +25,7 @@ describe("Testing Basic Widget: Audio", function () {
     commonWidgetTests_verifyCommonProperties(widget);
     commonWidgetTests_verifyStyles(widget);
 
-    /*Custom Test Suite for wm-audio widget.*/
+    /*Custom Test Suite for wm-video widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
         beforeEach(function () {
 
@@ -48,27 +50,23 @@ describe("Testing Basic Widget: Audio", function () {
         });
 
         describe("properties", function () {
-            //check for the mp3 format property
-            it("should change the mp3format as put in property panel", function () {
-                expect($element.attr('src')).toBe(iScope.mp3format);
-
-                iScope.mp3format = "Sample.mp3";
-                iScope.$apply();
-                expect($element.attr('src')).toBe(iScope.mp3format);
+            //check for the videoposter property
+            it("should change the videoposter as put in property panel", function () {
+                expect($element.attr('poster')).toBe(iScope.videoposter);
             });
 
-            //check for the audiopreload property
-            it("should change the audiopreload as put in property panel", function () {
-                expect($element.attr('preload')).toBe(iScope.audiopreload);
+            //check for the mp4 format property
+            it("should change the mp4format as put in property panel", function () {
+                expect($element.attr('src')).toBe(iScope.mp4format);
 
-                iScope.audiopreload = "auto";
+                iScope.mp4format = "Sample.mp4";
                 iScope.$apply();
-                expect($element.attr('preload')).toBe("auto");
+                expect($element.attr('src')).toBe("Sample.mp4");
             });
 
-            //check for the audiosupportmessage property
-            it("should change the audiosupportmessage as put in property panel", function () {
-                expect($element.attr('audiosupportmessage')).toBe(iScope.audiosupportmessage);
+            //check for the videopreload property
+            it("should change the videopreload as put in property panel", function () {
+                expect($element.attr('videopreload')).toBe(iScope.videopreload);
             });
 
             //check for the controls property
@@ -86,11 +84,12 @@ describe("Testing Basic Widget: Audio", function () {
                 expect($element.is('[loop]')).toBe(iScope.loop);
             });
 
-            //check for the muted property
+            ////check for the muted property
             //it("should change the muted as put in property panel", function () {
             //    expect($element.attr('muted')).toBe(iScope.muted);
             //});
-
         });
     });
 });
+
+

@@ -1,6 +1,6 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
-/*Testing for a currency*/
-describe("Testing Form Widget: currency", function () {
+/*Testing for a date*/
+describe("Testing Form Widget: date", function () {
     "use strict";
     var $compile,
         $rootScope,
@@ -9,23 +9,21 @@ describe("Testing Form Widget: currency", function () {
         iScope,
         widget = {},
         markup =
-            '<wm-currency name="Currenct name" tabindex="3" placeholder="Enter value" ' +
-            'currency="USD" hint="Currenct hint" width="150px" height="50px" ' +
-            'datavalue="25" minvalue="0" maxvalue="100" required="false" ' +
-            'readonly="false" show="true" disabled="false" class="col-md-push-3" ' +
+            '<wm-date name="Date name" tabindex="2" placeholder="Select date" hint="Date hint" ' +
+            'width="200px" datepattern="yyyyMMdd" mindate="Thu Jan 01 2015 00:00:00 GMT+0530 (India Standard Time)" ' +
+            'required="false" maxdate="Fri Jan 01 2016 00:00:00 GMT+0530 (India Standard Time)" ' +
+            'autofocus="false" readonly="false" show="true" disabled="false" class="col-md-push-3" ' +
             'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
             'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
-            'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png"' +
-            'backgroundrepeat="repeat" backgroundposition="left" backgroundsize="200px, 200px" backgroundattachment="fixed"' +
             'bordercolor="#d92953" borderstyle="solid" bordertop="3" borderleft="3" borderright="3" ' +
             'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
             'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
             'visibility="visible" display="inline"' +
             'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
-            'on-focus="eventHandler()" on-blur="eventHandler()" ' +
-            '></wm-currency>';
+            //'on-focus="eventHandler()" on-blur="eventHandler()" ' +
+            '></wm-date>';
 
-    widget.type = 'wm-currency'; // type of the widget
+    widget.type = 'wm-date'; // type of the widget
     widget.widgetSelector = 'element'; // perform common widget tests on this element
     widget.$unCompiled = WM.element(markup);
     widget.PropertiesToBeExcluded = ["hint", "animation", "badgevalue"];
@@ -36,18 +34,17 @@ describe("Testing Form Widget: currency", function () {
     widget.basicEvents = {
         'click': 'element',
         'mouseenter': 'element',
-        'mouseleave': 'element',
-        'focus': 'element',
-        'blur': 'element'
+        'mouseleave': 'element'
+        //'focus': 'element',
+        //'blur': 'element'
     };
-    widget.innerElementEvents = "input";
 
     commonWidgetTests_verifyInitPropsInWidgetScope(widget);
     commonWidgetTests_verifyCommonProperties(widget);
     commonWidgetTests_verifyStyles(widget);
     commonWidgetTests_verifyBasicEvents(widget);
 
-    /*Custom Test Suite for wm-currency widget.*/
+    /*Custom Test Suite for wm-date widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
         beforeEach(function () {
 
@@ -72,35 +69,7 @@ describe("Testing Form Widget: currency", function () {
         });
 
         describe("properties", function () {
-            //check for the required property
-            it("should set the required property", function () {
-                iScope.required = true;
-                iScope.$apply();
-                expect($element.find("input").attr("required")).toBe("required");
-            });
-
-            //check for the disable property
-            it("should disable the $element on toggling disable property", function () {
-                iScope.disabled = true;
-                iScope.$apply();
-                expect($element.find("input").attr('disabled')).toBeTruthy();
-            });
-
-            //check for the readonly property
-            it("should change the readonly property of the textbox on toggling readonly property", function () {
-                iScope.readonly = true;
-                iScope.$apply();
-                expect($element.find("input").attr('readonly')).toBeTruthy();
-            });
-
-            //check for the currencysymbol property
-            it("should change currency symbol when set in properties panel", function () {
-                iScope.currency = 'EUR';
-                iScope.$apply();
-                expect($element.find("span").text()).toMatch(/€/i);
-            });
-
-            //check for the helptext property
+            //check for the hint property
             it("should change helptext for currency to helpText when put in property panel", function () {
                 iScope.hint = "helpText";
                 iScope.$apply();
@@ -108,25 +77,62 @@ describe("Testing Form Widget: currency", function () {
             });
 
             //check for the placeholder property
-            it("should change placeholder in currency to placeholderForCurrency when put in property panel", function () {
-                iScope.placeholder = "placeholderForCurrency";
+            it("should change placeholder in currency to placeholderForDate when put in property panel", function () {
+                iScope.placeholder = "placeholderForDate";
                 iScope.$apply();
-                expect($element.find("input").attr('placeholder')).toMatch(/placeholderForCurrency/i);
+                expect($element.find("input").attr('placeholder')).toMatch(/placeholderForDate/i);
             });
 
-            //check for the minvalue property
-            it("should change min value for currency to 5 when put in property panel", function () {
-                iScope.minvalue = "5";
+            //check for the required property
+            it("should set the required property", function () {
+                iScope.required = true;
                 iScope.$apply();
-                expect($element.find("input").attr('min')).toMatch(5);
+                expect($element.attr("required")).toBe("required");
             });
 
-            //check for the maxvalue property
-            it("should change max value for currency to 5 when put in property panel", function () {
-                iScope.maxvalue = "5";
+            //check for the disable property
+            it("should disable the $element on toggling disable property", function () {
+                iScope.disabled = true;
                 iScope.$apply();
-                expect($element.find("input").attr('max')).toMatch(5);
+                expect($element.attr('disabled')).toBeTruthy();
             });
+
+            //check for the readonly property
+            it("should change the readonly property of the textbox on toggling readonly property", function () {
+                iScope.readonly = true;
+                iScope.$apply();
+                expect($element.attr('readonly')).toBeTruthy();
+            });
+
+            //check for the autofocus property
+            it("should set the autofocus property", function () {
+                iScope.autofocus = true;
+                iScope.$apply();
+                expect($element.attr("autofocus")).toBe("autofocus");
+            });
+
+            //check for the datepattern property
+            it("should check the datepattern as put in property panel", function () {
+                expect($element.attr('datepattern')).toMatch(iScope.datepattern);
+            });
+
+            //check for the mindate property
+            it("should check the mindate as put in property panel", function () {
+                expect($element.attr('mindate')).toBe(iScope.mindate);
+            });
+
+            //check for the maxdate property
+            it("should check the maxdate as put in property panel", function () {
+                expect($element.attr('maxdate')).toBe(iScope.maxdate);
+            });
+
+            //check for the datavalue property
+            it("should check the datavalue as put in property panel", function () {
+                iScope.datavalue = "Tue Dec 01 2015 00:00:00 GMT+0530 (India Standard Time)";
+                iScope.$apply();
+                expect($element.find('input').val()).toBe("Tue Dec 01 2015 00:00:00 GMT+0530 (India Standard Time)");
+            });
+
         });
     });
 });

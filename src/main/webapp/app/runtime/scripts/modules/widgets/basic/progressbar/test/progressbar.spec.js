@@ -1,6 +1,6 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
 /*Testing for a progress*/
-ddescribe("Testing Basic Widget: progress", function () {
+describe("Testing Basic Widget: progress", function () {
     "use strict";
     var $compile,
         $rootScope,
