@@ -29,7 +29,7 @@ WM.module('wm.layouts.containers')
             '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget'  + $rootScope.getWidgetStyles() + '></div>');
 
     }])
-    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$compile', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $compile, CONSTANTS) {
+    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$compile', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $compile) {
         'use strict';
 
         /* get the properties related to the tabs */

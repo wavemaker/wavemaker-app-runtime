@@ -24,7 +24,7 @@ WM.module('wm.layouts.containers')
                 '</div>'
             );
     }])
-    .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', '$compile', 'CONSTANTS', function ($templateCache, WidgetUtilService, PropertiesFactory, $compile, CONSTANTS) {
+    .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', '$compile', function ($templateCache, WidgetUtilService, PropertiesFactory, $compile) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordion', ['wm.base',  'wm.containers']);
@@ -168,7 +168,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmAccordionheader', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', '$compile', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, $compile, Utils) {
+    .directive('wmAccordionheader', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', '$compile', function ($templateCache, WidgetUtilService, PropertiesFactory, $compile) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionheader', ['wm.base', 'wm.layouts']);

@@ -2,7 +2,7 @@
 /*Directive for liveform */
 
 WM.module('wm.widgets.live')
-    /* To update the model in milli seconds ,change the view value before updating to model */
+    /*Define controller for the liveform in dialog mode*/
     .controller('liveFormDialogController', function () {
         "use strict";
     })
