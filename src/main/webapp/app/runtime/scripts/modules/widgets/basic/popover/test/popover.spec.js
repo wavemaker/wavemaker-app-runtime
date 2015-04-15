@@ -1,6 +1,6 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
-/*Testing for a Anchor*/
-describe("Testing Basic Widget: Anchor", function () {
+/*Testing for a popover*/
+describe("Testing Basic Widget: popover", function () {
     "use strict";
     var $compile,
         $rootScope,
@@ -9,9 +9,8 @@ describe("Testing Basic Widget: Anchor", function () {
         iScope,
         widget = {},
         markup =
-            '<wm-anchor caption="Anchor link" badgevalue="Anchor badge"  name="Anchor name" ' +
-            'hint="Anchor hint" tabindex="2" target="_parent" width="200px" height="200px" ' +
-            'hyperlink="http://www.wavemaker.com" show="true" animation="bounce"' +
+            '<wm-popover caption="Popover caption" name="Popover Name" hint="Popover hint" tabindex="1" ' +
+            'width="200px" height="200px" popoverwidth="300px" popoverheight="300px" show="true"' +
             'iconclass="glyphicon glyphicon-star-empty"iconwidth="20px" iconheight="20px" iconmargin="5px" ' +
             'iconurl="http://pngimg.com/upload/star_PNG1592.png" class="btn-primary" ' +
             'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
@@ -22,38 +21,38 @@ describe("Testing Basic Widget: Anchor", function () {
             'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
             'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
             'visibility="visible" display="inline"' +
-            'on-click="eventHandler()" on-dblclick="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
-            'on-blur="eventHandler()" on-focus="eventHandler()">' +
-            '</wm-anchor>';
+            'animation="bounce" popoverplacement="bottom" popoverarrow="true"' +
+            '>' +
+            '</wm-popover>';
 
-    widget.type = 'wm-anchor'; // type of the widget
+    widget.type = 'wm-popover'; // type of the widget
     widget.widgetSelector = 'element'; // perform common widget tests on this element
     widget.$unCompiled = WM.element(markup);
-
-    // map of eventName-selector. events target will be the element which satisfies the given selector.
-    // this selector should be relative to widgetSelector
-    widget.basicEvents = {
-        'click': 'element',
-        'dblclick': 'element',
-        'mouseenter': 'element',
-        'mouseleave': 'element',
-        'blur': 'element',
-        'focus': 'element'
-    };
+    widget.PropertiesToBeExcluded = ["hint", "show"];
 
     commonWidgetTests_verifyInitPropsInWidgetScope(widget);
     commonWidgetTests_verifyCommonProperties(widget);
-    commonWidgetTests_verifyStyles(widget);
-    commonWidgetTests_verifyBasicEvents(widget);
 
-    /*Custom Test Suite for wm-anchor widget.*/
+    /*Custom Test Suite for wm-popover widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
         beforeEach(function () {
+            var modulesToBeInjected = [
+                'wm.common',
+                'wm.utils',
+                'wm.widgets',
+                'wm.layouts',
+                'wm.layouts.containers',
+                'ngRoute',
+                'wm.variables',
+                'wm.plugins.database',
+                'wm.plugins.webServices',
+                'angular-gestures'
+            ];
 
-            /*Include the required modules.*/
-            module('wm.common');
-            module('wm.utils');
-            module('wm.widgets');
+            //inject the modules
+            modulesToBeInjected.forEach(function (moduleName) {
+                module(moduleName);
+            });
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
@@ -71,22 +70,41 @@ describe("Testing Basic Widget: Anchor", function () {
         });
 
         describe("properties", function () {
-            //check for the target property
-            it("should change the target as put in property panel", function () {
-                expect($element.attr('target')).toBe(iScope.target);
+            // check for hint property
+            it('should have given hint', function () {
+                expect($element.find('a').attr('title')).toBe(iScope.hint);
 
-                iScope.target = "_Self";
+                iScope.hint = 'updated';
                 iScope.$apply();
-                expect($element.attr('target')).toBe(iScope.target);
+                expect($element.find('a').attr('title')).toBe(iScope.hint);
             });
 
-            //check for the hyperlink property
-            it("should change the hyperlink as put in property panel", function () {
-                expect($element.attr('href')).toBe(iScope.hyperlink);
+            //check for the popoverwidth property
+            it("should change the popoverwidth as put in property panel", function () {
+                expect($element.find('.popover-content').css('width')).toBe(iScope.popoverwidth);
+            });
 
-                iScope.hyperlink = "www.google.com";
-                iScope.$apply();
-                expect($element.attr('href')).toBe(iScope.hyperlink);
+            //check for the popoverheight property
+            it("should change the popoverheight as put in property panel", function () {
+                expect($element.find('.popover-content').css('height')).toBe(iScope.popoverheight);
+            });
+
+            // check for show property
+            it('should have proper display property based on given show value', function () {
+                var isShowDefined = widget.$unCompiled[0].attributes.hasOwnProperty('show'),
+                    initShowValue = isShowDefined ? iScope.show : true;
+
+                expect($element.hasClass('ng-hide')).not.toBe(initShowValue);
+            });
+
+            //check for the popoverplacement property
+            it("should change the popoverplacement as put in property panel", function () {
+                expect($element.find('.popover').hasClass(iScope.popoverplacement)).toBe(true);
+            });
+
+            //check for the popoverarrow property
+            it("should change the popoverarrow as put in property panel", function () {
+                expect($element.find('.arrow').hasClass('ng-hide')).not.toBe(iScope.popoverarrow);
             });
 
             //check for the iconclass property
@@ -113,6 +131,7 @@ describe("Testing Basic Widget: Anchor", function () {
             it("should change the iconurl as put in property panel", function () {
                 expect($element.find('img').attr('src')).toBe(iScope.iconurl);
             });
+
         });
     });
 });

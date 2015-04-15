@@ -1,143 +1,104 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
-describe("Picture", function () {
+/*Testing for a picture*/
+describe("Testing Basic Widget: picture", function () {
     "use strict";
+    var $compile,
+        $rootScope,
+        $unCompiled,
+        $element,
+        iScope,
+        widget = {},
+        markup =
+            '<wm-picture name="Picture Name" tabindex="2" hint="Picture Hint"' +
+            'picturesource="http://superbwebsitebuilders.com/wp-content/uploads/2013/06/Google.jpg"' +
+            'pictureaspect="H" shape="rounded" ' +
+            'show="true" disabled="true" animation="bounce" class="btn-primary" ' +
+            'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
+            'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
+            'bordercolor="#d92953" borderstyle="solid" bordertop="3" borderleft="3" borderright="3" ' +
+            'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
+            'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
+            'visibility="visible" display="inline"' +
+            'on-click="eventHandler()" on-dblclick="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()" >' +
+            '</wm-picture>';
 
-    var $compile, $rootScope, element, scope;
+    widget.type = 'wm-picture'; // type of the widget
+    widget.widgetSelector = 'element'; // perform common widget tests on this element
+    widget.$unCompiled = WM.element(markup);
 
-    beforeEach(function () {
-        module('wm.widgets');
-        module('wmCore');
-        module(function ($provide) {
-            $provide.value("$routeParams", {"project_name" : "myproject"});
-        });
-        inject(function (_$compile_, _$rootScope_) {
-            $compile = _$compile_;
-            $rootScope = _$rootScope_;
-            element = $compile('<wm-picture picturesource="http://superbwebsitebuilders.com/wp-content/uploads/2013/06/Google.jpg"></wm-picture>')($rootScope);
-            $rootScope.$digest();
-            scope = $rootScope;
-        });
-    });
+     //map of eventName-selector. events target will be the element which satisfies the given selector.
+     //this selector should be relative to widgetSelector
+    widget.basicEvents = {
+        'click': 'element',
+        'dblclick': 'element',
+        'mouseenter': 'element',
+        'mouseleave': 'element',
+        'blur': 'element',
+        'focus': 'element'
+    };
 
-    describe("styles", function () {
-        it("should have element width change to 200px when assigned from property panel", function () {
-            element.isolateScope().width = 200;
-            element.isolateScope().$apply();
-            expect(element.width()).toBe(200);
-        });
-        it("should have element height change to 200px when assigned from property panel", function () {
-            element.isolateScope().height = 200;
-            element.isolateScope().$apply();
-            expect(element.height()).toBe(200);
-        });
-        it("should have element minWidth change to 200px when assigned from property panel", function () {
-            element.isolateScope().minwidth = 200;
-            element.isolateScope().$apply();
-            expect(element.css('min-width')).toBe('200px');
-        });
-        it("should have element minHeight change to 200px when assigned from property panel", function () {
-            element.isolateScope().minheight = 200;
-            element.isolateScope().$apply();
-            expect(element.css('min-height')).toBe('200px');
-        });
+    commonWidgetTests_verifyInitPropsInWidgetScope(widget);
+    commonWidgetTests_verifyCommonProperties(widget);
+    commonWidgetTests_verifyStyles(widget);
+    commonWidgetTests_verifyBasicEvents(widget);
 
-        it("should change margin style to be 10PX 5PX 3PX 2PX", function () {
-            element.isolateScope().margintop = '10';
-            element.isolateScope().marginright = '5';
-            element.isolateScope().marginbottom = '3';
-            element.isolateScope().marginleft = '2';
-            element.isolateScope().$apply();
-            expect(element.css('margin')).toBe('10px 5px 3px 2px');
-        });
+    /*Custom Test Suite for wm-picture widget.*/
+    describe('Executing widget specific tests: ' + widget.type, function () {
+        beforeEach(function () {
 
-        it("should change padding style to be 10PX 5PX 3PX 2PX", function () {
-            element.isolateScope().paddingtop = '10';
-            element.isolateScope().paddingright = '5';
-            element.isolateScope().paddingbottom = '3';
-            element.isolateScope().paddingleft = '2';
-            element.isolateScope().$apply();
-            expect(element.css('padding')).toBe('10px 5px 3px 2px');
-        });
+            /*Include the required modules.*/
+            module('wm.common');
+            module('wm.utils');
+            module('wm.widgets');
 
-        it("should change border-width style to be 4px", function () {
-            element.isolateScope().bordertop = '4';
-            element.isolateScope().borderright = '4';
-            element.isolateScope().borderbottom = '4';
-            element.isolateScope().borderleft = '4';
-            element.isolateScope().$apply();
-            expect(element.css('border-left-width')).toBe('4px');
-            expect(element.css('border-right-width')).toBe('4px');
-            expect(element.css('border-bottom-width')).toBe('4px');
-            expect(element.css('border-top-width')).toBe('4px');
-        });
-        it("should change border color style to be red", function () {
-            element.isolateScope().bordercolor = '#FF0000';
-            element.isolateScope().$apply();
-            expect(element.css('border-color')).toBe('rgb(255, 0, 0)');
+            inject(function (_$compile_, _$rootScope_) {
+                $compile = _$compile_;
+                $rootScope = _$rootScope_;
+                $element = $compile(widget.$unCompiled.clone())($rootScope);
+
+                // if the widgetSelector is other than `element`,
+                // find the widget and its isolateScope using widgetSelector
+                if (widget.widgetSelector && widget.widgetSelector !== 'element') {
+                    $element = $element.find(widget.widgetSelector).first();
+                }
+                iScope = $element.isolateScope();
+                iScope.$apply();
+            });
         });
 
-        it("should change background color style to be red", function () {
-            element.isolateScope().backgroundcolor = '#FF0000';
-            element.isolateScope().$apply();
-            expect(element.css('background-color')).toBe('rgb(255, 0, 0)');
-        });
+        describe("properties", function () {
+            //check for the picturesource property
+            it("should change the picturesource as put in property panel", function () {
+                expect($element.attr('src')).toBe(iScope.picturesource);
+            });
 
-        it("should change color style to be red", function () {
-           element.isolateScope().color = '#FF0000';
-           element.isolateScope().$apply();
-           expect(element.css('color')).toBe('rgb(255, 0, 0)');
-        });
+            //check for the shape property
+            it("should change the shape as put in property panel", function () {
+                iScope.shape = "rounded";
+                iScope.$apply();
+                expect($element.hasClass('img-rounded')).toBe(true);
+            });
 
-        it("should change text-align to be center", function () {
-            element.isolateScope().textalign = 'center';
-            element.isolateScope().$apply();
-            expect(element.css('text-align')).toBe('center');
-        });
-    });
+            //check for the disabled property
+            it("should change the disabled as put in property panel", function () {
+                expect($element.is('[disabled]')).toBe(true);
+            });
 
-    describe("properties", function () {
-        it("should have default show property as true", function () {
-            expect(element.isolateScope().show).toBeTruthy();
-        });
+            //check for the pictureaspect property
+            it("should change the pictureaspect as put in property panel", function () {
+                iScope.pictureaspect = 'H';
+                iScope.$apply();
+                expect($element.css('width')).toBe('100%');
 
-        it("should hide the element", function () {
-            element.isolateScope().show = false;
-            element.isolateScope().$apply();
-            expect(element.hasClass('ng-hide')).toBeTruthy();
-        });
+                iScope.pictureaspect = 'V';
+                iScope.$apply();
+                expect($element.css('height')).toBe('100%');
 
-        it("changing source property of the image", function () {
-            element.isolateScope().picturesource = "http://superbwebsitebuilders.com/wp-content/uploads/2013/06/Google.jpg";
-            element.isolateScope().$apply();
-            expect(element.attr("src")).toBe('http://superbwebsitebuilders.com/wp-content/uploads/2013/06/Google.jpg');
-        });
-    });
-
-    describe("behavior", function () {
-        it("should trigger assigned click event", function () {
-            var testVariable = 1;
-            element.isolateScope().onClick = function () {
-                testVariable = 2;
-            };
-            element.click();
-            expect(testVariable).toBe(2);
-        });
-        it("should trigger assigned mouseenter event", function () {
-            var testVariable = 1;
-            element.isolateScope().onMouseenter = function () {
-                testVariable = 2;
-            };
-            element.mouseenter();
-            expect(testVariable).toBe(2);
-        });
-
-        it("should trigger assigned mouseleave event", function () {
-            var testVariable = 1;
-            element.isolateScope().onMouseleave = function () {
-                testVariable = 2;
-            };
-            element.mouseleave();
-            expect(testVariable).toBe(2);
+                iScope.pictureaspect = 'Both';
+                iScope.$apply();
+                expect($element.css('width')).toBe('100%');
+                expect($element.css('height')).toBe('100%');
+            });
         });
     });
 });

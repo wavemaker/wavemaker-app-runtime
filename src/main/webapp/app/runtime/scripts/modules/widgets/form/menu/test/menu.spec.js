@@ -1,6 +1,6 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
-/*Testing for a select*/
-describe("Testing Form Widget: select", function () {
+/*Testing for a menu*/
+describe("Testing Form Widget: menu", function () {
     "use strict";
     var $compile,
         $rootScope,
@@ -9,10 +9,10 @@ describe("Testing Form Widget: select", function () {
         iScope,
         widget = {},
         markup =
-            '<wm-select name="Select Name" tabindex="2" hint="Select hint" ' +
-            'width="300px" height="50px" dataset="1,2,3" ' +
-            'required="true" autofocus="true" readonly="true" multiple="true" ' +
-            'disabled="true" show="true" class="col-md-push-3" ' +
+            '<wm-menu caption="Menu caption" name="menu name" ' +
+            'dropposition="down" width="150px" height="40px" ' +
+            'scopedataset="MenuItems" dataset="Menu Item 1, Menu Item 2, Menu Item 3"' +
+            'show="true" iconclass="glyphicon-upload" ' +
             'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
             'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
             'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png"' +
@@ -21,31 +21,19 @@ describe("Testing Form Widget: select", function () {
             'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
             'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
             'visibility="visible" display="inline"' +
-            'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
-            'on-focus="eventHandler()" on-blur="eventHandler()" ' +
-            '></wm-select>';
+            '></wm-menu>';
 
-    widget.type = 'wm-select'; // type of the widget
+    widget.type = 'wm-menu'; // type of the widget
     widget.widgetSelector = 'element'; // perform common widget tests on this element
     widget.$unCompiled = WM.element(markup);
-    widget.PropertiesToBeExcluded = ["animation", "badgevalue"];
-
-     //map of eventName-selector. events target will be the element which satisfies the given selector.
-     //this selector should be relative to widgetSelector
-    widget.basicEvents = {
-        'click': 'element',
-        'mouseenter': 'element',
-        'mouseleave': 'element',
-        'focus': 'element',
-        'blur': 'element'
-    };
+    widget.PropertiesToBeExcluded = ["scopedataset", "animation", "badgevalue"];
+    widget.innerElement = "button";
 
     commonWidgetTests_verifyInitPropsInWidgetScope(widget);
     commonWidgetTests_verifyCommonProperties(widget);
     commonWidgetTests_verifyStyles(widget);
-    commonWidgetTests_verifyBasicEvents(widget);
 
-    /*Custom Test Suite for wm-select widget.*/
+    /*Custom Test Suite for wm-menu widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
         beforeEach(function () {
 
@@ -70,40 +58,49 @@ describe("Testing Form Widget: select", function () {
         });
 
         describe("properties", function () {
+            //check for the dropposition property
+            it("should check the dropposition put in property panel", function () {
+                iScope.dropposition = "up";
+                iScope.$apply();
+                expect($element.hasClass('dropup')).toMatch(true);
+            });
+
+            //check for the iconclass property
+            it("should check the iconclass put in property panel", function () {
+                iScope.iconclass = "glyphicon-upload";
+                iScope.$apply();
+                expect($element.find('i').hasClass(iScope.iconclass)).toMatch(true);
+            });
+
             //check for the dataset property
-            it("should change the options for the element", function () {
-                iScope.dataset = "Hello, Namaste";
+            it("should check the dataset put in property panel", function () {
+                iScope.dataset = "Menu Item 1, Menu Item 2, Menu Item 3";
                 iScope.$apply();
-                expect($element.find("option")[1].text).toBe("Namaste");
+                expect($element.attr('dataset')).toMatch(iScope.dataset);
             });
 
-            //check for the autofocus property
-            it("should set the autofocus property", function () {
-                iScope.autofocus = true;
+            //check for the construction of the element from the dataset
+            it("should check the construction of the element from the dataset", function () {
+                iScope.dataset = "Menu Item 1, Menu Item 2, Menu Item 3";
                 iScope.$apply();
-                expect($element.attr("autofocus")).toBe("autofocus");
+                var items = iScope.dataset.split(', ');
+                _.forEach(items, function (item, index) {
+                    var counter = index + 1;
+                    expect($element.find('li:nth-child('+ counter +')').text()).toMatch(items[index]);
+                });
             });
 
-            //check for the readonly property
-            it("should set the readonly property", function () {
-                iScope.readonly = true;
+            //check for the scopedataset property
+            it("should check the scopedataset put in property panel", function () {
+                iScope.MenuItems = "Menu Item 1, Menu Item 2, Menu Item 3";
                 iScope.$apply();
-                expect($element.attr("readonly")).toBe("readonly");
+                var items = iScope.MenuItems.split(', ');
+                _.forEach(items, function (item, index) {
+                    var counter = index + 1;
+                    expect($element.find('li:nth-child('+ counter +')').text()).toMatch(items[index]);
+                });
             });
 
-            //check for the multiple property
-            it("should set the multiple property", function () {
-                iScope.multiple = true;
-                iScope.$apply();
-                expect($element.attr("multiple")).toBe("multiple");
-            });
-
-            //check for the disabled property
-            it("should set the disabled property", function () {
-                iScope.disabled = true;
-                iScope.$apply();
-                expect($element.attr("disabled")).toBe("disabled");
-            });
         });
     });
 });

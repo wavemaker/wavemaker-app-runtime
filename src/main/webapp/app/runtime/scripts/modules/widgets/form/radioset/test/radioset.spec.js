@@ -1,6 +1,6 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
-/*Testing for a radio*/
-describe("Testing Form Widget: radio", function () {
+/*Testing for a radioset*/
+describe("Testing Form Widget: radioset", function () {
     "use strict";
     var $compile,
         $rootScope,
@@ -9,42 +9,36 @@ describe("Testing Form Widget: radio", function () {
         iScope,
         widget = {},
         markup =
-            '<wm-radio caption="Radio caption" name="Radio name" hint="Radio hint" tabindex="2" ' +
-            'width="200px" height="150px" required="true" radiogroup="Radiogroup" ' +
-            'datavalue="1" checkedvalue="1" autofocus="true" show="true" disabled="true" class="col-md-push-3" ' +
+            '<wm-radioset name="radioset name" tabindex="2" hint="radio set hint"' +
+            'width="150px" height="auto" layout="stacked" datafield="All Fields" dataset="Option 1, Option 2, Option 3" ' +
+            'usekeys="true" readonly="true" show="true" disabled="true"  class="btn-primary" ' +
             'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
-            'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
-            'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png"' +
-            'backgroundrepeat="repeat" backgroundposition="left" backgroundsize="200px, 200px" backgroundattachment="fixed"' +
-            'bordercolor="#d92953" borderstyle="solid" bordertop="3" borderleft="3" borderright="3" ' +
-            'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
+            'paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
             'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
-            'visibility="visible" display="inline"' +
             'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
-            //'on-focus="eventHandler()" on-blur="eventHandler()" >' +
-            '></wm-radio>';
+            'on-blur="eventHandler()" on-focus="eventHandler()">' +
+            '</wm-radioset>';
 
-    widget.type = 'wm-radio'; // type of the widget
+    widget.type = 'wm-radioset'; // type of the widget
     widget.widgetSelector = 'element'; // perform common widget tests on this element
     widget.$unCompiled = WM.element(markup);
     widget.PropertiesToBeExcluded = ["animation", "badgevalue"];
-    widget.innerElement = "label";
 
     // map of eventName-selector. events target will be the element which satisfies the given selector.
     // this selector should be relative to widgetSelector
     widget.basicEvents = {
         'click': 'element',
         'mouseenter': 'element',
-        'mouseleave': 'element'
-        //'focus': 'element',
-        //'blur': 'element'
+        'mouseleave': 'element',
+        'focus': 'element',
+        'blur': 'element'
     };
     commonWidgetTests_verifyInitPropsInWidgetScope(widget);
     commonWidgetTests_verifyCommonProperties(widget);
     commonWidgetTests_verifyStyles(widget);
     commonWidgetTests_verifyBasicEvents(widget);
 
-    /*Custom Test Suite for wm-radio widget.*/
+    /*Custom Test Suite for wm-radioset widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
         beforeEach(function () {
 
@@ -69,28 +63,26 @@ describe("Testing Form Widget: radio", function () {
         });
 
         describe("properties", function () {
-            //check for the datavalue property
-            it("should check the datavalue as put in property panel", function () {
-                expect($element.attr('datavalue')).toBe(iScope.datavalue);
+            //check for the datafield property
+            it("should check the datafield as put in property panel", function () {
+                expect($element.attr('datafield')).toBe(iScope.datafield);
             });
 
-            //check for the checkedvalue property
-            it("should check the checkedvalue as put in property panel", function () {
-                expect($element.attr('checkedvalue')).toBe(iScope.checkedvalue);
+            //check for the dataset property
+            it("should check the dataset as put in property panel", function () {
+                expect($element.attr('dataset')).toBe(iScope.dataset);
             });
 
-            //check for the autofocus property
-            it("should set the autofocus property", function () {
-                iScope.autofocus = true;
+            //check for the usekeys property
+            it("should check the usekeys as put in property panel", function () {
+                expect($element.attr('usekeys')).toMatch(iScope.usekeys);
+            });
+
+            //check for the readonly property
+            it("should set the readonly property", function () {
+                iScope.readonly = true;
                 iScope.$apply();
-                expect($element.attr("autofocus")).toBe("autofocus");
-            });
-
-            //check for the required property
-            it("should set the required property", function () {
-                iScope.required = true;
-                iScope.$apply();
-                expect($element.attr("required")).toBe("required");
+                expect($element.attr("readonly")).toBe("readonly");
             });
 
             //check for the disabled property
@@ -100,9 +92,22 @@ describe("Testing Form Widget: radio", function () {
                 expect($element.attr("disabled")).toBe("disabled");
             });
 
-            //check for the radiogroup property
-            it("should change the radiogroup as put in property panel", function () {
-                expect($element.find('input').attr('name')).toBe(iScope.radiogroup);
+            //check for the layout property
+            it("should change the layout as put in property panel", function () {
+                iScope.layout = "stacked";
+                iScope.$apply();
+                expect($element.hasClass('stacked')).toBe(true);
+            });
+
+            //check for the construction of the element from the dataset
+            it("should check the construction of the element from the dataset", function () {
+                iScope.dataset = "Option 1, Option 2, Option 3";
+                iScope.$apply();
+                var items = iScope.dataset.split(', ');
+                _.forEach(items, function (item, index) {
+                    var counter = index + 1;
+                    expect($element.find('li:nth-child('+ counter +')').text()).toMatch(items[index]);
+                });
             });
         });
     });

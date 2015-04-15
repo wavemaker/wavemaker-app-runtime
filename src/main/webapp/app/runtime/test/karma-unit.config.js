@@ -20,6 +20,7 @@ module.exports = function (config) {
             './angular-mocks.js',
             '../build/application/wm-loader.js',
             '../build/application/runtimeloader.js',
+            './test-utils.js',
             '../build/application/placeholders.js',
             '../scripts/modules/widgets/test/common-widget.spec.js',
             '../scripts/modules/layouts/containers/**/test/*.spec.js',

@@ -1,6 +1,6 @@
 /*global describe, it, WM, beforeEach, expect, module, inject*/
-/*Testing for a radio*/
-describe("Testing Form Widget: radio", function () {
+/*Testing for a slider*/
+describe("Testing Form Widget: slider", function () {
     "use strict";
     var $compile,
         $rootScope,
@@ -9,9 +9,9 @@ describe("Testing Form Widget: radio", function () {
         iScope,
         widget = {},
         markup =
-            '<wm-radio caption="Radio caption" name="Radio name" hint="Radio hint" tabindex="2" ' +
-            'width="200px" height="150px" required="true" radiogroup="Radiogroup" ' +
-            'datavalue="1" checkedvalue="1" autofocus="true" show="true" disabled="true" class="col-md-push-3" ' +
+            '<wm-slider name="Slider name" hint="Slider hint" ' +
+            'width="400px" height="50px" minvalue="0" ' +
+            'maxvalue="100" step="5" readonly="false" disabled="false" show="true" class="col-md-push-3" ' +
             'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
             'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
             'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png"' +
@@ -20,31 +20,18 @@ describe("Testing Form Widget: radio", function () {
             'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
             'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
             'visibility="visible" display="inline"' +
-            'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
-            //'on-focus="eventHandler()" on-blur="eventHandler()" >' +
-            '></wm-radio>';
+            '></wm-slider>';
 
-    widget.type = 'wm-radio'; // type of the widget
+    widget.type = 'wm-slider'; // type of the widget
     widget.widgetSelector = 'element'; // perform common widget tests on this element
     widget.$unCompiled = WM.element(markup);
     widget.PropertiesToBeExcluded = ["animation", "badgevalue"];
-    widget.innerElement = "label";
 
-    // map of eventName-selector. events target will be the element which satisfies the given selector.
-    // this selector should be relative to widgetSelector
-    widget.basicEvents = {
-        'click': 'element',
-        'mouseenter': 'element',
-        'mouseleave': 'element'
-        //'focus': 'element',
-        //'blur': 'element'
-    };
     commonWidgetTests_verifyInitPropsInWidgetScope(widget);
     commonWidgetTests_verifyCommonProperties(widget);
     commonWidgetTests_verifyStyles(widget);
-    commonWidgetTests_verifyBasicEvents(widget);
 
-    /*Custom Test Suite for wm-radio widget.*/
+    /*Custom Test Suite for wm-slider widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
         beforeEach(function () {
 
@@ -69,28 +56,39 @@ describe("Testing Form Widget: radio", function () {
         });
 
         describe("properties", function () {
-            //check for the datavalue property
-            it("should check the datavalue as put in property panel", function () {
-                expect($element.attr('datavalue')).toBe(iScope.datavalue);
-            });
-
-            //check for the checkedvalue property
-            it("should check the checkedvalue as put in property panel", function () {
-                expect($element.attr('checkedvalue')).toBe(iScope.checkedvalue);
-            });
-
-            //check for the autofocus property
-            it("should set the autofocus property", function () {
-                iScope.autofocus = true;
+            //check for the readonly property
+            it("should set the datavalue property", function () {
+                iScope.datavalue = "25";
                 iScope.$apply();
-                expect($element.attr("autofocus")).toBe("autofocus");
+                expect($element.find('input').attr("title")).toBe("25");
             });
 
-            //check for the required property
-            it("should set the required property", function () {
-                iScope.required = true;
+            //check for the minvalue property
+            it("should set the minvalue property", function () {
+                iScope.minvalue = "0";
                 iScope.$apply();
-                expect($element.attr("required")).toBe("required");
+                expect($element.find('input').attr("min")).toBe("0");
+            });
+
+            //check for the maxvalue property
+            it("should set the maxvalue property", function () {
+                iScope.maxvalue = "100";
+                iScope.$apply();
+                expect($element.find('input').attr("max")).toBe("100");
+            });
+
+            //check for the step property
+            it("should set the step property", function () {
+                iScope.step = "5";
+                iScope.$apply();
+                expect($element.find('input').attr("step")).toBe("5");
+            });
+
+            //check for the readonly property
+            it("should set the readonly property", function () {
+                iScope.readonly = true;
+                iScope.$apply();
+                expect($element.attr("readonly")).toBe("readonly");
             });
 
             //check for the disabled property
@@ -98,11 +96,6 @@ describe("Testing Form Widget: radio", function () {
                 iScope.disabled = true;
                 iScope.$apply();
                 expect($element.attr("disabled")).toBe("disabled");
-            });
-
-            //check for the radiogroup property
-            it("should change the radiogroup as put in property panel", function () {
-                expect($element.find('input').attr('name')).toBe(iScope.radiogroup);
             });
         });
     });

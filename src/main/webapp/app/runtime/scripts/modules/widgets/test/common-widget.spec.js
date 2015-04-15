@@ -86,10 +86,11 @@ function commonWidgetTests_verifyInitPropsInWidgetScope(widget) {
         _.forEach(widget.$unCompiled[0].attributes, function (attr) {
             var attrName = attr.name,
                 attrValue = attr.value,
-                processedAttrValue = attrValue;
+                processedAttrValue = attrValue,
+                propsExcluded = widget.PropertiesToBeExcluded ? widget.PropertiesToBeExcluded : [];
 
             // ignore the event related attributes and attributes having hyphen(-) in them(custom attrs)
-            if (stringStartsWith(attr.name, 'on-') || attr.name.indexOf('-') !== -1) {
+            if (stringStartsWith(attr.name, 'on-') || attr.name.indexOf('-') !== -1 || propsExcluded.indexOf(attrName) !== -1) {
                 return;
             }
 
@@ -124,7 +125,8 @@ function commonWidgetTests_verifyCommonProperties(widget) {
             $rootScope,
             $element,
             iScope,
-            widgetProps;
+            widgetProps,
+            propsExcluded = widget.PropertiesToBeExcluded ? widget.PropertiesToBeExcluded : [];
 
         beforeEach(function () {
 
@@ -152,88 +154,102 @@ function commonWidgetTests_verifyCommonProperties(widget) {
         });
 
         // check for name property
-        it('should have given name', function () {
-            if (!widgetProps.name) {
-                return;
-            }
-            expect($element.attr('name')).toBe(iScope.name);
+        if(propsExcluded.indexOf('name') < 0) {
+            it('should have given name', function () {
+                if (!widgetProps.name) {
+                    return;
+                }
+                expect($element.attr('name')).toBe(iScope.name);
 
-            iScope.name = 'updated';
-            expect($element.attr('name')).toBe(iScope.name);
-        });
+                iScope.name = 'updated';
+                expect($element.attr('name')).toBe(iScope.name);
+            });
+        }
 
         // check for class property
-        it('should have given class', function () {
-            if (!widgetProps.class) {
-                return;
-            }
-            var old = iScope.class;
-            if (old) {
-                expect($element.hasClass(old)).toBe(true);
-            }
+        if(propsExcluded.indexOf('class') < 0) {
+            it('should have given class', function () {
+                if (!widgetProps.class) {
+                    return;
+                }
+                var old = iScope.class;
+                if (old) {
+                    expect($element.hasClass(old)).toBe(true);
+                }
 
-            iScope.class = 'updated';
-            if (old) {
-                expect($element.hasClass(old)).toBe(false);
-            }
+                iScope.class = 'updated';
+                if (old) {
+                    expect($element.hasClass(old)).toBe(false);
+                }
 
-            expect($element.hasClass(iScope.class)).toBe(true);
-        });
+                expect($element.hasClass(iScope.class)).toBe(true);
+            });
+        }
 
         // check for show property
-        it('should have proper display property based on given show value', function () {
-            if (!widgetProps.show) {
-                return;
-            }
-            var isShowDefined = widget.$unCompiled[0].attributes.hasOwnProperty('show'),
-                initShowValue = isShowDefined ? iScope.show : true;
+        if(propsExcluded.indexOf('show') < 0) {
+            it('should have proper display property based on given show value', function () {
+                if (!widgetProps.show) {
+                    return;
+                }
+                var isShowDefined = widget.$unCompiled[0].attributes.hasOwnProperty('show'),
+                    initShowValue = isShowDefined ? iScope.show : true;
 
-            expect($element.hasClass('ng-hide')).not.toBe(initShowValue);
+                expect($element.hasClass('ng-hide')).not.toBe(initShowValue);
 
-            iScope.show = true;
-            iScope.$apply();
-            expect($element.hasClass('ng-hide')).toBe(false);
+                iScope.show = true;
+                iScope.$apply();
+                expect($element.hasClass('ng-hide')).toBe(false);
 
-            iScope.show = false;
-            iScope.$apply();
-            expect($element.hasClass('ng-hide')).toBe(true);
-        });
+                iScope.show = false;
+                iScope.$apply();
+                expect($element.hasClass('ng-hide')).toBe(true);
+            });
+        }
 
         // check for hint property
-        it('should have given hint', function () {
-            if (!widgetProps.hint) {
-                return;
-            }
-            expect($element.attr('title')).toBe(iScope.hint);
+        if(propsExcluded.indexOf('hint') < 0) {
+            it('should have given hint', function () {
+                if (!widgetProps.hint) {
+                    return;
+                }
+                expect($element.attr('title')).toBe(iScope.hint);
 
-            iScope.hint = 'updated';
-            iScope.$apply();
-            expect($element.attr('title')).toBe(iScope.hint);
-        });
+                iScope.hint = 'updated';
+                iScope.$apply();
+                expect($element.attr('title')).toBe(iScope.hint);
+            });
+        }
 
         // check for animation property
-        it('should have given animation', function () {
-            if (!widgetProps.animation) {
-                return;
-            }
-            expect($element.attr('animation')).toBe(iScope.animation);
-        });
+        if(propsExcluded.indexOf('animation') < 0) {
+            it('should have given animation', function () {
+                if (!widgetProps.animation) {
+                    return;
+                }
+                expect($element.attr('animation')).toBe(iScope.animation);
+            });
+        }
 
         // check for tab index property
-        it('should have given tab index', function () {
-            if (!widgetProps.tabindex) {
-                return;
-            }
-            expect($element.attr('tabindex')).toBe(iScope.tabindex);
-        });
+        if(propsExcluded.indexOf('tabindex') < 0) {
+            it('should have given tab index', function () {
+                if (!widgetProps.tabindex) {
+                    return;
+                }
+                expect($element.attr('tabindex')).toBe(iScope.tabindex);
+            });
+        }
 
         // check for badge value property
-        it('should have given badge value', function () {
-            if (!widgetProps.badgevalue) {
-                return;
-            }
-            expect($element.attr('badgevalue')).toBe(iScope.badgevalue);
-        });
+        if(propsExcluded.indexOf('badgevalue') < 0) {
+            it('should have given badge value', function () {
+                if (!widgetProps.badgevalue) {
+                    return;
+                }
+                expect($element.attr('badgevalue')).toBe(iScope.badgevalue);
+            });
+        }
     });
 }
 
@@ -268,6 +284,9 @@ function commonWidgetTests_verifyStyles(widget) {
                     $element = $element.find(widget.widgetSelector).first();
                 }
                 iScope = $element.isolateScope();
+                if(widget.innerElement) {
+                    $element = $element.find(widget.innerElement);
+                }
                 iScope.$apply();
                 widgetProps = iScope.widgetProps;
             });
@@ -277,7 +296,7 @@ function commonWidgetTests_verifyStyles(widget) {
         _.forEach(['width', 'height'], function (cssName) {
             var propName = cssName.toLowerCase();
             it('should have given ' + cssName, function () {
-                if (!widgetProps[propName]) {
+                if (!widgetProps[propName] || !widget.$unCompiled.attr(propName)) {
                     return;
                 }
                 var initValue = +(widget.$unCompiled.attr(propName));
@@ -410,7 +429,7 @@ function commonWidgetTests_verifyStyles(widget) {
                 propName = cssName.toLowerCase(),
                 initValue = widget.$unCompiled.attr(propName);
 
-            if (!widgetProps[propName]) {
+            if (!widgetProps[propName] || !initValue) {
                 return;
             }
 
@@ -446,7 +465,7 @@ function commonWidgetTests_verifyStyles(widget) {
                 propName = cssName.toLowerCase(),
                 initValue = widget.$unCompiled.attr(propName);
 
-            if (!widgetProps[propName]) {
+            if (!widgetProps[propName]  || !initValue) {
                 return;
             }
 
@@ -504,7 +523,7 @@ function commonWidgetTests_verifyStyles(widget) {
             var propName = cssName.toLowerCase();
 
             it('should have given ' + cssName, function () {
-                if (!widgetProps[propName]) {
+                if (!widgetProps[propName]  || !widget.$unCompiled.attr(propName)) {
                     return;
                 }
                 var paddingUnit = widget.$unCompiled.attr('paddingunit') || 'px',
@@ -637,7 +656,7 @@ function commonWidgetTests_verifyStyles(widget) {
                 propName = 'backgroundimage',
                 initValue = widget.$unCompiled.attr(propName);
 
-            if (!widgetProps[propName]) {
+            if (!widgetProps[propName]  || !initValue) {
                 return;
             }
 
@@ -771,6 +790,9 @@ function commonWidgetTests_verifyBasicEvents(widget) {
                     $element = $element.find(widget.widgetSelector).first();
                 }
                 iScope = $element.isolateScope();
+                if(widget.innerElementEvents) {
+                    $element = $element.find(widget.innerElement);
+                }
                 iScope.disabled = false;
                 iScope.$apply();
             });
