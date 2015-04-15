@@ -81,9 +81,9 @@ wm.modules.wmCommon.services.ProjectService = function ($location, BaseService, 
     }
 
     function run(details, successCallback, failureCallback) {
-
+        var target = CONSTANTS.isRunMode ? 'Project_Run' : 'Project';
         BaseService.execute({
-            target: "Project",
+            target: target,
             action: "run",
             data: {
                 action: "inplaceDeploy",

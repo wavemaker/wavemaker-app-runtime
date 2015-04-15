@@ -33,38 +33,12 @@ wm.modules.wmCommon.constant('SERVICE_TYPE_CONSTANTS', {
 
 
 
-/* Defining service urls for file services ins tudio and run mode */
+/* Defining service urls for file services for run mode */
 wm.modules.wmCommon.constant("WM_COMMON_SERVICE_URLS", {
-    Project: {
+    Project_Run: {
         run: {
             url: "../services/deployment/jobs",
             method: "POST"
-        },
-        clean: {
-            url: "../services/deployment/jobs",
-            method: "POST"
-        },
-        deploy: {
-            url: "../services/deployment/jobs",
-            method: "POST"
-        }
-    },
-    FILE: {
-        read: {
-            url: "../services/projects/:projectID/resources/web/:filePath",
-            method: "GET"
-        },
-        write: {
-            url: "../services/projects/:projectID/resources/web/:filePath",
-            method: "POST"
-        },
-        upload: {
-            url: "../services/projects/:projectID/resources/web/:filePath",
-            method: "POST",
-            headers: {
-                'Content-Type': undefined
-            },
-            transformRequest: WM.identity
         }
     },
     FILE_RUN: {

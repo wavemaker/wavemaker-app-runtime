@@ -54,7 +54,6 @@ wm.modules.wmCommon.services.BaseService = [
             },
         /*Function to display messages using the wmToaster*/
             displayMessage = function (type, messageTitle, messageDescription) {
-                localeObject = localeObject || getLocaleObject();
                 /*Return if wmToaster does not exist*/
                 if (!wmToaster) {
                     return;
@@ -276,7 +275,7 @@ wm.modules.wmCommon.services.BaseService = [
                 if (serviceSettings) {
                     return makeCall(serviceSettings, successCallback, failureCallback);
                 }
-
+                localeObject = localeObject || getLocaleObject();
                 /* display error */
                 displayMessage('failure', localeObject["MESSAGE_ERROR_HTTP_ERROR_TITLE"], localeObject["MESSAGE_ERROR_HTTP_CONFIG_ERROR_DESC"]);
             },
