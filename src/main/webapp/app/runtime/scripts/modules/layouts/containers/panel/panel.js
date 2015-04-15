@@ -65,7 +65,7 @@ WM.module('wm.layouts.containers')
             'controller': function () {
                 this.registerFooter = function (footer) {
                     this.footer = footer;
-                }
+                };
             },
             'compile': function () {
                 return {
@@ -124,6 +124,7 @@ WM.module('wm.layouts.containers')
         };
     }])
     .directive('wmPanelFooter', ['$templateCache', function ($templateCache) {
+        "use strict";
         return {
             'restrict': 'E',
             'replace': true,
@@ -135,7 +136,7 @@ WM.module('wm.layouts.containers')
                 scope.expanded = true;
                 panelCtrl.registerFooter(element);
             }
-        }
+        };
     }]);
 
 /**
