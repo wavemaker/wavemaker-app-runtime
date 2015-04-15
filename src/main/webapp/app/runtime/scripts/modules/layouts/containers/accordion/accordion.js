@@ -16,6 +16,7 @@ WM.module('wm.layouts.containers')
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0)" class="accordion-toggle" wmtransclude></a>' +
                     '</h3>' +
+                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button class="app-icon glyphicon panel-action" data-ng-class="pane.active ? \'glyphicon-minus\': \'glyphicon-plus\'"></button></div>' +
                 '</div>'
             );
         $templateCache.put('template/layout/container/accordion-content.html',
@@ -196,9 +197,7 @@ WM.module('wm.layouts.containers')
                             template =
                                 '<i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i>' +
                                 '<span class="heading" data-ng-bind-html="heading"></span>' +
-                                '<span class="description" data-ng-bind-html="description"></span>' +
-                                '<div class="panel-actions"><button class="app-icon glyphicon panel-action" data-ng-class="pane.active ? \'glyphicon-minus\': \'glyphicon-plus\'"></button></div>';
-
+                                '<span class="description" data-ng-bind-html="description"></span>';
                             transcludeTarget.append($compile(template)(scope));
                         }
                         scope.pane = paneCtrl.getPaneScope();

@@ -14,6 +14,7 @@ WM.module('wm.layouts.containers')
                                 '<span class="description">{{description}}</span>' +
                             '</a>' +
                             '<div class="panel-actions">' +
+                                '<span data-ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>'+
                                 '<wm-menu scopedataset="actions" iconname="cog" data-ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="label" displayfield="label"></wm-menu>' +
                                 '<button class="app-icon panel-action glyphicon glyphicon-question-sign" title="{{::$root.appLocale.LABEL_HELP}}" data-ng-if="helptext" data-ng-click="toggleHelp()">&nbsp;</button>' +
                                 '<button class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="togglePanel($event);">&nbsp;</button>' +
@@ -27,7 +28,7 @@ WM.module('wm.layouts.containers')
                     '</div>' +
                 '</div>'
             );
-        $templateCache.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" wmtransclude></div>');
+        $templateCache.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" data-ng-show="expanded" wmtransclude></div>');
     }])
     .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
@@ -86,6 +87,7 @@ WM.module('wm.layouts.containers')
                                 }
                                 /* flip the active flag */
                                 scope.expanded = !scope.expanded;
+                                panelCtrl.footer.isolateScope().expanded = scope.expanded;
                             }
                         };
                         /* toggle the state of the panel */
@@ -130,6 +132,7 @@ WM.module('wm.layouts.containers')
             'require': '^wmPanel',
             'template': $templateCache.get('template/layout/container/panel-footer.html'),
             'link': function (scope, element, attrs, panelCtrl) {
+                scope.expanded = true;
                 panelCtrl.registerFooter(element);
             }
         }
