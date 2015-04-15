@@ -21,7 +21,8 @@ wm.modules.wmCommon.services.ProjectService = function ($location, BaseService, 
             data: {
                 name: params.projectName,
                 description: params.description,
-                templateId: params.templateId,
+                projectShellId: params.projectShellId,
+                projectType: params.projectType,
                 icon: params.icon
             }
         }, successCallback, failureCallback);
@@ -145,8 +146,7 @@ wm.modules.wmCommon.services.ProjectService = function ($location, BaseService, 
                 fileType: "ZIP",
                 packageType: "PROJECT",
                 sourceName: details.projectId,
-                targetName: details.projectName,
-                templateName: details.templateName
+                targetName: details.projectName
             }
         }, successCallback, failureCallback);
     }
@@ -161,7 +161,6 @@ wm.modules.wmCommon.services.ProjectService = function ($location, BaseService, 
                 packageType: "TEMPLATE",
                 sourceName: details.projectId,
                 targetName: details.targetName,
-                templateName: details.templateName
             }
         }, successCallback, failureCallback);
     }
