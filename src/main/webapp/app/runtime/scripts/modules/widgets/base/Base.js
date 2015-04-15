@@ -1985,8 +1985,8 @@ base.directives.accessroles = function (CONSTANTS, $rootScope, $compile) {
  * It injects the modelUpdater function when has-model attribute is present on the element.
  * It emits invokeService event to the rootScope which can used in run mode to invoke a service
  */
-base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService', 'Utils', 'CONSTANTS', '$parse', '$timeout', 'DataFormatService', '$animate',
-    function ($rootScope, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, DataFormatService/*Do not remove*/, $animate) {
+base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService', 'Utils', 'CONSTANTS', '$parse', '$timeout', 'DataFormatService', '$animate', '$routeParams',
+    function ($rootScope, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, DataFormatService/*Do not remove*/, $animate, $routeParams) {
         'use strict';
 
         var sliceFn = Array.prototype.slice;
@@ -2027,7 +2027,8 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                 if (parts[1] === 'show') {
                     DialogService.showDialog(parts[0]);
                     return;
-                } else if (parts[1] === 'hide') {
+                }
+                if (parts[1] === 'hide') {
                     DialogService.hideDialog(parts[0]);
                     return;
                 }
@@ -2047,7 +2048,8 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
 
             var overrideFlg,
                 getParentMethod,
-                fn;
+                fn,
+                eleParent;
 
             Object.keys(iScope.widgetProps)
                 .filter(function (key) {
@@ -2057,6 +2059,15 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                     overrideFlg = false;
                     if (!attrs[evt]) {
                         return;
+                    }
+                    if (attrs[evt] === ('goToPage-' + $routeParams.name)) {
+                        element.addClass('active');
+                        if (iScope._widgettype === 'wm-anchor') {
+                            eleParent = element.parent();
+                            if (eleParent && eleParent.hasClass('app-nav-item')) {
+                                eleParent.addClass('active');
+                            }
+                        }
                     }
                     fn = attrs[evt]
                         .split(";")

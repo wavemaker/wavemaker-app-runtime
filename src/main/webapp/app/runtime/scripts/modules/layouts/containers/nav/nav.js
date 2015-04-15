@@ -163,12 +163,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': function (template) {
-                if (template.find('[on-click="goToPage-' + (CONSTANTS.isRunMode ? $routeParams.name : $rootScope.activePageName)  + '"]').length) {
-                    return '<li init-widget class="app-nav-item active"' + $rootScope.getWidgetStyles('container') + ' wmtransclude></li>';
-                }
-                return '<li init-widget class="app-nav-item"' + $rootScope.getWidgetStyles('container') + ' wmtransclude></li>';
-            },
+            'template': '<li init-widget class="app-nav-item"' + $rootScope.getWidgetStyles('container') + ' wmtransclude></li>',
             'compile': function () {
                 return {
                     'pre': function (scope) {
