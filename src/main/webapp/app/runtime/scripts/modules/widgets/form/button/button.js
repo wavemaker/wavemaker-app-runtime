@@ -11,7 +11,7 @@ WM.module('wm.widgets.form')
                 '<img data-identifier="img" class="button-image-icon" data-ng-src="{{iconsrc}}"  data-ng-if="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                 '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" data-ng-if="showicon"></i> ' +
                 '<span class="btn-caption"></span>' +
-                '<span class="badge">{{badgevalue}}</span>' +
+                '<span data-ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
             '</button>'
             );
     }])

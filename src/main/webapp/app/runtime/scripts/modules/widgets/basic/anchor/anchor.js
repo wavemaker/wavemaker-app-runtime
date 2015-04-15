@@ -10,7 +10,7 @@ WM.module('wm.widgets.basic')
                 '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}"  data-ng-show="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                 '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
                 '<span class="anchor-caption"></span>' +
-                '<span class="badge">{{badgevalue}}</span>' +
+                '<span data-ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
                 '</a>');
 
     }]).directive('wmAnchor', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $sce, Utils, CONSTANTS) {
