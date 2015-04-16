@@ -363,6 +363,10 @@ wm.variables.services.Variables = [
 
                 /*Method to read page level variables from the path specified*/
                 FileService.read(params, function (variables) {
+                    if (!WM.isObject(variables)) {
+                        variables = {};
+                    }
+
                     setPageVariables(pageName, variables);
                     Utils.triggerFn(success, variables);
                 }, function (errMsg) {
@@ -398,6 +402,9 @@ wm.variables.services.Variables = [
 
                 /* call file service to read the variables file */
                 FileService.read(requestParams, function (variables) {
+                    if (!WM.isObject(variables)) {
+                        variables = {};
+                    }
                     Utils.triggerFn(success, variables, true);
                 }, function (errMsg) {
                     Utils.triggerFn(error, errMsg);
