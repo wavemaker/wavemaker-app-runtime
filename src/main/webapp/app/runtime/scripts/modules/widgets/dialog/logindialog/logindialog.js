@@ -5,11 +5,10 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/logindialog.html",
-            '<div class="app-dialog modal-dialog app-login-dialog" init-widget data-ng-show="show" ' +
-                ' data-ng-style="{width: dialogWidth, height: dialogHeight}">' +
-                ' <div class="modal-content" wmtransclude>' +
+            '<div class="app-dialog modal-dialog app-login-dialog"  data-ng-style="{width: width}" init-widget data-ng-show="show" >' +
+                ' <div class="modal-content"  wmtransclude>' +
                 ' </div>' +
-                ' </div>'
+            ' </div>'
             );
         $templateCache.put("template/widget/dialog/logindialogcontainer.html",
             '<div wmtransclude></div>'
@@ -21,34 +20,12 @@ WM.module('wm.widgets.dialog')
             widgetProps = PropertiesFactory.getPropertiesOf("wm.logindialog", ["wm.basicdialog", "wm.base", "wm.base.events.successerror"]),
             notifyFor = {
                 'width': true,
-                'height': true,
-                'iconclass': true,
-                'iconwidth': true,
-                'iconheight': true,
-                'iconmargin': true,
-                'title': true
+                'height': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
-            case "iconclass":
-            case "iconwidth":
-            case "iconheight":
-            case "iconmargin":
-                scope.header[key] = newVal;
-                break;
-            case "title":
-                scope.header.caption = newVal;
-                break;
-            case "width":
-                if (CONSTANTS.isStudioMode) {
-                    scope.dialogWidth = newVal;
-                }
-                break;
-            case "height":
-                scope.dialogHeight = newVal;
-                break;
             }
         }
 
@@ -90,6 +67,13 @@ WM.module('wm.widgets.dialog')
                         scope = scope || element.isolateScope();
                         scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
+                        //Update the title and iconclass for the old login dialogs based on the parent container property set
+                        if(attrs.title && !scope.header.caption){
+                            scope.header.caption = attrs.title;
+                        }
+                        if(attrs.iconclass && !scope.header.iconclass){
+                            scope.header.iconclass = attrs.iconclass;
+                        }
 
                         /* register the property change handler */
                         if (scope.propertyManager) {

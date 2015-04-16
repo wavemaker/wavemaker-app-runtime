@@ -309,7 +309,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "hint": {"type": "string", "bindable": "in-out-bound"},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
                     "badgevalue": {"type": "string", "bindable": "in-out-bound"},
-                    "caption": {"type": "string", "value": "Button", "bindable": "in-out-bound"},
+                    "caption": {"type": "string", "bindable": "in-out-bound"},
                     "iconurl": {"type": "string", "bindable": "in-bound"},
                     "iconwidth": {"type": "string"},
                     "iconheight": {"type": "string"},
@@ -683,17 +683,17 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "show": {"type": "boolean", "show": false },
                     "height": {"type": "string"},
                     "width": {"type": "string"},
+                    "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "animation": {"type": "list", "options": animationOptions},
+                    "hint": {"type": "string", "bindable": "in-bound"}
+                },
+                "wm.dialog.dialogheader": {
+                    "caption": {"type": "string"},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
                     "iconwidth": {"type": "string"},
                     "iconheight": {"type": "string"},
-                    "iconmargin": {"type": "string"},
-                    "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                    "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                    "animation": {"type": "list", "options": animationOptions}
-                },
-                "wm.dialog.dialogheader": {
-                    "caption": {"type": "string", "value": "Form", "show": false},
-                    "hint": {"type": "string", "value": "Dialog", "bindable": "in-bound"}
+                    "iconmargin": {"type": "string"}
                 },
                 "wm.dialog.onOk": {
                     "onOk": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
@@ -719,23 +719,22 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "url": {"type": "string", "value": "http://www.wavemaker.com", "bindable": "in-out-bound"},
                     "height": {"type": "string", "value": "400"},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-globe"},
-                    "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"}
+                    "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
+                    "closable": {"type": "boolean", "value": true}
                 },
                 "wm.pagedialog": {
                     "title": {"type": "string", "value": "Page Content", "bindable": "in-bound"},
                     "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
-                    "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "glyphicon glyphicon-file"}
+                    "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "glyphicon glyphicon-file"},
+                    "closable": {"type": "boolean", "value": true}
                 },
                 "wm.logindialog": {
                     "height": {"type": "string", "show": false},
-                    "title": {"type": "string", "value": "Login", "bindable": "in-bound"},
-                    "modal": {"type": "boolean", "value": false},
-                    "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-user"}
+                    "modal": {"type": "boolean", "value": false}
                 },
                 "wm.designdialog": {
-                    "title": {"type": "string", "bindable": "in-bound"},
                     "modal": {"type": "boolean", "value": true},
-                    "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-edit"}
+                    "closable": {"type": "boolean", "value": true}
                 },
                 "wm.spinner": {
                     "show": {"type": "boolean", "value": false},

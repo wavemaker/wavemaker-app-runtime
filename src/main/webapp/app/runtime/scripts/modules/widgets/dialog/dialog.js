@@ -14,13 +14,14 @@ WM.module('wm.widgets.dialog')
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",
             '<div data-ng-show="show" data-identifier="dialog-header" class="app-dialog-header modal-header" init-widget title="{{hint}}">' +
-                '<button aria-label="Close" class="app-dialog-close close" data-ng-click="hideDialog()">' +
+                '<button data-ng-if="closable" aria-label="Close" class="app-dialog-close close" data-ng-click="hideDialog()">' +
                     '<span aria-hidden="true">&times;</span>' +
                 '</button>' +
                 '<h4 class="app-dialog-title modal-title">' +
-                    '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
+                    '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
                     '<span>{{caption}}</span>' +
                 '</h4>' +
+                '<div class="dialog-header-action" wmtransclude></div>' +
             '</div>'
             );
         $templateCache.put("template/widget/dialog/design.html",
@@ -43,6 +44,7 @@ WM.module('wm.widgets.dialog')
                 'iconheight': true,
                 'iconmargin': true,
                 'iconclass': true,
+                'closable': true,
                 'title': true
             };
 
@@ -68,6 +70,7 @@ WM.module('wm.widgets.dialog')
             case "iconheight":
             case "iconmargin":
             case "iconclass":
+            case "closable":
                 scope.header[key] = newVal;
                 break;
             case "title":
@@ -210,7 +213,7 @@ WM.module('wm.widgets.dialog')
         };
     }]).directive('wmDialogheader', ["PropertiesFactory", "DialogService", "WidgetUtilService", "LOCAL_CONSTANTS", "$templateCache", "CONSTANTS", function (PropertiesFactory, DialogService, WidgetUtilService, LOCAL_CONSTANTS, $templateCache, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.basicdialog", "wm.base"]),
+        var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.base"]),
             notifyFor = {
                 'iconclass': true
             };
@@ -234,6 +237,7 @@ WM.module('wm.widgets.dialog')
         return {
             "restrict": 'E',
             "replace": true,
+            "transclude": true,
             "controller": 'DialogController',
             "scope": {},
             "template": $templateCache.get("template/widget/dialog/dialog-header.html"),
