@@ -30,7 +30,7 @@ describe("Testing Basic Widget: progress", function () {
 
     commonWidgetTests_verifyInitPropsInWidgetScope(widget);
     commonWidgetTests_verifyCommonProperties(widget);
-    //commonWidgetTests_verifyStyles(widget);
+    commonWidgetTests_verifyStyles(widget);
     commonWidgetTests_verifyBasicEvents(widget);
 
     /*Custom Test Suite for wm-progress widget.*/
@@ -41,6 +41,7 @@ describe("Testing Basic Widget: progress", function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
@@ -69,17 +70,6 @@ describe("Testing Basic Widget: progress", function () {
                 expect($element.find('div').hasClass('progress-bar-info')).toBe(true);
             });
 
-            ////check for the hyperlink property
-            //it("should change the hyperlink as put in property panel", function () {
-            //    expect($element.attr('href')).toBe(iScope.hyperlink);
-            //
-            //    iScope.hyperlink = "www.google.com";
-            //    iScope.$apply();
-            //    expect($element.attr('href')).toBe(iScope.hyperlink);
-            //});
-            //
-
-            //datavalue="40" minvalue="0" maxvalue="100" ' +
             //check for the datavalue property
             it("should change the datavalue as put in property panel", function () {
                 expect($element.find('div').attr('aria-valuenow')).toBe(iScope.datavalue);

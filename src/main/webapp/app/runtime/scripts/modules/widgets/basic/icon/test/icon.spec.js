@@ -28,6 +28,7 @@ describe("Testing Basic Widget: Icon", function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             //inject the dependents
             inject(function (_$compile_, _$rootScope_) {

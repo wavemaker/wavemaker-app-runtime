@@ -31,6 +31,7 @@ describe("Testing Basic Widget: Audio", function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
@@ -76,7 +77,8 @@ describe("Testing Basic Widget: Audio", function () {
                 expect($element.is('[controls]')).toBe(iScope.controls);
             });
 
-            ////check for the autoplay property
+
+            ////TODO: check for the autoplay property
             //it("should change the autoplay as put in property panel", function () {
             //    expect($element.attr('autoplay')).toBe(iScope.autoplay);
             //});
@@ -86,7 +88,7 @@ describe("Testing Basic Widget: Audio", function () {
                 expect($element.is('[loop]')).toBe(iScope.loop);
             });
 
-            //check for the muted property
+            //TODO: check for the muted property
             //it("should change the muted as put in property panel", function () {
             //    expect($element.attr('muted')).toBe(iScope.muted);
             //});

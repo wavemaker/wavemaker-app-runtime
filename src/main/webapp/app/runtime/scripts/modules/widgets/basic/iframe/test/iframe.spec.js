@@ -29,6 +29,7 @@ describe("Testing Basic Widget: iframe", function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
@@ -54,6 +55,20 @@ describe("Testing Basic Widget: iframe", function () {
             //check for the iframesrc property
             it("should check the iframesrc put in property panel", function () {
                 iScope.iframesrc = "login.html";
+                iScope.$apply();
+                expect($element.find('iframe').attr('src')).toMatch(iScope.iframesrc);
+            });
+
+            //check for the external https iframesrc property
+            it("should check the external https iframesrc put in property panel", function () {
+                iScope.iframesrc = "https://www.wavemakeronline.com/login/login";
+                iScope.$apply();
+                expect($element.find('iframe').attr('src')).toMatch(iScope.iframesrc);
+            });
+
+            //check for the external http iframesrc property
+            it("should check the external http iframesrc put in property panel", function () {
+                iScope.iframesrc = "http://dev.wavemaker.com/";
                 iScope.$apply();
                 expect($element.find('iframe').attr('src')).toMatch(iScope.iframesrc);
             });

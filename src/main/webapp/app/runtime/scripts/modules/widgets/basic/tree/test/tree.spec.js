@@ -93,7 +93,7 @@ describe("Testing Basic Widget: tree", function () {
                 expect($element.attr('nodechildren')).toBe(iScope.nodechildren);
             });
 
-            ////check for the construction of the element from the dataset
+            ////TODO: check for the construction of the element from the dataset
             //it("should check the construction of the element from the dataset", function () {
             //    iScope.nodes = [{
             //        "label": "item1",
@@ -109,6 +109,8 @@ describe("Testing Basic Widget: tree", function () {
             //        expect($element.find('li:nth-child('+ counter +')').text()).toMatch(items[index]);
             //    });
             //});
+
+            ////TODO: check for the nodeicon, nodelabel, nodechildren with an object
         });
     });
 });

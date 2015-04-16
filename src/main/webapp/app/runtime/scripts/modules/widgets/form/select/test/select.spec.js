@@ -53,6 +53,7 @@ describe("Testing Form Widget: select", function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
@@ -75,6 +76,23 @@ describe("Testing Form Widget: select", function () {
                 iScope.dataset = "Hello, Namaste";
                 iScope.$apply();
                 expect($element.find("option")[1].text).toBe("Namaste");
+            });
+
+            //check for the dataset property
+            it("should change the options for the element", function () {
+                iScope.dataset = ["item1", "item2"];
+                iScope.$apply();
+                expect($element.find("option")[0].text).toBe("item1");
+            });
+
+            //check for the dataset property
+            it("should change the options for the element", function () {
+                iScope.dataset = {
+                    "label1": "item1",
+                    "label2": "item2"
+                };
+                iScope.$apply();
+                expect($element.find("option")[1].text).toBe("item2");
             });
 
             //check for the autofocus property

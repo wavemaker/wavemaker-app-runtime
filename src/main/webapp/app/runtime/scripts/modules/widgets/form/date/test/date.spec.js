@@ -20,7 +20,7 @@ describe("Testing Form Widget: date", function () {
             'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
             'visibility="visible" display="inline"' +
             'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
-            //'on-focus="eventHandler()" on-blur="eventHandler()" ' +
+            //TODO: 'on-focus="eventHandler()" on-blur="eventHandler()" ' +
             '></wm-date>';
 
     widget.type = 'wm-date'; // type of the widget
@@ -52,6 +52,7 @@ describe("Testing Form Widget: date", function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
@@ -131,6 +132,13 @@ describe("Testing Form Widget: date", function () {
                 iScope.datavalue = "Tue Dec 01 2015 00:00:00 GMT+0530 (India Standard Time)";
                 iScope.$apply();
                 expect($element.find('input').val()).toBe("Tue Dec 01 2015 00:00:00 GMT+0530 (India Standard Time)");
+            });
+
+            //check for the datavalue property
+            it("should check the epoch datavalue as put in property panel", function () {
+                iScope.datavalue = 1428995261174;
+                iScope.$apply();
+                expect($element.find('input').val()).toBe("Tue Apr 14 2015 12:37:41 GMT+0530 (India Standard Time)");
             });
 
         });

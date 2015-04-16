@@ -41,6 +41,7 @@ describe("Testing Form Widget: menu", function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
@@ -99,6 +100,44 @@ describe("Testing Form Widget: menu", function () {
                     var counter = index + 1;
                     expect($element.find('li:nth-child('+ counter +')').text()).toMatch(items[index]);
                 });
+            });
+
+            //check for the construction of the child items from the dataset
+            it("should check the construction of the child items from the dataset", function () {
+                iScope.dataset = [{
+                        "label": "item1",
+                        "icon": "glyphicon glyphicon-euro"
+                    }, {
+                        "label": "item2",
+                        "icon": "glyphicon glyphicon-euro"
+                    }, {
+                        "label": "item3",
+                        "icon": "glyphicon glyphicon-euro"
+                    }, {
+                        "label": "item4",
+                        "icon": "glyphicon glyphicon-euro",
+                        "children": [{
+                            "label": "sub-menu-item1",
+                            "icon": "glyphicon glyphicon-euro"
+                        }, {
+                            "label": "sub-menu-item2",
+                            "icon": "glyphicon glyphicon-euro"
+                        }]
+                    }
+                ];
+                iScope.$apply();
+                var items = ["item1", "item2", "item3", "item4"];
+                _.forEach(items, function (item, index) {
+                    var counter = index + 1;
+                    expect($element.find('[items="menuItems"] li:nth-child('+ counter +')').text()).toMatch(items[index]);
+                });
+
+                var childItems = ["sub-menu-item1","sub-menu-item2",];
+                _.forEach(childItems, function (item, index) {
+                    var counter = index + 1;
+                    expect($element.find('[items="item.children"] li:nth-child('+ counter +')').text()).toMatch(items[index]);
+                });
+
             });
 
         });

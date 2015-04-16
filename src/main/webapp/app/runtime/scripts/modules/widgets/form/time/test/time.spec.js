@@ -21,7 +21,7 @@ describe("Testing Form Widget: time", function () {
             'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
             'visibility="visible" display="inline"' +
             'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
-            //'on-focus="eventHandler()" on-blur="eventHandler()" ' +
+            //TODO: 'on-focus="eventHandler()" on-blur="eventHandler()" ' +
             '></wm-text>';
 
     widget.type = 'wm-time'; // type of the widget
@@ -51,6 +51,7 @@ describe("Testing Form Widget: time", function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
