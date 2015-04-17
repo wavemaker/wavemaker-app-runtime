@@ -29,7 +29,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
         result = {
             "properties": {
                 "wm.Variable": {
-                    "name": {"type": "string", "required": true},
+                    "name": {"type": "string", "required": true, "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$"},
                     "type": {"type": "list", "options": {"string": "LABEL_STRING", "boolean": "LABEL_BOOLEAN", "number": "LABEL_NUMBER", "date": "LABEL_DATE", "entry": "LABEL_ENTRY"}, "value": "string", "required": true},
                     "isList": {"type": "boolean", "value": false},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},

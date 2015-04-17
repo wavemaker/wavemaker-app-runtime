@@ -161,12 +161,12 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
 
                 "wm.base.editors": {
-                    "width": {"type": "string"},
-                    "height": {"type": "string"},
-                    "minwidth": {"type": "string"},
-                    "maxwidth": {"type": "string"},
-                    "minheight": {"type": "string"},
-                    "maxheight": {"type": "string"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "minwidth": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "maxwidth": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "minheight": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "maxheight": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
 
                     /* ---- styles ----*/
                     "border": {"type": "string", "widget": "box"},
@@ -287,7 +287,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "content": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
                     "hint": {"type": "string", "bindable": "in-out-bound"},
                     "autoscroll": {"type": "boolean"},
-                    "height": {"type": "string"}
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"}
                 },
                 "wm.icon": {
                     "title": {"type": "string", "bindable": "in-out-bound"},
@@ -300,8 +300,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 "wm.iframe": {
                     "iframesrc": {"type": "string", "bindable": "in-bound", "widget": "string"},
                     "hint": {"type": "string", "bindable": "in-out-bound"},
-                    "width": {"type": "string", "value": '300px'},
-                    "height": {"type": "string", "value": '150px'},
+                    "width": {"type": "string", "value": '300px', "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"type": "string", "value": '150px', "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'}
                 },
 
@@ -327,8 +327,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.switch": {
                     "hint": {"type": "string", "bindable": "in-out-bound"},
-                    "width": {"type": "string"},
-                    "height": {"type": "string"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "datavalue": {"type": "string, object", "bindable": "in-out-bound", "widget": "string"},
                     "scopedatavalue": {"type": "string"},
                     "dataset": {"type": "array, string", "bindable": "in-bound", "widget": "string", "value": "on, off"},
@@ -467,7 +467,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "zindex": {"type": "string"}
                 },
                 "wm.date": {
-                    "width": {"type": "string"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "autofocus": {"type": "boolean"},
                     "readonly": {"type": "boolean"},
                     "disabled": {"type": "boolean"},
@@ -512,12 +512,12 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
 
                 "wm.booleaneditors": {
-                    "width": {"type": "string"},
-                    "height": {"type": "string"},
-                    "minwidth": {"type": "string"},
-                    "maxwidth": {"type": "string"},
-                    "minheight": {"type": "string"},
-                    "maxheight": {"type": "string"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "minwidth": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "maxwidth": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "minheight": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "maxheight": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     /* ---- styles ----*/
                     "padding": {"type": "string", "widget": "box"},
                     "paddingunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
@@ -681,8 +681,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
 
                 "wm.basicdialog": {
                     "show": {"type": "boolean", "show": false },
-                    "height": {"type": "string"},
-                    "width": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "animation": {"type": "list", "options": animationOptions},
@@ -718,7 +718,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 "wm.iframedialog": {
                     "title": {"type": "string", "value": "External Content", "bindable": "in-bound"},
                     "url": {"type": "string", "value": "http://www.wavemaker.com", "bindable": "in-out-bound"},
-                    "height": {"type": "string", "value": "400"},
+                    "height": {"type": "string", "value": "400", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-globe"},
                     "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
                     "closable": {"type": "boolean", "value": true}
@@ -730,7 +730,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "closable": {"type": "boolean", "value": true}
                 },
                 "wm.logindialog": {
-                    "height": {"type": "string", "show": false},
+                    "height": {"type": "string", "show": false, "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "closable": {"type": "boolean", "value": true},
                     "modal": {"type": "boolean", "value": true}
                 },
@@ -813,8 +813,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 'wm.containers': {
                     "class": {"type": "string"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
-                    "height": {"type": "string"},
-                    "width": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
                     "visibility": {"type": "list", "options": visibilityOptions},
                     "display": {"type": "list", "options": displayOptions},
@@ -822,16 +822,16 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
 
                 'wm.layouts.header': {
-                    "height": {"type": "string"}
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"}
                 },
                 'wm.layouts.list': {
-                    "height": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                     "layout":  {"type": "list", "options": ["inline", "vertical"], "value": "vertical"},
                     "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
                 },
                 'wm.layouts.breadcrumb': {
-                    "height": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                     "scopedataset": {"type": "string"},
@@ -840,7 +840,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "itemlink": {"type": "list", "options": [""]}
                 },
                 'wm.layouts.nav': {
-                    "height": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                     "layout":  {"type": "list", "options": ["", "stacked", "justified"]},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -852,20 +852,20 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "itemchildren": {"type": "list", "options": [""]}
                 },
                 'wm.layouts.navbar': {
-                    "height": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                     "title": {"type": "string", "bindable": "in-bound"},
                     "imgsrc": {"type": "string", "bindable": "in-bound"}
                 },
                 'wm.layouts.listtemplate': {
-                    "height": {"type": "string"},
-                    "width": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "class": {"type": "string", "show": false},
                     "layout":  {"type": "list", "options": ["blank", "gridlayout", "inline", "media", "panel", "thumbnail"], "value": "panel"}
                 },
                 'wm.layouts.listitem': {
-                    "height": {"type": "string"},
-                    "width": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "margin": {"type": "string", "widget": "box"},
                     "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
                     "margintop": {"type": "string"},
@@ -874,7 +874,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "marginleft": {"type": "string"}
                 },
                 'wm.layouts.topnav': {
-                    "height": {"type": "string"}
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"}
                 },
                 'wm.layouts.leftpanel': {
                     "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], "value": "2"}
@@ -883,7 +883,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], "value": "2"}
                 },
                 'wm.layouts.content': {
-                    "height": {"type": "string"}
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"}
                 },
                 'wm.layouts.panel': {
                     "title": {"type": "string", "value": "Title", "bindable": "in-bound"},
@@ -934,8 +934,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "animation": {"type": "list", "options": animationOptions}
                 },
                 'wm.layouts.tile': {
-                    "width": {"type": "string"},
-                    "height": {"type": "string"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
                     "margin": {"type": "string", "widget": "box"},
                     "margintop": {"type": "string"},
@@ -954,12 +954,12 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "animation": {"type": "list", "options": animationOptions}
                 },
                 'wm.layouts.footer': {
-                    "height": {"type": "string"}
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"}
                 },
                 'wm.layouts.layoutgrid': {
                     "name": {"type": "string", "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$", "maxlength": 32},
-                    "height": {"type": "string"},
-                    "width": {"type": "string", "value": '100%'},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "width": {"type": "string", "value": '100%', "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
                     "margin": {"type": "string", "widget": "box"},
                     "margintop": {"type": "string"},
@@ -969,12 +969,12 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "insert": {"type": "toolbar", "actions": [{'action': 'addrow', 'label': 'LABEL_PROPERTY_ADDROW', 'icon': 'add-row'}]}
                 },
                 'wm.layouts.gridcolumn': {
-                    "height": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]},
                     "insert": {"type": "toolbar", "actions": [{'action': 'addcolumnleft', 'label': 'LABEL_PROPERTY_ADDCOLUMNLEFT', 'icon': 'add-column-left'}, {'action': 'addcolumnright', 'label': 'LABEL_PROPERTY_ADDCOLUMNRIGHT', 'icon': 'add-column-right'}]}
                 },
                 'wm.layouts.gridrow': {
-                    "height": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "insert": {"type": "toolbar", "actions": [{'action': 'addrowbelow', 'label': 'LABEL_PROPERTY_ADDROWBELOW', 'icon': 'add-row-below'}, {'action': 'addrowabove', 'label': 'LABEL_PROPERTY_ADDROWABOVE', 'icon': 'add-row-above'}, {'action': 'addcolumn', 'label': 'LABEL_PROPERTY_ADDCOLUMN', 'icon': 'add-column'}]}
                 },
                 'wm.layouts.column': {
@@ -1004,8 +1004,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "marginright": {"type": "string"},
                     "marginleft": {"type": "string"},
                     "method": {"type": "list", "options": ["get", "post"]},
-                    "height": {"type": "string"},
-                    "width": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "captionsize": {"type": "string"},
                     "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left"},
                     "enctype": {"type": "list", "options": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]},
@@ -1023,7 +1023,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                     "editfields": {"type": "button", "hidelabel": true},
-                    "height": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "rowdata": {"type": "string"},
                     "formdata": {"type": "object", "bindable": "in-bound", "widget": "string"},
                     "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string"},
@@ -1032,7 +1032,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "show": {"type": "boolean", "value": true},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
                     "updatemode": {"type": "boolean", "value": false},
-                    "width": {"type": "string"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "insertmessage": {"type": "string", "value": "Record added successfully", "bindable": "in-out-bound"},
                     "updatemessage": {"type": "string", "value": "Record updated successfully", "bindable": "in-out-bound"},
                     /*Events*/
@@ -1042,8 +1042,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                 },
                 'wm.grid': {
-                    "width": {"value": "100%"},
-                    "height": {"value": "200px"},
+                    "width": {"value": "100%", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"value": "200px", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                     "scopedataset": {"type": "string"},
                     "pagesize": {"type": "number"},
@@ -1110,8 +1110,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onAbort": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                 },
                 'wm.youtube': {
-                    "width": { "value": "800px"},
-                    "height": {"value": "125px"},
+                    "width": { "value": "800px", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"value": "125px", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "uploadpath": {"type": "string"}
                 },
                 "wm.anchor": {
@@ -1161,8 +1161,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 "wm.prefabs": {
                     "margin": {"type": "string", "widget": "box"},
                     "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
-                    "width": {"type": "string"},
-                    "height": {"type": "string"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onDestroy": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "animation": {"type": "list", "options": animationOptions}
@@ -1170,8 +1170,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
 
                 "wm.accordion": {
                     "closeothers": { "type": "boolean", "value": true},
-                    "height": {"type": "string"},
-                    "width": {"type": "string"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "tabindex": {"type": "string"}
                 },
 
@@ -1264,8 +1264,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
                 },
                 "wm.chart": {
-                    "height": {"type": "string", value: "210px"},
-                    "width": {"type": "string"},
+                    "height": {"type": "string", value: "210px", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "type": {"type": "string", "widget": "list", "options": ["Column", "Line", "Area", "Cumulative Line", "Bar", "Pie", "Donut", "Bubble"], "bindable": "in-out-bound"},
                     "scopedataset": {"type": "string"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1406,8 +1406,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "displayformat": {"type": "list", "options": ["percentage", "absolute"], "value": "percentage"},
                     "type": {"type": "list", "options": ["default", "default-striped", "success", "success-striped", "info", "info-striped", "warning", "warning-striped", "danger", "danger-striped"], "value": "default"},
 
-                    "width": {"type": "string"},
-                    "height": {"type": "string"},
+                    "width": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
+                    "height": {"type": "string", "pattern": "(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)"},
                     "onStart": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onComplete": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onBeforeupdate": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
