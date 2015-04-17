@@ -36,8 +36,8 @@ wm.modules.wmCommon.constant('SERVICE_TYPE_CONSTANTS', {
 /* Defining service urls for file services for run mode */
 wm.modules.wmCommon.constant("WM_COMMON_SERVICE_URLS", {
     Project_Run: {
-        run: {
-            url: "../services/deployment/jobs",
+        inplaceDeploy: {
+            url: "../services/projects/:projectId/deployment/inplaceDeploy",
             method: "POST"
         }
     },

@@ -14,10 +14,9 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS) 
         var target = CONSTANTS.isRunMode ? 'Project_Run' : 'Project';
         BaseService.execute({
             target: target,
-            action: "run",
-            data: {
-                action: "inplaceDeploy",
-                projectId: details.projectId
+            action: "inplaceDeploy",
+            urlParams: {
+                "projectId": details.projectId
             },
             config: details.config
         }, successCallback, failureCallback);

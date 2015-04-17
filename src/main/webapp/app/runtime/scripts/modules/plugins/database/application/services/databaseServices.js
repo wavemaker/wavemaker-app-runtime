@@ -165,9 +165,8 @@ wm.plugins.database.services.DatabaseService = [
                 BaseService.execute({
                     target: "Database",
                     action: "importSample",
-                    data: {
-                        "projectId": projectID,
-                        "action": "importSampleDatabase"
+                    urlParams: {
+                        "projectID": projectID,
                     }
                 }, successCallback, failureCallback);
             },
@@ -194,15 +193,14 @@ wm.plugins.database.services.DatabaseService = [
                     target: "Database",
                     action: "testConnection",
                     data: {
-                        "projectId": params.projectID,
-                        "action": "testDBConnection",
-                        "databaseDetails": {
-                            "username": params.username,
-                            "password": params.password,
-                            "url": params.url,
-                            "driver_class": params.driver_class,
-                            "dialect": params.dialect
-                        }
+                        "username": params.username,
+                        "password": params.password,
+                        "url": params.url,
+                        "driver_class": params.driver_class,
+                        "dialect": params.dialect
+                    },
+                    urlParams: {
+                        "projectID": params.projectID
                     }
                 }, successCallback, failureCallback);
             },
@@ -230,22 +228,21 @@ wm.plugins.database.services.DatabaseService = [
                     target: "Database",
                     action: "importDB",
                     data: {
-                        "projectId": params.projectID,
-                        "action": "importDatabase",
-                        "databaseDetails": {
-                            "serviceId": params.serviceId,
-                            "packageName": params.packageName,
-                            "username": params.username,
-                            "password": params.password,
-                            "url": params.url,
-                            "tableFilter": params.tableFilter,
-                            "schemaFilter": params.schemaFilter,
-                            "driver_class": params.driver_class,
-                            "dialect": params.dialect,
-                            "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                            "impersonateUser": false,
-                            "activeDirectoryDomain": params.activeDirectoryDomain
-                        }
+                        "serviceId": params.serviceId,
+                        "packageName": params.packageName,
+                        "username": params.username,
+                        "password": params.password,
+                        "url": params.url,
+                        "tableFilter": params.tableFilter,
+                        "schemaFilter": params.schemaFilter,
+                        "driver_class": params.driver_class,
+                        "dialect": params.dialect,
+                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                        "impersonateUser": false,
+                        "activeDirectoryDomain": params.activeDirectoryDomain
+                    },
+                    urlParams: {
+                        "projectID": params.projectID
                     }
                 }, successCallback, failureCallback);
             },
@@ -272,12 +269,9 @@ wm.plugins.database.services.DatabaseService = [
                 BaseService.execute({
                     target: "Database",
                     action: "reImportDB",
-                    data: {
-                        "projectId": params.projectID,
-                        "action": "reImportDatabase",
-                        "databaseDetails": {
-                            "serviceId": params.serviceId
-                        }
+                    urlParams: {
+                        "projectID": params.projectID,
+                        "serviceId": params.serviceId
                     }
                 }, successCallback, failureCallback);
             },
@@ -305,48 +299,21 @@ wm.plugins.database.services.DatabaseService = [
                     target: "Database",
                     action: "exportDB",
                     data: {
-                        "projectId": params.projectID,
-                        "action": "exportDatabase",
-                        "databaseDetails": {
-                            "serviceId": params.serviceId,
-                            "username": params.username,
-                            "password": params.password,
-                            "url": params.url,
-                            "schemaName": params.schemaName,
-                            "schemaFilter": params.schemaFilter,
-                            "driver_class": params.driver_class,
-                            "dialect": params.dialect,
-                            "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                            "impersonateUser": false,
-                            "overwrite": params.overwrite
-                        }
+                        "serviceId": params.serviceId,
+                        "username": params.username,
+                        "password": params.password,
+                        "url": params.url,
+                        "schemaName": params.schemaName,
+                        "schemaFilter": params.schemaFilter,
+                        "driver_class": params.driver_class,
+                        "dialect": params.dialect,
+                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                        "impersonateUser": false,
+                        "overwrite": params.overwrite
+                    },
+                    urlParams: {
+                        "projectID": params.projectID
                     }
-                }, successCallback, failureCallback);
-            },
-
-            /**
-             * @ngdoc function
-             * @name wm.database.$DatabaseService#executeDBScript
-             * @methodOf wm.database.$DatabaseService
-             * @function
-             *
-             * @description
-             * Method to export the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project & details of the database.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            executeDBScript: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "executeDBScript",
-                    data: params.content
                 }, successCallback, failureCallback);
             },
 
