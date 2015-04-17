@@ -19,32 +19,24 @@ wm.plugins.database.factory(wm.plugins.database.factories);
 wm.plugins.database.constant('DB_SERVICE_URLS', {
     Database: {
         importSample: {
-            url: "../services/databaseservice/actions",
+            url: "../services/projects/:projectID/database/importSample",
             method: "POST"
         },
         testConnection: {
-            url: "../services/databaseservice/actions",
+            url: "../services/projects/:projectID/database/testConnection",
             method: "POST"
         },
         importDB: {
-            url: "../services/databaseservice/actions",
+            url: "../services/projects/:projectID/database/import",
             method: "POST"
         },
         reImportDB: {
-            url: "../services/databaseservice/actions",
+            url: "../services/projects/:projectID/database/reimport?serviceId=:serviceId",
             method: "POST"
         },
         exportDB: {
-            url: "../services/databaseservice/actions",
+            url: "../services/projects/:projectID/database/export",
             method: "POST"
-        },
-        executeDBScript: {
-            url: "../services/databaseservice/executescript",
-            method: "POST",
-            headers: {
-                'Content-Type': undefined
-            },
-            transformRequest: WM.identity
         },
 
         /*DataModel related services*/
