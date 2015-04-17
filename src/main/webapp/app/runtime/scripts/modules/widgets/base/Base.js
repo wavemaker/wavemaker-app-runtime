@@ -686,15 +686,15 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "animation": {"type": "list", "options": animationOptions},
-                    "hint": {"type": "string", "bindable": "in-bound"},
-                    "title": {"type": "string", "show": false} //for backward compatibility
+                    "hint": {"type": "string", "bindable": "in-bound"}
                 },
                 "wm.dialog.dialogheader": {
                     "caption": {"type": "string", "maxlength": 256},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
                     "iconwidth": {"type": "string"},
                     "iconheight": {"type": "string"},
-                    "iconmargin": {"type": "string"}
+                    "iconmargin": {"type": "string"},
+                    "closable": {"type": "boolean", "show": false}
                 },
                 "wm.dialog.onOk": {
                     "onOk": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
@@ -731,11 +731,13 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.logindialog": {
                     "height": {"type": "string", "show": false},
-                    "modal": {"type": "boolean", "value": false}
+                    "closable": {"type": "boolean", "value": true},
+                    "modal": {"type": "boolean", "value": true}
                 },
                 "wm.designdialog": {
-                    "modal": {"type": "boolean", "value": true},
-                    "closable": {"type": "boolean", "value": true}
+                    "modal": {"type": "boolean", "value": false},
+                    "closable": {"type": "boolean", "value": true},
+                    "title": {"type": "string", "show": false} //for backward compatibility
                 },
                 "wm.spinner": {
                     "show": {"type": "boolean", "value": false},
