@@ -298,25 +298,6 @@
       border-radius: 4px;
     }
   }
-  .app-navbar {
-    .navbar-brand {
-      .brand-image {
-        display: inline-block;
-        margin-right: 8px;
-      }
-    }
-    .app-nav-item >.dropdown,
-    .app-nav-item >.app-popover {
-      > a.dropdown-toggle, >a.app-popover-link {
-        padding: 15px;
-      }
-      &.open {
-        > a {
-          background-color: transparent;
-        }
-      }
-    }
-  }
 
 /*********************************************************************************************************************/
   /***********************************grid styles***********************************************************************/
@@ -526,6 +507,26 @@
   .navbar {
     border-radius: 0;
     margin-bottom: 0;
+    .navbar-brand {
+      margin-left: 1em;
+      margin-right: 1em;
+      .brand-image {
+        display: inline-block;
+        margin-right: 0.5em;
+      }
+    }
+    .app-nav-item {
+      >.dropdown,  >.app-popover {
+        > a.dropdown-toggle , >a.app-popover-link {
+          padding: 1.428571429em;
+        }
+        &.open {
+          > a {
+            background-color: transparent;
+          }
+        }
+      }
+    }
   }
   .btn-transparent {
     background: transparent !important;
