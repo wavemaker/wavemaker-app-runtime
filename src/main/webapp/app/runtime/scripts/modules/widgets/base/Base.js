@@ -153,7 +153,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
         result = {
             "properties": {
                 "wm.base": {
-                    "name": {"type": "string"},
+                    "name": {"type": "string", "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$", "maxlength": 32},
                     "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                     "class": {"type": "string"},
                     "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
@@ -228,7 +228,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                 },
                 "wm.base.editors.captionproperties": {
-                    "caption": {"type": "string", "value": "_unset_", "bindable": "in-bound" },
+                    "caption": {"type": "string", "value": "_unset_", "bindable": "in-bound", "maxlength": 256 },
                     "captionsize": {"type": "string"},
                     "paddingtop": {"value": "0"},
                     "paddingright": {"value": "0"},
@@ -309,7 +309,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "hint": {"type": "string", "bindable": "in-out-bound"},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
                     "badgevalue": {"type": "string", "bindable": "in-out-bound"},
-                    "caption": {"type": "string", "bindable": "in-out-bound"},
+                    "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                     "iconurl": {"type": "string", "bindable": "in-bound"},
                     "iconwidth": {"type": "string"},
                     "iconheight": {"type": "string"},
@@ -337,12 +337,12 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "displayfield": {"type": "list", "options": [""], "value": ""}
                 },
                 "wm.menu": {
-                    "name": {"type": "string"},
+                    "name": {"type": "string", "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$", "maxlength": 32},
                     "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                     "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
                     "scopedataset": {"type": "string"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Menu Item 1, Menu Item 2, Menu Item 3"},
-                    "caption": {"type": "string", "bindable": "in-out-bound"},
+                    "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                     "menuclass": {"type": "string"},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
                     "dropposition": {"type": "list", "options": ["down", "up"], "value": "down"},
@@ -494,7 +494,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.message": {
                     "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
-                    "caption": {"type": "string", "value": "Message", "bindable": "in-out-bound"},
+                    "caption": {"type": "string", "value": "Message", "bindable": "in-out-bound", "maxlength": 256},
                     "onClose": {"type": "event", "options": widgetEventOptions, "widget": "list"},
                     "animation": {"type": "list", "options": animationOptions}
                 },
@@ -543,7 +543,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "datavalue": {"type": "string", "bindable": "in-out-bound"},
                     "checkedvalue": {"type": "string"},
                     "radiogroup": {"type": "string"},
-                    "caption": {"type": "string", "bindable": "in-out-bound"}
+                    "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256}
                 },
                 "wm.radioset": {
                     "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
@@ -584,7 +584,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
 
                 "wm.inputslider": {
-                    "caption": {"value": "slider"}
+                    "caption": {"value": "slider", "maxlength": 256}
                 },
 
                 "wm.slider": {
@@ -604,7 +604,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "uncheckedvalue": {"type": "string"},
                     "scopedatavalue": {"type": "string"},
                     "startchecked": {"type": "boolean"},
-                    "caption": {"type": "string", "bindable": "in-out-bound"}
+                    "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256}
                 },
                 "wm.checkboxset": {
                     "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
@@ -651,7 +651,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
 
                 "wm.label": {
                     "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
-                    "caption": {"type": "date, string, number", "widget": "string", "value": "Label", "bindable": "in-out-bound"},
+                    "caption": {"type": "date, string, number", "widget": "string", "value": "Label", "bindable": "in-out-bound", "maxlength": 256},
                     "required": {"type": "boolean"},
                     "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                     "animation": {"type": "list", "options": animationOptions}
@@ -690,7 +690,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "title": {"type": "string", "show": false} //for backward compatibility
                 },
                 "wm.dialog.dialogheader": {
-                    "caption": {"type": "string"},
+                    "caption": {"type": "string", "maxlength": 256},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
                     "iconwidth": {"type": "string"},
                     "iconheight": {"type": "string"},
@@ -739,7 +739,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.spinner": {
                     "show": {"type": "boolean", "value": false},
-                    "caption": {"type": "string", "value": "Loading..."},
+                    "caption": {"type": "string", "value": "Loading...", "maxlength": 256},
                     "servicevariabletotrack": {"type": "list", "options": []},
                     "image": {"type": "string", "bindable": "in-bound"},
                     "imagewidth": {"type": "string"},
@@ -765,7 +765,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
 
                 'wm.layouts': {
-                    "name": {"type": "string"},
+                    "name": {"type": "string", "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$", "maxlength": 32},
                     "class": {"type": "string"},
                     "border": {"type": "string", "widget": "box"},
                     "borderunit": {"type": "string", "options": ["em", "px"], "value": "px", "widget": "icons_radio"},
@@ -955,7 +955,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "height": {"type": "string"}
                 },
                 'wm.layouts.layoutgrid': {
-                    "name": {"type": "string"},
+                    "name": {"type": "string", "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$", "maxlength": 32},
                     "height": {"type": "string"},
                     "width": {"type": "string", "value": '100%'},
                     "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
@@ -1025,7 +1025,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "rowdata": {"type": "string"},
                     "formdata": {"type": "object", "bindable": "in-bound", "widget": "string"},
                     "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string"},
-                    "name": {"type": "string"},
+                    "name": {"type": "string", "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$", "maxlength": 32},
                     "novalidate": {"type": "boolean", "value": true},
                     "show": {"type": "boolean", "value": true},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound"},
@@ -1099,7 +1099,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "filename": {"type": "string", "bindable": "in-out-bound"},
                     "filepath": {"type": "string", "bindable": "in-out-bound"},
                     "destination": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound"},
-                    "caption": {"type": "string", "value": "Upload", "bindable": "in-out-bound"},
+                    "caption": {"type": "string", "value": "Upload", "bindable": "in-out-bound", "maxlength": 256},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "glyphicon glyphicon-upload"},
 
                     /* ---- events ---- */
@@ -1118,7 +1118,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "iconwidth": {"type": "string"},
                     "iconheight": {"type": "string"},
                     "iconmargin": {"type": "string"},
-                    "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound"},
+                    "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256},
                     "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                     "hyperlink": {"type": "string", "bindable": "in-out-bound"},
                     "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
@@ -1139,7 +1139,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "iconwidth": {"type": "string"},
                     "iconheight": {"type": "string"},
                     "iconmargin": {"type": "string"},
-                    "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound"},
+                    "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256},
                     "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                     "tabindex": {"type": "string"},
                     "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
@@ -1222,7 +1222,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "animationinterval" : {"type" : "number", "value" : "3"}
                 },
                 "wm.livelist": {
-                    "name": {"type": "string"},
+                    "name": {"type": "string", "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$", "maxlength": 32},
                     "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                     "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
                     "pagesize": {"type": "number"},
@@ -3097,8 +3097,7 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
 
     /* checks for the unique constraint of the name, if the given name is not used returns true else false */
     function isValidName(name) {
-        var isValid = true, errMsgTitle, errMsgDesc,
-            nameRegEx = /^[\w ]+$/; /* regular expression for not allowing special characters, allows space */
+        var isValid = true, errMsgTitle, errMsgDesc;
 
         /* isEmpty? */
         if (!name) {
@@ -3109,10 +3108,6 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
             isValid = false;
             errMsgTitle = "MESSAGE_ERROR_DUPLICATE_WIDGETNAME_TITLE";
             errMsgDesc = "MESSAGE_ERROR_DUPLICATE_WIDGETNAME_DESC";
-        } else if (name && !nameRegEx.test(name)) { /* check for special characters */
-            isValid = false;
-            errMsgTitle = "MESSAGE_ERROR_INVALID_WIDGETNAME_TITLE";
-            errMsgDesc = "MESSAGE_ERROR_INVALID_SPECIALCHARS_DESC";
         }
 
         /* name is not valid, show the error message */
