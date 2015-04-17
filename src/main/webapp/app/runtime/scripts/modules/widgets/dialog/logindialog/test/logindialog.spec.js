@@ -4,65 +4,42 @@ describe("LoginDialog", function () {
     "use strict";
     var $compile,
         $rootScope,
+        $unCompiled,
         iScope,
         widget = {},
         widgetConfig,
-        element;
+        element,
+        markup = '<wm-logindialog modal="false" iconclass="glyphicon glyphicon-log-in" title="Login" name="logindialog1">'+
+            '<wm-dialogheader name="LoginDialog" width="600" height="200" animation="shake" iconclass="glyphicon glyphicon-heart" iconwidth="20px" iconheight="20px" iconmargin="5px" hint="LoginDialog"></wm-dialogheader>'+
+            '<wm-dialogcontent name="dialogcontent1">'+
+            '<wm-form name="form1">'+
+            '<wm-message scopedataset="loginMessage" class="app-login-dialog-message" name="message1"></wm-message>'+
+            '<wm-composite name="composite1">'+
+            '<wm-label caption="Username" class="col-md-3" name="label2"></wm-label>'+
+            '<wm-container class="col-md-9" name="container1">'+
+            '<wm-text placeholder="Enter username" class="app-login-dialog-username" name="usernametext" updateon="default"></wm-text>'+
+            '</wm-container>'+
+            '</wm-composite>'+
+            '<wm-composite name="composite2">'+
+            '<wm-label caption="Password" class="col-md-3" name="label3"></wm-label>'+
+            '<wm-container class="col-md-9" name="container2">'+
+            '<wm-text type="password" placeholder="Enter password" class="app-login-dialog-password" name="passwordtext" updateon="default"></wm-text>'+
+            '</wm-container>'+
+            '</wm-composite>'+
+            '</wm-form>'+
+            '</wm-dialogcontent>'+
+            '<wm-dialogactions name="dialogactions1" show="true">'+
+            '<wm-button class="btn-primary" caption="Sign in" name="button2"></wm-button>'+
+            '</wm-dialogactions>'+
+            '</wm-logindialog>',
+        dialogBody;
 
-    /*Verifying the common properties and events of a dialog*/
-    verifyCommonDialogPropertiesAndEvents('login');
+    /*Custom Test Suite for alert dialog widget.*/
+    widget.type = 'wm-logindialog';
+    widget.widgetSelector = 'element';
+    widget.unCompiled = WM.element(markup);
 
-    /*Custom Test Suite for Login dialog widget.*/
-    describe("Executing custom test suite for login dialog", function () {
-        beforeEach(function () {
-            widget.type = 'wm-logindialog';
-            widget.unCompiled = '<wm-logindialog></wm-logindialog>';
+    //verifyCommonDialogPropertiesAndEvents(widget);
+    commonWidgetTests_verifyStyles(widget, "true");
 
-            /*Include the required modules.*/
-            module("wm.common");
-            module("wm.utils");
-            module('wm.widgets');
-            module('wm.widgets.base');
-
-            inject(function (_$compile_, _$rootScope_, WidgetProperties) {
-                $compile = _$compile_;
-                $rootScope = _$rootScope_;
-                widgetConfig = WidgetProperties.getConfig('wm-logindialog');
-                element = $compile(widgetConfig.template)($rootScope);
-                $rootScope.$digest();
-                iScope = element.find('.app-dialog.app-login-dialog').isolateScope();
-            });
-        });
-
-        /*Test Suite for testing the properties specific to login dialog widget.*/
-        describe("Testing properties specific to login dialog", function () {
-            it("should change height to 200px ", function () {
-                iScope.height =  "200px";
-                iScope.$apply();
-                expect(element.find('.app-dialog').css('height')).toBe('200px');
-            });
-        });
-
-        /*Test Suite for testing the events specific to login dialog widget.*/
-        describe("Testing events specific to login dialog", function () {
-            it("test the onSuccess event", function () {
-                var testVariable = "Before onSuccess";
-                element.onSuccess = function () {
-                    testVariable = "After onSuccess";
-                };
-                iScope.$apply();
-                element.onSuccess();
-                expect(testVariable).toBe("After onSuccess");
-            });
-            it("test the onError event", function () {
-                var testVariable = "Before onError";
-                element.onSuccess = function () {
-                    testVariable = "After onError";
-                };
-                iScope.$apply();
-                element.onSuccess();
-                expect(testVariable).toBe("After onError");
-            });
-        });
-    });
 });

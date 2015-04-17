@@ -25,7 +25,7 @@ module.exports = function (config) {
             '../scripts/modules/widgets/test/common-widget.spec.js',
             '../scripts/modules/layouts/containers/**/test/*.spec.js',
             '../scripts/modules/widgets/dialog/*/test/*.spec.js',
-            '../scripts/modules/widgets/**/test/*.spec.js'
+            '../scripts/modules/widgets/**/test/*.spec.js',
         ],
 
 
