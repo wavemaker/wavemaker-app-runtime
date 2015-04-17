@@ -3,224 +3,186 @@
 describe("ColorPicker", function () {
 
     'use strict';
-    var $compile, $rootScope, element, scope;
-    /*configurations to be executed before each test*/
-    beforeEach(function () {
-        module('wm.widgets');
-        module('wmCore');
-        inject(function (_$compile_, _$rootScope_) {
-            $compile = _$compile_;
-            $rootScope = _$rootScope_;
-            element = $compile('<wm-colorpicker></wm-colorpicker>')($rootScope);
-            $rootScope.$digest();
-            scope = $rootScope;
+    var $compile,
+        $rootScope,
+        $element,
+        iScope,
+        widget = {},
+        script_variable = "#ffff11",
+        markup =
+            '<wm-colorpicker name="cpicker" tabindex="1" placeholder="pick" scopedatavalue="script_variable" datavalue="#ffffff" '+
+            'readonly="true" disabled="true" class="dummy-class" '+
+            'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()" ' +
+            'on-focus="eventHandler()" on-blur="eventHandler()" on-dblclick="eventHandler()" on-change="eventHandler()" '+
+            '></wm-colorpicker>';
+
+    widget.type = 'wm-colorpicker'; // type of the widget
+    widget.widgetSelector = 'element'; // perform common widget tests on this element
+    widget.$unCompiled = WM.element(markup);
+    // map of eventName-selector. events target will be the element which satisfies the given selector.
+    // this selector should be relative to widgetSelector
+    widget.basicEvents = {
+        /*'click': 'element',
+        'change': 'element',
+        'mouseenter': 'element',
+        'mouseleave': 'element',
+        'focus': 'element',
+        'blur': 'element',
+        'dblclick' : 'element'*/
+        /*
+            TODO : test cases for events supplied on event specific test cases
+         */
+    };
+
+    commonWidgetTests_verifyInitPropsInWidgetScope(widget);
+    commonWidgetTests_verifyCommonProperties(widget);
+    commonWidgetTests_verifyStyles(widget);
+    //commonWidgetTests_verifyBasicEvents(widget);
+
+
+    describe('Executing widget specific tests: ' + widget.type, function () {
+        beforeEach(function () {
+
+            /*Include the required modules.*/
+            module('wm.common');
+            module('wm.utils');
+            module('wm.widgets');
+
+            inject(function (_$compile_, _$rootScope_) {
+                $compile = _$compile_;
+                $rootScope = _$rootScope_;
+                $element = $compile(widget.$unCompiled.clone())($rootScope);
+
+                // if the widgetSelector is other than `element`,
+                // find the widget and its isolateScope using widgetSelector
+                if (widget.widgetSelector && widget.widgetSelector !== 'element') {
+                    $element = $element.find(widget.widgetSelector).first();
+                }
+                iScope = $element.isolateScope();
+                iScope.$apply();
+            });
         });
+
+        describe('properties', function(){
+            //check for the placeholder property
+            it("should change the placeholder property", function () {
+                iScope.placeholder = "pick color";
+                iScope.$apply();
+                expect($element.find('input').attr('placeholder')).toBe('pick color');
+            });
+
+            //check for the tabindex property
+            it("should change tabindex property to be 1", function () {
+                expect($element.attr('tabindex')).toBe('1');
+            });
+
+            //check for the scopedatavalue property
+            it("should change scopedatavalue to true when put in property panel", function () {
+                expect($element.attr('scopedatavalue')).toBe('script_variable');
+            });
+
+            //check for the datavalue property
+            it("should change datavalue to true when put in property panel", function () {
+                iScope.datavalue = "#ffcc11";
+                iScope.$apply();
+                expect($element.find('input').val()).toBe('#ffcc11');
+            });
+
+            //check for the disabled property
+            it("checking the disabled property", function () {
+                expect($element.attr('disabled')).toBe('disabled');
+            });
+
+            //check for read only property
+            it("checking the readonly property", function () {
+                expect($element.attr('readonly')).toBe('readonly');
+            });
+
+        });
+
+        describe('events', function(){
+            //check for click event
+            it("should trigger assigned click event", function () {
+                var testVariable = 1;
+                iScope.onClick = function () {
+                    testVariable = 2;
+                };
+                iScope.$apply();
+                $element.find('input').click();
+                expect(testVariable).toBe(2);
+            });
+
+            //check for dbl click event
+            /*it("should trigger assigned dblclick event", function () {
+                var testVariable = 1;
+                iScope.onDblclick = function () {
+                    testVariable = 2;
+                };
+                iScope.$apply();
+                $element.find('input').dblclick();
+                expect(testVariable).toBe(2);
+            });*/
+            /*
+                TODO : dbl click and change event should be implemented later
+             */
+            //check for change event
+            /*it("should trigger assigned change event", function () {
+                var testVariable = 1;
+                iScope.onChange = function () {
+                    testVariable = 2;
+                };
+                iScope.$apply();
+                $element.find('input').change();
+                expect(testVariable).toBe(2);
+            });*/
+
+            //check for mouseenter event
+            it("should trigger assigned mouseenter event", function () {
+                var testVariable = 1;
+                iScope.onMouseenter = function () {
+                    testVariable = 2;
+                };
+                iScope.$apply();
+                $element.find('input').mouseenter();
+                expect(testVariable).toBe(2);
+            });
+
+            //check for mouseleave event
+            it("should trigger assigned mouseleave event", function () {
+                var testVariable = 1;
+                iScope.onMouseleave = function () {
+                    testVariable = 2;
+                };
+                iScope.$apply();
+                $element.find('input').mouseleave();
+                expect(testVariable).toBe(2);
+            });
+
+            //check for focus event
+            /*
+                TODO : need to check the implementation
+             */
+            /*it("should trigger assigned focus event", function () {
+                var testVariable = 1;
+                iScope.onFocus = function () {
+                    testVariable = 2;
+                };
+                iScope.$apply();
+                $element.find('input').focus();
+                expect(testVariable).toBe(2);
+            });*/
+
+            //check for blur event
+            it("should trigger assigned blur event", function () {
+                var testVariable = 1;
+                iScope.onBlur = function () {
+                    testVariable = 2;
+                };
+                iScope.$apply();
+                $element.find('input').blur();
+                expect(testVariable).toBe(2);
+            });
+        });
+
     });
-
-    /* Unit tests for styles */
-    /* Commented the code as no style attribute is attached with colorpicker widget.
-
-    describe("styles", function () {
-        it("should have element width change to 200px when assigned from property panel", function () {
-            element.isolateScope().width = 200;
-            element.isolateScope().$apply();
-            expect(element.width()).toBe(200);
-        });
-        it("should have element height change to 200px when assigned from property panel", function () {
-            element.isolateScope().height = 200;
-            element.isolateScope().$apply();
-            expect(element.height()).toBe(200);
-        });
-        it("should have element minWidth change to 200px when assigned from property panel", function () {
-            element.isolateScope().minwidth = 200;
-            element.isolateScope().$apply();
-            expect(element.css('min-width')).toBe('200px');
-        });
-        it("should have element minHeight change to 200px when assigned from property panel", function () {
-            element.isolateScope().minheight = 200;
-            element.isolateScope().$apply();
-            expect(element.css('min-height')).toBe('200px');
-        });
-
-        it("should change margin style to be 10PX 5PX 3PX 2PX", function () {
-            //values vary since for now all margins except bottom need unit
-            element.isolateScope().margintop = 10;
-            element.isolateScope().marginright = 5;
-            element.isolateScope().marginbottom = 3;
-            element.isolateScope().marginleft = 2;
-            element.isolateScope().$apply();
-            expect(element.css('margin')).toBe('10px 5px 3px 2px');
-        });
-        it("should change padding style to be 10PX 5PX 3PX 2PX", function () {
-            element.isolateScope().paddingtop = 10;
-            element.isolateScope().paddingright = 5;
-            element.isolateScope().paddingbottom = 3;
-            element.isolateScope().paddingleft = 2;
-            element.isolateScope().$apply();
-            expect(element.css('padding')).toBe('10px 5px 3px 2px');
-        });
-
-        it("should change border-width style to be 4px", function () {
-            element.isolateScope().bordertop = 10;
-            element.isolateScope().borderright = 5;
-            element.isolateScope().borderbottom = 3;
-            element.isolateScope().borderleft = 2;
-            element.isolateScope().$apply();
-            expect(element.css('border-left-width')).toBe('2px');
-            expect(element.css('border-right-width')).toBe('5px');
-            expect(element.css('border-bottom-width')).toBe('3px');
-            expect(element.css('border-top-width')).toBe('10px');
-        });
-        it("should change border color style to be red", function () {
-            element.isolateScope().bordercolor = '#FF0000';
-            element.isolateScope().$apply();
-            expect(element.css('border-color')).toBe('rgb(255, 0, 0)');
-        });
-
-        it("should change background color style to be red", function () {
-            element.isolateScope().backgroundcolor = '#FF0000';
-            element.isolateScope().$apply();
-            expect(element.css('background-color')).toBe('rgb(255, 0, 0)');
-        });
-        it("should change color style to be red", function () {
-            element.isolateScope().color = '#FF0000';
-            element.isolateScope().$apply();
-            expect(element.css('color')).toBe('rgb(255, 0, 0)');
-        });
-
-        it("should change font-family to be arial", function () {
-            element.isolateScope().fontfamily = 'arial';
-            element.isolateScope().$apply();
-            expect(element.css('font-family')).toBe('arial');
-        });
-        it("should change font-weight to be lighter", function () {
-            element.isolateScope().fontweight = 'lighter';
-            element.isolateScope().$apply();
-            expect(element.css('font-weight')).toBe('lighter');
-        });
-        it("should change font-variant to be small-caps", function () {
-            element.isolateScope().fontvariant = 'small-caps';
-            element.isolateScope().$apply();
-            expect(element.css('font-variant')).toBe('small-caps');
-        });
-        it("should change font-style to be italic", function () {
-            element.isolateScope().fontstyle = 'italic';
-            element.isolateScope().$apply();
-            expect(element.css('font-style')).toBe('italic');
-        });
-        it("should change text-align to be center", function () {
-            element.isolateScope().textalign = 'center';
-            element.isolateScope().$apply();
-            expect(element.css('text-align')).toBe('center');
-        });
-
-        it("should change white-space to be nowrap", function () {
-            element.isolateScope().whitespace = 'nowrap';
-            element.isolateScope().$apply();
-            expect(element.css('white-space')).toBe('nowrap');
-        });
-        it("should change word-break to be break-word", function () {
-            element.isolateScope().wordbreak = 'break-word';
-            element.isolateScope().$apply();
-            expect(element.css('word-break')).toBe('break-word');
-        });
-        it("should change text-decoration to be underline", function () {
-            element.isolateScope().textdecoration = 'underline';
-            element.isolateScope().$apply();
-            expect(element.css('text-decoration')).toBe('underline');
-        });
-
-        it("should change opacity to be 0.5", function () {
-            element.isolateScope().opacity = 0.5;
-            element.isolateScope().$apply();
-            expect(element.css('opacity')).toBe('0.5');
-        });
-        it("should change cursor to be pointer", function () {
-            element.isolateScope().cursor = 'pointer';
-            element.isolateScope().$apply();
-            expect(element.css('cursor')).toBe('pointer');
-        });
-        it("should change z-index to be 100", function () {
-            element.isolateScope().zindex = 100;
-            element.isolateScope().$apply();
-            expect(element.css('z-index')).toBe('100');
-        });
-    });
-
-    Commented the code as no style attribute is attached with colorpicker widget.*/
-
-    /* Unit Tests for properties */
-    describe("properties", function () {
-        it("should have default show property as true", function () {
-            expect(element.isolateScope().show).toBeTruthy();
-        });
-        it("should hide the element on toggling show property", function () {
-            element.isolateScope().show = false;
-            element.isolateScope().$apply();
-            expect(element.hasClass('ng-hide')).toBeTruthy();
-        });
-        it("should have default disable property as false", function () {
-            expect(element.isolateScope().disabled).toBeFalsy();
-        });
-        it("should disable the element on toggling disable property", function () {
-            element.isolateScope().disabled = true;
-            element.isolateScope().$apply();
-            expect(element.find('input').attr('disabled')).toBeTruthy();
-        });
-        it("should have default required property as false", function () {
-            expect(element.find('input').hasClass('ng-valid')).toBeTruthy();
-        });
-        it("should change the required property of the textbox on toggling required property", function () {
-            element.isolateScope().required = true;
-            element.isolateScope().$apply();
-            expect(element.find('input').attr("required")).toBeTruthy();
-        });
-        it("should have default readonly property as false", function () {
-            expect(element.isolateScope().readonly).toBeFalsy();
-        });
-        it("should change the readonly property of the textbox on toggling readonly property", function () {
-            element.isolateScope().readonly = true;
-            element.isolateScope().$apply();
-            expect(element.find('input').attr('readonly')).toBeTruthy();
-        });
-        it("should set the model of the colorpicker widget", function () {
-            element.isolateScope()._model_ = "#FFFFFF";
-            element.isolateScope().$apply();
-            expect(element.find('input').val()).toBe("#FFFFFF");
-        });
-        it("should set border color style from model", function () {
-            element.isolateScope()._model_ = "#FFFFFF";
-            element.isolateScope().$apply();
-            expect(element.css('border-right-color')).toBe('rgb(255, 255, 255)');
-        });
-    });
-
-    /*Unit Tests for events.*/
-    describe("behavior", function () {
-        it("should trigger assigned click event", function () {
-            var testVariable = 1;
-            element.isolateScope().onClick = function () {
-                testVariable = 2;
-            };
-            element.find('input').click();
-            expect(testVariable).toBe(2);
-        });
-        it("should trigger assigned mouse-leave event", function () {
-            var testVariable = 1;
-            element.isolateScope().onMouseleave = function () {
-                testVariable = 2;
-            };
-            element.find('input').mouseleave();
-            expect(testVariable).toBe(2);
-        });
-        it("should trigger assigned mouse-enter event", function () {
-            var testVariable = 1;
-            element.isolateScope().onMouseenter = function () {
-                testVariable = 2;
-            };
-            element.find('input').mouseenter();
-            expect(testVariable).toBe(2);
-        });
-    });
-
 });
