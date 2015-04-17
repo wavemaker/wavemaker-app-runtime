@@ -15,36 +15,70 @@
  */
 package com.wavemaker.runtime.controller;
 
-import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.data.dao.procedure.WMProcedureExecutor;
-import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
-import com.wavemaker.runtime.data.model.*;
-import com.wavemaker.runtime.data.util.DataServiceUtils;
-import com.wavemaker.runtime.data.util.ProceduresUtils;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.data.dao.procedure.WMProcedureExecutor;
+import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
+import com.wavemaker.runtime.data.model.CustomProcedure;
+import com.wavemaker.runtime.data.model.CustomProcedureParam;
+import com.wavemaker.runtime.data.model.CustomQuery;
+import com.wavemaker.runtime.data.model.ProcedureResponse;
+import com.wavemaker.runtime.data.model.QueryResponse;
+import com.wavemaker.runtime.data.util.DataServiceUtils;
+import com.wavemaker.runtime.data.util.ProceduresUtils;
+import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.wrapper.StringWrapper;
 
 /**
  * @author Sowmya
  */
 
 @RequestMapping("/")
-public class StudioRuntimeController {
+public class AppRuntimeController {
 
     private static final String QUERY_EXECUTOR_BEAN_NAME = "{serviceId}WMQueryExecutor";
     private static final String TRANSACTION_MANAGER_BEAN_NAME = "{serviceId}TransactionManager";
     private static final String PROCEDURE_EXECUTOR_BEAN_NAME = "{serviceId}WMProcedureExecutor";
+
+    private String applicationType = null;
+
+    @RequestMapping(value="/application/type" , method = RequestMethod.GET)
+    @ResponseBody
+    public StringWrapper getApplicationType() {
+        if (applicationType == null) {
+            synchronized (this) {
+                if (applicationType == null) {
+                    try {
+                        Properties properties = new Properties();
+                        properties.loadFromXML(AppRuntimeController.class.getClassLoader().getResourceAsStream(".wmproject.properties"));
+                        applicationType = properties.getProperty("type");
+                    } catch (IOException e) {
+                        throw new WMRuntimeException("Failed to get application type", e);
+                    }
+                }
+            }
+        }
+        return new StringWrapper(applicationType);
+    }
 
     @RequestMapping(value="/{serviceId}/queries/wm_querymetadata" , method = RequestMethod.POST)
     @ResponseBody
