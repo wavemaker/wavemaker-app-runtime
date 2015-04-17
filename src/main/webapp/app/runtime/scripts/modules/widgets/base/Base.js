@@ -686,7 +686,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "animation": {"type": "list", "options": animationOptions},
-                    "hint": {"type": "string", "bindable": "in-bound"}
+                    "hint": {"type": "string", "bindable": "in-bound"},
+                    "title": {"type": "string", "show": false} //for backward compatibility
                 },
                 "wm.dialog.dialogheader": {
                     "caption": {"type": "string"},
