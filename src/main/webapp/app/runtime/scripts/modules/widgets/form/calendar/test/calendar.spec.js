@@ -2,7 +2,7 @@
 /*global commonWidgetTests_verifyInitPropsInWidgetScope, commonWidgetTests_verifyCommonProperties, commonWidgetTests_verifyStyles, commonWidgetTests_verifyBasicEvents*/
 /*global modulesToBeInjected*/
 
-describe('Testing Widget: wm-checkbox', function () {
+describe('Testing Widget: wm-calendar', function () {
     'use strict';
 
     var $compile,
@@ -10,12 +10,12 @@ describe('Testing Widget: wm-checkbox', function () {
         $element,
         iScope,
         widget = {},
-        script_variable = 'true',
+        script_variable = "01/01/2015",
         markup =
-            '<wm-checkbox caption="I agree" class="dummy-class" name="chbox1" tabindex="1" hint="tick" ' +
-            'width="20" height="5" scopedatavalue="script_variable" required="true" startchecked="true" ' +
-            'disabled="true" checkedvalue="true" uncheckedvalue="false" datavalue="true" ' +
-            'class="col-md-push-3" fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
+            '<wm-calendar name="calendar1" tabindex="1" hint="pick date" scopedatavalue="script_variable" required="true" ' +
+            'autofocus="true" datavalue="Fri Jan 02 2015 00:00:00 GMT+0530 (India Standard Time)" datepattern="yyyy-MM-dd" disabled="true" show="false" ' +
+            'placeholder="select date" ' +
+            'class="dummy class" fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
             'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
             'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png"' +
             'backgroundrepeat="repeat" backgroundposition="left" backgroundsize="200px, 200px" backgroundattachment="fixed"' +
@@ -23,34 +23,30 @@ describe('Testing Widget: wm-checkbox', function () {
             'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
             'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
             'visibility="visible" display="inline" ' +
-            'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()" ' +
-            /*'on-focus="eventHandler()" on-blur="eventHandler()"*/+ ' on-change="eventHandler()" '+
-            '></wm-checkbox>';
+            'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()"' +
+            'on-focus="eventHandler()" on-blur="eventHandler()" on-change="eventHandler()" ' +
+            '></wm-calendar>';
 
-    widget.type = 'wm-checkbox'; // type of the widget
+    widget.type = 'wm-calendar'; // type of the widget
     widget.widgetSelector = 'element'; // perform common widget tests on this element
     widget.$unCompiled = WM.element(markup);
-    widget.innerElement = "label";
     // map of eventName-selector. events target will be the element which satisfies the given selector.
     // this selector should be relative to widgetSelector
     widget.basicEvents = {
         'click': 'element',
         'change': 'element',
         'mouseenter': 'element',
-        'mouseleave': 'element'
-        /*'focus': 'element',
-        'blur': 'element'*/
-        /*
-         TODO : need to check the focus and blur event for checkbox
-         */
+        'mouseleave': 'element',
+        'focus': 'element',
+        'blur': 'element'
     };
+    widget.PropertiesToBeExcluded = ['hint'];
 
     commonWidgetTests_verifyInitPropsInWidgetScope(widget);
     commonWidgetTests_verifyCommonProperties(widget);
     commonWidgetTests_verifyStyles(widget);
     commonWidgetTests_verifyBasicEvents(widget);
 
-    /*Custom Test Suite for wm-button widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
 
         beforeEach(function () {
@@ -75,57 +71,49 @@ describe('Testing Widget: wm-checkbox', function () {
             });
         });
 
-        //check for the caption property
-        it("should change label to iaccept when put in property panel", function () {
-            iScope.caption = "iaccept";
+        //check for the placeholder property
+        it("should change placeholder in calendar to newplaceholder when put in property panel", function () {
+            iScope.placeholder = "newplaceholder";
             iScope.$apply();
-            expect($element.find('label').text()).toBe('iaccept');
-        });
-
-        //check for the tabindex property
-        it("should change tabindex when put in property panel", function () {
-            expect($element.attr('tabindex')).toBe('1');
+            expect($element.find('input').attr('placeholder')).toMatch(/newplaceholder/i);
         });
 
         //check for the scopedatavalue property
-        it("should change scopedatavalue to true when put in property panel", function () {
-            expect($element.attr('scopedatavalue')).toBe('script_variable');
+        it("should match the given value", function () {
+            expect($element.attr('scopedatavalue')).toMatch('script_variable');
         });
 
         //check for the datavalue property
-        it("should change datavalue to true when put in property panel", function () {
-            iScope.datavalue = "abc";
+        it("should change datavalue of calendar to 01/02/2015 when put in property panel", function () {
+            iScope.datavalue = "05/14/2015";
             iScope.$apply();
-            expect($element.find('input:last').val()).toBe('abc');
+            expect($element.find('input').val()).toMatch('05/14/2015');
         });
 
-        //check for the checkedvalue property
-        it("should change checkedvalue to on when put in property panel", function () {
-            expect($element.attr('checkedvalue')).toBe('true');
-        });
-
-        //check for the uncheckedvalue property
-        it("should change uncheckedvalue to off when put in property panel", function () {
-            expect($element.attr('uncheckedvalue')).toBe('false');
+        //check for the datepattern property
+        it("should match the given date pattern", function () {
+            expect($element.attr("datepattern")).toMatch('yyyy-MM-dd');
         });
 
         //check for the required property
         it("should set the required property", function () {
             iScope.required = true;
             iScope.$apply();
-            expect($element.find('input[type="checkbox"]').attr("required")).toBe("required");
+            expect($element.attr("required")).toBe("required");
         });
 
-        //check for the startchecked property
-        it("should set the startchecked property", function () {
-            expect($element.attr("startchecked")).toBe("true");
+        //check for the autofocus property
+        it("should set the autofocus property", function () {
+            iScope.autofocus = true;
+            iScope.$apply();
+            expect($element.attr("autofocus")).toBe("autofocus");
         });
 
         //check for the disabled property
         it("should disable the $element on toggling disable property", function () {
             iScope.disabled = true;
             iScope.$apply();
-            expect($element.attr('disabled')).toBe('disabled');
+            expect($element.attr('disabled')).toBeTruthy();
         });
 
     });

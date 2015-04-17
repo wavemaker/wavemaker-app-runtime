@@ -11,15 +11,19 @@ describe('Testing Widget: wm-button', function () {
         iScope,
         widget = {},
         markup =
-            '<wm-button name="submitBtn" tabindex="1" type="submit" hint="Help text for submit button" caption="Submit" ' +
-                'width="200" height="200" show="true" disabled="disabled" iconname="saved" class="btn-primary" ' +
-                'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
-                'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
-                'bordercolor="#d92953" borderstyle="solid" bordertop="3" borderleft="3" borderright="3" ' +
-                'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
-                'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
-                'on-click="eventHandler()" on-dblclick="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()" ' +
-                'on-focus="eventHandler()" on-blur="eventHandler()" ' +
+            '<wm-button name="button1" tabindex="1" badgevalue="1" type="submit" hint="submit button" width="100" height="30" disabled="false" ' +
+            'animation="bounce" caption="Submit" iconclass="icon class" ' +
+            'iconurl="http://www.google.com/doodle4google/images/splashes/featured.png" iconwidth="20" iconheight="12" iconmargin="5" ' +
+            'class="dummy-class" fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
+            'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
+            'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png" ' +
+            'backgroundrepeat="repeat" backgroundposition="left" backgroundsize="200px, 200px" backgroundattachment="fixed" ' +
+            'bordercolor="#d92953" borderstyle="solid" bordertop="3" borderleft="3" borderright="3" ' +
+            'borderbottom="3" paddingtop="3" paddingleft="3" paddingright="3" paddingbottom="3" margintop="3" ' +
+            'marginleft="3" marginright="3" marginbottom="3" opacity="0.8" cursor="nw-resize" zindex="100" ' +
+            'visibility="visible" display="inline" ' +
+            'on-click="eventHandler()" on-mouseenter="eventHandler()" on-mouseleave="eventHandler()" ' +
+            'on-focus="eventHandler()" on-blur="eventHandler()" ' +
             '></wm-button>';
 
     widget.type = 'wm-button'; // type of the widget
@@ -44,137 +48,74 @@ describe('Testing Widget: wm-button', function () {
     /*Custom Test Suite for wm-button widget.*/
     describe('Executing widget specific tests: ' + widget.type, function () {
 
-        // test for caption property
-        describe('Test for caption property', function () {
-            var $unCompiled = WM.element('<wm-button caption="{{buttonCaption}}"></wm-button>');
+        beforeEach(function () {
 
-            beforeEach(function () {
+            /*Include the required modules.*/
+            module('wm.common');
+            module('wm.utils');
+            module('wm.widgets');
 
-                modulesToBeInjected.forEach(function (moduleName) {
-                    module(moduleName);
-                });
+            inject(function (_$compile_, _$rootScope_) {
+                $compile = _$compile_;
+                $rootScope = _$rootScope_;
+                $element = $compile(widget.$unCompiled.clone())($rootScope);
 
-                inject(function (_$compile_, _$rootScope_) {
-                    $compile = _$compile_;
-                    $rootScope = _$rootScope_;
-                    $rootScope.buttonCaption = 'Submit Button';
-                    $element = $compile($unCompiled)($rootScope);
-                    iScope = $element.isolateScope();
-                    iScope.$apply();
-                });
-            });
-
-            it('should have given caption', function () {
-                expect($element.text().trim()).toBe($rootScope.buttonCaption);
+                // if the widgetSelector is other than `element`,
+                // find the widget and its isolateScope using widgetSelector
+                if (widget.widgetSelector && widget.widgetSelector !== 'element') {
+                    $element = $element.find(widget.widgetSelector).first();
+                }
+                iScope = $element.isolateScope();
+                iScope.$apply();
             });
         });
 
-        //test for iconname property
-        describe('Test for iconname property', function () {
+        // test for caption property
+        it('should have given caption', function () {
+            iScope.caption = "submitbtn";
+            iScope.$apply();
+            expect($element.find('.btn-caption').text().trim()).toBe('submitbtn');
+        });
 
-            var iconName = 'home',
-                $unCompiled = WM.element('<wm-button iconname="' + iconName + '"></wm-button>');
+        //check for the badgevalue property
+        it("should change badge value of button to bvalue", function () {
+            iScope.badgevalue = "bvalue";
+            iScope.$apply();
+            expect($element.find('.badge').text()).toBe('bvalue');
+        });
 
-            beforeEach(function () {
+        //check for the type property
+        it("should change type for button to reset", function () {
+            expect($element.attr('type')).toBe('submit');
+        });
 
-                modulesToBeInjected.forEach(function (moduleName) {
-                    module(moduleName);
-                });
-
-                inject(function (_$compile_, _$rootScope_) {
-                    $compile = _$compile_;
-                    $rootScope = _$rootScope_;
-                    $element = $compile($unCompiled)($rootScope);
-                    iScope = $element.isolateScope();
-                    iScope.$apply();
-                });
-            });
-
-            it('should have given iconname', function () {
-                expect($element.find('> i.glyphicon-' + iconName + ':not(.ng-hide)').length).toBe(1);
-                expect($element.find('> img.ng-hide').length).toBe(1);
-            });
+        //check for the disabled property
+        it("should disable the $element on toggling disable property", function () {
+            iScope.disabled = true;
+            iScope.$apply();
+            expect($element.attr('disabled')).toBeTruthy();
         });
 
         //test for iconurl property
-        describe('Test for iconurl property', function () {
-            var iconUrl = 'http://findicons.com/files/icons/582/the_last_order/128/url_history.png',
-                $unCompiled = WM.element('<wm-button iconurl="' + iconUrl + '"></wm-button>');
-
-            beforeEach(function () {
-
-                modulesToBeInjected.forEach(function (moduleName) {
-                    module(moduleName);
-                });
-
-                inject(function (_$compile_, _$rootScope_) {
-                    $compile = _$compile_;
-                    $rootScope = _$rootScope_;
-                    $element = $compile($unCompiled)($rootScope);
-                    iScope = $element.isolateScope();
-                    iScope.$apply();
-                });
-            });
-
-            it('should have given iconurl', function () {
-                expect($element.find('> img[src="' + iconUrl + '"]:not(.ng-hide)').length).toBe(1);
-                expect($element.find('> i.ng-hide').length).toBe(1);
-            });
+        it('should have given iconurl', function () {
+            iScope.iconurl = "http://www.google.com/doodle4google/images/splashes/featured.png";
+            iScope.$apply();
+            expect($element.find('img').attr('src')).toBe("http://www.google.com/doodle4google/images/splashes/featured.png");
         });
 
         //test for iconwidth and iconheight properties
-        describe('Test for iconwidth and iconheight properties', function () {
+        it('should have given iconwidth and iconheight', function () {
+            iScope.iconwidth = '15';
+            iScope.iconheight = '15';
+            iScope.$apply();
+            expect($element.find('img').css('width')).toBe('15px');
+            expect($element.find('img').css('height')).toBe('15px');
 
-            var iconSize = '32px',
-                $unCompiled = WM.element('<wm-button iconname="home" iconwidth="' + iconSize + '" iconheight="' + iconSize + '"></wm-button>');
-
-            beforeEach(function () {
-
-                modulesToBeInjected.forEach(function (moduleName) {
-                    module(moduleName);
-                });
-
-                inject(function (_$compile_, _$rootScope_) {
-                    $compile = _$compile_;
-                    $rootScope = _$rootScope_;
-                    $element = $compile($unCompiled)($rootScope);
-                    iScope = $element.isolateScope();
-                    iScope.$apply();
-                });
-            });
-
-            it('should have given iconwidth and iconheight', function () {
-                var $iconEl = $element.find('> i');
-                expect($iconEl.css('width')).toBe(iconSize);
-                expect($iconEl.css('height')).toBe(iconSize);
-            });
         });
 
-        //test for iconwidth and iconheight properties
-        describe('Test for iconmargin property', function () {
-
-            var iconMargin = '20px',
-                $unCompiled = WM.element('<wm-button iconname="home" iconmargin="' + iconMargin + '"></wm-button>');
-
-            beforeEach(function () {
-
-                modulesToBeInjected.forEach(function (moduleName) {
-                    module(moduleName);
-                });
-
-                inject(function (_$compile_, _$rootScope_) {
-                    $compile = _$compile_;
-                    $rootScope = _$rootScope_;
-                    $element = $compile($unCompiled)($rootScope);
-                    iScope = $element.isolateScope();
-                    iScope.$apply();
-                });
-            });
-
-            it('should have given iconmargin', function () {
-                var $iconEl = $element.find('> i');
-                expect($iconEl.css('margin')).toBe(iconMargin);
-            });
+        //test for icon margin properties
+        it('should have given iconmargin', function () {
+            expect($element.attr('iconmargin')).toBe('5');
         });
     });
 });
