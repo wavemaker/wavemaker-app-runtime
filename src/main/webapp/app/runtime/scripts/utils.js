@@ -211,6 +211,36 @@ WM.module('wm.utils', [])
             return +parentOvleryZIndex;
         }
 
+    /**
+     * Method to check the markup and return valid content even if users makes mistakes
+     * @param htmlString
+     * @param handleValidMarkUp
+     * @param handleInValidMarkUp
+     * @return {String}
+     */
+        function getValidMarkUp (htmlString, handleValidMarkUp, handleInValidMarkUp) {
+            var newMarkup = "", checkValidRootElement = function (ele) {
+                return WM.element(ele).is("wm-page, wm-partial, wm-template");
+            };
+
+            var $htm = WM.element.parseHTML(htmlString);
+            //check if the root element is either of the valid elements
+            if( checkValidRootElement($htm[0]) ){
+                newMarkup = htmlString;
+                triggerFn(handleValidMarkUp);
+            } else {
+                //handle the invalid condition
+                triggerFn(handleInValidMarkUp);
+                //the page markup is not valid
+                var $outerEle = WM.element("<div>" + htmlString + "</div>"),
+                    $innerEle = WM.element($outerEle).find("wm-page, wm-partial");
+
+                if($innerEle.length > 0){
+                    newMarkup = WM.element($innerEle[0]).prop('outerHTML');
+                }
+            }
+            return newMarkup;
+        }
         function formatVariableIconClass(variableCategory) {
             return variableCategoryMap[variableCategory];
         }
@@ -1101,6 +1131,7 @@ WM.module('wm.utils', [])
             if (!markupStr) {
                 return '';
             }
+            markupStr = getValidMarkUp(markupStr);
 
             var content = markupStr.replace(/>\s+</g, '><'),
                 root = WM.element('<div></div>');
@@ -1294,6 +1325,7 @@ WM.module('wm.utils', [])
             extractType: extractType,
             isDeleteResourceAllowed: isDeleteResourceAllowed,
             generateGUId: generateGUId,
-            isDuplicateName: isDuplicateName
+            isDuplicateName: isDuplicateName,
+            getValidMarkUp: getValidMarkUp
         };
     }]);
