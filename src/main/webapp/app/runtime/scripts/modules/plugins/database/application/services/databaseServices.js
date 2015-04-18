@@ -166,7 +166,7 @@ wm.plugins.database.services.DatabaseService = [
                     target: "Database",
                     action: "importSample",
                     urlParams: {
-                        "projectID": projectID,
+                        "projectID": projectID
                     }
                 }, successCallback, failureCallback);
             },
