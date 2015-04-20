@@ -19,7 +19,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             result,
             properties,
             propertyGroups,
-            variableMap;
+            variableMap,
+            variableRegex = '^[a-zA-Z_][A-Za-z0-9_]+$';
 
         /* make events compatible to select widget options */
         WM.forEach(WM.copy(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
@@ -29,7 +30,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
         result = {
             "properties": {
                 "wm.Variable": {
-                    "name": {"type": "string", "required": true, "pattern": "^[a-zA-Z_][A-Za-z0-9_]+$"},
+                    "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "type": {"type": "list", "options": {"string": "LABEL_STRING", "boolean": "LABEL_BOOLEAN", "number": "LABEL_NUMBER", "date": "LABEL_DATE", "entry": "LABEL_ENTRY"}, "value": "string", "required": true},
                     "isList": {"type": "boolean", "value": false},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
@@ -113,7 +114,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "useDefaultSuccessHandler": {"type": "boolean", "value": true}
                 },
                 "wm.NavigationVariable": {
-                    "name": {"type": "string", "required": true},
+                    "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "operation": {"type": "list", "options": {"gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage"},
                     "pageName": {"type": "string", "required": true, "options": {}, "widgettype": "list"},
@@ -123,7 +124,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"type": "string", "value": {}, "hide": true}
                 },
                 "wm.NotificationVariable": {
-                    "name": {"type": "string", "required": true},
+                    "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "operation": {"type": "list", "options": {"alert": "alert", "confirm": "confirm", "toast": "toast"}, "value": "alert"}, //"prompt", "warnOnce" to be added
                     "text": {"type": "string"},
@@ -139,7 +140,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"type": "string", "value": {}, "hide": true}
                 },
                 "wm.TimerVariable": {
-                    "name": {"type": "string", "required": true},
+                    "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "autoStart": {"type": "boolean", "value": false},
                     "repeating": {"type": "boolean", "value": false},
