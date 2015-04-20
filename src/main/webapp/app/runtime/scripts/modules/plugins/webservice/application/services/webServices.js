@@ -105,6 +105,7 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 action: 'updateRestService',
                 data : connectionParams.data,
                 urlParams: connectionParams.urlParams
+                data: connectionParams
             }, successCallback, failureCallback);
         },
 
@@ -483,7 +484,7 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             BaseService.send({
                 target: 'WebService',
                 action: 'retrieveServiceOperations',
-                urlParams : params.urlParams
+                urlParams: params.urlParams
             }, successCallback, failureCallback);
         },
         /**
@@ -511,6 +512,27 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 },
                 data: params.dataParams || undefined,
                 "byPassResult": true
+            }, successCallback, failureCallback);
+        },
+        /**
+         * @ngdoc function
+         * @name wm.webservice.$WebService#buildApiRestService
+         * @methodOf wm.webservice.$WebService
+         * @function
+         *
+         * @description
+         * takes a REST service url and gives out the default field values required to build/import the REST service
+         *
+         * @param {object} connectionParams object containing parameters for the request (else throws an error message)
+         * @param {function} successCallback to be called on success
+         * @param {function} failureCallback to be called on failure
+         */
+        buildApiRestService: function (connectionParams, successCallback, failureCallback) {
+
+            BaseService.send({
+                target: 'WebService',
+                action: 'buildApiRestService',
+                data: connectionParams
             }, successCallback, failureCallback);
         }
     };

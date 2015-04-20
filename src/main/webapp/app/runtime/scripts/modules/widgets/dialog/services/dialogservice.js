@@ -123,6 +123,9 @@ WM.module('wm.widgets.dialog')
                 // save a reference to the scope which with dialog got compiled.
                 $modalInstances[dialogId].opened.then(function () {
                     $modalInstances[dialogId].scope = $modalStack.getTop().value.modalScope;
+                    if (WM.isFunction(params.onOpen)) {
+                        params.onOpen($modalInstances[dialogId].scope);
+                    }
                 });
 
                 openDialogIds.push(dialogId);

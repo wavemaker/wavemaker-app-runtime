@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
@@ -17,15 +18,14 @@ import com.wavemaker.runtime.helper.SchemaConversionHelper;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
-import com.wavemaker.runtime.rest.model.api.ApiDocument;
-import com.wavemaker.runtime.rest.model.api.DataFormat;
-import com.wavemaker.runtime.rest.model.api.EndPoint;
-import com.wavemaker.runtime.rest.model.api.HTTPMethod;
-import com.wavemaker.runtime.rest.model.api.Operation;
-import com.wavemaker.runtime.rest.model.api.Parameter;
-import com.wavemaker.runtime.rest.model.api.ParameterType;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.WMUtils;
+import com.wavemaker.tools.api.core.models.ApiDocument;
+import com.wavemaker.tools.api.core.models.EndPoint;
+import com.wavemaker.tools.api.core.models.HTTPMethod;
+import com.wavemaker.tools.api.core.models.Operation;
+import com.wavemaker.tools.api.core.models.Parameter;
+import com.wavemaker.tools.api.core.models.ParameterType;
 
 /**
  * @author Uday Shankar
@@ -40,19 +40,19 @@ public class RestRuntimeService {
         RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationId, params);
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
         String responseBody = restResponse.getResponseBody();
-        if(restResponse.getContentType() != null) {
+        if (restResponse.getContentType() != null) {
             MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
             if (WMUtils.isXmlMediaType(responseContentType)) {
                 restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
-            } else if(!WMUtils.isJsonMediaType(responseContentType)) {
+            } else if (!WMUtils.isJsonMediaType(responseContentType)) {
                 try {//trying if the content is of xml type
                     restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
                 } catch (Exception e) {
-                    logger.debug("Unable to read the response as xml for the media type [" + responseContentType + "] and convert to json",e);
+                    logger.debug("Unable to read the response as xml for the media type [" + responseContentType + "] and convert to json", e);
                 }
             }
         }
-        if(restResponse.getConvertedResponse() != null) {
+        if (restResponse.getConvertedResponse() != null) {
             restResponse.setResponseBody(null);
         }
         return restResponse;
@@ -60,42 +60,42 @@ public class RestRuntimeService {
 
     private RestRequestInfo getRestRequestInfo(String serviceId, String operationId, Map<String, Object> params) throws IOException {
         ApiDocument apiDocument = getApiDocument(serviceId);
-        Operation operation = getOperationById(apiDocument, operationId);
-        if (operation == null) {
+        EndPoint endPoint = getEndPointByOperationId(apiDocument, operationId);
+        if (endPoint == null) {
             throw new WMRuntimeException("Invalid operationId [" + operationId + "]");
         }
+        Operation operation = getOperationById(endPoint, operationId);
         RestRequestInfo restRequestInfo = new RestRequestInfo();
-        StringBuilder endpointAddressStringBuilder = new StringBuilder(apiDocument.getBaseURL() + operation.getRelativePath());
+        StringBuilder endpointAddressStringBuilder = new StringBuilder(apiDocument.getBaseURL() + endPoint.getRelativePath());
         restRequestInfo.setMethod(operation.getHttpMethod().toString());
-        List<DataFormat> consumes = operation.getConsumes();
+        Set<String> consumes = operation.getConsumes();
         Assert.isTrue(consumes.size() <= 1);
-        if(!consumes.isEmpty()) {
-            DataFormat dataFormat = consumes.get(0);
-            restRequestInfo.setContentType(dataFormat.getFormat());
+        if (!consumes.isEmpty()) {
+            restRequestInfo.setContentType(consumes.iterator().next());
         }
         List<Parameter> parameters = operation.getParameters();
         Map<String, Object> headers = new HashMap<>();
         Map<String, Object> queryParams = new HashMap<>();
         Map<String, String> pathParams = new HashMap<>();
         String requestBody = null;
-        if(params != null){
-            for(Parameter parameter : parameters) {
+        if (params != null) {
+            for (Parameter parameter : parameters) {
                 String paramName = parameter.getName();
                 Object value = params.get(paramName);
-                if(ParameterType.HEADER.equals(parameter.getParameterType())) {
-                    if(params.containsKey(paramName)) {
+                if (ParameterType.HEADER.equals(parameter.getParameterType())) {
+                    if (params.containsKey(paramName)) {
                         headers.put(paramName, value);
                     }
-                } else if(ParameterType.QUERY.equals(parameter.getParameterType())) {
-                    if(params.containsKey(paramName)) {
+                } else if (ParameterType.QUERY.equals(parameter.getParameterType())) {
+                    if (params.containsKey(paramName)) {
                         queryParams.put(paramName, value);
                     }
-                } else if(ParameterType.PATH.equals(parameter.getParameterType())) {
-                    if(params.containsKey(paramName)) {
+                } else if (ParameterType.PATH.equals(parameter.getParameterType())) {
+                    if (params.containsKey(paramName)) {
                         pathParams.put(paramName, (String) value);
                     }
-                } else if(ParameterType.BODY.equals(parameter.getParameterType())) {
-                    if(params.containsKey(paramName)) {
+                } else if (ParameterType.BODY.equals(parameter.getParameterType())) {
+                    if (params.containsKey(paramName)) {
                         requestBody = (String) value;
                     }
                 } else if (ParameterType.AUTH.equals(parameter.getParameterType())) {
@@ -110,11 +110,11 @@ public class RestRuntimeService {
 
         }
         boolean first = true;
-        for(String queryParam : queryParams.keySet()) {
+        for (String queryParam : queryParams.keySet()) {
             Object val = queryParams.get(queryParam);
             String[] strings = WMUtils.getStringList(val);
-            for(String str : strings) {
-                if(first) {
+            for (String str : strings) {
+                if (first) {
                     endpointAddressStringBuilder.append("?");
                 } else {
                     endpointAddressStringBuilder.append("&");
@@ -131,13 +131,36 @@ public class RestRuntimeService {
         return restRequestInfo;
     }
 
+    private Operation getOperationById(EndPoint endPoint, String operationId) {
+        List<Operation> operations = endPoint.getOperations();
+        for (Operation operation : operations) {
+            if (operation.getName().equals(operationId)) {
+                return operation;
+            }
+        }
+        return null;
+    }
+
     private Operation getOperationById(ApiDocument apiDocument, String operationId) {
         List<EndPoint> endPoints = apiDocument.getEndPoints();
-        for ( EndPoint endPoint : endPoints) {
+        for (EndPoint endPoint : endPoints) {
             List<Operation> operations = endPoint.getOperations();
-            for(Operation operation : operations) {
-                if(operation.getName().equals(operationId)) {
+            for (Operation operation : operations) {
+                if (operation.getName().equals(operationId)) {
                     return operation;
+                }
+            }
+        }
+        return null;
+    }
+
+    private EndPoint getEndPointByOperationId(ApiDocument apiDocument, String operationId) {
+        List<EndPoint> endPoints = apiDocument.getEndPoints();
+        for (EndPoint endPoint : endPoints) {
+            List<Operation> operations = endPoint.getOperations();
+            for (Operation operation : operations) {
+                if (operation.getName().equals(operationId)) {
+                    return endPoint;
                 }
             }
         }
