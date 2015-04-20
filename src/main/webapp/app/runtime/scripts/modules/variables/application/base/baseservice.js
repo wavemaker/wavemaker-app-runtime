@@ -220,7 +220,7 @@ wm.variables.services.Variables = [
                 watchers[scope.$id] = {};
 
                 /* Maintain a copy of the variables in the exposed collection
-                 * Priamary reason for this:
+                 * Primary reason for this:
                  * StudioMode: any update to the dataSet or other properties by variable will not reflect in the actual collection
                  * RunMode: The same collection is used by same partials/prefabs appearing twice in a page */
                 self.variableCollection[scope.$id] = WM.copy(self.variableCollection[context]) || {};
@@ -942,9 +942,8 @@ wm.variables.services.Variables = [
                 /*if deleted variable page context is available, return it else, return false*/
                 if (pageContext) {
                     return pageContext;
-                } else {
-                    return false;
                 }
+                return false;
             };
 
         /*

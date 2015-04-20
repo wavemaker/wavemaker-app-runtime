@@ -2,12 +2,12 @@
 /*Directive for Calendar */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache , $rootScope) {
+    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
         'use strict';
         $templateCache.put('template/widget/calendar.html',
                 '<div class="app-calendar" init-widget has-model ' +
                     ' data-ng-model ="_model_" data-ng-show = "show"' +
-                    ' data-ng-change="_onChange({$event: $event, $scope: this})" >' + $rootScope.getWidgetStyles() +
+                    ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + $rootScope.getWidgetStyles() + '>' +
                     '<datepicker show-weeks="true" class="well well-sm"></datepicker>' +
                     /*Holder for the model for submitting values in a form*/
                     '<input data-ng-disabled="disabled" class="model-holder ng-hide" data-ng-model="_model_">' +
