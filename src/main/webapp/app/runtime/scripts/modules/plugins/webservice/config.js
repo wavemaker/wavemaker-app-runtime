@@ -71,7 +71,7 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             method: "GET"
         },
         listServicesWithType: {
-            url: "../services/projects/:projectID/services/",
+            url: "../services/projects/:projectID/services",
             method: "GET"
         },
         getServiceMethods: {
