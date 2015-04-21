@@ -1557,12 +1557,41 @@ If the height and width are not specified the video takes the height of the post
 
 .app-calendar {
   display: inline-block;
-  min-height: 227px;
-  width: 290px;
-  padding: 0;
+  position: relative;
   .well {
     padding: 0;
     margin-bottom: 0;
+  }
+  /***overriding the calendar classes*****/
+
+  .fc {
+    .fc-view-container {
+      background: #fff;
+    }
+    table {
+      background-color: transparent;
+    }
+    th {
+      text-align: center;
+      padding: 0.25em;
+    }
+    .fc-row {
+      .fc-content-skeleton, .fc-helper-skeleton {
+        td {
+          border-color: inherit;
+          background: initial !important;
+        }
+      }
+    }
+    .fc-toolbar {
+      button {
+        height: auto;
+        padding: 0.3em 1em;
+      }
+    }
+    .fc-divider {
+      margin: 0;
+    }
   }
 }
 

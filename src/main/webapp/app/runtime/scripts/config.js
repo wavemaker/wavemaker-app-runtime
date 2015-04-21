@@ -26,7 +26,7 @@ WM.module('wm.widgets.form', []);
 WM.module('wm.widgets.dialog', ['ui.bootstrap.modal']);
 WM.module('wm.widgets.grid', []);
 WM.module('wm.widgets.live', []);
-WM.module('wm.widgets.advanced', []);
+WM.module('wm.widgets.advanced', ['ui.calendar']);
 WM.module('wm.prefabs', ['wm.widgets.base']);
 WM.module('wm.themes', ['wm.widgets.base']);
 

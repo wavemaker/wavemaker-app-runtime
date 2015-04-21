@@ -483,9 +483,16 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.calendar": {
                     "autofocus": {"type": "boolean"},
+                    "width": {"type": "string", "pattern": dimensionRegex},
+                    "height": {"type": "string", "pattern": dimensionRegex},
                     "disabled": {"type": "boolean", "value": false},
-                    "datepattern": {"value": "dd-MMMM-yyyy", "type": "list", "options": [], "widget": "calendarpatterns"},
-                    "datavalue": {"type": "date, string, number", "widget": "date", "bindable": "in-out-bound"}
+                    "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
+                    "scopedataset": {"type": "string"},
+                    //"datepattern": {"value": "dd-MMMM-yyyy", "type": "list", "options": [], "widget": "calendarpatterns"},
+                    "datavalue": {"type": "date, string, number", "widget": "string", "bindable": "in-out-bound"},
+                    "onDayclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "onEventdrop": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "onEventresize": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                 },
                 "wm.time": {
                     "autofocus": {"type": "boolean"},
@@ -900,7 +907,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "helptext": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
                     "actions": {"type": "object", "bindable": "in-bound", "widget": "string"},
                     "badgevalue": {"type": "string", "bindable": "in-out-bound"},
-                    "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default" , "bindable": "in-out-bound"},
+                    "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                     "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
                     "margin": {"type": "string", "widget": "box"},
                     "margintop": {"type": "string", "pattern": numberRegex},
@@ -1186,10 +1193,10 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.accordionheader": {
                     "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
-                    "description": {"type": "string", "bindable": "in-bound" , "widget": "textarea"},
+                    "description": {"type": "string", "bindable": "in-bound", "widget": "textarea"},
                     "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                     "badgevalue": {"type": "string", "bindable": "in-out-bound"},
-                    "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default" , "bindable": "in-out-bound"},
+                    "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                     "tabindex": {"type": "string"},
                     "isdefaultpane": {"type": "boolean", "bindable": "in-bound"}
                 },
@@ -1341,7 +1348,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
                     "margintop": {"type": "string", "pattern": numberRegex},
                     "marginbottom": {"type": "string", "pattern": numberRegex},
-                    "marginright": {"type": "string"}, "pattern": numberRegex,
+                    "marginright": {"type": "string", "pattern": numberRegex},
                     "marginleft": {"type": "string", "pattern": numberRegex},
                     "backgroundcolor": {"type": "string", "widget": "color"},
                     "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -1479,7 +1486,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 {"name": "displaystyle", "properties": ["padding", "paddingunit", "margin", "marginunit", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},
                 {"name": "prefablifecycleevents", "properties": ["onLoad", "onDestroy"], "parent": "events"},
                 {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
-                {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
+                {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onDayclick", "onEventdrop", "onEventresize", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "touchevents", "properties": ["onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect",
@@ -2855,12 +2862,12 @@ base.services.WidgetUtilService = ['$filter', '$parse', '$rootScope', 'CONSTANTS
 
         /* this method will update the view value in the controller's scope */
         function updateModel() {
-            if (element.hasClass('app-calendar')) {
-                /* if model for Calendar or Date widget and model is a valid date, update the model with the primitive value
-                 * else make it undefined */
+            /*if (element.hasClass('app-calendar')) {
+                *//* if model for Calendar or Date widget and model is a valid date, update the model with the primitive value
+                 * else make it undefined *//*
                 var formattedDate = new Date(isolateScope._model_);
                 isolateScope._model_ = $filter('date')(formattedDate, isolateScope.datepattern);
-            }
+            }*/
 
             if (_model && ctrlScope) {
                 /* update the model value in the controller if the controller scope is available */

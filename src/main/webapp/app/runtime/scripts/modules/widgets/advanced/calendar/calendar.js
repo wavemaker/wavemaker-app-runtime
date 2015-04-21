@@ -1,14 +1,14 @@
 /*global WM, */
 /*Directive for Calendar */
 
-WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+WM.module('wm.widgets.advanced')
+    .run(['$templateCache', '$rootScope', function ($templateCache , $rootScope) {
         'use strict';
         $templateCache.put('template/widget/calendar.html',
                 '<div class="app-calendar" init-widget has-model ' +
                     ' data-ng-model ="_model_" data-ng-show = "show"' +
-                    ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + $rootScope.getWidgetStyles() + '>' +
-                    '<datepicker show-weeks="true" class="well well-sm"></datepicker>' +
+                    ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + $rootScope.getWidgetStyles() +  '>' +
+                    '<div  ui-calendar="calendarOptions.calendar" calendar="{{name}}"  data-ng-model="eventSources"></div>' +
                     /*Holder for the model for submitting values in a form*/
                     '<input data-ng-disabled="disabled" class="model-holder ng-hide" data-ng-model="_model_">' +
                 '</div>');
@@ -26,7 +26,7 @@ WM.module('wm.widgets.form')
                 };
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler(element, key, newVal) {
+            function propertyChangeHandler(element, scope, key, newVal) {
                 switch (key) {
                 case 'disabled':
                     if (newVal) {
@@ -35,13 +35,20 @@ WM.module('wm.widgets.form')
                         element.find('button').removeAttr('disabled');
                     }
                     break;
+                case 'dataset':
+                    scope.eventSources = [newVal];
+                    break;
                 }
             }
 
             return {
                 'restrict': 'E',
                 'replace': true,
-                'scope': {},
+                'scope': {
+                    "onDayclick": "&",
+                    "onEventdrop": "&",
+                    "onEventresize": "&"
+                },
                 'template': function (tElement, tAttrs) {
                     var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/calendar.html', tElement, tAttrs));
                     /*Set name for the model-holder, to ease submitting a form*/
@@ -56,6 +63,31 @@ WM.module('wm.widgets.form')
                     return {
                         'pre': function (scope) {
                             scope.widgetProps = widgetProps;
+                            scope.calendarOptions = {
+                                calendar: {
+                                    height: 450,
+                                    editable: true,
+                                    header: {
+                                        left: 'month basicWeek basicDay agendaWeek agendaDay',
+                                        center: 'title',
+                                        right: 'today prev,next'
+                                    },
+                                    dayClick: scope.onDayclick,
+                                    eventDrop: scope.onEventdrop,
+                                    eventResize: scope.onEventresize
+                                }
+                            };
+                            scope.events = [
+                                {
+                                    "title": "All Day Event",
+                                    "start": "Fri May 06 2015 00:00:00 GMT+0530 (India Standard Time)"
+                                },
+                                {
+                                    "title": "Long Event",
+                                    "start": "Fri May 04 2015 00:00:00 GMT+0530 (India Standard Time)",
+                                    "end": "Fri May 21 2015 00:00:00 GMT+0530 (India Standard Time)"
+                                }];
+                            scope.eventSources = [scope.events];
                         },
                         'post': function (scope, element, attrs) {
                             if (scope.widgetid) {
@@ -69,7 +101,7 @@ WM.module('wm.widgets.form')
                             }
 
                             /* register the property change handler */
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
+                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element, scope), scope, notifyFor);
 
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         }
@@ -82,7 +114,7 @@ WM.module('wm.widgets.form')
 
 /**
  * @ngdoc directive
- * @name wm.widgets.form.directive:wmCalendar
+ * @name wm.widgets.advanced.directive:wmCalendar
  * @restrict E
  *
  * @description
@@ -159,6 +191,41 @@ WM.module('wm.widgets.form')
  *              $scope.f = function (event, scope) {
  *                  $scope.currentDate = scope.datavalue;
  *              }
+ *              $scope.events = [
+                                  {
+                                    "title": "All Day Event",
+                                    "start": "Fri May 06 2015 00:00:00 GMT+0530 (India Standard Time)"
+                                  },
+                                  {
+                                    "title": "Long Event",
+                                    "start": "Fri May 04 2015 00:00:00 GMT+0530 (India Standard Time)",
+                                    "end": "Fri May 21 2015 00:00:00 GMT+0530 (India Standard Time)"
+                                  },
+                                  {
+                                    "id": 999,
+                                    "title": "Repeating Event",
+                                    "start": "Fri May 01 2015 00:00:00 GMT+0530 (India Standard Time)",
+                                    "allDay": false
+                                  },
+                                  {
+                                    "id": 999,
+                                    "title": "Repeating Event",
+                                    "start": "Fri May 01 2015 00:00:00 GMT+0530 (India Standard Time)",
+                                    "allDay": false
+                                  },
+                                  {
+                                    "title": "Birthday Party",
+                                    "start": "Fri May 06 2015 00:00:00 GMT+0530 (India Standard Time)",
+                                    "end": "Fri May 09 2015 00:00:00 GMT+0530 (India Standard Time)",
+                                    "allDay": false
+                                  },
+                                  {
+                                    "title": "Click for Google",
+                                    "start": "Fri May 23 2015 00:00:00 GMT+0530 (India Standard Time)",
+                                    "end": "Fri May 24 2015 00:00:00 GMT+0530 (India Standard Time)",
+                                    "url": "http://google.com/"
+                                  }
+                                ]
  *           }
  *       </file>
  *   </example>
