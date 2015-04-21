@@ -1436,6 +1436,13 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "opacity": {"type": "string", "widget": "slider"},
                     "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                     "zindex": {"type": "string", "pattern": zindexRegex}
+                },
+                "wm.template": {
+                    "showheader": {"type": "boolean"},
+                    "showtopnav": {"type": "boolean"},
+                    "showleftnav": {"type": "boolean"},
+                    "showrightnav": {"type": "boolean"},
+                    "showfooter": {"type": "boolean"}
                 }
             },
 
@@ -1446,7 +1453,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 {"name": "mobile", "parent": "", "show": true},
                 {"name": "security", "parent": "", "show": true},
                 {"properties": ["caption", "gridcaption", "title", "heading", "name", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "showtopnav", "showleftnav", "showrightnav", "showfooter", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight"], "parent": "properties"},
                 {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},

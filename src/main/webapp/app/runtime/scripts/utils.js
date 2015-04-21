@@ -1143,15 +1143,15 @@ WM.module('wm.utils', [])
              * StudioMode: remove the ngController directive
              */
             if (APPCONSTANTS.isRunMode) {
-                root.html(content).find('wm-livelist, wm-login')
+                root.html(content).find('wm-livelist, wm-login, wm-template')
                     .each(function () {
                         var widget = WM.element(this),
                             wrapper,
-                            ctrlName = widget.attr('data-ng-controller');
+                            ctrlName = widget.attr('data-ng-controller') || widget.attr('ng-controller');
 
                         if (ctrlName) {
                             wrapper = WM.element('<div></div>').attr('data-ng-controller', ctrlName);
-                            widget.removeAttr('data-ng-controller').wrap(wrapper);
+                            widget.removeAttr('data-ng-controller ng-controller').wrap(wrapper);
                         }
                     });
                 content = root[0].innerHTML;
