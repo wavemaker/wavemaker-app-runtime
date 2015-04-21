@@ -54,24 +54,40 @@ var Application = WM.module('Application',
                 invokeService,
                 isPrefabProject = false,
                 NG_LOCALE_PATH = "resources/ngLocale/",
-                APP_LOCALE_PATH = "resources/i18n/";
+                APP_LOCALE_PATH = "resources/i18n/",
+                isApplicaton;
 
             // try to read config.json under webapp directory.
             // if will be available only for the prefab projects.
+
             Utils.fetchContent(
-                "json",
-                "./config.json",
+                'json',
+                './services/application/type',
                 function (response) {
-                    if (!response.error) {
-                        // if the response doesn't have any error, the type of the project is a prefab.
-                        isPrefabProject = true;
-                        // save the content of the config file.
-                        $rootScope.prefabConfig = response;
-                    }
+                    $rootScope.projectType = response.result;
                 },
                 WM.noop,
                 true
             );
+
+            isPrefabProject = $rootScope.projectType === 'PREFAB';
+            isApplicaton = $rootScope.projectType === 'APPLICATION';
+
+            if (isPrefabProject) {
+                Utils.fetchContent(
+                    "json",
+                    "./config.json",
+                    function (response) {
+                        if (!response.error) {
+                            // save the content of the config file.
+                            $rootScope.prefabConfig = response;
+                        }
+                    },
+                    WM.noop,
+                    true
+                );
+            }
+
 
             /*create the project object*/
             $rootScope.project = {
@@ -221,7 +237,7 @@ var Application = WM.module('Application',
             };
 
             /* load the common contents */
-            if (!isPrefabProject && Utils.getCurrentPage() !== "login.html") {
+            if (isApplicaton && Utils.getCurrentPage() !== "login.html") {
                 var commonPage = "Common";
                 Application.loadResources(commonPage, function () {
                     /* set the common-page variables, registration will be handled by page directive */

@@ -221,21 +221,24 @@ WM.module('wm.utils', [])
         function getValidMarkUp (htmlString, handleValidMarkUp, handleInValidMarkUp) {
             var newMarkup = "", checkValidRootElement = function (ele) {
                 return WM.element(ele).is("wm-page, wm-partial, wm-template");
-            };
+            },
+                $htm,
+                $outerEle,
+                $innerEle;
 
-            var $htm = WM.element.parseHTML(htmlString);
+            $htm = WM.element.parseHTML(htmlString);
             //check if the root element is either of the valid elements
-            if( checkValidRootElement($htm[0]) ){
+            if (checkValidRootElement($htm[0])) {
                 newMarkup = htmlString;
                 triggerFn(handleValidMarkUp);
             } else {
                 //handle the invalid condition
                 triggerFn(handleInValidMarkUp);
                 //the page markup is not valid
-                var $outerEle = WM.element("<div>" + htmlString + "</div>"),
-                    $innerEle = WM.element($outerEle).find("wm-page, wm-partial");
+                $outerEle = WM.element("<div>" + htmlString + "</div>");
+                $innerEle = WM.element($outerEle).find("wm-page, wm-partial, wm-template");
 
-                if($innerEle.length > 0){
+                if ($innerEle.length > 0) {
                     newMarkup = WM.element($innerEle[0]).prop('outerHTML');
                 }
             }
