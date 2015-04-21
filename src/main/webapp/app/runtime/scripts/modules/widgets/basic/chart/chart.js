@@ -73,17 +73,17 @@ WM.module('wm.widgets.basic')
             },
            /*properties of the respective chart type*/
             options = {
-                'Column': ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance'],
-                'Line': ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance'],
-                'Area': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance'],
-                'Cumulative Line': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance'],
-                'Bar': ['showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance'],
+                'Column': ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Line': ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Area': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Cumulative Line': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Bar': ['showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
                 'Pie': ['showlabels', 'labeltype', 'showlabelsoutside'],
                 'Donut': ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside'],
                 'Bubble' : ['showxdistance', 'showydistance', 'bubblesize', 'tooltipcolumns', 'shape']
             },
             /*all properties of the chart*/
-            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'tooltipcolumns', 'shape'],
+            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'tooltipcolumns', 'shape', 'captions', 'showxaxis', 'showyaxis'],
             advanceDataProps = ['aggregation', 'aggregationcolumn', 'groupby', 'orderby'],
             chartTypes = ["Column", "Line", "Area", "Cumulative Line", "Bar", "Pie", "Donut", "Bubble"],
             styleProps = {
@@ -1167,6 +1167,8 @@ WM.module('wm.widgets.basic')
 
             chart.showLegend(scope.showlegend)
                 .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft})
+                .showXAxis(scope.showxaxis)
+                .showYAxis(scope.showyaxis)
                 .color(themes[scope.theme].colors);
             /*setting the no data message*/
             chart.noData(scope.message);
@@ -1299,14 +1301,19 @@ WM.module('wm.widgets.basic')
                 /*Adding the units to the captions if they are specified*/
                 xaxislabel += scope.xunits ? "(" + scope.xunits + ")" : "";
                 yaxislabel += scope.yunits ? "(" + scope.yunits + ")" : "";
+
+                if(scope.captions) {
+                    chart.xAxis.axisLabel(xaxislabel);
+                    chart.yAxis.axisLabel(yaxislabel);
+                }
+
+
                 chart.xAxis
-                    .axisLabel(xaxislabel)
                     .axisLabelDistance(scope.xaxislabeldistance)
                     .tickFormat(function (d) {
                         return formatData(scope, d, scope.xAxisDataType, {dateFormat: scope.xdateformat, numberFormat: xnumberformat, format: xFormat, isXaxis: true, xDataKeyArr: scope.xDataKeyArr});
                     });
                 chart.yAxis
-                    .axisLabel(yaxislabel)
                     .axisLabelDistance(scope.yaxislabeldistance)
                     .tickFormat(function (d) {
                         return formatData(scope, d, scope.yAxisDataType, {dateFormat: scope.ydateformat, numberFormat: ynumberformat, format: yFormat, isXaxis: false, xDataKeyArr: scope.xDataKeyArr});
@@ -1655,6 +1662,9 @@ WM.module('wm.widgets.basic')
                 }
                 break;
             case "nodatamessage":
+            case "captions":
+            case "showxaxis":
+            case "showyaxis":
                 plotChartProxy(scope, element);
                 break;
             }
@@ -1708,7 +1718,10 @@ WM.module('wm.widgets.basic')
             'textdecoration': true,
             'legendposition': true,
             'shape': true,
-            'nodatamessage': true
+            'nodatamessage': true,
+            'captions': true,
+            'showxaxis': true,
+            'showyaxis': true
         };
 
 
