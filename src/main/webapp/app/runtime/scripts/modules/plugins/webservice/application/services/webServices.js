@@ -124,7 +124,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             BaseService.send({
                 target: 'WebService',
                 action: 'importWSDL',
-                params: connectionParams
+                params: connectionParams.params,
+                urlParams: connectionParams.urlParams
             }, successCallback, failureCallback);
         },
 
@@ -148,6 +149,7 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 target: 'WebService',
                 action: 'uploadWSDL',
                 params: connectionParams.params,
+                urlParams: connectionParams.urlParams,
                 data: connectionParams.content
             }, successCallback, failureCallback);
         },
@@ -373,7 +375,7 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             BaseService.send({
                 target: 'WebService',
                 action: 'registerFeedService',
-                data: connectionParams
+                urlParams: connectionParams
             }, successCallback, failureCallback);
         },
 

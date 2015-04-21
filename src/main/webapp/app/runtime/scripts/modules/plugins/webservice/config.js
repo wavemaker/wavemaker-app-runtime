@@ -31,11 +31,11 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             method: "POST"
         },
         importWSDL: {
-            url: "../services/soapservicegenerator/wsdl",
+            url: "../services/projects/:projectID/soapservice/import",
             method: "POST"
         },
         uploadWSDL: {
-            url: "../services/soapservicegenerator/wsdl",
+            url: "../services/projects/:projectID/soapservice/import",
             method: "POST",
             headers: {
                 'Content-Type': undefined
@@ -43,7 +43,7 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             transformRequest: WM.identity
         },
         registerFeedService: {
-            url: "../services/servicegenerator/feed",
+            url: "../services/projects/:projectID/feed/register",
             method: "POST"
         },
         getRESTDetails: {
@@ -51,7 +51,7 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             method: "GET"
         },
         getWSDL: {
-            url: "../services/projects/:projectID/services/:serviceID/soapservicewsdl",
+            url: "../services/projects/:projectID/soapservice/:serviceID/wsdl",
             method: "GET"
         },
         getBindingProperties: {
