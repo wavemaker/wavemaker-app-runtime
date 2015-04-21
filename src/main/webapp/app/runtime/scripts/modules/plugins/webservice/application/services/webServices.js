@@ -55,7 +55,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             BaseService.send({
                 target: 'WebService',
                 action: 'generateRESTWsdlSettings',
-                data : connectionParams
+                data : connectionParams.data,
+                urlParams: connectionParams.urlParams
             }, successCallback, failureCallback);
         },
 
@@ -78,7 +79,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             BaseService.send({
                 target: 'WebService',
                 action: 'buildRestService',
-                data : connectionParams
+                data : connectionParams.data,
+                urlParams: connectionParams.urlParams
             }, successCallback, failureCallback);
         },
 
@@ -101,7 +103,8 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
             BaseService.send({
                 target: 'WebService',
                 action: 'updateRestService',
-                data : connectionParams
+                data : connectionParams.data,
+                urlParams: connectionParams.urlParams
             }, successCallback, failureCallback);
         },
 

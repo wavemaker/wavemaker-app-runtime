@@ -19,16 +19,16 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             method: "POST"
         },
         generateRESTWsdlSettings: {
-            url: "../services/restservices/settings",
+            url: "../services/projects/:projectID/restservice/settings",
             method: "POST"
         },
         buildRestService: {
-            url: "../services/restservices/create",
+            url: "../services/projects/:projectID/restservice",
             method: "POST"
         },
         updateRestService: {
-            url: "../services/restservices/update",
-            method: "POST"
+            url: "../services/projects/:projectID/restservice",
+            method: "PUT"
         },
         importWSDL: {
             url: "../services/projects/:projectID/soapservice/import",
@@ -47,7 +47,7 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             method: "POST"
         },
         getRESTDetails: {
-            url: "../services/projects/:projectID/services/:serviceID/restservice/",
+            url: "../services/projects/:projectID/restservice/:serviceID",
             method: "GET"
         },
         getWSDL: {
