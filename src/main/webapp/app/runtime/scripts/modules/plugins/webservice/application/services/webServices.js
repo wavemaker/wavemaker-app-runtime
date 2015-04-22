@@ -105,7 +105,6 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 action: 'updateRestService',
                 data : connectionParams.data,
                 urlParams: connectionParams.urlParams
-                data: connectionParams
             }, successCallback, failureCallback);
         },
 
@@ -155,7 +154,7 @@ wm.plugins.webServices.services.WebService = function (BaseService) {
                 params: connectionParams.params,
                 urlParams: connectionParams.urlParams,
                 data: connectionParams.content
-            }, successCallback, failureCallback);
+            }, successCallback,failureCallback);
         },
 
         /**
