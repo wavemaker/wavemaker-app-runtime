@@ -13,10 +13,9 @@ WM.module('wm.widgets.basic')
                     '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +
                 '</a>' +
-                 '<div class="popover {{popoverplacement}}">' +
+                 '<div class="popover {{popoverplacement}}" data-ng-style="{\'width\' : popoverwidth, \'height\' : popoverheight}">' +
                     '<div class="arrow" data-ng-show="{{popoverarrow}}"></div>' +
-                    '<div class="popover-content" data-ng-style="{\'width\' : popoverwidth, \'height\' : popoverheight}">' +
-                        '<div page-container-target data-ng-show="show"></div>' +
+                    '<div class="popover-content" page-container-target data-ng-show="show">' +
                     '</div>' +
                  '</div>' +
             '</div>');

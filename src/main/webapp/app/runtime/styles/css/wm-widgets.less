@@ -263,11 +263,15 @@ html, body {
     }
     >.popover{
         display : none;
-        max-width : none;
+        max-width : none !important;
         min-width : 50px;
         min-height : 50px;
         .popover-content {
-            overflow: auto;
+            width: 100%;
+            height: 100%;
+            .app-partial {
+              overflow: auto;
+            }
         }
         .arrow {
             margin : 0;
@@ -275,24 +279,24 @@ html, body {
         &.left,&.right{
             .arrow{
                 &.top{
-                    top : 0.5em;
+                    top : 1em;
                     bottom : auto;
                 }
                 &.bottom{
                     top : auto;
-                    bottom : 0.5em;
+                    bottom : 1em;
                 }
             }
         }
         &.top,&.bottom{
             .arrow{
                 &.left{
-                    left : 1.4em;
+                    left : 2em;
                     right : auto;
                 }
                 &.right{
                     left : auto;
-                    right : 0.5em;
+                    right : 1em;
                 }
             }
         }
