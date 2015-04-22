@@ -4,7 +4,7 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layouts/template.html',
-                '<div data-role="template" class="app-template container" init-widget>' +
+                '<div data-role="template" class="app-template app-page container" init-widget>' +
                     '<header data-role="page-header" class="app-header clearfix" data-ng-if="showheader">' +
                         'header content' +
                     '</header>' +
