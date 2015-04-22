@@ -372,16 +372,21 @@ WM.module("i18n").service("i18nService", [
         }
 
         /* loads the locale bundles */
-        function loadLocaleBundles() {
+        function loadLocaleBundles(emitEvent) {
             loadNgLocaleBundle()
                 .then(loadComponentLocaleBundles)
-                .then(loadAppLocaleBundle);
+                .then(loadAppLocaleBundle)
+                .then(function () {
+                    if (emitEvent) {
+                        $rootScope.$emit('locale-change');
+                    }
+                });
         }
 
         /*
          * this method will be triggered when there is a change in the locale selection.
          * load the localeBundles related to the selected locale.
-         * This method emits "locale-changed" event on the $rootScope.
+         * This method emits "locale-change" event on the $rootScope.
          */
         function setSelectedLocale(locale) {
             if (!_initSuccess) {
@@ -402,7 +407,7 @@ WM.module("i18n").service("i18nService", [
             $rootScope[localeKey] = {};
 
             /* load the locale bundles of the selected locale */
-            loadLocaleBundles();
+            loadLocaleBundles(true);
         }
 
         /* returns the default locale */
