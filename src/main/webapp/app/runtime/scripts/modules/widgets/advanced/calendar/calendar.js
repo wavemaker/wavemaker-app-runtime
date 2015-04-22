@@ -2,27 +2,27 @@
 /*Directive for Calendar */
 
 WM.module('wm.widgets.advanced')
-    .run(['$templateCache', '$rootScope', function ($templateCache , $rootScope) {
+    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
         'use strict';
         $templateCache.put('template/widget/calendar.html',
                 '<div class="app-calendar" init-widget has-model ' +
                     ' data-ng-model ="_model_" data-ng-show = "show"' +
-                    ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + $rootScope.getWidgetStyles() +  '>' +
-                    '<div  ui-calendar="calendarOptions.calendar" calendar="{{name}}"  data-ng-model="eventSources"></div>' +
-                    /*Holder for the model for submitting values in a form*/
-                    '<input data-ng-disabled="disabled" class="model-holder ng-hide" data-ng-model="_model_">' +
+                    ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + $rootScope.getWidgetStyles("shell") +  '>' +
+                    '<div ui-calendar="calendarOptions.calendar" calendar="{{name}}" ng-model="eventSources"></div>' +
                 '</div>');
     }])
     .directive('wmCalendar', [
-        '$filter',
         'PropertiesFactory',
         'WidgetUtilService',
-        '$timeout',
-        function ($filter, PropertiesFactory, WidgetUtilService, $timeout) {
+        '$compile',
+        '$locale',
+        function (PropertiesFactory, WidgetUtilService, $compile, $locale) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
                 notifyFor = {
-                    'disabled': true
+                    'disabled': true,
+                    'dataset': true,
+                    'height': true
                 };
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -36,7 +36,11 @@ WM.module('wm.widgets.advanced')
                     }
                     break;
                 case 'dataset':
-                    scope.eventSources = [newVal];
+                    scope.eventSources.push(newVal);
+                    //scope.eventSources.push(scope.eventsF);
+                    break;
+                case 'height':
+                    scope.calendarOptions.calendar.height = parseInt(newVal, 10);
                     break;
                 }
             }
@@ -47,7 +51,9 @@ WM.module('wm.widgets.advanced')
                 'scope': {
                     "onDayclick": "&",
                     "onEventdrop": "&",
-                    "onEventresize": "&"
+                    "onEventresize": "&",
+                    "onEventclick": "&",
+                    "onEventrender": "&"
                 },
                 'template': function (tElement, tAttrs) {
                     var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/calendar.html', tElement, tAttrs));
@@ -63,9 +69,16 @@ WM.module('wm.widgets.advanced')
                     return {
                         'pre': function (scope) {
                             scope.widgetProps = widgetProps;
+                            scope.events = [];
+                            scope.eventSources = [scope.events];
+                        },
+                        'post': function (scope, element, attrs) {
+                            scope.onEventClickProxy = function (event, delta, revertFunc, jsEvent, ui, view) {
+                                scope.onEventclick({$event: event, $delta: delta, $revertFunc: revertFunc, $jsEvent: jsEvent, $ui : ui, $view: view});
+                            };
                             scope.calendarOptions = {
                                 calendar: {
-                                    height: 450,
+                                    height: parseInt(scope.height, 10),
                                     editable: true,
                                     header: {
                                         left: 'month basicWeek basicDay agendaWeek agendaDay',
@@ -74,31 +87,57 @@ WM.module('wm.widgets.advanced')
                                     },
                                     dayClick: scope.onDayclick,
                                     eventDrop: scope.onEventdrop,
-                                    eventResize: scope.onEventresize
+                                    eventResize: scope.onEventresize,
+                                    eventClick: scope.onEventClickProxy,
+                                    eventRender: scope.onEventrender,
+                                    dayNames: $locale.DATETIME_FORMATS.DAY,
+                                    dayNamesShort: $locale.DATETIME_FORMATS.SHORTDAY
                                 }
                             };
-                            scope.events = [
-                                {
-                                    "title": "All Day Event",
-                                    "start": "Fri May 06 2015 00:00:00 GMT+0530 (India Standard Time)"
-                                },
-                                {
-                                    "title": "Long Event",
-                                    "start": "Fri May 04 2015 00:00:00 GMT+0530 (India Standard Time)",
-                                    "end": "Fri May 21 2015 00:00:00 GMT+0530 (India Standard Time)"
-                                }];
-                            scope.eventSources = [scope.events];
-                        },
-                        'post': function (scope, element, attrs) {
-                            if (scope.widgetid) {
-                                $timeout(function () { // when the widget is inside canvas, update the datavalue after datepicker is compiled
-                                    if ((!scope.datavalue && isNaN(Date.parse(scope.datavalue))) || scope.datavalue === 0) {
-                                        scope._model_ = scope.datavalue = new Date();
-                                    } else {
-                                        scope._model_ = scope.datavalue = $filter('date')(scope.datavalue, scope.datepattern);
+                            scope.$root.$on('locale-change', function () {
+                                scope.calendarOptions.calendar.dayNames = $locale.DATETIME_FORMATS.DAY;
+                                scope.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
+                            });
+
+
+                            /* event source that calls a function on every view switch */
+                          /*  scope.eventsF = function (start, end, timezone, callback) {
+                                if (scope.eventsFunction) {
+                                    callback(scope.eventsFunction(start, end, timezone));
+                                }
+                            };*/
+
+                            /* add and removes an event source of choice */
+                            scope.addRemoveEventSource = function (sources, source) {
+                                var canAdd = 0;
+                                WM.forEach(sources, function (value, key) {
+                                    if (sources[key] === source) {
+                                        sources.splice(key, 1);
+                                        canAdd = 1;
                                     }
-                                }, undefined, false);
-                            }
+                                });
+                                if (canAdd === 0) {
+                                    sources.push(source);
+                                }
+                            };
+                            /* add custom event*/
+                            scope.addEvent = function (eventObject) {
+                                scope.events.push(eventObject);
+                            };
+                            /* remove event */
+                            scope.remove = function (index) {
+                                scope.events.splice(index, 1);
+                            };
+                            /* Change View */
+                            /*scope.changeView = function (view, calendar) {
+                            };*/
+
+                            /* Render Tooltip */
+                            scope.eventRender = function (event, element, view) {
+                                element.attr({'tooltip': event.title,
+                                    'tooltip-append-to-body': true});
+                                $compile(element)(scope);
+                            };
 
                             /* register the property change handler */
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element, scope), scope, notifyFor);

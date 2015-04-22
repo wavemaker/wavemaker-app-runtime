@@ -483,6 +483,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.calendar": {
                     "autofocus": {"type": "boolean"},
+                    "backgroundcolor": {"type": "string", "widget": "color"},
                     "width": {"type": "string", "pattern": dimensionRegex},
                     "height": {"type": "string", "pattern": dimensionRegex},
                     "disabled": {"type": "boolean", "value": false},
@@ -492,7 +493,9 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "datavalue": {"type": "date, string, number", "widget": "string", "bindable": "in-out-bound"},
                     "onDayclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onEventdrop": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                    "onEventresize": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    "onEventresize": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "onEventclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "onEventrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                 },
                 "wm.time": {
                     "autofocus": {"type": "boolean"},
@@ -1493,7 +1496,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 {"name": "displaystyle", "properties": ["padding", "paddingunit", "margin", "marginunit", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},
                 {"name": "prefablifecycleevents", "properties": ["onLoad", "onDestroy"], "parent": "events"},
                 {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
-                {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onDayclick", "onEventdrop", "onEventresize", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
+                {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onDayclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "touchevents", "properties": ["onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect",
