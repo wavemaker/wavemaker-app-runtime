@@ -891,15 +891,18 @@ WM.module('wm.utils', [])
         }
 
         function addNodeToJson(tree, nodeId, parentNodeUId, options, parentNodeId) {
+
+            options = options || {};
+
             var node = {
                     "id": nodeId,
-                    "label": options && options.label,
-                    "collapsed": options && options.collapsed,
-                    "class": options && options.class,
-                    "active": options && options.active,
-                    "props": options && options.nodeProps,
-                    "isDeletable": options && options.isDeletable,
-                    "onDelete": options && options.onDelete
+                    "label": options.label,
+                    "collapsed": options.collapsed,
+                    "class": options.class,
+                    "active": options.active,
+                    "props": options.nodeProps,
+                    "isDeletable": options.isDeletable,
+                    "onDelete": options.onDelete
                 },
                 parentIndex,
                 parentStartIndex,
