@@ -69,6 +69,13 @@ WM.module('wm.widgets.basic')
                         "backgroundColor": "#47637c",
                         "textColor": "#FFFFFF"
                     }
+                },
+                'Luminosity': {
+                    colors: ["#FFFFFF", "#e4e4e4", "#00bcd4", "#f0dd2f", "#00aabf", "#018376", "#e91e63", "#39e5d4", "#ff6d6d", "#00ff76", "#ff9800", "#969696", "#ff4200", "#e00000", "#95cbe5", "#5331ff", "#fff4a7", "#e7a800", "#0061e4", "#d5e7ff"],
+                    tooltip: {
+                        "backgroundColor": "#47637c",
+                        "textColor": "#FFFFFF"
+                    }
                 }
             },
            /*properties of the respective chart type*/
@@ -79,11 +86,11 @@ WM.module('wm.widgets.basic')
                 'Cumulative Line': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
                 'Bar': ['showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
                 'Pie': ['showlabels', 'labeltype', 'showlabelsoutside'],
-                'Donut': ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside'],
+                'Donut': ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside', 'title'],
                 'Bubble' : ['showxdistance', 'showydistance', 'bubblesize', 'tooltipcolumns', 'shape']
             },
             /*all properties of the chart*/
-            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'tooltipcolumns', 'shape', 'captions', 'showxaxis', 'showyaxis'],
+            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'tooltipcolumns', 'shape', 'captions', 'showxaxis', 'showyaxis', 'title'],
             advanceDataProps = ['aggregation', 'aggregationcolumn', 'groupby', 'orderby'],
             chartTypes = ["Column", "Line", "Area", "Cumulative Line", "Bar", "Pie", "Donut", "Bubble"],
             styleProps = {
@@ -1131,6 +1138,7 @@ WM.module('wm.widgets.basic')
                     .tooltips(scope.tooltips)
                     .showLabels(scope.showlabels)
                     .labelType(scope.labeltype)
+                    .title(scope.title)
                     .labelThreshold(0.04);
                 if (isDonutChart(scope.type)) {
                     chart.donut(true)
@@ -1167,9 +1175,13 @@ WM.module('wm.widgets.basic')
 
             chart.showLegend(scope.showlegend)
                 .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft})
-                .showXAxis(scope.showxaxis)
-                .showYAxis(scope.showyaxis)
-                .color(themes[scope.theme].colors);
+                .color(scope.customcolors || themes[scope.theme].colors);
+
+            if(!isPieType(scope.type)) {
+                chart.showXAxis(scope.showxaxis)
+                    .showYAxis(scope.showyaxis);
+            }
+
             /*setting the no data message*/
             chart.noData(scope.message);
             theme = scope.theme;
@@ -1665,6 +1677,8 @@ WM.module('wm.widgets.basic')
             case "captions":
             case "showxaxis":
             case "showyaxis":
+            case "title":
+            case "customcolors":
                 plotChartProxy(scope, element);
                 break;
             }
@@ -1721,7 +1735,9 @@ WM.module('wm.widgets.basic')
             'nodatamessage': true,
             'captions': true,
             'showxaxis': true,
-            'showyaxis': true
+            'showyaxis': true,
+            'title': true,
+            'customcolors': true
         };
 
 
