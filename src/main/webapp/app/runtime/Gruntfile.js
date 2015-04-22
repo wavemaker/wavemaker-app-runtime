@@ -165,6 +165,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/layouts/page/header.js',
                         '<%= config.scripts %>/modules/layouts/page/leftpanel.js',
                         '<%= config.scripts %>/modules/layouts/page/page.js',
+                        '<%= config.scripts %>/modules/layouts/page/template.js',
                         '<%= config.scripts %>/modules/layouts/page/rightpanel.js',
                         '<%= config.scripts %>/modules/layouts/page/row.js',
                         '<%= config.scripts %>/modules/layouts/page/topnav.js',
