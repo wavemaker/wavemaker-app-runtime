@@ -55,6 +55,7 @@ describe('Testing Widget: wm-calendar', function () {
             module('wm.common');
             module('wm.utils');
             module('wm.widgets');
+            module('ngRoute');
 
             inject(function (_$compile_, _$rootScope_) {
                 $compile = _$compile_;
@@ -115,6 +116,10 @@ describe('Testing Widget: wm-calendar', function () {
             iScope.$apply();
             expect($element.attr('disabled')).toBeTruthy();
         });
+
+        /**
+         * TODO : to add test cases for on dayclick, eventdrop, eventresize events
+         */
 
     });
 });
