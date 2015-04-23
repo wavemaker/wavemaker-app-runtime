@@ -482,11 +482,9 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "datavalue": {"type": "date, string, number", "widget": "date", "bindable": "in-out-bound"}
                 },
                 "wm.calendar": {
-                    "autofocus": {"type": "boolean"},
                     "backgroundcolor": {"type": "string", "widget": "color"},
                     "width": {"type": "string", "pattern": dimensionRegex},
                     "height": {"type": "string", "pattern": dimensionRegex},
-                    "disabled": {"type": "boolean", "value": false},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                     "scopedataset": {"type": "string"},
                     //"datepattern": {"value": "dd-MMMM-yyyy", "type": "list", "options": [], "widget": "calendarpatterns"},

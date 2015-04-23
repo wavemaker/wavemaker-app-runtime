@@ -18,9 +18,8 @@ WM.module('wm.widgets.advanced')
         '$locale',
         function (PropertiesFactory, WidgetUtilService, $compile, $locale) {
             'use strict';
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 notifyFor = {
-                    'disabled': true,
                     'dataset': true,
                     'height': true
                 };
@@ -28,16 +27,8 @@ WM.module('wm.widgets.advanced')
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler(element, scope, key, newVal) {
                 switch (key) {
-                case 'disabled':
-                    if (newVal) {
-                        element.find('button').prop('disabled', true);
-                    } else {
-                        element.find('button').removeAttr('disabled');
-                    }
-                    break;
                 case 'dataset':
                     scope.eventSources.push(newVal);
-                    //scope.eventSources.push(scope.eventsF);
                     break;
                 case 'height':
                     scope.calendarOptions.calendar.height = parseInt(newVal, 10);
