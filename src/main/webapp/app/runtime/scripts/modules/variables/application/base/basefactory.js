@@ -134,7 +134,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "onCancel": {"type": "list", "options": variableEventOptions, "disabled": true, "hide": true},
                     "onClose": {"type": "list", "options": variableEventOptions},
                     "onOk": {"type": "list", "options": variableEventOptions},
-                    "duration": {"type": "list", "options": {"0": "0", "1000": "1000", "2000": "2000", "3000": "3000", "4000": "4000", "5000": "5000", "6000": "6000", "7000": "7000", "8000": "8000", "9000": "9000", "10000": "10000", "15000": "15000"}, "hide": true},
+                    "duration": {"type": "list", "options": [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000], "hide": true},
                     "class": {"type": "list", "options": {"Success": "Success", "Error": "Error", "Warning": "Warning", "Info": "Info", "Misc": "Misc"}, "hide": true},
                     "toasterPosition": {"type": "list", "options": {"top left": "top left", "top center": "top center", "top right": "top right", "center left": "center left", "center center": "center center", "center right": "center right", "bottom left": "bottom left", "bottom center": "bottom center", "bottom right": "bottom right"}, "hide": true},
                     "dataBinding": {"type": "string", "value": {}, "hide": true}
