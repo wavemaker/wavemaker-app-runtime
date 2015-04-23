@@ -243,8 +243,8 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wavemaker.tools</groupId>
-            <artifactId>wavemaker-api-tools</artifactId>
+            <groupId>com.wavemaker</groupId>
+            <artifactId>wavemaker-apidocs-tools-core</artifactId>
         </dependency>
         <dependency>
             <groupId>net.sf.jmimemagic</groupId>
