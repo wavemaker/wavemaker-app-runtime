@@ -85,7 +85,7 @@ WM.module('wm.prefabs')
 
                 Utils.fetchContent(
                     'json',
-                    Utils.preventCachingOf('../services/projects/' + getProjectId() + '/prefabs'),
+                    Utils.preventCachingOf('services/projects/' + getProjectId() + '/prefabs'),
                     function (response) {
                         onAppPrefabsLoad(response);
                         Utils.triggerFn(callback);
@@ -111,7 +111,7 @@ WM.module('wm.prefabs')
                 } else {
                     configUrl = CONSTANTS.isRunMode
                         ? 'app/prefabs/' + prefabName + '/config.json'
-                        : '../services/projects/' + getProjectId() + '/resources/web/app/prefabs/' + prefabName + '/config.json';
+                        : 'services/projects/' + getProjectId() + '/resources/web/app/prefabs/' + prefabName + '/config.json';
 
                     Utils.fetchContent(
                         'json',
@@ -135,7 +135,7 @@ WM.module('wm.prefabs')
             function loadStudioPrefabConfig(prefabName) {
                 var configUrl, deferred = $q.defer();
 
-                configUrl = '../services/prefabs/' + studioPrefabNamePropertiesMap[prefabName].id + '/files/webapp/config.json';
+                configUrl = 'services/prefabs/' + studioPrefabNamePropertiesMap[prefabName].id + '/files/webapp/config.json';
 
                 Utils.fetchContent(
                     'json',
@@ -406,7 +406,7 @@ WM.module('wm.prefabs')
 
                 resourcePath = CONSTANTS.isRunMode
                                 ? 'app/prefabs/' + prefabName + '/'
-                                : '../services/projects/' + getProjectId() + '/resources/web/app/prefabs/' + prefabName + '/';
+                                : 'services/projects/' + getProjectId() + '/resources/web/app/prefabs/' + prefabName + '/';
 
                 if (pendingTasks.resources[prefabName]) {
                     handler = $rootScope.$on(prefabName + '-dependencies-ready', function (evt, prefabContent) {

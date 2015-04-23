@@ -2441,7 +2441,7 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                         if (CONSTANTS.isRunMode) {
                             propValue = './app/prefabs/' + scope.prefabname + '/' + propValue;
                         } else {
-                            propValue = '../services/prefabs/' + scope.prefabid + '/files/webapp/' + propValue;
+                            propValue = 'services/prefabs/' + scope.prefabid + '/files/webapp/' + propValue;
                         }
                         iScope._initState[attrName] = propValue;
                     } else {

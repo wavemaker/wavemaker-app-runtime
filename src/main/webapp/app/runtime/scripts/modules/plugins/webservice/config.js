@@ -15,27 +15,27 @@ wm.plugins.webServices.factory(wm.plugins.webServices.factories);
 wm.plugins.webServices.constant('WS_SERVICE_URLS', {
     WebService: {
         invokeRestCall: {
-            url: "../services/restservices/invoke",
+            url: "services/restservices/invoke",
             method: "POST"
         },
         generateRESTWsdlSettings: {
-            url: "../services/projects/:projectID/restservice/settings",
+            url: "services/projects/:projectID/restservice/settings",
             method: "POST"
         },
         buildRestService: {
-            url: "../services/projects/:projectID/restservice",
+            url: "services/projects/:projectID/restservice",
             method: "POST"
         },
         updateRestService: {
-            url: "../services/projects/:projectID/restservice",
+            url: "services/projects/:projectID/restservice",
             method: "PUT"
         },
         importWSDL: {
-            url: "../services/projects/:projectID/soapservice/import",
+            url: "services/projects/:projectID/soapservice/import",
             method: "POST"
         },
         uploadWSDL: {
-            url: "../services/projects/:projectID/soapservice/import",
+            url: "services/projects/:projectID/soapservice/import",
             method: "POST",
             headers: {
                 'Content-Type': undefined
@@ -43,43 +43,43 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             transformRequest: WM.identity
         },
         registerFeedService: {
-            url: "../services/projects/:projectID/feed/register",
+            url: "services/projects/:projectID/feed/register",
             method: "POST"
         },
         getRESTDetails: {
-            url: "../services/projects/:projectID/restservice/:serviceID",
+            url: "services/projects/:projectID/restservice/:serviceID",
             method: "GET"
         },
         getWSDL: {
-            url: "../services/projects/:projectID/soapservice/:serviceID/wsdl",
+            url: "services/projects/:projectID/soapservice/:serviceID/wsdl",
             method: "GET"
         },
         getBindingProperties: {
-            url: "../services/projects/:projectID/services/:serviceID/properties",
+            url: "services/projects/:projectID/services/:serviceID/properties",
             method: "GET"
         },
         setBindingProperties: {
-            url: "../services/projects/:projectID/services/:serviceID/properties",
+            url: "services/projects/:projectID/services/:serviceID/properties",
             method: "POST"
         },
         listTypes: {
-            url: "../services/projects/:projectID/services/types",
+            url: "services/projects/:projectID/services/types",
             method: "GET"
         },
         listPrefabTypes: {
-            url: "../services/projects/:projectID/prefabs/:prefabName/types",
+            url: "services/projects/:projectID/prefabs/:prefabName/types",
             method: "GET"
         },
         listServicesWithType: {
-            url: "../services/projects/:projectID/services",
+            url: "services/projects/:projectID/services",
             method: "GET"
         },
         getServiceMethods: {
-            url: '../services/projects/:projectID/services/:serviceID/operations',
+            url: 'services/projects/:projectID/services/:serviceID/operations',
             method: "GET"
         },
         getServiceOperationParams: {
-            url: '../services/projects/:projectID/services/:serviceID/operations/:operationID',
+            url: 'services/projects/:projectID/services/:serviceID/operations/:operationID',
             method: "GET"
         },
         invoke: {
@@ -95,11 +95,11 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             method: "POST"
         },
         remove: {
-            url: '../services/projects/:projectID/services/:serviceID',
+            url: 'services/projects/:projectID/services/:serviceID',
             method: "DELETE"
         },
         retrieveServiceOperations: {
-            url: '../services/projects/:projectId/services/:serviceId/servicedef',
+            url: 'services/projects/:projectId/services/:serviceId/servicedef',
             method: "GET"
         },
         invokeRuntimeRestCall: {

@@ -8,7 +8,7 @@ module.exports = function (grunt) {
     // configurable paths
     var wmBuildConfig = {
         scripts: 'scripts',
-        build: 'build',
+        application: 'application',
         styles: 'styles',
         components: 'components'
     };
@@ -21,7 +21,7 @@ module.exports = function (grunt) {
                     {
                         dot: true,
                         src: [
-                            '<%= config.build %>/*'
+                            '<%= config.application %>/*'
                         ]
                     }
                 ]
@@ -30,8 +30,7 @@ module.exports = function (grunt) {
         less: {
             dev: {
                 files: {
-                    '<%= config.build %>/application/css/wm-style.css': '<%= config.styles %>/css/wm-runtime.less',
-                    '<%= config.build %>/studio/styles/css/wm-widgets.css': '<%= config.styles %>/css/wm-widgets.less'
+                    '<%= config.application %>/styles/css/wm-style.css': '<%= config.styles %>/css/wm-runtime.less'
                 }
             }
         },
@@ -64,7 +63,7 @@ module.exports = function (grunt) {
                     report: 'min'
                 },
                 files: {
-                    '<%= config.build %>/application/wm-libs.js': ['<%= config.build %>/application/wm-libs.js']
+                    '<%= config.application %>/scripts/wm-libs.js': ['<%= config.application %>/scripts/wm-libs.js']
                 }
             },
             'min-mangle-false' : {
@@ -74,8 +73,8 @@ module.exports = function (grunt) {
                     report: 'min'
                 },
                 files: {
-                    '<%= config.build %>/application/runtimeloader.js' : ['<%= config.build %>/application/runtimeloader.js'],
-                    '<%= config.build %>/application/wm-loader.js' : ['<%= config.build %>/application/wm-loader.js']
+                    '<%= config.application %>/scripts/runtimeloader.js' : ['<%= config.application %>/scripts/runtimeloader.js'],
+                    '<%= config.application %>/scripts/wm-loader.js' : ['<%= config.application %>/scripts/wm-loader.js']
                 }
             }
         },
@@ -86,7 +85,7 @@ module.exports = function (grunt) {
                     report: 'min'
                 },
                 'files': {
-                    '<%= config.build %>/application/css/wm-style.css': '<%= config.build %>/application/css/wm-style.css'
+                    '<%= config.application %>/styles/css/wm-style.css': '<%= config.application %>/styles/css/wm-style.css'
                 }
             }
         },
@@ -94,9 +93,9 @@ module.exports = function (grunt) {
             'wm-loader': {
                 nonull: true,
                 files: {
-                    '<%= config.build %>/application/placeholders.js': ['<%= config.components %>/placeholders/js/utils.js', '<%= config.components %>/placeholders/js/main.js'],
-                    '<%= config.build %>/application/wm-loader.js': ['<%= config.build %>/application/runtimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
-                    '<%= config.build %>/application/wm-libs.js': [
+                    '<%= config.application %>/scripts/placeholders.js': ['<%= config.components %>/placeholders/js/utils.js', '<%= config.components %>/placeholders/js/main.js'],
+                    '<%= config.application %>/scripts/wm-loader.js': ['<%= config.application %>/scripts/runtimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
+                    '<%= config.application %>/scripts/wm-libs.js': [
                         '<%= config.components %>/underscore/underscore.js',
                         '<%= config.components %>/jquery/jquery.js',
                         '<%= config.components %>/jquery-ui/js/jquery-ui.js',
@@ -126,7 +125,7 @@ module.exports = function (grunt) {
             'runtime-files': {
                 nonull: true,
                 files: {
-                    '<%= config.build %>/application/runtimeloader.js': [
+                    '<%= config.application %>/scripts/runtimeloader.js': [
                         '<%= config.scripts %>/config.js',
                         '<%= config.scripts %>/utils.js',
                         '<%= config.scripts %>/formatUtils.js',

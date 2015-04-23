@@ -19,172 +19,172 @@ wm.plugins.database.factory(wm.plugins.database.factories);
 wm.plugins.database.constant('DB_SERVICE_URLS', {
     Database: {
         importSample: {
-            url: "../services/projects/:projectID/database/importSample",
+            url: "services/projects/:projectID/database/importSample",
             method: "POST"
         },
         testConnection: {
-            url: "../services/projects/:projectID/database/testConnection",
+            url: "services/projects/:projectID/database/testConnection",
             method: "POST"
         },
         importDB: {
-            url: "../services/projects/:projectID/database/import",
+            url: "services/projects/:projectID/database/import",
             method: "POST"
         },
         reImportDB: {
-            url: "../services/projects/:projectID/database/reimport?serviceId=:serviceId",
+            url: "services/projects/:projectID/database/reimport?serviceId=:serviceId",
             method: "POST"
         },
         exportDB: {
-            url: "../services/projects/:projectID/database/export",
+            url: "services/projects/:projectID/database/export",
             method: "POST"
         },
 
         /*DataModel related services*/
         getAllDataModels: {
-            url: "../services/projects/:projectID/datamodels/",
+            url: "services/projects/:projectID/datamodels/",
             method: "GET"
         },
         getDataModel: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName?isdraft=:isdraft",
+            url: "services/projects/:projectID/datamodels/:dataModelName?isdraft=:isdraft",
             method: "GET"
         },
         createDataModel: {
-            url: "../services/projects/:projectID/datamodels",
+            url: "services/projects/:projectID/datamodels",
             method: "POST"
         },
         deleteDataModel: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName",
+            url: "services/projects/:projectID/datamodels/:dataModelName",
             method: "DELETE"
         },
         saveDataModel: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/save",
+            url: "services/projects/:projectID/datamodels/:dataModelName/save",
             method: "POST"
         },
         applyDataModel: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/apply",
+            url: "services/projects/:projectID/datamodels/:dataModelName/apply",
             method: "POST"
         },
         revertDataModel: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/revert",
+            url: "services/projects/:projectID/datamodels/:dataModelName/revert",
             method: "POST"
         },
 
         /*Entities related services*/
 
         getAllEntities: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables",
             method: "GET"
         },
         getEntity: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:tableName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:tableName",
             "method": "GET"
         },
         createEntity: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables",
             method: "POST"
         },
         updateEntity: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:entityName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName",
             method: "POST"
         },
         deleteEntity: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:entityName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName",
             method: "DELETE"
         },
 
         /*Entity Columns related services*/
 
         addColumns: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns",
             method: "POST"
         },
         updateColumn: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns/:columnName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns/:columnName",
             method: "PUT"
         },
         deleteColumn: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns/:columnName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns/:columnName",
             method: "DELETE"
         },
 
         /*Services related to relations*/
 
         addRelation: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations",
             method: "POST"
         },
         updateRelation: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
             method: "PUT"
         },
         deleteRelation: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
             method: "DELETE"
         },
 
         /*Queries Related services*/
 
         getAllQueries: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/queries",
+            url: "services/projects/:projectID/datamodels/:dataModelName/queries",
             method: "GET"
         },
         getQuery: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/queries/:queryName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/queries/:queryName",
             method: "GET"
         },
         createQuery: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/queries",
+            url: "services/projects/:projectID/datamodels/:dataModelName/queries",
             method: "POST"
         },
         updateQuery: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/queries/:queryName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/queries/:queryName",
             method: "PUT"
         },
         deleteQuery: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/queries/:queryName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/queries/:queryName",
             method: "DELETE"
         },
         setQueryMetaData: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/queries/:queryName/metadata",
+            url: "services/projects/:projectID/datamodels/:dataModelName/queries/:queryName/metadata",
             method: "POST"
         },
         validateQuery: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/query/validate",
+            url: "services/projects/:projectID/datamodels/:dataModelName/query/validate",
             method: "POST"
         },
         executeQuery: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/query/execute",
+            url: "services/projects/:projectID/datamodels/:dataModelName/query/execute",
             method: "POST"
         },
 
         /*Procedure Related services*/
 
         getAllProcedures: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/procedures",
+            url: "services/projects/:projectID/datamodels/:dataModelName/procedures",
             method: "GET"
         },
         getProcedure: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName",
             method: "GET"
         },
         createProcedure: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/procedures",
+            url: "services/projects/:projectID/datamodels/:dataModelName/procedures",
             method: "POST"
         },
         updateProcedure: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName",
             method: "PUT"
         },
         deleteProcedure: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName",
             method: "DELETE"
         },
         setProcedureMetaData: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName/metadata",
+            url: "services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName/metadata",
             method: "POST"
         },
         executeProcedure: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/procedures/execute",
+            url: "services/projects/:projectID/datamodels/:dataModelName/procedures/execute",
             method: "POST"
         },
 
@@ -271,11 +271,11 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         /*Database connection properties*/
 
         getConnectionProperties: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/connectionproperties",
+            url: "services/projects/:projectID/datamodels/:dataModelName/connectionproperties",
             method: "GET"
         },
         updateConnectionProperties: {
-            url: "../services/projects/:projectID/datamodels/:dataModelName/connectionproperties",
+            url: "services/projects/:projectID/datamodels/:dataModelName/connectionproperties",
             method: "PUT"
         }
     }

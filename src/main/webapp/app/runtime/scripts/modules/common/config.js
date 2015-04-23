@@ -37,7 +37,7 @@ wm.modules.wmCommon.constant('SERVICE_TYPE_CONSTANTS', {
 wm.modules.wmCommon.constant("WM_COMMON_SERVICE_URLS", {
     Project_Run: {
         inplaceDeploy: {
-            url: "../services/projects/:projectId/deployment/inplaceDeploy",
+            url: "services/projects/:projectId/deployment/inplaceDeploy",
             method: "POST"
         }
     },

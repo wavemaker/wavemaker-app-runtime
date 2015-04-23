@@ -49,7 +49,7 @@ WM.module('wm.utils', [])
                 'lib': ['../lib'],
                 'jar': ['../lib'],
                 'locale': ['resources/i18n'],
-                'services': ['../services'],
+                'services': ['services'],
                 'image': ['resources/images', 'resources/images/imagelists'],
                 'audio': ['resources/audio'],
                 'video': ['resources/video']
@@ -537,8 +537,8 @@ WM.module('wm.utils', [])
             }
             /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in "styles/images/" path or not.
              * When page is refreshed, loader.gif will be loaded first and it will be in "style/images/".
-             * Prepend "../services/projects/" + $rootScope.project.id + "/web/resources/images/imagelists/"  if the image url is just image name in the project root,
-             * and if the url pointing to resources/images/ then "../services/projects/" + $rootScope.project.id + "/web/"*/
+             * Prepend "services/projects/" + $rootScope.project.id + "/web/resources/images/imagelists/"  if the image url is just image name in the project root,
+             * and if the url pointing to resources/images/ then "services/projects/" + $rootScope.project.id + "/web/"*/
             if (isValidWebURL(urlString)) {
                 return urlString;
             }
@@ -547,11 +547,11 @@ WM.module('wm.utils', [])
             }
 
             // if the resource to be loaded is inside a prefab
-            if (stringStartsWith(urlString, "../services/prefabs")) {
+            if (stringStartsWith(urlString, "services/prefabs")) {
                 return urlString;
             }
 
-            urlString = "../services/projects/" + $rootScope.project.id + "/resources/web/" + urlString;
+            urlString = "services/projects/" + $rootScope.project.id + "/resources/web/" + urlString;
             return urlString;
         }
 
@@ -565,11 +565,11 @@ WM.module('wm.utils', [])
             }
 
             // if the resource to be loaded is inside a prefab
-            if (stringStartsWith(urlString, "../services/prefabs")) {
+            if (stringStartsWith(urlString, "services/prefabs")) {
                 return urlString;
             }
 
-            urlString = "../services/projects/" + $rootScope.project.id + "/resources/web/" + urlString;
+            urlString = "services/projects/" + $rootScope.project.id + "/resources/web/" + urlString;
             return urlString;
         }
 
