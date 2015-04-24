@@ -120,7 +120,7 @@ WM.module('wm.layouts.containers')
                 'height': true
             };
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
+        function propertyChangeHandler(scope, key) {
             switch (key) {
             case 'height':
                 scope.overflow = "auto";

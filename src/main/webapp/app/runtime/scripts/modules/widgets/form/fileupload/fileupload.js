@@ -36,15 +36,15 @@ WM.module('wm.widgets.form')
                 '</div>');
 
         $templateCache.put('template/widget/form/upload-directive.html',
-                '<div class="status col-xs-12">' +
-                    '<div class="col-xs-1 action"><span class="badge" data-ng-bind="fileExtension"></span></div>' +
-                    '<div class="col-xs-4 name" title="{{fileName}}" data-ng-bind="fileName"></div>' +
-                    '<div class="col-xs-3 size" title="{{fileSize}}" data-ng-bind="fileSize"></div>' +
-                    '<div class="col-xs-3 upload-status">' +
+                '<div class="status">' +
+                              '<div class="action"><span class="badge" data-ng-bind="fileExtension"></span></div>' +
+                    '<div class="name" title="{{fileName}}" data-ng-bind="fileName"></div>' +
+                    '<div class="size" title="{{fileSize}}" data-ng-bind="fileSize"></div>' +
+                    '<div class="upload-status">' +
                         '<div class="progress" data-ng-hide="showStatusMessage"><div class="progress-bar progress-bar-info progress-bar-striped" data-ng-style="{width:progressWidth}"></div></div>' +
                         '<label title="{{status_messsage}}" data-ng-bind="status_messsage" data-ng-show="showStatusMessage"></label>' +
                     '</div>' +
-                    '<div class="col-xs-1 action" data-ng-if="isAbortVisible"><button class="cancel glyphicon glyphicon-remove" title="Cancel" data-ng-click="abortUpload()"></button></div>' +
+                    '<div class="action" data-ng-if="isAbortVisible"><button class="cancel glyphicon glyphicon-remove" title="Cancel" data-ng-click="abortUpload()"></button></div>' +
                 '</div>');
     }])
     .directive('onFileSelect', ['$parse', '$timeout', function ($parse, $timeout) {
@@ -142,6 +142,7 @@ WM.module('wm.widgets.form')
         var UPLOAD_SERVICE = 'resources/upload?relativePath=',
             UPLOAD_LOCATION = 'resources/uploads/';
         return {
+            replace: true,
             restrict: 'E',
             template: $templateCache.get('template/widget/form/upload-directive.html'),
             scope: true,
@@ -407,7 +408,7 @@ WM.module('wm.widgets.form')
                                 scope.onError({
                                     $event: WM.extend($event.$files || {}, $file),
                                     $scope: scope
-                                })
+                                });
                             },
                         /* function to handle single and multiple file uploads*/
                             uploadFile = function ($evt, $file, statusContainer) {

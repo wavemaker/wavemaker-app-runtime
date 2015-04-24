@@ -695,17 +695,33 @@ body.modal-open {
   position: relative;
   margin: 0 0 @app-standard-margin 0;
 /**single file upload classes**/
-  .app-single-file-upload {
+  .app-single-file-upload, .app-multi-file-upload {
     position: relative;
     .app-files-upload-status {
       display: inline-block;
       vertical-align: middle;
-      width: 80%;
+      .status {
+        display: inline-block;
+        > div {
+          display: inline-block;
+          margin-right: 4px;
+        }
+        .progress {
+          width: 10em;
+          display: inline-block;
+        }
+        .upload-status label {
+          margin: 0;
+        }
+        .name {
+          max-width: 200px;
+        }
+      }
     }
     .app-button-wrapper {
       position: relative;
       display: inline-block;
-      width: 20%;
+      margin-right: 4px;
     }
   }
   .form-horizontal {
