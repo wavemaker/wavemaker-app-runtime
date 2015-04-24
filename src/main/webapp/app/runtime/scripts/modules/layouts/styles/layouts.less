@@ -501,6 +501,18 @@
 
 .wm-app {
   background-color: @app-background-color;
+  /**********************************************************************/
+  /********************Overrides for the content classes**************************/
+  /**********************************************************************/
+  /***override the chart tooltip style***/
+
+  .nvtooltip {
+    font-family: inherit;
+    table {
+      background-color: transparent;
+    }
+  }
+
   label {
     font-weight: normal;
   }

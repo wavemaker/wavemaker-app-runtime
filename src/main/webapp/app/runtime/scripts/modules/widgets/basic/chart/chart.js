@@ -5,10 +5,10 @@ WM.module('wm.widgets.basic')
     .run(["$templateCache", '$rootScope', function ($templateCache, $rootScope) {
         "use strict";
         $templateCache.put("template/widget/form/chart.html",
-            '<div init-widget class="app-chart" title="{{hint}}" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' >' +
+            '<div init-widget class="app-chart" title="{{hint}}" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' ><div class="app-chart-inner">' +
                 '<svg></svg>' +
                 '<div class="wm-content-info readonly-wrapper {{class}}" data-ng-show="showContentLoadError"><p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p></div>' +
-            '</div>'
+            '</div></div>'
             );
     }]).directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, Variables, QueryBuilder, Utils, $timeout) {
         "use strict";
@@ -87,10 +87,10 @@ WM.module('wm.widgets.basic')
                 'Bar': ['showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
                 'Pie': ['showlabels', 'labeltype', 'showlabelsoutside'],
                 'Donut': ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside', 'title'],
-                'Bubble' : ['showxdistance', 'showydistance', 'bubblesize', 'tooltipcolumns', 'shape']
+                'Bubble' : ['showxdistance', 'showydistance', 'bubblesize', 'shape']
             },
             /*all properties of the chart*/
-            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'tooltipcolumns', 'shape', 'captions', 'showxaxis', 'showyaxis', 'title'],
+            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'shape', 'captions', 'showxaxis', 'showyaxis', 'title'],
             advanceDataProps = ['aggregation', 'aggregationcolumn', 'groupby', 'orderby'],
             chartTypes = ["Column", "Line", "Area", "Cumulative Line", "Bar", "Pie", "Donut", "Bubble"],
             styleProps = {
@@ -171,7 +171,8 @@ WM.module('wm.widgets.basic')
         function formatData(scope, d, dataType, options) {
             var datakey = (options.isXaxis && options.xDataKeyArr && options.xDataKeyArr.length) ? options.xDataKeyArr[d] : d,
                 formattedData,
-                divider;
+                divider,
+                prefix;
             switch (dataType) {
             case 'date':
                 return !isLineTypeChart(scope.type) ? d3.time.format(options.dateFormat)(new Date(d)) : datakey;
@@ -184,11 +185,9 @@ WM.module('wm.widgets.basic')
                 if (options.numberFormat && dataType) {
                     /*Getting the respective divider[1000,1000000,1000000000] based on the number format choosen*/
                     divider = (tickformats[options.numberFormat] && tickformats[options.numberFormat].divider) || 0;
-                    if (isPieType(scope.type)) {
-                        formattedData = d + tickformats[options.numberFormat].prefix;
-                    } else if (divider !== 0) {
-                        /*Dividing the value with respective divider*/
-                        formattedData = d3.format('.2f')(d / divider) + tickformats[options.numberFormat].prefix;
+                    prefix = tickformats[options.numberFormat] && tickformats[options.numberFormat].prefix;
+                    if (prefix && divider !== 0) {
+                        formattedData = d3.format('.2f')(d / divider) + prefix;
                     }
                 } else if (!options.numberFormat) {
                     /*Auto formatting the data when no formating option is chosen*/
@@ -428,14 +427,12 @@ WM.module('wm.widgets.basic')
                     /*Setting the bubble size and tooltip columns to be shown*/
                     if (isBubbleChart(scope.type)) {
                         scope.widgetProps.bubblesize.options = options;
-                        scope.widgetDataset.tooltipcolumns = scope.dataset || options ? options.join(',') : '';
                     }
                 } else {
                     scope.widgetProps.xaxisdatakey.options = options;
                     setYAxisDataKey(scope, options, '');
                     if (isBubbleChart(scope.type)) {
                         scope.widgetProps.bubblesize.options = options;
-                        scope.widgetDataset.tooltipcolumns = scope.dataset || options ? options.join(',') : '';
                     }
                 }
 
@@ -448,9 +445,8 @@ WM.module('wm.widgets.basic')
                 scope.xaxisdatakey = scope.yaxisdatakey = '';
                 scope.xaxislabel = scope.yaxislabel = '';
                 scope.xunits = scope.yunits = '';
-                scope.bubblesize = scope.tooltipcolumns = '';
+                scope.bubblesize = '';
                 scope.widgetProps.bubblesize.options = [];
-                scope.widgetProps.tooltipcolumns.options = [];
                 scope.widgetProps.aggregationcolumn.disabled = true;
                 scope.widgetProps.aggregation.disabled = true;
                 /*Setting the values to the default*/
@@ -518,15 +514,7 @@ WM.module('wm.widgets.basic')
                 yVal = parseFloat(value) || value,
                 dataPoint = {},
                 size = parseFloat(dataObj[scope.bubblesize]) || 2,
-                tooltipcolumns = scope.tooltipcolumns ? scope.tooltipcolumns.split(',') : [],
                 type = scope.type;
-
-            /*Pushing also the tooltips columns also since bubble chart need all other columns*/
-            if (tooltipcolumns.length > 0 && isBubbleChart(type)) {
-                tooltipcolumns.forEach(function (column) {
-                    dataPoint[column] = dataObj[column];
-                });
-            }
 
             if (isChartDataJSON(type)) {
                 dataPoint.x = xVal;
@@ -1061,11 +1049,6 @@ WM.module('wm.widgets.basic')
         /* intializes the chart obejct */
         function initChart(scope) {
             var chart,
-                bgColor,
-                textColor,
-                theme,
-                tooltipContent,
-                tooltipColumns = [],
                 divider;
             divider = tickformats[scope.ynumberformat] ? tickformats[scope.ynumberformat].divider : 1;
             switch (scope.type) {
@@ -1081,7 +1064,6 @@ WM.module('wm.widgets.basic')
                     .reduceXTicks(scope.reducexticks)
                     .rotateLabels(0)
                     .showControls(scope.showcontrols)
-                    .tooltips(scope.tooltips)
                     .groupSpacing(scope.barspacing);
                 break;
             case 'Cumulative Line':
@@ -1093,13 +1075,11 @@ WM.module('wm.widgets.basic')
                         return d[1] / 100;
                     })
                     .useInteractiveGuideline(true)
-                    .showControls(scope.showcontrols)
-                    .tooltips(scope.tooltips);
+                    .showControls(scope.showcontrols);
                 break;
             case 'Line':
                 chart = nv.models.lineChart()
-                    .useInteractiveGuideline(true)
-                    .tooltips(scope.tooltips);
+                    .useInteractiveGuideline(true);
                 break;
             case 'Area':
                 chart = nv.models.stackedAreaChart()
@@ -1111,8 +1091,7 @@ WM.module('wm.widgets.basic')
                     })
                     .clipEdge(true)
                     .showControls(scope.showcontrols)
-                    .useInteractiveGuideline(true)
-                    .tooltips(scope.tooltips);
+                    .useInteractiveGuideline(true);
                 break;
             case 'Bar':
                 chart = nv.models.multiBarHorizontalChart()
@@ -1133,19 +1112,17 @@ WM.module('wm.widgets.basic')
                     })
                     /*Dividing the respective value with divider[1000,1000000,1000000000] based on the number format choosen*/
                     .y(function (d) {
-                        return (parseFloat((d.y / divider).toFixed(2)) || d.y);
+                        return d.y;
                     })
-                    .tooltips(scope.tooltips)
                     .showLabels(scope.showlabels)
                     .labelType(scope.labeltype)
+                    .valueFormat(d3.format('%'))
                     .title(scope.title)
-                    .labelThreshold(0.04);
+                    .labelThreshold(0.04)
+                    .labelsOutside(scope.showlabelsoutside);
                 if (isDonutChart(scope.type)) {
                     chart.donut(true)
-                        .donutRatio(scope.donutratio)
-                        .donutLabelsOutside(scope.showlabelsoutside);
-                } else {
-                    chart.pieLabelsOutside(scope.showlabelsoutside);
+                        .donutRatio(scope.donutratio);
                 }
                 break;
             case 'Bubble':
@@ -1156,7 +1133,6 @@ WM.module('wm.widgets.basic')
                     .y(function (d) {
                         return d.y;
                     })
-                    .tooltips(scope.tooltips)
                     .showDistX(scope.showxdistance)
                     .showDistY(scope.showydistance);
                 break;
@@ -1169,8 +1145,7 @@ WM.module('wm.widgets.basic')
                     })
                     .y(function (d) {
                         return d.y;
-                    })
-                    .tooltips(true);
+                    });
             }
 
             chart.showLegend(scope.showlegend)
@@ -1181,34 +1156,11 @@ WM.module('wm.widgets.basic')
                 chart.showXAxis(scope.showxaxis)
                     .showYAxis(scope.showyaxis);
             }
-
+            if(scope.tooltip) {
+                chart.tooltip.enabled();
+            }
             /*setting the no data message*/
             chart.noData(scope.message);
-            theme = scope.theme;
-            bgColor = themes[theme].tooltip.backgroundColor;
-            textColor = themes[theme].tooltip.textColor;
-            if (!isPieType(scope.type) && !isBubbleChart(scope.type)) {
-                chart.tooltipContent(function (key, x, y) {
-                    return "<div style='text-align: center;'><p style='background-color:" + bgColor + ";color:" + textColor + "'><strong>" + key + "</strong><br></p>" + x + " on " + y + "</div>";
-                });
-            } else if (isBubbleChart(scope.type)) {
-                /*By default bubble chart doesn't provide any tooltips,so constructing the tooltips*/
-                tooltipColumns = scope.tooltipcolumns ? scope.tooltipcolumns.split(',') : [];
-                chart.tooltipContent(function (key, x, y, data, dataPoint) {
-                    if (tooltipColumns) {
-                        tooltipContent = "<div class='tooltip-container'>";
-                        tooltipColumns.forEach(function (column) {
-                            tooltipContent += '<h5><strong>' + column + "</strong> : " + dataPoint.point[column] + '</h5>';
-                        });
-                        tooltipContent += '</div>';
-                    }
-                    return tooltipContent;
-                });
-            } else {
-                chart.tooltipContent(function (key, x) {
-                    return "<div style='text-align: center'><p style='background-color:" + bgColor + ";color:" + textColor + "'><strong>" + key + "</strong><br></p>" + x + "</div>";
-                });
-            }
             return chart;
         }
 
@@ -1323,20 +1275,71 @@ WM.module('wm.widgets.basic')
                 chart.xAxis
                     .axisLabelDistance(scope.xaxislabeldistance)
                     .tickFormat(function (d) {
-                        return formatData(scope, d, scope.xAxisDataType, {dateFormat: scope.xdateformat, numberFormat: xnumberformat, format: xFormat, isXaxis: true, xDataKeyArr: scope.xDataKeyArr});
+                        return formatData(scope, d, scope.xAxisDataType, {
+                            dateFormat: scope.xdateformat,
+                            numberFormat: xnumberformat,
+                            format: xFormat,
+                            isXaxis: true,
+                            xDataKeyArr: scope.xDataKeyArr
+                        });
                     });
                 chart.yAxis
                     .axisLabelDistance(scope.yaxislabeldistance)
                     .tickFormat(function (d) {
-                        return formatData(scope, d, scope.yAxisDataType, {dateFormat: scope.ydateformat, numberFormat: ynumberformat, format: yFormat, isXaxis: false, xDataKeyArr: scope.xDataKeyArr});
+                        return formatData(scope, d, scope.yAxisDataType, {
+                            dateFormat: scope.ydateformat,
+                            numberFormat: ynumberformat,
+                            format: yFormat,
+                            isXaxis: false,
+                            xDataKeyArr: scope.xDataKeyArr
+                        });
                     });
             } else {
                 /*In case of pie/donut chart formatting the values of it*/
-                chart.valueFormat(function (d) {
-                    return formatData(scope, d, scope.yAxisDataType, {dateFormat: scope.ydateformat, numberFormat: ynumberformat, format: yFormat, isXaxis: false, xDataKeyArr: scope.xDataKeyArr});
-                });
+                if (scope.labeltype === "percent") {
+                    chart.valueFormat(d3.format('%'));
+                } else {
+                    chart.valueFormat(function (d) {
+                        return formatData(scope, d, scope.yAxisDataType, {
+                            dateFormat: scope.ydateformat,
+                            numberFormat: ynumberformat,
+                            format: yFormat,
+                            isXaxis: false,
+                            xDataKeyArr: scope.xDataKeyArr
+                        });
+                    });
+                }
             }
 
+
+            /*Customizing the tooltips in case of the pie and donut when labelType is value */
+            if (isPieType(scope.type)) {
+                chart.tooltipContent(function (key) {
+                    var yValue;
+                    if(scope.labeltype === 'percent') {
+                        yValue = d3.format('.3s')(key.data.y);
+                    } else if(scope.labeltype === 'value'){
+                        yValue = formatData(scope, key.data.y, scope.yAxisDataType, {
+                            dateFormat: scope.ydateformat,
+                            numberFormat: ynumberformat,
+                            format: yFormat,
+                            isXaxis: false,
+                            xDataKeyArr: scope.xDataKeyArr
+                        });
+                    }
+                    return "<div class='nvtooltip xy-tooltip nv-pointer-events-none'>" +
+                        "<table>" +
+                        "<tbody>" +
+                        "<tr>" +
+                        "<td class='legend-color-guide'><div style='background-color:" + key.color + ";'></div></td>" +
+                        "<td class='key'>" + key.data.x + "</td>" +
+                        "<td class='value'>" + yValue + "</td>" +
+                        "</tr>" +
+                        "</tbody>" +
+                        "</table>" +
+                        "</div>";
+                });
+            }
 
             /** changing the default no data message**/
             d3.select('#wmChart' + scope.$id + ' svg')
@@ -1886,8 +1889,6 @@ WM.module('wm.widgets.basic')
  *                  This property controls the distance between the x axis and its label.<br>
  * @param {number=} yaxisunits
  *                  Specifies the units for the y axis.<br>
- * @param {list=} tooltipcolumns
- *                  This property controls in configuring the columns to be shown in tooltip.
  * @param {boolean=} show
  *                  Show isa bindable property. <br>
  *                  This property will be used to show/hide the chart widget on the web page. <br>

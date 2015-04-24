@@ -1484,7 +1484,13 @@ If the height and width are not specified the video takes the height of the post
 *********************************************************************************/
 
 .app-chart {
+  /***to fix the tooltip issue*****/
+  .app-chart-inner {
+    position: relative;
+    .width-height();
+  }
   position: relative;
+
   > svg {
     width: 100%;
     height: 100%;
@@ -1654,16 +1660,6 @@ If the height and width are not specified the video takes the height of the post
       display: inline-block;
 
     }
-  }
-}
-
-/********************************************************************************
-************************* Chart classes ******************************
-*********************************************************************************/
-.nvtooltip {
-  h3 {
-    font-size: 14px;
-    font-weight: bold;
   }
 }
 
