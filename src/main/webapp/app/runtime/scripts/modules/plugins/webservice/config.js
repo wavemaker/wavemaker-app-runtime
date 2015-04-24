@@ -106,7 +106,7 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
             url: ''
         },
         buildApiRestService: {
-            url: "../services/restservices/create",
+            url: "services/restservices/create",
             method: "POST"
         }
     }
