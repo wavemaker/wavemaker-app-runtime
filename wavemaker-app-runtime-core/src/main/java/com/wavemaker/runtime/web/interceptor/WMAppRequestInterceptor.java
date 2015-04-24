@@ -10,8 +10,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.wavemaker.studio.common.WMRuntimeException;
-import com.wavemaker.tools.apidocs.tools.core.annotation.WMAccessVisibility;
-import com.wavemaker.tools.apidocs.tools.core.model.AccessSpecifier;
+import com.wavemaker.tools.api.core.annotation.WMAccessVisibility;
+import com.wavemaker.tools.api.core.models.AccessSpecifier;
 
 /**
  * @Author: sowmyad

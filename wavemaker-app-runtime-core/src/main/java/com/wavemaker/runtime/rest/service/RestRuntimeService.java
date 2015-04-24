@@ -20,7 +20,7 @@ import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.WMUtils;
-import com.wavemaker.tools.apidocs.tools.core.model.*;
+import com.wavemaker.tools.api.core.models.*;
 
 /**
  * @author Uday Shankar
