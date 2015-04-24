@@ -56,10 +56,10 @@ module.exports = function (grunt) {
                         dest: '<%= config.application %>/styles/fonts'
                     },
                     {
-                        cwd: '<%= config.runtime %>/components/bootstrap',
+                        cwd: '<%= config.components %>/bootstrap',
                         src: 'bootstrap.css.map',
                         expand: true,
-                        dest: '<%= config.runtime %>/application/styles/css/'
+                        dest: '<%= config.application %>/styles/css/'
                     },
                     {
                         cwd: '<%= config.components %>/jquery-ui/themes/images',
