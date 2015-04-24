@@ -30,11 +30,45 @@ module.exports = function (grunt) {
         less: {
             dev: {
                 files: {
-                    '<%= config.application %>/styles/css/wm-style.css': '<%= config.styles %>/css/wm-runtime.less'
+                    '<%= config.application %>/styles/css/wm-style.css': '<%= config.styles %>/less/wm-runtime.less'
                 }
             }
         },
         copy: {
+            for_runtime_application_folder: {
+                files: [
+                    {
+                        src: '<%= config.styles %>/images/spinner-small.gif',
+                        dest: '<%= config.application %>/styles/images/spinner-small.gif'
+                    },
+                    {
+                        src: '<%= config.styles %>/images/loader.gif',
+                        dest: '<%= config.application %>/styles/images/loader.gif'
+                    },
+                    {
+                        src: '<%= config.styles %>/images/ui-icons.png',
+                        dest: '<%= config.application %>/styles/images/ui-icons.png'
+                    },
+                    {
+                        cwd: '<%= config.styles %>/fonts',
+                        src: '*',
+                        expand: true,
+                        dest: '<%= config.application %>/styles/fonts'
+                    },
+                    {
+                        cwd: '<%= config.runtime %>/components/bootstrap',
+                        src: 'bootstrap.css.map',
+                        expand: true,
+                        dest: '<%= config.runtime %>/application/styles/css/'
+                    },
+                    {
+                        cwd: '<%= config.components %>/jquery-ui/themes/images',
+                        src: '*',
+                        expand: true,
+                        dest: '<%= config.application %>/styles/css/images'
+                    }
+                ]
+            }
         },
         bower: {
             install: {
@@ -253,6 +287,7 @@ module.exports = function (grunt) {
         'less',
         'concat',
         'concat:wm-loader',
+        'copy',
         'uglify',
         'cssmin'
     ]);
@@ -263,7 +298,8 @@ module.exports = function (grunt) {
         'bower',
         'less',
         'concat',
-        'concat:wm-loader'
+        'concat:wm-loader',
+        'copy'
     ]);
 
     grunt.registerTask('unitTest', ['build', 'karma:unit']);

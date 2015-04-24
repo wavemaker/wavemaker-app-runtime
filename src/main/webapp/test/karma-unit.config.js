@@ -7,7 +7,7 @@ module.exports = function (config) {
     config.set({
 
         // base path, that will be used to resolve files and exclude
-        basePath: '.',
+        basePath: '',
 
 
         // frameworks to use
@@ -17,7 +17,7 @@ module.exports = function (config) {
         // list of files / patterns to load in the browser
         files: [
             '../build/application/wm-libs.js',
-            './angular-mocks.js',
+            'angular-mocks.js',
             '../build/application/wm-loader.js',
             '../build/application/runtimeloader.js',
             './test-utils.js',

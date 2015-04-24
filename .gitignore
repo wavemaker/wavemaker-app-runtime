@@ -10,7 +10,7 @@ target/
 *#*
 *~
 
-src/main/webapp/app/runtime/node_modules
-src/main/webapp/app/runtime/components
-src/main/webapp/app/runtime/application
-src/main/webapp/app/runtime/tp
+src/main/webapp/node_modules
+src/main/webapp/components
+src/main/webapp/application
+src/main/webapp/tp
