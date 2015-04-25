@@ -1314,7 +1314,7 @@ WM.module('wm.widgets.basic')
 
             /*Customizing the tooltips in case of the pie and donut when labelType is value */
             if (isPieType(scope.type)) {
-                chart.tooltipContent(function (key) {
+                chart.tooltip.contentGenerator(function (key) {
                     var yValue;
                     if(scope.labeltype === 'percent') {
                         yValue = d3.format('.3s')(key.data.y);
