@@ -1522,8 +1522,8 @@ WM.module('wm.widgets.basic')
                     scope.filterFields = newVal.filterFields;
                 }
 
-                /* plotchart for only valid data */
-                if (scope.chartData.length) {
+                /* plotchart for only valid data and only after bound variable returns data */
+                if (scope.chartData.length && !scope.variableInflight) {
                     plotChartProxy(scope, element);
                 }
                 break;
@@ -1604,7 +1604,14 @@ WM.module('wm.widgets.basic')
             case "showydistance":
             case "bubblesize":
             case "shape":
-                /**In RunMode, the plotchart method will not be called for all property change */
+            case "orderby":
+            case "nodatamessage":
+            case "captions":
+            case "showxaxis":
+            case "showyaxis":
+            case "title":
+            case "customcolors":
+                    /**In RunMode, the plotchart method will not be called for all property change */
                 if (scope.chartReady) {
                     plotChartProxy(scope, element);
                 }
@@ -1651,12 +1658,6 @@ WM.module('wm.widgets.basic')
                     plotChartProxy(scope, element);
                 }
                 break;
-            case "orderby":
-                /*Re-plot the chart when the order by columns are chosen*/
-                if (scope.chartReady) {
-                    plotChartProxy(scope, element);
-                }
-                break;
             case "fontsize":
             case "fontunit":
             case "color":
@@ -1672,17 +1673,9 @@ WM.module('wm.widgets.basic')
                 break;
             case "legendposition":
                 /*Modifying the legend position only when legend is shown*/
-                if (scope.showlegend) {
+                if (scope.chartReady && scope.showlegend) {
                     modifyLegendPosition(scope);
                 }
-                break;
-            case "nodatamessage":
-            case "captions":
-            case "showxaxis":
-            case "showyaxis":
-            case "title":
-            case "customcolors":
-                plotChartProxy(scope, element);
                 break;
             }
         }
@@ -1780,7 +1773,7 @@ WM.module('wm.widgets.basic')
                         scope.chartReady = true;
 
                         /* When there is not value binding, then plot the chart with sample data */
-                        if (!scope.binddataset) {
+                        if (!scope.binddataset && !attrs.scopedataset) {
                             plotChartProxy(scope, element);
                         }
 
@@ -1788,10 +1781,12 @@ WM.module('wm.widgets.basic')
                         if (CONSTANTS.isRunMode) {
                             /* fields defined in scope: {} MUST be watched explicitly */
                             /*watching scopedataset attribute to plot chart for the element.*/
-                            scope.$watch("scopedataset", function (newVal) {
-                                scope.chartData = newVal || scope.chartData;
-                                plotChartProxy(scope, element);
-                            });
+                            if(attrs.scopedataset) {
+                                scope.$watch("scopedataset", function (newVal) {
+                                    scope.chartData = newVal || scope.chartData;
+                                    plotChartProxy(scope, element);
+                                });
+                            }
                         } else {
                             /* on canvas-resize, plot the chart again */
                             scope.$on('$destroy', scope.$root.$on('canvas-resize', function () {
@@ -1808,7 +1803,6 @@ WM.module('wm.widgets.basic')
                                 if(boundVariableName === variableName) {
                                     scope.variableInflight = active;
                                     scope.message = active ? 'Loading Data...' : '';
-                                    plotChart(scope, element);
                                 }
                             }));
                         }
