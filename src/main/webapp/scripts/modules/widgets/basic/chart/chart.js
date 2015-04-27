@@ -10,7 +10,7 @@ WM.module('wm.widgets.basic')
                 '<div class="wm-content-info readonly-wrapper {{class}}" data-ng-show="showContentLoadError"><p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p></div>' +
             '</div></div>'
             );
-    }]).directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, Variables, QueryBuilder, Utils, $timeout) {
+    }]).directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, $timeout) {
         "use strict";
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.chart", ["wm.base"]),
             themes = {
@@ -78,7 +78,7 @@ WM.module('wm.widgets.basic')
                     }
                 }
             },
-           /*properties of the respective chart type*/
+           /* properties of the respective chart type */
             options = {
                 'Column': ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
                 'Line': ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
@@ -120,12 +120,62 @@ WM.module('wm.widgets.basic')
             dataTypeArray = ['Cumulative Line', 'Area'],     /*Charts that supports the data to be Array*/
             lineTypeCharts = ['Line', 'Area', 'Cumulative Line'],   /*Charts that does not supports the string type of data in the xaxis in the nvd3*/
             allShapes = ["circle", "square", "diamond", "cross", "triangle-up", "triangle-down"],
-            sampleData = {};
-
-        /* returns true if chart type is cumulative line */
-        function isCumulativeLineChart(type) {
-            return (type === 'Cumulative Line');
-        }
+            sampleData = {},
+            notifyFor = {
+                'dataset': true,
+                'xaxisdatakey': true,
+                'yaxisdatakey': true,
+                'type': true,
+                'height': true,
+                'width': true,
+                'show': true,
+                'xaxislabel': true,
+                'yaxislabel': true,
+                'xunits': true,
+                'yunits': true,
+                'xnumberformat': true,
+                'xdigits': true,
+                'xdateformat': true,
+                'ynumberformat': true,
+                'ydigits': true,
+                'ydateformat': true,
+                'showlegend': true,
+                'showvalues': true,
+                'showlabels': true,
+                'showcontrols': true,
+                'staggerlabels': true,
+                'reducexticks': true,
+                'offsettop': true,
+                'offsetbottom': true,
+                'offsetright': true,
+                'offsetleft': true,
+                'barspacing': true,
+                'xaxislabeldistance': true,
+                'yaxislabeldistance': true,
+                'theme': true,
+                'labeltype': true,
+                'donutratio': true,
+                'showlabelsoutside': true,
+                'aggregation': true,
+                'aggregationcolumn': true,
+                'groupby': true,
+                'orderby': true,
+                'fontsize': true,
+                'fontunit': true,
+                'color': true,
+                'fontfamily': true,
+                'fontweight': true,
+                'fontstyle': true,
+                'textdecoration': true,
+                'legendposition': true,
+                'shape': true,
+                'nodatamessage': true,
+                'captions': true,
+                'showxaxis': true,
+                'showyaxis': true,
+                'title': true,
+                'customcolors': true
+            };
 
         /* returns true if chart type is pie */
         function isPieChart(type) {
@@ -244,9 +294,10 @@ WM.module('wm.widgets.basic')
         /* get the data type for the service variable type*/
         function getDataType(key, data) {
             var keys = key.split('.'),
-                newKey = key;
+                newKey = key,
+                value;
             if (data) {
-                var value = data[key];
+                value = data[key];
                 /*If the element is not directly accessible then access it inside of it*/
                 if (value === undefined && keys.length > 1) {
                     data = data[keys[0]];
@@ -301,7 +352,7 @@ WM.module('wm.widgets.basic')
             /* Initially hiding all the properties*/
             hideOrShowProperties(allOptions, scope, false);
             /* Showing the properties based on the type of the chart*/
-            hideOrShowProperties((chartTypes.indexOf(scope.type) === -1) ? options['Column'] : options[scope.type] , scope, true);
+            hideOrShowProperties((chartTypes.indexOf(scope.type) === -1) ? options.Column : options[scope.type], scope, true);
 
             if (isPieType(scope.type)) {
                 /* If pie chart, set the display key for x and y axis datakey and subgroups */
@@ -324,8 +375,7 @@ WM.module('wm.widgets.basic')
 
                 scope.widgetProps.yaxisdatakey.widget = 'multiselect';
                 $timeout(function () {
-                    /* TODO: to check if same options can be fed to the checkboxset */
-                    scope.widgetDataset['yaxisdatakey'] = scope.axisoptions ? scope.axisoptions.join(',') : '';
+                    scope.widgetDataset.yaxisdatakey = scope.axisoptions ? scope.axisoptions.join(',') : '';
                 }, 5);
             }
         }
@@ -376,7 +426,7 @@ WM.module('wm.widgets.basic')
                 scope.widgetProps.yaxisdatakey.widget = 'list';
                 scope.widgetProps.yaxisdatakey.options = options;
             } else {
-                scope.widgetDataset['yaxisdatakey'] = dataSet || options ? options.join(',') : '';
+                scope.widgetDataset.yaxisdatakey = dataSet || options ? options.join(',') : '';
             }
         }
 
@@ -384,16 +434,16 @@ WM.module('wm.widgets.basic')
             return (groupby && groupby !== "none");
         }
 
+        /* enables/disables the aggregation column property*/
+        function toggleAggregationColumnState(scope) {
+            scope.widgetProps.aggregationcolumn.disabled = !(isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== "none");
+        }
+
         /* enables/disables the aggregation function property */
         function toggleAggregationState(scope) {
             scope.widgetProps.aggregation.disabled = !(isGroupByEnabled(scope.groupby));
             /* enables/disables the aggregation column property*/
             toggleAggregationColumnState(scope);
-        }
-
-        /* enables/disables the aggregation column property*/
-        function toggleAggregationColumnState(scope) {
-            scope.widgetProps.aggregationcolumn.disabled = !(isGroupByEnabled(scope.groupby) && scope.aggregation && scope.aggregation !== "none");
         }
 
         /* Displaying options for x and y axis based on the columns chosen in aggregation column and groupby*/
@@ -574,7 +624,7 @@ WM.module('wm.widgets.basic')
                 scope.xAxisDataType = getColumnType(xAxisKey, scope.dataset.propertiesMap.columns);
                 scope.yAxisDataType = getColumnType(yAxisKeys[0], scope.dataset.propertiesMap.columns);
             } else {
-                if(scope.chartData && scope.chartData[0]) {
+                if (scope.chartData && scope.chartData[0]) {
                     scope.xAxisDataType = getDataType(xAxisKey, scope.chartData[0]);
                     scope.yAxisDataType = getDataType(yAxisKeys[0], scope.chartData[0]);
                 }
@@ -865,8 +915,8 @@ WM.module('wm.widgets.basic')
                     }
                     return chartHeight;
                 },
-                getAxisLabelHeight = function(axis) {
-                    var axisLabel = d3.select("#"+ chartId +" .nv-"+ axis +".nv-axis .nv-axislabel")[0][0];
+                getAxisLabelHeight = function (axis) {
+                    var axisLabel = d3.select("#" + chartId + " .nv-" + axis + ".nv-axis .nv-axislabel")[0][0];
                     return axisLabel ? axisLabel.getBoundingClientRect().height : 0;
                 };
 
@@ -1048,9 +1098,7 @@ WM.module('wm.widgets.basic')
 
         /* intializes the chart obejct */
         function initChart(scope) {
-            var chart,
-                divider;
-            divider = tickformats[scope.ynumberformat] ? tickformats[scope.ynumberformat].divider : 1;
+            var chart;
             switch (scope.type) {
             case 'Column':
                 chart = nv.models.multiBarChart()
@@ -1110,7 +1158,6 @@ WM.module('wm.widgets.basic')
                     .x(function (d) {
                         return d.x;
                     })
-                    /*Dividing the respective value with divider[1000,1000000,1000000000] based on the number format choosen*/
                     .y(function (d) {
                         return d.y;
                     })
@@ -1152,11 +1199,11 @@ WM.module('wm.widgets.basic')
                 .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft})
                 .color(scope.customcolors || themes[scope.theme].colors);
 
-            if(!isPieType(scope.type)) {
+            if (!isPieType(scope.type)) {
                 chart.showXAxis(scope.showxaxis)
                     .showYAxis(scope.showyaxis);
             }
-            if(scope.tooltip) {
+            if (scope.tooltip) {
                 chart.tooltip.enabled();
             }
             /*setting the no data message*/
@@ -1266,7 +1313,7 @@ WM.module('wm.widgets.basic')
                 xaxislabel += scope.xunits ? "(" + scope.xunits + ")" : "";
                 yaxislabel += scope.yunits ? "(" + scope.yunits + ")" : "";
 
-                if(scope.captions) {
+                if (scope.captions) {
                     chart.xAxis.axisLabel(xaxislabel);
                     chart.yAxis.axisLabel(yaxislabel);
                 }
@@ -1316,9 +1363,9 @@ WM.module('wm.widgets.basic')
             if (isPieType(scope.type)) {
                 chart.tooltip.contentGenerator(function (key) {
                     var yValue;
-                    if(scope.labeltype === 'percent') {
+                    if (scope.labeltype === 'percent') {
                         yValue = d3.format('.3s')(key.data.y);
-                    } else if(scope.labeltype === 'value'){
+                    } else if (scope.labeltype === 'value') {
                         yValue = formatData(scope, key.data.y, scope.yAxisDataType, {
                             dateFormat: scope.ydateformat,
                             numberFormat: ynumberformat,
@@ -1460,17 +1507,19 @@ WM.module('wm.widgets.basic')
                 $rootScope.$emit('update-widget-property', 'groupby', choosenColumn);
             } else {
                 scope.widgetProps.groupby.widget = 'multiselect';
-                scope.widgetDataset['groupby']  = columns ? columns.join(',') : '';
+                scope.widgetDataset.groupby = columns ? columns.join(',') : '';
             }
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
+            var variableName,
+                variableObj,
+                elScope,
+                styleObj = {};
             switch (key) {
             case "dataset":
-                var variableName,
-                    variableObj,
-                    elScope = element.scope();
+                elScope = element.scope();
                 /*Set the variable name based on whether the widget is bound to a variable opr widget*/
                 if (scope.binddataset && scope.binddataset.indexOf("bind:Variables.") !== -1) {
                     variableName = scope.binddataset.replace("bind:Variables.", "");
@@ -1554,7 +1603,7 @@ WM.module('wm.widgets.basic')
                     scope.offsetright = 0;
                     scope.offsetbottom = 0;
                     scope.offsetleft = 0;
-                } else if(isPieType(oldVal)) {
+                } else if (isPieType(oldVal)) {
                     scope.offsettop = 25;
                     scope.offsetright = 25;
                     scope.offsetbottom = 55;
@@ -1666,7 +1715,6 @@ WM.module('wm.widgets.basic')
             case "fontstyle":
             case "textdecoration":
                 if (scope.chartReady) {
-                    var styleObj = {};
                     styleObj[styleProps[key]] = (key === 'fontsize' || key === 'fontunit') ? scope.fontsize + scope.fontunit : newVal;
                     setTextStyle(styleObj, scope.$id);
                 }
@@ -1679,63 +1727,6 @@ WM.module('wm.widgets.basic')
                 break;
             }
         }
-
-        var notifyFor = {
-            'dataset': true,
-            'xaxisdatakey': true,
-            'yaxisdatakey': true,
-            'type': true,
-            'height': true,
-            'width': true,
-            'show': true,
-            'xaxislabel': true,
-            'yaxislabel': true,
-            'xunits': true,
-            'yunits': true,
-            'xnumberformat': true,
-            'xdigits': true,
-            'xdateformat': true,
-            'ynumberformat': true,
-            'ydigits': true,
-            'ydateformat': true,
-            'showlegend': true,
-            'showvalues': true,
-            'showlabels': true,
-            'showcontrols': true,
-            'staggerlabels': true,
-            'reducexticks': true,
-            'offsettop': true,
-            'offsetbottom': true,
-            'offsetright': true,
-            'offsetleft': true,
-            'barspacing': true,
-            'xaxislabeldistance': true,
-            'yaxislabeldistance': true,
-            'theme': true,
-            'labeltype': true,
-            'donutratio': true,
-            'showlabelsoutside': true,
-            'aggregation': true,
-            'aggregationcolumn': true,
-            'groupby': true,
-            'orderby': true,
-            'fontsize': true,
-            'fontunit': true,
-            'color': true,
-            'fontfamily': true,
-            'fontweight': true,
-            'fontstyle': true,
-            'textdecoration': true,
-            'legendposition': true,
-            'shape': true,
-            'nodatamessage': true,
-            'captions': true,
-            'showxaxis': true,
-            'showyaxis': true,
-            'title': true,
-            'customcolors': true
-        };
-
 
         return {
             restrict: 'E',
@@ -1781,7 +1772,7 @@ WM.module('wm.widgets.basic')
                         if (CONSTANTS.isRunMode) {
                             /* fields defined in scope: {} MUST be watched explicitly */
                             /*watching scopedataset attribute to plot chart for the element.*/
-                            if(attrs.scopedataset) {
+                            if (attrs.scopedataset) {
                                 scope.$watch("scopedataset", function (newVal) {
                                     scope.chartData = newVal || scope.chartData;
                                     plotChartProxy(scope, element);
@@ -1797,10 +1788,10 @@ WM.module('wm.widgets.basic')
                         if (scope.binddataset && scope.binddataset.indexOf("bind:Variables.") !== -1) {
                             boundVariableName = scope.binddataset.replace("bind:Variables.", "");
                             boundVariableName = boundVariableName.split('.')[0];
-                            handlers.push($rootScope.$on('toggle-variable-state', function (event, variableName, active, response) {
+                            handlers.push($rootScope.$on('toggle-variable-state', function (event, variableName, active) {
                                 /*based on the active state and response toggling the 'loading data...' and 'no data found' messages */
                                 /*variable is active.so showing loading data message*/
-                                if(boundVariableName === variableName) {
+                                if (boundVariableName === variableName) {
                                     scope.variableInflight = active;
                                     scope.message = active ? 'Loading Data...' : '';
                                 }
