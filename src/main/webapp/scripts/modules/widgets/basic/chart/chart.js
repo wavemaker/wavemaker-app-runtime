@@ -1480,8 +1480,11 @@ WM.module('wm.widgets.basic')
 
         /*Sets the aggregation columns*/
         function setAggregationColumns(scope) {
+            if (!scope.axisoptions) {
+                return;
+            }
             /*Set the "aggregationColumn" to show all keys in case of aggregation function is count or to numeric keys in all other cases.*/
-            scope.widgetProps.aggregationcolumn.options = scope.aggregation !== "count" ? scope.numericColumns : scope.axisoptions;
+            scope.widgetProps.aggregationcolumn.options = scope.aggregation === "count" ? scope.axisoptions : scope.numericColumns;
         }
 
         /*Sets the groupby columns to the non primary key columns and other than aggregation column if chosen*/
@@ -1535,6 +1538,8 @@ WM.module('wm.widgets.basic')
                 variableObj = elScope.Variables && elScope.Variables[variableName];
                 /*setting the flag for the live variable in the scope for the checks*/
                 scope.isLiveVariable = variableObj && variableObj.category === 'wm.LiveVariable';
+                scope.axisoptions = WidgetUtilService.extractDataSetFields(scope.dataset, scope.dataset.propertiesMap);
+
                 /*If binded to a live variable feed options to the aggregation and group by*/
                 if (scope.isLiveVariable && CONSTANTS.isStudioMode) {
                     /*Updating the numeric and non primary columns when dataset is changed*/
@@ -1551,7 +1556,6 @@ WM.module('wm.widgets.basic')
                 if (!WM.isArray(scope.chartData) && WM.isObject(scope.chartData)) {
                     scope.chartData = [scope.chartData];
                 }
-                scope.axisoptions = WidgetUtilService.extractDataSetFields(scope.dataset, scope.dataset.propertiesMap);
 
                 /* scope variables used to keep the actual key values for x-axis */
                 scope.xDataKeyArr = [];
