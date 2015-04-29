@@ -243,7 +243,7 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wavemaker</groupId>
+            <groupId>com.wavemaker.tools</groupId>
             <artifactId>wavemaker-apidocs-tools-core</artifactId>
         </dependency>
         <dependency>
