@@ -580,7 +580,8 @@ WM.module('wm.widgets.live')
                         }
                         if (value.type === "blob") {
                             primaryKey = $scope.dataset.propertiesMap.primaryKeys.join();
-                            href = 'services/' + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + value.key + '?' + Math.random();
+                            href = (($scope.variableObj.prefabName !== "" &&  $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
+                            href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + value.key + '?' + Math.random();
                             value.href = href;
                         }
                         value.value = dataObj[value.key];

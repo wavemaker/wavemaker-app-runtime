@@ -1334,7 +1334,7 @@ WM.module('wm.widgets.grid')
                                 }
                             }
 
-                            $scope.contentBaseUrl = 'services/' + variableObj.liveSource + '/' + variableObj.type + '/';
+                            $scope.contentBaseUrl = (( variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                         }
                         /*if the grid is not bound to widgets*/
                     } else if ($scope.binddataset.indexOf('bind:Widgets') === -1) {
