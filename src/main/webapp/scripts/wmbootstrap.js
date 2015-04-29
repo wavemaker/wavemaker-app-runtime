@@ -57,8 +57,6 @@ var Application = WM.module('Application',
                 APP_LOCALE_PATH = "resources/i18n/",
                 isApplicaton;
 
-            // try to read config.json under webapp directory.
-            // if will be available only for the prefab projects.
 
             Utils.fetchContent(
                 'json',

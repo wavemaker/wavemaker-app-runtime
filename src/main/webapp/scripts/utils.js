@@ -1157,7 +1157,7 @@ WM.module('wm.utils', [])
                             ctrlName = widget.attr('data-ng-controller') || widget.attr('ng-controller');
 
                         if (ctrlName) {
-                            wrapper = WM.element('<div></div>').attr('data-ng-controller', ctrlName);
+                            wrapper = WM.element('<div class="app-controller"></div>').attr('data-ng-controller', ctrlName);
                             widget.removeAttr('data-ng-controller ng-controller').wrap(wrapper);
                         }
                     });
