@@ -258,7 +258,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             paramValue = TypeConversionUtils.fromString(loader, customProcedureParam.getParamValue().toString(), false);
         } catch (IllegalArgumentException ex) {
             LOGGER.error("Failed to Convert param value for procedure", ex);
-            throw new WMRuntimeException(MessageResource.QUERY_CONV_FAILURE, ex);
+            throw new WMRuntimeException(ex.getMessage(), ex);
         } catch (ClassNotFoundException ex) {
             throw new WMRuntimeException(MessageResource.CLASS_NOT_FOUND, ex, customProcedureParam.getProcedureParamType());
         }
