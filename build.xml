@@ -23,7 +23,7 @@
 
         <antcall target="cmd-template">
             <param name="cmd.name" value="grunt"/>
-            <param name="cmd.arg" value="build --no-color"/>
+            <param name="cmd.arg" value="build-production --no-color"/>
             <param name="cmd.executable.dir" value="src/main/webapp"/>
         </antcall>
 
