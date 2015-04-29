@@ -45,21 +45,25 @@ WM.module('wm.layouts.page')
                 '</div>'
             );
         $templateCache.put('template/layouts/templateshowcase.html',
-                '<div class="app-template showcase">' +
+                '<div class="app-template showcase" data-ng-hide="hideShowCase">' +
                     '<div class="showcase-header row">' +
-                        '<div class="col-md-5 template-title">{{templates[activeTemplateIndex].id}}</div>' +
-                        '<div class="col-md-2 nav-actions">' +
+                        '<div class="col-sm-5 template-title">{{templates[activeTemplateIndex].id}}</div>' +
+                        '<div class="col-sm-2 nav-actions">' +
                             '<span class="glypicon glyphicon glyphicon-menu-left nav-action" data-ng-click="prev()"></span>' +
                             '<span class="template-index">{{activeTemplateIndex + 1}}</span> of ' +
                             '<span class="template-count">{{templates.length}}</span>' +
                             '<span class="glypicon glyphicon glyphicon-menu-right nav-action" data-ng-click="next()"></span>' +
                         '</div>' +
-                        '<div class="col-md-offset-3 col-md-2">' +
+                        '<div class="col-sm-5">' +
+                            '<button class="btn btn-primary hide-show-case-btn" data-ng-click="hideShowCase = true">' +
+                                '<span><i class="fa fa-close"/></span> ' +
+                            '</button>' +
                             '<button class="btn btn-primary view-all-template-btn" data-ng-click="showAll = !showAll">' +
                                 '<span class="glyphicon glyphicon-menu-up" data-ng-hide="showAll"></span>' +
                                 '<span class="glyphicon glyphicon-menu-down" data-ng-show="showAll"></span>' +
                                 '<span> Templates </span> ' +
                             '</button>' +
+
                         '</div>' +
                     '</div>' +
                     '<div class="showcase-body" data-ng-show="showAll">' +
