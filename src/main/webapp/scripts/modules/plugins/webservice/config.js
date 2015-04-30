@@ -108,6 +108,14 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
         buildApiRestService: {
             url: "services/restservices/create",
             method: "POST"
+        },
+        getSoapServiceSettings: {
+            url: "services/projects/:projectId/soapservice/:serviceId/settings",
+            method: "GET"
+        },
+        setSoapServiceSettings: {
+            url: "services/projects/:projectId/soapservice/:serviceId/settings",
+            method: "POST"
         }
     }
 });
