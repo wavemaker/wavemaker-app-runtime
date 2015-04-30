@@ -135,9 +135,10 @@ WM.module('wm.layouts.page')
                 'scope': {},
                 'link': function (scope, element) {
                     Utils.fetchContent(
-                        "json",
-                        "./config.json",
+                        'json',
+                        Utils.preventCachingOf('./config.json'),
                         function (response) {
+                            scope.templates = [];
                             if (!response.error) {
                                 scope.templates = response.templates;
                             }

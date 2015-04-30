@@ -73,8 +73,8 @@ var Application = WM.module('Application',
 
             if (isPrefabProject) {
                 Utils.fetchContent(
-                    "json",
-                    "./config.json",
+                    'json',
+                    Utils.preventCachingOf('./config.json'),
                     function (response) {
                         if (!response.error) {
                             // save the content of the config file.
