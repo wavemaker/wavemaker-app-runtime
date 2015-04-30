@@ -12,8 +12,10 @@ WM.module('wm.widgets.live')
 
         function getVariableName() {
             var variableName;
-            variableName = $scope.binddataset.replace("bind:Variables.", "");
-            return variableName.substr(0, variableName.indexOf("."));
+            if ($scope.binddataset) {
+                variableName = $scope.binddataset.replace("bind:Variables.", "");
+                return variableName.substr(0, variableName.indexOf("."));
+            }
         }
 
         /*to get the list of columns from the dataSet/scopeDataSet*/
@@ -83,11 +85,16 @@ WM.module('wm.widgets.live')
                 if (WM.isObject(newVal) && !WM.isArray(newVal)) {
                     newVal = [newVal];
                 }
+                if (!$scope.binddataset) {
+                    if (WM.isString(newVal)) {
+                        newVal = newVal.split(',');
+                    }
+                }
                 if (newVal instanceof Array) {
                     $scope.dataNavigator.pagingOptions = {
                         maxResults: $scope.pagesize || 20
                     };
-                    if (!$scope.dataNavigatorWatched && $scope.dataNavigator && $scope.dataNavigator.show) {
+                    if (!$scope.dataNavigatorWatched && $scope.dataNavigator && $scope.shownavigation) {
                         $scope.dataNavigator.dataset = $scope.binddataset;
                         $scope.dataNavigatorWatched = true;
                         /*Register a watch on the "result" property of the "dataNavigator" so that the paginated data is displayed in the live-list.*/
@@ -122,7 +129,7 @@ WM.module('wm.widgets.live')
             /*If the "maxResults" property has been set in the dataNavigator, that takes precedence. Hence splice the data only if it is not set.*/
             /** Set the data to field-definitions, now the template will be modified and rendered,
              * If pageSize is mentioned then splice the data to get the required data*/
-            $scope.fieldDefs = ($scope.dataNavigator && !$scope.dataNavigator.show && $scope.pagesize) ? newData.splice(0, $scope.pagesize) : data;
+            $scope.fieldDefs = ($scope.dataNavigator && !$scope.shownavigation && $scope.pagesize) ? newData.splice(0, $scope.pagesize) : data;
             $scope.elementScope.fieldDefs = $scope.fieldDefs;
         };
 

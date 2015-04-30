@@ -35,7 +35,7 @@ WM.module('wm.layouts.containers')
                 }, undefined);
             }
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler(scope, element, key, newVal) {
+            function propertyChangeHandler(scope, key, newVal) {
                 switch (key) {
                 case 'layout':
                     if (newVal && CONSTANTS.isStudioMode) {
@@ -71,12 +71,13 @@ WM.module('wm.layouts.containers')
 
                         post: function (scope, element, attrs, controller) {
 
-                            var listScope = controller.getListScope();
+                            var listScope = controller.getListScope(),
+                                onPropertyChange;
 
                             listScope.markup = attrs.markup;
                             listScope.itemsPerRowClass = getRowClass(listScope.itemsperrow);
                             if (CONSTANTS.isStudioMode) {
-                                var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
+                                onPropertyChange = propertyChangeHandler.bind(undefined, scope);
                                 onPropertyChange.notifyFor = notifyFor;
                                 /* register the property change handler */
                                 scope.propertyManager.add(scope.propertyManager.ACTIONS.CHANGE, onPropertyChange);
