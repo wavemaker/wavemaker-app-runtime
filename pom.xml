@@ -64,7 +64,20 @@
         <module>wavemaker-app-runtime-prefab</module>
         <module>wavemaker-app-runtime-core</module>
     </modules>
-
+    <profiles>
+        <profile>
+            <id>runtime</id>
+            <activation>
+                <property>
+                    <name>!project.props.file</name>
+                </property>
+            </activation>
+            <properties>
+                <project.props.file>${main.basedir}/build-helpers/filters/desktop-runtime-local.props
+                </project.props.file>
+            </properties>
+        </profile>
+    </profiles>
     <build>
         <resources>
             <resource>
@@ -81,6 +94,25 @@
         </resources>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>read environment properties</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${project.props.file}</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <inherited>false</inherited>
@@ -90,7 +122,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <target>
-                                <ant antfile="${basedir}/build.xml" target="run-js-commands"/>
+                                <ant antfile="${basedir}/build.xml" target="run-js-commands-${wm_runtime_build_type}"/>
                             </target>
                         </configuration>
                         <goals>
@@ -786,5 +818,4 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
 </project>

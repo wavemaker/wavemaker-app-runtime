@@ -1,0 +1,4 @@
+#####################################################
+#Config properties for desktop environment
+#####################################################
+wm_runtime_build_type=local

@@ -13,7 +13,7 @@
         <echo>Ran command "${cmd.executable}" with args "${cmd.argline}" in directory ${cmd.executable.dir}</echo>
     </target>
 
-    <target name="run-js-commands">
+    <target name="run-js-commands-local">
 
         <antcall target="cmd-template">
             <param name="cmd.name" value="npm"/>
@@ -23,7 +23,23 @@
 
         <antcall target="cmd-template">
             <param name="cmd.name" value="grunt"/>
-            <param name="cmd.arg" value="build-production --no-color"/>
+            <param name="cmd.arg" value="build --no-color"/>
+            <param name="cmd.executable.dir" value="src/main/webapp"/>
+        </antcall>
+
+    </target>
+
+    <target name="run-js-commands-production">
+
+        <antcall target="cmd-template">
+            <param name="cmd.name" value="npm"/>
+            <param name="cmd.arg" value="install"/>
+            <param name="cmd.executable.dir" value="src/main/webapp"/>
+        </antcall>
+
+        <antcall target="cmd-template">
+            <param name="cmd.name" value="grunt"/>
+            <param name="cmd.arg" value="build-prod --no-color"/>
             <param name="cmd.executable.dir" value="src/main/webapp"/>
         </antcall>
 

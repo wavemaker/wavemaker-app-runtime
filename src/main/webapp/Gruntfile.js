@@ -281,7 +281,7 @@ module.exports = function (grunt) {
     });
 
     /*grunt task for production*/
-    grunt.registerTask('build-production', [
+    grunt.registerTask('build-prod', [
         'clean',
         'bower',
         'less',
