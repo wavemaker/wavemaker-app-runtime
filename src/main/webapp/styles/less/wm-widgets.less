@@ -803,8 +803,13 @@ body.modal-open {
     .app-list-item-value {
      word-break: break-all;
     }
-    &.active .panel {
-      color: @app-label-text-color;
+    &.active {
+      a.app-anchor {
+        color: inherit;
+      }
+      .panel {
+        color: @app-label-text-color;
+      }
     }
    }
   &.inline {
@@ -813,6 +818,12 @@ body.modal-open {
     }
   }
 
+  .popover.inline {
+    width: 100%;
+    position: relative;
+    max-width: 100%;
+    display: block;
+  }
   .app-list-header {
     background: #aeaeae;
     color: #464646;
