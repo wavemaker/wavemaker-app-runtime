@@ -297,10 +297,12 @@ WM.module('wm.widgets.live')
                                 /* to add <wm-labels> in the markup, based on dataSet
                                 */
                                 if (CONSTANTS.isStudioMode) {
-                                    if ((scope.oldbinddataset !== -1 && scope.oldbinddataset !== scope.binddataset)) {
-                                        scope.updateLiveListBindings(true);
-                                    } else if (scope.oldbinddataset === -1 && !attrs.dataset) {
-                                        scope.updateLiveListBindings();
+                                    if (attrs.template !== "true") {
+                                        if ((scope.oldbinddataset !== -1 && scope.oldbinddataset !== scope.binddataset)) {
+                                            scope.updateLiveListBindings(true);
+                                        } else if (scope.oldbinddataset === -1 && !attrs.dataset) {
+                                            scope.updateLiveListBindings();
+                                        }
                                     }
                                     scope.oldbinddataset = scope.binddataset;
                                     /*update selectedItem dataType*/
