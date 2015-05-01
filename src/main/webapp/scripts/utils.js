@@ -40,7 +40,9 @@ WM.module('wm.utils', [])
                 VALID_WEB_URL: /^(http[s]?:\/\/)(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/,  //ref : http://stackoverflow.com/questions/4314741/url-regex-validation
                 REPLACE_PATTERN: /\$\{([^\}]+)\}/g,
                 ZIP_FILE: /\.zip$/i,
-                EXE_FILE: /\.exe$/i
+                EXE_FILE: /\.exe$/i,
+                NO_QUOTES_ALLOWED: /^[^'|"]*$/,
+                VALID_HTML: /<[a-z][\s\S]*>/i
             },
             NUMBER_TYPES = ["int", "integer", "float", "double", "short", "byte"],
             SYSTEM_FOLDER_PATHS = {
@@ -528,6 +530,16 @@ WM.module('wm.utils', [])
         /*function to check valid java package name*/
         function isValidJavaPackageName(pkgName) {
             return pkgName.match(/^\w[\w\d_.]*[\w\d]$/);
+        }
+
+        /*function to check if quotes (both single and double) are NOT present in a string.*/
+        function isQuoteNotPresent(str) {
+            return REGEX.NO_QUOTES_ALLOWED.test(str);
+        }
+
+        /*function to check if string contains HTML tags.*/
+        function isValidHtml(str) {
+            return REGEX.VALID_HTML.test(str);
         }
 
         /*This function returns the url to the image after checking the validity of url*/
@@ -1272,6 +1284,8 @@ WM.module('wm.utils', [])
             isMobile: isMobile,
             isScriptLoaded: isScriptLoaded,
             isValidJavaPackageName: isValidJavaPackageName,
+            isValidHtml: isValidHtml,
+            isQuoteNotPresent: isQuoteNotPresent,
             stringStartsWith: stringStartsWith,
             stringEndsWith: stringEndsWith,
             isStyleSheetLoaded: isStyleSheetLoaded,
