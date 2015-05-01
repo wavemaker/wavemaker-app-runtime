@@ -25,8 +25,9 @@ WM.module('wm.prefabs')
         'WIDGET_CONSTANTS',
         '$rootScope',
         'DialogService',
+        'PrefabService',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rootScope, DialogService) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rootScope, DialogService, PrefabService) {
             'use strict';
 
             var prefabDefaultProps = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -55,7 +56,7 @@ WM.module('wm.prefabs')
                 }());
             }
 
-            function onConfigLoad(iScope, details) {
+            function onConfigLoad(iScope, serverProps, config) {
 
                 if (prefabWidgetPropsMap[iScope.prefabname]) {
                     iScope.widgetProps = WM.copy(prefabWidgetPropsMap[iScope.prefabname]);
@@ -86,10 +87,12 @@ WM.module('wm.prefabs')
                         'parent': 'events',
                         'properties': prefabEvents
                     });
+
+                    iScope.serverProps = serverProps;
                 }
 
-                userDefinedProps = details.properties || {};
-                iScope.prefabid = details.id;
+                userDefinedProps = config.properties || {};
+                iScope.prefabid = config.id;
 
                 WM.forEach(userDefinedProps, function (prop, key) {
 
@@ -166,17 +169,26 @@ WM.module('wm.prefabs')
                 'compile': function () {
                     return {
                         'pre': function (iScope, element, attrs) {
+                            var serverProps;
+                            function loadDependencies() {
+                                if (CONSTANTS.isStudioMode) {
+                                    PrefabService.getAppPrefabServerProps({
+                                        'projectID': $rootScope.project.id,
+                                        'prefabName': iScope.prefabname
+                                    }, function (response) {
+                                        serverProps = response || {};
+                                    });
+
+                                }
+                                PrefabManager.loadAppPrefabConfig(iScope.prefabname, onConfigLoad.bind(undefined, iScope, serverProps));
+                            }
                             if (CONSTANTS.isStudioMode && attrs.registrationRequired !== undefined) {
                                 PrefabManager.registerPrefab(
                                     iScope.prefabname,
-                                    PrefabManager.loadAppPrefabConfig.bind(
-                                        undefined,
-                                        iScope.prefabname,
-                                        onConfigLoad.bind(undefined, iScope)
-                                    )
+                                    loadDependencies
                                 );
                             } else {
-                                PrefabManager.loadAppPrefabConfig(iScope.prefabname, onConfigLoad.bind(undefined, iScope));
+                                loadDependencies();
                             }
                         },
 
