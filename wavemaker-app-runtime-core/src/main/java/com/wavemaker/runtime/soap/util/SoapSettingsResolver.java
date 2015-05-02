@@ -46,8 +46,8 @@ public class SoapSettingsResolver {
                 requestContext.put(BindingProvider.PASSWORD_PROPERTY, bindingProperties.getHttpBasicAuthPassword());
             }
 
-            requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, Long.valueOf(bindingProperties.getConnectionTimeout()));
-            requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, Long.valueOf(bindingProperties.getRequestTimeout()));
+            requestContext.put(JAXWSProperties.CONNECT_TIMEOUT, Integer.valueOf(bindingProperties.getConnectionTimeout()));
+            requestContext.put(JAXWSProperties.REQUEST_TIMEOUT, Integer.valueOf(bindingProperties.getRequestTimeout()));
 
             if (StringUtils.isNotEmpty(bindingProperties.getSoapActionURI())) {
                 requestContext.put(BindingProvider.SOAPACTION_USE_PROPERTY, true);

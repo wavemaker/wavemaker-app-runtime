@@ -29,8 +29,8 @@ public class SoapServiceSettings {
 
     private String endpointAddress;
 
-    private long connectionTimeout;
-    private long requestTimeout;
+    private int connectionTimeout;
+    private int requestTimeout;
 
     private String soapActionURI;
 
@@ -95,7 +95,7 @@ public class SoapServiceSettings {
      *
      * @return The connection timeout value
      */
-    public long getConnectionTimeout() {
+    public int getConnectionTimeout() {
         return this.connectionTimeout;
     }
 
@@ -104,7 +104,7 @@ public class SoapServiceSettings {
      *
      * @param connectionTimeout The connection timeout value to set.
      */
-    public void setConnectionTimeout(long connectionTimeout) {
+    public void setConnectionTimeout(int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
     }
 
@@ -113,7 +113,7 @@ public class SoapServiceSettings {
      *
      * @return The request timeout value.
      */
-    public long getRequestTimeout() {
+    public int getRequestTimeout() {
         return this.requestTimeout;
     }
 
@@ -122,7 +122,7 @@ public class SoapServiceSettings {
      *
      * @param requestTimeout The request timeout value to set.
      */
-    public void setRequestTimeout(long requestTimeout) {
+    public void setRequestTimeout(int requestTimeout) {
         this.requestTimeout = requestTimeout;
     }
 
