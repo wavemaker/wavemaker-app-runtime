@@ -61,6 +61,9 @@ WM.module('wm.prefabs')
                 if (prefabWidgetPropsMap[iScope.prefabname]) {
                     iScope.widgetProps = WM.copy(prefabWidgetPropsMap[iScope.prefabname]);
                     iScope._methodsMap = prefabMethodsMap[iScope.prefabname];
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.serverProps = serverProps;
+                    }
                     return;
                 }
 
@@ -148,6 +151,9 @@ WM.module('wm.prefabs')
 
                 iScope.widgetProps = WM.copy(prefabWidgetPropsMap[iScope.prefabname]);
                 iScope._methodsMap = prefabMethodsMap[iScope.prefabname];
+                if (CONSTANTS.isStudioMode) {
+                    iScope.serverProps = serverProps;
+                }
             }
 
             return {
