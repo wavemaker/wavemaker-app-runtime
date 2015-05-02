@@ -159,6 +159,10 @@ $.widget('wm.datagrid', {
             var random = this.random;
             return random() + random() + '-' + random() + '-' + random() + '-' +
                 random() + '-' + random() + random() + random();
+        },
+        isValidHtml: function (htm) {
+            var validHtmlRegex = /<[a-z][\s\S]*>/i;
+            return validHtmlRegex.test(htm);
         }
     },
 
@@ -369,13 +373,20 @@ $.widget('wm.datagrid', {
     _getColumnTemplate: function (row, colId, colDef) {
         var classes = this.options.cssClassNames.tableCell,
             htm = '<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"',
+            colExpression,
+            invalidExpression = false,
             ctId,
             template,
             columnValue;
         if (colDef.customExpression) {
             ctId = row.pk + '-' + colId;
             htm += 'data-custom-template="' + ctId + '">';
-            template = this.options.getCompiledTemplate(colDef.customExpression, row, colDef) || '';
+            colExpression = colDef.customExpression;
+            if (!this.Utils.isValidHtml(colExpression)) {
+                colExpression = '<span>' + colExpression + '</span>';
+                invalidExpression = true;
+            }
+            template = this.options.getCompiledTemplate(colExpression, row, colDef) || '';
             this.customCellTemplates[ctId] = template;
         } else if (colDef.widgetType) {
             template = '';

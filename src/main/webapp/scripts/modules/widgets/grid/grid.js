@@ -128,7 +128,8 @@ WM.module('wm.widgets.grid')
                 'readonlygrid': true,
                 'gridcaption': true,
                 'gridclass': true,
-                'nodatamessage': true
+                'nodatamessage': true,
+                'loadingdatamsg': true
             },
             getObjectIndexInArray = function (key, value, arr) {
                 var index = -1;
@@ -179,7 +180,7 @@ WM.module('wm.widgets.grid')
                         '</div>' +
                         '<div class="app-datagrid-actions col-md-6 col-sm-4 col-xs-12">' +
                             '<wm-button ng-repeat="btn in actions" caption="{{btn.label}}" show="{{btn.show}}" class="btn-sm {{btn.class}}" ' +
-                            'iconname="{{btn.icon}}" on-click="{{btn.action}}"></wm-button>' +
+                                'iconname="{{btn.icon}}" on-click="{{btn.action}}"></wm-button>' +
                         '</div>' +
                     '</div></div>';
             },
@@ -441,6 +442,9 @@ WM.module('wm.widgets.grid')
                             case 'nodatamessage':
                                 scope.datagridElement.datagrid('option', 'dataStates.nodata', newVal);
                                 break;
+                            case 'loadingdatamsg':
+                                scope.datagridElement.datagrid('option', 'dataStates.loading', newVal);
+                                break;
                             }
                         }
 
@@ -448,7 +452,7 @@ WM.module('wm.widgets.grid')
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
 
                         /*Register a watch on the "bindDataSet" property so that whenever the dataSet binding is changed,
-                        * the "dataNavigatorWatched" value is reset.*/
+                         * the "dataNavigatorWatched" value is reset.*/
                         handlers.push(scope.$watch('binddataset', function (newVal, oldVal) {
                             if (newVal !== oldVal) {
                                 scope.dataNavigatorWatched = false;
@@ -748,16 +752,17 @@ WM.module('wm.widgets.grid')
                     $scope.onSort({$event: e, $data: $scope.serverData});
                 },
                 getCompiledTemplate = function (htm, row, colDef) {
-                    var isolateScope = $scope.$new();
-                    isolateScope.row = row;
-                    isolateScope.row.getProperty = function (field) {
+                    var rowScope = $scope.$new(),
+                        el = WM.element(htm);
+                    rowScope.row = row;
+                    rowScope.row.getProperty = function (field) {
                         return row[field];
                     };
-                    isolateScope.colDef = colDef;
-                    isolateScope.col = row[colDef.field];
-                    return $compile(htm)(isolateScope);
+                    rowScope.colDef = colDef;
+                    rowScope.columnValue = row[colDef.field];
+                    return $compile(el)(rowScope);
                 },
-                /* Check whether it is non-empty row. */
+            /* Check whether it is non-empty row. */
                 isEmptyRecord = function (record) {
                     var properties = Object.keys(record),
                         data,
@@ -768,7 +773,7 @@ WM.module('wm.widgets.grid')
                         /* If fieldDefs are missing, show all columns in data. */
                         isDisplayed = ($scope.fieldDefs.length && WM.isDefined($scope.fieldDefs[index]) && (CONSTANTS.isMobile ?
                             $scope.fieldDefs[index].mobileDisplay : $scope.fieldDefs[index].pcDisplay)) ||
-                            true;
+                        true;
                         /*Validating only the displayed fields*/
                         if (isDisplayed) {
                             return (data === null || data === undefined || data === '');
@@ -776,7 +781,7 @@ WM.module('wm.widgets.grid')
                         return true;
                     });
                 },
-                /* Function to remove the empty data. */
+            /* Function to remove the empty data. */
                 removeEmptyRecords = function (serviceData) {
                     var allRecords = serviceData.data || serviceData,
                         filteredData = [];
@@ -1246,7 +1251,7 @@ WM.module('wm.widgets.grid')
                     elScope,
                     result,
                     selectedItemIndex;
-                $scope.datagridElement.datagrid('setStatus', 'loading');
+                $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
 
                 result = Utils.getValidJSON(newVal);
 
@@ -1443,8 +1448,8 @@ WM.module('wm.widgets.grid')
                             columnDef.widgetType = column.widgetType;
                             columnDef.displayName = column.displayName;
                             columnDef.searchPlaceholder = column.searchPlaceholder || (
-                                    columnDef.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd'
-                                )
+                                columnDef.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd'
+                            )
                         }
                     });
                     /* if properties map is provided, append the same to column defs*/
@@ -1453,7 +1458,7 @@ WM.module('wm.widgets.grid')
                         columnDef.primaryKey = columns[columnDef.field].isPrimaryKey;
                         columnDef.generator = columns[columnDef.field].generator;
                         columnDef.readonly = WM.isDefined(columns[columnDef.field].readonly) ?
-                                columns[columnDef.field].readonly === "true" : columnDef.generator === 'identity';
+                            columns[columnDef.field].readonly === "true" : columnDef.generator === 'identity';
 
                         /*Prevent searching and sorting on non-primary key columns in related tables.*/
                         columnDef.searchable = columnDef.sortable = !(columnDef.field && columnDef.field.indexOf('.') !== -1 && !columnDef.primaryKey);
@@ -1652,9 +1657,7 @@ WM.module('wm.widgets.grid')
                         columnDef.readonly = WM.isDefined(attrs.readonly) ? attrs.readonly === "true" : columnDef.generator === 'identity';
 
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
-                            if (columnDef.widgetType === 'image') {
-                                columnDef.customExpression = '<img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
-                            } else {
+                            if (columnDef.widgetType !== 'image') {
                                 columnDef.customExpression = '<a ng-if="col != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 glyphicon glyphicon-file"></i></a>';
                             }
                         }
