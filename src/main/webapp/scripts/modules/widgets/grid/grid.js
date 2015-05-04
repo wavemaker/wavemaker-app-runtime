@@ -1447,6 +1447,8 @@ WM.module('wm.widgets.grid')
                             columnDef.textColor = column.textColor;
                             columnDef.widgetType = column.widgetType;
                             columnDef.displayName = column.displayName;
+                            columnDef.class = column.class;
+                            columnDef.ngClass = column.ngClass;
                             columnDef.searchPlaceholder = column.searchPlaceholder || (
                                 columnDef.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd'
                             )
@@ -1646,6 +1648,8 @@ WM.module('wm.widgets.grid')
                                 'generator': attrs.generator,
                                 'widgetType': attrs.widgetType,
                                 'style': styleDef,
+                                'class': attrs.colClass || '',
+                                'ngClass': attrs.colNgClass || '',
                                 'searchPlaceholder': attrs.searchPlaceholder || (attrs.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd')
                             };
 

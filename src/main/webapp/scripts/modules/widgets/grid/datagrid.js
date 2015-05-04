@@ -371,27 +371,28 @@ $.widget('wm.datagrid', {
 
     /* Returns the table cell template. */
     _getColumnTemplate: function (row, colId, colDef) {
-        var classes = this.options.cssClassNames.tableCell,
+        var classes = this.options.cssClassNames.tableCell + ' ' + colDef.class,
+            ngClass = colDef.ngClass || '',
             htm = '<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"',
             colExpression,
             invalidExpression = false,
-            ctId,
+            ctId = row.pk + '-' + colId,
             template,
+            isCellCompiled = false,
             columnValue;
+        if (ngClass) {
+            htm += 'data-ng-class="' + ngClass + '" data-compiled-template="' + ctId + '" ';
+            isCellCompiled = true;
+        }
+
         if (colDef.customExpression) {
-            ctId = row.pk + '-' + colId;
-            htm += 'data-custom-template="' + ctId + '">';
-            colExpression = colDef.customExpression;
-            if (!this.Utils.isValidHtml(colExpression)) {
-                colExpression = '<span>' + colExpression + '</span>';
-                invalidExpression = true;
+            if (isCellCompiled) {
+                htm += '>';
+            } else {
+                htm += 'data-compiled-template="' + ctId + '">';
+                isCellCompiled = true;
             }
-            template = this.options.getCompiledTemplate(colExpression, row, colDef) || '';
-            this.customCellTemplates[ctId] = template;
-        } else if (colDef.widgetType) {
-            template = '';
-            htm += 'data-widget-template>';
-            htm += this._getWidgetTemplate(colDef, row);
+            htm += colDef.customExpression;
         } else {
             htm += '>';
             if (colDef.type !== 'custom') {
@@ -429,6 +430,9 @@ $.widget('wm.datagrid', {
             }
         }
         htm += '</td>';
+        if (isCellCompiled) {
+            this.compiledCellTemplates[ctId] = this.options.getCompiledTemplate(htm, row, colDef) || '';
+        }
         return htm;
     },
 
@@ -577,7 +581,7 @@ $.widget('wm.datagrid', {
                 'value': '',
                 'event': null
             },
-            customCellTemplates: {}
+            compiledCellTemplates: {}
         });
         this._prepareHeaderData();
         this._prepareData();
@@ -1120,19 +1124,19 @@ $.widget('wm.datagrid', {
         }
     },
 
-    /* Replaces all the custom templates with the actual compiled templates. */
-    _findAndReplaceCustomTemplates: function () {
+    /* Replaces all the templates needing angular compilation with the actual compiled templates. */
+    _findAndReplaceCompiledTemplates: function () {
         if (!this.gridBody) {
             return;
         }
-        var $cells = this.gridBody.find('[data-custom-template]'),
+        var $compiledCells = this.gridBody.find('td[data-compiled-template]'),
             self = this;
 
-        $cells.each(function () {
+        $compiledCells.each(function () {
             var $cell = $(this),
-                id = $cell.attr('data-custom-template');
+                id = $cell.attr('data-compiled-template');
 
-            $cell.append(self.customCellTemplates[id]);
+            $cell.replaceWith(self.compiledCellTemplates[id]);
         });
     },
 
@@ -1259,7 +1263,7 @@ $.widget('wm.datagrid', {
             this.setStatus(this.dataStatus.state, this.dataStatus.message);
         }
         this.gridBody = this.gridElement.find('tbody');
-        this._findAndReplaceCustomTemplates();
+        this._findAndReplaceCompiledTemplates();
         this.attachEventHandlers($htm);
     },
 
