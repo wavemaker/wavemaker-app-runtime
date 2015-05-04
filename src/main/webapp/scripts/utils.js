@@ -108,24 +108,24 @@ WM.module('wm.utils', [])
                 "wm.TimerVariable": "time"
             },
             fieldTypeWidgetTypeMap = {
-                'integer': ['Number', 'Text', 'Slider'],
-                'big_integer': ['Number', 'Text', 'Slider'],
-                'short': ['Number', 'Text', 'Slider'],
-                'byte': ['Number', 'Text', 'Slider'],
-                'date': ['Date', 'Text'],
-                'boolean': ['Checkbox', 'Text'],
+                'integer': ['Number', 'Text', 'Slider', 'Select'],
+                'big_integer': ['Number', 'Text', 'Slider', 'Select'],
+                'short': ['Number', 'Text', 'Slider', 'Select'],
+                'byte': ['Number', 'Text', 'Slider', 'Select'],
+                'date': ['Date', 'Text', 'Select'],
+                'boolean': ['Checkbox', 'Text', 'Select'],
                 'list': ['Select', 'Text', 'Datalist'],
-                'float': ['Number', 'Text', 'Slider'],
-                'big_decimal': ['Number', 'Text', 'Slider'],
-                'double': ['Number', 'Text', 'Slider'],
-                'string': ['Text', 'Textarea', 'Password', 'RichText'],
-                'character': ['Text', 'Textarea', 'RichText'],
-                'text': ['Textarea', 'Text', 'RichText'],
+                'float': ['Number', 'Text', 'Slider', 'Select'],
+                'big_decimal': ['Number', 'Text', 'Slider', 'Select'],
+                'double': ['Number', 'Text', 'Slider', 'Select'],
+                'string': ['Text', 'Textarea', 'Password', 'RichText', 'Select'],
+                'character': ['Text', 'Textarea', 'RichText', 'Select'],
+                'text': ['Textarea', 'Text', 'RichText', 'Select'],
                 'clob': ['Textarea', 'Text', 'RichText'],
                 'blob': ['Upload', 'Textarea', 'Text', 'RichText'],
-                'time': ['Time', 'Text'],
-                'timestamp': ['Timestamp', 'Text', 'Date', 'Time'],
-                'custom': ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider']
+                'time': ['Time', 'Text', 'Select'],
+                'timestamp': ['Timestamp', 'Text', 'Date', 'Time', 'Select'],
+                'custom': ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select']
             },
             indexPage = getIndexPage();
 
@@ -220,7 +220,7 @@ WM.module('wm.utils', [])
      * @param handleInValidMarkUp
      * @return {String}
      */
-        function getValidMarkUp (htmlString, handleValidMarkUp, handleInValidMarkUp) {
+        function getValidMarkUp(htmlString, handleValidMarkUp, handleInValidMarkUp) {
             var newMarkup = "", checkValidRootElement = function (ele) {
                 return WM.element(ele).is("wm-page, wm-partial, wm-template");
             },

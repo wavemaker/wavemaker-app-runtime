@@ -1001,12 +1001,24 @@ WM.module('wm.widgets.live')
                     '</div></wm-composite>';
                 break;
             case "Select":
-                template = template +
-                    '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value[dataArray[' + index + '].selected]}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].value" scopedatavalue="dataArray[' + index + '].selected" show="{{isUpdateMode}}"></wm-select>' +
-                    '</div></wm-composite>';
+                switch (fieldDef.type) {
+                case "list":
+                    template = template +
+                        '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value[dataArray[' + index + '].selected]}}" show="{{!isUpdateMode}}"></wm-label>' +
+                        '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].value" scopedatavalue="dataArray[' + index + '].selected" show="{{isUpdateMode}}"></wm-select>' +
+                        '</div></wm-composite>';
+                    break;
+                default:
+                    template = template +
+                        '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                        '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-select>' +
+                        '</div></wm-composite>';
+                    break;
+                }
                 break;
             case "Datalist":
                 template = template +
@@ -1182,6 +1194,15 @@ WM.module('wm.widgets.live')
                         }
                         if (attrs.widgetType) {
                             columnDef.widgetType = attrs.widgetType;
+                        }
+                        if (attrs.dataset) {
+
+                            if (Utils.stringStartsWith(attrs.dataset, 'bind:') && CONSTANTS.isRunMode) {
+                                expr = attrs.dataset.replace('bind:', '');
+                                columnDef.dataset = parentIsolateScope.$eval(expr);
+                            } else {
+                                columnDef.dataset = attrs.dataset;
+                            }
                         }
                         if (attrs.extensions) {
                             columnDef.extensions = attrs.extensions;
