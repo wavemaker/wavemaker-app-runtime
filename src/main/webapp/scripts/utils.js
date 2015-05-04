@@ -717,20 +717,20 @@ WM.module('wm.utils', [])
 
         /*function to handle the load event of the iframe which is called when the iframe is loaded after form submit to
          * handle manipulations after file upload.*/
-        function handleUploadIFrameOnLoad(iFrameElement, successCallback, errorCallback) {
+        function handleUploadIFrameOnLoad(iFrameElement, successCallback, errorCallback, evt) {
             var serverResponse;
             /*removing event listener for the iframe*/
-            iFrameElement.off("load", function () {
-                handleUploadIFrameOnLoad(iFrameElement, successCallback, errorCallback);
-            });
+            iFrameElement.off("load", handleUploadIFrameOnLoad);
             /*obtaining the server response of the form submit and prefab import*/
             serverResponse = WM.element('#fileUploadIFrame').contents().find('body').text();
-
+            if(evt && evt.currentTarget) {
+                evt.currentTarget.responseText = serverResponse;
+            }
             /*removing the iframe element from the DOM markup after import/upload is successful.*/
             iFrameElement.first().remove();
             /*triggering the callback function when succes response is encountered*/
             if (!serverResponse.errorDetails) {
-                triggerFn(successCallback, serverResponse);
+                triggerFn(successCallback,  evt);
             } else {
                 triggerFn(errorCallback);
             }
@@ -759,8 +759,8 @@ WM.module('wm.utils', [])
             WM.element('body').append(iFrameElement);
 
             /*event handler for handling load event of iframe*/
-            iFrameElement.on("load", function () {
-                handleUploadIFrameOnLoad(iFrameElement, successCallback, errorCallback);
+            iFrameElement.on("load", function (evt) {
+                handleUploadIFrameOnLoad(iFrameElement, successCallback, errorCallback, evt);
             });
 
             formElement = WM.element("*[name=" + uploadConfig.formName + "]").first();

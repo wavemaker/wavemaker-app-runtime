@@ -511,12 +511,14 @@ WM.module('wm.widgets.form')
 
                         /* Upload the single file using upload directive */
                         scope.uploadSingleFile = function ($evt, $file) {
-                            /* to call on-select event-fn*/
-                            onFileSelect($evt, $file);
-                            /* Delete previous html node , when new file is uploading */
-                            var statusEle = element.find('.app-files-upload-status.single');
-                            statusEle.html('');
-                            uploadFile($evt, $file[0], statusEle);
+                            if($file.length) {
+                                /* to call on-select event-fn*/
+                                onFileSelect($evt, $file);
+                                /* Delete previous html node , when new file is uploading */
+                                var statusEle = element.find('.app-files-upload-status.single');
+                                statusEle.html('');
+                                uploadFile($evt, $file[0], statusEle);
+                            }
                         };
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
