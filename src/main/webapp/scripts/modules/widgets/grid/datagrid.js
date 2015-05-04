@@ -951,7 +951,7 @@ $.widget('wm.datagrid', {
                     id = $el.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id],
                     editableTemplate;
-                if (!colDef.readonly) {
+                if (!(colDef.readonly || colDef.customExpression)) {
                     editableTemplate = self._getEditableTemplate(colDef.field);
                     $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
                     // TODO: Use some other selector. Input will fail for other types.
