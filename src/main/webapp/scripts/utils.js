@@ -337,8 +337,17 @@ WM.module('wm.utils', [])
 
         /*function to check if fn is a function and then execute*/
         function triggerFn(fn) {
+            /* Use of slice on arguments will make this function not optimizable
+            * https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#32-leaking-arguments
+            * */
+
+            var start = 1, len = arguments.length, args = new Array(len - start);
+            for (start; start < len; start++) {
+                args[start - 1] = arguments[start];
+            }
+
             if (WM.isFunction(fn)) {
-                fn.apply(null, sliceFn.call(arguments, 1));
+                fn.apply(null, args);
             }
         }
 
