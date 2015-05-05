@@ -238,10 +238,10 @@ WM.module('wm.utils', [])
                 triggerFn(handleInValidMarkUp);
                 //the page markup is not valid
                 $outerEle = WM.element("<div>" + htmlString + "</div>");
-                $innerEle = WM.element($outerEle).find("wm-page, wm-partial, wm-template");
+                $innerEle = $outerEle.find("wm-page, wm-partial, wm-template");
 
                 if ($innerEle.length > 0) {
-                    newMarkup = WM.element($innerEle[0]).prop('outerHTML');
+                    newMarkup = $innerEle[0].outerHTML;
                 }
             }
             return newMarkup;
