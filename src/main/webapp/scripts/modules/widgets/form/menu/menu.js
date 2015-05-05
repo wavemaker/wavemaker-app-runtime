@@ -27,7 +27,7 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',
-                '<ul class="dropdown-menu">' +
+                '<ul class="dropdown-menu pull-right">' +
                     '<wm-menu-dropdown-item data-ng-repeat="item in items" item="item"/>' +
                 '</ul>'
             );

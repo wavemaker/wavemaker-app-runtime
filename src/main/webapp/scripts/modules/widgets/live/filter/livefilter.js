@@ -355,7 +355,7 @@ WM.module('wm.widgets.live')
                                 case "layout":
                                     if (CONSTANTS.isStudioMode && scope.newcolumns) {
                                         scope.newcolumns = false;
-                                        var designerObj = {
+                                        designerObj = {
                                             widgetName: scope.name,
                                             fieldDefs: scope.filterFields,
                                             buttonDefs: scope.buttonArray,
@@ -416,7 +416,7 @@ WM.module('wm.widgets.live')
                 }
             };
         }])
-    .directive("wmFilterField", ["$compile", "QueryBuilder", "Variables", function ($compile, QueryBuilder, Variables) {
+    .directive("wmFilterField", ["$compile", function ($compile) {
         'use strict';
 
         /* provides the template based on the form-field definition */
