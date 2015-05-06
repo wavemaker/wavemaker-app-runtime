@@ -262,15 +262,18 @@ WM.module('wm.widgets.grid')
                         /* Event to update "insertrow", "updaterow" and "deleterow" properties based on "readonlygrid" value.
                          * NOTE: This is not handled in propertyChangeHandler because we have to update these properties only
                          * when user explicitly clicks readonlygrid checkbox. */
-                        handlers.push($rootScope.$on('grid-action-properties-modified', function (event, readonlygrid) {
-                            scope.deleterow = !readonlygrid;
-                            scope.updaterow = !readonlygrid;
-                            scope.insertrow = !readonlygrid;
-                            $rootScope.$emit('set-markup-attr', scope.widgetid, {
-                                'insertrow': scope.insertrow,
-                                'updaterow': scope.updaterow,
-                                'deleterow': scope.deleterow
-                            });
+                        handlers.push($rootScope.$on('grid-action-properties-modified', function (event, scopeId, readonlygrid) {
+                            /* as multiple grid directives will be listening to the event, apply readonlygrid property only for current grid */
+                            if (scope.$id === scopeId) {
+                                scope.deleterow = !readonlygrid;
+                                scope.updaterow = !readonlygrid;
+                                scope.insertrow = !readonlygrid;
+                                $rootScope.$emit('set-markup-attr', scope.widgetid, {
+                                    'insertrow': scope.insertrow,
+                                    'updaterow': scope.updaterow,
+                                    'deleterow': scope.deleterow
+                                });
+                            }
                         }));
 
                         /* event emitted on building new markup from canvasDom */
