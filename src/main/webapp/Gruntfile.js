@@ -56,7 +56,7 @@ module.exports = function (grunt) {
                         dest: '<%= config.application %>/styles/fonts'
                     },
                     {
-                        cwd: '<%= config.components %>/bootstrap',
+                        cwd: '<%= config.components %>/bootstrap/css',
                         src: 'bootstrap.css.map',
                         expand: true,
                         dest: '<%= config.application %>/styles/css/'

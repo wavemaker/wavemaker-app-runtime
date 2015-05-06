@@ -43,7 +43,7 @@
     },
     "bootstrap" : {
       "less": "less/",
-      ".": ["dist/css/*.css", "dist/css/*.map"],
+      "css": ["dist/css/*.css", "dist/css/*.map"],
       "fonts": "fonts/"
     },
     "placeholders": {
