@@ -290,6 +290,7 @@ WM.module('wm.prefabs')
                             } else { //dependencies already loaded.
                                 compileTemplate(depsMap[prefabName].templateContent);
                             }
+                            iScope.showServerProps = iScope.serverProps && Object.keys(iScope.serverProps).length;
                         }
                     };
                 }
