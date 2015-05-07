@@ -18,7 +18,7 @@ WM.module('wm.widgets.form')
                 '</select>'
                 );
     }])
-    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', '$timeout', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $timeout, CONSTANTS) {
+    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
 
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/

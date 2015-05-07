@@ -1157,7 +1157,8 @@ WM.module('wm.widgets.live')
                             template,
                             index,
                             columnDef,
-                            expr;
+                            expr,
+                            exprWatchHandler;
 
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
@@ -1187,7 +1188,17 @@ WM.module('wm.widgets.live')
                         if (attrs.defaultValue) {
                             if (Utils.stringStartsWith(attrs.defaultValue, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = attrs.defaultValue.replace('bind:', '');
-                                columnDef.defaultValue = scope.$eval(expr);
+                                if (scope.Variables && !Utils.isEmptyObject(scope.Variables)) {
+                                    columnDef.defaultValue = scope.$eval(expr);
+                                } else {
+                                    exprWatchHandler = scope.$watch(expr, function (newVal) {
+                                        parentIsolateScope.dataArray[index].defaultValue = newVal;
+                                        parentIsolateScope.dataArray[index].selected = newVal;
+                                        if (newVal) {
+                                            exprWatchHandler();
+                                        }
+                                    });
+                                }
                             } else {
                                 columnDef.defaultValue = attrs.defaultValue;
                             }
