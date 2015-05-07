@@ -145,7 +145,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     paramTypeListRefsKey,
                     isListKey,
                     isParamListKey,
-                    isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1;
+                    isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1,
+                    PAGE_TYPE = "org.springframework.data.domain.Page";
                 if (isRestSupportedService) {
                     paramsKey = "parameters";
                     opTypeRefsKey = "fullyQualifiedReturnType";
@@ -171,9 +172,10 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         typeRef,
                         returnObj;
 
+                    /* special case for pageable return type */
                     if (isRestSupportedService) {
                         isList = operation[isListKey];
-                        typeRef = isList ? (operation[listOpTypeRefsKey][0] || 'java.lang.Object') : operation[opTypeRefsKey];
+                        typeRef = (isList || operation[opTypeRefsKey] === PAGE_TYPE)? (operation[listOpTypeRefsKey][0] || 'java.lang.Object') : operation[opTypeRefsKey];
                         returnObj = {typeRef: typeRef};
                     } else {
                         returnObj = operation[opTypeRefsKey];
