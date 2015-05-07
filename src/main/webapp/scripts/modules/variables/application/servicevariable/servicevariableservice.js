@@ -122,12 +122,9 @@ wm.variables.services.$servicevariable = ['Variables',
                 var variableEvents = VARIABLE_CONSTANTS.EVENTS;
 
                 /* if RestService check statusCode for error, else check 'error' field in response */
-                if ((response && response.error) || (variable.serviceType === SERVICE_TYPE_REST && (response.statusCode < 200 || response.statusCode > 299))) {
+                if (response && response.error) {
                     processErrorResponse(response, variable, callBackScope, error);
                 } else {
-                    if (variable.serviceType === SERVICE_TYPE_REST) {
-                        response = Utils.getValidJSON(response.convertedResponse || response.responseBody) || response.convertedResponse || response.responseBody;
-                    }
                     /* if dataTransformation enabled, transform the data */
                     if (variable.transformationColumns) {
                         response = transformData(response, variable);
@@ -284,6 +281,14 @@ wm.variables.services.$servicevariable = ['Variables',
                             "url": $rootScope.project.deployedUrl
                         };
                     }
+                } else if (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
+                    methodInfo = WM.copy(variable.wmServiceOperationInfo);
+                    if (methodInfo.parameters) {
+                        methodInfo.parameters.forEach(function (param) {
+                            param.sampleValue = variable.dataBinding[param.name];
+                        });
+                    }
+                    params = constructRestRequestParams(methodInfo, serviceType, variable);
                 } else if (serviceType === SERVICE_TYPE_REST) {
                     dataParams = [service, operation, WM.copy(variable.dataBinding)];
 
@@ -294,14 +299,6 @@ wm.variables.services.$servicevariable = ['Variables',
                         "url": $rootScope.project.deployedUrl,
                         "target": "invokeRestService"
                     };
-                } else if (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
-                    methodInfo = WM.copy(variable.wmServiceOperationInfo);
-                    if (methodInfo.parameters) {
-                        methodInfo.parameters.forEach(function (param) {
-                            param.sampleValue = variable.dataBinding[param.name];
-                        });
-                    }
-                    params = constructRestRequestParams(methodInfo, serviceType, variable);
                 } else {
                     /*for old projects as a normal java method invocation*/
                     params = {
@@ -336,13 +333,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     variableActive[variable.activeScope.$id][variable.name] = true;
                 }
 
-                if (serviceType === SERVICE_TYPE_REST) {
-                    variable.promise = WebService.invokeRestService(params, function (response) {
-                        processSuccessResponse(response, variable, callBackScope, options, success, error);
-                    }, function (errorMsg) {
-                        processErrorResponse(errorMsg, variable, callBackScope, error);
-                    });
-                } else if (serviceType === SERVICE_TYPE_DATA) {
+                if (serviceType === SERVICE_TYPE_DATA) {
                     if (variable.operationType === "procedure") {
                         requestMethod = "executeNamedProcedure";
                     } else {
@@ -357,6 +348,12 @@ wm.variables.services.$servicevariable = ['Variables',
                 } else if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
                     /* Here we are invoking JavaService through the new REST api (old classes implementation removed, older projects migrated with new changes for corresponding service variable) */
                     variable.promise = WebService.invokeJavaService(params, function (response) {
+                        processSuccessResponse(response, variable, callBackScope, options, success, error);
+                    }, function (errorMsg) {
+                        processErrorResponse(errorMsg, variable, callBackScope, error);
+                    });
+                } else if (serviceType === SERVICE_TYPE_REST) {
+                    variable.promise = WebService.invokeRestService(params, function (response) {
                         processSuccessResponse(response, variable, callBackScope, options, success, error);
                     }, function (errorMsg) {
                         processErrorResponse(errorMsg, variable, callBackScope, error);
@@ -443,7 +440,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         for (i = 0; i < apiDocument.endPoints.length; i += 1) {
                             endPoint = apiDocument.endPoints[i];
                             if (endPoint.operations.some(matchOperations)) {
-                                operationInfo.relativePath = apiDocument.relativePath + endPoint.relativePath;
+                                operationInfo.relativePath = (apiDocument.relativePath || "") + endPoint.relativePath;
                                 break;
                             }
                         }
