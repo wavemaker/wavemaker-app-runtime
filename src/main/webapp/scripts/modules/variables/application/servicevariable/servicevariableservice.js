@@ -179,6 +179,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     var paramValue = param.sampleValue;
                     switch (param.parameterType) {
                     case 'QUERY':
+                    case 'AUTH':
                         if (!queryParams) {
                             if (paramValue) {
                                 queryParams = "?" + param.name + "=" + encodeURIComponent(paramValue);
