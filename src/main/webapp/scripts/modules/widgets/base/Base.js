@@ -1371,9 +1371,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                     "showrecordcount": {"type": "boolean", "value": false},
-                    "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "value": "right", "widget": "icons_radio"},
                     "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
-                    "verticalalign": {"type": "string", "options": ["bottom", "middle", "top"], "value": "middle", "widget": "icons_radio"},
                     "onEnterKeyPress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                 },
