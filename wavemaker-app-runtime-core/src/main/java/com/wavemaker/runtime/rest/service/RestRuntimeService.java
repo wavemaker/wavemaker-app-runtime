@@ -20,7 +20,12 @@ import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.WMUtils;
-import com.wavemaker.tools.api.core.models.*;
+import com.wavemaker.tools.api.core.models.ApiDocument;
+import com.wavemaker.tools.api.core.models.EndPoint;
+import com.wavemaker.tools.api.core.models.HTTPMethod;
+import com.wavemaker.tools.api.core.models.Operation;
+import com.wavemaker.tools.api.core.models.Parameter;
+import com.wavemaker.tools.api.core.models.ParameterType;
 
 /**
  * @author Uday Shankar
@@ -39,12 +44,16 @@ public class RestRuntimeService {
             MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
             if (WMUtils.isXmlMediaType(responseContentType)) {
                 restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
+                restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
             } else if (!WMUtils.isJsonMediaType(responseContentType)) {
                 try {//trying if the content is of xml type
                     restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
+                    restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
                 } catch (Exception e) {
                     logger.debug("Unable to read the response as xml for the media type [" + responseContentType + "] and convert to json", e);
                 }
+            } else {
+                restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
             }
         }
         if (restResponse.getConvertedResponse() != null) {
