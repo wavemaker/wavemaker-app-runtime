@@ -31,7 +31,7 @@ WM.module('wm.layouts.containers')
                                 '<span class="sr-only">Toggle navigation</span>' +
                                 '<i class="glyphicon glyphicon-option-vertical"></i>' +
                             '</button>' +
-                            '<a class="navbar-brand" href="#">' +
+                            '<a class="navbar-brand" href="#" data-ng-if="title || imagesrc">' +
                                 '<img data-identifier="img" class="brand-image" alt="{{title}}" width="20" height="20" data-ng-if="imgsrc" data-ng-src="{{imagesrc}}"/>' +
                                     '{{title}}' +
                             '</a>' +
