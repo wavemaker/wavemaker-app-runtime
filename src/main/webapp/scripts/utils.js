@@ -869,7 +869,7 @@ WM.module('wm.utils', [])
                 triggerFn(callback);
             };
 
-            img.src = "http://wavemaker.com/img/blank.gif?op=" + op + "&v=" + version + "&r=" + revision + "&preventCache=" + String(Math.random(new Date().getTime())).replace(/\D/, "").substring(0, 8);
+           // img.src = "http://wavemaker.com/img/blank.gif?op=" + op + "&v=" + version + "&r=" + revision + "&preventCache=" + String(Math.random(new Date().getTime())).replace(/\D/, "").substring(0, 8);
         }
 
         function getNodeFromJson(tree, nodeId, parentNodeId) {
