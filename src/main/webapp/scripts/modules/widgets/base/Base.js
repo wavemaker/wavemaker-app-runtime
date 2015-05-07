@@ -508,7 +508,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 "wm.message": {
                     "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
                     "caption": {"type": "string", "value": "Message", "bindable": "in-out-bound", "maxlength": 256},
-                    "onClose": {"type": "event", "options": widgetEventOptions, "widget": "list"},
+                    "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "animation": {"type": "list", "options": animationOptions}
                 },
 
