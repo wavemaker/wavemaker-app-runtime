@@ -113,11 +113,17 @@ wm.plugins.database.services.DatabaseService = [
                     }
                 };
                 WebService.testRestService(connectionParams, function (response) {
-                    var parsedData = Utils.getValidJSON(response.responseBody);
+                    var parsedData = Utils.getValidJSON(response.responseBody),
+                        errMsg,
+                        localeObject;
                     if (parsedData.hasOwnProperty('result')) {
                         Utils.triggerFn(successCallback, parsedData.result);
                     } else if (parsedData.hasOwnProperty('error')) {
                         Utils.triggerFn(failureCallback, (parsedData.error && parsedData.error.message) || parsedData.error);
+                    } else if (parsedData.hasOwnProperty('errorDetails')) {
+                        localeObject = $rootScope.locale || $rootScope.appLocale;
+                        errMsg = WM.copy(localeObject[parsedData.errorDetails.code]);
+                        Utils.triggerFn(failureCallback, Utils.replace(errMsg, parsedData.errorDetails.data) || parsedData.errorDetails);
                     } else {
                         Utils.triggerFn(successCallback, parsedData);
                     }
