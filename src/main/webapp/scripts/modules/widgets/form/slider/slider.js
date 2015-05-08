@@ -8,11 +8,11 @@ WM.module('wm.widgets.form')
                    '<div class="app-slider slider" init-widget has-model data-ng-show="show" title="{{hint}}"'
                    + $rootScope.getWidgetStyles() +
                    '><span class="app-slider-value">{{minvalue}}</span>' +
+                   '<span class="app-slider-value pull-right">{{maxvalue}}</span>' +
                    '<input class="range-input" type="range" title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
                        ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                        ' data-ng-disabled="disabled"' +
-                       ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + /* private method defined in this scope */
-                    '/><span class="app-slider-value">{{maxvalue}}</span>' +
+                       ' data-ng-change="_onChange({$event: $event, $scope: this})" />' + /* private method defined in this scope */
                     '<div data-ng-show="readonly || disabled" class="readonly-wrapper"></div>' +
                    '</div>'
             );
