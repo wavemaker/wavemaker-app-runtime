@@ -25,7 +25,7 @@ WM.module('wm.widgets.advanced')
                 };
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler(element, scope, key, newVal) {
+            function propertyChangeHandler(scope, key, newVal) {
                 switch (key) {
                 case 'dataset':
                     scope.eventSources.push(newVal);
@@ -64,9 +64,20 @@ WM.module('wm.widgets.advanced')
                             scope.eventSources = [scope.events];
                         },
                         'post': function (scope, element, attrs) {
-                            scope.onEventClickProxy = function (event, delta, revertFunc, jsEvent, ui, view) {
-                                scope.onEventclick({$event: event, $delta: delta, $revertFunc: revertFunc, $jsEvent: jsEvent, $ui : ui, $view: view});
-                            };
+                            function dayProxy(date, jsEvent, view) {
+                                scope.onDayclick({$date: date, $jsEvent: jsEvent, $view: view});
+                            }
+                            function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
+                                var fn = scope[method] || WM.noop;
+                                fn({$event: event, $delta: delta, $revertFunc: revertFunc, $jsEvent: jsEvent, $ui: ui, $view: view});
+                            }
+                            function eventClickProxy(event, jsEvent, view) {
+                                scope.onEventclick({$event: event, $jsEvent: jsEvent, $view: view});
+                            }
+                            function eventRenderProxy(event, jsEvent, view) {
+                                /*unable to pass jsEvent in angular expression, hence ignoring*/
+                                scope.onEventrender({$event: event, jsEvent: {}, $view: view});
+                            }
                             scope.calendarOptions = {
                                 calendar: {
                                     height: parseInt(scope.height, 10),
@@ -76,11 +87,11 @@ WM.module('wm.widgets.advanced')
                                         center: 'title',
                                         right: 'today prev,next'
                                     },
-                                    dayClick: scope.onDayclick,
-                                    eventDrop: scope.onEventdrop,
-                                    eventResize: scope.onEventresize,
-                                    eventClick: scope.onEventClickProxy,
-                                    eventRender: scope.onEventrender,
+                                    dayClick: dayProxy,
+                                    eventDrop: eventProxy.bind(undefined, 'onEventdrop'),
+                                    eventResize: eventProxy.bind(undefined, 'onEventresize'),
+                                    eventClick: eventClickProxy,
+                                    eventRender: eventRenderProxy,
                                     dayNames: $locale.DATETIME_FORMATS.DAY,
                                     dayNamesShort: $locale.DATETIME_FORMATS.SHORTDAY
                                 }
@@ -131,7 +142,7 @@ WM.module('wm.widgets.advanced')
                             };
 
                             /* register the property change handler */
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element, scope), scope, notifyFor);
+                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         }
