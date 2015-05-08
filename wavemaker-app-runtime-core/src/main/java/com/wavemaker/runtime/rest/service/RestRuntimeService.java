@@ -86,28 +86,25 @@ public class RestRuntimeService {
             for (Parameter parameter : parameters) {
                 String paramName = parameter.getName();
                 Object value = params.get(paramName);
-                if (ParameterType.HEADER.equals(parameter.getParameterType())) {
-                    if (params.containsKey(paramName)) {
+                if (value == null && ParameterType.HEADER.equals(parameter.getParameterType())) {//This is to handle header rename to lower case letters in some webapp servers
+                    value = params.get(paramName.toLowerCase());
+                }
+                if (value != null) {
+                    if (ParameterType.HEADER.equals(parameter.getParameterType())) {
                         headers.put(paramName, value);
-                    }
-                } else if (ParameterType.QUERY.equals(parameter.getParameterType())) {
-                    if (params.containsKey(paramName)) {
+                    } else if (ParameterType.QUERY.equals(parameter.getParameterType())) {
                         queryParams.put(paramName, value);
-                    }
-                } else if (ParameterType.PATH.equals(parameter.getParameterType())) {
-                    if (params.containsKey(paramName)) {
+                    } else if (ParameterType.PATH.equals(parameter.getParameterType())) {
                         pathParams.put(paramName, (String) value);
-                    }
-                } else if (ParameterType.BODY.equals(parameter.getParameterType())) {
-                    if (params.containsKey(paramName)) {
+                    } else if (ParameterType.BODY.equals(parameter.getParameterType())) {
                         requestBody = (String) value;
-                    }
-                } else if (ParameterType.AUTH.equals(parameter.getParameterType())) {
-                    restRequestInfo.setBasicAuth(true);
-                    if (RestConstants.AUTH_USER_NAME.equals(paramName)) {
-                        restRequestInfo.setUserName((String) params.get(RestConstants.AUTH_USER_NAME));
-                    } else if (RestConstants.AUTH_PASSWORD.equals(paramName)) {
-                        restRequestInfo.setPassword((String) params.get(RestConstants.AUTH_PASSWORD));
+                    } else if (ParameterType.AUTH.equals(parameter.getParameterType())) {
+                        restRequestInfo.setBasicAuth(true);
+                        if (RestConstants.AUTH_USER_NAME.equals(paramName)) {
+                            restRequestInfo.setUserName((String) params.get(RestConstants.AUTH_USER_NAME));
+                        } else if (RestConstants.AUTH_PASSWORD.equals(paramName)) {
+                            restRequestInfo.setPassword((String) params.get(RestConstants.AUTH_PASSWORD));
+                        }
                     }
                 }
             }
