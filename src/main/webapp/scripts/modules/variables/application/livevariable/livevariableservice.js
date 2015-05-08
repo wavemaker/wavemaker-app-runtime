@@ -334,7 +334,7 @@ wm.variables.services.$liveVariable = [
 
                             attributeName = fieldName;
                             variable.propertiesMap.columns.forEach(function (column) {
-                                if (column.columnName === fieldName && column.isRelated) {
+                                if (column.fieldName === fieldName && column.isRelated) {
                                     attributeName = column.relatedFieldName;
                                 }
                             });
