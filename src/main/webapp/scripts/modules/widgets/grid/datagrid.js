@@ -184,7 +184,7 @@ $.widget('wm.datagrid', {
             var id = index,
                 type = value.type,
                 field = value.field,
-                headerLabel = value.displayName,
+                headerLabel = WM.isDefined(value.displayName) ? value.displayName : field,
                 headerClasses = this.options.cssClassNames.headerCell,
                 sortInfo,
                 sortField,
@@ -222,12 +222,7 @@ $.widget('wm.datagrid', {
             if (field === 'radio') {
                 htm += '';
             }
-            if (type !== 'custom') {
-                headerLabel = headerLabel || field;
-            }
-            if (headerLabel) {
-                htm += '<div class="header-data">' + headerLabel + '</div>';
-            }
+            htm += '<div class="header-data">' + headerLabel + '</div>';
             if (this.options.enableSort && (isUndefined(value.sortable) || value.sortable) && !value.widgetType) {
                 htm += '<span class="sort-buttons-container">';
                 sortInfo = this.options.sortInfo;
