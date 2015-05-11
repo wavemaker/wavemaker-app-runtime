@@ -228,7 +228,7 @@ $.widget('wm.datagrid', {
             if (headerLabel) {
                 htm += '<div class="header-data">' + headerLabel + '</div>';
             }
-            if (this.options.enableSort && (isUndefined(value.sortable) || value.sortable)) {
+            if (this.options.enableSort && (isUndefined(value.sortable) || value.sortable) && !value.widgetType) {
                 htm += '<span class="sort-buttons-container">';
                 sortInfo = this.options.sortInfo;
                 sortField = sortInfo.field;
