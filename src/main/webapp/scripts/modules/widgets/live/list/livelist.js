@@ -228,7 +228,8 @@ WM.module('wm.widgets.live')
                         var iterMarkup,
                             itemsEle,
                             ele,
-                            elementScope = element.scope().$new();
+                            elementScope = element.scope().$new(),
+                            unbindWatcher;
                         elementScope.onClick = scope.onClick;
                         elementScope.onMouseenter = scope.onMouseenter;
                         elementScope.onMouseleave = scope.onMouseleave;
@@ -286,6 +287,13 @@ WM.module('wm.widgets.live')
                         /**Compile the elements, remove the content from the ul and append the compiled one*/
                         if (CONSTANTS.isRunMode) {
                             WM.element(itemsEle).insertAfter(element.find("[data-identifier=listtemplate]"));
+                            unbindWatcher = scope.$watch(function () {
+                                var items = element.find('.list-group li:first-of-type');
+                                if (items.length) {
+                                    items.first().click();
+                                    unbindWatcher();
+                                }
+                            });
                         }
 
                         /** In case of run mode, the field-definitions will be generated from the markup*/
