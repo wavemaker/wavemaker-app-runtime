@@ -63,8 +63,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "onBeforeUpdate": {"type": "list", "options": variableEventOptions},
                     "onResult": {"type": "list", "options": variableEventOptions},
                     "onSuccess": {"type": "list", "options": variableEventOptions},
-                    "onError": {"type": "list", "options": variableEventOptions},
-                    "onPrepareSetData": {"type": "list", "options": variableEventOptions}
+                    "onError": {"type": "list", "options": variableEventOptions}
                 },
                 "wm.LiveVariable": {
                     "service": {"hide": true, "required": false},
