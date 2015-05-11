@@ -550,6 +550,7 @@ WM.module('wm.widgets.live')
                                 "key": fieldObj.fieldName,
                                 "value": colPrimaryData,
                                 "type": 'list',
+                                "valueType": fieldObj.fullyQualifiedType,
                                 "isRelated": true,
                                 "primaryKey": false,
                                 "selected": ''
