@@ -145,7 +145,7 @@ WM.module('wm.widgets.live')
             );
 
     }])
-    .directive('wmLivelist', ["$rootScope", "$templateCache", "$compile", "PropertiesFactory", "WidgetUtilService", "Utils", "CONSTANTS", function ($rootScope, $templateCache, $compile, PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
+    .directive('wmLivelist', ["$rootScope", "$templateCache", "$compile", "PropertiesFactory", "WidgetUtilService", "Utils", "CONSTANTS", "$timeout", function ($rootScope, $templateCache, $compile, PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, $timeout) {
         "use strict";
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.livelist", ["wm.base.editors", "wm.base.events"]),
             listItemsMarkup = '',
@@ -287,13 +287,17 @@ WM.module('wm.widgets.live')
                         /**Compile the elements, remove the content from the ul and append the compiled one*/
                         if (CONSTANTS.isRunMode) {
                             WM.element(itemsEle).insertAfter(element.find("[data-identifier=listtemplate]"));
-                            unbindWatcher = scope.$watch(function () {
-                                var items = element.find('.list-group li:first-of-type');
-                                if (items.length) {
-                                    items.first().click();
-                                    unbindWatcher();
-                                }
-                            });
+                            if (attrs.selectfirstitem !== "false") {
+                                unbindWatcher = scope.$watch(function () {
+                                    var items = element.find('.list-group li:first-of-type');
+                                    if (items.length) {
+                                        $rootScope.$safeApply(scope, function () {
+                                            $timeout(function () {items.first().click(); }, 0, false);
+                                            unbindWatcher();
+                                        });
+                                    }
+                                });
+                            }
                         }
 
                         /** In case of run mode, the field-definitions will be generated from the markup*/

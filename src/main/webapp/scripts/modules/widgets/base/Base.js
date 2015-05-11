@@ -1251,7 +1251,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "itemclass": {"type": "string", "pattern": classRegex},
-                    "listclass": {"type": "string", "pattern": classRegex}
+                    "listclass": {"type": "string", "pattern": classRegex},
+                    "selectfirstitem": {"type": "boolean", "value": true, "bindable": "in-out-bound"}
                 },
                 "wm.livefilter": {
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1481,7 +1482,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "deletemessage", "loadingdatamsg","showpreview", "updatemode", "errormessage", "tooltips", "showlegend", "captions", "showxaxis", "showyaxis", "showvalues",
                      "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                      "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval"], "parent": "properties"},
-                {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect"], "parent": "properties"},
+                {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
                 {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "rows", "columns", "columnwidth", "taborder"], "parent": "properties"},
