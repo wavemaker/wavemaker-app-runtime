@@ -89,6 +89,9 @@ public class RestRuntimeService {
                 if (value == null && ParameterType.HEADER.equals(parameter.getParameterType())) {//This is to handle header rename to lower case letters in some webapp servers
                     value = params.get(paramName.toLowerCase());
                 }
+                if (value == null && ParameterType.BODY.equals(parameter.getParameterType())) {//This is to handle body parameter which might not have been named in some api-docs
+                    value = params.get(RestConstants.REQUEST_BODY_KEY);
+                }
                 if (value != null) {
                     if (ParameterType.HEADER.equals(parameter.getParameterType())) {
                         headers.put(paramName, value);
