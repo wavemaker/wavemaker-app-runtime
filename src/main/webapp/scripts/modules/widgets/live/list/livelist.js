@@ -287,7 +287,7 @@ WM.module('wm.widgets.live')
                         /**Compile the elements, remove the content from the ul and append the compiled one*/
                         if (CONSTANTS.isRunMode) {
                             WM.element(itemsEle).insertAfter(element.find("[data-identifier=listtemplate]"));
-                            if (attrs.selectfirstitem !== "false") {
+                            if (attrs.selectfirstitem === "true") {
                                 unbindWatcher = scope.$watch(function () {
                                     var items = element.find('.list-group li:first-of-type');
                                     if (items.length) {

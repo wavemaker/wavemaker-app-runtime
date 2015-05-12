@@ -1252,7 +1252,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "itemclass": {"type": "string", "pattern": classRegex},
                     "listclass": {"type": "string", "pattern": classRegex},
-                    "selectfirstitem": {"type": "boolean", "value": true, "bindable": "in-out-bound"}
+                    "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"}
                 },
                 "wm.livefilter": {
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},

@@ -81,13 +81,19 @@ WM.module('wm.layouts.containers')
                         scope.togglePanel = function ($event) {
                             if (scope.collapsible && CONSTANTS.isRunMode) {
                                 if (scope.expanded) {
-                                    scope.onCollapse && scope.onCollapse({$event: $event, $scope: this});
+                                    if (scope.onCollapse) {
+                                        scope.onCollapse({$event: $event, $scope: this});
+                                    }
                                 } else {
-                                    scope.onExpand && scope.onExpand({$event: $event, $scope: this});
+                                    if (scope.onExpand) {
+                                        scope.onExpand({$event: $event, $scope: this});
+                                    }
                                 }
                                 /* flip the active flag */
                                 scope.expanded = !scope.expanded;
-                                panelCtrl.footer.isolateScope().expanded = scope.expanded;
+                                if (panelCtrl.footer) {
+                                    panelCtrl.footer.isolateScope().expanded = scope.expanded;
+                                }
                             }
                         };
                         /* toggle the state of the panel */
