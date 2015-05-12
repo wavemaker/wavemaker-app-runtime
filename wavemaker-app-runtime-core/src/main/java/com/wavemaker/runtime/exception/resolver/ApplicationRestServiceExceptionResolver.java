@@ -1,13 +1,17 @@
 package com.wavemaker.runtime.exception.resolver;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.exception.DataException;
+import org.hibernate.exception.GenericJDBCException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -42,8 +46,11 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((ConstraintViolationException) ex);
         } else if (ex instanceof DataIntegrityViolationException) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return handleRuntimeException((DataIntegrityViolationException) ex);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return handleDataIntegrityViolationException((DataIntegrityViolationException) ex);
+        } else if (ex instanceof GenericJDBCException) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return handleGenericJDBCException((GenericJDBCException) ex);
         } else if (ex instanceof QueryParameterMismatchException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((QueryParameterMismatchException) ex);
@@ -58,25 +65,40 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         }
     }
 
+    private ModelAndView handleGenericJDBCException(GenericJDBCException ex) {
+        if (ex.getCause() instanceof SQLException) {
+            String[] messages = new String[2];
+            messages[0]=ex.getMessage();
+            messages[1]=ex.getSQLException().getMessage();
+            ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR,  Arrays.toString(messages));
+            return prepareModelViewObj(errorDetails);
+        }
+        return handleRuntimeException(ex);
+    }
+
+    private ModelAndView handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        if (ex.getCause() instanceof DataException) {
+            SQLException sqlException = ((DataException) ex.getCause()).getSQLException();
+            String[] messages = new String[2];
+            messages[0]=ex.getMessage();
+            messages[1]= (sqlException != null) ? sqlException.getMessage() : null;
+            ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, Arrays.toString(messages));
+            return prepareModelViewObj(errorDetails);
+        }
+        return handleRuntimeException(ex);
+    }
+
     private ModelAndView handleRuntimeException(RuntimeException ex) {
-        ModelAndView modelAndView = null;
-        ErrorDetails errorDetails = null;
         String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
-        errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
-        modelAndView = new ModelAndView(new MappingJackson2JsonView());
-        modelAndView.addObject(errorDetails);
-        return modelAndView;
+        ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
+        return prepareModelViewObj(errorDetails);
     }
 
     private ModelAndView handleException(Exception ex, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        ModelAndView modelAndView = null;
-        ErrorDetails errorDetails = null;
         String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
-        errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
-        modelAndView = new ModelAndView(new MappingJackson2JsonView());
-        modelAndView.addObject(errorDetails);
-        return modelAndView;
+        ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
+        return prepareModelViewObj(errorDetails);
     }
 
     private ModelAndView handleWMExceptions(WMRuntimeException ex) {
@@ -136,6 +158,13 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         }
         errorDetails.setData(data);
         return errorDetails;
+    }
+
+    private ModelAndView prepareModelViewObj(ErrorDetails errorDetails)
+    {
+        ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+        modelAndView.addObject(errorDetails);
+        return modelAndView;
     }
 
 
