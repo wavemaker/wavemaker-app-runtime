@@ -453,6 +453,11 @@ wm.variables.services.$servicevariable = ['Variables',
                     Utils.triggerFn(error, errMsg);
                 }, forceReload);
             },
+
+            isPostRequest = function (variable) {
+                var opInfo = variable.wmServiceOperationInfo;
+                return (opInfo && opInfo.httpMethod === "POST" && opInfo.parameters.length === 1 && opInfo.parameters[0].parameterType === "BODY");
+            },
         /* properties of a service variable - should contain methods applicable on this particular object */
             methods = {
                 getDataSet: function (variable) {
@@ -542,6 +547,28 @@ wm.variables.services.$servicevariable = ['Variables',
                     if (variableActive[variable.activeScope.$id][variable.name] && variable.promise) {
                         variable.promise.abort();
                     }
+                },
+                setInput: function (variable, key, val) {
+                    var paramObj = {},
+                        targetObj = variable.dataBinding;
+                    if (WM.isObject(key)) {
+                        paramObj = key;
+                    } else {
+                        paramObj[key] = val;
+                    }
+
+                    if (isPostRequest(variable)) {
+                        if (!variable.dataBinding.body) {
+                            variable.dataBinding.body = {};
+                        }
+                        targetObj = variable.dataBinding.body;
+                    }
+
+                    WM.forEach(paramObj, function (paramVal, paramKey) {
+                        targetObj[paramKey] = paramVal;
+                    });
+
+                    return variable.dataBinding;
                 }
             },
             serviceVariableObj = {
@@ -580,6 +607,9 @@ wm.variables.services.$servicevariable = ['Variables',
                 },
                 cancel: function () {
                     return methods.cancel(this);
+                },
+                setInput: function (key, val) {
+                    return methods.setInput(this, key, val);
                 }
             };
 

@@ -1057,6 +1057,48 @@ wm.variables.services.$liveVariable = [
                     if (variableActive[variable.activeScope.$id][variable.name] && variable.promise) {
                         variable.promise.abort();
                     }
+                },
+                setInput: function (variable, key, val) {
+                    var paramObj = {},
+                        targetObj = {};
+                    if (WM.isObject(key)) {
+                        paramObj = key;
+                    } else {
+                        paramObj[key] = val;
+                    }
+
+                    if (!variable.inputFields) {
+                        variable.inputFields = {};
+                    }
+                    targetObj = variable.inputFields;
+
+                    WM.forEach(paramObj, function (paramVal, paramKey) {
+                        targetObj[paramKey] = paramVal;
+                    });
+
+                    return targetObj;
+                },
+                setFilter: function (variable, key, val) {
+                    var paramObj = {},
+                        targetObj = {};
+                    if (WM.isObject(key)) {
+                        paramObj = key;
+                    } else {
+                        paramObj[key] = val;
+                    }
+
+                    if (!variable.filterFields) {
+                        variable.filterFields = {};
+                    }
+                    targetObj = variable.filterFields;
+
+                    WM.forEach(paramObj, function (paramVal, paramKey) {
+                        targetObj[paramKey] = {
+                            "value": paramVal
+                        };
+                    });
+
+                    return targetObj;
                 }
             },
 
@@ -1169,6 +1211,12 @@ wm.variables.services.$liveVariable = [
                 },
                 cancel: function () {
                     return methods.cancel(this);
+                },
+                setInput: function (key, val) {
+                    return methods.setInput(this, key, val);
+                },
+                setFilter: function (key, val) {
+                    return methods.setFilter(this, key, val);
                 }
             };
 
