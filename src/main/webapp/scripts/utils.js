@@ -938,7 +938,7 @@ WM.module('wm.utils', [])
             if (WM.isUndefined(parentNodeUId) && WM.isUndefined(parentNodeId)) {
                 parentNode = tree[0];
             } else {
-                if (parentNodeId) {
+                if (parentNodeId && !parentNodeUId) {
                     parentNodeUId = getNodeFromJson(tree, parentNodeId).uid;
                 }
                 parentIndex = parentNodeUId.split("-");
