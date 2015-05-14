@@ -129,7 +129,8 @@ WM.module('wm.widgets.grid')
                 'gridcaption': true,
                 'gridclass': true,
                 'nodatamessage': true,
-                'loadingdatamsg': true
+                'loadingdatamsg': true,
+                'filternullrecords': true
             },
             getObjectIndexInArray = function (key, value, arr) {
                 var index = -1;
@@ -447,6 +448,9 @@ WM.module('wm.widgets.grid')
                                 break;
                             case 'loadingdatamsg':
                                 scope.datagridElement.datagrid('option', 'dataStates.loading', newVal);
+                                break;
+                            case 'filternullrecords':
+                                scope.datagridElement.datagrid('option', 'filterNullRecords', newVal);
                                 break;
                             }
                         }
@@ -805,7 +809,11 @@ WM.module('wm.widgets.grid')
                         }
                         data = serverData.data;
                     }
-                    $scope.gridData = removeEmptyRecords(data);
+                    if ($scope.filternullrecords) {
+                        $scope.gridData = removeEmptyRecords(data);
+                    } else {
+                        $scope.gridData = data;
+                    }
                     if ($scope.gridData && $scope.gridData.length === 0) {
                         $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
                     } else {

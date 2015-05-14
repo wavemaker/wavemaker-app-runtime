@@ -27,6 +27,7 @@ $.widget('wm.datagrid', {
         enableRowSelection: true,
         enableColumnSelection: true,
         multiselect: false,
+        filterNullRecords: true,
         caption: '',
         cssClassNames: {
             'tableRow': 'app-datagrid-row',
@@ -397,7 +398,8 @@ $.widget('wm.datagrid', {
                     break;
                 default:
                     columnValue = row[colDef.field];
-                    htm += ((this.Utils.isUndefined(columnValue) || columnValue === null)) ? '' : columnValue;
+                    htm += (this.options.filterNullRecords &&
+                        (this.Utils.isUndefined(columnValue) || columnValue === null)) ? '' : columnValue;
                     break;
                 }
             } else {
@@ -742,6 +744,7 @@ $.widget('wm.datagrid', {
         case 'multiselect': // Fallthrough
         case 'showRadioColumn':
         case 'colDefs':
+        case 'filterNullRecords':
         case 'showRowIndex':
             this.refreshGrid();
             break;

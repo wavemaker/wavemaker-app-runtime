@@ -1076,6 +1076,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "readonlygrid": {"type": "boolean", "value": true},
                     "showrecordcount": {"type": "boolean", "show": false},
                     "shownavigation": {"type": "boolean", "value": true},
+                    "filternullrecords": {"type": "boolean", "value": true},
                     "nodatamessage": {"type": "string", "value": "No data found.", "bindable": "in-out-bound"},
                     "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-out-bound"},
                     "deletemessage": {"type": "string", "value": "Record deleted successfully", "bindable": "in-out-bound"},
