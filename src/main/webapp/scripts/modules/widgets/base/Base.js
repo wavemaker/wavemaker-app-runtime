@@ -1217,7 +1217,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
 
                 "wm.tabs": {
-                    "vertical": {"type": "boolean" },
+                    "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"],"value": "top"},
                     "taborder": {"type": "list", "widget": "tabordering", "dataset": []}
                 },
 
@@ -1463,7 +1463,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 {"name": "mobile", "parent": "", "show": true},
                 {"name": "security", "parent": "", "show": true},
                 {"properties": ["caption", "gridcaption", "title", "heading", "name", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "showtopnav", "showleftnav", "showrightnav", "showfooter", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "showtopnav", "showleftnav", "showrightnav", "showfooter", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight","tabsposition"], "parent": "properties"},
                 {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},

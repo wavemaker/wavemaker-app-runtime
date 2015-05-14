@@ -33,7 +33,19 @@ WM.module('wm.layouts.containers')
         'use strict';
 
         /* get the properties related to the tabs */
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabs', ['wm.base', 'wm.layouts', 'wm.containers']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabs', ['wm.base', 'wm.layouts', 'wm.containers']),
+            notifyFor = {
+                'tabsposition': true
+            };
+
+        /*Define the property change handler. This function will be triggered when there is a change in the widget property */
+        function propertyChangeHandler(scope, key, newVal) {
+            switch (key) {
+            case 'tabsposition':
+                scope.setTabsPosition(newVal);
+                break;
+            }
+        }
 
         return {
             'restrict': 'E',
@@ -233,8 +245,23 @@ WM.module('wm.layouts.containers')
                             addNewBtnTemplate.appendTo(toolTipTarget);
                         }
 
+                        scope.setTabsPosition = function (tabsposition) {
+                            var tabs = element.find('>ul.nav-tabs');
+                            element.removeClass('inverted');
+                            if (tabsposition === 'bottom' || tabsposition === 'right') {
+                                element.addClass('inverted');
+                                element.append(tabs);
+                            } else {
+                                element.prepend(tabs);
+                            }
+                            scope.vertical = (tabsposition === 'left' || tabsposition === 'right');
+                        };
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+
                         /* initialize the widget */
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        scope.setTabsPosition(attrs.tabsposition || (attrs.vertical === "true" ? 'left' : 'top'));
                     }
                 };
             }
@@ -445,9 +472,9 @@ WM.module('wm.layouts.containers')
  *                  Width of the tabs widget.
  * @param {string=} height
  *                  Height of the tabs widget.
- * @param {boolean=} vertical
- *                  `vertical="true"` aligns the tabs vertically.
- *                  Default value: `false`
+ * @param {boolean=} tabsposition
+ *                  Align the tab headers to left/right/top/bottom of the content.
+ *                  Default value: `top`
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the tabs on the web page. <br>
@@ -463,7 +490,6 @@ WM.module('wm.layouts.containers')
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
  *               <div>
- *                   Align Tabs Vertically: <wm-checkbox scopedatavalue="vertical"></wm-checkbox><br>
  *                   <wm-composite>
  *                       <wm-label caption="width:"></wm-label>
  *                       <wm-text scopedatavalue="width"></wm-text>
@@ -480,7 +506,7 @@ WM.module('wm.layouts.containers')
  *                   Address2: {{address2}}
  *               </div>
  *               <br>
- *               <wm-tabs vertical="{{vertical}}" width="{{width}}" height="{{height}}">
+ *               <wm-tabs width="{{width}}" height="{{height}}">
  *                   <wm-tabpane>
  *                       <wm-tabheader heading="tab1"></wm-tabheader>
  *                       <wm-tabcontent>
@@ -525,7 +551,7 @@ WM.module('wm.layouts.containers')
  *       <file name="script.js">
  *           function Ctrl($scope) {
  *               // set the default values
- *               $scope.vertical = true;
+ *               $scope.tabsposition = "top";
  *               $scope.width = 300;
  *               $scope.height = 300;
  *           }
@@ -705,9 +731,6 @@ WM.module('wm.layouts.containers')
  *                  Width of the tabs widget.
  * @param {string=} height
  *                  Height of the tabs widget.
- * @param {boolean=} vertical
- *                  `vertical="true"` aligns the tabs vertically.
- *                  Default value: `false`
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the tabs on the web page. <br>
