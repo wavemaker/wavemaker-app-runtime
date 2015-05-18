@@ -1,17 +1,16 @@
 package com.wavemaker.runtime.exception.resolver;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.exception.DataException;
 import org.hibernate.exception.GenericJDBCException;
+import org.hibernate.exception.SQLGrammarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -47,11 +46,14 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             return handleRuntimeException((ConstraintViolationException) ex);
         } else if (ex instanceof DataIntegrityViolationException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return handleDataIntegrityViolationException((DataIntegrityViolationException) ex);
+            return handleRuntimeException((DataIntegrityViolationException) ex);
         } else if (ex instanceof GenericJDBCException) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return handleGenericJDBCException((GenericJDBCException) ex);
-        } else if (ex instanceof QueryParameterMismatchException) {
+            return handleRuntimeException((GenericJDBCException) ex);
+        }else if (ex instanceof SQLGrammarException) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return handleRuntimeException((SQLGrammarException) ex);
+        }else if (ex instanceof QueryParameterMismatchException) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return handleRuntimeException((QueryParameterMismatchException) ex);
         } else if (ex instanceof WMRuntimeException) {
@@ -65,31 +67,8 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         }
     }
 
-    private ModelAndView handleGenericJDBCException(GenericJDBCException ex) {
-        if (ex.getCause() instanceof SQLException) {
-            String[] messages = new String[2];
-            messages[0]=ex.getMessage();
-            messages[1]=ex.getSQLException().getMessage();
-            ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR,  Arrays.toString(messages));
-            return prepareModelViewObj(errorDetails);
-        }
-        return handleRuntimeException(ex);
-    }
-
-    private ModelAndView handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        if (ex.getCause() instanceof DataException) {
-            SQLException sqlException = ((DataException) ex.getCause()).getSQLException();
-            String[] messages = new String[2];
-            messages[0]=ex.getMessage();
-            messages[1]= (sqlException != null) ? sqlException.getMessage() : null;
-            ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, Arrays.toString(messages));
-            return prepareModelViewObj(errorDetails);
-        }
-        return handleRuntimeException(ex);
-    }
-
     private ModelAndView handleRuntimeException(RuntimeException ex) {
-        String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
+        String msg = ExceptionUtils.getRootCauseMessage(ex);
         ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
         return prepareModelViewObj(errorDetails);
     }
