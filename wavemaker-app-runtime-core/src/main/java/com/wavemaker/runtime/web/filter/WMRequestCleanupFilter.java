@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.sun.syndication.feed.impl.ToStringBean;
+import com.sun.xml.bind.v2.ClassFactory;
+import com.sun.xml.ws.api.client.ServiceInterceptorFactory;
 import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
 
 /**
@@ -23,9 +26,9 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
 
     private static final Logger logger = LoggerFactory.getLogger(WMRequestCleanupFilter.class);
 
+    // Filter and finally clear any cache/thread local objects created by this request on completion
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        // Filter and finally clear any cache/thread local objects created by this request on completion
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
@@ -39,9 +42,14 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
 
     private void cleanClassFactoryCache() {
         try {
-            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "com.sun.xml.bind.v2.ClassFactory");
+            String className = "com.sun.xml.bind.v2.ClassFactory";
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            if (klass == null) {
+                klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
+            }
             if (klass != null) {
-                klass.getMethod("cleanCache").invoke(null);
+                logger.debug("Calling cleanCache of {}", ClassFactory.class);
+                ClassFactory.cleanCache();
             }
         } catch (Throwable e) {
             logger.warn("Failed to clean ClassFactory Cache", e);
@@ -50,65 +58,85 @@ public class WMRequestCleanupFilter extends GenericFilterBean {
 
     private void clearThreadLocalServiceInterceptorFactory() {
         try {
-            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "com.sun.xml.ws.api.client.ServiceInterceptorFactory");
+            String className = "com.sun.xml.ws.api.client.ServiceInterceptorFactory";
+            Class klass = ClassLoaderUtils.findLoadedClass(ServiceInterceptorFactory.class.getClassLoader(), className);
+            if (klass == null) {
+                klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
+            }
             if (klass != null) {
                 Field privateThreadLocalFactoriesField = klass.getDeclaredField("threadLocalFactories");
                 privateThreadLocalFactoriesField.setAccessible(true);
                 ThreadLocal threadLocal = (ThreadLocal) privateThreadLocalFactoriesField.get(null);
                 if (threadLocal != null) {
+                    logger.debug("Removing the thread local value of the field threadLocalFactories in the class {}", className);
                     threadLocal.remove();
                 }
             }
         } catch (Throwable e) {
-            logger.warn("Failed to cleanup ServiceInterceptorFactory Thread Local", e);
+            logger.warn("Failed to cleanup ServiceInterceptorFactory Thread Local value", e);
         }
     }
 
     private void clearThreadLocalToStringBean() {
         try {
-            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "com.sun.syndication.feed.impl.ToStringBean");
+            String className = "com.sun.syndication.feed.impl.ToStringBean";
+            Class klass = ClassLoaderUtils.findLoadedClass(ToStringBean.class.getClassLoader(), className);
+            if (klass == null) {
+                klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
+            }
             if (klass != null) {
-                Field privatePREFIX_TLField = klass.getDeclaredField("PREFIX_TL");
-                privatePREFIX_TLField.setAccessible(true);
-                ThreadLocal threadLocal = (ThreadLocal) privatePREFIX_TLField.get(null);
+                Field prefixTLField = ToStringBean.class.getDeclaredField("PREFIX_TL");
+                prefixTLField.setAccessible(true);
+                ThreadLocal threadLocal = (ThreadLocal) prefixTLField.get(null);
                 if (threadLocal != null) {
+                    logger.debug("Removing the thread local value of the field PREFIX_TL in the class {}", className);
                     threadLocal.remove();
                 }
             }
         } catch (Throwable e) {
-            logger.warn("Failed to cleanup ToStringBean Thread Local", e);
+            logger.warn("Failed to cleanup ToStringBean Thread Local value", e);
         }
     }
 
     private void clearThreadLocalActivityCorrelator() {
         try {
-            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "com.microsoft.sqlserver.jdbc.ActivityCorrelator");
-            if (klass != null) {
-                Field activityIdTls = klass.getDeclaredField("ActivityIdTls");
-                activityIdTls.setAccessible(true);
-                ThreadLocal threadLocal = (ThreadLocal) activityIdTls.get(null);
-                if (threadLocal != null) {
-                    threadLocal.remove();
-                }
+            String className = "com.microsoft.sqlserver.jdbc.ActivityCorrelator";
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            if (klass == null) {
+                klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
             }
+            if (klass != null) {
+               Field activityIdTlsField = klass.getDeclaredField("ActivityIdTls");
+               activityIdTlsField.setAccessible(true);
+               ThreadLocal threadLocal = (ThreadLocal) activityIdTlsField.get(null);
+               if (threadLocal != null) {
+                   logger.debug("Removing the thread local value of the field ActivityIdTls in the class {}", className);
+                   threadLocal.remove();
+               }
+           }
         } catch (Throwable e) {
-            logger.warn("Failed to cleanup ActivityCorrelator Thread Local", e);
+            logger.warn("Failed to cleanup ActivityCorrelator Thread Local value", e);
         }
     }
 
     private void clearThreadLocalAbstractClassGenerator() {
         try {
-            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), "net.sf.cglib.core.AbstractClassGenerator");
+            String className = "net.sf.cglib.core.AbstractClassGenerator";
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
+            if (klass == null) {
+                klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
+            }
             if (klass != null) {
-                Field CURRENT = klass.getDeclaredField("CURRENT");
-                CURRENT.setAccessible(true);
-                ThreadLocal threadLocal = (ThreadLocal) CURRENT.get(null);
+                Field currentField = klass.getDeclaredField("CURRENT");
+                currentField.setAccessible(true);
+                ThreadLocal threadLocal = (ThreadLocal) currentField.get(null);
                 if (threadLocal != null) {
+                    logger.debug("Removing the thread local value of the field currentField in the class {}", className);
                     threadLocal.remove();
                 }
             }
         } catch (Throwable e) {
-            logger.warn("Failed to cleanup AbstractClassGenerator Thread Local", e);
+            logger.warn("Failed to cleanup AbstractClassGenerator Thread Local value", e);
         }
     }
 }

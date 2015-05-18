@@ -107,7 +107,7 @@ public class WMAppContext {
         }
     }
 
-    public static synchronized WMAppContext getInstance(ServletContextEvent event) {
+    public static synchronized WMAppContext init(ServletContextEvent event) {
         if (instance == null) {
             instance = new WMAppContext(event);
         }
