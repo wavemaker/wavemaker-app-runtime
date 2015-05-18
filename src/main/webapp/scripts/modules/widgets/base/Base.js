@@ -3145,6 +3145,16 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
         return isValid;
     }
 
+    /* checks if the widget name already exists */
+    function isExists(name) {
+        var isExists = false;
+        /* check for the name */
+        if (nameIdMap[name]) {
+            isExists = true;
+        }
+        return isExists;
+    }
+
     /* this is a private method to the Widgets service. This function unregisters the widget by its name. So that we can re-use the name */
     function unregister(name) {
         var widgetId = nameIdMap[name];
@@ -3190,6 +3200,16 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
      */
     returnObj.isValidName = isValidName;
 
+    /**
+     * @ngdoc function
+     * @name wm.widgets.$Widgets#isExists
+     * @methodOf wm.widgets.$Widgets
+     * @function
+     *
+     * @description
+     * checks for the widget with the provided name, if the widget exists return true else false
+     */
+    returnObj.isExists = isExists;
     /**
      * @ngdoc function
      * @name wm.widgets.$Widgets#byType
