@@ -220,7 +220,7 @@ WM.module('wm.widgets.advanced')
  *               <wm-calendar name="calendar1"
  *                   on-change="f($event, $scope)"
  *                   placeholder="{{placeholder}}"
- *                   datepattern="{{datepattern}}"
+ *                   datepattern="{{datepattern}}">
  *               </wm-calendar><br>
  *           </div>
  *       </file>
