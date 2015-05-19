@@ -11,7 +11,6 @@
  * Complete list of the methods:
  *
  * - {@link wm.database.$DatabaseService#methods_importSample importSample}
- * - {@link wm.database.$DatabaseService#methods_testConnection testConnection}
  * - {@link wm.database.$DatabaseService#methods_importDB importDB}
  * - {@link wm.database.$DatabaseService#methods_exportDB exportDB}
  * - {@link wm.database.$DatabaseService#methods_getAllDataModels getAllDataModels}
@@ -39,8 +38,6 @@
  * - {@link wm.database.$DatabaseService#methods_deleteQuery deleteQuery}
  * - {@link wm.database.$DatabaseService#methods_validateQuery validateQuery}
  * - {@link wm.database.$DatabaseService#methods_executeQuery executeQuery}
- * - {@link wm.database.$DatabaseService#methods_getConnectionProperties getConnectionProperties}
- * - {@link wm.database.$DatabaseService#methods_updateConnectionProperties updateConnectionProperties}
  * - {@link wm.database.$DatabaseService#methods_readTableData readTableData}
  * - {@link wm.database.$DatabaseService#methods_insertTableData insertTableData}
  * - {@link wm.database.$DatabaseService#methods_updateTableData updateTableData}
@@ -177,7 +174,7 @@ wm.plugins.database.services.DatabaseService = [
                 }, successCallback, failureCallback);
             },
             /**
-             * @ngdoc function
+             * Internal function
              * @name wm.database.$DatabaseService#testConnection
              * @methodOf wm.database.$DatabaseService
              * @function
@@ -1332,7 +1329,7 @@ wm.plugins.database.services.DatabaseService = [
                 }, successCallback, failureCallback);
             },
             /**
-             * @ngdoc function
+             * Internal function
              * @name wm.database.$DatabaseService#getConnectionProperties
              * @methodOf wm.database.$DatabaseService
              * @function
@@ -1361,7 +1358,7 @@ wm.plugins.database.services.DatabaseService = [
             },
 
             /**
-             * @ngdoc function
+             * Internal function
              * @name wm.database.$DatabaseService#updateConnectionProperties
              * @methodOf wm.database.$DatabaseService
              * @function
