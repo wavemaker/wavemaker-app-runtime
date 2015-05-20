@@ -501,7 +501,8 @@ $.widget('wm.datagrid', {
         var data = [],
             colDefs = this.options.colDefs,
             self = this,
-            isObject = this.Utils.isObject;
+            isObject = this.Utils.isObject,
+            isDefined = this.Utils.isDefined;
         if (!this.options.colDefs.length && this.options.data.length) {
             this._generateCustomColDefs();
         }
@@ -533,7 +534,16 @@ $.widget('wm.datagrid', {
                     }
                 }
 
-                rowData[colDef.field] = text;
+                if (isDefined(text)) {
+                    rowData[colDef.field] = text;
+                } else {
+                    /* For case when coldef field name has ".", but data is in
+                     * format [{'foo.bar': 'test'}], i.e. when the key value is
+                     * not a nested object but a primitive value.
+                     * (Ideally if coldef name has ".", for e.g. field name 'foo.bar',
+                     * data should be [{'foo': {'bar': 'test'}})*/
+                    rowData[colDef.field] = item[colDef.field];
+                }
             });
 
             /* Add a unique identifier for each row. */
