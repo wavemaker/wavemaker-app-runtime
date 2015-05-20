@@ -52,9 +52,9 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
                         });
                     }
-                } else if (type) {
+                } else if (type && modelTypes[type]) {
                     /* case when the data returned from the service is not an object */
-                    if (!modelTypes[type] || !modelTypes[type].fields || Utils.isEmptyObject(modelTypes[type].fields)) {
+                    if (modelTypes[type].primitiveType) {
                         parentNode['value'] = '';
                         return;
                     }
