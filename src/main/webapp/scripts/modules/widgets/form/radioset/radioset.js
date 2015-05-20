@@ -57,7 +57,6 @@ WM.module('wm.widgets.form')
             /*store parsed data in 'data'*/
             var data = dataSet,
                 parsedData,
-                nullKey = '',
                 objectKeys = [],
                 dataField = changedDataField,
                 displayField = getDisplayField(dataSet, changedDisplayField);
@@ -175,7 +174,7 @@ WM.module('wm.widgets.form')
             } else if (WM.isString(dataSet)) {
                 scope.dataObject = dataSet;
                 /*getting the dataKeys for creating the option texts*/
-                scope.dataKeys = dataSet.split(',');
+                scope.dataKeys = dataSet.split(',').map(function (option) { return option.trim(); });
             } else if (WM.isObject(dataSet)) {
                 scope.dataObject = dataSet;
                 /*getting the dataKeys for creating the option texts*/
@@ -193,9 +192,10 @@ WM.module('wm.widgets.form')
                     '<li>' +
                         '<div class="radio"><label class="app-radioset-label">' +
                             '<input type="radio" ' + (scope.disabled ? ' disabled="disabled" ' : '') +
-                                'id=' + '"' + dataKey + '"' + ' ng-checked="checkModel(' + index + ')"/>' +
+                                'data-attr-index=' + index + ' ng-checked="checkModel(' + index + ')"/>' +
                          dataKey + '</label>' +
-                    '</li></div>';
+                        '</div>' +
+                    '</li>';
             });
             /*Holder for the model for submitting values in a form and a wrapper to for readonly mode*/
             template = template + '<input name="{{name}}" data-ng-disabled="disabled" data-ng-hide="true" class="model-holder" data-ng-model="_model_">'  + '<div data-ng-if="readonly || disabled" class="readonly-wrapper"></div>';
@@ -241,7 +241,10 @@ WM.module('wm.widgets.form')
                     return;
                 }
                 var radioOption;
-                radioOption = WM.element(this).text();
+                /*The input has id in the format scope.$id + index, so parse it and take the corresponding radioOption
+                from the dataKeys array*/
+                radioOption = WM.element(this).find('input').attr('data-attr-index');
+                radioOption = scope.dataKeys[radioOption];
                 assignModelValue(scope, dataSet, radioOption);
 
                 /*if usekeys is true, apply model value as selectedvalue*/
