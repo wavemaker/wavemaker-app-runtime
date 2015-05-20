@@ -14,7 +14,7 @@ WM.module('wm.widgets.dialog')
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",
             '<div data-ng-show="show" data-identifier="dialog-header" class="app-dialog-header modal-header" init-widget title="{{hint}}">' +
-                '<button data-ng-if="closable" aria-label="Close" class="app-dialog-close close" data-ng-click="hideDialog()">' +
+                '<button data-ng-if="closable" aria-label="Close" class="app-dialog-close close" data-ng-click="hideDialog()" title="Close">' +
                     '<span aria-hidden="true">&times;</span>' +
                 '</button>' +
                 '<h4 class="app-dialog-title modal-title">' +
