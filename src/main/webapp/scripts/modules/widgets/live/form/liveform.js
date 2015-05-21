@@ -972,10 +972,11 @@ WM.module('wm.widgets.live')
                 fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
                 template = template +
                     '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                    'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" show="{{isUpdateMode}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}"  type="number" step="' + step + '"';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
+                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" show="{{isUpdateMode}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}"  type="number" step="' + step + '"';
                 if (fieldDef.maxvalue) {
                     template = template + ' minvalue="{{dataArray[' + index + '].minvalue}}"';
                 }
@@ -988,61 +989,70 @@ WM.module('wm.widgets.live')
                 fieldDef.placeholder = fieldDef.placeholder || 'Select date';
                 template = template +
                     '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-date>' +
-                    '</div></wm-composite>';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy\'}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-date>' +
+                        '</div>' +
+                    '</wm-composite>';
                 break;
             case "Checkbox":
                 template = template +
                     '<wm-composite widget="checkbox" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-checkbox name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-checkbox>' +
-                    '</div></wm-composite>';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-checkbox name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-checkbox>' +
+                        '</div>' +
+                    '</wm-composite>';
                 break;
             case "Select":
                 switch (fieldDef.type) {
                 case "list":
                     template = template +
                         '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value[dataArray[' + index + '].selected]}}" show="{{!isUpdateMode}}"></wm-label>' +
-                        '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].value" scopedatavalue="dataArray[' + index + '].selected" show="{{isUpdateMode}}"></wm-select>' +
-                        '</div></wm-composite>';
+                            '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                            '<div class="col-md-9 col-sm-9">' +
+                                '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value[dataArray[' + index + '].selected]}}" show="{{!isUpdateMode}}"></wm-label>' +
+                                '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].value" scopedatavalue="dataArray[' + index + '].selected" show="{{isUpdateMode}}"></wm-select>' +
+                            '</div>' +
+                        '</wm-composite>';
                     break;
                 default:
                     template = template +
                         '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                        '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-select>' +
-                        '</div></wm-composite>';
+                            '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                            '<div class="col-md-9 col-sm-9">' +
+                                '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                                '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-select>' +
+                            '</div>' +
+                        '</wm-composite>';
                     break;
                 }
                 break;
             case "Datalist":
                 template = template +
                     '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}""{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value[dataArray[' + index + '].selected]}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<datalist data-ng-show="isUpdateMode" id="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}">' +
-                    '<option data-ng-repeat="(key, value) in dataArray[' + index + '].value">{{value}}</option>' +
-                    '</datalist>' +
-                    '<input class="form-control app-textbox" data-ng-show="isUpdateMode" list="{{dataArray[' + index + '].key}}"' +
-                    'type="text"' +
-                    'data-ng-model="dataArray[' + index + '].selected"' +
-                    '/>' +
-                    '</div></wm-composite>';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}""{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value[dataArray[' + index + '].selected]}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<datalist data-ng-show="isUpdateMode" id="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}">' +
+                                '<option data-ng-repeat="(key, value) in dataArray[' + index + '].value">{{value}}</option>' +
+                            '</datalist>' +
+                            '<input class="form-control app-textbox" data-ng-show="isUpdateMode" list="{{dataArray[' + index + '].key}}"' +
+                                'type="text" data-ng-model="dataArray[' + index + '].selected"/>' +
+                        '</div>' +
+                    '</wm-composite>';
                 break;
             case "Text":
                 fieldDef.placeholder = fieldDef.placeholder || 'Enter text';
                 template = template +
                     '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                    'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
+                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"';
                 if (fieldDef.maxvalue && fieldDef.maxvalue !== 'null' && fieldDef.maxvalue !== 'undefined') {
                     template = template + ' maxchars="{{dataArray[' + index + '].maxvalue}}">';
                 }
@@ -1052,10 +1062,10 @@ WM.module('wm.widgets.live')
                 fieldDef.placeholder = fieldDef.placeholder || 'Enter password';
                 template = template +
                     '<wm-composite widget="password" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="********" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                    'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}" type="password"';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="********" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
+                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}" type="password"';
                 if (fieldDef.maxvalue && fieldDef.maxvalue !== 'null' && fieldDef.maxvalue !== 'undefined') {
                     template = template + ' maxchars="{{dataArray[' + index + '].maxvalue}}"';
                 }
@@ -1064,19 +1074,20 @@ WM.module('wm.widgets.live')
             case "RichText":
                 template = template +
                     '<wm-composite widget="richtext" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-richtexteditor name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-richtexteditor>' +
-                    '</div></wm-composite>';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-richtexteditor name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-richtexteditor>' +
+                        '</div>' +
+                    '</wm-composite>';
                 break;
             case "Textarea":
                 fieldDef.placeholder = fieldDef.placeholder || 'Enter text';
                 template = template +
                     '<wm-composite widget="textarea" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-textarea name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                    'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}"show="{{isUpdateMode}}"';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-textarea name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
+                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}"show="{{isUpdateMode}}"';
                 if (fieldDef.maxvalue && fieldDef.maxvalue !== 'null' && fieldDef.maxvalue !== 'undefined') {
                     template = template + ' maxchars="{{dataArray[' + index + '].maxvalue}}"';
                 }
@@ -1085,21 +1096,28 @@ WM.module('wm.widgets.live')
             case "Time":
                 template = template +
                     '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="form-time {{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" ' +
-                    'regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}"></wm-time>' +
-                    '</div></wm-composite>';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy\'}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" ' +
+                                'regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}">' +
+                            '</wm-time>' +
+                        '</div>' +
+                    '</wm-composite>';
                 break;
             case "Timestamp":
                 /*timestamp has two widgets, date and time. Date for selecting date and Time for time*/
                 template = template +
                     '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="form-timestamp {{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-3 col-sm-4"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy hh:mm:ss\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].datevalue" show="{{isUpdateMode}}"></wm-date>' +
-                    '</div><div class="col-md-6 col-sm-5"><wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}"></wm-time>' +
-                    '</div></wm-composite>';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-3 col-sm-4">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy hh:mm:ss\'}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].datevalue" show="{{isUpdateMode}}"></wm-date>' +
+                        '</div>' +
+                        '<div class="col-md-6 col-sm-5">' +
+                            '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}"></wm-time>' +
+                        '</div>' +
+                    '</wm-composite>';
                 break;
             case "Slider":
                 if (fieldDef.type === 'float' || fieldDef.type === 'double') {
@@ -1111,15 +1129,17 @@ WM.module('wm.widgets.live')
                 }
                 template = template +
                     '<wm-composite widget="slider" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-slider name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" show="{{isUpdateMode}}" scopedatavalue="dataArray[' + index + '].value" minvalue="{{dataArray[' + index + '].minvalue}}" maxvalue="{{dataArray[' + index + '].maxvalue}}" step="' + step + '"></wm-slider>' +
-                    '</div></wm-composite>';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-slider name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" show="{{isUpdateMode}}" scopedatavalue="dataArray[' + index + '].value" minvalue="{{dataArray[' + index + '].minvalue}}" maxvalue="{{dataArray[' + index + '].maxvalue}}" step="' + step + '"></wm-slider>' +
+                        '</div>' +
+                    '</wm-composite>';
                 break;
             case "Upload":
                 template = template +
                     '<wm-composite widget="upload" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}"  hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label><div class="col-md-9 col-sm-9">';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}"  hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label><div class="col-md-9 col-sm-9">';
                 if (fieldDef.filetype === 'image') {
                     template = template + '<a class="col-md-9 col-sm-9 form-control-static" target="_blank" href="{{dataArray[' + index + '].href}}" data-ng-show="dataArray[' + index + '].value || dataArray[' + index + '].href"><img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" src="{{dataArray[' + index + '].href}}"/></a>';
                 } else {
@@ -1130,11 +1150,13 @@ WM.module('wm.widgets.live')
             default:
                 template = template +
                     '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                    'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-text>' +
-                    '</div></wm-composite>';
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                            '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
+                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-text>' +
+                        '</div>' +
+                    '</wm-composite>';
                 break;
             }
 

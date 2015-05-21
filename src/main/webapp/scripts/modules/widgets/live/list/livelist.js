@@ -137,10 +137,10 @@ WM.module('wm.widgets.live')
     .run(["$templateCache", "$rootScope", function ($templateCache, $rootScope) {
         "use strict";
         $templateCache.put("template/widget/list.html",
-            '<div class="app-livelist clearfix" init-widget' + $rootScope.getWidgetStyles() + ' data-ng-show="show" >' +
-                '<ul data-identifier="list" title="{{hint}}" data-ng-class="listclass" wmtransclude></ul>' +
+            '<div class="app-livelist" init-widget' + $rootScope.getWidgetStyles() + ' data-ng-show="show" >' +
+                '<ul data-identifier="list" class="clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude></ul>' +
                 '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                '<wm-datanavigator show="{{show && shownavigation}}" showrecordcount="{{show && showrecordcount}}"></wm-datanavigator>' +
+                '<wm-datanavigator class="well well-sm clearfix" show="{{show && shownavigation}}" showrecordcount="{{show && showrecordcount}}"></wm-datanavigator>' +
             '</div>'
             );
 
