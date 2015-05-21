@@ -20,7 +20,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             properties,
             propertyGroups,
             variableMap,
-            variableRegex = '^[a-zA-Z_][A-Za-z0-9_]+$';
+            variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$';
 
         /* make events compatible to select widget options */
         WM.forEach(WM.copy(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
