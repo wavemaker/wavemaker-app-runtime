@@ -397,9 +397,8 @@ $.widget('wm.datagrid', {
                     htm += this._getTimestampTemplate(row[colDef.field]);
                     break;
                 default:
-                    columnValue = row[colDef.field];
-                    htm += (this.options.filterNullRecords &&
-                        (this.Utils.isUndefined(columnValue) || columnValue === null)) ? '' : columnValue;
+                    columnValue = row[colDef.field] || '';
+                    htm += (this.options.filterNullRecords && columnValue === null) ? '' : columnValue;
                     break;
                 }
             } else {
