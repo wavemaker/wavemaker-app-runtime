@@ -154,7 +154,8 @@ var Application = WM.module('Application',
                     if (!pageName) {
                         return;
                     }
-
+                    /* separate the page name from subview element names if any*/
+                    pageName = pageName.split(".").shift();
                     loadPage = function (pageName) {
                         var target = WM.element('#wm-app-content'),
                             page = target.find('.app-page');

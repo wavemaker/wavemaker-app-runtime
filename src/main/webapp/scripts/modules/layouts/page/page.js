@@ -1,7 +1,7 @@
 /*global WM, _*/
 
 WM.module('wm.layouts.page')
-    .directive('wmPage', ['DeviceViewService', 'CONSTANTS', '$rootScope', '$routeParams', 'Utils', '$timeout', 'Variables', function (DeviceViewService, CONSTANTS, $rootScope, $routeParams, Utils, $timeout, Variables) {
+    .directive('wmPage', ['DeviceViewService', 'CONSTANTS', '$rootScope', '$routeParams', 'Utils', '$timeout', 'Variables', 'NavigationVariableService', function (DeviceViewService, CONSTANTS, $rootScope, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
         'use strict';
 
         var extendVariables = function (scope, variables) {
@@ -28,7 +28,8 @@ WM.module('wm.layouts.page')
                         var pageName = (!$rootScope.isPrefabTemplate && scope.prefabname) || ($rootScope.isPrefabTemplate && "Main") || attrs.ngController.replace('PageController', ''),
                             variableScope = CONSTANTS.isStudioMode && !scope.prefabname && !scope.$parent.partialname ? $rootScope.domScope : scope,
                             containerScope,
-                            count;
+                            count,
+                            subView;
 
                         if (CONSTANTS.isRunMode) {
                             scope.Variables = {};
@@ -65,6 +66,14 @@ WM.module('wm.layouts.page')
                                 if (!count) {
                                     //trigger the onPageReady method
                                     Utils.triggerFn(scope.onPageReady);
+
+                                    /* if subview element names found (appended with page-name after a '.'), navigate to the view element */
+                                    if ($routeParams && $routeParams.name) {
+                                        subView = $routeParams.name.split(".");
+                                        if (subView.length > 1) {
+                                            NavigationVariableService.navigateToView(subView.pop());
+                                        }
+                                    }
 
                                     /* update layout after the page is rendered */
 
