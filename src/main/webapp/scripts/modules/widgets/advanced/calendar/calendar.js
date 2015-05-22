@@ -16,7 +16,9 @@ WM.module('wm.widgets.advanced')
         'WidgetUtilService',
         '$compile',
         '$locale',
-        function (PropertiesFactory, WidgetUtilService, $compile, $locale) {
+        'CONSTANTS',
+        'Utils',
+        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 notifyFor = {
@@ -40,6 +42,7 @@ WM.module('wm.widgets.advanced')
                 'restrict': 'E',
                 'replace': true,
                 'scope': {
+                    "scopedataset": '=?',
                     "onDayclick": "&",
                     "onEventdrop": "&",
                     "onEventresize": "&",
@@ -64,6 +67,7 @@ WM.module('wm.widgets.advanced')
                             scope.eventSources = [scope.events];
                         },
                         'post': function (scope, element, attrs) {
+                            var handlers = [];
                             function dayProxy(date, jsEvent, view) {
                                 scope.onDayclick({$date: date, $jsEvent: jsEvent, $view: view});
                             }
@@ -140,7 +144,15 @@ WM.module('wm.widgets.advanced')
                                     'tooltip-append-to-body': true});
                                 $compile(element)(scope);
                             };
+                            if (CONSTANTS.isRunMode) {
+                                handlers.push(scope.$watch('scopedataset', function (newVal) {
+                                    scope.eventSources.push(newVal);
+                                }));
+                            }
 
+                            scope.$on('$destroy', function () {
+                                handlers.forEach(Utils.triggerFn);
+                            });
                             /* register the property change handler */
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
