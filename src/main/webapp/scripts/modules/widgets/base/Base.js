@@ -2913,7 +2913,7 @@ base.services.WidgetUtilService = ['$filter', '$parse', '$rootScope', 'CONSTANTS
     }
 
     /*Function that returns all the internal object keys in the bound dataset*/
-    function extractDataSetFields(dataset, propertiesMap) {
+    function extractDataSetFields(dataset, propertiesMap, sort) {
         var columns = [],
             columnDefs,
             properties;
@@ -2927,6 +2927,9 @@ base.services.WidgetUtilService = ['$filter', '$parse', '$rootScope', 'CONSTANTS
             columnDefs.forEach(function (columnDef) {
                 columns.push(columnDef.field);
             });
+        }
+        if (sort) {
+            columns = columns.sort();
         }
         return columns;
     }
