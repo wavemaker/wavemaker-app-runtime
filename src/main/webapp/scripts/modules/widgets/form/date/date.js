@@ -107,13 +107,15 @@ WM.module('wm.widgets.form')
                                 return this._proxyModel ?  this._proxyModel.valueOf() : undefined;
                             },
                             set: function (val) {
+                                var epoch;
                                 if (val) {
                                     if (WM.isDate(val)) {
-                                        this._proxyModel = val;
+                                        epoch = val.getTime();
                                     } else {
-                                        var date = new Date(val);
-                                        this._proxyModel = WM.isDate(date) ? date : undefined;
+                                        epoch = new Date(val).getTime();
+                                        epoch = isNaN(epoch) ? undefined : epoch;
                                     }
+                                    this._proxyModel = epoch;
                                 } else {
                                     this._proxyModel = undefined;
                                 }
