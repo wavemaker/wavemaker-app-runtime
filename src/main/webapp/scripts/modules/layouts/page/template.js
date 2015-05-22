@@ -134,6 +134,7 @@ WM.module('wm.layouts.page')
                 'template': $templateCache.get('template/layouts/templateshowcase.html'),
                 'scope': {},
                 'link': function (scope, element) {
+                    scope.showAll = true;
                     Utils.fetchContent(
                         'json',
                         Utils.preventCachingOf('./config.json'),
