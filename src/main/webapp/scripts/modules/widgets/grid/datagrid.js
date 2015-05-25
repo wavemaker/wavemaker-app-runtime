@@ -397,8 +397,14 @@ $.widget('wm.datagrid', {
                     htm += this._getTimestampTemplate(row[colDef.field]);
                     break;
                 default:
-                    columnValue = row[colDef.field] || '';
-                    htm += (this.options.filterNullRecords && columnValue === null) ? '' : columnValue;
+                    columnValue = row[colDef.field];
+                    /* 1. Show "null" values as null if filterNullRecords is true, else show empty string.
+                     * 2. Show "undefined" values as empty string. */
+                    if ((this.options.filterNullRecords && columnValue === null) ||
+                        this.Utils.isUndefined(columnValue)) {
+                        columnValue = '';
+                    }
+                    htm += columnValue;
                     break;
                 }
             } else {
