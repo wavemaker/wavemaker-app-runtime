@@ -350,21 +350,6 @@ $.widget('wm.datagrid', {
         return '<input type="radio" name="" value=""' + checked + disabled + '/>';
     },
 
-    /* Returns the widget template. */
-    _getWidgetTemplate: function (colDef, row) {
-        var template = '',
-            val = row[colDef.field];
-        switch (colDef.widgetType) {
-        case 'button':
-            template = '<button type="button" value="' + val + '">' + val + '</button>';
-            break;
-        case 'image':
-            template = '<img src="' + val + '" alt="' + val + '"/>';
-            break;
-        }
-        return template;
-    },
-
     /* Returns the table cell template. */
     _getColumnTemplate: function (row, colId, colDef) {
         var classes = this.options.cssClassNames.tableCell + ' ' + colDef.class,

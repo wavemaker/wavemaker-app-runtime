@@ -142,7 +142,8 @@ WM.module('wm.widgets.grid')
                 }
                 return index;
             },
-            readOnlyGridAttrUpdated;
+            readOnlyGridAttrUpdated,
+            gridColumnCount;
 
         return {
             "restrict": 'E',
@@ -207,6 +208,7 @@ WM.module('wm.widgets.grid')
 
                 /*set the raw gridColumnMarkup to the grid attribute*/
                 tAttr.gridColumnMarkup = gridColumnMarkup;
+                gridColumnCount = (gridColumnMarkup.match(/<wm-grid-column/g) || []).length;
                 /* in run mode there is separate controller for grid widget but not in studio mode, to prevent errors in studio mode create and empty function
                  * with particular controller name */
                 if (CONSTANTS.isStudioMode) {
@@ -232,6 +234,7 @@ WM.module('wm.widgets.grid')
                     },
                     'post': function (scope, element, attrs) {
                         scope.gridElement = element;
+                        scope.gridColumnCount = gridColumnCount;
                         scope.displayAllFields = attrs.displayall === '';
                         scope.datagridElement = element.find('.app-datagrid');
                         var handlers = [], gridController;
@@ -1627,7 +1630,7 @@ WM.module('wm.widgets.grid')
  *     </file>
  * </example>
  */
-    .directive('wmGridColumn', ['$parse', 'Utils', function ($parse, Utils) {
+    .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', function ($parse, Utils, CONSTANTS) {
         'use strict';
 
         return {
@@ -1662,6 +1665,26 @@ WM.module('wm.widgets.grid')
                                 'class': attrs.colClass || '',
                                 'ngClass': attrs.colNgClass || '',
                                 'searchPlaceholder': attrs.searchPlaceholder || (attrs.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd')
+                            },
+                            updateCustomExpression = function (column) {
+                                var widgetType = column.widgetType,
+                                    field = column.field,
+                                    val = "{{row.getProperty('" + field + "')}}";
+                                if (!widgetType) {
+                                    return;
+                                }
+                                switch (widgetType) {
+                                    case 'image':
+                                        if (column.type === 'blob') {
+                                            column.customExpression = '<img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
+                                        }
+                                        column.customExpression = '<img data-ng-src="' + val + '" alt="' + val + '"/>';
+                                        break;
+                                    case 'button':
+                                        var widgetTitle = val || '';
+                                        column.customExpression = '<wm-button caption="' + widgetTitle + '" show="true" class="btn-sm btn-primary"></wm-button>';
+                                        break;
+                                }
                             };
 
                         if (tElement.context.innerHTML) {
@@ -1678,6 +1701,20 @@ WM.module('wm.widgets.grid')
                         }
                         /* push the fieldDef in the object meant to have all fields */
                         scope.$parent.fullFieldDefs.push(columnDef);
+                        /* Backward compatibility for widgetType */
+                        if (columnDef.widgetType && !columnDef.customExpression) {
+                            updateCustomExpression(columnDef);
+                            if (CONSTANTS.isStudioMode && scope.$parent.fullFieldDefs.length === scope.$parent.gridColumnCount) {
+                                /* Update markup for grid. */
+                                var config = {
+                                    widgetName: scope.name,
+                                    scopeId: scope.$parent.$id,
+                                    fieldDefs: scope.$parent.fullFieldDefs
+                                };
+                                scope.$root.$emit('grid-defs-modified', config);
+                                scope.$root.$emit('save-workspace', undefined, true);
+                            }
+                        }
 
                         /* This condition is for:
                          * Mobile/Tablet view in STUDIO mode.
