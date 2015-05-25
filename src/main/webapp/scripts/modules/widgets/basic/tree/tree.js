@@ -1,4 +1,4 @@
-/*global WM, _*/
+/*global WM, _, document*/
 /*Directive for Tree */
 
 WM.module('wm.widgets.basic')
@@ -133,7 +133,9 @@ WM.module('wm.widgets.basic')
             function renderTree(element, scope) {
                 element.empty();
                 if (scope.nodes.length) {
-                    constructNodes(scope, scope.nodes, element);
+                    var docFrag = document.createDocumentFragment();
+                    constructNodes(scope, scope.nodes, docFrag);
+                    element.append(docFrag);
                 }
             }
 
