@@ -2,10 +2,8 @@
 /*Directive for liveform */
 
 WM.module('wm.widgets.live')
-    /*Define controller for the liveform in dialog mode*/
-    .controller('liveFormDialogController', function () {
-        "use strict";
-    })
+    /*Define controller for the liveform in dialog mode - required*/
+    .controller('liveFormDialogController', WM.noop)
     .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', '$templateCache', 'wmToaster', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, $templateCache, wmToaster) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.layouts.liveform", ["wm.layouts", "wm.base.events.successerror"]),
