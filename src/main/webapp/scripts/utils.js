@@ -1064,12 +1064,15 @@ WM.module('wm.utils', [])
         }
 
         function preventCachingOf(url) {
-            //if (!url) {
-            //    return;
-            //}
-            //
-            //var _url = url + (url.indexOf("?") !== -1 ? "&" : "?");
-            //_url += "preventCache=" + Date.now();
+            if (!url) {
+                return;
+            }
+
+            if (isIE() || isIE11()) {
+                var _url = url + (url.indexOf("?") !== -1 ? "&" : "?");
+                _url += "preventCache=" + Date.now();
+                return _url;
+            }
 
             return url;
         }
