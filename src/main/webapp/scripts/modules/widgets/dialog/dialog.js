@@ -211,7 +211,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogheader', ["PropertiesFactory", "DialogService", "WidgetUtilService", "LOCAL_CONSTANTS", "$templateCache", "CONSTANTS", function (PropertiesFactory, DialogService, WidgetUtilService, LOCAL_CONSTANTS, $templateCache, CONSTANTS) {
+    }]).directive('wmDialogheader', ["PropertiesFactory", "DialogService", "WidgetUtilService", "LOCAL_CONSTANTS", "$templateCache", function (PropertiesFactory, DialogService, WidgetUtilService, LOCAL_CONSTANTS, $templateCache) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.base"]),
             notifyFor = {
@@ -249,13 +249,15 @@ WM.module('wm.widgets.dialog')
                     "post": function (scope, element, attrs, dialogCtrl) {
                         var parentEl,
                             onCloseEventName,
-                            onOpenedEventName;
+                            onOpenedEventName,
+                            parentElScope;
 
                         parentEl = element.closest('.app-dialog');
+                        parentElScope = parentEl.isolateScope();
 
                         /* accessing the onClose from parent scope*/
-                        scope.onClose = scope.$parent.onClose;
-                        scope.onOpened = scope.$parent.onOpened;
+                        scope.onClose = parentElScope.onClose;
+                        scope.onOpened = parentElScope.onOpened;
                         scope.dialogid = parentEl.attr('dialogid');
 
                         element.scope().dialogid = scope.dialogid;
@@ -269,7 +271,7 @@ WM.module('wm.widgets.dialog')
                                 dialogCtrl._CloseButtonHandler(onCloseEventName);
                             }
                         };
-                        if (onOpenedEventName && dialogCtrl && CONSTANTS.isRunMode) {
+                        if (onOpenedEventName && dialogCtrl && !scope.widgetid) {
                             /*handles close button click*/
                             dialogCtrl._OnOpenedHandler(onOpenedEventName);
                         }

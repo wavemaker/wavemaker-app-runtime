@@ -1273,6 +1273,26 @@ WM.module('wm.utils', [])
             return retVal;
         }
 
+        /*
+         * scrolls the given element into the visible area of the container.
+         * @params: {element} element to be scrolled in to view
+         * @params: {container} container of the element
+         */
+        function scrollIntoView(element, container) {
+            var $container = WM.element(container),
+                $element = WM.element(element),
+                containerTop = $container.scrollTop(),
+                containerHeight = $container.height(),
+                containerBottom = containerTop + containerHeight,
+                elemTop = $element[0] && $element[0].offsetTop,
+                elemBottom = elemTop + $element.height();
+            if (elemTop < containerTop) {
+                $container.scrollTop(elemTop);
+            } else if (elemBottom > containerBottom) {
+                $container.scrollTop(elemBottom - containerHeight);
+            }
+        }
+
         return {
             camelCase: WM.element.camelCase,
             initCaps: initCaps,
@@ -1356,6 +1376,7 @@ WM.module('wm.utils', [])
             isDeleteResourceAllowed: isDeleteResourceAllowed,
             generateGUId: generateGUId,
             isDuplicateName: isDuplicateName,
-            getValidMarkUp: getValidMarkUp
+            getValidMarkUp: getValidMarkUp,
+            scrollIntoView: scrollIntoView
         };
     }]);
