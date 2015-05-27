@@ -949,6 +949,17 @@ WM.module('wm.utils', [])
                 });
             }
 
+            /* case, no node in the tree (empty tree) */
+            if (!parentNode) {
+                /* make it as a root node and push into the tree */
+                node.uid = "0";
+                node.nodeMap = {
+                    "0": node.id
+                };
+                tree.push(node);
+                return node;
+            }
+
             /*Case: The tree has no children*/
             if (!(parentNode.children) || !(WM.isArray(parentNode.children))) {
                 /*Initialize the tree children*/

@@ -60,12 +60,15 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                     typeChain = typeChain || "";
                     var typeChainArr = typeChain.split("~");
+                    if (typeChainArr.indexOf(type) !== -1) {
+                        return;
+                    }
+                    typeChain += "~" + type;
                     WM.forEach(modelTypes[type].fields, function (field, fieldName) {
                         /* if the field is of type list and variable is not a service variable, skip it.
                          * skipping as it is resulting in endless recursive loop for DataServices
                          */
-                        if ((!field.isList || variable.serviceType === SERVICE_TYPE_SOAP || variable.serviceType === SERVICE_TYPE_FEED || variable.serviceType === SERVICE_TYPE_REST) && typeChainArr.indexOf(type) === -1) {
-                            typeChain += "~" + type;
+                        if ((!field.isList || variable.serviceType === SERVICE_TYPE_SOAP || variable.serviceType === SERVICE_TYPE_FEED || variable.serviceType === SERVICE_TYPE_REST)) {
                             if (modelTypes[field.type] && modelTypes[field.type].fields) {
                                 parentNode[fieldName] = field.isList ? [{}] : {};
                                 prepareServiceModel(field.type, field.isList ? parentNode[fieldName][0] : parentNode[fieldName], '', variable, typeChain);

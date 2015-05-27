@@ -37,7 +37,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "editJson": {"type": "json"},
                     "isBound": {"type": "boolean"},
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
-                    "dataBinding": {"type": "string", "value": {dataValue: ""}, "hide": true},
+                    "dataBinding": {"type": "list", "value": [{"name": "dataSet", "type": "object", "fields": [{"name": "dataValue", "type": "string"}]}], "hide": true},
                     "saveInPhonegap": {"type": "boolean", "value": false, "hide": true}
                 },
                 "wm.ServiceVariable": {
@@ -57,6 +57,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "transformationRequired": {"type": "boolean-labelfirst", "value": false},
                     "columnField": {"type": "list", "options": {}, "hide": true},
                     "dataField": {"type": "list", "options": {}, "hide": true},
+                    "dataBinding": {"type": "list", "value": [{"name": "dataBinding", "type": "object", "fields": []}], "hide": true},
 
                     /* Events */
                     "onCanUpdate": {"type": "list", "options": variableEventOptions},
@@ -72,7 +73,6 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operation": {"options": {"read": "read", "insert": "insert", "update": "update", "delete": "delete"}, "value": "read"},
                     "liveSource": {"type": "list", "required": true},
                     "type": {"hide": false, "options": {}, "required": true},
-                    "dataBinding": {"type": "string", "value": {}, "hide": true},
                     "firstRow": {"disabled": false, "hide": false},
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"disabled": false, "hide": false},
@@ -167,6 +167,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding"], "parent": "data"},
                 {"name": "inputfields", "properties": ["dataSet", "dataBinding"], "parent": "data"},
                 {"name": "filterfields", "properties": ["dataSet"], "parent": "data"},
+                {"name": "bindings", "properties": [], "parent": "data"},
                 {"name": "dataTransformation", "properties": ["transformationRequired", "columnField", "dataField"], "parent": "data"},
 
                 /* properties under events tab */

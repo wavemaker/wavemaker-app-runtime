@@ -190,22 +190,94 @@ wm.variables.services.Variables = [
                 }
             },
 
+            processVariablePostBindUpdate = function (nodeName, nodeVal, variable) {
+                if (variable.category === "wm.LiveVariable") {
+                    if (variable.operation === "read") {
+                        variable.filterFields[nodeName] = {
+                            'value': nodeVal
+                        };
+                        /* if auto-update set for the variable with read operation only, get its data */
+                        if (variable.autoUpdate && !WM.isUndefined(nodeVal)) {
+                            variable.update();
+                        }
+                    } else {
+                        variable.inputFields[nodeName] = nodeVal;
+                        /* if auto-update set for the variable with read operation only, get its data */
+                        if (variable.autoUpdate && !WM.isUndefined(nodeVal)) {
+                            variable[variable.operation + 'Record']();
+                        }
+                    }
+                } else if (variable.category === "wm.ServiceVariable") {
+                    if (variable.autoUpdate && !WM.isUndefined(nodeVal)) {
+                        variable.update();
+                    }
+                } else if (variable.category === "wm.LoginVariable") {
+                    if (variable.autoUpdate && !WM.isUndefined(nodeVal)) {
+                        variable.login();
+                    }
+                }
+            },
+
+            processBindNode = function (node, parentNode, scope, variable) {
+                if (Utils.stringStartsWith(node.value, "bind:")) {
+                    scope.$watch(node.value.replace("bind:", ""), function (newVal, oldVal) {
+                        if (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(parentNode[node.name]))) {
+                            return;
+                        }
+                        parentNode[node.name] = newVal;
+                        processVariablePostBindUpdate(node.name, newVal, variable);
+                    });
+                } else {
+                    if (WM.isDefined(node.value)) {
+                        parentNode[node.name] =  node.value;
+                        if (variable.category === "wm.LiveVariable") {
+                            /* binding is not present, apply the value written for binding */
+                            if (variable.operation === "read") {
+                                variable.filterFields[node.name] = {
+                                    'value': node.value
+                                };
+                            } else {
+                                variable.inputFields[node.name] = node.value;
+                            }
+                        }
+                    }
+                    if (node.fields && node.fields.length) {
+                        parentNode[node.name] = WM.isObject(parentNode[node.name]) ? parentNode[node.name] : {};
+                        WM.forEach(node.fields, function (field) {
+                            processBindNode(field, parentNode[node.name], scope, variable);
+                        });
+                    }
+                }
+            },
+
             /* function to update the binding for a variable */
             updateVariableBinding = function (variable, name, scope) {
 
-                /* unregister previous watchers, if any */
+                /* un-register previous watchers, if any */
                 watchers[scope.$id][name] = watchers[scope.$id][name] || [];
                 watchers[scope.$id][name].forEach(Utils.triggerFn);
 
-                /* loop over each variable-binding object to check for bindings */
-                WM.forEach(variable.dataBinding, function (binding, param) {
-                    if (typeof binding === 'object' && variable.category === 'wm.ServiceVariable') {
-                        WM.forEach(binding, function (subParamBinding, subParam) {
-                            bindVariableField({bindingVal: subParamBinding, paramName: subParam, variable: variable, variableName: name, parentNode: param, scope: scope});
-                        });
-                    }
-                    bindVariableField({bindingVal: binding, paramName: param, variable: variable, variableName: name, scope: scope});
-                });
+                /*
+                 * new implementation: dataBinding is an array of binding maps
+                 * old implementation: dataBinding is an object map
+                 */
+                if (WM.isArray(variable.dataBinding)) {
+                    var bindMap = variable.dataBinding;
+                    variable.dataBinding = {};
+                    bindMap.forEach(function (node) {
+                        processBindNode(node, variable, scope, variable);
+                    });
+                } else {
+                    /* loop over each variable-binding object to check for bindings */
+                    WM.forEach(variable.dataBinding, function (binding, param) {
+                        if (typeof binding === 'object' && variable.category === 'wm.ServiceVariable') {
+                            WM.forEach(binding, function (subParamBinding, subParam) {
+                                bindVariableField({bindingVal: subParamBinding, paramName: subParam, variable: variable, variableName: name, parentNode: param, scope: scope});
+                            });
+                        }
+                        bindVariableField({bindingVal: binding, paramName: param, variable: variable, variableName: name, scope: scope});
+                    });
+                }
             },
 
             /*
@@ -1017,6 +1089,35 @@ wm.variables.services.Variables = [
                     });
                 }
                 return filteredVariables;
+            },
+
+            getBindMap = function (type, parentReference, oldBindings, typeChain) {
+                var types = $rootScope.dataTypes,
+                    curFieldObj,
+                    typeChainArr;
+
+                oldBindings = oldBindings || {};
+                typeChain = typeChain || "";
+                typeChainArr = typeChain.split("~");
+                if (typeChainArr.indexOf(type) !== -1) {
+                    return;
+                }
+                typeChain += "~" + type;
+                if (types && types[type] && types[type].fields) {
+                    parentReference.fields = [];
+                    WM.forEach(types[type].fields, function (field, fieldName) {
+                        curFieldObj = {
+                            "name": fieldName,
+                            "type": field.type,
+                            "isList": field.isList
+                        };
+                        if (oldBindings[fieldName] && !WM.isObject(oldBindings[fieldName])) {
+                            curFieldObj.value = oldBindings[fieldName];
+                        }
+                        parentReference.fields.push(curFieldObj);
+                        getBindMap(field.type, curFieldObj, oldBindings[fieldName], typeChain);
+                    });
+                }
             };
 
         /*
@@ -1530,7 +1631,8 @@ wm.variables.services.Variables = [
                     defaultName = variableDetails.name || variableDetails.service.charAt(0).toUpperCase() + variableDetails.service.slice(1) + variableDetails.operation.charAt(0).toUpperCase() + variableDetails.operation.slice(1),
                     createdVariable,
                     variableName,
-                    variableOwner;
+                    variableOwner,
+                    bindMapCollection;
 
                 /*If the default variable does not exist, create it.
                  * Else, simply return the variable name.*/
@@ -1545,7 +1647,7 @@ wm.variables.services.Variables = [
                     createdVariable.operationType = variableDetails.operationType;
                     createdVariable.serviceType = variableDetails.serviceType;
                     createdVariable.category = variableCategory;
-                    createdVariable.dataBinding = {};
+                    createdVariable.dataBinding[0].fields = [];
                     createdVariable.isDefault = true;
                     createdVariable.type = variableDetails.returnType;
 
@@ -1556,8 +1658,13 @@ wm.variables.services.Variables = [
                     delete createdVariable.name;
 
                     /* insert sample param values if provided */
+                    bindMapCollection = createdVariable.dataBinding[0].fields;
                     WM.forEach(variableDetails.sampleParamValues, function (val, key) {
-                        createdVariable.dataBinding[key] = val;
+                        bindMapCollection.push({
+                            "name": key,
+                            "value": val,
+                            "type": "java.lang.String"
+                        });
                     });
 
                     /* Store the variable in proper category */
@@ -1669,7 +1776,18 @@ wm.variables.services.Variables = [
              * filter the variable collection based on the params provided and return the appropriate variable found
              * @params {variableParams} params needed to filter the variable collection and find variable
              */
-            filterByVariableKeys: filterByVariableKeys
+            filterByVariableKeys: filterByVariableKeys,
+
+            /**
+             * @ngdoc method
+             * @name $Variables#getBindMap
+             * @methodOf wm.variables.$Variables
+             * @description
+             * gets the bind map structure for a variable based on the type provided
+             * @params {type} the type for which the the map is to be prepared
+             * @params {parentReference} reference for the target bind map to be prepared at
+             */
+            getBindMap: getBindMap
         };
 
         return returnObject;
