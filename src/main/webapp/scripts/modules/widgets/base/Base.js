@@ -1217,7 +1217,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
 
                 "wm.tabs": {
-                    "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"],"value": "top"},
+                    "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
                     "taborder": {"type": "list", "widget": "tabordering", "dataset": []}
                 },
 
@@ -1463,7 +1463,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 {"name": "mobile", "parent": "", "show": true},
                 {"name": "security", "parent": "", "show": true},
                 {"properties": ["caption", "gridcaption", "title", "heading", "name", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "showtopnav", "showleftnav", "showrightnav", "showfooter", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight","tabsposition"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "showtopnav", "showleftnav", "showrightnav", "showfooter", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition"], "parent": "properties"},
                 {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
@@ -1480,7 +1480,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 {"name": "behavior", "properties": ["pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "ignoreparentreadonly", "readonlygrid",
                     "multiple", "show", "controls", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
                     "lock", "freeze", "autoscroll", "closable", "actions", "expanded",  "destroyable", "showDirtyFlag", "link",
-                    "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "deletemessage", "loadingdatamsg","showpreview", "updatemode", "errormessage", "tooltips", "showlegend", "captions", "showxaxis", "showyaxis", "showvalues",
+                    "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "deletemessage", "loadingdatamsg", "showpreview", "updatemode", "errormessage", "tooltips", "showlegend", "captions", "showxaxis", "showyaxis", "showvalues",
                      "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                      "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
@@ -2529,7 +2529,7 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                         In some cases such as tabs, the tab-content couldn't be destroyed from isolateScope if the parent tabs was destroyed first*/
                         if (attrs.widgetid) {
                             // disable ng-show, ng-hide animations
-                            $animate.enabled(false, element);
+                            $animate.enabled(element, false);
                             element.on('$destroy', function () {
                                 iScope.$destroy();
                             });
