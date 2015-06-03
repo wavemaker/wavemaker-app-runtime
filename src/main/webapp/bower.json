@@ -5,13 +5,13 @@
   "dependencies": {
     "jquery": "2.1.3",
     "jquery-ui": "1.11.2",
-    "angular": "1.4.0-rc.2",
-    "angular-animate": "1.4.0-rc.2",
+    "angular": "1.4.0",
+    "angular-animate": "1.4.0",
     "bootstrap": "3.3.2",
-    "angular-sanitize": "1.4.0-rc.2",
+    "angular-sanitize": "1.4.0",
     "angular-bootstrap-colorpicker": "https://github.com/buberdds/angular-bootstrap-colorpicker.git#v3.0.11",
-    "angular-route": "1.4.0-rc.2",
-    "angular-scenario": "1.4.0-rc.2",
+    "angular-route": "1.4.0",
+    "angular-scenario": "1.4.0",
     "angular-ui-bootstrap": "https://github.com/angular-ui/bootstrap-bower.git#v0.12.0",
     "angular-toaster": "https://github.com/jirikavi/AngularJS-Toaster.git#0.4.13",
     "textAngular": "https://github.com/fraywing/textAngular.git#v1.3.7",
@@ -30,7 +30,7 @@
   },
   "resolutions": {
     "d3": "v3.5.5",
-    "angular": "1.4.0-rc.2"
+    "angular": "1.4.0"
   },
   "exportsOverride": {
     "jquery-ui": {
