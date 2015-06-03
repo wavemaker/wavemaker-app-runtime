@@ -149,10 +149,9 @@ WM.module("wm.widgets.basic")
                                     dataSize = newVal.totalElements;
                                     $scope.checkDataSize(dataSize);
 
-                                    maxResults = newVal.numberOfElements;
+                                    maxResults = newVal.size;
                                     currentPage = $scope.currentPage || 1;
-                                    /*Set the pageCount to null as the the total number of records is unknown in case of a query.*/
-                                    pageCount = null;
+                                    /* Sending pageCount undefined to calculate it again for query.*/
                                     $scope.setDefaultPagingValues(dataSize, maxResults, currentPage, pageCount);
                                     $scope.disableNavigation();
                                 }
