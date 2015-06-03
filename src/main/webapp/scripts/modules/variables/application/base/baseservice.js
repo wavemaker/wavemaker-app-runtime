@@ -944,6 +944,79 @@ wm.variables.services.Variables = [
                     return pageContext;
                 }
                 return false;
+            },
+
+        /*function to filter the variable collection based on the object map provided*/
+            filterByVariableKeys = function (variableParams, searchAllContexts) {
+                var variables = self.variableCollection,
+                    currentVariable,
+                    variableOwner,
+                    variableNames,
+                    varParamsArray = Object.keys(variableParams),
+                    index,
+                    varParamCounter,
+                    currentVarParam,
+                    filteredVariables = [],
+                    defaultContextArray = ["App", $rootScope.activePageName];
+
+                if (variableParams.owner) {
+                    variableOwner = (variableParams.owner === VARIABLE_CONSTANTS.OWNER.APP) ? VARIABLE_CONSTANTS.OWNER.APP : $rootScope.activePageName;
+                }
+
+                /*function to find the variables which match the all the keys in the object map provided*/
+                function findMatchingVariables(contextVariables, context) {
+                    variableNames = Object.keys(contextVariables);
+
+                    /*iterating over the variables of a specific context, either app or page*/
+                    for (index = 0; index < variableNames.length; index++) {
+                        currentVariable = variables[context][variableNames[index]];
+
+                        /*iterating over the filter keys provided and validating if the
+                        * current variable's properties match the filter keys provided*/
+                        for (varParamCounter = 0; varParamCounter < varParamsArray.length; varParamCounter++) {
+                            currentVarParam = varParamsArray[varParamCounter];
+
+                            /*checking if the properties match, if so pushing the param key to the
+                            * temp array*/
+                            if (currentVariable[currentVarParam] !== variableParams[currentVarParam]) {
+                                break;
+                            }
+                        }
+                        /*if all properties have been matched and are validated to true, then push
+                         * the current variable to the filtered variables array*/
+                        if (varParamCounter === varParamsArray.length) {
+                            if (filteredVariables.indexOf(currentVariable) === -1) {
+                                currentVariable.name = variableNames[index];
+                                filteredVariables.push(currentVariable);
+                            }
+                        }
+                    }
+                }
+
+                /*if searchAllContexts is false, use the variable owner if provided, else use the
+                * default contexts - app and active-page to filter the variables.*/
+                if (!searchAllContexts) {
+                    /*if the variable owner is available, then provide the context to filter variables*/
+                    if (variableOwner) {
+                        findMatchingVariables(variables[variableOwner], variableOwner);
+                    } else {
+                        /*if no variable owner and searchAllContexts is false, restrict the contexts
+                        * to default variable contexts*/
+                        defaultContextArray.forEach(function (context) {
+                            findMatchingVariables(variables[context], context);
+                        });
+                    }
+                } else {
+                    /*if searchAllContext is true, then use each context in the
+                     * variable collection for filtering the collection*/
+                    Object.keys(variables).forEach(function (context) {
+                        /*only filtering the context for app and pages, ignoring scope-id contexts*/
+                        if (isNaN(context)) {
+                            findMatchingVariables(variables[context], context);
+                        }
+                    });
+                }
+                return filteredVariables;
             };
 
         /*
@@ -1509,19 +1582,13 @@ wm.variables.services.Variables = [
              * @params {object} variable details
              */
             deleteDefaultVariable: function (variableDetails) {
-                var variableName,
-                    variableOwner = (variableDetails.owner === VARIABLE_CONSTANTS.OWNER.APP) ? undefined : $rootScope.activePageName;
-                switch (variableDetails.category) {
-                case "wm.LiveVariable":
-                    variableName = variableDetails.name || variableDetails.service.charAt(0).toUpperCase() + variableDetails.service.slice(1) + variableDetails.table.charAt(0).toUpperCase() + variableDetails.table.slice(1) + "Data";
-                    break;
-                case "wm.ServiceVariable":
-                    variableName = variableDetails.name || variableDetails.service.charAt(0).toUpperCase() + variableDetails.service.slice(1) + variableDetails.operation.charAt(0).toUpperCase() + variableDetails.operation.slice(1);
-                    break;
-                default:
-                    break;
-                }
-                return deleteVariable(variableName, variableOwner);
+                /*filter the variable collection by using the provided object map as a filter key*/
+                var filteredVariables = filterByVariableKeys(variableDetails, false);
+
+                filteredVariables.forEach(function (variable) {
+                    /*calling delete variable on each of the matching variables*/
+                    deleteVariable(variable.name, variable.owner);
+                });
             },
 
             /**
@@ -1592,7 +1659,17 @@ wm.variables.services.Variables = [
              * @params {requestQueue} request queue for the variable
              * @params {handler} handler of the variable request, separate handlers for service and live variables
              */
-            processRequestQueue: processRequestQueue
+            processRequestQueue: processRequestQueue,
+
+            /**
+             * @ngdoc method
+             * @name $Variables#filterByVariableKeys
+             * @methodOf wm.variables.$Variables
+             * @description
+             * filter the variable collection based on the params provided and return the appropriate variable found
+             * @params {variableParams} params needed to filter the variable collection and find variable
+             */
+            filterByVariableKeys: filterByVariableKeys
         };
 
         return returnObject;

@@ -1293,6 +1293,20 @@ WM.module('wm.utils', [])
             }
         }
 
+        /*function to compare two arrays and check if the contents are equal*/
+        function arraysEqual(arr1, arr2) {
+            var i;
+            if (arr1.length !== arr2.length) {
+                return false;
+            }
+            for (i = 0; i < arr1.length; i++) {
+                if (arr1[i] !== arr2[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         return {
             camelCase: WM.element.camelCase,
             initCaps: initCaps,
@@ -1377,6 +1391,7 @@ WM.module('wm.utils', [])
             generateGUId: generateGUId,
             isDuplicateName: isDuplicateName,
             getValidMarkUp: getValidMarkUp,
-            scrollIntoView: scrollIntoView
+            scrollIntoView: scrollIntoView,
+            arraysEqual: arraysEqual
         };
     }]);
