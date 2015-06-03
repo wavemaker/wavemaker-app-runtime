@@ -2528,11 +2528,7 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                         /*Register a watch on the element for destroy and destroy the scope.
                         In some cases such as tabs, the tab-content couldn't be destroyed from isolateScope if the parent tabs was destroyed first*/
                         if (attrs.widgetid) {
-                            // disable ng-show, ng-hide animations
-                            $animate.enabled(element, false);
-                            element.on('$destroy', function () {
-                                iScope.$destroy();
-                            });
+                            element.on('$destroy', iScope.$destroy.bind(iScope));
                         } else {
                             iScope._widgettype = tElement.context.tagName.toLowerCase();
                         }
