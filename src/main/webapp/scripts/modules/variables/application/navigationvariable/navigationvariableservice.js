@@ -117,9 +117,7 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
     var methods = {
             navigate: function (variable, options) {
                 var pageName,
-                    view,
                     viewName,
-                    viewElement,
                     operation,
                     sourceScope,
                     pathPrefix;
@@ -142,74 +140,23 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                         break;
                     case 'gotoView':
                         viewName = (variable.dataBinding && variable.dataBinding.viewName) || variable.viewName;
-                        /* if view's page name is not current page, change the route with the required page and view name */
-                        if (variable.pageName  && variable.pageName !== $rootScope.activePageName) {
-                            $window.location = getPathPrefix(pageName) + '#/' + variable.pageName + "." + viewName;
-                            return;
-                        }
-                        viewElement = WM.element("[name='" + viewName + "']");
-                        if (viewElement.length) {
-                            showAncestors(viewElement);
-                            ViewService.showView(viewName);
-                        } else {
-                            showAncestorDialog(viewName);
-                            $timeout(function () {
-                                viewElement = WM.element("[name='" + viewName + "']");
-                                if (viewElement.length) {
-                                    showAncestors(viewElement);
-                                    ViewService.showView(viewName);
-                                }
-                            });
-                        }
                         break;
                     case 'gotoTab':
                         viewName = (variable.dataBinding && variable.dataBinding.tabName) || variable.tabName;
-                        /* if view's page name is not current page, change the route with the required page and view name */
-                        if (variable.pageName  && variable.pageName !== $rootScope.activePageName) {
-                            $window.location = getPathPrefix(pageName) + '#/' + variable.pageName + "." + viewName;
-                            return;
-                        }
-                        view = sourceScope.Widgets && sourceScope.Widgets[viewName];
-                        viewElement = WM.element("[name='" + viewName + "']");
-                        if (view && viewElement.length) {
-                            showAncestors(viewElement);
-                            view.select();
-                        } else {
-                            showAncestorDialog(viewName);
-                            $timeout(function () {
-                                view = sourceScope.Widgets && sourceScope.Widgets[viewName];
-                                viewElement = WM.element("[name='" + viewName + "']");
-                                if (view && viewElement.length) {
-                                    showAncestors(viewElement);
-                                    view.select();
-                                }
-                            });
-                        }
                         break;
                     case 'gotoAccordion':
                         viewName = (variable.dataBinding && variable.dataBinding.accordionName) || variable.accordionName;
+                        break;
+                    }
+
+                    /* if view name found, call routine to navigate to it */
+                    if (viewName) {
                         /* if view's page name is not current page, change the route with the required page and view name */
                         if (variable.pageName  && variable.pageName !== $rootScope.activePageName) {
                             $window.location = getPathPrefix(pageName) + '#/' + variable.pageName + "." + viewName;
                             return;
                         }
-                        view = sourceScope.Widgets && sourceScope.Widgets[viewName];
-                        viewElement = WM.element("[name='" + viewName + "']");
-                        if (view && viewElement.length) {
-                            showAncestors(viewElement);
-                            view.expand();
-                        } else {
-                            showAncestorDialog(viewName);
-                            $timeout(function () {
-                                view = sourceScope.Widgets && sourceScope.Widgets[viewName];
-                                viewElement = WM.element("[name='" + viewName + "']");
-                                if (view && viewElement.length) {
-                                    showAncestors(viewElement);
-                                    view.expand();
-                                }
-                            });
-                        }
-                        break;
+                        navigateToView(viewName);
                     }
                 }
             }
