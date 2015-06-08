@@ -147,15 +147,17 @@ var Application = WM.module('Application',
                     var pageName = (Utils.getCurrentPage() === "login.html") ? "Login" : $route.current.params.name,
                         loadPage;
 
-                    /* setting active page name in rootScope, required by the Variables service*/
-                    $rootScope.activePageName = pageName;
 
                     /*check for pageName*/
                     if (!pageName) {
                         return;
                     }
+
                     /* separate the page name from subview element names if any*/
                     pageName = pageName.split(".").shift();
+                    /* setting active page name in rootScope, required by the Variables service*/
+                    $rootScope.activePageName = pageName;
+
                     loadPage = function (pageName) {
                         var target = WM.element('#wm-app-content'),
                             page = target.find('.app-page');

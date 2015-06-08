@@ -113,6 +113,11 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
         return pathPrefix;
     }
 
+    function partialWithNameExists(name) {
+        var partials = WM.element("[page-container][content='" + name + "']");
+        return partials.length;
+    }
+
     /* properties of a basic variable - should contain methods applicable on this particular object */
     var methods = {
             navigate: function (variable, options) {
@@ -152,7 +157,7 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                     /* if view name found, call routine to navigate to it */
                     if (viewName) {
                         /* if view's page name is not current page, change the route with the required page and view name */
-                        if (variable.pageName  && variable.pageName !== $rootScope.activePageName) {
+                        if (variable.pageName  && variable.pageName !== $rootScope.activePageName && !partialWithNameExists(variable.pageName)) {
                             $window.location = getPathPrefix(pageName) + '#/' + variable.pageName + "." + viewName;
                             return;
                         }
