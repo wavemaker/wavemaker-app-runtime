@@ -99,7 +99,7 @@ WM.module('wm.widgets.form')
                 /*remove 'bind:' prefix from the binded displayExpression*/
                 displayField = scope.binddisplayexpression.replace("bind:", "");
                 /* parse the displayExpression for replacing all the expressions with values in the object */
-                return scope.$eval(displayField.replace(/\$\[(\w)+(\w+\.+\w+)*\]/g, function (expr) {
+                return scope.$eval(displayField.replace(/\$\[(\w)+(\w+(\[\$i\])?\.+\w+)*\]/g, function (expr) {
                     var val;
                     /*remove '$[' prefix & ']' suffix from each expression pattern */
                     expr = expr.replace(/[\$\[\]]/gi, '');
@@ -117,6 +117,24 @@ WM.module('wm.widgets.form')
                     /* return val to the original string*/
                     return val;
                 }));
+            }
+            /*If any column of the option object is present in the display expression,
+              replace it with the option value*/
+            if (scope.displayexpression) {
+                var newStr =  scope.displayexpression;
+                Object.keys(option).forEach(function (column) {
+                    var regexExpr = new RegExp("\\b" + column + "\\b", "g"),
+                        val = option[column];
+                    if (WM.isString(val)) {
+                        val = "'" + val + "'";
+                    }
+                    newStr = newStr.replace(regexExpr, val);
+                });
+                try {
+                    return scope.$eval(newStr);
+                } catch (e) {
+                    return newStr;
+                }
             }
             /*return just the displayField from the option object, if displayExpr is not set*/
             return getObjValueByStringKey(option, displayField);

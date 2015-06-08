@@ -288,10 +288,6 @@ WM.module('wm.widgets.live')
                 /*clear the dataArray*/
                 function emptyDataModel() {
                     $scope.dataArray.forEach(function (dataValue) {
-                        if (dataValue.isRelated) {
-                            dataValue.selected = '';
-                            return;
-                        }
                         if (isTimeStampType(dataValue)) {
                             dataValue.datevalue = dataValue.timevalue = Date.now();
                         }
@@ -353,10 +349,8 @@ WM.module('wm.widgets.live')
                             fieldObj.value = isNaN(Number(fieldObj.defaultValue)) ? '' : Number(fieldObj.defaultValue);
                         } else if (fieldObj.type === 'timestamp') {
                             fieldObj.timevalue = fieldObj.datevalue = new Date(Number(fieldObj.defaultValue) || fieldObj.defaultValue);
-                        } else if (!fieldObj.isRelated) {
+                        } else {
                             fieldObj.value = fieldObj.defaultValue;
-                        } else if (fieldObj.isRelated) {
-                            fieldObj.selected = fieldObj.defaultValue;
                         }
                     }
                     if (fieldObj.type === "blob") {
@@ -438,13 +432,7 @@ WM.module('wm.widgets.live')
                                     }
                                 });
                             }
-                            primaryKey = $scope.relatedfieldPrimaryKeyMap[field.key];
-                            WM.forEach($scope.relatedData[field.key], function (colRelatedData) {
-                                /* == has been used because select stores the selected value as string,even number is stored as string*/
-                                if (colRelatedData[primaryKey] == field.selected) {
-                                    dataObject[field.key] = colRelatedData;
-                                }
-                            });
+                            dataObject[field.key] = field.value;
                         }
                     });
                     if ($scope.multipartData) {
@@ -498,65 +486,36 @@ WM.module('wm.widgets.live')
                 /*Translate the variable rawObject into the dataArray for form construction*/
                 $scope.translateVariableObject = function (rawObject) {
                     $scope.propertiesMap = rawObject.propertiesMap;
-                    $scope.relatedData = rawObject.relatedData;
                     $scope.columnArray = $scope.propertiesMap.columns;
-                    $scope.relatedfieldPrimaryKeyMap = {};
                     $scope.primaryKey = $scope.primaryKey || [];
                     var translatedObj = [];
                     $scope.columnArray.forEach(function (fieldObj, index) {
-                        if (!fieldObj.isRelated) {
-                            translatedObj[index] = {
-                                "displayName": Utils.prettifyLabel(fieldObj.fieldName),
-                                "show": true,
-                                "primaryKey": fieldObj.isPrimaryKey,
-                                "generator": fieldObj.generator,
-                                "key": fieldObj.fieldName,
-                                "value": "",
-                                "type": fieldObj.fullyQualifiedType,
-                                "maxvalue": '',
-                                "readonly": fieldObj.isPrimaryKey,
-                                "required": fieldObj.notNull === "true" || fieldObj.notNull === true
-                            };
-                            if (fieldObj.defaultValue) {
-                                if (fieldObj.type === 'integer') {
-                                    translatedObj[index].defaultValue = isNaN(Number(fieldObj.defaultValue)) ? '' : Number(fieldObj.defaultValue);
-                                } else {
-                                    translatedObj[index].defaultValue = fieldObj.defaultValue;
-                                }
+                        translatedObj[index] = {
+                            "displayName": Utils.prettifyLabel(fieldObj.fieldName),
+                            "show": true,
+                            "primaryKey": fieldObj.isPrimaryKey,
+                            "generator": fieldObj.generator,
+                            "key": fieldObj.fieldName,
+                            "value": "",
+                            "type": fieldObj.isRelated ? "list" : fieldObj.fullyQualifiedType,
+                            "maxvalue": '',
+                            "isRelated": fieldObj.isRelated,
+                            "readonly": fieldObj.isPrimaryKey,
+                            "required": fieldObj.notNull === "true" || fieldObj.notNull === true
+                        };
+                        if (fieldObj.defaultValue) {
+                            if (fieldObj.type === 'integer') {
+                                translatedObj[index].defaultValue = isNaN(Number(fieldObj.defaultValue)) ? '' : Number(fieldObj.defaultValue);
+                            } else {
+                                translatedObj[index].defaultValue = fieldObj.defaultValue;
                             }
-                            if (fieldObj.type === "string" || fieldObj.type === "character" || fieldObj.type === "text" || fieldObj.type === "blob" || fieldObj.type === "clob") {
-                                translatedObj[index].maxvalue = fieldObj.length;
-                            }
-                            /*Store the primary key of data*/
-                            if (fieldObj.isPrimaryKey) {
-                                $scope.setPrimaryKey(fieldObj.fieldName);
-                            }
-                        } else {
-                            /*handle related data*/
-                            var primaryKey = $scope.getPrimaryKey(fieldObj.columns),
-                                colRelatedData = $scope.relatedData[fieldObj.fieldName],
-                                colPrimaryData = {};
-                            /*Maintain the related field primary key map*/
-                            $scope.relatedfieldPrimaryKeyMap[fieldObj.fieldName] = primaryKey;
-                            WM.forEach(colRelatedData, function (col) {
-                                colPrimaryData[col[primaryKey]] = col[primaryKey];
-                            });
-                            translatedObj[index] = {
-                                "displayName": Utils.prettifyLabel(fieldObj.fieldName),
-                                "show": true,
-                                "generator": fieldObj.generator,
-                                "key": fieldObj.fieldName,
-                                "value": colPrimaryData,
-                                "type": 'list',
-                                "valueType": fieldObj.fullyQualifiedType,
-                                "isRelated": true,
-                                "primaryKey": false,
-                                "selected": ''
-                            };
-                            /*Store the primary key of data*/
-                            if (fieldObj.isPrimaryKey) {
-                                $scope.setPrimaryKey(fieldObj.relatedFieldName);
-                            }
+                        }
+                        if (fieldObj.type === "string" || fieldObj.type === "character" || fieldObj.type === "text" || fieldObj.type === "blob" || fieldObj.type === "clob") {
+                            translatedObj[index].maxvalue = fieldObj.length;
+                        }
+                        /*Store the primary key of data*/
+                        if (fieldObj.isPrimaryKey) {
+                            $scope.setPrimaryKey(fieldObj.fieldName);
                         }
                     });
                     return translatedObj;
@@ -566,10 +525,6 @@ WM.module('wm.widgets.live')
                         primaryKey,
                         href;
                     $scope.dataArray.forEach(function (value) {
-                        if (value.isRelated) {
-                            value.selected = dataObj[value.key] ? dataObj[value.key][$scope.relatedfieldPrimaryKeyMap[value.key]].toString() : dataObj[value.key];
-                            return;
-                        }
                         if (isTimeStampType(value)) {
                             value.datevalue = value.timevalue = dataObj[value.key];
                         }
@@ -592,10 +547,6 @@ WM.module('wm.widgets.live')
                     if (!dataObj) {
                         return;
                     }
-                    if (fieldDef.isRelated) {
-                        fieldDef.selected = dataObj[fieldDef.key] ? dataObj[fieldDef.key][$scope.relatedfieldPrimaryKeyMap[fieldDef.key]].toString() : dataObj[fieldDef.key];
-                        return;
-                    }
                     if (isTimeStampType(fieldDef)) {
                         fieldDef.datevalue = fieldDef.timevalue = dataObj[fieldDef.key];
                     }
@@ -609,38 +560,6 @@ WM.module('wm.widgets.live')
                         fieldDef.href = href;
                     }
                     fieldDef.value = dataObj[fieldDef.key];
-                };
-
-                $scope.setRelatedData = function (fieldDef) {
-                    if ($scope.translatedObj) {
-                        $scope.translatedObj.forEach(function (transObj) {
-                            if (transObj.key === fieldDef.key) {
-                                fieldDef.isRelated = transObj.isRelated;
-                                if (fieldDef.isRelated) {
-                                    fieldDef.primaryKey = transObj.primaryKey;
-                                    fieldDef.selected = transObj.selected;
-                                    fieldDef.value = transObj.value;
-                                }
-                                var relatedValueObject = {},
-                                    parseExpression = function (string, name, column) {
-                                        var regexExpr = new RegExp("\\b" + name + "\\b", "g");
-                                        return string.replace(regexExpr, column[name]);
-                                    },
-                                    relatedColumnArray;
-                                if (fieldDef.displayvalue  && $scope.dataset.relatedData[fieldDef.key]) {
-                                    relatedColumnArray = Object.keys($scope.dataset.relatedData[fieldDef.key][0]);
-                                    $scope.dataset.relatedData[fieldDef.key].forEach(function (column) {
-                                        var newStr =  fieldDef.displayvalue;
-                                        relatedColumnArray.forEach(function (columnname) {
-                                            newStr = parseExpression(newStr, columnname, column);
-                                        });
-                                        relatedValueObject[column[$scope.relatedfieldPrimaryKeyMap[fieldDef.key]]] = newStr;
-                                    });
-                                    fieldDef.value = relatedValueObject;
-                                }
-                            }
-                        });
-                    }
                 };
             },
             compile: function () {
@@ -747,28 +666,6 @@ WM.module('wm.widgets.live')
                                             translatedObj.forEach(function (transObj) {
                                                 if (transObj.key === fieldObject.key) {
                                                     fieldObject.isRelated = transObj.isRelated;
-                                                    if (fieldObject.isRelated) {
-                                                        fieldObject.primaryKey = transObj.primaryKey;
-                                                        fieldObject.selected = transObj.selected;
-                                                        fieldObject.value = transObj.value;
-                                                    }
-                                                    var relatedValueObject = {},
-                                                        parseExpression = function (string, name, column) {
-                                                            var regexExpr = new RegExp("\\b" + name + "\\b", "g");
-                                                            return string.replace(regexExpr, column[name]);
-                                                        },
-                                                        relatedColumnArray;
-                                                    if (fieldObject.displayvalue  && newVal.relatedData[fieldObject.key]) {
-                                                        relatedColumnArray = Object.keys(newVal.relatedData[fieldObject.key][0]);
-                                                        newVal.relatedData[fieldObject.key].forEach(function (column) {
-                                                            var newStr =  fieldObject.displayvalue;
-                                                            relatedColumnArray.forEach(function (columnname) {
-                                                                newStr = parseExpression(newStr, columnname, column);
-                                                            });
-                                                            relatedValueObject[column[scope.relatedfieldPrimaryKeyMap[fieldObject.key]]] = newStr;
-                                                        });
-                                                        fieldObject.value = relatedValueObject;
-                                                    }
                                                 }
                                             });
                                         });
@@ -945,7 +842,7 @@ WM.module('wm.widgets.live')
             }
         };
     }])
-    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", function (Utils, $compile, CONSTANTS) {
+    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "Variables", function (Utils, $compile, CONSTANTS, Variables) {
         'use strict';
 
         /* provides the template based on the form-field definition */
@@ -1007,28 +904,15 @@ WM.module('wm.widgets.live')
                     '</wm-composite>';
                 break;
             case "Select":
-                switch (fieldDef.type) {
-                case "list":
-                    template = template +
-                        '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                            '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                            '<div class="col-md-9 col-sm-9">' +
-                                '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value[dataArray[' + index + '].selected]}}" show="{{!isUpdateMode}}"></wm-label>' +
-                                '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].value" scopedatavalue="dataArray[' + index + '].selected" show="{{isUpdateMode}}"></wm-select>' +
-                            '</div>' +
-                        '</wm-composite>';
-                    break;
-                default:
-                    template = template +
-                        '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                            '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                            '<div class="col-md-9 col-sm-9">' +
-                                '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                                '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-select>' +
-                            '</div>' +
-                        '</wm-composite>';
-                    break;
-                }
+                template = template +
+                    '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
+                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                    '<div class="col-md-9 col-sm-9">' +
+                    '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                    '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" datafield="{{dataArray[' + index + '].datafield}}" displayfield="{{dataArray[' + index + '].displayfield}}"';
+                template = fieldDef.displayvalue ? template + 'displayexpression="{{dataArray[' + index + '].displayvalue}}"' : template;
+                template = fieldDef.multiple ? template + 'multiple="{{dataArray[' + index + '].multiple}}"' : template;
+                template = template + '></wm-select></div></wm-composite>';
                 break;
             case "Datalist":
                 template = template +
@@ -1185,7 +1069,11 @@ WM.module('wm.widgets.live')
                             index,
                             columnDef,
                             expr,
-                            exprWatchHandler;
+                            exprWatchHandler,
+                            variable,
+                            variableObj = {},
+                            variableData,
+                            dataSetWatchHandler;
 
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
@@ -1208,10 +1096,12 @@ WM.module('wm.widgets.live')
                             'minvalue': attrs.minvalue,
                             'displayvalue': attrs.displayvalue,
                             'placeholder': attrs.placeholder,
-                            'regexp': attrs.regexp || ".*"
+                            'regexp': attrs.regexp || ".*",
+                            'datafield': attrs.datafield,
+                            'displayfield': attrs.displayfield,
+                            'multiple': attrs.multiple === "true" || attrs.multiple === true
                         };
-
-
+                        attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
                         /*If defaultValue is set then assign it to the attribute*/
                         if (attrs.defaultValue) {
                             if (Utils.stringStartsWith(attrs.defaultValue, 'bind:') && CONSTANTS.isRunMode) {
@@ -1235,13 +1125,40 @@ WM.module('wm.widgets.live')
                             columnDef.widgetType = attrs.widgetType;
                         }
                         if (attrs.dataset) {
-
                             if (Utils.stringStartsWith(attrs.dataset, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = attrs.dataset.replace('bind:', '');
-                                columnDef.dataset = parentIsolateScope.$eval(expr);
+                                /*Watch on the bound variable. dataset will be set after variable is populated.*/
+                                dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
+                                    variable = parentIsolateScope.Variables[expr.split('.')[1]];
+                                    if (WM.isObject(variable)) {
+                                        if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
+                                            parentIsolateScope.dataArray[index].dataset = newVal.content;
+                                        } else if (variable.category === "wm.LiveVariable") {
+                                            parentIsolateScope.dataArray[index].dataset = newVal.data;
+                                        } else {
+                                            parentIsolateScope.dataArray[index].dataset = newVal;
+                                        }
+                                    }
+                                });
                             } else {
                                 columnDef.dataset = attrs.dataset;
                             }
+                        } else if (CONSTANTS.isRunMode && attrs.isRelated) {
+                            /*when the field is related and dataset is not bound, set the dataset to related data of the live form bound variable
+                             and set the display field to primary key of the related table*/
+                            expr = parentIsolateScope.binddataset.replace('bind:', ''); /*live form bound variable*/
+                            /*Watch on the bound variable. dataset will be set after variable is populated.*/
+                            dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
+                                parentIsolateScope.dataArray[index].dataset = newVal.relatedData && newVal.relatedData[columnDef.key];
+                                variableObj.type = columnDef.displayName;
+                                variableObj.isDefault = true;
+                                variableObj.category = 'wm.LiveVariable';
+                                variableData = Variables.filterByVariableKeys(variableObj, true); /*Search for the live variable with the table name*/
+                                if (variableData.length) {
+                                    parentIsolateScope.dataArray[index].displayfield = parentIsolateScope.getPrimaryKey(variableData[0].propertiesMap.columns);
+                                    parentIsolateScope.dataArray[index].datafield = "All Fields";
+                                }
+                            });
                         }
                         if (attrs.extensions) {
                             columnDef.extensions = attrs.extensions;
@@ -1249,13 +1166,8 @@ WM.module('wm.widgets.live')
                         if (attrs.filetype) {
                             columnDef.filetype = attrs.filetype;
                         }
-                        /*If it is a list set it to the list*/
-                        if (attrs.type === "list") {
-                            columnDef.selected = columnDef.defaultValue;
-                        }
 
                         if (scope.isLayoutDialog) {
-                            parentIsolateScope.setRelatedData(columnDef);
                             parentIsolateScope.setDefaultValueToValue(columnDef);
                             parentIsolateScope.setFieldVal(columnDef);
                             if (scope.operationType === 'update') {
@@ -1272,6 +1184,12 @@ WM.module('wm.widgets.live')
                         template = getTemplate(columnDef, index);
                         element.html(template);
                         $compile(element.contents())(parentIsolateScope);
+
+                        parentIsolateScope.$on('$destroy', function () {
+                            if (dataSetWatchHandler) {
+                                dataSetWatchHandler();
+                            }
+                        });
                     }
                 };
             }
