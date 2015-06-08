@@ -241,6 +241,7 @@ WM.module('wm.widgets.grid')
 
                         scope.$on('$destroy', function () {
                             handlers.forEach(Utils.triggerFn);
+                            Utils.triggerFn(scope.toggleVariableStateHandler);
                         });
 
                         WM.element(element).css({'position': 'relative'});
@@ -1013,6 +1014,7 @@ WM.module('wm.widgets.grid')
             $scope.fullFieldDefs = [];
             /* This is the array which contains all the selected items */
             $scope.selectedItems = [];
+            $scope.toggleVariableHandlerAttached = false;
 
             $scope.$watch('gridData', function (newValue, oldValue) {
                 if (WM.isDefined(newValue)) {
@@ -1307,6 +1309,15 @@ WM.module('wm.widgets.grid')
                         /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
                         variableName = $scope.binddataset.replace('bind:Variables.', '');
                         variableName = variableName.substr(0, variableName.indexOf('.'));
+                        if (variableName && !$scope.toggleVariableHandlerAttached) {
+                            $scope.toggleVariableStateHandler = $rootScope.$on('toggle-variable-state', function (event, boundVariableName, active) {
+                                /*based on the active state and response toggling the 'loading data...' and 'no data found' messages. */
+                                if (boundVariableName === variableName) {
+                                    $scope.variableInflight = active;
+                                }
+                            });
+                            $scope.toggleVariableHandlerAttached = true;
+                        }
                     }
                     elScope = element.scope();
                     selectedItemIndex = $scope.binddataset.indexOf('selecteditem.');
@@ -1373,8 +1384,11 @@ WM.module('wm.widgets.grid')
                             /* if new columns to be rendered, create new column defs*/
                             $scope.prepareFieldDefs();
                         }
-                        /* render empty data in both studio and run modes */
-                        setGridData([]);
+                        if (!$scope.variableInflight) {
+                            /* If variable has finished loading and resultSet is empty,
+                             * render empty data in both studio and run modes */
+                            setGridData([]);
+                        }
                     }
                     return;
                 }
