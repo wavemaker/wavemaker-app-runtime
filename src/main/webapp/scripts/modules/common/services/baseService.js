@@ -238,6 +238,11 @@ wm.modules.wmCommon.services.BaseService = [
 
                 logAction("debug", "SEND_REQUEST_TO_SERVER", config.url);
 
+                var pattern = new RegExp("^services");
+                if (CONSTANTS.isRunMode && ($rootScope.projectType === "MOBILE") && pattern.test(config.url)) {
+                    config.url = $rootScope.project.deployedUrl + "/" + config.url;
+                }
+
                 /* get a deferred object used to abort the http request */
                 var deferred = $q.defer(),
                     promiseObj;
