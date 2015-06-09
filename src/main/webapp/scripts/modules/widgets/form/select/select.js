@@ -10,6 +10,7 @@ WM.module('wm.widgets.form')
                 ' data-ng-model="modelProxy"' + /* proxy-object is updated in the onChangeProxy function*/
                 ' title="{{hint}}"' +
                 ' data-ng-show="show"' +
+                ' data-ng-readonly="readonly" ' +
                 ' data-ng-disabled="disabled"' +
                 ' data-ng-required="required"' +
                 ' data-ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
