@@ -1,4 +1,4 @@
-/*global WM, _*/
+/*global WM, window, _*/
 
 WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
@@ -124,9 +124,23 @@ WM.module('wm.layouts.page')
         '$location',
         'Utils',
         '$routeParams',
+        '$timeout',
 
-        function ($templateCache, $location, Utils, $routeParams) {
+        function ($templateCache, $location, Utils, $routeParams, $timeout) {
             'use strict';
+
+            var MSGS = {
+                'HIDE_TEMPLATES_SHOW_CASE': 'hide-templates-show-case',
+                'SHOW_TEMPLATES_SHOW_CASE': 'show-templates-show-case',
+                'UPDATE_LOCATION': 'update-location-path',
+                'SELECT_TEMPLATE': 'select-template',
+                'TEMPLATEBUNDLE_CONFIG': 'template-bundle-config',
+                'ON_LOAD': 'on-load'
+            };
+
+            function postMessage(content) {
+                window.top.postMessage(content, '*');
+            }
 
             return {
                 'restrict': 'E',
@@ -134,6 +148,9 @@ WM.module('wm.layouts.page')
                 'template': $templateCache.get('template/layouts/templateshowcase.html'),
                 'scope': {},
                 'link': function (scope, element) {
+
+                    var pageName = $routeParams.name;
+
                     scope.showAll = true;
                     Utils.fetchContent(
                         'json',
@@ -142,6 +159,7 @@ WM.module('wm.layouts.page')
                             scope.templates = [];
                             if (!response.error) {
                                 scope.templates = response.templates;
+                                postMessage({'key': MSGS.TEMPLATEBUNDLE_CONFIG, 'config': response});
                             }
                         },
                         WM.noop,
@@ -169,7 +187,6 @@ WM.module('wm.layouts.page')
 
                     scope.activeTemplateIndex = 0;
 
-                    var pageName = $routeParams.name;
                     if (pageName) {
                         scope.templates.some(function (template, idx) {
                             if (pageName === template.id) {
@@ -180,6 +197,34 @@ WM.module('wm.layouts.page')
                     }
 
                     WM.element('html > body:first').append(element);
+
+                    window.onmessage = function (msg) {
+
+                        if (!WM.isObject(msg.data)) {
+                            return;
+                        }
+
+                        var key = msg.data.key;
+
+                        switch (key) {
+                        case MSGS.HIDE_TEMPLATES_SHOW_CASE:
+                            scope.hideShowCase = true;
+                            break;
+                        case MSGS.SELECT_TEMPLATE:
+                            scope.showTemplate(msg.data.templateIndex);
+                            break;
+                        }
+
+                        scope.$root.$safeApply(scope);
+                    };
+
+                    scope.$root.$on('$routeChangeSuccess', function () {
+                        postMessage({'key': MSGS.UPDATE_LOCATION, 'location': $location.absUrl()});
+                    });
+
+                    $timeout(function () {
+                        postMessage({'key': MSGS.ON_LOAD});
+                    });
                 }
             };
         }
