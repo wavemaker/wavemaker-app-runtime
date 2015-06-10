@@ -1112,8 +1112,12 @@ WM.module('wm.widgets.live')
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                         '<div class="col-md-3 col-sm-4">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy hh:mm:ss\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].datevalue" show="{{isUpdateMode}}"></wm-date>' +
-                        '</div>' +
+                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].datevalue" show="{{isUpdateMode}}"';
+                if (fieldDef.datepattern) {
+                    template = template + ' datepattern="{{dataArray[' + index + '].datepattern}}"';
+                }
+                template = template +
+                    '></wm-date></div>' +
                         '<div class="col-md-6 col-sm-5">' +
                             '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}"></wm-time>' +
                         '</div>' +
