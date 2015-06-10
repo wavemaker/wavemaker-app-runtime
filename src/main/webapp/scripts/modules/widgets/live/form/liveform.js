@@ -990,9 +990,11 @@ WM.module('wm.widgets.live')
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                         '<div class="col-md-9 col-sm-9">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-date>' +
-                        '</div>' +
-                    '</wm-composite>';
+                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"';
+                if (fieldDef.datepattern) {
+                    template = template + ' datepattern="{{dataArray[' + index + '].datepattern}}"';
+                }
+                template = template + '></wm-date></div></wm-composite>';
                 break;
             case "Checkbox":
                 template = template +
@@ -1198,6 +1200,7 @@ WM.module('wm.widgets.live')
                             'readonly': attrs.readonly === "true" || attrs.readonly === true,
                             'required': attrs.required === "true" || attrs.required === true,
                             'maxvalue': attrs.maxvalue,
+                            'datepattern': attrs.datepattern,
                             'minvalue': attrs.minvalue,
                             'displayvalue': attrs.displayvalue,
                             'placeholder': attrs.placeholder,
