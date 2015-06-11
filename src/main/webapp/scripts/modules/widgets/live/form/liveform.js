@@ -852,7 +852,7 @@ WM.module('wm.widgets.live')
                 fieldTypeWidgetTypeMap = Utils.getFieldTypeWidgetTypesMap();
             /*Set "Readonly field" placeholder for fields which are readonly and contain generated values if the user has not given any placeholder*/
             if (fieldDef.readonly && fieldDef.generator === "identity") {
-                fieldDef.placeholder = fieldDef.placeholder || 'Readonly field';
+                fieldDef.placeholder = fieldDef.placeholder || '';
             }
             /*Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap*/
             switch (fieldDef.widgetType || fieldTypeWidgetTypeMap[fieldDef.type][0]) {
@@ -864,7 +864,7 @@ WM.module('wm.widgets.live')
                 } else {
                     step = 1;
                 }
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
+                fieldDef.placeholder = fieldDef.placeholder || '';
                 template = template +
                     '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -881,7 +881,7 @@ WM.module('wm.widgets.live')
                 template = template + '></wm-text></div></wm-composite>';
                 break;
             case "Date":
-                fieldDef.placeholder = fieldDef.placeholder || 'Select date';
+                fieldDef.placeholder = fieldDef.placeholder || '';
                 template = template +
                     '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -929,7 +929,7 @@ WM.module('wm.widgets.live')
                     '</wm-composite>';
                 break;
             case "Text":
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter text';
+                fieldDef.placeholder = fieldDef.placeholder || '';
                 template = template +
                     '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -943,7 +943,7 @@ WM.module('wm.widgets.live')
                 template = template + '></wm-text></div></wm-composite>';
                 break;
             case "Password":
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter password';
+                fieldDef.placeholder = fieldDef.placeholder || '';
                 template = template +
                     '<wm-composite widget="password" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -965,7 +965,7 @@ WM.module('wm.widgets.live')
                     '</wm-composite>';
                 break;
             case "Textarea":
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter text';
+                fieldDef.placeholder = fieldDef.placeholder || '';
                 template = template +
                     '<wm-composite widget="textarea" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
