@@ -4,16 +4,17 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
         'use strict';
         $templateCache.put('template/layout/page/leftpanel.html',
-                '<aside data-role="page-left-panel" page-container init-widget class="app-left-panel" ' + $rootScope.getWidgetStyles('container') + ' >' +
+                '<aside data-role="page-left-panel" page-container init-widget class="app-left-panel" data-ng-class="animation" ' + $rootScope.getWidgetStyles('container') + ' >' +
                     '<div class="app-ng-transclude" wmtransclude page-container-target></div>' +
                 '</aside>'
             );
     }])
-    .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.leftpanel', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
-                'columnwidth': true
+                'columnwidth': true,
+                'animation': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -22,6 +23,14 @@ WM.module('wm.layouts.page')
             case 'columnwidth':
                 /*If columnwidth is passed set the appropriate class*/
                 element.removeClass('col-md-' + oldVal + ' col-sm-' + oldVal).addClass('col-md-' + newVal + ' col-sm-' + newVal);
+                break;
+            case 'animation':
+                var appPage = element.closest('.app-page');
+                if (newVal === 'slide-in') {
+                    appPage.addClass('slide-in-left-panel-container');
+                } else {
+                    appPage.removeClass('slide-in-left-panel-container');
+                }
                 break;
             }
         }
@@ -52,13 +61,51 @@ WM.module('wm.layouts.page')
 
                     'post': function (scope, element, attrs) {
                         /*If columnwidth is passed set the appropriate class*/
-
                         if (scope.columnwidth) {
                             WM.element(element).addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
                         }
+                        var eventName = 'click.leftNavToggle';
+                        //If mobile project, then add mobile specific styles.
+                        if ($rootScope.isMobileType) {
+                            element.addClass('wm-mobile-app-left-panel');
+                        }
+                        scope.toggle = function () {
+                            if (element.hasClass('visible')) {
+                                scope.collapse();
+                            } else {
+                                scope.expand();
+                            }
+                        };
+                        scope.expand = function () {
+                            var appPage = element.closest('.app-page'),
+                                skipEvent = true;
+                            element.addClass('visible');
+                            if (scope.animation === 'slide-in') {
+                                appPage.addClass('slide-in-left-panel-container');
+                            }
+                            element.on(eventName, function () {
+                                skipEvent = true;
+                            });
+                            appPage.on(eventName, function () {
+                                if (!skipEvent) {
+                                    scope.collapse();
+                                }
+                                skipEvent = false;
+                            });
+                        };
+                        scope.collapse = function () {
+                            var appPage = element.closest('.app-page');
+                            element.removeClass('visible');
+                            element.off(eventName);
+                            appPage.off(eventName);
+                            if (scope.animation === 'slide-in') {
+                                appPage.removeClass('slide-in-left-panel-container');
+                            }
+                        };
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        scope.collapse();
                     }
                 };
             }

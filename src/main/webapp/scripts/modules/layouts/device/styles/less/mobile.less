@@ -1,7 +1,42 @@
-.mobile-common(){
+.mobile-left-panel(@left-panel-width){
+  display: block;
+  height: 100%;
+  width: @left-panel-width;
+  overflow: auto;
+  transition: left 0.5s  ease-in-out;
+  position: fixed;
+  top: 0;
+
+  &.slide-over {
+    left: -100%;
+    z-index: 1;
+
+    &.visible {
+      left: 0;
+    }
+  }
+
+  &.slide-in {
+    left: -@left-panel-width;
+
+    &.visible {
+      left: 0;
+    }
+  }
+}
+.mobile-common(@left-panel-width){
 /* Styles */
   .wm-app {
 
+    .app-page{
+      position: fixed;
+      left: 0;
+      transition: left 0.5s  ease-in-out;
+
+      &.slide-in-left-panel-container{
+        left: @left-panel-width;
+      }
+    }
     #wm-mobile-display {
       display: block;
     }
@@ -9,9 +44,9 @@
     .app-header {
       height: 4em !important;
       width: 100%;
-      position: fixed;
-      z-index: 99999;
+      position: absolute;
       top: 0;
+      left: 0;
 
       /********provide the margin top if the header exist*******/
       & + .app-top-nav, & + .app-content {
@@ -30,8 +65,7 @@
       }
     /*Search widget container (available only in Mobile)*/
       .app-search{
-        z-index: 99999;
-        position: fixed;
+        position: absolute;
         top: 4em;
         display: none;
         margin: 0;
@@ -102,13 +136,7 @@
       }
     }
     .app-left-panel {
-      display: none;
-      position: fixed;
-      top: 4em;
-      bottom: 0;
-      left: 0;
-      width: 60%;
-      z-index: 9999;
+      .mobile-left-panel(@left-panel-width)
     }
 
     .app-right-panel {
@@ -194,17 +222,21 @@
 }
 }
 
+
+.wm-app .wm-mobile-app-left-panel{
+  .mobile-left-panel(90%)
+}
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen
 and (min-device-width : 299px)
 and (max-device-width : 480px) {
-    .mobile-common()
+    .mobile-common(90%)
 }
 /* Small web screens(portrait and landscape) ----------- */
 @media only screen
 and (min-width : 299px)
 and (max-width : 480px) {
-    .mobile-common()
+    .mobile-common(90%)
 }
 
 /* Smartphones (landscape) ----------- */

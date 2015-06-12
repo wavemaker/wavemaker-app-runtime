@@ -79,7 +79,7 @@ WM.module("wm.layouts.device")
         function bindLeftPanelEvents() {
             //tap left to show/hide left panel
             MobileEventService.touch(roleSelector(SWIPE_ELEM_CLASS_NAME), function () {
-                toggleContainer(roleSelector(LEFT_PANEL_CLASS_NAME));
+                WM.element(roleSelector(LEFT_PANEL_CLASS_NAME)).isolateScope().toggle();
             });
         }
 
