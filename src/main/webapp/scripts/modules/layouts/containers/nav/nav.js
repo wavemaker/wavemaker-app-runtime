@@ -4,7 +4,7 @@
 /*Directive for Nav*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmNav', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', '$compile', '$timeout', function (PropertiesFactory, WidgetUtilService, $rootScope, $compile, $timeout) {
+    .directive('wmNav', ['Utils', 'PropertiesFactory', 'WidgetUtilService', '$rootScope', '$compile', '$timeout', function (Utils, PropertiesFactory, WidgetUtilService, $rootScope, $compile, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.layouts']),
             notifyFor = {
@@ -32,7 +32,20 @@ WM.module('wm.layouts.containers')
             } else if (WM.isObject(newVal)) {
                 nodes = [newVal];
             }
-
+            /* re-initialize the property values */
+            if (scope.newcolumns) {
+                scope.newcolumns = false;
+                scope.itemlabel = '';
+                scope.itemchildren = '';
+                scope.itemicon = '';
+                scope.itemlink = '';
+                scope.$root.$emit("set-markup-attr", scope.widgetid, {
+                    'itemlabel': scope.itemlabel,
+                    'itemchildren': scope.itemchildren,
+                    'itemicon': scope.itemicon,
+                    'itemlink': scope.itemlink
+                });
+            }
             if (scope.widgetid) { // when the widget is inside canvas
                 scope.keys = WM.isObject(nodes[0]) ? Object.keys(nodes[0]) : [];
                 /*Changing the properties like labels,children and icons*/
@@ -60,7 +73,7 @@ WM.module('wm.layouts.containers')
                         $innericonNode,
                         ulNode,
                         $caret = WM.element('<span class="caret"></span>');
-                    if (itemChildren) {
+                    if (itemChildren && WM.isArray(itemChildren)) {
                         $iconNode.addClass(itemClass);
                         $anchor.html(itemLabel).attr('dropdown-toggle', '').addClass('app-anchor dropdown-toggle').prepend($iconNode).append($caret);
                         $list.append($anchor).attr('dropdown', '').addClass('dropdown');
@@ -92,9 +105,19 @@ WM.module('wm.layouts.containers')
 
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, element, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             switch (key) {
             case 'dataset':
+                var variable = element.scope().Variables[Utils.getVariableName(scope)];
+                if (variable && variable.category === "wm.LiveVariable") {
+                    newVal = newVal.data;
+                }
+                scope.nodes = getNodes(scope, newVal);
+                constructNav(element, scope);
+                if (scope.widgetid) {
+                    $rootScope.$emit('nav-dataset-modified', {'widgetName': scope.name});
+                }
+                break;
             case 'scopedataset':
                 scope.nodes = getNodes(scope, newVal);
                 constructNav(element, scope);

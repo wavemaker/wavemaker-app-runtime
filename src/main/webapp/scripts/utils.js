@@ -186,7 +186,14 @@ WM.module('wm.utils', [])
             label = periodSeparate(label);
             return label;
         }
-
+        /*function to get variable name bound to an element*/
+        function getVariableName(scope) {
+            var variableName;
+            if (scope.binddataset) {
+                variableName = scope.binddataset.replace("bind:Variables.", "");
+                return variableName.substr(0, variableName.indexOf("."));
+            }
+        }
         function isValidWebURL(url) {
             return (REGEX.VALID_WEB_URL).test(url);
         }
@@ -1324,6 +1331,7 @@ WM.module('wm.utils', [])
             periodSeparate: periodSeparate,
             spaceSeparate: spaceSeparate,
             prettifyLabel: prettifyLabel,
+            getVariableName: getVariableName,
             getImageUrl: getImageUrl,
             getResourceUrl: getResourceURL,
             formatVariableIconClass: formatVariableIconClass,

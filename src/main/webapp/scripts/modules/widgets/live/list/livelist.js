@@ -9,15 +9,6 @@ WM.module('wm.widgets.live')
         $scope.fieldDefs = [];// The data required by the wmListItem directive to populate the items
         $scope.noDataFound = false;
         this.listScope = $scope;
-
-        function getVariableName() {
-            var variableName;
-            if ($scope.binddataset) {
-                variableName = $scope.binddataset.replace("bind:Variables.", "");
-                return variableName.substr(0, variableName.indexOf("."));
-            }
-        }
-
         /*to get the list of columns from the dataSet/scopeDataSet*/
         function getColumnsFromDataSet(dataset) {
             return WM.isArray(dataset) && WM.isObject(dataset[0]) ? Object.keys(dataset[0]) : WM.isObject(dataset) ? Object.keys(dataset) : [];
@@ -37,7 +28,7 @@ WM.module('wm.widgets.live')
 
         /* update the selectedItem dataType onchange of bindDataSet*/
         $scope.updateSelectedItemDataType = function (element) {
-            var variable = element.scope() && element.scope().Variables && element.scope().Variables[getVariableName()];
+            var variable = element.scope() && element.scope().Variables && element.scope().Variables[Utils.getVariableName($scope)];
             /*check for sanity*/
             if (variable) {
                 /* set the variable type info to the live-list selected-entry type, so that type matches to the variable for which variable is created*/
@@ -68,7 +59,7 @@ WM.module('wm.widgets.live')
 
             if (newVal && newVal !== oldVal) {
                 $scope.noDataFound = false;
-                var variableObj = element.scope() && element.scope().Variables && element.scope().Variables[getVariableName()];
+                var variableObj = element.scope() && element.scope().Variables && element.scope().Variables[Utils.getVariableName($scope)];
 
                 if (newVal.data) {
                     newVal = newVal.data;
