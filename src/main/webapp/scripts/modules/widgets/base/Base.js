@@ -320,7 +320,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "iconheight": {"type": "string", "pattern": dimensionRegex},
                     "iconmargin": {"type": "string", "pattern": dimensionRegex},
                     "disabled": {"type": "boolean", "bindable": "in-bound"},
-                    "type": {"type": "list", "options": ["button", "reset", "submit"]},
+                    "type": {"type": "list", "options": ["button", "reset", "submit"], "value" : "button"},
                     "tabindex": {"type": "string"},
                     "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                     "animation": {"type": "list", "options": animationOptions}
