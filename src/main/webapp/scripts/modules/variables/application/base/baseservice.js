@@ -1584,10 +1584,12 @@ wm.variables.services.Variables = [
             createLiveVariable: function (variableDetails) {
                 /* call base service function to create the variable */
                 var variableCategory = "wm.LiveVariable",
-                    defaultName = variableDetails.service.charAt(0).toUpperCase() + variableDetails.service.slice(1) + variableDetails.table.charAt(0).toUpperCase() + variableDetails.table.slice(1) + "Data",
+                    defaultName,
                     createdVariable,
                     variableName,
                     variableOwner;
+
+                defaultName = variableDetails.name || variableDetails.service.capitalize() + variableDetails.table.capitalize() + "Data";
 
                 /*If the default variable does not exist, create it.
                 * Else, simply return the variable name.*/

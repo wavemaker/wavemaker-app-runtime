@@ -322,6 +322,46 @@ wm.plugins.database.services.DatabaseService = [
 
             /**
              * @ngdoc function
+             * @name wm.database.$DatabaseService#loadModelInfo
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to load all the datamodels and their info.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            loadModelInfo: function (params, successCallback, failureCallback) {
+                BaseService.execute({
+                    target: "Database",
+                    action: "loadModelInfo",
+                    data: {
+                        "serviceId": params.serviceId,
+                        "packageName": params.packageName,
+                        "username": params.username,
+                        "password": params.password,
+                        "url": params.url,
+                        "schemaFilter": params.schemaFilter,
+                        "tableFilter": params.tableFilter,
+                        "driver_class": params.driver_class,
+                        "dialect": params.dialect,
+                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                        "impersonateUser": false
+                    },
+                    urlParams: {
+                        "projectID": params.projectID
+                    }
+                }, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
              * @name wm.database.$DatabaseService#getAllDataModels
              * @methodOf wm.database.$DatabaseService
              * @function
