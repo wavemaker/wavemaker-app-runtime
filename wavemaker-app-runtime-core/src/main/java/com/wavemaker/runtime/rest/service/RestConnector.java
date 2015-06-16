@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.BasicScheme;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -14,12 +12,7 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -75,9 +68,7 @@ public class RestConnector {
         }
 
         if (restRequestInfo.getBasicAuth()) {
-            UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(restRequestInfo.getUserName(), restRequestInfo.getPassword());
-            String authenticate = BasicScheme.authenticate(credentials, "UTF-8");
-            headersMap.add("Authorization", authenticate);
+            headersMap.add("Authorization", restRequestInfo.getAuthorization());
         }
 
         wmRestTemplate.setRequestFactory(commonsClientHttpRequestFactory);

@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
@@ -18,26 +17,26 @@ import com.wavemaker.runtime.helper.SchemaConversionHelper;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
+import com.wavemaker.runtime.util.SwaggerDocUtil;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.WMUtils;
-import com.wavemaker.tools.api.core.models.ApiDocument;
-import com.wavemaker.tools.api.core.models.EndPoint;
-import com.wavemaker.tools.api.core.models.HTTPMethod;
-import com.wavemaker.tools.api.core.models.Operation;
-import com.wavemaker.tools.api.core.models.Parameter;
-import com.wavemaker.tools.api.core.models.ParameterType;
+import com.wavemaker.tools.apidocs.tools.core.model.Operation;
+import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
+import com.wavemaker.tools.apidocs.tools.core.model.Path;
+import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
+import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
 
 /**
  * @author Uday Shankar
  */
 public class RestRuntimeService {
 
-    private Map<String, ApiDocument> apiDocumentCache = new HashMap<String, ApiDocument>();
+    private Map<String, Swagger> swaggerDocumentCache = new HashMap<String, Swagger>();
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
-    public RestResponse executeRestCall(String serviceId, String operationId, Map<String, Object> params) throws IOException {
-        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationId, params);
+    public RestResponse executeRestCall(String serviceId, String operationUid, Map<String, Object> params) throws IOException {
+        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationUid, params);
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
         String responseBody = restResponse.getResponseBody();
         if (restResponse.getContentType() != null) {
@@ -62,21 +61,37 @@ public class RestRuntimeService {
         return restResponse;
     }
 
-    private RestRequestInfo getRestRequestInfo(String serviceId, String operationId, Map<String, Object> params) throws IOException {
-        ApiDocument apiDocument = getApiDocument(serviceId);
-        EndPoint endPoint = getEndPointByOperationId(apiDocument, operationId);
-        if (endPoint == null) {
-            throw new WMRuntimeException("Invalid operationId [" + operationId + "]");
+    private RestRequestInfo getRestRequestInfo(String serviceId, String operationUid, Map<String, Object> params) throws IOException {
+        Swagger swagger = getSwaggerDoc(serviceId);
+        Path path = SwaggerDocUtil.getPathByOperationUid(swagger, operationUid);
+        Map<String, Path> paths = swagger.getPaths();
+        String relativePath = null;
+        for (Map.Entry<String, Path> entry : paths.entrySet()) {
+            if (path == entry.getValue()) {
+                relativePath = entry.getKey();
+            }
         }
-        Operation operation = getOperationById(endPoint, operationId);
+        Operation operation = SwaggerDocUtil.getOperationByUid(swagger, operationUid);
         RestRequestInfo restRequestInfo = new RestRequestInfo();
-        StringBuilder endpointAddressStringBuilder = new StringBuilder(apiDocument.getBaseURL() + endPoint.getRelativePath());
-        restRequestInfo.setMethod(operation.getHttpMethod().toString());
-        Set<String> consumes = operation.getConsumes();
+        StringBuilder endpointAddressStringBuilder = new StringBuilder(swagger.getBasePath() + ((relativePath == null) ? "" : relativePath));
+        restRequestInfo.setMethod(SwaggerDocUtil.getOperationType(path, operationUid).toString());
+        List<String> consumes = operation.getConsumes();
         Assert.isTrue(consumes.size() <= 1);
         if (!consumes.isEmpty()) {
             restRequestInfo.setContentType(consumes.iterator().next());
         }
+
+        //check basic auth is there for operation
+        List<Map<String, List<String>>> securityMap = operation.getSecurity();
+        for (Map<String, List<String>> securityList : securityMap) {
+            for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
+                if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
+                    restRequestInfo.setBasicAuth(true);
+                    restRequestInfo.setAuthorization(params.get(RestConstants.AUTHORIZATION).toString());
+                }
+            }
+        }
+
         List<Parameter> parameters = operation.getParameters();
         Map<String, Object> headers = new HashMap<>();
         Map<String, Object> queryParams = new HashMap<>();
@@ -86,29 +101,33 @@ public class RestRuntimeService {
             for (Parameter parameter : parameters) {
                 String paramName = parameter.getName();
                 Object value = params.get(paramName);
-                if (value == null && ParameterType.HEADER.equals(parameter.getParameterType())) {//This is to handle header rename to lower case letters in some webapp servers
+                String type = parameter.getIn().toUpperCase();
+                if (value == null && ParameterType.HEADER.equals(type)) {//This is to handle header rename to lower case letters in some webapp servers
                     value = params.get(paramName.toLowerCase());
                 }
-                if (value == null && ParameterType.BODY.equals(parameter.getParameterType())) {//This is to handle body parameter which might not have been named in some api-docs
+                if (value == null && ParameterType.BODY.equals(type)) {//This is to handle body parameter which might not have been named in some api-docs
                     value = params.get(RestConstants.REQUEST_BODY_KEY);
                 }
                 if (value != null) {
-                    if (ParameterType.HEADER.equals(parameter.getParameterType())) {
+                    if (ParameterType.HEADER.toString().equals(type)) {
                         headers.put(paramName, value);
-                    } else if (ParameterType.QUERY.equals(parameter.getParameterType())) {
+                    } else if (ParameterType.QUERY.toString().equals(type)) {
                         queryParams.put(paramName, value);
-                    } else if (ParameterType.PATH.equals(parameter.getParameterType())) {
+                    } else if (ParameterType.PATH.toString().equals(type)) {
                         pathParams.put(paramName, (String) value);
-                    } else if (ParameterType.BODY.equals(parameter.getParameterType())) {
+                    } else if (ParameterType.BODY.toString().equals(type)) {
                         requestBody = (String) value;
-                    } else if (ParameterType.AUTH.equals(parameter.getParameterType())) {
+                    }
+
+
+                     /*else if (ParameterType.AUTH.toString().equals(type)) {
                         restRequestInfo.setBasicAuth(true);
                         if (RestConstants.AUTH_USER_NAME.equals(paramName)) {
                             restRequestInfo.setUserName((String) params.get(RestConstants.AUTH_USER_NAME));
                         } else if (RestConstants.AUTH_PASSWORD.equals(paramName)) {
                             restRequestInfo.setPassword((String) params.get(RestConstants.AUTH_PASSWORD));
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -135,60 +154,21 @@ public class RestRuntimeService {
         return restRequestInfo;
     }
 
-    private Operation getOperationById(EndPoint endPoint, String operationId) {
-        List<Operation> operations = endPoint.getOperations();
-        for (Operation operation : operations) {
-            if (operation.getName().equals(operationId)) {
-                return operation;
-            }
-        }
-        return null;
-    }
-
-    private Operation getOperationById(ApiDocument apiDocument, String operationId) {
-        List<EndPoint> endPoints = apiDocument.getEndPoints();
-        for (EndPoint endPoint : endPoints) {
-            List<Operation> operations = endPoint.getOperations();
-            for (Operation operation : operations) {
-                if (operation.getName().equals(operationId)) {
-                    return operation;
-                }
-            }
-        }
-        return null;
-    }
-
-    private EndPoint getEndPointByOperationId(ApiDocument apiDocument, String operationId) {
-        List<EndPoint> endPoints = apiDocument.getEndPoints();
-        for (EndPoint endPoint : endPoints) {
-            List<Operation> operations = endPoint.getOperations();
-            for (Operation operation : operations) {
-                if (operation.getName().equals(operationId)) {
-                    return endPoint;
-                }
-            }
-        }
-        return null;
-    }
-
-    private ApiDocument getApiDocument(String serviceId) throws IOException {
-        if (!apiDocumentCache.containsKey(serviceId)) {
+    private Swagger getSwaggerDoc(String serviceId) throws IOException {
+        if (!swaggerDocumentCache.containsKey(serviceId)) {
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
-            ApiDocument apiDocument = WMObjectMapper.getInstance().readValue(stream, ApiDocument.class);
-            apiDocumentCache.put(serviceId, apiDocument);
+            Swagger swaggerDoc = WMObjectMapper.getInstance().readValue(stream, Swagger.class);
+            swaggerDocumentCache.put(serviceId, swaggerDoc);
         }
-        return apiDocumentCache.get(serviceId);
+        return swaggerDocumentCache.get(serviceId);
     }
 
-    public void validateOperation(String serviceId, String operationId, String method) throws IOException {
-        ApiDocument apiDocument = getApiDocument(serviceId);
-        Operation operation = getOperationById(apiDocument, operationId);
-        if (operation == null) {
-            throw new WMRuntimeException("Invalid operationId [" + operationId + "]");
-        }
-        HTTPMethod httpMethod = operation.getHttpMethod();
-        if (httpMethod != null && !httpMethod.name().equalsIgnoreCase(method)) {
-            throw new WMRuntimeException("Method [" + method + "] is not allowed to execute the operation [" + operationId + "] in the service [" + serviceId + "]");
+    public void validateOperation(String serviceId, String operationUid, String method) throws IOException {
+        Swagger swagger = getSwaggerDoc(serviceId);
+        Path path = SwaggerDocUtil.getPathByOperationUid(swagger, operationUid);
+        String httpMethod = SwaggerDocUtil.getOperationType(path, operationUid);
+        if (httpMethod != null && !httpMethod.equalsIgnoreCase(method)) {
+            throw new WMRuntimeException("Method [" + method + "] is not allowed to execute the operation [" + operationUid + "] in the service [" + serviceId + "]");
         }
     }
 }

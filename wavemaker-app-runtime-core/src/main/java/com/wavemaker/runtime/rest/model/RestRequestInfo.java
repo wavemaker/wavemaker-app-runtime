@@ -30,8 +30,7 @@ public class RestRequestInfo {
     private String contentType;
     private String requestBody;
     private boolean basicAuth;
-    private String userName;
-    private String password;
+    private String authorization;
     private Map<String, Object> headers;
     private RestResponse sampleRestResponse;
 
@@ -75,28 +74,12 @@ public class RestRequestInfo {
         this.method = method;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getRequestBody() {
         return requestBody;
     }
 
     public void setRequestBody(String requestBody) {
         this.requestBody = requestBody;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public RestResponse getSampleRestResponse() {
@@ -107,6 +90,14 @@ public class RestRequestInfo {
         this.sampleRestResponse = sampleRestResponse;
     }
 
+    public String getAuthorization() {
+        return authorization;
+    }
+
+    public void setAuthorization(String authorization) {
+        this.authorization = authorization;
+    }
+
     @Override
     public String toString() {
         return "RestRequestInfo{" +
@@ -115,8 +106,7 @@ public class RestRequestInfo {
                 ", contentType='" + contentType + '\'' +
                 ", requestBody='" + requestBody + '\'' +
                 ", basicAuth=" + basicAuth +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
+                ", authorization='" + authorization + '\'' +
                 ", headers=" + headers +
                 ", sampleRestResponse=" + sampleRestResponse +
                 '}';
