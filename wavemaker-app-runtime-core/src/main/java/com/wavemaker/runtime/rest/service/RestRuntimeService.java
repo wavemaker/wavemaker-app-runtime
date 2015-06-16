@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 
-import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.helper.SchemaConversionHelper;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
 import com.wavemaker.runtime.util.SwaggerDocUtil;
 import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.json.JSONUtils;
 import com.wavemaker.studio.common.util.WMUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
@@ -35,8 +35,8 @@ public class RestRuntimeService {
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
-    public RestResponse executeRestCall(String serviceId, String operationUid, Map<String, Object> params) throws IOException {
-        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationUid, params);
+    public RestResponse executeRestCall(String serviceId, String operationId, Map<String, Object> params) throws IOException {
+        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationId, params);
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
         String responseBody = restResponse.getResponseBody();
         if (restResponse.getContentType() != null) {
@@ -61,20 +61,23 @@ public class RestRuntimeService {
         return restResponse;
     }
 
-    private RestRequestInfo getRestRequestInfo(String serviceId, String operationUid, Map<String, Object> params) throws IOException {
+    private RestRequestInfo getRestRequestInfo(String serviceId, String operationId, Map<String, Object> params) throws IOException {
         Swagger swagger = getSwaggerDoc(serviceId);
-        Path path = SwaggerDocUtil.getPathByOperationUid(swagger, operationUid);
-        Map<String, Path> paths = swagger.getPaths();
-        String relativePath = null;
-        for (Map.Entry<String, Path> entry : paths.entrySet()) {
-            if (path == entry.getValue()) {
-                relativePath = entry.getKey();
+        String relativePath = swagger.getPaths().keySet().iterator().next();
+        Path path = swagger.getPaths().values().iterator().next();
+        Operation operation = null;
+        for (Operation eachOperation : path.getOperations()) {
+            if (eachOperation.getOperationId().equals(operationId)) {
+                operation = eachOperation;
             }
         }
-        Operation operation = SwaggerDocUtil.getOperationByUid(swagger, operationUid);
+        if (operation == null) {
+            throw new WMRuntimeException("Operation does not exist with id " + operationId);
+        }
         RestRequestInfo restRequestInfo = new RestRequestInfo();
         StringBuilder endpointAddressStringBuilder = new StringBuilder(swagger.getBasePath() + ((relativePath == null) ? "" : relativePath));
-        restRequestInfo.setMethod(SwaggerDocUtil.getOperationType(path, operationUid).toString());
+        String methodType = SwaggerDocUtil.getOperationType(path, operation.getOperationUid());
+        restRequestInfo.setMethod(methodType.toUpperCase());
         List<String> consumes = operation.getConsumes();
         Assert.isTrue(consumes.size() <= 1);
         if (!consumes.isEmpty()) {
@@ -83,11 +86,13 @@ public class RestRuntimeService {
 
         //check basic auth is there for operation
         List<Map<String, List<String>>> securityMap = operation.getSecurity();
-        for (Map<String, List<String>> securityList : securityMap) {
-            for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
-                if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
-                    restRequestInfo.setBasicAuth(true);
-                    restRequestInfo.setAuthorization(params.get(RestConstants.AUTHORIZATION).toString());
+        if (securityMap != null) {
+            for (Map<String, List<String>> securityList : securityMap) {
+                for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
+                    if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
+                        restRequestInfo.setBasicAuth(true);
+                        restRequestInfo.setAuthorization(params.get(RestConstants.AUTHORIZATION).toString());
+                    }
                 }
             }
         }
@@ -118,16 +123,6 @@ public class RestRuntimeService {
                     } else if (ParameterType.BODY.toString().equals(type)) {
                         requestBody = (String) value;
                     }
-
-
-                     /*else if (ParameterType.AUTH.toString().equals(type)) {
-                        restRequestInfo.setBasicAuth(true);
-                        if (RestConstants.AUTH_USER_NAME.equals(paramName)) {
-                            restRequestInfo.setUserName((String) params.get(RestConstants.AUTH_USER_NAME));
-                        } else if (RestConstants.AUTH_PASSWORD.equals(paramName)) {
-                            restRequestInfo.setPassword((String) params.get(RestConstants.AUTH_PASSWORD));
-                        }
-                    }*/
                 }
             }
 
@@ -157,18 +152,9 @@ public class RestRuntimeService {
     private Swagger getSwaggerDoc(String serviceId) throws IOException {
         if (!swaggerDocumentCache.containsKey(serviceId)) {
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
-            Swagger swaggerDoc = WMObjectMapper.getInstance().readValue(stream, Swagger.class);
+            Swagger swaggerDoc = JSONUtils.toObject(stream, Swagger.class);
             swaggerDocumentCache.put(serviceId, swaggerDoc);
         }
         return swaggerDocumentCache.get(serviceId);
-    }
-
-    public void validateOperation(String serviceId, String operationUid, String method) throws IOException {
-        Swagger swagger = getSwaggerDoc(serviceId);
-        Path path = SwaggerDocUtil.getPathByOperationUid(swagger, operationUid);
-        String httpMethod = SwaggerDocUtil.getOperationType(path, operationUid);
-        if (httpMethod != null && !httpMethod.equalsIgnoreCase(method)) {
-            throw new WMRuntimeException("Method [" + method + "] is not allowed to execute the operation [" + operationUid + "] in the service [" + serviceId + "]");
-        }
     }
 }
