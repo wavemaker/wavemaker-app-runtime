@@ -60,7 +60,7 @@ var Application = WM.module('Application',
                     'json',
                     './services/application/type',
                     function (response) {
-                        $rootScope.projectType = response.result;
+                        $rootScope.projectType = projectType = response.result;
                     },
                     WM.noop,
                     true
