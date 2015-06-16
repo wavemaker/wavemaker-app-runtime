@@ -44,48 +44,53 @@ var Application = WM.module('Application',
 
             /* add a node to the DOM to determine the mobile view */
             WM.element('<i id="wm-mobile-display"></i>').appendTo(".wm-app");
-
             var projectID = ProjectService.getId(), /*ProjectID will always be at the same index in the URL*/
-                projectDeployedUrl = ProjectService.getDeployedUrl(),
+                projectDeployedUrl,
             /*variable to know whether a page is loaded or not*/
                 loadedPages = {},
             /*variable to hold to track the previous route path*/
                 prevRoute,
                 invokeService,
-                isPrefabProject = false,
                 NG_LOCALE_PATH = "resources/ngLocale/",
                 APP_LOCALE_PATH = "resources/i18n/",
-                isApplicaton;
+                projectType = WM.element('meta[name=application_type]').attr('content');
 
-
-            Utils.fetchContent(
-                'json',
-                './services/application/type',
-                function (response) {
-                    $rootScope.projectType = response.result;
-                },
-                WM.noop,
-                true
-            );
-
-            isPrefabProject = $rootScope.projectType === 'PREFAB';
-            isApplicaton = $rootScope.projectType === 'APPLICATION';
-
-            if (isPrefabProject) {
+            if (!projectType) {
                 Utils.fetchContent(
                     'json',
-                    Utils.preventCachingOf('./config.json'),
+                    './services/application/type',
                     function (response) {
-                        if (!response.error) {
-                            // save the content of the config file.
-                            $rootScope.prefabConfig = response;
-                        }
+                        $rootScope.projectType = response.result;
                     },
                     WM.noop,
                     true
                 );
             }
 
+            $rootScope.isPrefabType = projectType === 'PREFAB';
+            $rootScope.isMobileType = projectType === 'MOBILE';
+            $rootScope.isApplicationType = projectType === 'APPLICATION';
+            $rootScope.isTemplateBundleType = projectType === 'TEMPLATEBUNDLE';
+
+            if ($rootScope.isMobileType || $rootScope.isPrefabType) {
+                Utils.fetchContent(
+                    'json',
+                    Utils.preventCachingOf('./config.json'),
+                    function (response) {
+                        if (!response.error) {
+                            if ($rootScope.isPrefabType) {
+                                $rootScope.prefabConfig = response;
+                            } else if ($rootScope.isMobileType) {
+                                projectDeployedUrl = response.baseUrl;
+                            }
+                        }
+                    },
+                    WM.noop,
+                    true
+                );
+            } else {
+                projectDeployedUrl  = ProjectService.getDeployedUrl();
+            }
 
             /*create the project object*/
             $rootScope.project = {
@@ -116,7 +121,7 @@ var Application = WM.module('Application',
                 var htmlMarkup = loadedPages[pageName].html;
                 /* load the new page*/
                 /*Process markup*/
-                if (isPrefabProject) {
+                if ($rootScope.isPrefabType) {
                     // if the project type is prefab, manipulate the response.
                     // save the markup of the page. wmPrefabRun directive will process it.
                     $rootScope.prefabTemplate = WM.element(Utils.processMarkup(htmlMarkup));
@@ -134,7 +139,7 @@ var Application = WM.module('Application',
                 $compile(htmlMarkup)($scope);
 
                 /* for prefab project, initialize local service */
-                if (isPrefabProject) {
+                if ($rootScope.isPrefabType) {
                     initI18nService(loadedPages[pageName].variables.supportedLocale);
                 }
             }
@@ -238,7 +243,7 @@ var Application = WM.module('Application',
             };
 
             /* load the common contents */
-            if (isApplicaton && Utils.getCurrentPage() !== "login.html") {
+            if (($rootScope.isApplicationType || $rootScope.isMobileType) && Utils.getCurrentPage() !== "login.html") {
                 var commonPage = "Common";
                 Application.loadResources(commonPage, function () {
                     /* set the common-page variables, registration will be handled by page directive */
