@@ -94,14 +94,6 @@ WM.module("wm.widgets.basic")
                     }
                 };
 
-                /*Function to check the lastPage parameter and manipulate the navigator accordingly.*/
-                $scope.checkLastPage = function (data) {
-                    /*When the number of elements is less than the page size,
-                    * it means that the current page is the last page.
-                    * Hence disable the "Next" link.*/
-                    $scope.isDisableNext = data.numberOfElements < $scope.maxResults;
-                };
-
                 /*Function to disable navigation based on the current and total pages.*/
                 $scope.disableNavigation = function () {
                     var isCurrentPageFirst = ($scope.currentPage === 1),
@@ -223,7 +215,7 @@ WM.module("wm.widgets.basic")
 
                 /*Function to be invoked after the data of the page has been fetched.*/
                 $scope.onPageDataReady = function (event, data, callback) {
-                    $scope.checkLastPage(data);
+                    $scope.disableNavigation();
                     $scope.invokeSetRecord(event, data);
                     Utils.triggerFn(callback);
                 };
