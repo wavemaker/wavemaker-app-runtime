@@ -37,6 +37,10 @@ wm.variables.services.$servicevariable = ['Variables',
             SERVICE_TYPE_SOAP = VARIABLE_CONSTANTS.SERVICE_TYPE_SOAP,
             SERVICE_TYPE_DATA = VARIABLE_CONSTANTS.SERVICE_TYPE_DATA,
             SERVICE_TYPE_JAVA = VARIABLE_CONSTANTS.SERVICE_TYPE_JAVA,
+            supportedOperations = ['get','put','post','delete'],
+            BASE_PATH_KEY = 'x-WM-BASE_PATH',
+            RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
+            parameterTypeKey = 'in',
             /* function to prepare the sample model for the service variable */
             prepareServiceModel = function (type, parentNode, startNode, variable, typeChain) {
                 var modelTypes = variable.prefabName ? prefabDataTypes[variable.prefabName] : $rootScope.dataTypes;
@@ -52,9 +56,9 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
                         });
                     }
-                } else if (type && modelTypes[type]) {
+                } else if ((type && modelTypes[type]) || (type === "string" && modelTypes['java.lang.String'])) {
                     /* case when the data returned from the service is not an object */
-                    if (modelTypes[type].primitiveType) {
+                    if ((type !== "string" && modelTypes[type] && modelTypes[type].primitiveType)  || ( type === "string" && modelTypes['java.lang.String'] && modelTypes['java.lang.String'].primitiveType)) {
                         parentNode['value'] = '';
                         return;
                     }
@@ -180,7 +184,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 /* loop through all the parameters */
                 WM.forEach(operationInfo.parameters, function (param) {
                     var paramValue = param.sampleValue;
-                    switch (param.parameterType) {
+                    switch (param.parameterType.toUpperCase()) {
                     case 'QUERY':
                     case 'AUTH':
                         if (!queryParams) {
@@ -226,7 +230,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     "projectID": $rootScope.project.id,
                     "url": url,
                     "target": target,
-                    "method": operationInfo.httpMethod,
+                    "method": operationInfo.methodType,
                     "headers": headers,
                     "dataParams": requestBody
                 };
@@ -409,18 +413,18 @@ wm.variables.services.$servicevariable = ['Variables',
              * sets the other operation info into the provided model for later reference
              */
             setMatchedOperationParams = function (model, selectedOperation, operation) {
-                if (operation.name === selectedOperation) {
-                    model.httpMethod = operation.httpMethod;
-                    model.name = operation.name;
+                if (operation.operationId === selectedOperation) {
+                    model.methodType = operation.operationType;
+                    model.name = operation.operationId;
                     model.parameters = [];
 
                     /*if the operation has parameters, iterate over them to create a map of parameter and
                      * it's type*/
-                    if (operation.parameters.length !== 0) {
+                    if (operation.parameters && operation.parameters.length) {
                         operation.parameters.forEach(function (parameter) {
                             model.parameters.push({
-                                "name": parameter.name || (parameter.parameterType && parameter.parameterType.toLowerCase()),
-                                "parameterType": parameter.parameterType
+                                "name": parameter.name || (parameter[parameterTypeKey] && parameter[parameterTypeKey].toLowerCase()),
+                                "parameterType": parameter[parameterTypeKey]
                             });
                         });
                     }
@@ -432,23 +436,41 @@ wm.variables.services.$servicevariable = ['Variables',
             getServiceOperationInfo = function (selectedOperation, selectedService, success, error, forceReload) {
                 var operationInfo = {},
                     i,
-                    endPoint,
+                    operations = [],
                     matchOperations = setMatchedOperationParams.bind(undefined, operationInfo, selectedOperation);
 
                 /*invoking a service to get the operations that a particular service has and it's
                  * parameters to create a unique url pattern*/
                 ServiceFactory.getServiceDef(selectedService, function (response) {
-                    /*iterate over the apiDocuments received from the service response*/
-                    response.apiDocuments.forEach(function (apiDocument) {
-                        /*iterate over the endPoints available in each apiDocument*/
-                        for (i = 0; i < apiDocument.endPoints.length; i += 1) {
-                            endPoint = apiDocument.endPoints[i];
-                            if (endPoint.operations.some(matchOperations)) {
-                                operationInfo.relativePath = (apiDocument.relativePath || "") + endPoint.relativePath;
+                    /*iterate over the paths received from the service response*/
+                        var pathsArr = Object.keys(response.paths);
+                    for (var i= 0, nPaths = pathsArr.length; i <nPaths; i++) {
+                        var pathKey = pathsArr[i],
+                            path = response.paths[pathKey];
+                        for (var j = 0, nOps = supportedOperations.length; j < nOps; j++) {
+                            var opType = supportedOperations[j],
+                                operation = path[opType];
+                            if (operation && operation.operationId === selectedOperation) {
+                                operationInfo.methodType = opType;
+                                operationInfo.name = selectedOperation;
+                                operationInfo.relativePath = (path[BASE_PATH_KEY] || "") + path[RELATIVE_PATH_KEY];
+                                operationInfo.parameters = [];
+
+                                if (operation.parameters && operation.parameters.length) {
+                                    operation.parameters.forEach(function (parameter) {
+                                        operationInfo.parameters.push({
+                                            "name": parameter.name || (parameter[parameterTypeKey] && parameter[parameterTypeKey].toLowerCase()),
+                                            "parameterType": parameter[parameterTypeKey]
+                                        });
+                                    });
+                                }
                                 break;
                             }
                         }
-                    });
+                        if (j < nOps) {
+                            break;
+                        }
+                    }
                     /*pass the data prepared to the success callback function*/
                     Utils.triggerFn(success, operationInfo);
                 }, function (errMsg) {
@@ -459,7 +481,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
             isPostRequest = function (variable) {
                 var opInfo = variable.wmServiceOperationInfo;
-                return (opInfo && opInfo.httpMethod === "POST" && opInfo.parameters.length === 1 && opInfo.parameters[0].parameterType === "BODY");
+                return (opInfo && opInfo.methodType === "POST" && opInfo.parameters.length === 1 && opInfo.parameters[0].parameterType === "BODY");
             },
         /* properties of a service variable - should contain methods applicable on this particular object */
             methods = {
