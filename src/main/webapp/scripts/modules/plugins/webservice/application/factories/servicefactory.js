@@ -26,6 +26,12 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 'serviceDef': {}
             },
             serviceDefMap = {},
+            supportedOperations = ['get','put','post','delete'],
+            primitiveDataTypes = ['integer','boolean','string'],
+            IS_LIST_KEY = 'x-WM-IS_LIST',
+            UNIQUE_ITEMS_KEY = 'uniqueItems',
+            FULLY_QUALIFIED_NAME_KEY = 'x-WM-FULLY_QUALIFIED_NAME',
+            parameterTypeKey = 'in',
 
         /*function to get service object matching its name*/
             getServiceObjectByName = function (name) {
@@ -137,30 +143,51 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 });
             },
 
-            processOperations = function (serviceObj, operations) {
-                var paramsKey,
-                    opTypeRefsKey,
-                    listOpTypeRefsKey,
-                    paramTypeRefsKey,
-                    paramTypeListRefsKey,
-                    isListKey,
-                    isParamListKey,
-                    isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1,
-                    PAGE_TYPE = "org.springframework.data.domain.Page";
-                if (isRestSupportedService) {
-                    paramsKey = "parameters";
-                    opTypeRefsKey = "fullyQualifiedReturnType";
-                    listOpTypeRefsKey = "fullyQualifiedReturnTypeArguments";
-                    paramTypeRefsKey = "fullyQualifiedType";
-                    paramTypeListRefsKey = "fullyQualifiedTypeArguments";
-                    isListKey = "returnTypeList";
-                    isParamListKey = "list";
+            /*Getting the fully qualified name*/
+            getFullyQualifiedName = function (refValue, definitions) {
+                var refValues = refValue.split('/');
+                return definitions[refValues[refValues.length - 1]][FULLY_QUALIFIED_NAME_KEY];
+            },
+
+            getReturnType = function (responseObject, definitions) {
+                var refObject,
+                    type,
+                    values;
+                if(responseObject.type) {
+                    /*In case of primitive type*/
+                    if(primitiveDataTypes.indexOf(responseObject.type) !== -1) {
+                        return responseObject.type;
+                    } else if(responseObject.type === 'array'){
+                        /*In case of list type*/
+                        if (responseObject[IS_LIST_KEY]) {
+                            if(responseObject.items.type) {
+                                type = responseObject.items.type;
+                            } else {
+                                if(responseObject.items.$ref) {
+                                    type = getFullyQualifiedName(responseObject.items.$ref, definitions);
+                                }
+                            }
+                            return responseObject[UNIQUE_ITEMS_KEY] ? 'Set<' + type + '>' : 'List<' + type + '>';
+                        } else {
+                            if(responseObject.items.type) {
+                                return responseObject.items.type + "[]";
+                            } else {
+                                if(responseObject.items.$ref) {
+                                    return getFullyQualifiedName(responseObject.items.$ref, definitions) + "[]";
+                                }
+                            }
+                        }
+                    }
                 } else {
-                    paramsKey = "parameter";
-                    opTypeRefsKey = "return";
-                    paramTypeRefsKey = "typeRef";
-                    isParamListKey = "isList";
+                    /*In case of object type*/
+                    return getFullyQualifiedName(responseObject.$ref, definitions);
                 }
+            },
+
+            processOperations = function (serviceObj, operations, definitions) {
+                var paramsKey = "parameters",
+                    isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1;
+
                 /*Empty the "operations" so that they are set based on the response.*/
                 serviceObj.operations = [];
 
@@ -170,20 +197,25 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     var operationObject = {},
                         isList,
                         typeRef,
-                        returnObj;
+                        returnObj,
+                        returnType;
+
+                    if (operation.operationType === "hqlquery" || operation.operationType === "nativequery") {
+                        returnType = operation.return;
+                    } else {
+                        returnType = getReturnType(operation.responses['200'].schema, definitions);
+                    }
 
                     /* special case for pageable return type */
                     if (isRestSupportedService) {
-                        isList = operation[isListKey];
-                        typeRef = (isList || operation[opTypeRefsKey] === PAGE_TYPE)? (operation[listOpTypeRefsKey][0] || 'java.lang.Object') : operation[opTypeRefsKey];
-                        returnObj = {typeRef: typeRef};
+                        returnObj = {typeRef: returnType};
                     } else {
-                        returnObj = operation[opTypeRefsKey];
+                        returnObj = returnType;
                     }
 
                     /*push the operation only if does not exist previously*/
                     operationObject = {
-                        name: operation.name,
+                        name: operation.operationId || operation.name,
                         operationType: operation.operationType || null,
                         parameter: undefined,
                         return: returnObj
@@ -194,18 +226,21 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     if (!WM.element.isEmptyObject(operation[paramsKey])) {
                         operationObject.parameter = [];
                         WM.forEach(operation[paramsKey], function (param) {
-
-                            isList = param[isParamListKey];
-                            if (isRestSupportedService) {
-                                typeRef = isList ? (param[paramTypeListRefsKey][0] || 'java.lang.Object') : param[paramTypeRefsKey];
+                            if(param.type) {
+                                typeRef = param.type
                             } else {
-                                typeRef = param[paramTypeRefsKey];
+                                if (param.schema) {
+                                    typeRef = getReturnType(param.schema, definitions);
+                                } else if(param.items) {
+                                    typeRef = getReturnType(param.items, definitions);
+                                }
                             }
+                            isList = param[IS_LIST_KEY];
                             operationObject.parameter.push({
                                 name: param.name,
                                 typeRef: typeRef,
                                 isList: isList,
-                                parameterType: param.parameterType
+                                parameterType: param[parameterTypeKey]
                             });
                         });
                     }
@@ -224,8 +259,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 var serviceObj = getServiceObjectByName(serviceId),
                     urlParams,
                     operations,
-                    onOperationsFetch = function (operations) {
-                        processOperations(serviceObj, operations);
+                    onOperationsFetch = function (operations, definitions) {
+                        processOperations(serviceObj, operations, definitions);
                         var callback;
 
                         /*while loop is used so that any requests that come when the response is being served; are also handled.*/
@@ -259,17 +294,18 @@ wm.plugins.webServices.factories.ServiceFactory = [
                      * parameters to create a unique url pattern
                      */
                     getServiceDef(serviceId, function (response) {
-                        /*iterate over the apiDocuments received from the service response*/
-                        response.apiDocuments.forEach(function (apiDocument) {
-                            /*iterate over the endPoints available in each apiDocument*/
-                            apiDocument.endPoints.forEach(function (endPoint) {
-                                endPoint.operations.forEach(function (operation) {
-                                    operations.push(operation);
-                                });
+                        /*iterate over the paths received from the service response*/
+                        WM.forEach(response.paths, function (path) {
+                            /*iterate over the operations available in each path*/
+                            WM.forEach(supportedOperations, function (operation) {
+                                if(path[operation]) {
+                                    path[operation].operationType = operation;
+                                    operations.push(path[operation]);
+                                }
                             });
                         });
                         /*pass the data prepared to the success callback function*/
-                        onOperationsFetch(operations);
+                        onOperationsFetch(operations, response.definitions);
                     }, function () {
                         /*handle error response*/
                         wmToaster.show("error", $rootScope.locale["MESSAGE_ERROR_TITLE"], $rootScope.locale["MESSAGE_ERROR_FETCH_SERVICE_METHODS_DESC"]);
@@ -311,17 +347,14 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                 var paramExists = false,
                                     paramTypeRefsKey,
                                     paramTypeListRefsKey,
-                                    isParamListKey,
                                     isList,
                                     typeRef,
                                     isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1;
                                 if (isRestSupportedService) {
                                     paramTypeRefsKey = "fullyQualifiedType";
                                     paramTypeListRefsKey = "fullyQualifiedTypeArguments";
-                                    isParamListKey = "list";
                                 } else {
                                     paramTypeRefsKey = "typeRef";
-                                    isParamListKey = "isList";
                                 }
 
                                 /*loop through the existing params for the operation object to check existence of fetched params*/
@@ -332,7 +365,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                     }
                                 });
 
-                                isList = param[isParamListKey];
+                                isList = param[IS_LIST_KEY];
                                 if (isRestSupportedService) {
                                     typeRef = isList ? (param[paramTypeListRefsKey][0] || 'java.lang.Object') : param[paramTypeRefsKey];
                                 } else {
@@ -345,7 +378,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                         name: param.name,
                                         typeRef: typeRef,
                                         isList: isList,
-                                        parameterType: param.parameterType
+                                        parameterType: param[parameterTypeKey]
                                     });
                                 }
                             });
