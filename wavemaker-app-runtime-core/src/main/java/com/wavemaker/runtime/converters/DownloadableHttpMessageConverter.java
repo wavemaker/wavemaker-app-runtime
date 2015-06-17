@@ -3,6 +3,7 @@ package com.wavemaker.runtime.converters;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -41,7 +42,7 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
         InputStream contents = downloadable.getContents();
         if (contents != null) {
             String fileName = downloadable.getFileName();
-            String contentType = downloadable.getContentType() != null ? downloadable.getContentType() : new Tika().detect(fileName);
+            String contentType = StringUtils.isNotBlank(downloadable.getContentType()) ? downloadable.getContentType() : new Tika().detect(fileName);
             servletServerHttpResponse.getServletResponse().setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
             servletServerHttpResponse.getServletResponse().setContentType(contentType);
             if(downloadable.getContentLength() != null){
