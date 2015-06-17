@@ -434,8 +434,6 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "datavalue": {"type": "string", "bindable": "in-out-bound"},
                     "scopedatavalue": {"type": "string"},
                     "tabindex": {"type": "string"},
-                    /* Properties: help */
-                    "placeholder": {"type": "string", "value": "Select date"},
                     /* ---- styles ----*/
                     "border": {"type": "string", "widget": "box"},
                     "borderunit": {"type": "string", "options": ["em", "px"], "value": "px", "widget": "icons_radio"},
@@ -472,6 +470,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "zindex": {"type": "string", "pattern": zindexRegex}
                 },
                 "wm.date": {
+                    "placeholder": {"type": "string", "value": "Select date"},
                     "width": {"type": "string", "pattern": dimensionRegex},
                     "autofocus": {"type": "boolean"},
                     "readonly": {"type": "boolean"},
@@ -479,9 +478,11 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "mindate": {"type": "date"},
                     "maxdate": {"type": "date"},
                     "datepattern": {"value": "dd-MM-yyyy", "type": "list", "options": [], "widget": "datetimepatterns"},
+                    "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
                     "datavalue": {"type": "date, string, number", "widget": "date", "bindable": "in-out-bound"}
                 },
                 "wm.calendar": {
+                    "placeholder": {"type": "string", "value": "Select date"},
                     "backgroundcolor": {"type": "string", "widget": "color"},
                     "width": {"type": "string", "pattern": dimensionRegex},
                     "height": {"type": "string", "pattern": dimensionRegex},
@@ -496,14 +497,17 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onEventrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                 },
                 "wm.time": {
+                    "placeholder": {"type": "string", "value": "Select time"},
                     "autofocus": {"type": "boolean"},
                     "readonly": {"type": "boolean"},
                     "disabled": {"type": "boolean"},
                     "hourstep": {"type": "number", "value": 1},
                     "minutestep": {"type": "number", "value": 15},
+                    "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "timepatterns"},
                     "ismeridian": {"type": "boolean", "value": true},
                     "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
-                    "required": {"type": "boolean"}
+                    "required": {"type": "boolean"},
+                    "datavalue": {"type": "time, string, number", "widget": "time", "bindable": "in-out-bound"}
                 },
                 "wm.message": {
                     "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
@@ -1471,6 +1475,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 {"name": "display", "properties": ["picturesource", "modal", "vertical", "fileuploadtitle", "fileuploadmessage"], "parent": "properties"},
                 {"name": "values", "properties": [ "scopedatavalue", "datavalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultvalue", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["places", "datepattern", "ismeridian", "hourstep", "minutestep", "limit"], "parent": "properties"},
+                {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "dataset", "properties": ["operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "datafield", "itemicon", "itemlabel", "itemlink", "itemchildren", "displayfield", "displayexpression",  "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
                 {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},

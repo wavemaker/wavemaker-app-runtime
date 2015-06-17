@@ -24,7 +24,7 @@ WM.module('wm.widgets.form')
             '</div>'
             );
     }])
-    .directive('wmDate', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', function (PropertiesFactory, WidgetUtilService, $templateCache) {
+    .directive('wmDate', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', function (PropertiesFactory, WidgetUtilService, $templateCache, $filter) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -104,6 +104,9 @@ WM.module('wm.widgets.form')
                          *  */
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
+                                if (this.outputformat && this.outputformat !== "timestamp") {
+                                    return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
+                                }
                                 return this._proxyModel ?  this._proxyModel.valueOf() : undefined;
                             },
                             set: function (val) {
@@ -112,6 +115,9 @@ WM.module('wm.widgets.form')
                                     if (WM.isDate(val)) {
                                         epoch = val.getTime();
                                     } else {
+                                        if (!isNaN(val)) {
+                                            val = parseInt(val, 10);
+                                        }
                                         epoch = new Date(val).getTime();
                                         epoch = isNaN(epoch) ? undefined : epoch;
                                     }
@@ -121,6 +127,10 @@ WM.module('wm.widgets.form')
                                 }
                             }
                         });
+
+                        if (attrs.datavalue) {
+                            scope._model_ = attrs.datavalue;
+                        }
                     }
                 };
             }

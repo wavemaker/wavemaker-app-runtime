@@ -22,7 +22,7 @@ WM.module('wm.widgets.form')
                 '</span>' +
             '</div>'
             );
-    }]).directive('wmTime', ['PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', function (PropertiesFactory, WidgetUtilService, $timeout, $templateCache) {
+    }]).directive('wmTime', ['PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', function (PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.time', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -131,6 +131,9 @@ WM.module('wm.widgets.form')
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
                                 this._timeModel = scope.formatTime(this._proxyModel);
+                                if (this.outputformat && this.outputformat !== "timestamp") {
+                                    return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
+                                }
                                 return this._proxyModel ?  this._proxyModel.valueOf() : undefined;
                             },
                             set: function (val) {
@@ -138,6 +141,9 @@ WM.module('wm.widgets.form')
                                     if (WM.isDate(val)) {
                                         this._proxyModel = val;
                                     } else {
+                                        if (!isNaN(val)) {
+                                            val = parseInt(val, 10);
+                                        }
                                         var date = new Date(val);
                                         this._proxyModel = WM.isDate(date) ? date : undefined;
                                     }
@@ -150,6 +156,10 @@ WM.module('wm.widgets.form')
 
                         if (!attrs.datavalue && !attrs.scopedatavalue) {
                             scope._model_ = Date.now();
+                        }
+
+                        if (attrs.datavalue) {
+                            scope._model_ = attrs.datavalue;
                         }
 
                     }

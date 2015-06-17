@@ -118,14 +118,14 @@ WM.module('wm.utils', [])
                 'float': ['Number', 'Text', 'Slider', 'Select'],
                 'big_decimal': ['Number', 'Text', 'Slider', 'Select'],
                 'double': ['Number', 'Text', 'Slider', 'Select'],
-                'string': ['Text', 'Textarea', 'Password', 'RichText', 'Select'],
-                'character': ['Text', 'Textarea', 'RichText', 'Select'],
-                'text': ['Textarea', 'Text', 'RichText', 'Select'],
+                'string': ['Text', 'Textarea', 'Password', 'RichText', 'Select', 'Date', 'Time', 'Timestamp'],
+                'character': ['Text', 'Textarea', 'RichText', 'Select', 'Date', 'Time', 'Timestamp'],
+                'text': ['Textarea', 'Text', 'RichText', 'Select', 'Date', 'Time', 'Timestamp'],
                 'clob': ['Textarea', 'Text', 'RichText'],
                 'blob': ['Upload', 'Textarea', 'Text', 'RichText'],
                 'time': ['Time', 'Text', 'Select'],
                 'timestamp': ['Timestamp', 'Text', 'Date', 'Time', 'Select'],
-                'custom': ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select']
+                'custom': ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select', 'Date', 'Time', 'Timestamp']
             },
             indexPage = getIndexPage();
 
