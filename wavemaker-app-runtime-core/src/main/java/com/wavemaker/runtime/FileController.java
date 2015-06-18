@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -70,6 +72,8 @@ public final class FileController extends AbstractController {
     private static final String WM_CONFIG_URL = "/config.js";
 
     private ServiceResponse serviceResponse;
+
+    private static final Logger logger = LoggerFactory.getLogger(FileController.class);
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -114,7 +118,7 @@ public final class FileController extends AbstractController {
         }
 
         if (sendFile != null && !sendFile.exists()) {
-            logger.debug("File " + reqPath + " not found in expected path: " + sendFile);
+            logger.debug("File {} not found in expected path: {}", reqPath, sendFile);
             handleError(response, "File " + reqPath + " not found in expected path: " + sendFile, HttpServletResponse.SC_NOT_FOUND);
         } else if (sendFile != null) {
             if (addExpiresTag) {

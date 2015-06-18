@@ -81,7 +81,7 @@ public class WMAppContext {
                 appPropsResource = new ServletContextResource(this.context, "/WEB-INF/"
                                                                                     + CommonConstants.APP_PROPERTY_FILE);
             } catch (Exception e) {
-                logger.warn("Cannot load app properties resource [" + CommonConstants.APP_PROPERTY_FILE + "]", e);
+                logger.warn("Cannot load app properties resource {}", CommonConstants.APP_PROPERTY_FILE, e);
                 return;
             }
 

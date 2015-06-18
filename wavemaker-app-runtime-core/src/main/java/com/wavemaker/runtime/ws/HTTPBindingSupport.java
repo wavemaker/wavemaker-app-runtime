@@ -244,7 +244,7 @@ public class HTTPBindingSupport {
             }
         }
 
-        logger.info("Invoking HTTP '" + method + "' request with URL: " + endpointAddress);
+        logger.info("Invoking HTTP {} request with URL: {}", method, endpointAddress);
         try {
             T result = d.invoke(postSource);
             return result;

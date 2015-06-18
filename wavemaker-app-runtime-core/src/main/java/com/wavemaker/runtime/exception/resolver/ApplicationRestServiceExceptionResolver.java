@@ -36,7 +36,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     @Override
     protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
-        logger.error("Error occurred while serving the request with url [" + request.getRequestURI() + "]", ex);
+        logger.error("Error occurred while serving the request with url {}", request.getRequestURI(), ex);
 
         if (ex instanceof EntityNotFoundException) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -62,7 +62,7 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
         } else if (ex instanceof HttpMessageNotReadableException) {
             return handleHttpMessageNotReadableException((HttpMessageNotReadableException) ex, response);
         } else {
-            logger.error("Unknown error for url [" + request.getRequestURI() + "]", ex);
+            logger.error("Unknown error for url {}", request.getRequestURI(), ex);
             return handleException(ex, response);
         }
     }

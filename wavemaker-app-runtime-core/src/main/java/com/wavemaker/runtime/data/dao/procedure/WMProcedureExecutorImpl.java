@@ -143,10 +143,10 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 CustomProcedureParam procedureParam = customParams.get(position);
                 if (ProceduresUtils.hasOutParamType(procedureParam)) {
 
-                    LOGGER.info("Found out Parameter " + procedureParam.getParamName());
+                    LOGGER.info("Found out Parameter {}", procedureParam.getParamName());
                     String typeName = StringUtils.splitPackageAndClass(procedureParam.getValueType()).v2;
                     Integer typeCode = getTypeCode(typeName);
-                    LOGGER.info("Found type code to be " + typeCode);
+                    LOGGER.info("Found type code to be {}", typeCode);
                     callableStatement.registerOutParameter(position + 1, typeCode);
 
                     if (typeName.equalsIgnoreCase(CURSOR)) {
@@ -161,7 +161,7 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 }
             }
 
-            LOGGER.info("Executing Procedure [ " + procedureStr + " ]");
+            LOGGER.info("Executing Procedure {}", procedureStr);
             boolean resultType = callableStatement.execute();
 
             List responseWrapper = new ArrayList<Object>();

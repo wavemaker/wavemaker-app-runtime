@@ -68,9 +68,7 @@ public class JSONRPCController extends ControllerBase {
             input = ServerUtils.readInput(request);
         }
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Request body: '" + input + "'");
-        }
+        this.logger.debug("Request body: '{}'",input);
 
         JSONObject jsonReq = (JSONObject) JSONUnmarshaller.unmarshal(input, getInternalRuntime().getJSONState());
 
@@ -103,12 +101,8 @@ public class JSONRPCController extends ControllerBase {
             params = new JSONArray();
         }
 
-        if (this.logger.isInfoEnabled()) {
-            this.logger.info("Invoke Service: " + serviceName + ", Method: " + method);
-            if (this.logger.isDebugEnabled()) {
-                this.logger.debug("Method " + method + " Parameters: " + params);
-            }
-        }
+        this.logger.info("Invoke Service: {} , Method: {}", serviceName, method);
+        this.logger.debug("Method {},Parameters: {}", method, params);
 
         ServiceWire sw = this.getServiceManager().getServiceWire(serviceName);
         if (sw == null) {
@@ -119,10 +113,7 @@ public class JSONRPCController extends ControllerBase {
         reflInvokeRef = invokeMethod(sw, method, params, null, this.serviceResponse);
 
 
-
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("method " + method + " result: " + reflInvokeRef);
-        }
+        this.logger.debug("method {},result: {}", method, reflInvokeRef);
 
         JsonView jv = getView();
         ret = getModelAndView(jv, reflInvokeRef);

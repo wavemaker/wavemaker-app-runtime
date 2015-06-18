@@ -50,7 +50,7 @@ public class RestRuntimeService {
                     restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
                     restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
                 } catch (Exception e) {
-                    logger.debug("Unable to read the response as xml for the media type [" + responseContentType + "] and convert to json", e);
+                    logger.debug("Unable to read the response as xml for the media type {} and convert to json", responseContentType, e);
                 }
             } else {
                 restResponse.setContentType(MediaType.APPLICATION_JSON.toString());

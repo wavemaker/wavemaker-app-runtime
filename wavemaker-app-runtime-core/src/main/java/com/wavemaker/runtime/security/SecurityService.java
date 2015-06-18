@@ -15,7 +15,10 @@
  */
 package com.wavemaker.runtime.security;
 
-import com.wavemaker.runtime.WMAppContext;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -26,9 +29,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.wavemaker.runtime.WMAppContext;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
@@ -169,7 +170,7 @@ public class SecurityService {
                 // take out the prefix and get the actual role name
                 realRoleName = roleName.substring(ROLE_PREFIX.length());
             } else {
-                logger.warn("Role " + roleName + " does not use the prefix " + ROLE_PREFIX + ". This may cause problems");
+                logger.warn("Role {} does not use the prefix {}. This may cause problems", roleName, ROLE_PREFIX);
                 realRoleName = roleName;
             }
 

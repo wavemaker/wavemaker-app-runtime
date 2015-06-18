@@ -152,7 +152,7 @@ public class ServerUtils {
             methodParameterNames = ap.lookupParameterNames(method);
             ap = null;
         } catch (ParameterNamesNotFoundException e) {
-            logger.info("No parameter names found for method " + method.getName());
+            logger.info("No parameter names found for method {}", method.getName());
             methodParameterNames = new String[numParams];
         }
 
@@ -185,7 +185,7 @@ public class ServerUtils {
             }
 
             if (paramName == null) {
-                logger.warn("no parameter name information for parameter " + i + ", method: " + method.getName());
+                logger.warn("no parameter name information for parameter {}, method: {}", i, method.getName());
                 paramName = "arg-" + (i + 1);
             }
 

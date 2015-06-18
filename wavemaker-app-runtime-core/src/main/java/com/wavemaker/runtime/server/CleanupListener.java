@@ -114,7 +114,7 @@ public class CleanupListener implements ServletContextListener {
                     timer.shutDown();
                     Thread hsqlTimerThread = timer.getThread();
                     if (hsqlTimerThread != null && hsqlTimerThread.isAlive()) {
-                        logger.info("Joining HSQL-Timer thread: " + hsqlTimerThread.getName());
+                        logger.info("Joining HSQL-Timer thread: {}", hsqlTimerThread.getName());
                         hsqlTimerThread.join(2000);
                     }
                 }
@@ -138,7 +138,7 @@ public class CleanupListener implements ServletContextListener {
                 AbandonedConnectionCleanupThread.shutdown();
             }
         } catch (Throwable e) {
-            logger.warn("Failed to shutdown mysql thread " + className, e);
+            logger.warn("Failed to shutdown mysql thread {}", className, e);
         }
     }
 

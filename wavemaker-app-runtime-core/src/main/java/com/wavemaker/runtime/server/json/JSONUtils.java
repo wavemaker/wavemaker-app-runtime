@@ -86,9 +86,7 @@ public class JSONUtils {
             jsonState.setSettersCalled(new ArrayList<String>());
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Deserialized properties " + deserializedProps);
-        }
+        logger.debug("Deserialized properties {}", deserializedProps);
 
         ParsedServiceArguments psa = new ParsedServiceArguments();
         psa.setArguments(objects);

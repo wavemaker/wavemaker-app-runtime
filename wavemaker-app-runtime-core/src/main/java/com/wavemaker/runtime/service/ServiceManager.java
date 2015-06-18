@@ -146,10 +146,10 @@ public class ServiceManager implements ApplicationContextAware {
     public void addServiceWire(ServiceWire serviceWire) {
 
         if (getServiceWire(serviceWire.getServiceId()) == null) {
-            this.logger.info("Adding ServiceWire " + serviceWire);
+            this.logger.info("Adding ServiceWire {}", serviceWire);
             this.serviceWires.add(serviceWire);
         } else {
-            this.logger.info("Attempt to re-add ServiceWire " + serviceWire);
+            this.logger.info("Attempt to re-add ServiceWire {}", serviceWire);
             this.serviceWires.add(serviceWire);
         }
     }

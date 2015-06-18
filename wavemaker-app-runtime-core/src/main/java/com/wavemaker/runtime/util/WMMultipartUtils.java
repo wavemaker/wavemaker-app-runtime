@@ -134,7 +134,7 @@ public class WMMultipartUtils {
                 }
             }
         } else {
-            LOGGER.error("Casting multipart " + field.getName() + " to " + field.getType().getSimpleName() + " is not supported");
+            LOGGER.error("Casting multipart {} to {} is not supported", field.getName(), field.getType().getSimpleName());
             throw new WMRuntimeException("Casting multipart " + field.getName() + " to " + field.getType().getSimpleName() + " is not supported");
         }
         return instance;

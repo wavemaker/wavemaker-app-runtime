@@ -13,20 +13,12 @@ package com.wavemaker.runtime.security.ad;
  * specific language governing permissions and limitations under the License.
  */
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.DistinguishedName;
-import org.springframework.ldap.core.support.DefaultDirObjectFactory;
-import org.springframework.ldap.support.LdapUtils;
-import org.springframework.security.authentication.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.ldap.SpringSecurityLdapTemplate;
-import org.springframework.security.ldap.authentication.AbstractLdapAuthenticationProvider;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
@@ -35,12 +27,28 @@ import javax.naming.OperationNotSupportedException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.ldap.core.DirContextOperations;
+import org.springframework.ldap.core.DistinguishedName;
+import org.springframework.ldap.core.support.DefaultDirObjectFactory;
+import org.springframework.ldap.support.LdapUtils;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.ldap.SpringSecurityLdapTemplate;
+import org.springframework.security.ldap.authentication.AbstractLdapAuthenticationProvider;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Specialized LDAP authentication provider which uses Active Directory configuration conventions.
@@ -99,6 +107,8 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
     // Only used to allow tests to substitute a mock LdapContext
     ContextFactory contextFactory = new ContextFactory();
 
+    private static final Logger logger = LoggerFactory.getLogger(SpringActiveDirectoryLdapAuthenticationProvider.class);
+
     /**
      * @param domain the domain for which authentication should take place
      */
@@ -129,7 +139,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
             return searchForUser(ctx, username);
 
         } catch (NamingException e) {
-            logger.error("Failed to locate directory entry for authenticated user: " + username, e);
+            logger.error("Failed to locate directory entry for authenticated user: {}", username, e);
             throw badCredentials(e);
         } finally {
             LdapUtils.closeContext(ctx);
@@ -151,7 +161,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("'memberOf' attribute values: " + Arrays.asList(groups));
+            logger.debug("'memberOf' attribute values: {}",Arrays.asList(groups));
         }
 
         ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>(groups.length);
@@ -189,14 +199,14 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
     }
 
     void handleBindException(String bindPrincipal, NamingException exception) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Authentication for " + bindPrincipal + " failed:" + exception);
-        }
+        logger.debug("Authentication for {} failed:", bindPrincipal, exception);
 
         int subErrorCode = parseSubErrorCode(exception.getMessage());
 
         if (subErrorCode > 0) {
-            logger.info("Active Directory authentication failed: " + subCodeToLogMessage(subErrorCode));
+            if (logger.isInfoEnabled()) {
+                logger.info("Active Directory authentication failed: {}", subCodeToLogMessage(subErrorCode));
+            }
 
             if (convertSubErrorCodesToExceptions) {
                 raiseExceptionForErrorCode(subErrorCode, exception);
@@ -298,7 +308,7 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         int atChar = bindPrincipal.lastIndexOf('@');
 
         if (atChar < 0) {
-            logger.debug("User principal '" + bindPrincipal + "' does not contain the domain, and no domain has been configured");
+            logger.debug("User principal {} does not contain the domain, and no domain has been configured", bindPrincipal);
             throw badCredentials();
         }
 

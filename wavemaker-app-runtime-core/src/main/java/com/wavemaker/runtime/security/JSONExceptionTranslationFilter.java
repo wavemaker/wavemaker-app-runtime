@@ -19,8 +19,6 @@ import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,7 +43,7 @@ public class JSONExceptionTranslationFilter extends ExceptionTranslationFilter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String requestPath = httpRequest.getServletPath();
         if (requestPath != null && requestPath.endsWith(".json")) {
-            logger.error("Access to '" + requestPath + "' is denied.  Reason: " + reason.getMessage());
+            logger.error("Access to {} is denied.  Reason: {}", requestPath, reason.getMessage());
 
             // send 403
             ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN, requestPath);
