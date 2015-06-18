@@ -355,7 +355,7 @@ $.widget('wm.datagrid', {
         var classes = this.options.cssClassNames.tableCell + ' ' + colDef.class,
             ngClass = colDef.ngClass || '',
             htm = '<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"',
-            colExpression,
+            colExpression = colDef.customExpression,
             invalidExpression = false,
             ctId = row.pk + '-' + colId,
             template,
@@ -365,15 +365,17 @@ $.widget('wm.datagrid', {
             htm += 'data-ng-class="' + ngClass + '" data-compiled-template="' + ctId + '" ';
             isCellCompiled = true;
         }
-
-        if (colDef.customExpression) {
+        if (colDef.datepattern && !colExpression) {
+            colExpression = "{{'" + row[colDef.field] + "' | date:'" + colDef.datepattern + "'}}";
+        }
+        if (colExpression) {
             if (isCellCompiled) {
                 htm += '>';
             } else {
                 htm += 'data-compiled-template="' + ctId + '">';
                 isCellCompiled = true;
             }
-            htm += colDef.customExpression;
+            htm += colExpression;
         } else {
             htm += '>';
             if (colDef.type !== 'custom') {
