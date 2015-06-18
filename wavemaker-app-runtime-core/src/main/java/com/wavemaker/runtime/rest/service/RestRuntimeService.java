@@ -63,8 +63,9 @@ public class RestRuntimeService {
 
     private RestRequestInfo getRestRequestInfo(String serviceId, String operationId, Map<String, Object> params) throws IOException {
         Swagger swagger = getSwaggerDoc(serviceId);
-        String relativePath = swagger.getPaths().keySet().iterator().next();
-        Path path = swagger.getPaths().values().iterator().next();
+        Map.Entry<String, Path> pathEntry =  swagger.getPaths().entrySet().iterator().next();
+        String relativePath = pathEntry.getKey();
+        Path path = pathEntry.getValue();
         Operation operation = null;
         for (Operation eachOperation : path.getOperations()) {
             if (eachOperation.getOperationId().equals(operationId)) {
@@ -90,7 +91,6 @@ public class RestRuntimeService {
             for (Map<String, List<String>> securityList : securityMap) {
                 for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
                     if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
-                        restRequestInfo.setBasicAuth(true);
                         restRequestInfo.setAuthorization(params.get(RestConstants.AUTHORIZATION).toString());
                     }
                 }
@@ -107,20 +107,20 @@ public class RestRuntimeService {
                 String paramName = parameter.getName();
                 Object value = params.get(paramName);
                 String type = parameter.getIn().toUpperCase();
-                if (value == null && ParameterType.HEADER.equals(type)) {//This is to handle header rename to lower case letters in some webapp servers
+                if (value == null && ParameterType.HEADER.name().equals(type)) {//This is to handle header rename to lower case letters in some webapp servers
                     value = params.get(paramName.toLowerCase());
                 }
-                if (value == null && ParameterType.BODY.equals(type)) {//This is to handle body parameter which might not have been named in some api-docs
+                if (value == null && ParameterType.BODY.name().equals(type)) {//This is to handle body parameter which might not have been named in some api-docs
                     value = params.get(RestConstants.REQUEST_BODY_KEY);
                 }
                 if (value != null) {
-                    if (ParameterType.HEADER.toString().equals(type)) {
+                    if (ParameterType.HEADER.name().equals(type)) {
                         headers.put(paramName, value);
-                    } else if (ParameterType.QUERY.toString().equals(type)) {
+                    } else if (ParameterType.QUERY.name().equals(type)) {
                         queryParams.put(paramName, value);
-                    } else if (ParameterType.PATH.toString().equals(type)) {
+                    } else if (ParameterType.PATH.name().equals(type)) {
                         pathParams.put(paramName, (String) value);
-                    } else if (ParameterType.BODY.toString().equals(type)) {
+                    } else if (ParameterType.BODY.name().equals(type)) {
                         requestBody = (String) value;
                     }
                 }
