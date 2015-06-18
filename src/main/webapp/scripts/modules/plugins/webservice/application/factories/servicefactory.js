@@ -203,7 +203,11 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     if (operation.operationType === "hqlquery" || operation.operationType === "nativequery") {
                         returnType = operation.return;
                     } else {
-                        returnType = getReturnType(operation.responses['200'].schema, definitions);
+                        if(operation.responses['200'].schema) {
+                            returnType = getReturnType(operation.responses['200'].schema, definitions);
+                        } else {
+                            returnType = "void";
+                        }
                     }
 
                     /* special case for pageable return type */

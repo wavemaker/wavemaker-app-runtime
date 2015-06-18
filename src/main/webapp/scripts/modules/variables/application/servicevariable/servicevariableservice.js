@@ -179,14 +179,15 @@ wm.variables.services.$servicevariable = ['Variables',
                     url,
                     target,
                     pathParamRex,
-                    invokeParams;
+                    invokeParams,
+                    uname,
+                    pswd;
 
                 /* loop through all the parameters */
                 WM.forEach(operationInfo.parameters, function (param) {
                     var paramValue = param.sampleValue;
                     switch (param.parameterType.toUpperCase()) {
                     case 'QUERY':
-                    case 'AUTH':
                         if (!queryParams) {
                             if (paramValue) {
                                 queryParams = "?" + param.name + "=" + encodeURIComponent(paramValue);
@@ -195,6 +196,16 @@ wm.variables.services.$servicevariable = ['Variables',
                             if (paramValue) {
                                 queryParams += "&" + param.name + "=" + encodeURIComponent(paramValue);
                             }
+                        }
+                        break;
+                    case 'AUTH':
+                        if(param.name === 'userName') {
+                            uname = paramValue;
+                        } else if(param.name === 'password'){
+                            pswd = paramValue;
+                        }
+                        if(authString) {
+                            headers.Authorization = encodeURIComponent(uname + ':' + pswd);
                         }
                         break;
                     case 'PATH':
@@ -230,7 +241,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     "projectID": $rootScope.project.id,
                     "url": url,
                     "target": target,
-                    "method": operationInfo.methodType,
+                    "method": operationInfo.httpMethod || operationInfo.methodType,
                     "headers": headers,
                     "dataParams": requestBody
                 };
