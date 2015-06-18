@@ -67,7 +67,7 @@ public class RestConnector {
             headersMap.add("Content-Type", contentType);
         }
 
-        if (restRequestInfo.getBasicAuth()) {
+        if (StringUtils.isNotBlank(restRequestInfo.getAuthorization())) {
             headersMap.add("Authorization", restRequestInfo.getAuthorization());
         }
 

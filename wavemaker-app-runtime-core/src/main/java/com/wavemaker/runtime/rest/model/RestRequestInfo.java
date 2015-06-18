@@ -29,18 +29,9 @@ public class RestRequestInfo {
     private String method;
     private String contentType;
     private String requestBody;
-    private boolean basicAuth;
     private String authorization;
     private Map<String, Object> headers;
     private RestResponse sampleRestResponse;
-
-    public boolean getBasicAuth() {
-        return basicAuth;
-    }
-
-    public void setBasicAuth(boolean basicAuth) {
-        this.basicAuth = basicAuth;
-    }
 
     public String getContentType() {
         return contentType;
@@ -105,7 +96,6 @@ public class RestRequestInfo {
                 ", method='" + method + '\'' +
                 ", contentType='" + contentType + '\'' +
                 ", requestBody='" + requestBody + '\'' +
-                ", basicAuth=" + basicAuth +
                 ", authorization='" + authorization + '\'' +
                 ", headers=" + headers +
                 ", sampleRestResponse=" + sampleRestResponse +

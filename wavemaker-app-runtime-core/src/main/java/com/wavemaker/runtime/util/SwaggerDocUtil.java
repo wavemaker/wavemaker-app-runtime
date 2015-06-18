@@ -25,9 +25,9 @@ public class SwaggerDocUtil {
      * @return Path
      */
     public static Path getPathByEndPoint(Swagger swagger, String endPoint) {
-        for (Map.Entry<String, Path> path : swagger.getPaths().entrySet()) {
-            if (path.getKey().equals(endPoint)) {
-                return path.getValue();
+        for (Map.Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
+            if (pathEntry.getKey().equals(endPoint)) {
+                return pathEntry.getValue();
             }
         }
         throw new SwaggerException("Path does not exist with end point " + endPoint);
@@ -41,10 +41,10 @@ public class SwaggerDocUtil {
      * @return path
      */
     public static Path getPathByOperationUid(Swagger swagger, String operationUid) {
-        for (Map.Entry<String, Path> path : swagger.getPaths().entrySet()) {
-            for (Operation operation : path.getValue().getOperations()) {
+        for (Map.Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
+            for (Operation operation : pathEntry.getValue().getOperations()) {
                 if (operationUid.equals(operation.getOperationUid())) {
-                    return path.getValue();
+                    return pathEntry.getValue();
                 }
             }
         }
@@ -59,8 +59,8 @@ public class SwaggerDocUtil {
      * @return Operation
      */
     public static Operation getOperationByUid(Swagger swagger, String operationUid) {
-        for (Map.Entry<String, Path> path : swagger.getPaths().entrySet()) {
-            for (Operation operation : path.getValue().getOperations()) {
+        for (Map.Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
+            for (Operation operation : pathEntry.getValue().getOperations()) {
                 if (operationUid.equals(operation.getOperationUid())) {
                     return operation;
                 }
