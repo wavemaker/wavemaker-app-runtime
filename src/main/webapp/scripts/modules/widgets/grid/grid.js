@@ -1377,6 +1377,15 @@ WM.module('wm.widgets.grid')
                         $scope.widgetProps.pagesize.disabled = $scope.variableType === 'wm.LiveVariable';
                     }
                 }
+                /* In Studio, disabling readonly property if bound to a source other than LiveVariable */
+                if (CONSTANTS.isStudioMode) {
+                    if (!$scope.binddataset || isBoundToLiveVariable) {
+                        $scope.widgetProps.readonlygrid.disabled = false;
+                    } else {
+                        $rootScope.$emit('update-widget-property', 'readonlygrid', true);
+                        $scope.widgetProps.readonlygrid.disabled = true;
+                    }
+                }
                 if (!WM.isObject(newVal) || (newVal && newVal.dataValue === '')) {
                     if (newVal === '' || (newVal && newVal.dataValue === '')) {
                         /* clear the grid columnDefs and data in studio */
