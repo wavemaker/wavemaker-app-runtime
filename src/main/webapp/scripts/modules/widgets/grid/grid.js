@@ -1377,9 +1377,9 @@ WM.module('wm.widgets.grid')
                         $scope.widgetProps.pagesize.disabled = $scope.variableType === 'wm.LiveVariable';
                     }
                 }
-                /* In Studio, disabling readonly property if bound to a source other than LiveVariable */
+                /* In Studio, disabling readonlygrid property if bound to a service variable. */
                 if (CONSTANTS.isStudioMode) {
-                    if (!$scope.binddataset || isBoundToLiveVariable) {
+                    if (!($scope.binddataset && isBoundToServiceVariable)) {
                         $scope.widgetProps.readonlygrid.disabled = false;
                     } else {
                         $rootScope.$emit('update-widget-property', 'readonlygrid', true);
