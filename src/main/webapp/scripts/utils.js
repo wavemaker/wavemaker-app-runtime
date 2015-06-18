@@ -1111,7 +1111,7 @@ WM.module('wm.utils', [])
                 return;
             }
             /* get a reference to the element where ng-app is defined */
-            var appEl = WM.element("[data-ng-app]"), injector;
+            var appEl = WM.element("[id=ng-app]"), injector;
             if (appEl) {
                 try {
                     injector = appEl.injector(); // get the angular injector
