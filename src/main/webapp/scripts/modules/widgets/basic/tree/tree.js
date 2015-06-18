@@ -134,7 +134,7 @@ WM.module('wm.widgets.basic')
                 element.empty();
                 if (scope.nodes.length) {
                     var docFrag = document.createDocumentFragment();
-                    constructNodes(scope, scope.nodes, docFrag);
+                    constructNodes(scope, scope.nodes, WM.element(docFrag));
                     element.append(docFrag);
                 }
             }
@@ -220,7 +220,7 @@ WM.module('wm.widgets.basic')
                             var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
                             WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
 
-                            if (!scope.widgetid && attrs.hasOwnProperty('scopedataset')) {
+                            if (!scope.widgetid && attrs.scopedataset) {
                                 $timeout(function () {
                                     scope.$watch('scopedataset', function (newVal) {
                                         onPropertyChange('scopedataset', newVal);

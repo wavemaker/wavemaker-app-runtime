@@ -105,19 +105,13 @@ WM.module('wm.layouts.containers')
 
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
+        function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case 'dataset':
                 var variable = element.scope().Variables[Utils.getVariableName(scope)];
                 if (variable && variable.category === "wm.LiveVariable") {
                     newVal = newVal.data;
                 }
-                scope.nodes = getNodes(scope, newVal);
-                constructNav(element, scope);
-                if (scope.widgetid) {
-                    $rootScope.$emit('nav-dataset-modified', {'widgetName': scope.name});
-                }
-                break;
             case 'scopedataset':
                 scope.nodes = getNodes(scope, newVal);
                 constructNav(element, scope);
@@ -148,9 +142,9 @@ WM.module('wm.layouts.containers')
                                          '\'navbar-nav\': type == \'navbar\',' +
                                          '\'nav-stacked\': layout == \'stacked\',' +
                                          '\'nav-justified\': layout == \'justified\'' +
-                        '}"' +
+                        '}" ' +
                         'data-ng-show="show"' + $rootScope.getWidgetStyles('container') +
-                        'data-element-type="wmNav" wmtransclude init-widget has-model ></ul>',
+                        'data-element-type="wmNav" wmtransclude init-widget></ul>',
             'compile': function () {
                 return {
                     'pre': function (scope) {
@@ -164,7 +158,7 @@ WM.module('wm.layouts.containers')
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
 
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
-                        if (!scope.widgetid && attrs.hasOwnProperty('scopedataset')) {
+                        if (!scope.widgetid && attrs.scopedataset) {
                             $timeout(function () {
                                 scope.$watch('scopedataset', function (newVal) {
                                     onPropertyChange('scopedataset', newVal);
