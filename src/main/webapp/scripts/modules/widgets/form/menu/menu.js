@@ -182,7 +182,7 @@ WM.module('wm.widgets.form')
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
-                        if (!scope.widgetid && attrs.hasOwnProperty('scopedataset')) {
+                        if (!scope.widgetid && attrs.scopedataset) {
                             $timeout(function () {
                                 scope.$watch('scopedataset', function (newVal) {
                                     onPropertyChange('scopedataset', newVal);
