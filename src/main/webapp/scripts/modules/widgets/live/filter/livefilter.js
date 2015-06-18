@@ -162,6 +162,7 @@ WM.module('wm.widgets.live')
                             colDef.lookupField = '';
                             colDef.minPlaceholder = '';
                             colDef.maxPlaceholder = '';
+                            colDef.datepattern = '';
                             colDef.type = column.type;
                             colDef.isPrimaryKey = column.isPrimaryKey;
                             colDef.generator = column.generator;
@@ -479,15 +480,15 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-date></div>' +
-                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-date></div>' +
+                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
+                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     type = 'date';
                     template = template + '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-date></div>' +
+                        '<div class="col-md-8"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"  datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -536,7 +537,8 @@ WM.module('wm.widgets.live')
                             'lookupType': attrs.lookupType,
                             'lookupField': attrs.lookupField,
                             'minPlaceholder': attrs.minPlaceholder,
-                            'maxPlaceholder': attrs.maxPlaceholder
+                            'maxPlaceholder': attrs.maxPlaceholder,
+                            'datepattern': attrs.datepattern
                         };
                         scope.parentIsolateScope.filterFields = scope.parentIsolateScope.filterFields || [];
                         scope.parentIsolateScope.fieldObjectCreated = true;
