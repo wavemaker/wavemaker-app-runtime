@@ -63,7 +63,7 @@ WM.module('wm.layouts.containers')
                 scope.nodes.forEach(function (node) {
                     var $anchor = WM.element('<a class="app-anchor"></a>'),
                         $list = WM.element('<li class="app-nav-item"></li>'),
-                        $iconNode = WM.element('<i></i>'),
+                        $iconNode = WM.element('<i class="app-nav-icon"></i>'),
                         itemLabel = node[labelField],
                         itemClass = node[iconField],
                         itemLink = node[itemField],
@@ -81,7 +81,7 @@ WM.module('wm.layouts.containers')
                         itemChildren.forEach(function (child) {
                             $innerAnchor = WM.element('<a class="app-anchor"></a>');
                             $innerList = WM.element('<li class="app-nav-item"></li>');
-                            $innericonNode = WM.element('<i></i>');
+                            $innericonNode = WM.element('<i class="app-nav-icon"></i>');
                             itemLabel = child[labelField];
                             itemClass = child[iconField];
                             itemLink = child[itemField];
