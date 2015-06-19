@@ -80,6 +80,7 @@ var Application = WM.module('Application',
                         if (!response.error) {
                             if ($rootScope.isPrefabType) {
                                 $rootScope.prefabConfig = response;
+                                projectDeployedUrl  = ProjectService.getDeployedUrl();
                             } else if ($rootScope.isMobileType) {
                                 projectDeployedUrl = response.baseUrl;
                             }
