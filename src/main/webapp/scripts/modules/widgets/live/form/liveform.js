@@ -4,7 +4,7 @@
 WM.module('wm.widgets.live')
     /*Define controller for the liveform in dialog mode - required*/
     .controller('liveFormDialogController', WM.noop)
-    .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', '$templateCache', 'wmToaster', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, $templateCache, wmToaster) {
+    .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', '$templateCache', 'wmToaster', '$filter', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, $templateCache, wmToaster, $filter) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.layouts.liveform", ["wm.layouts", "wm.base.events.successerror"]),
             notifyFor = {
@@ -20,7 +20,7 @@ WM.module('wm.widgets.live')
             },
 
             isTimeStampType = function (field) {
-                return field.widgetType === 'timestamp' || (field.type === 'timestamp' && !field.widgetType);
+                return field.widgetType === 'Timestamp' || (field.type === 'timestamp' && !field.widgetType);
             };
 
         return {
@@ -408,8 +408,12 @@ WM.module('wm.widgets.live')
                             field.value = dateString + ' ' + timeString;
                             field.value = new Date(field.value);
                             field.value = field.value.getTime();
-                            dataObject[field.key] = field.value;
-                        } else if (field.type === "time") {
+                            if (field.outputformat && (field.outputformat !== "timestamp")) {
+                                dataObject[field.key] = $filter('date')(field.value, field.outputformat);
+                            } else {
+                                dataObject[field.key] = field.value;
+                            }
+                        } else if (field.type === "time" || field.widgetType === "Time") {
                             dataObject[field.key] = field.timevalue;
                         } else if (field.type === "blob") {
                             if (isFormDataSupported) {
@@ -887,7 +891,7 @@ WM.module('wm.widgets.live')
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                         '<div class="col-md-9 col-sm-9">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"';
+                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"';
                 if (fieldDef.datepattern) {
                     template = template + ' datepattern="{{dataArray[' + index + '].datepattern}}"';
                 }
@@ -984,7 +988,7 @@ WM.module('wm.widgets.live')
                         '<div class="col-md-9 col-sm-9">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy\'}}" show="{{!isUpdateMode}}"></wm-label>' +
                             '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" ' +
-                                'regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}">' +
+                                'regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}">' +
                             '</wm-time>' +
                         '</div>' +
                     '</wm-composite>';
@@ -996,14 +1000,14 @@ WM.module('wm.widgets.live')
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                         '<div class="col-md-3 col-sm-4">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy hh:mm:ss\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].datevalue" show="{{isUpdateMode}}"';
+                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].datevalue" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"';
                 if (fieldDef.datepattern) {
                     template = template + ' datepattern="{{dataArray[' + index + '].datepattern}}"';
                 }
                 template = template +
                     '></wm-date></div>' +
                         '<div class="col-md-6 col-sm-5">' +
-                            '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}"></wm-time>' +
+                            '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"></wm-time>' +
                         '</div>' +
                     '</wm-composite>';
                 break;
@@ -1093,6 +1097,7 @@ WM.module('wm.widgets.live')
                             'required': attrs.required === "true" || attrs.required === true,
                             'maxvalue': attrs.maxvalue,
                             'datepattern': attrs.datepattern,
+                            'outputformat': attrs.outputformat,
                             'minvalue': attrs.minvalue,
                             'displayvalue': attrs.displayvalue,
                             'placeholder': attrs.placeholder,

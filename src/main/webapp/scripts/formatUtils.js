@@ -13,7 +13,8 @@ WM.module('wm.utils')
             var MONTH_LONG_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                 MONTH_SHORT_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                 MERIDIAN_NAMES = ['am', 'pm'],
-                DATE_TIME_PATTERNS = ['dd-MM-yyyy', 'EEE MMM dd hh:mm:ss Z yyyy', 'yyyy-MM-dd T HH:mm:ss', 'yyyy-M-dd', 'dd-M-yyyy', 'M-dd-yyyy', 'yyyy-MM-dd hh:mm:ss:sss Z', 'yyyy-MM-dd hh:mm:ss:sss a', 'yyyy-MM-dd HH:mm:ss:sss', 'yyyy-MM-dd HH:mm', 'yyyy-MM-dd hh:mm a', 'yyyy-MM-dd hh:mm:ss a', 'EEEE, MMMM dd, yyyy', 'EEE, dd MMM yyyy HH:mm:ss Z', 'yyyy, dd MMMM', 'yyyy, MMM dd', 'MM-dd-yy hh:mm:ss a Z', 'MM-dd-yy hh:mm:ss a', 'yyyy-MM-dd', 'yyyyMMdd', 'MM/dd/yyyy', 'M/d/yyyy', 'dd/MM/yyyy', 'dd.MM.yyyy'],
+                DATE_TIME_PATTERNS = ['dd-MM-yyyy', 'EEE MMM dd hh:mm:ss Z yyyy', 'yyyy-MM-dd T HH:mm:ss', 'yyyy-M-dd', 'dd-M-yyyy', 'M-dd-yyyy', 'yyyy-MM-dd hh:mm:ss:sss Z', 'yyyy-MM-dd hh:mm:ss:sss a', 'yyyy-MM-dd HH:mm:ss:sss', 'yyyy-MM-dd HH:mm', 'yyyy-MM-dd hh:mm a', 'yyyy-MM-dd hh:mm:ss a', 'EEEE, MMMM dd, yyyy', 'EEE, dd MMM yyyy HH:mm:ss Z', 'yyyy, dd MMMM', 'yyyy, MMM dd', 'MM-dd-yy hh:mm:ss a Z', 'MM-dd-yy hh:mm:ss a', 'yyyy-MM-dd', 'yyyyMMdd', 'MM/dd/yyyy', 'M/d/yyyy', 'dd/MM/yyyy', 'dd.MM.yyyy', 'timestamp'],
+                TIME_PATTERNS = ['HH:mm:ss', 'HH:mm', 'hh:mm:ss', 'hh:mm', 'hh:mm a', 'H:m:s', 'h:m:s', 'timestamp'],
                 CURRENCY_OPTIONS = ["AED", "AFN", "ALL", "AMD", "ARS", "AUD", "AZN", "BAM", "BDT", "BGN", "BHD", "BIF", "BND", "BOB", "BRL", "BWP", "BYR", "BZD", "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EEK", "EGP", "ERN", "ETB", "EUR", "GBP", "GEL", "GHS", "GNF", "GTQ", "HKD", "HNL", "HRK", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KHR", "KMF", "KRW", "KWD", "KZT", "LBP", "LKR", "LTL", "LVL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MOP", "MUR", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SDG", "SEK", "SGD", "SOS", "SYP", "THB", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VEF", "VND", "XAF", "XOF", "YER", "ZAR", "ZMK"],
 
             //WEEK_LONG_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -35,8 +36,11 @@ WM.module('wm.utils')
                     'a': [3, MERIDIAN_NAMES]
                 },
                 customFilters = {};
-            function getDateTimePatterns () {
+            function getDateTimePatterns() {
                 return DATE_TIME_PATTERNS;
+            }
+            function getTimePatterns() {
+                return TIME_PATTERNS;
             }
             function getCurrencyOptions() {
                 return CURRENCY_OPTIONS;
@@ -278,6 +282,7 @@ WM.module('wm.utils')
             this.register = register;
             /*Getter for date time patterns*/
             this.getDateTimePatterns = getDateTimePatterns;
+            this.getTimePatterns = getTimePatterns;
             this.getCurrencyOptions = getCurrencyOptions;
         }
     ]);
