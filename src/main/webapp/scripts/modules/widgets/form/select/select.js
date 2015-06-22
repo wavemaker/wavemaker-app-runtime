@@ -36,20 +36,6 @@ WM.module('wm.widgets.form')
             _modelChangedManually = {},
             ALLFIELDS = 'All Fields';
 
-        /* to access nested objects with string key */
-        function getObjValueByStringKey(obj, strKey) {
-            /* check for the key-string */
-            if (strKey) {
-                var val;
-                /* convert indexes to properties, so as to work for even 'key1[0].child1'*/
-                strKey.replace(/\[(\w+)\]/g, '.$1').split('.').forEach(function (key) {
-                    val = (val && val[key]) || obj[key];
-                });
-                return val;
-            }
-            return obj;
-        }
-
         /*
          * gets the key to map the select options out of dataSet
          * if only one key is there in the option object it returns that key
@@ -91,56 +77,6 @@ WM.module('wm.widgets.form')
         }
 
         /*
-         * returns the display field data
-         */
-        function getDisplayFieldData(scope, option, displayField) {
-            /* if displayExpression is set*/
-            if (scope.binddisplayexpression) {
-                /*remove 'bind:' prefix from the binded displayExpression*/
-                displayField = scope.binddisplayexpression.replace("bind:", "");
-                /* parse the displayExpression for replacing all the expressions with values in the object */
-                return scope.$eval(displayField.replace(/\$\[(\w)+(\w+(\[\$i\])?\.+\w+)*\]/g, function (expr) {
-                    var val;
-                    /*remove '$[' prefix & ']' suffix from each expression pattern */
-                    expr = expr.replace(/[\$\[\]]/gi, '');
-                    /*split to get all keys in the expr*/
-                    expr.split('.').forEach(function (key) {
-                        /* get the value for the 'key' from the option first & then value itself,
-                         * as it will be the object to scan
-                         * */
-                        val = (val && val[key]) || option[key];
-                        /*if val is a string, append single quotes to it */
-                        if (WM.isString(val)) {
-                            val = "'" + val + "'";
-                        }
-                    });
-                    /* return val to the original string*/
-                    return val;
-                }));
-            }
-            /*If any column of the option object is present in the display expression,
-              replace it with the option value*/
-            if (scope.displayexpression) {
-                var newStr =  scope.displayexpression;
-                Object.keys(option).forEach(function (column) {
-                    var regexExpr = new RegExp("\\b" + column + "\\b", "g"),
-                        val = option[column];
-                    if (WM.isString(val)) {
-                        val = "'" + val + "'";
-                    }
-                    newStr = newStr.replace(regexExpr, val);
-                });
-                try {
-                    return scope.$eval(newStr);
-                } catch (e) {
-                    return newStr;
-                }
-            }
-            /*return just the displayField from the option object, if displayExpr is not set*/
-            return getObjValueByStringKey(option, displayField);
-        }
-
-        /*
          * watch the model
          * and update the modelProxy,
          * */
@@ -173,19 +109,19 @@ WM.module('wm.widgets.form')
             if (dataField && dataField !== ALLFIELDS) {
                 data = {};
                 WM.forEach(dataSet, function (option) {
-                    data[getObjValueByStringKey(option, dataField)] = getDisplayFieldData(scope, option, displayField);
+                    data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getDisplayFieldData(scope, option, displayField);
                 });
             } else {
                 data = {};
                 WM.forEach(dataSet, function (option, index) {
                     if (WM.isObject(option)) {
                         if (scope.datafield === ALLFIELDS) {
-                            data[index] = displayField ? getDisplayFieldData(scope, option, displayField) : option;
+                            data[index] = WidgetUtilService.getDisplayFieldData(scope, option, displayField);
                             /*store parsed dataSet in scope*/
                             _dataSetModelProxyMap[scope.$id][index] = option;
                             _dataSetModelMap[scope.$id][JSON.stringify(option)] = index.toString();
                         } else {
-                            data[getObjValueByStringKey(option, dataField)] = getDisplayFieldData(scope, option, displayField);
+                            data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getDisplayFieldData(scope, option, displayField);
                         }
                     } else {
                         if (WM.isArray(dataSet)) {

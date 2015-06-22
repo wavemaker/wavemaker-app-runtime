@@ -2974,6 +2974,66 @@ base.services.WidgetUtilService = ['$filter', '$parse', '$rootScope', 'CONSTANTS
         iScope.propertyManager.add(iScope.propertyManager.ACTIONS.CHANGE, listener);
     }
 
+    function getObjValueByKey(obj, strKey) {
+        /* check for the key-string */
+        if (strKey) {
+            var val;
+            /* convert indexes to properties, so as to work for even 'key1[0].child1'*/
+            strKey.replace(/\[(\w+)\]/g, '.$1').split('.').forEach(function (key) {
+                val = (val && val[key]) || obj[key];
+            });
+            return val;
+        }
+        return obj;
+    }
+
+    function getDisplayFieldData(scope, option, displayField) {
+        /* if displayExpression is set*/
+        if (scope.binddisplayexpression) {
+            /*remove 'bind:' prefix from the binded displayExpression*/
+            displayField = scope.binddisplayexpression.replace("bind:", "");
+            /* parse the displayExpression for replacing all the expressions with values in the object */
+            return scope.$eval(displayField.replace(/\$\[(\w)+(\w+(\[\$i\])?\.+\w+)*\]/g, function (expr) {
+                var val;
+                /*remove '$[' prefix & ']' suffix from each expression pattern */
+                expr = expr.replace(/[\$\[\]]/gi, '');
+                /*split to get all keys in the expr*/
+                expr.split('.').forEach(function (key) {
+                    /* get the value for the 'key' from the option first & then value itself,
+                     * as it will be the object to scan
+                     * */
+                    val = (val && val[key]) || option[key];
+                    /*if val is a string, append single quotes to it */
+                    if (WM.isString(val)) {
+                        val = "'" + val + "'";
+                    }
+                });
+                /* return val to the original string*/
+                return val;
+            }));
+        }
+        /*If any column of the option object is present in the display expression,
+         replace it with the option value*/
+        if (scope.displayexpression) {
+            var newStr =  scope.displayexpression;
+            Object.keys(option).forEach(function (column) {
+                var regexExpr = new RegExp("\\b" + column + "\\b", "g"),
+                    val = option[column];
+                if (WM.isString(val)) {
+                    val = "'" + val + "'";
+                }
+                newStr = newStr.replace(regexExpr, val);
+            });
+            try {
+                return scope.$eval(newStr);
+            } catch (e) {
+                return newStr;
+            }
+        }
+        /*return just the displayField from the option object, if displayExpr is not set*/
+        return getObjValueByKey(option, displayField);
+    }
+
     return {
 
         /**
@@ -3025,7 +3085,31 @@ base.services.WidgetUtilService = ['$filter', '$parse', '$rootScope', 'CONSTANTS
          * @description
          * registers a property change listener
          */
-        registerPropertyChangeListener: registerPropertyChangeListener
+        registerPropertyChangeListener: registerPropertyChangeListener,
+
+        /**
+         * @ngdoc function
+         * @name wm.widgets.$WidgetUtilService#getObjValueByKey
+         * @methodOf wm.widgets.$WidgetUtilService
+         * @function
+         *
+         * @description
+         * Returns the value for the provided key in the object
+         */
+        getObjValueByKey: getObjValueByKey,
+
+        /**
+         * @ngdoc function
+         * @name wm.widgets.$WidgetUtilService#getDisplayFieldData
+         * @methodOf wm.widgets.$WidgetUtilService
+         * @function
+         *
+         * @description
+         * returns the display field data for select, radioboxset and checkboxset widgets
+         * Based on the bind display expression or display expression or display name,
+         * data is extracted and formatted from the passed option object
+         */
+        getDisplayFieldData: getDisplayFieldData
     };
 }];
 
