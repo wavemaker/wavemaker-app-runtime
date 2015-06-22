@@ -199,9 +199,9 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                         break;
                     case 'AUTH':
-                        if(param.name === 'userName') {
+                        if(param.name === 'wm_auth_username') {
                             uname = paramValue;
-                        } else if(param.name === 'password'){
+                        } else if(param.name === 'wm_auth_password'){
                             pswd = paramValue;
                         }
                         if(authString) {
@@ -454,7 +454,9 @@ wm.variables.services.$servicevariable = ['Variables',
                  * parameters to create a unique url pattern*/
                 ServiceFactory.getServiceDef(selectedService, function (response) {
                     /*iterate over the paths received from the service response*/
-                        var pathsArr = Object.keys(response.paths);
+                        var pathsArr = Object.keys(response.paths),
+                            securityDefinitions = response.definitions,
+                            AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization';
                     for (var i= 0, nPaths = pathsArr.length; i <nPaths; i++) {
                         var pathKey = pathsArr[i],
                             path = response.paths[pathKey];
@@ -473,6 +475,16 @@ wm.variables.services.$servicevariable = ['Variables',
                                             "name": parameter.name || (parameter[parameterTypeKey] && parameter[parameterTypeKey].toLowerCase()),
                                             "parameterType": parameter[parameterTypeKey]
                                         });
+                                    });
+                                }
+                                if (securityDefinitions && securityDefinitions[AUTH_TYPE_KEY].type === "basic" && operation.security[0][AUTH_TYPE_KEY]) {
+                                    operationInfo.parameters.push({
+                                        "name": "wm_auth_username",
+                                        "parameterType": "AUTH"
+                                    });
+                                    operationInfo.parameters.push({
+                                        "name": "wm_auth_password",
+                                        "parameterType": "AUTH"
                                     });
                                 }
                                 break;

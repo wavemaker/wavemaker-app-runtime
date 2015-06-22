@@ -145,8 +145,13 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
             /*Getting the fully qualified name*/
             getFullyQualifiedName = function (refValue, definitions) {
-                var refValues = refValue.split('/');
-                return definitions[refValues[refValues.length - 1]][FULLY_QUALIFIED_NAME_KEY];
+                var refValues = refValue.split('/'),
+                    returnType = definitions[refValues[refValues.length - 1]];
+                if(returnType) {
+                    return returnType[FULLY_QUALIFIED_NAME_KEY];
+                } else {
+                    return 'Object';
+                }
             },
 
             getReturnType = function (responseObject, definitions) {
