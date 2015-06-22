@@ -85,7 +85,7 @@ wm.plugins.database.services.DatabaseService = [
             };
             /*In the SAAS studio mode, if we directly try to access the runtime urls, it results in cross-domain request issues.,
              * Hence use the WebService's testRestService call to initiate the request.*/
-            if (params.url && CONSTANTS.isStudioMode && $rootScope.preferences.loadXDomainAppDataUsingProxy) {
+            if (params.url && CONSTANTS.isStudioMode && $rootScope.preferences.workspace.loadXDomainAppDataUsingProxy) {
 
                 /* Check for url parameters to replace the URL.
                  * So the variable parameters in the URL will be replaced by the actual parameter values.*/

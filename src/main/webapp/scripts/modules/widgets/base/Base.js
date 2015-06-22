@@ -1461,11 +1461,11 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
             },
 
             "propertyGroups": [
-                {"name": "properties", "parent": "", "show": true},
-                {"name": "styles", "parent": "", "show": true},
-                {"name": "events", "parent": "", "show": true},
-                {"name": "mobile", "parent": "", "show": true},
-                {"name": "security", "parent": "", "show": true},
+                {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic"},
+                {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style"},
+                {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
+                {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
+                {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
                 {"properties": ["caption", "gridcaption", "title", "heading", "name", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
                 {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "showtopnav", "showleftnav", "showrightnav", "showfooter", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition"], "parent": "properties"},
                 {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
