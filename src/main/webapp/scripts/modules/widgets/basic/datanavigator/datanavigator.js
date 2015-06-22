@@ -243,7 +243,8 @@ WM.module("wm.widgets.basic")
                                     "relatedData": relatedData,
                                     "pagingOptions": pagingOptions,
                                     "filterFields": $scope.filterFields,
-                                    "orderBy": $scope.sortOptions
+                                    "orderBy": $scope.sortOptions,
+                                    "variableName": $scope.variableName
                                 };
                                 /*Update the paging options and invoke the function to re-calculate the paging values.*/
                                 $scope.dataSize = pagingOptions.dataSize;
