@@ -139,12 +139,11 @@ WM.module('wm.widgets.advanced')
                             };*/
 
                             /* Render Tooltip */
-                            scope.eventRender = function (event, element, view) {
-                                element.attr({'tooltip': event.title,
-                                    'tooltip-append-to-body': true});
+                            scope.eventRender = function (event, element) {
+                                element.attr({'tooltip': event.title, 'tooltip-append-to-body': true});
                                 $compile(element)(scope);
                             };
-                            if (CONSTANTS.isRunMode) {
+                            if (CONSTANTS.isRunMode && attrs.scopedataset) {
                                 handlers.push(scope.$watch('scopedataset', function (newVal) {
                                     scope.eventSources.push(newVal);
                                 }));
