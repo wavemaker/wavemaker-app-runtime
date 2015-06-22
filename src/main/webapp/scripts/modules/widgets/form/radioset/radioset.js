@@ -187,7 +187,7 @@ WM.module('wm.widgets.form')
             var template = '';
             /*appending the radio widget to the radioset widget based on the keys generated.*/
             WM.forEach(scope.dataKeys, function (dataKey, index) {
-                dataKey = dataKey.trim();
+                dataKey = WM.isString(dataKey) ? dataKey.trim() : dataKey;
                 template = template +
                     '<li>' +
                         '<div class="radio"><label class="app-radioset-label">' +
