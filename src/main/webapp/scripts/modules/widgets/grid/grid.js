@@ -992,7 +992,7 @@ WM.module('wm.widgets.grid')
                         variableName = dataSet.variableName;
                     } else if (WM.isString(dataSet) && dataSet !== '') {
                         widgetName = dataSet.split('.')[1];
-                        widgetScope = $scope.Widgets.byName(widgetName);
+                        widgetScope = $scope.Widgets[widgetName];
                         variableName = Utils.getVariableName($scope);
                     }
                     return variableName;

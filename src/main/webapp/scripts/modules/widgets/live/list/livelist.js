@@ -3,7 +3,7 @@
 /*Directive for liveList */
 
 WM.module('wm.widgets.live')
-    .controller('listController', ["$rootScope", "$scope", "CONSTANTS", "Utils", function ($rootScope, $scope, CONSTANTS, Utils) {
+    .controller('listController', ["$rootScope", "$scope", "CONSTANTS", "Utils", "Variables", "$servicevariable", function ($rootScope, $scope, CONSTANTS, Utils, Variables, $servicevariable) {
         "use strict";
         $scope.dataset = []; // The data that is bound to the list. Stores the name for reference.
         $scope.fieldDefs = [];// The data required by the wmListItem directive to populate the items
@@ -26,9 +26,73 @@ WM.module('wm.widgets.live')
             return columns;
         }
 
+        /* Function to get details of widget the live list is bound to.
+         * Example: If live list is bound to the selected items of a grid
+         * (binddataset - bind:Widgets.gridId.selecteditem), we first find the
+         * variable bound to the grid, get its type and columns, and then generate
+         * corresponding bindings for the live list.*/
+        function getBoundWidgetDatasetDetails() {
+            var bindDataSetSplit,
+                referenceWidgetName,
+                referenceWidget,
+                referenceBindDataSet,
+                referenceVariableName,
+                relatedFieldName,
+                relatedFieldType,
+                fields,
+                details,
+                referenceVariable,
+                isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
+
+            bindDataSetSplit = $scope.binddataset.split('.');
+            referenceWidgetName = bindDataSetSplit[1];
+            referenceWidget = $scope.Widgets[referenceWidgetName];
+            referenceBindDataSet = referenceWidget.binddataset;
+
+            /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
+            referenceVariableName = referenceBindDataSet.replace('bind:Variables.', '');
+            referenceVariableName = referenceVariableName.substr(0, referenceVariableName.indexOf('.'));
+
+            referenceVariable = Variables.getVariableByName(referenceVariableName);
+            relatedFieldName = isBoundToSelectedItemSubset && bindDataSetSplit[3];
+            fields = $rootScope.dataTypes[referenceVariable.package].fields;
+            details = {
+                'referenceVariableName': referenceVariableName,
+                'referenceWidget': referenceWidget,
+                'referenceVariable': referenceVariable,
+            };
+            /* If binddataset is of the format: bind:Widgets.widgetName.selecteditem.something,
+             * i.e. widget is bound to a subset of selected item, get type of that subset.*/
+            if (relatedFieldName) {
+                relatedFieldType = fields[relatedFieldName].type;
+                details['relatedFieldType'] = relatedFieldType;
+            } else {
+                /* When binddataset is of the format: bind:Widgets.widgetName.selecteditem */
+                details['fields'] = fields;
+            }
+            return details;
+        }
+
+        /* Fetch column bindings for the live list in case it is bound to a widget. */
+        function fetchDynamicColumns() {
+            var fields = [],
+                result;
+            result = getBoundWidgetDatasetDetails();
+            if (result.fields) {
+                fields = result.fields;
+            } else if (result.relatedFieldType) {
+                /*Invoke the function to fetch sample data-structure for the field.*/
+                fields = $servicevariable.getServiceModel({
+                    typeRef: result.relatedFieldType,
+                    variable: result.referenceVariable
+                });
+            }
+            return WM.isObject(fields) ? Object.keys(fields) : fields;
+        }
+
         /* update the selectedItem dataType onchange of bindDataSet*/
         $scope.updateSelectedItemDataType = function (element) {
-            var variable = element.scope() && element.scope().Variables && element.scope().Variables[Utils.getVariableName($scope)];
+            var variable = element.scope() && element.scope().Variables && element.scope().Variables[$scope.boundVariableName];
             /*check for sanity*/
             if (variable) {
                 /* set the variable type info to the live-list selected-entry type, so that type matches to the variable for which variable is created*/
@@ -40,7 +104,12 @@ WM.module('wm.widgets.live')
             var columns = $scope.dataset && $scope.dataset.propertiesMap ?
                         getColumnsFromPropertiesMap($scope.dataset.propertiesMap) :
                         getColumnsFromDataSet($scope.dataset);
-
+            if (!columns.length) {
+                /* If live list is bound to a widget, fetch the columns accordingly. */
+                if ($scope.binddataset.indexOf('bind:Widgets.') !== -1) {
+                    columns = fetchDynamicColumns();
+                }
+            }
             /* emit event to modify the liveList template*/
             $rootScope.$emit("livelist-template-modified", {"widgetName": $scope.name, "bindDataset": $scope.binddataset, "fields": columns, "forceUpdate": forceUpdate});
         };
@@ -59,11 +128,11 @@ WM.module('wm.widgets.live')
 
             if (newVal && newVal !== oldVal) {
                 $scope.noDataFound = false;
-                var variableObj = element.scope() && element.scope().Variables && element.scope().Variables[Utils.getVariableName($scope)];
+                var variableObj = element.scope() && element.scope().Variables && element.scope().Variables[$scope.boundVariableName];
 
                 if (newVal.data) {
                     newVal = newVal.data;
-                } else if (variableObj && variableObj.category === "wm.LiveVariable") {
+                } else if (variableObj && variableObj.category === "wm.LiveVariable" && $scope.binddataset.indexOf('bind:Widgets.') === -1) {
                     return;
                 }
                 /*If the data is a pageable object, then display the content.*/
@@ -296,6 +365,7 @@ WM.module('wm.widgets.live')
                         function propertyChangeHandler(key, newVal, oldVal) {
                             switch (key) {
                             case "dataset":
+                                scope.boundVariableName = Utils.getVariableName(scope);
                                 scope.watchVariableDataSet(newVal, oldVal, element);
                                 /* to add <wm-labels> in the markup, based on dataSet
                                 */

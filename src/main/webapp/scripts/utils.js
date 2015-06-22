@@ -188,10 +188,23 @@ WM.module('wm.utils', [])
         }
         /*function to get variable name bound to an element*/
         function getVariableName(scope) {
-            var variableName;
             if (scope.binddataset) {
-                variableName = scope.binddataset.replace("bind:Variables.", "");
-                return variableName.substr(0, variableName.indexOf("."));
+                var variableName,
+                    widgetScope,
+                    widgetName,
+                    isBoundToVariable = scope.binddataset.indexOf('bind:Variables.') !== -1,
+                    isBoundToWidget = scope.binddataset.indexOf('bind:Widgets.') !== -1;
+                if (isBoundToVariable) {
+                    variableName = scope.binddataset.replace("bind:Variables.", "");
+                    variableName = variableName.substr(0, variableName.indexOf("."));
+                } else if (isBoundToWidget) {
+                    if (WM.isString(scope.binddataset) && scope.binddataset !== '') {
+                        widgetName = scope.binddataset.split('.')[1];
+                        widgetScope = scope.Widgets[widgetName];
+                        variableName = getVariableName(widgetScope);
+                    }
+                }
+                return variableName;
             }
         }
         function isValidWebURL(url) {
