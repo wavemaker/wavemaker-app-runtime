@@ -131,7 +131,8 @@ WM.module('wm.widgets.live')
                             /*Create an object as required by the filterFields for live-variable so that all further calls to getData take place properly.
                             * This is used by widgets such as dataNavigator.*/
                             WM.forEach(filterFields, function (filterField) {
-                                tempObj[filterField.column] = filterField.value;
+                                tempObj[filterField.column] = {};
+                                tempObj[filterField.column]['value'] = filterField.value;
                             });
                             $scope.result.filterFields = tempObj;
                             /*Set the paging options also in the result so that it could be used by the dataNavigator.
@@ -270,7 +271,7 @@ WM.module('wm.widgets.live')
                                     }
                                 });
                             }
-                            function applyFilterOnFiled() {
+                            function applyFilterOnField() {
                                 WM.forEach(scope.filterFields, function (filterField) {
                                     if (filterField.filterOn && filterField.filterOn !== '') {
                                         WM.forEach(scope.filterFields, function (fieldObj, index) {
@@ -328,7 +329,7 @@ WM.module('wm.widgets.live')
 
                                             /* call method to update allowed values for select type filter fields */
                                             updateAllowedValues();
-                                            applyFilterOnFiled();
+                                            applyFilterOnField();
                                         }
                                     } else if (!newVal && CONSTANTS.isStudioMode) { /*Clear the variables when the live-filter has not been bound.*/
                                         //element.empty();

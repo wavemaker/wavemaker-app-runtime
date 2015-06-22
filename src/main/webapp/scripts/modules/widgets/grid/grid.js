@@ -545,6 +545,8 @@ WM.module('wm.widgets.grid')
                     }
                 },
                 currentSearch,
+                isBoundToVariable,
+                isBoundToWidget,
                 isBoundToLiveVariable,
                 isBoundToLiveVariableRoot,
                 isBoundToServiceVariable,
@@ -611,7 +613,11 @@ WM.module('wm.widgets.grid')
                         parent;
 
                     if ($scope.binddataset) {
-                        variableName = $scope.binddataset.substr($scope.binddataset.lastIndexOf("bind:Variables.") + 15);
+                        if (isBoundToVariable) {
+                            variableName = $scope.binddataset.substr($scope.binddataset.lastIndexOf("bind:Variables.") + 15);
+                        } else if (isBoundToWidget) {
+                            variableName = serviceData.variableName;
+                        }
 
                         /* Retrieve the variable details specific to the project in the root-scope */
                         /* As this event is registered on rootscope, it is triggered on destroy hence the object.keys length check is put skip
@@ -974,6 +980,22 @@ WM.module('wm.widgets.grid')
                         'referenceWidget': referenceWidget,
                         'referenceVariable': referenceVariable
                     };
+                },
+                getWidgetVariableName = function (dataSet) {
+                    if (!dataSet) {
+                        return;
+                    }
+                    var variableName,
+                        widgetScope,
+                        widgetName;
+                    if (dataSet.variableName) {
+                        variableName = dataSet.variableName;
+                    } else if (WM.isString(dataSet) && dataSet !== '') {
+                        widgetName = dataSet.split('.')[1];
+                        widgetScope = $scope.Widgets.byName(widgetName);
+                        variableName = Utils.getVariableName($scope);
+                    }
+                    return variableName;
                 };
             /* Function to reset the column definitions dynamically. */
             $scope.resetColumnDefinitions = function () {
@@ -1305,19 +1327,30 @@ WM.module('wm.widgets.grid')
                     }
                 }
                 if ($scope.binddataset) {
-                    if ($scope.binddataset.indexOf('bind:Variables.') !== -1) {
+                    isBoundToVariable = $scope.binddataset.indexOf('bind:Variables.') !== -1;
+                    isBoundToWidget = $scope.binddataset.indexOf('bind:Widgets.') !== -1;
+                    if (isBoundToVariable) {
                         /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
                         variableName = $scope.binddataset.replace('bind:Variables.', '');
                         variableName = variableName.substr(0, variableName.indexOf('.'));
-                        if (variableName && !$scope.toggleVariableHandlerAttached) {
-                            $scope.toggleVariableStateHandler = $rootScope.$on('toggle-variable-state', function (event, boundVariableName, active) {
-                                /*based on the active state and response toggling the 'loading data...' and 'no data found' messages. */
-                                if (boundVariableName === variableName) {
-                                    $scope.variableInflight = active;
-                                }
-                            });
-                            $scope.toggleVariableHandlerAttached = true;
+                    } else if (isBoundToWidget && newVal !== '') {
+                        variableName = getWidgetVariableName(newVal);
+                        if (!variableName) {
+                            if (CONSTANTS.isStudioMode &&
+                                newVal.indexOf('selecteditem') !== -1 &&
+                                newVal.indexOf('livelist') !== -1) {
+                                $scope.datagridElement.datagrid('setStatus', 'error', $rootScope.locale['MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO']);
+                            }
                         }
+                    }
+                    if (variableName && !$scope.toggleVariableHandlerAttached) {
+                        $scope.toggleVariableStateHandler = $rootScope.$on('toggle-variable-state', function (event, boundVariableName, active) {
+                            /*based on the active state and response toggling the 'loading data...' and 'no data found' messages. */
+                            if (boundVariableName === variableName) {
+                                $scope.variableInflight = active;
+                            }
+                        });
+                        $scope.toggleVariableHandlerAttached = true;
                     }
                     elScope = element.scope();
                     selectedItemIndex = $scope.binddataset.indexOf('selecteditem.');
@@ -1474,7 +1507,7 @@ WM.module('wm.widgets.grid')
                     columnDef.pcDisplay = true;
                     columnDef.mobileDisplay = true;
                     WM.forEach($scope.fullFieldDefs, function (column) {
-                        if (column.field === columnDef.field) {
+                        if (column.field && column.field === columnDef.field) {
                             columnDef.pcDisplay = column.pcDisplay;
                             columnDef.mobileDisplay = column.mobileDisplay;
                             columnDef.customExpression = column.customExpression;
