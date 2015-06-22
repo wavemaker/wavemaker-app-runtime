@@ -918,6 +918,26 @@ WM.module('wm.widgets.live')
                 template = fieldDef.multiple ? template + 'multiple="{{dataArray[' + index + '].multiple}}"' : template;
                 template = template + '></wm-select></div></wm-composite>';
                 break;
+            case "Checkboxset":
+                template = template +
+                    '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
+                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                    '<div class="col-md-9 col-sm-9">' +
+                    '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                    '<wm-checkboxset name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" datafield="{{dataArray[' + index + '].datafield}}" displayfield="{{dataArray[' + index + '].displayfield}}" dataset=""';
+                template = fieldDef.displayvalue ? template + 'displayexpression="{{dataArray[' + index + '].displayvalue}}"' : template;
+                template = template + '></wm-checkboxset></div></wm-composite>';
+                break;
+            case "Radioset":
+                template = template +
+                    '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
+                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                    '<div class="col-md-9 col-sm-9">' +
+                    '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                    '<wm-radioset name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" datafield="{{dataArray[' + index + '].datafield}}" displayfield="{{dataArray[' + index + '].displayfield}}" dataset=""';
+                template = fieldDef.displayvalue ? template + 'displayexpression="{{dataArray[' + index + '].displayvalue}}"' : template;
+                template = template + '></wm-radioset></div></wm-composite>';
+                break;
             case "Datalist":
                 template = template +
                     '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +

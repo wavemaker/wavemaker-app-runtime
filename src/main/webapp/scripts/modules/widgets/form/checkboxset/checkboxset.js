@@ -224,7 +224,7 @@ WM.module('wm.widgets.form')
             var template = '';
             /*iterating over the keys to create the template for the widget.*/
             WM.forEach(scope.dataKeys, function (dataKey) {
-                dataKey = dataKey.trim();
+                dataKey = WM.isString(dataKey) ? dataKey.trim() : dataKey;
                 template = template +
                     '<li>' +
                         '<div class="checkbox"><label class="app-checkboxset-label" title="' + dataKey + '">' +
@@ -271,7 +271,7 @@ WM.module('wm.widgets.form')
             /*register a click event handler for the radio*/
             element.find('.app-checkboxset-label').on('click', function () {
                 var checkedOption, inputElements = element.find('input:checked');
-                scope._model_.length = 0;
+                scope._model_ = [];
 
                 inputElements.each(function () {
                     checkedOption = WM.element(this).val();
@@ -328,7 +328,7 @@ WM.module('wm.widgets.form')
 
         /* checks if the given value object is in the given model array of objects */
         function valueInModel(model, value) {
-            return (value && model.some(function (el) {
+            return (value && WM.isArray(model) && model.some(function (el) {
                 return WM.equals(value, el);
             }));
         }
