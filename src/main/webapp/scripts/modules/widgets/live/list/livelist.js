@@ -324,7 +324,7 @@ WM.module('wm.widgets.live')
                                             dataSetExpr,
                                             field;
                                         parentDataset = parentDataset.replace("bind:", "");
-                                        dataSetExpr = new RegExp("(" + parentDataset + ")(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?", 'g');
+                                        dataSetExpr = new RegExp("(" + parentDataset + ")(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?", 'g');
                                         /*if the attribute value is "bind:xxxxx.xxxx", either the dataSet/scopeDataSet has to contain "xxxx.xxxx" */
                                         if (attribute.value.indexOf(parentDataset) !== -1) {
                                             field = attribute.value.replace("bind:", "");
