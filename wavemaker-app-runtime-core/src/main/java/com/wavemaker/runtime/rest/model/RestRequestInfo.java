@@ -15,9 +15,13 @@
  */
 package com.wavemaker.runtime.rest.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
+
+import com.wavemaker.runtime.rest.RestConstants;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Uday Shankar
@@ -29,7 +33,6 @@ public class RestRequestInfo {
     private String method;
     private String contentType;
     private String requestBody;
-    private String authorization;
     private Map<String, Object> headers;
     private RestResponse sampleRestResponse;
 
@@ -81,13 +84,34 @@ public class RestRequestInfo {
         this.sampleRestResponse = sampleRestResponse;
     }
 
+    public boolean doesHaveAuthorization() {
+        if (headers != null) {
+            for (String key : headers.keySet()) {
+                if (RestConstants.AUTHORIZATION.equals(key)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public String getAuthorization() {
-        return authorization;
+        headers = (headers == null) ? new HashMap<String, Object>() : headers;
+        for (String key : headers.keySet()) {
+            if (RestConstants.AUTHORIZATION.equals(key)) {
+                if (headers.get(key) != null) {
+                    return headers.get(key).toString();
+                }
+            }
+        }
+        throw new WMRuntimeException("Authorization is not there in rest request info");
     }
 
     public void setAuthorization(String authorization) {
-        this.authorization = authorization;
+        headers = (headers == null) ? new HashMap<String, Object>() : headers;
+        headers.put(RestConstants.AUTHORIZATION, authorization);
     }
+
 
     @Override
     public String toString() {
@@ -96,7 +120,6 @@ public class RestRequestInfo {
                 ", method='" + method + '\'' +
                 ", contentType='" + contentType + '\'' +
                 ", requestBody='" + requestBody + '\'' +
-                ", authorization='" + authorization + '\'' +
                 ", headers=" + headers +
                 ", sampleRestResponse=" + sampleRestResponse +
                 '}';
