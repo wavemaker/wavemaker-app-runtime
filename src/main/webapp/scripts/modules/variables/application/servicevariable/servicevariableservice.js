@@ -41,6 +41,7 @@ wm.variables.services.$servicevariable = ['Variables',
             BASE_PATH_KEY = 'x-WM-BASE_PATH',
             RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
             parameterTypeKey = 'in',
+            AUTH_HDR_KEY = "Authorization",
             /* function to prepare the sample model for the service variable */
             prepareServiceModel = function (type, parentNode, startNode, variable, typeChain) {
                 var modelTypes = variable.prefabName ? prefabDataTypes[variable.prefabName] : $rootScope.dataTypes;
@@ -204,8 +205,8 @@ wm.variables.services.$servicevariable = ['Variables',
                         } else if(param.name === 'wm_auth_password'){
                             pswd = paramValue;
                         }
-                        if(authString) {
-                            headers.Authorization = encodeURIComponent(uname + ':' + pswd);
+                        if(uname && pswd) {
+                            headers[AUTH_HDR_KEY] = "Basic " + btoa(uname + ':' + pswd);
                         }
                         break;
                     case 'PATH':
@@ -455,7 +456,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 ServiceFactory.getServiceDef(selectedService, function (response) {
                     /*iterate over the paths received from the service response*/
                         var pathsArr = Object.keys(response.paths),
-                            securityDefinitions = response.definitions,
+                            securityDefinitions = response.securityDefinitions,
                             AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization';
                     for (var i= 0, nPaths = pathsArr.length; i <nPaths; i++) {
                         var pathKey = pathsArr[i],
@@ -477,14 +478,15 @@ wm.variables.services.$servicevariable = ['Variables',
                                         });
                                     });
                                 }
-                                if (securityDefinitions && securityDefinitions[AUTH_TYPE_KEY].type === "basic" && operation.security[0][AUTH_TYPE_KEY]) {
+                                if (securityDefinitions && securityDefinitions[AUTH_TYPE_KEY] && securityDefinitions[AUTH_TYPE_KEY].type === "basic" && operation.security[0][AUTH_TYPE_KEY]) {
+                                    operationInfo.authorization = securityDefinitions[AUTH_TYPE_KEY].type;
                                     operationInfo.parameters.push({
                                         "name": "wm_auth_username",
-                                        "parameterType": "AUTH"
+                                        "parameterType": "auth"
                                     });
                                     operationInfo.parameters.push({
                                         "name": "wm_auth_password",
-                                        "parameterType": "AUTH"
+                                        "parameterType": "auth"
                                     });
                                 }
                                 break;

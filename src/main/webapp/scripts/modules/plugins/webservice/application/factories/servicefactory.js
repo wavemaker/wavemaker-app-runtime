@@ -32,6 +32,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
             UNIQUE_ITEMS_KEY = 'uniqueItems',
             FULLY_QUALIFIED_NAME_KEY = 'x-WM-FULLY_QUALIFIED_NAME',
             parameterTypeKey = 'in',
+            AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization',
 
         /*function to get service object matching its name*/
             getServiceObjectByName = function (name) {
@@ -189,9 +190,11 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 }
             },
 
-            processOperations = function (serviceObj, operations, definitions) {
+            processOperations = function (serviceObj, operations, swagger) {
                 var paramsKey = "parameters",
-                    isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1;
+                    isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1,
+                    definitions = swagger.definitions,
+                    securityDefinitions = swagger.securityDefinitions;
 
                 /*Empty the "operations" so that they are set based on the response.*/
                 serviceObj.operations = [];
@@ -253,6 +256,20 @@ wm.plugins.webServices.factories.ServiceFactory = [
                             });
                         });
                     }
+
+                    if (securityDefinitions && securityDefinitions[AUTH_TYPE_KEY] && securityDefinitions[AUTH_TYPE_KEY].type === "basic" && operation.security[0][AUTH_TYPE_KEY]) {
+                        if(!operationObject.parameters) {
+                            operationObject.parameters = [];
+                        }
+                        operationObject.parameter.push({
+                            "name": "wm_auth_username",
+                            "parameterType": "auth"
+                        });
+                        operationObject.parameter.push({
+                            "name": "wm_auth_password",
+                            "parameterType": "auth"
+                        });
+                    }
                 });
             },
 
@@ -268,8 +285,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 var serviceObj = getServiceObjectByName(serviceId),
                     urlParams,
                     operations,
-                    onOperationsFetch = function (operations, definitions) {
-                        processOperations(serviceObj, operations, definitions);
+                    onOperationsFetch = function (operations, swagger) {
+                        processOperations(serviceObj, operations, swagger);
                         var callback;
 
                         /*while loop is used so that any requests that come when the response is being served; are also handled.*/
@@ -314,7 +331,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                             });
                         });
                         /*pass the data prepared to the success callback function*/
-                        onOperationsFetch(operations, response.definitions);
+                        onOperationsFetch(operations, response);
                     }, function () {
                         /*handle error response*/
                         wmToaster.show("error", $rootScope.locale["MESSAGE_ERROR_TITLE"], $rootScope.locale["MESSAGE_ERROR_FETCH_SERVICE_METHODS_DESC"]);
