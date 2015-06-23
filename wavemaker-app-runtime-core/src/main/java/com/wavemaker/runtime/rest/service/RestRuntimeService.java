@@ -33,6 +33,8 @@ public class RestRuntimeService {
 
     private Map<String, Swagger> swaggerDocumentCache = new HashMap<String, Swagger>();
 
+    private static final String AUTHORIZATION = "authorization";
+
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
     public RestResponse executeRestCall(String serviceId, String operationId, Map<String, Object> params) throws IOException {
@@ -91,7 +93,7 @@ public class RestRuntimeService {
             for (Map<String, List<String>> securityList : securityMap) {
                 for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
                     if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
-                        restRequestInfo.setAuthorization(params.get(RestConstants.AUTHORIZATION).toString());
+                        restRequestInfo.setAuthorization(params.get(AUTHORIZATION).toString());
                     }
                 }
             }

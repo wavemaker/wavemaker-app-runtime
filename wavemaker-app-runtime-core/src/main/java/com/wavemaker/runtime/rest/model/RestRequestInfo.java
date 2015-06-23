@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.studio.common.WMRuntimeException;
 
@@ -95,6 +96,7 @@ public class RestRequestInfo {
         return false;
     }
 
+    @JsonIgnore
     public String getAuthorization() {
         headers = (headers == null) ? new HashMap<String, Object>() : headers;
         for (String key : headers.keySet()) {
@@ -107,6 +109,7 @@ public class RestRequestInfo {
         throw new WMRuntimeException("Authorization is not there in rest request info");
     }
 
+    @JsonIgnore
     public void setAuthorization(String authorization) {
         headers = (headers == null) ? new HashMap<String, Object>() : headers;
         headers.put(RestConstants.AUTHORIZATION, authorization);
