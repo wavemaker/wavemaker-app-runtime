@@ -133,7 +133,7 @@ module.exports = function (grunt) {
                     '<%= config.application %>/scripts/wm-loader.js': ['<%= config.application %>/scripts/runtimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
                     '<%= config.application %>/scripts/wm-mobileloader.js': ['<%= config.application %>/scripts/mobileruntimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
                     '<%= config.application %>/scripts/wm-libs.js': [
-                        '<%= config.components %>/underscore/underscore.js',
+                        '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
                         '<%= config.components %>/jquery-ui/js/jquery-ui.js',
                         '<%= config.components %>/socialbyway/js/socialbyway.v1.01-beta.js',
