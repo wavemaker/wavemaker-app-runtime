@@ -10,7 +10,6 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
 
 import com.wavemaker.runtime.helper.SchemaConversionHelper;
 import com.wavemaker.runtime.rest.RestConstants;
@@ -65,7 +64,7 @@ public class RestRuntimeService {
 
     private RestRequestInfo getRestRequestInfo(String serviceId, String operationId, Map<String, Object> params) throws IOException {
         Swagger swagger = getSwaggerDoc(serviceId);
-        Map.Entry<String, Path> pathEntry =  swagger.getPaths().entrySet().iterator().next();
+        Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
         String relativePath = pathEntry.getKey();
         Path path = pathEntry.getValue();
         Operation operation = null;
@@ -82,8 +81,7 @@ public class RestRuntimeService {
         String methodType = SwaggerDocUtil.getOperationType(path, operation.getOperationUid());
         restRequestInfo.setMethod(methodType.toUpperCase());
         List<String> consumes = operation.getConsumes();
-        Assert.isTrue(consumes.size() <= 1);
-        if (!consumes.isEmpty()) {
+        if (consumes != null && !consumes.isEmpty()) {
             restRequestInfo.setContentType(consumes.iterator().next());
         }
 
@@ -93,14 +91,17 @@ public class RestRuntimeService {
             for (Map<String, List<String>> securityList : securityMap) {
                 for (Map.Entry<String, List<String>> security : securityList.entrySet()) {
                     if (RestConstants.WM_REST_SERVICE_AUTH_NAME.equals(security.getKey())) {
-                        restRequestInfo.setAuthorization(params.get(AUTHORIZATION).toString());
+                        if (params.get(AUTHORIZATION) == null) {
+                            throw new WMRuntimeException("Authorization details are not specified in the request headers");
+                        }
+                        restRequestInfo.setAuthorization(params.get(RestConstants.AUTHORIZATION).toString());
                     }
                 }
             }
         }
 
         List<Parameter> parameters = operation.getParameters();
-        Map<String, Object> headers = new HashMap<>();
+        Map<String, Object> headers = (restRequestInfo.getHeaders() == null) ? new HashMap<String,Object>() : restRequestInfo.getHeaders();
         Map<String, Object> queryParams = new HashMap<>();
         Map<String, String> pathParams = new HashMap<>();
         String requestBody = null;
