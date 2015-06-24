@@ -94,7 +94,7 @@ public class RestRuntimeService {
                         if (params.get(AUTHORIZATION) == null) {
                             throw new WMRuntimeException("Authorization details are not specified in the request headers");
                         }
-                        restRequestInfo.setAuthorization(params.get(RestConstants.AUTHORIZATION).toString());
+                        restRequestInfo.setAuthorization(params.get(AUTHORIZATION).toString());
                     }
                 }
             }
