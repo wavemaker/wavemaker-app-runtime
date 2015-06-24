@@ -29,15 +29,23 @@ WM.module('wm.widgets.form')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
                 'readonly': true,
-                'disabled': true
+                'disabled': true,
+                'mindate': true,
+                'maxdate': true
             };
 
-        function propertyChangeHandler(element, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case 'readonly':
             case 'disabled':
                 // prevent the click events on decrement/increment buttons
                 element.css('pointer-events', newVal ? 'none' : 'all');
+                break;
+            case 'mindate':
+            case 'maxdate':
+                if (newVal && !isNaN(newVal) && WM.isString(newVal)) {
+                    scope[key] = new Date(parseInt(newVal, 10));
+                }
                 break;
             }
         }
@@ -92,7 +100,7 @@ WM.module('wm.widgets.form')
                     'post': function (scope, element, attrs) {
 
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                         scope._onClick = _onClick.bind(undefined, scope);
 
