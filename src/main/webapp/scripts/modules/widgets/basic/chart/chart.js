@@ -358,8 +358,8 @@ WM.module('wm.widgets.basic')
                 /* If pie chart, set the display key for x and y axis datakey and subgroups */
                 scope.widgetProps.xaxisdatakey.displayKey = 'LABEL_PROPERTY_LABEL';
                 scope.widgetProps.yaxisdatakey.displayKey = 'LABEL_PROPERTY_VALUES';
-                PropertiesFactory.getPropertyGroup('xaxis').displayKey = 'LABEL_PROPERTY_LABEL';
-                PropertiesFactory.getPropertyGroup('yaxis').displayKey = 'LABEL_PROPERTY_VALUES';
+                PropertiesFactory.getPropertyGroup('xaxis').displayKey = 'LABEL_PROPERTY_LABEL_DATA';
+                PropertiesFactory.getPropertyGroup('yaxis').displayKey = 'LABEL_PROPERTY_VALUE_DATA';
 
                 /* If it is a pie chart then the yaxisdatakey must be a single select else it has to be a multiselect */
                 scope.widgetProps.yaxisdatakey.widget = 'list';
