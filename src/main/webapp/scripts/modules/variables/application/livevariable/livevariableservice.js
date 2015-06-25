@@ -889,7 +889,7 @@ wm.variables.services.$liveVariable = [
                 getPrimaryKey: function (variable) {
                     var primaryKey = [];
                     /*Loop through the propertiesMap and get the primary key column.*/
-                    WM.element.each(variable.dataSet.propertiesMap.columns, function (index, column) {
+                    WM.element.each(variable.propertiesMap.columns, function (index, column) {
                         if (column.isPrimaryKey) {
                             if (column.isRelated && (WM.element.inArray(column.relatedFieldName, primaryKey) === -1)) {
                                 primaryKey.push(column.relatedFieldName);

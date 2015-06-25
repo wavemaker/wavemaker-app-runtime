@@ -271,7 +271,8 @@ WM.module("wm.widgets.basic")
                         }
                     } else {
                         startIndex = ($scope.currentPage - 1) * $scope.maxResults;
-                        data = $scope.dataset.slice(startIndex, startIndex + $scope.maxResults);
+                        data = WM.isArray($scope.dataset) ?
+                            $scope.dataset.slice(startIndex, startIndex + $scope.maxResults) : $scope.dataset;
                         $scope.result = data;
                         $scope.onPageDataReady(event, data, callback);
                     }

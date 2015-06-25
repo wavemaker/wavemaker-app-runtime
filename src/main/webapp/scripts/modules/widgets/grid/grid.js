@@ -695,7 +695,8 @@ WM.module('wm.widgets.grid')
                                 "propertiesMap": propertiesMap,
                                 "relatedData": relatedData,
                                 "pagingOptions": pagingOptions,
-                                "filterFields": filterFields
+                                "filterFields": filterFields,
+                                "variableName": $scope.variableName
                             };
 
                             /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
@@ -752,7 +753,8 @@ WM.module('wm.widgets.grid')
                                     'relatedData': relatedData,
                                     'pagingOptions': pagingOptions,
                                     'filterFields': filterFields,
-                                    'sortOptions': sortOptions
+                                    'sortOptions': sortOptions,
+                                    'variableName': $scope.variableName
                                 };
 
                                 /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
@@ -856,7 +858,7 @@ WM.module('wm.widgets.grid')
                     }
                 },
                 deleteRecord = function (row, cancelRowDeleteCallback) {
-                    if ($scope.gridVariable.propertiesMap.tableType === "VIEW") {
+                    if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                         $scope.$root.$safeApply($scope);
                         return;
@@ -960,42 +962,41 @@ WM.module('wm.widgets.grid')
                         referenceBindDataSet,
                         referenceVariableName,
                         relatedFieldName,
-                        referenceVariable;
+                        relatedFieldType,
+                        fields,
+                        details,
+                        referenceVariable,
+                        isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
 
-                    bindDataSetSplit = $scope.binddataset.split(".");
-                    relatedFieldName = bindDataSetSplit[3];
-
+                    bindDataSetSplit = $scope.binddataset.split('.');
                     referenceWidgetName = bindDataSetSplit[1];
                     referenceWidget = $scope.Widgets[referenceWidgetName];
                     referenceBindDataSet = referenceWidget.binddataset;
 
                     /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
-                    referenceVariableName = referenceBindDataSet.replace("bind:Variables.", "");
-                    referenceVariableName = referenceVariableName.substr(0, referenceVariableName.indexOf("."));
+                    referenceVariableName = referenceBindDataSet.replace('bind:Variables.', '');
+                    referenceVariableName = referenceVariableName.substr(0, referenceVariableName.indexOf('.'));
 
                     referenceVariable = Variables.getVariableByName(referenceVariableName);
-                    return {
+                    relatedFieldName = isBoundToSelectedItemSubset && bindDataSetSplit[3];
+                    fields = (referenceVariable !== null) && $rootScope.dataTypes &&
+                        $rootScope.dataTypes[referenceVariable.package].fields;
+                    details = {
                         'referenceVariableName': referenceVariableName,
-                        'relatedFieldName': relatedFieldName,
                         'referenceWidget': referenceWidget,
-                        'referenceVariable': referenceVariable
+                        'referenceVariable': referenceVariable,
+                        'relatedFieldName': relatedFieldName
                     };
-                },
-                getWidgetVariableName = function (dataSet) {
-                    if (!dataSet) {
-                        return;
+                    /* If binddataset is of the format: bind:Widgets.widgetName.selecteditem.something,
+                     * i.e. widget is bound to a subset of selected item, get type of that subset.*/
+                    if (relatedFieldName && fields) {
+                        relatedFieldType = fields[relatedFieldName].type;
+                        details['relatedFieldType'] = relatedFieldType;
+                    } else {
+                        /* When binddataset is of the format: bind:Widgets.widgetName.selecteditem */
+                        details['fields'] = fields;
                     }
-                    var variableName,
-                        widgetScope,
-                        widgetName;
-                    if (dataSet.variableName) {
-                        variableName = dataSet.variableName;
-                    } else if (WM.isString(dataSet) && dataSet !== '') {
-                        widgetName = dataSet.split('.')[1];
-                        widgetScope = $scope.Widgets[widgetName];
-                        variableName = Utils.getVariableName($scope);
-                    }
-                    return variableName;
+                    return details;
                 };
             /* Function to reset the column definitions dynamically. */
             $scope.resetColumnDefinitions = function () {
@@ -1178,13 +1179,21 @@ WM.module('wm.widgets.grid')
 
                 /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
                 result = fetchReferenceDetails();
-                /*Check for sanity.*/
-                if (result.referenceVariable) {
+                if (result.fields) {
+                    var f = result.fields,
+                        dataKeys = Object.keys(f),
+                        fields = {};
+                    dataKeys.forEach(function(key) {
+                        fields[key] = '';
+                    });
+                } else if (result.relatedFieldType) {
                     /*Invoke the function to fetch sample data-structure for the field.*/
                     fields = $servicevariable.getServiceModel({
-                        typeRef: $rootScope.dataTypes[result.referenceVariable.package].fields[result.relatedFieldName].type,
+                        typeRef: result.relatedFieldType,
                         variable: result.referenceVariable
                     });
+                }
+                if (fields) {
                     $scope.watchVariableDataSet(fields, $scope.gridElement);
                 }
             };
@@ -1242,7 +1251,8 @@ WM.module('wm.widgets.grid')
                                                     "data": data,
                                                     "propertiesMap": propertiesMap,
                                                     "relatedData": relatedData,
-                                                    "pagingOptions": pagingOptions
+                                                    "pagingOptions": pagingOptions,
+                                                    "variableName": reference.referenceVariableName
                                                 };
 
                                                 /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
@@ -1288,7 +1298,9 @@ WM.module('wm.widgets.grid')
                     variableObj,
                     elScope,
                     result,
-                    selectedItemIndex;
+                    selectedItemIndex,
+                    isBoundToSelectedItem,
+                    isBoundToSelectedItemSubset;
                 $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
 
                 result = Utils.getValidJSON(newVal);
@@ -1333,13 +1345,33 @@ WM.module('wm.widgets.grid')
                         /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
                         variableName = $scope.binddataset.replace('bind:Variables.', '');
                         variableName = variableName.substr(0, variableName.indexOf('.'));
-                    } else if (isBoundToWidget && newVal !== '') {
-                        variableName = getWidgetVariableName(newVal);
-                        if (!variableName) {
-                            if (CONSTANTS.isStudioMode &&
-                                newVal.indexOf('selecteditem') !== -1 &&
-                                newVal.indexOf('livelist') !== -1) {
-                                $scope.datagridElement.datagrid('setStatus', 'error', $rootScope.locale['MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO']);
+                    } else if (isBoundToWidget) {
+                        variableName = Utils.getVariableName($scope);
+                        isBoundToSelectedItem = $scope.binddataset.indexOf('selecteditem') !== -1;
+                        isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
+                        if (isBoundToSelectedItemSubset || isBoundToSelectedItem) {
+                            if (variableName === null) {
+                                var widgetBindingDetails = fetchReferenceDetails();
+                                if (!widgetBindingDetails.fields) {
+                                    var relatedTables = widgetBindingDetails.referenceVariable.relatedTables;
+                                    variableName = widgetBindingDetails.referenceVariableName;
+                                    relatedTables.forEach(function(val) {
+                                        if (val.columnName === widgetBindingDetails.relatedFieldName) {
+                                            variableName = val.watchOn;
+                                        }
+                                    });
+                                }
+                            }
+                            /*Check for studio mode.*/
+                            if (CONSTANTS.isStudioMode && newVal !== '') {
+                                /*If "newVal" is not available(in studio mode, newVal will be same as bindDataSet with 'bind:' removed; for the first time)
+                                 , fetch column definitions dynamically.*/
+                                if (($scope.binddataset === ('bind:' + newVal)) || (WM.isArray(newVal) && !newVal.length)) {
+                                    $scope.fetchDynamicColumnDefs();
+                                    return;
+                                }
+                            } else if (!newVal) { /*In run-mode, if "newVal" is not available, fetch data dynamically.*/
+                                $scope.fetchDynamicData();
                             }
                         }
                     }
@@ -1353,20 +1385,6 @@ WM.module('wm.widgets.grid')
                         $scope.toggleVariableHandlerAttached = true;
                     }
                     elScope = element.scope();
-                    selectedItemIndex = $scope.binddataset.indexOf('selecteditem.');
-                    if (selectedItemIndex !== -1) {
-                        /*Check for studio mode.*/
-                        if (CONSTANTS.isStudioMode) {
-                            /*If "newVal" is not available(in studio mode, newVal will be same as bindDataSet with 'bind:' removed; for the first time)
-                            , fetch column definitions dynamically.*/
-                            if ($scope.binddataset === ('bind:' + newVal)) {
-                                $scope.fetchDynamicColumnDefs();
-                                return;
-                            }
-                        } else if (!newVal) { /*In run-mode, if "newVal" is not available, fetch data dynamically.*/
-                            $scope.fetchDynamicData();
-                        }
-                    }
 
                     /*TODO to remove is studiomode check*/
                     if ($scope.variableName && (variableName !== $scope.variableName) && CONSTANTS.isStudioMode) {
@@ -1382,7 +1400,9 @@ WM.module('wm.widgets.grid')
 
                         /*Check if the variable is a liveVariable*/
                         isBoundToLiveVariable = $scope.variableType === 'wm.LiveVariable';
-                        isBoundToLiveVariableRoot = isBoundToLiveVariable && $scope.binddataset.indexOf('dataSet.') === -1;
+                        isBoundToLiveVariableRoot = isBoundToLiveVariable &&
+                            $scope.binddataset.indexOf('dataSet.') === -1 &&
+                            $scope.binddataset.indexOf('selecteditem') === -1;
                         isBoundToServiceVariable = $scope.variableType === 'wm.ServiceVariable';
 
                         if (isBoundToLiveVariable) {

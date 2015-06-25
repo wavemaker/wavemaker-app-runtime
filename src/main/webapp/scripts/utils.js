@@ -209,7 +209,12 @@ WM.module('wm.utils', [])
                     if (WM.isString(scope.binddataset) && scope.binddataset !== '') {
                         widgetName = scope.binddataset.split('.')[1];
                         widgetScope = scope.Widgets[widgetName];
-                        variableName = getVariableName(widgetScope);
+                        if (scope.binddataset.indexOf('selecteditem.') === -1) {
+                            variableName = getVariableName(widgetScope);
+                        } else {
+                            // Return null if widget is bound to selecteditem.something.
+                            variableName = null;
+                        }
                     }
                 }
                 return variableName;
