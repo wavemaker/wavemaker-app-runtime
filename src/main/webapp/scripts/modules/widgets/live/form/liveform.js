@@ -994,7 +994,7 @@ WM.module('wm.widgets.live')
                     '<wm-composite widget="textarea" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                         '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-textarea name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
+                            '<wm-textarea name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" width="{{dataArray[' + index + '].width}}" height="{{dataArray[' + index + '].height}}" ' +
                                 'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}"show="{{isUpdateMode}}"';
                 if (fieldDef.maxvalue && fieldDef.maxvalue !== 'null' && fieldDef.maxvalue !== 'undefined') {
                     template = template + ' maxchars="{{dataArray[' + index + '].maxvalue}}"';
@@ -1124,7 +1124,9 @@ WM.module('wm.widgets.live')
                             'regexp': attrs.regexp || ".*",
                             'datafield': attrs.datafield,
                             'displayfield': attrs.displayfield,
-                            'multiple': attrs.multiple === "true" || attrs.multiple === true
+                            'multiple': attrs.multiple === "true" || attrs.multiple === true,
+                            'width' : attrs.width,
+                            'height': attrs.height
                         };
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
                         /*If defaultValue is set then assign it to the attribute*/
