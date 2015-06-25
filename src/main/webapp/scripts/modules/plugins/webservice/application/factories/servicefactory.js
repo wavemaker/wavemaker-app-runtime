@@ -258,8 +258,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     }
 
                     if (securityDefinitions && securityDefinitions[AUTH_TYPE_KEY] && securityDefinitions[AUTH_TYPE_KEY].type === "basic" && operation.security[0][AUTH_TYPE_KEY]) {
-                        if(!operationObject.parameters) {
-                            operationObject.parameters = [];
+                        if(!operationObject.parameter) {
+                            operationObject.parameter = [];
                         }
                         operationObject.parameter.push({
                             "name": "wm_auth_username",
