@@ -177,6 +177,14 @@ WM.module('wm.utils', [])
             return name.charAt(0).toUpperCase() + name.substring(1);
         }
 
+        /* capitalize ONLY the first-letter of the string passed, remaining is made lower cased */
+        function firstCaps(name) {
+            if (!name) {
+                return '';
+            }
+            return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+        }
+
         function prettifyLabel(label) {
             /*capitalize the initial Letter*/
             label = initCaps(label);
@@ -1341,6 +1349,7 @@ WM.module('wm.utils', [])
         return {
             camelCase: WM.element.camelCase,
             initCaps: initCaps,
+            firstCaps: firstCaps,
             periodSeparate: periodSeparate,
             spaceSeparate: spaceSeparate,
             prettifyLabel: prettifyLabel,

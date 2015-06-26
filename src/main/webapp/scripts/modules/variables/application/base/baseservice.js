@@ -1589,7 +1589,7 @@ wm.variables.services.Variables = [
                     variableName,
                     variableOwner;
 
-                defaultName = variableDetails.name || variableDetails.service.capitalize() + variableDetails.table.capitalize() + "Data";
+                defaultName = variableDetails.name || Utils.firstCaps(variableDetails.service) + Utils.firstCaps(variableDetails.table) + "Data";
 
                 /*If the default variable does not exist, create it.
                 * Else, simply return the variable name.*/
