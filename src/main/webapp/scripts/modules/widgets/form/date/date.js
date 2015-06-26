@@ -50,10 +50,36 @@ WM.module('wm.widgets.form')
             }
         }
 
+        function getTimeStamp(val) {
+            var epoch;
+            if (val) {
+                if (WM.isDate(val)) {
+                    epoch = val.getTime();
+                } else {
+                    if (!isNaN(val)) {
+                        val = parseInt(val, 10);
+                    }
+                    epoch = new Date(val).getTime();
+                    epoch = isNaN(epoch) ? undefined : epoch;
+                }
+            }
+            return epoch;
+        }
+
         function _onClick(scope, evt) {
             evt.stopPropagation();
             scope.isOpen = !scope.isOpen;
-
+            /*TODO: Remove this code after updating angular ui to 0.13 version
+            * As timestamp is not accepted, converting timestamp to other date formats*/
+            if (scope.isOpen) {
+                var epoch,
+                    val = scope._proxyModel,
+                    format = scope.datepattern || 'dd-MM-yyyy';
+                epoch = getTimeStamp(val);
+                if (epoch) {
+                    scope._proxyModel = $filter('date')(epoch, format);
+                }
+            }
             if (scope.onClick) {
                 scope.onClick({$event: evt, $scope: scope});
             }
@@ -118,21 +144,7 @@ WM.module('wm.widgets.form')
                                 return this._proxyModel ?  this._proxyModel.valueOf() : undefined;
                             },
                             set: function (val) {
-                                var epoch;
-                                if (val) {
-                                    if (WM.isDate(val)) {
-                                        epoch = val.getTime();
-                                    } else {
-                                        if (!isNaN(val)) {
-                                            val = parseInt(val, 10);
-                                        }
-                                        epoch = new Date(val).getTime();
-                                        epoch = isNaN(epoch) ? undefined : epoch;
-                                    }
-                                    this._proxyModel = epoch;
-                                } else {
-                                    this._proxyModel = undefined;
-                                }
+                                this._proxyModel = getTimeStamp(val);
                             }
                         });
 
