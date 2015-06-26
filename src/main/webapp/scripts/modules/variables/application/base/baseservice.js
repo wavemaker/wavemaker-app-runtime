@@ -226,7 +226,7 @@ wm.variables.services.Variables = [
                         }
                         parentNode[node.name] = newVal;
                         processVariablePostBindUpdate(node.name, newVal, variable);
-                    });
+                    }, true);
                 } else {
                     if (WM.isDefined(node.value)) {
                         parentNode[node.name] =  node.value;
