@@ -1692,11 +1692,15 @@ wm.variables.services.Variables = [
              */
             deleteDefaultVariable: function (variableDetails) {
                 /*filter the variable collection by using the provided object map as a filter key*/
-                var filteredVariables = filterByVariableKeys(variableDetails, false);
+                var filteredVariables = filterByVariableKeys(variableDetails, false),
+                    owner = VARIABLE_CONSTANTS.OWNER.APP;
 
                 filteredVariables.forEach(function (variable) {
                     /*calling delete variable on each of the matching variables*/
-                    deleteVariable(variable.name, variable.owner);
+                    if (variable.owner === VARIABLE_CONSTANTS.OWNER.PAGE) {
+                        owner = $rootScope.activePageName;
+                    }
+                    deleteVariable(variable.name, owner);
                 });
             },
 
