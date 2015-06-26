@@ -53,19 +53,7 @@ var Application = WM.module('Application',
                 invokeService,
                 NG_LOCALE_PATH = "resources/ngLocale/",
                 APP_LOCALE_PATH = "resources/i18n/",
-                projectType = WM.element('meta[name=application_type]').attr('content');
-
-            if (!projectType) {
-                Utils.fetchContent(
-                    'json',
-                    './services/application/type',
-                    function (response) {
-                        $rootScope.projectType = projectType = response.result;
-                    },
-                    WM.noop,
-                    true
-                );
-            }
+                projectType = _WM_APP_PROPERTIES.type;
 
             $rootScope.isPrefabType = projectType === 'PREFAB';
             $rootScope.isMobileType = projectType === 'MOBILE';
@@ -115,6 +103,7 @@ var Application = WM.module('Application',
                 // if the supportedLocale is not available set it to defaultLocale
                 supportedLocale = supportedLocale || [defaultLocale];
                 i18nService.init(supportedLocale, defaultLocale, APP_LOCALE_PATH, NG_LOCALE_PATH);
+                i18nService.setSelectedLocale(_WM_APP_PROPERTIES.defaultLanguage);
             }
 
             /* compile html-content manually in the page & update the variable context */
