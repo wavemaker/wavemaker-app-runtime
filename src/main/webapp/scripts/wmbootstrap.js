@@ -53,7 +53,10 @@ var Application = WM.module('Application',
                 invokeService,
                 NG_LOCALE_PATH = "resources/ngLocale/",
                 APP_LOCALE_PATH = "resources/i18n/",
-                projectType = _WM_APP_PROPERTIES.type;
+                appProperties = WM.copy(_WM_APP_PROPERTIES),
+                projectType = appProperties.type;
+
+            _WM_APP_PROPERTIES = undefined; // delete the global variable.
 
             $rootScope.isPrefabType = projectType === 'PREFAB';
             $rootScope.isMobileType = projectType === 'MOBILE';
@@ -103,7 +106,7 @@ var Application = WM.module('Application',
                 // if the supportedLocale is not available set it to defaultLocale
                 supportedLocale = supportedLocale || [defaultLocale];
                 i18nService.init(supportedLocale, defaultLocale, APP_LOCALE_PATH, NG_LOCALE_PATH);
-                i18nService.setSelectedLocale(_WM_APP_PROPERTIES.defaultLanguage);
+                i18nService.setSelectedLocale(appProperties.defaultLanguage);
             }
 
             /* compile html-content manually in the page & update the variable context */
