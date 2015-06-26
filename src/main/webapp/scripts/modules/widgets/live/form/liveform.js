@@ -1097,7 +1097,9 @@ WM.module('wm.widgets.live')
                             variable,
                             variableObj = {},
                             variableData,
-                            dataSetWatchHandler;
+                            dataSetWatchHandler,
+                            colName,
+                            exprArray;
 
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
@@ -1133,15 +1135,31 @@ WM.module('wm.widgets.live')
                         if (attrs.defaultValue) {
                             if (Utils.stringStartsWith(attrs.defaultValue, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = attrs.defaultValue.replace('bind:', '');
-                                if (scope.Variables && !Utils.isEmptyObject(scope.Variables)) {
+                                if (scope.Variables && !Utils.isEmptyObject(scope.Variables) && scope.$eval(expr)) {
                                     columnDef.defaultValue = scope.$eval(expr);
                                 } else {
-                                    exprWatchHandler = scope.$watch(expr, function (newVal) {
-                                        parentIsolateScope.dataArray[index].defaultValue = newVal;
-                                        parentIsolateScope.dataArray[index].selected = newVal;
-                                        if (newVal) {
-                                            exprWatchHandler();
+                                    /*TODO: Replace with new common binding function*/
+                                    if (expr.indexOf('.content[$i].') !== -1) {
+                                        exprArray = expr.split('.content[$i].');
+                                        expr = exprArray[0];
+                                        colName = exprArray[1];
+                                    } else if (expr.indexOf('.data[$i].') !== -1) {
+                                        exprArray = expr.split('.data[$i].');
+                                        expr = exprArray[0];
+                                        colName = exprArray[1];
+                                    }
+                                    exprWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
+                                        var val;
+                                        variable = parentIsolateScope.Variables[expr.split('.')[1]];
+                                        if (exprArray && WM.isObject(newVal) && Utils.isPageable(newVal)) {
+                                            val = newVal.content[0][colName];
+                                        } else if (exprArray && variable.category === "wm.LiveVariable") {
+                                            val = newVal.data[0][colName];
+                                        } else {
+                                            val = newVal;
                                         }
+                                        parentIsolateScope.dataArray[index].defaultValue = val;
+                                        parentIsolateScope.dataArray[index].selected = val;
                                     });
                                 }
                             } else {
@@ -1215,6 +1233,9 @@ WM.module('wm.widgets.live')
                         parentIsolateScope.$on('$destroy', function () {
                             if (dataSetWatchHandler) {
                                 dataSetWatchHandler();
+                            }
+                            if (exprWatchHandler) {
+                                exprWatchHandler();
                             }
                         });
                     }
