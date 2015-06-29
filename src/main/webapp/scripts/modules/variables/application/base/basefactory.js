@@ -92,7 +92,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operation": {"hide": true, "required": false},
                     "service": {"hide": true, "required": false},
                     "dataSet": {"value": {username: "", password: ""}},
-                    "dataBinding": {"value": {username: "", password: ""}},
+                    "dataBinding": {"type": "list", "value": [{"name": "dataBinding", "type": "object", "fields": [{"name": "username", "type": "string"}, {"name": "password", "type": "string"}]}], "hide": true},
                     "startUpdate": {"value": false},
                     "autoUpdate": {"value": false},
                     "useDefaultSuccessHandler": {"type": "boolean", "value": true}
