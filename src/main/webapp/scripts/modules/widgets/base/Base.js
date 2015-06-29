@@ -3015,20 +3015,7 @@ base.services.WidgetUtilService = ['$filter', '$parse', '$rootScope', 'CONSTANTS
         /*If any column of the option object is present in the display expression,
          replace it with the option value*/
         if (scope.displayexpression) {
-            var newStr =  scope.displayexpression;
-            Object.keys(option).forEach(function (column) {
-                var regexExpr = new RegExp("\\b" + column + "\\b", "g"),
-                    val = option[column];
-                if (WM.isString(val)) {
-                    val = "'" + val + "'";
-                }
-                newStr = newStr.replace(regexExpr, val);
-            });
-            try {
-                return scope.$eval(newStr);
-            } catch (e) {
-                return newStr;
-            }
+            return Utils.getDisplayExprValue(option, scope.displayexpression, scope);
         }
         /*return just the displayField from the option object, if displayExpr is not set*/
         return getObjValueByKey(option, displayField);

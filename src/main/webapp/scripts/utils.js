@@ -1351,6 +1351,30 @@ WM.module('wm.utils', [])
             return true;
         }
 
+        /*
+         * Converts the object passed in to display value based on the display expression given
+         * @params: {object} object from which values are extracted
+         * @params: {displayExpr} expression to be evaluated
+         * @params: {scope} scope of the fucntion called. Used for eval
+         */
+        function getDisplayExprValue(object, displayExpr, scope) {
+            var keys = Object.keys(object).filter(function (val) {
+                return displayExpr.indexOf(val) !== -1;
+            });
+            keys.forEach(function (column) {
+                var regexExpr = new RegExp("\\b" + column + "\\b", "g"),
+                    val = object[column];
+                if (WM.isString(val)) {
+                    val = "'" + val + "'";
+                }
+                displayExpr = displayExpr.replace(regexExpr, val);
+            });
+            try {
+                return scope.$eval(displayExpr);
+            } catch (e) {
+                return displayExpr;
+            }
+        }
         return {
             camelCase: WM.element.camelCase,
             initCaps: initCaps,
@@ -1438,6 +1462,7 @@ WM.module('wm.utils', [])
             isDuplicateName: isDuplicateName,
             getValidMarkUp: getValidMarkUp,
             scrollIntoView: scrollIntoView,
-            arraysEqual: arraysEqual
+            arraysEqual: arraysEqual,
+            getDisplayExprValue: getDisplayExprValue
         };
     }]);

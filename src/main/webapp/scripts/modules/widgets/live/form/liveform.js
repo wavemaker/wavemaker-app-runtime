@@ -565,6 +565,17 @@ WM.module('wm.widgets.live')
                     }
                     fieldDef.value = dataObj[fieldDef.key];
                 };
+
+                /*For related fields, get the display value from the object*/
+                $scope.getDisplayExpr = function (object, displayExpr) {
+                    if (WM.isObject(object)) {
+                        if (!displayExpr) {
+                            displayExpr = Object.keys(object)[0];
+                        }
+                        return Utils.getDisplayExprValue(object, displayExpr, $scope);
+                    }
+                    return object;
+                };
             },
             compile: function () {
                 return {
@@ -912,7 +923,7 @@ WM.module('wm.widgets.live')
                     '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                     '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                     '<div class="col-md-9 col-sm-9">' +
-                    '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
+                    '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].isRelated ? getDisplayExpr(dataArray[' + index + '].value, dataArray[' + index + '].displayvalue || dataArray[' + index + '].displayfield) : dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
                     '<wm-select name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" datafield="{{dataArray[' + index + '].datafield}}" displayfield="{{dataArray[' + index + '].displayfield}}"';
                 template = fieldDef.displayvalue ? template + 'displayexpression="{{dataArray[' + index + '].displayvalue}}"' : template;
                 template = fieldDef.multiple ? template + 'multiple="{{dataArray[' + index + '].multiple}}"' : template;
