@@ -56,7 +56,8 @@ WM.module('wm.widgets.live')
                     };
                     $scope.filter = function () {
                         var filterFields = [],
-                            query;
+                            query,
+                            booleanValue;
                         WM.forEach($scope.filterFields, function (filterField) {
                             if (filterField.isRange) {
                                 if (filterField.widget === "date") {
@@ -79,7 +80,23 @@ WM.module('wm.widgets.live')
                             } else {
                                 switch (filterField.widget) {
                                 case 'select':
+                                case 'radioset':
                                     if (filterField.selected) {
+                                        if (filterField.isRelated) {
+                                            filterFields.push({
+                                                column: filterField.field + '.' + filterField.lookupField,
+                                                value: filterField.selected
+                                            });
+                                        } else {
+                                            filterFields.push({
+                                                column: filterField.field,
+                                                value: filterField.selected
+                                            });
+                                        }
+                                    }
+                                    break;
+                                case 'checkboxset':
+                                    if (filterField.selected && filterField.selected.length) {
                                         if (filterField.isRelated) {
                                             filterFields.push({
                                                 column: filterField.field + '.' + filterField.lookupField,
@@ -98,6 +115,15 @@ WM.module('wm.widgets.live')
                                         filterFields.push({
                                             column: filterField.field,
                                             value: $filter('date')(filterField.value, 'yyyy-MM-dd')
+                                        });
+                                    }
+                                    break;
+                                case 'checkbox':
+                                    if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
+                                        booleanValue = filterField.value ? 1 : 0;
+                                        filterFields.push({
+                                            column: filterField.field,
+                                            value: booleanValue
                                         });
                                     }
                                     break;
@@ -150,13 +176,28 @@ WM.module('wm.widgets.live')
                             colDefArray = [],
                             column,
                             numColumns = Math.min(columnObj.length, 5),
-                            index;
+                            index,
+                            getWidgetType = function (type) {
+                                var widgetType;
+                                switch (type) {
+                                case "date":
+                                    widgetType = "date";
+                                    break;
+                                case "boolean":
+                                    widgetType = "checkbox";
+                                    break;
+                                default:
+                                    widgetType = "text";
+                                    break;
+                                }
+                                return widgetType;
+                            };
                         for (index = 0; index < numColumns; index++) {
                             column = columnObj[index];
                             colDef = {};
                             colDef.field = column.fieldName;
                             colDef.displayName = Utils.prettifyLabel(column.fieldName);
-                            colDef.widget = column.type === "date" ? "date" : "text";
+                            colDef.widget = getWidgetType(column.type);
                             colDef.isRange = false;
                             colDef.filterOn = '';
                             colDef.lookupType = '';
@@ -241,7 +282,7 @@ WM.module('wm.widgets.live')
                             function updateAllowedValues() {
                                 WM.forEach(scope.filterFields, function (filterField) {
                                     var query, tableName, columns;
-                                    if (filterField.widget === 'select') {
+                                    if (filterField.widget === 'select' || filterField.widget === 'radioset' || filterField.widget === 'checkboxset') {
                                         if (filterField.isRelated) {
                                             tableName = filterField.lookupType;
                                             columns = filterField.lookupField;
@@ -453,6 +494,31 @@ WM.module('wm.widgets.live')
                         '</wm-composite>';
                 }
                 break;
+            case 'checkboxset':
+                fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
+                template = template + '<wm-composite widget="checkboxset" show="{{filterFields[' + index + '].show}}">' +
+                    '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                    '<div class="col-md-8"><wm-checkboxset name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-checkboxset></div>' +
+                    '</wm-composite>';
+                break;
+            case 'radioset':
+                if (fieldDef.isRange) {
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
+                    template = template +
+                        '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
+                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                        '<div class="col-md-4"><wm-radioset name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-radioset></div>' +
+                        '<div class="col-md-4"><wm-radioset name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" dataset=""></wm-radioset></div>' +
+                        '</wm-composite>';
+                } else {
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
+                    template = template + '<wm-composite widget="radioset" show="{{filterFields[' + index + '].show}}">' +
+                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                        '<div class="col-md-8"><wm-radioset name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-radioset></div>' +
+                        '</wm-composite>';
+                }
+                break;
             case 'text':
                 if (fieldDef.isRange) {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
@@ -492,6 +558,12 @@ WM.module('wm.widgets.live')
                         '<div class="col-md-8"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"  datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
                         '</wm-composite>';
                 }
+                break;
+            case 'checkbox':
+                template = template + '<wm-composite widget="checkboxset" show="{{filterFields[' + index + '].show}}">' +
+                    '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                    '<div class="col-md-8"><wm-checkbox name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" ></wm-checkbox></div>' +
+                    '</wm-composite>';
                 break;
             default:
                 if (fieldDef.isRange) {

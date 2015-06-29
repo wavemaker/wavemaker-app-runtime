@@ -47,7 +47,19 @@ wm.plugins.database.services.QueryBuilder = [
                         if (field.clause) {
                             whereClause += field.clause + " AND ";
                         } else {
-                            whereClause += field.column + "='" + field.value + "' AND ";
+                            if (WM.isArray(field.value)) {
+                                whereClause += "(" + field.column + "='";
+                                field.value.forEach(function (element, index) {
+                                    if (index + 1 === field.value.length) {
+                                        whereClause += element;
+                                    } else {
+                                        whereClause += element + "' OR " + field.column + "='";
+                                    }
+                                });
+                                whereClause += "') AND ";
+                            } else {
+                                whereClause += field.column + "='" + field.value + "' AND ";
+                            }
                         }
                     });
                     whereClause = whereClause.slice(0, -5);
