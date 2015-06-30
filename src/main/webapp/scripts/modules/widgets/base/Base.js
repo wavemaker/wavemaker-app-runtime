@@ -662,7 +662,9 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "hasdownarrow": {"type": "boolean", "value": true},
                     "restrictvalues": {"type": "boolean", "value": true},
                     "disabled": {"value": false},
-                    "multiple": {"type": "boolean", "value": false}
+                    "multiple": {"type": "boolean", "value": false},
+                    "placeholder": {"type": "string", "value": ""},
+
                 },
 
 

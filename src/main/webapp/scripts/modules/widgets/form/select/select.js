@@ -16,7 +16,8 @@ WM.module('wm.widgets.form')
                 ' data-ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
                 $rootScope.getWidgetStyles() +
                 ' data-ng-options="option.key as $root.locale[option.value] || option.value for option in selectOptions">' +
-                '</select>'
+                '<option selected disabled value="">{{placeholder}}</option>'+
+            '</select>'
                 );
     }])
     .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
@@ -134,6 +135,7 @@ WM.module('wm.widgets.form')
             }
             return data;
         }
+
 
         /*function to create the options for the select widget, based on the different configurations that can be provided.
          Options can be provided as
@@ -380,6 +382,8 @@ WM.module('wm.widgets.form')
  *                  Callback function which will be triggered when the mouse enters the widget.
  * @param {string=} on-mouseleave
  *                  Callback function which will be triggered when the mouse leaves the widget.
+ * @param {string=} placeholder
+ *                  Placeholder for the selectbox.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
@@ -403,7 +407,10 @@ WM.module('wm.widgets.form')
  *               <div style="width: {{width}};">
  *                   <div style="font-weight: bold; color: {{color}};">{{selectedItem}}</div>
  *                </div>
- *
+ *               <wm-composite>
+ *                      <wm-label caption="placeholder:"></wm-label>
+ *                      <wm-text scopedatavalue="placeholder"></wm-text>
+ *                  </wm-composite>
  *               <wm-composite>
  *                   <wm-label caption="caption:"></wm-label>
  *                   <wm-text scopedatavalue="caption"></wm-text>
