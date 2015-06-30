@@ -1206,6 +1206,9 @@ If the height and width are not specified the video takes the height of the post
 @app-richtexteditor-toolbar-background-color: #E6E6E6;
 @app-richtexteditor-toolbar-border-color: #cccccc;
 @app-richtexteditor-toolbar-text-color: #828282;
+//Minimum height for the Rich Text Editor at all times. This has to be same for both .ta-bind and .ta-editor
+@app-textarea-min-height: 140px;
+@app-richtexteditor-font-size: 0.95em;
 
 /************* important do not remove this. style is required to hide the input from the richtext editor**************/
 .ta-hidden-input {
@@ -1244,8 +1247,9 @@ If the height and width are not specified the video takes the height of the post
       .calc('height', ~"calc(100% - 88px)"); /*67px corresponds to the height of the toolbar in run mode*/
       padding: 0;
       & > .ta-bind {
-        min-height: 100%;
+        min-height: @app-textarea-min-height;
         padding: 6px 12px;
+        height: 100%;
       }
     }
     .ta-editor:focus {
@@ -1317,18 +1321,19 @@ If the height and width are not specified the video takes the height of the post
       .btn-group {
         margin-bottom: 5px;
         .btn {
-          font-size: 16px;
+          font-size: @app-richtexteditor-font-size;
+          padding: 0.33em 0.66em;
         }
       }
     }
     .btn {
       .fa {
-        .width-height(16px, 16px);
+        .width-height(@app-richtexteditor-font-size, @app-richtexteditor-font-size);
         display: inline-block;
       }
     }
     .ta-editor {
-      min-height: 140px;
+      min-height: @app-textarea-min-height;
       height: 90%;
       .calc('height', ~"calc(100% - 88px)"); /*67px corresponds to the height of the toolbar in run mode*/
       min-width: 100px;
