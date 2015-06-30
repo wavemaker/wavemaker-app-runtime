@@ -611,7 +611,8 @@ WM.module('wm.widgets.live')
                             'lookupField': attrs.lookupField,
                             'minPlaceholder': attrs.minPlaceholder,
                             'maxPlaceholder': attrs.maxPlaceholder,
-                            'datepattern': attrs.datepattern
+                            'datepattern': attrs.datepattern,
+                            'relatedEntityName': attrs.relatedEntityName
                         };
                         scope.parentIsolateScope.filterFields = scope.parentIsolateScope.filterFields || [];
                         scope.parentIsolateScope.fieldObjectCreated = true;
