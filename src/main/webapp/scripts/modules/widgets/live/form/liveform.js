@@ -520,6 +520,10 @@ WM.module('wm.widgets.live')
                         /*Store the primary key of data*/
                         if (fieldObj.isPrimaryKey) {
                             $scope.setPrimaryKey(fieldObj.fieldName);
+                            /*Hiding primary if it is generated automatically(User can un-hide it from edit feilds dialog)*/
+                            if (fieldObj.generator !== "assigned") {
+                                translatedObj[index].show = false;
+                            }
                         }
                     });
                     return translatedObj;
