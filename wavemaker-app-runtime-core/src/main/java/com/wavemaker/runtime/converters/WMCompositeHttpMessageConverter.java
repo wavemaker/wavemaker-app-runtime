@@ -68,7 +68,7 @@ public class WMCompositeHttpMessageConverter<T> implements HttpMessageConverter<
             throws IOException, HttpMessageNotWritableException {
         for (WMCustomHttpMessageConverter httpMessageConverter : httpMessageConverterList) {
             if (httpMessageConverter.supportsClazz(t.getClass())) {
-                httpMessageConverter.write(t, contentType, outputMessage);
+                httpMessageConverter.write(t, null, outputMessage);
                 return;
             }
         }

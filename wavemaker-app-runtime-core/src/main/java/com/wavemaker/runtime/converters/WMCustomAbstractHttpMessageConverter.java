@@ -2,6 +2,7 @@ package com.wavemaker.runtime.converters;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
+import java.io.IOException;
 
 /**
  * @Author: Uday
@@ -15,5 +16,10 @@ public abstract class WMCustomAbstractHttpMessageConverter<T> extends AbstractHt
     @Override
     public boolean supportsClazz(Class klass) {
         return supports(klass);
+    }
+
+    @Override
+    protected MediaType getDefaultContentType(T t) throws IOException {
+          return null;
     }
 }
