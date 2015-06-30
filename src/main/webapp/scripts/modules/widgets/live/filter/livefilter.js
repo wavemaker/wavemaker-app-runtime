@@ -57,8 +57,16 @@ WM.module('wm.widgets.live')
                     $scope.filter = function () {
                         var filterFields = [],
                             query,
-                            booleanValue;
+                            booleanValue,
+                            colName = '';
                         WM.forEach($scope.filterFields, function (filterField) {
+                            /* if field is part of a related entity, column name will be 'entity.fieldName' */
+                            if (filterField.isRelated) {
+                                colName = filterField.field + '.' + filterField.lookupField
+                            } else {
+                                colName = filterField.field;
+                            }
+
                             if (filterField.isRange) {
                                 if (filterField.widget === "date") {
                                     filterField.minValue = $filter('date')(filterField.minValue, 'yyyy-MM-dd');
@@ -82,38 +90,24 @@ WM.module('wm.widgets.live')
                                 case 'select':
                                 case 'radioset':
                                     if (filterField.selected) {
-                                        if (filterField.isRelated) {
-                                            filterFields.push({
-                                                column: filterField.field + '.' + filterField.lookupField,
-                                                value: filterField.selected
-                                            });
-                                        } else {
-                                            filterFields.push({
-                                                column: filterField.field,
-                                                value: filterField.selected
-                                            });
-                                        }
+                                        filterFields.push({
+                                            column: colName,
+                                            value: filterField.selected
+                                        });
                                     }
                                     break;
                                 case 'checkboxset':
                                     if (filterField.selected && filterField.selected.length) {
-                                        if (filterField.isRelated) {
-                                            filterFields.push({
-                                                column: filterField.field + '.' + filterField.lookupField,
-                                                value: filterField.selected
-                                            });
-                                        } else {
-                                            filterFields.push({
-                                                column: filterField.field,
-                                                value: filterField.selected
-                                            });
-                                        }
+                                        filterFields.push({
+                                            column: colName,
+                                            value: filterField.selected
+                                        });
                                     }
                                     break;
                                 case 'date':
                                     if (filterField.value) {
                                         filterFields.push({
-                                            column: filterField.field,
+                                            column: colName,
                                             value: $filter('date')(filterField.value, 'yyyy-MM-dd')
                                         });
                                     }
@@ -122,7 +116,7 @@ WM.module('wm.widgets.live')
                                     if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
                                         booleanValue = filterField.value ? 1 : 0;
                                         filterFields.push({
-                                            column: filterField.field,
+                                            column: colName,
                                             value: booleanValue
                                         });
                                     }
@@ -130,7 +124,7 @@ WM.module('wm.widgets.live')
                                 default:
                                     if (filterField.value) {
                                         filterFields.push({
-                                            column: filterField.field,
+                                            column: colName,
                                             value: filterField.value
                                         });
                                     }
@@ -537,6 +531,25 @@ WM.module('wm.widgets.live')
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     type = (fieldDef.type === "integer") ? "number" : "string";
+                    template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
+                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '</wm-composite>';
+                }
+                break;
+            case 'number':
+                type = "number";
+                if (fieldDef.isRange) {
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
+                    template = template +
+                        '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
+                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
+                        '</wm-composite>';
+                } else {
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
                         '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
