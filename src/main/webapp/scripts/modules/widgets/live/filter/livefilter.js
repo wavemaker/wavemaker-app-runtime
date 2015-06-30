@@ -199,12 +199,13 @@ WM.module('wm.widgets.live')
                             colDef.displayName = Utils.prettifyLabel(column.fieldName);
                             colDef.widget = getWidgetType(column.type);
                             colDef.isRange = false;
-                            colDef.filterOn = '';
+                            colDef.filterOn = column.fieldName;
                             colDef.lookupType = '';
                             colDef.lookupField = '';
                             colDef.minPlaceholder = '';
                             colDef.maxPlaceholder = '';
                             colDef.datepattern = '';
+                            colDef.multiple = '';
                             colDef.type = column.type;
                             colDef.isPrimaryKey = column.isPrimaryKey;
                             colDef.generator = column.generator;
@@ -490,8 +491,11 @@ WM.module('wm.widgets.live')
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     template = template + '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-select></div>' +
-                        '</wm-composite>';
+                        '<div class="col-md-8"><wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"';
+                    if (fieldDef.multiple) {
+                        template = template + 'multiple="{{filterFields[' + index + '].multiple}}"';
+                    }
+                    template = template + '></wm-select></div></wm-composite>';
                 }
                 break;
             case 'checkboxset':
@@ -605,13 +609,14 @@ WM.module('wm.widgets.live')
                             'generator': attrs.generator,
                             'isRange': attrs.isRange === "true" || attrs.isRange === true,
                             'isRelated': attrs.isRelated === "true" || attrs.isRelated === true,
-                            'filterOn': attrs.filterOn,
+                            'filterOn': attrs.filterOn || attrs.field || attrs.binding,
                             'widget': attrs.widget,
                             'lookupType': attrs.lookupType,
                             'lookupField': attrs.lookupField,
                             'minPlaceholder': attrs.minPlaceholder,
                             'maxPlaceholder': attrs.maxPlaceholder,
                             'datepattern': attrs.datepattern,
+                            'multiple': attrs.multiple === "true" || attrs.multiple === true,
                             'relatedEntityName': attrs.relatedEntityName
                         };
                         scope.parentIsolateScope.filterFields = scope.parentIsolateScope.filterFields || [];
