@@ -1174,7 +1174,7 @@ WM.module('wm.widgets.live')
                                         if (exprArray && WM.isObject(newVal) && Utils.isPageable(newVal)) {
                                             val = newVal.content[0][colName];
                                         } else if (exprArray && variable.category === "wm.LiveVariable") {
-                                            val = newVal.data[0][colName];
+                                            val = newVal.data && newVal.data[0][colName];
                                         } else {
                                             val = newVal;
                                         }

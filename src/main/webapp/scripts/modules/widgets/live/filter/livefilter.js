@@ -46,7 +46,8 @@ WM.module('wm.widgets.live')
                             } else {
                                 if (filterField.selected) {
                                     filterField.selected = '';
-                                } else {
+                                }
+                                if (filterField.value) {
                                     filterField.value = '';
                                 }
                             }
@@ -200,6 +201,7 @@ WM.module('wm.widgets.live')
                             colDef.maxPlaceholder = '';
                             colDef.datepattern = '';
                             colDef.multiple = '';
+                            colDef.value = '';
                             colDef.type = column.type;
                             colDef.isPrimaryKey = column.isPrimaryKey;
                             colDef.generator = column.generator;
@@ -225,6 +227,17 @@ WM.module('wm.widgets.live')
 
                         return colDefArray;
                     };
+                    /*Calls the filter function if default values are present*/
+                    $scope.filterOnDefault = function () {
+                        /*Check if default value is present for any filter field*/
+                        var defaultObj = _.find($scope.filterFields, function (obj) {
+                            return obj.value;
+                        });
+                        /*If default value exists and data is loaded, apply the filter*/
+                        if (defaultObj && $scope.result) {
+                            $scope.filter();
+                        }
+                    };
                 },
                 template: function (element) {
                     filterMarkup = element.html();
@@ -237,6 +250,8 @@ WM.module('wm.widgets.live')
                         pre: function (scope, element) {
                             scope.widgetProps = WM.copy(widgetProps);
                             scope.filterElement = element;
+                            scope.Variables = element.scope().Variables;
+                            scope.Widgets = element.scope().Widgets;
                         },
                         post: function (scope, element, attrs) {
                             var variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
@@ -307,42 +322,6 @@ WM.module('wm.widgets.live')
                                     }
                                 });
                             }
-                            function applyFilterOnField() {
-                                WM.forEach(scope.filterFields, function (filterField) {
-                                    if (filterField.filterOn && filterField.filterOn !== '') {
-                                        WM.forEach(scope.filterFields, function (fieldObj, index) {
-                                            if (fieldObj.field === filterField.filterOn) {
-                                                scope.$watch("filterFields[" + index + "].selected", function (newVal, oldVal) {
-                                                    var filterFields = {},
-                                                        query;
-
-                                                    if (newVal !== oldVal) {
-                                                        filterFields = [{
-                                                            "column": [filterField.filterOn],
-                                                            "value": newVal
-                                                        }];
-                                                        query = QueryBuilder.getQuery({
-                                                            "tableName": scope.result.propertiesMap.entityName,
-                                                            "columns": [" DISTINCT " + filterField.field],
-                                                            "filterFields": filterFields
-                                                        });
-
-                                                        QueryBuilder.executeQuery({
-                                                            "databaseName": Variables.getVariableByName(scope.variableName).liveSource,
-                                                            "query": query,
-                                                            "page": 1,
-                                                            "size": 500,
-                                                            "nativeSql": false
-                                                        }, function (data) {
-                                                            filterField.dataset = data.content;
-                                                        });
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            }
 
                             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                             function propertyChangeHandler(key, newVal, oldVal) {
@@ -365,7 +344,11 @@ WM.module('wm.widgets.live')
 
                                             /* call method to update allowed values for select type filter fields */
                                             updateAllowedValues();
-                                            applyFilterOnField();
+
+                                            /*In run mode, on load check if default value exists and apply filter*/
+                                            if (CONSTANTS.isRunMode) {
+                                                scope.filterOnDefault();
+                                            }
                                         }
                                     } else if (!newVal && CONSTANTS.isStudioMode) { /*Clear the variables when the live-filter has not been bound.*/
                                         //element.empty();
@@ -454,7 +437,7 @@ WM.module('wm.widgets.live')
                 }
             };
         }])
-    .directive("wmFilterField", ["$compile", function ($compile) {
+    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", function ($compile, Utils, CONSTANTS) {
         'use strict';
 
         /* provides the template based on the form-field definition */
@@ -613,25 +596,71 @@ WM.module('wm.widgets.live')
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
                         scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
 
-                        var template, index, fieldObject = {
-                            'field': attrs.field || attrs.binding,
-                            'displayName': attrs.displayName || attrs.caption,
-                            'show': attrs.show === "true" || attrs.show === true,
-                            'type': attrs.type || 'string',
-                            'primaryKey': attrs.primaryKey === "true" || attrs.primaryKey === true,
-                            'generator': attrs.generator,
-                            'isRange': attrs.isRange === "true" || attrs.isRange === true,
-                            'isRelated': attrs.isRelated === "true" || attrs.isRelated === true,
-                            'filterOn': attrs.filterOn || attrs.field || attrs.binding,
-                            'widget': attrs.widget,
-                            'lookupType': attrs.lookupType,
-                            'lookupField': attrs.lookupField,
-                            'minPlaceholder': attrs.minPlaceholder,
-                            'maxPlaceholder': attrs.maxPlaceholder,
-                            'datepattern': attrs.datepattern,
-                            'multiple': attrs.multiple === "true" || attrs.multiple === true,
-                            'relatedEntityName': attrs.relatedEntityName
-                        };
+                        var expr,
+                            exprWatchHandler,
+                            variable,
+                            colName,
+                            exprArray,
+                            template,
+                            index,
+                            fieldObject = {
+                                'field': attrs.field || attrs.binding,
+                                'displayName': attrs.displayName || attrs.caption,
+                                'show': attrs.show === "true" || attrs.show === true,
+                                'type': attrs.type || 'string',
+                                'primaryKey': attrs.primaryKey === "true" || attrs.primaryKey === true,
+                                'generator': attrs.generator,
+                                'isRange': attrs.isRange === "true" || attrs.isRange === true,
+                                'isRelated': attrs.isRelated === "true" || attrs.isRelated === true,
+                                'filterOn': attrs.filterOn || attrs.field || attrs.binding,
+                                'widget': attrs.widget,
+                                'lookupType': attrs.lookupType,
+                                'lookupField': attrs.lookupField,
+                                'minPlaceholder': attrs.minPlaceholder,
+                                'maxPlaceholder': attrs.maxPlaceholder,
+                                'datepattern': attrs.datepattern,
+                                'multiple': attrs.multiple === "true" || attrs.multiple === true,
+                                'relatedEntityName': attrs.relatedEntityName
+                            };
+                        /*Set the default value*/
+                        if (attrs.value) {
+                            /*If the default value is bound variable, keep watch on the expression*/
+                            if (Utils.stringStartsWith(attrs.value, 'bind:') && CONSTANTS.isRunMode) {
+                                expr = attrs.value.replace('bind:', '');
+                                if (scope.Variables && !Utils.isEmptyObject(scope.Variables) && scope.$eval(expr)) {
+                                    fieldObject.value = scope.$eval(expr);
+                                } else {
+                                    /*TODO: Replace with new common binding function*/
+                                    if (expr.indexOf('.content[$i].') !== -1) {
+                                        exprArray = expr.split('.content[$i].');
+                                        expr = exprArray[0];
+                                        colName = exprArray[1];
+                                    } else if (expr.indexOf('.data[$i].') !== -1) {
+                                        exprArray = expr.split('.data[$i].');
+                                        expr = exprArray[0];
+                                        colName = exprArray[1];
+                                    }
+                                    exprWatchHandler = scope.parentIsolateScope.$watch(expr, function (newVal) {
+                                        var val;
+                                        variable = scope.parentIsolateScope.Variables[expr.split('.')[1]];
+                                        if (exprArray && WM.isObject(newVal) && Utils.isPageable(newVal)) {
+                                            val = newVal.content[0][colName];
+                                        } else if (exprArray && variable.category === "wm.LiveVariable") {
+                                            val = newVal.data && newVal.data[0][colName];
+                                        } else {
+                                            val = newVal;
+                                        }
+                                        scope.parentIsolateScope.filterFields[index].value = val;
+                                        scope.parentIsolateScope.filterFields[index].selected = val;
+                                        /*Apply the filter after the default value change*/
+                                        scope.parentIsolateScope.filterOnDefault();
+                                    });
+                                }
+                            } else {
+                                fieldObject.value = attrs.value;
+                                fieldObject.selected = attrs.value;
+                            }
+                        }
                         scope.parentIsolateScope.filterFields = scope.parentIsolateScope.filterFields || [];
                         scope.parentIsolateScope.fieldObjectCreated = true;
                         index = scope.parentIsolateScope.filterFields.push(fieldObject) - 1;
@@ -639,6 +668,12 @@ WM.module('wm.widgets.live')
                         template = getTemplate(fieldObject, index);
                         element.html(template);
                         $compile(element.contents())(scope.parentIsolateScope);
+
+                        scope.parentIsolateScope.$on('$destroy', function () {
+                            if (exprWatchHandler) {
+                                exprWatchHandler();
+                            }
+                        });
                     }
                 };
             }
