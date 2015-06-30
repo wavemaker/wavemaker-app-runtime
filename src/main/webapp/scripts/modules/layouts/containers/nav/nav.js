@@ -106,12 +106,14 @@ WM.module('wm.layouts.containers')
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal) {
+            var elScope = element.scope();
             switch (key) {
             case 'dataset':
-                var variable = element.scope().Variables[Utils.getVariableName(scope)];
+                var variable = elScope.Variables[Utils.getVariableName(scope, elScope)];
                 if (variable && variable.category === "wm.LiveVariable") {
                     newVal = newVal.data;
                 }
+                // do not break here. continue with the next steps.
             case 'scopedataset':
                 scope.nodes = getNodes(scope, newVal);
                 constructNav(element, scope);

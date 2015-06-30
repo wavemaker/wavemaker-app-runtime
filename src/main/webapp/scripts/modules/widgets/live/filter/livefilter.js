@@ -145,7 +145,7 @@ WM.module('wm.widgets.live')
                         });
 
                         QueryBuilder.executeQuery({
-                            "databaseName": Variables.getVariableByName($scope.variableName).liveSource,
+                            "databaseName": Variables.getVariableByName($scope.variableName, $scope.filterElement.scope()).liveSource,
                             "query": query,
                             "page": 1,
                             "size": 500,
@@ -165,7 +165,7 @@ WM.module('wm.widgets.live')
                             * "currentPage" is set to "1" because each time the filter is applied, the dataNavigator should display results from the 1st page.*/
                             $scope.result.pagingOptions = {
                                 "dataSize": data.totalElements,
-                                "maxResults": Variables.getVariableByName($scope.variableName).maxResults || 20,
+                                "maxResults": Variables.getVariableByName($scope.variableName, $scope.filterElement.scope()).maxResults || 20,
                                 "currentPage": 1
                             };
                         });
@@ -302,7 +302,7 @@ WM.module('wm.widgets.live')
                                             filterField.displayfield = filterField.field;
                                         }
                                         QueryBuilder.executeQuery({
-                                            "databaseName": Variables.getVariableByName(scope.variableName).liveSource,
+                                            "databaseName": Variables.getVariableByName(scope.variableName, element.scope()).liveSource,
                                             "query": query,
                                             "page": 1,
                                             "size": 500,
@@ -360,7 +360,7 @@ WM.module('wm.widgets.live')
                                     /*If properties map is populated and if columns are presented for filter construction*/
                                     if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                         /*Check if propertiesMap in oldVal is defined, then it is not equal to newVal propertiesMap*/
-                                        if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns)) {
+                                        if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
                                             scope.variableName = scope.binddataset.match(variableRegex)[1];
                                             scope.result = newVal;
                                             /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/

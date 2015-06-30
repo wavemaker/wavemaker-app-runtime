@@ -195,21 +195,21 @@ WM.module('wm.utils', [])
             return label;
         }
         /*function to get variable name bound to an element*/
-        function getVariableName(scope) {
-            if (scope.binddataset) {
+        function getVariableName(iScope, scope) {
+            if (iScope.binddataset) {
                 var variableName,
                     widgetScope,
                     widgetName,
-                    isBoundToVariable = scope.binddataset.indexOf('bind:Variables.') !== -1,
-                    isBoundToWidget = scope.binddataset.indexOf('bind:Widgets.') !== -1;
+                    isBoundToVariable = iScope.binddataset.indexOf('bind:Variables.') !== -1,
+                    isBoundToWidget = iScope.binddataset.indexOf('bind:Widgets.') !== -1;
                 if (isBoundToVariable) {
-                    variableName = scope.binddataset.replace("bind:Variables.", "");
+                    variableName = iScope.binddataset.replace("bind:Variables.", "");
                     variableName = variableName.substr(0, variableName.indexOf("."));
                 } else if (isBoundToWidget) {
-                    if (WM.isString(scope.binddataset) && scope.binddataset !== '') {
-                        widgetName = scope.binddataset.split('.')[1];
-                        widgetScope = scope.Widgets[widgetName];
-                        if (scope.binddataset.indexOf('selecteditem.') === -1) {
+                    if (WM.isString(iScope.binddataset) && iScope.binddataset !== '') {
+                        if (iScope.binddataset.indexOf('selecteditem.') === -1) {
+                            widgetName = iScope.binddataset.split('.')[1];
+                            widgetScope = (scope || iScope).Widgets[widgetName];
                             variableName = getVariableName(widgetScope);
                         } else {
                             // Return null if widget is bound to selecteditem.something.
