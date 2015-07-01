@@ -140,7 +140,7 @@ WM.module('wm.widgets.live')
                             "filterFields": filterFields
                         });
 
-                        variable = Variables.getVariableByName($scope.variableName, $scope.filterElement.scope());
+                        variable = $scope.Variables[$scope.variableName];
                         QueryBuilder.executeQuery({
                             "databaseName": variable.liveSource,
                             "query": query,
@@ -163,7 +163,7 @@ WM.module('wm.widgets.live')
                             * "currentPage" is set to "1" because each time the filter is applied, the dataNavigator should display results from the 1st page.*/
                             $scope.result.pagingOptions = {
                                 "dataSize": data.totalElements,
-                                "maxResults": Variables.getVariableByName($scope.variableName, $scope.filterElement.scope()).maxResults || 20,
+                                "maxResults": $scope.Variables[$scope.variableName].maxResults || 20,
                                 "currentPage": 1
                             };
                         });
@@ -293,7 +293,7 @@ WM.module('wm.widgets.live')
                             };
 
                             function updateAllowedValues() {
-                                var variable = Variables.getVariableByName(scope.variableName, element.scope());
+                                var variable = scope.Variables[scope.variableName];
                                 WM.forEach(scope.filterFields, function (filterField) {
                                     var query, tableName, columns;
                                     if (filterField.widget === 'select' || filterField.widget === 'radioset' || filterField.widget === 'checkboxset') {
