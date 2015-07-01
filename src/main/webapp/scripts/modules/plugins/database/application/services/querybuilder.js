@@ -98,7 +98,8 @@ wm.plugins.database.services.QueryBuilder = [
                             "queryParams": options.queryParams || [],
                             "nativeSql": options.nativeSql
                         },
-                        "url": $rootScope.project.deployedUrl
+                        "service": options.prefabName ? "" : "services",
+                        "url": options.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + options.prefabName) : $rootScope.project.deployedUrl
                     }, function (response) {
                         Utils.triggerFn(success, response);
                     }, function (response) {

@@ -59,7 +59,8 @@ WM.module('wm.widgets.live')
                         var filterFields = [],
                             query,
                             booleanValue,
-                            colName = '';
+                            colName = '',
+                            variable;
                         WM.forEach($scope.filterFields, function (filterField) {
                             /* if field is part of a related entity, column name will be 'entity.fieldName' */
                             if (filterField.isRelated) {
@@ -139,12 +140,14 @@ WM.module('wm.widgets.live')
                             "filterFields": filterFields
                         });
 
+                        variable = Variables.getVariableByName($scope.variableName, $scope.filterElement.scope());
                         QueryBuilder.executeQuery({
-                            "databaseName": Variables.getVariableByName($scope.variableName, $scope.filterElement.scope()).liveSource,
+                            "databaseName": variable.liveSource,
                             "query": query,
                             "page": 1,
                             "size": 500,
-                            "nativeSql": false
+                            "nativeSql": false,
+                            "prefabName": variable.prefabName
                         }, function (data) {
                             var tempObj = {};
                             /*Set the response in "result" so that all widgets bound to "result" of the live-filter are updated.*/
@@ -290,6 +293,7 @@ WM.module('wm.widgets.live')
                             };
 
                             function updateAllowedValues() {
+                                var variable = Variables.getVariableByName(scope.variableName, element.scope());
                                 WM.forEach(scope.filterFields, function (filterField) {
                                     var query, tableName, columns;
                                     if (filterField.widget === 'select' || filterField.widget === 'radioset' || filterField.widget === 'checkboxset') {
@@ -311,11 +315,12 @@ WM.module('wm.widgets.live')
                                             filterField.displayfield = filterField.field;
                                         }
                                         QueryBuilder.executeQuery({
-                                            "databaseName": Variables.getVariableByName(scope.variableName, element.scope()).liveSource,
+                                            "databaseName": variable.liveSource,
                                             "query": query,
                                             "page": 1,
                                             "size": 500,
-                                            "nativeSql": false
+                                            "nativeSql": false,
+                                            "prefabName": variable.prefabName
                                         }, function (data) {
                                             filterField.dataset = data.content;
                                         });
