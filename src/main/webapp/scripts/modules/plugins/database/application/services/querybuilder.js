@@ -47,6 +47,7 @@ wm.plugins.database.services.QueryBuilder = [
                         if (field.clause) {
                             whereClause += field.clause + " AND ";
                         } else {
+                            /*If value is an array, loop through the array and build the query with OR clause*/
                             if (WM.isArray(field.value)) {
                                 whereClause += "(" + field.column + "='";
                                 field.value.forEach(function (element, index) {
@@ -58,7 +59,13 @@ wm.plugins.database.services.QueryBuilder = [
                                 });
                                 whereClause += "') AND ";
                             } else {
-                                whereClause += field.column + "='" + field.value + "' AND ";
+                                /*If the field is a boolean value, quotes should not be added to the values*/
+                                if (field.isBoolean) {
+                                    whereClause += field.column + "=" + field.value + " AND ";
+                                } else {
+                                    whereClause += field.column + "='" + field.value + "' AND ";
+                                }
+
                             }
                         }
                     });

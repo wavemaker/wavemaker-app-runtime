@@ -44,12 +44,8 @@ WM.module('wm.widgets.live')
                                 filterField.minValue = '';
                                 filterField.maxValue = '';
                             } else {
-                                if (filterField.selected) {
-                                    filterField.selected = '';
-                                }
-                                if (filterField.value) {
-                                    filterField.value = '';
-                                }
+                                filterField.selected = '';
+                                filterField.value = '';
                             }
                         });
                         /*Setting result to the default data*/
@@ -58,13 +54,14 @@ WM.module('wm.widgets.live')
                     $scope.filter = function () {
                         var filterFields = [],
                             query,
-                            booleanValue,
                             colName = '',
                             variable;
                         WM.forEach($scope.filterFields, function (filterField) {
+                            var fieldValue,
+                                isBoolean = false;
                             /* if field is part of a related entity, column name will be 'entity.fieldName' */
                             if (filterField.isRelated) {
-                                colName = filterField.field + '.' + filterField.lookupField
+                                colName = filterField.field + '.' + filterField.lookupField;
                             } else {
                                 colName = filterField.field;
                             }
@@ -91,46 +88,41 @@ WM.module('wm.widgets.live')
                                 switch (filterField.widget) {
                                 case 'select':
                                 case 'radioset':
-                                    if (filterField.selected) {
-                                        filterFields.push({
-                                            column: colName,
-                                            value: filterField.selected
-                                        });
+                                    if (filterField.type === "boolean") {
+                                        if (WM.isDefined(filterField.selected) && !WM.isString(filterField.selected)) {
+                                            fieldValue = filterField.selected;
+                                        }
+                                        isBoolean = true;
+                                    } else {
+                                        fieldValue = filterField.selected;
                                     }
                                     break;
                                 case 'checkboxset':
                                     if (filterField.selected && filterField.selected.length) {
-                                        filterFields.push({
-                                            column: colName,
-                                            value: filterField.selected
-                                        });
+                                        fieldValue = filterField.selected;
                                     }
                                     break;
                                 case 'date':
                                     if (filterField.value) {
-                                        filterFields.push({
-                                            column: colName,
-                                            value: $filter('date')(filterField.value, 'yyyy-MM-dd')
-                                        });
+                                        fieldValue = $filter('date')(filterField.value, 'yyyy-MM-dd');
                                     }
                                     break;
                                 case 'checkbox':
                                     if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
-                                        booleanValue = filterField.value ? 1 : 0;
-                                        filterFields.push({
-                                            column: colName,
-                                            value: booleanValue
-                                        });
+                                        fieldValue = filterField.value;
                                     }
+                                    isBoolean = true;
                                     break;
                                 default:
-                                    if (filterField.value) {
-                                        filterFields.push({
-                                            column: colName,
-                                            value: filterField.value
-                                        });
-                                    }
+                                    fieldValue = filterField.value;
                                     break;
+                                }
+                                if (WM.isDefined(fieldValue) && fieldValue !== '') {
+                                    filterFields.push({
+                                        column: colName,
+                                        value: fieldValue,
+                                        isBoolean: isBoolean
+                                    });
                                 }
                             }
                         });
@@ -251,10 +243,11 @@ WM.module('wm.widgets.live')
 
                     return {
                         pre: function (scope, element) {
+                            var elScope = element.scope();
                             scope.widgetProps = WM.copy(widgetProps);
                             scope.filterElement = element;
-                            scope.Variables = element.scope().Variables;
-                            scope.Widgets = element.scope().Widgets;
+                            scope.Variables = elScope.Variables;
+                            scope.Widgets = elScope.Widgets;
                         },
                         post: function (scope, element, attrs) {
                             var variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
