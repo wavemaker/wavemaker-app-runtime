@@ -50,7 +50,8 @@ var Application = WM.module('Application',
                 loadedPages = {},
             /*variable to hold to track the previous route path*/
                 prevRoute,
-                invokeService,
+                invokeServiceEvent,
+                updateLoggedInUserEvent,
                 NG_LOCALE_PATH = "resources/ngLocale/",
                 APP_LOCALE_PATH = "resources/i18n/",
                 appProperties = WM.copy(_WM_APP_PROPERTIES),
@@ -93,6 +94,35 @@ var Application = WM.module('Application',
             $rootScope.changeLocale = function ($isolateScope) {
                 i18nService.setSelectedLocale($isolateScope.datavalue);
             };
+
+            function updateLoggedInUser(checkVariable) {
+                var loggedInUser = $rootScope.Variables && $rootScope.Variables.loggedInUser;
+
+                if (checkVariable && !loggedInUser) {
+                    return;
+                }
+
+                /* get the userAuthenticated status */
+                SecurityService.isAuthenticated(function (isAuthenticated) {
+                    /* set this flag to be used by the logout variable service */
+                    $rootScope.isUserAuthenticated = typeof isAuthenticated === 'boolean' ? isAuthenticated : false;
+                    /* if logged-in user variable present, get user info and persist */
+                    if ($rootScope.isUserAuthenticated && loggedInUser) {
+                        /* TODO: merge the userInfo service calls into a single call */
+                        loggedInUser.dataSet.isAuthenticated = $rootScope.isUserAuthenticated;
+                        loggedInUser.dataSet.roles = $rootScope.userRoles;
+                        SecurityService.getUserName(function (name) {
+                            loggedInUser.dataSet.name = name;
+                        });
+                        SecurityService.getUserId(function (id) {
+                            loggedInUser.dataSet.id = id;
+                        });
+                        SecurityService.getTenantId(function (tenantId) {
+                            loggedInUser.dataSet.tenantId = tenantId;
+                        });
+                    }
+                });
+            }
 
             /* initialize the i18nService */
             function initI18nService(localeVariable) {
@@ -212,7 +242,7 @@ var Application = WM.module('Application',
                         Utils.triggerFn(onLoadCallback);
                         prevRoute = $location.path();
                     }, function (jqxhr) {
-                        /*incase of 401 Unauthorized Error */
+                        /*in case of 401 Unauthorized Error */
                         if (jqxhr.status === 401 && !jqxhr.headers('X-WM-Login-ErrorMessage')) {
                             BaseService.pushToErrorCallStack(null, function () {
                                 Application.loadResources(pageName, onLoadCallback);
@@ -247,35 +277,13 @@ var Application = WM.module('Application',
                     /* initialize the app variables */
                     Variables.initAppVariables($scope, function (appVariables) {
                         initI18nService(appVariables.supportedLocale);
-
-                        var loggedInUser = $rootScope.Variables && $rootScope.Variables.loggedInUser;
-
-                        /* get the userAuthenticated status */
-                        SecurityService.isAuthenticated(function (isAuthenticated) {
-                            /* set this flag to be used by the logout variable service */
-                            $rootScope.isUserAuthenticated = typeof isAuthenticated === 'boolean' ? isAuthenticated : false;
-                            /* if logged-in user variable present, get user info and persist */
-                            if ($rootScope.isUserAuthenticated && loggedInUser) {
-                                /* TODO: merge the userInfo service calls into a single call */
-                                loggedInUser.dataSet.isAuthenticated = $rootScope.isUserAuthenticated;
-                                loggedInUser.dataSet.roles = $rootScope.userRoles;
-                                SecurityService.getUserName(function (name) {
-                                    loggedInUser.dataSet.name = name;
-                                });
-                                SecurityService.getUserId(function (id) {
-                                    loggedInUser.dataSet.id = id;
-                                });
-                                SecurityService.getTenantId(function (tenantId) {
-                                    loggedInUser.dataSet.tenantId = tenantId;
-                                });
-                            }
-                        });
+                        updateLoggedInUser();
                     });
                 });
             }
 
             /*function to invoke a service during run time*/
-            invokeService = $rootScope.$on('invoke-service', function (event, name, options, onSuccess, onError) {
+            invokeServiceEvent = $rootScope.$on('invoke-service', function (event, name, options, onSuccess, onError) {
                 /*if function call is bound with the button, return*/
                 if (name.indexOf('(') !== -1) {
                     return;
@@ -325,7 +333,15 @@ var Application = WM.module('Application',
                 }
             });
 
-            $scope.$on('$destroy', invokeService);
+            updateLoggedInUserEvent = $rootScope.$on("update-loggedin-user", function () {
+                SecurityService.setLoggedInUser(null);
+                updateLoggedInUser(true);
+            });
+
+            $scope.$on('$destroy', function () {
+                invokeServiceEvent();
+                updateLoggedInUserEvent();
+            });
         }]);
 Application.config(['$routeProvider', '$controllerProvider', '$filterProvider', '$compileProvider',
     function ($routeProvider, $controllerProvider, $filterProvider, $compileProvider) {

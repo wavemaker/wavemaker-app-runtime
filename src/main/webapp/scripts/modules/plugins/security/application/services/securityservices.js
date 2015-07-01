@@ -918,5 +918,20 @@ wm.plugins.security.services.SecurityService = [
                     data: params.config
                 }, successCallback, failureCallback);
             },
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#setLoggedInUser
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * to cache the logged in user object
+             *
+             * @param {object} user user object
+             */
+
+            setLoggedInUser: function (user) {
+                loggedInUser = user;
+            }
         };
     }];

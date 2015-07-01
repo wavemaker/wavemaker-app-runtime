@@ -79,6 +79,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                     if (CONSTANTS.isRunMode) {
                         $rootScope.isUserAuthenticated = true;
                         Utils.triggerFn(success);
+                        $rootScope.$emit("update-loggedin-user");
                         WM.forEach(variableEvents, function (event) {
                             if (event !== "onError") {
                                 initiateCallback(event, variable, callBackScope);

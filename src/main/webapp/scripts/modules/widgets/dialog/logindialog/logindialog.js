@@ -115,6 +115,7 @@ WM.module('wm.widgets.dialog')
                                     scope.$root.isUserAuthenticated = true;
                                     element.trigger("success");
                                     scope.onSuccess({$event: event, $scope: scope});
+                                    scope.$root.$emit("update-loggedin-user");
                                     BaseService.executeErrorCallStack();
                                 }, function (error) {
                                     scope.loginMessage = scope.$parent.loginMessage = {
