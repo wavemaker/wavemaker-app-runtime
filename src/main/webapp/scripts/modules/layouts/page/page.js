@@ -49,6 +49,14 @@ WM.module('wm.layouts.page')
                             }
                         }
 
+                        if (CONSTANTS.isStudioMode) {
+                            containerScope = scope.$parent.Widgets && scope.$parent.Widgets[scope.$parent.partialcontainername];
+                            if (containerScope && WM.isDefined(containerScope.Widgets)) {
+                                scope.Widgets = {};
+                                containerScope.Widgets = scope.Widgets;
+                            }
+                        }
+
                         // define registerPageContainer and onPageContainerLoad methods in Run Mode.
                         if (!scope.registerPageContainer && CONSTANTS.isRunMode) {
                             count = 0;
