@@ -1884,10 +1884,12 @@ base.directives.pageContainer = [
     }
 ];
 
-base.directives.ngController = function ($rootScope) {
+base.directives.ngController = function ($rootScope, CONSTANTS) {
     'use strict';
 
-    $rootScope.Widgets = {};
+    if (CONSTANTS.isRunMode) {
+        $rootScope.Widgets = {};
+    }
 
     return {
         'restrict': 'A',
@@ -2382,9 +2384,9 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
 
             /* if the name is changed, update the tree and registry of the Widgets service */
             if (key === 'name') {
-                if (attrs.widgetid) {
+                if (attrs.widgetid) { // widget is insde the canvas
                     $rootScope.$emit('name-change', attrs.widgetid, newVal, oldVal, iScope);
-                } else if (scope.Widgets) {
+                } else if (scope.Widgets) { // widget may be inside canvas inside a page container or in run mode.
                     scope.Widgets[attrs.name] = iScope;
                 }
             }
