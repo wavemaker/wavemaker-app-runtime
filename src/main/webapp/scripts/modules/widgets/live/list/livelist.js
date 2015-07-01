@@ -126,7 +126,7 @@ WM.module('wm.widgets.live')
          * event to update the markup*/
         $scope.watchVariableDataSet = function (newVal, oldVal, element) {
 
-            if (newVal && newVal !== oldVal) {
+            if (newVal) {
                 $scope.noDataFound = false;
                 var variableObj = element.scope() && element.scope().Variables && element.scope().Variables[$scope.boundVariableName];
 
