@@ -1139,7 +1139,7 @@ WM.module('wm.widgets.live')
                             'required': attrs.required === "true" || attrs.required === true,
                             'maxvalue': attrs.maxvalue,
                             'datepattern': attrs.datepattern,
-                            'outputformat': attrs.outputformat,
+                            'outputformat': attrs.type === 'date' ? 'yyyy-MM-dd' : attrs.outputformat,
                             'minvalue': attrs.minvalue,
                             'displayvalue': attrs.displayvalue,
                             'placeholder': attrs.placeholder,
