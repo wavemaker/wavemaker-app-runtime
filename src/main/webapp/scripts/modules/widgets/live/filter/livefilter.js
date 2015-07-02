@@ -654,8 +654,13 @@ WM.module('wm.widgets.live')
                                     });
                                 }
                             } else {
-                                fieldObject.value = attrs.value;
-                                fieldObject.selected = attrs.value;
+                                if (fieldObject.type === 'integer') {
+                                    fieldObject.value = isNaN(Number(attrs.value)) ? '' : Number(attrs.value);
+                                    fieldObject.selected = fieldObject.value;
+                                } else {
+                                    fieldObject.value = attrs.value;
+                                    fieldObject.selected = attrs.value;
+                                }
                             }
                         }
                         scope.parentIsolateScope.filterFields = scope.parentIsolateScope.filterFields || [];
