@@ -19,6 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
+import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
 import com.wavemaker.runtime.rest.model.RestResponse;
 import com.wavemaker.studio.common.util.SSLUtils;
@@ -64,11 +65,11 @@ public class RestConnector {
 
         String contentType = restRequestInfo.getContentType();
         if (!StringUtils.isBlank(contentType)) {
-            headersMap.add("Content-Type", contentType);
+            headersMap.add(RestConstants.CONTENT_TYPE, contentType);
         }
 
-        if (restRequestInfo.doesHaveAuthorization()) {
-            headersMap.add("Authorization", restRequestInfo.getAuthorization());
+        if (RestRequestInfo.AuthType.BASIC.equals(restRequestInfo.getAuthType())) {
+            headersMap.add(RestConstants.AUTHORIZATION, restRequestInfo.getBasicAuthorization());
         }
 
         wmRestTemplate.setRequestFactory(commonsClientHttpRequestFactory);

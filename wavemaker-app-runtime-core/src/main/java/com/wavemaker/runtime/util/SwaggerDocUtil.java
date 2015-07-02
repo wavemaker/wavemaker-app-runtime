@@ -2,7 +2,7 @@ package com.wavemaker.runtime.util;
 
 import java.util.*;
 
-import com.wavemaker.studio.common.SwaggerException;
+import com.wavemaker.runtime.exception.swagger.SwaggerException;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;

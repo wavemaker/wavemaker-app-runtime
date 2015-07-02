@@ -18,6 +18,7 @@ import com.wavemaker.runtime.rest.model.RestResponse;
 import com.wavemaker.runtime.util.SwaggerDocUtil;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.json.JSONUtils;
+import com.wavemaker.studio.common.util.IOUtils;
 import com.wavemaker.studio.common.util.WMUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
@@ -71,6 +72,7 @@ public class RestRuntimeService {
         for (Operation eachOperation : path.getOperations()) {
             if (eachOperation.getOperationId().equals(operationId)) {
                 operation = eachOperation;
+                break;
             }
         }
         if (operation == null) {
@@ -94,14 +96,14 @@ public class RestRuntimeService {
                         if (params.get(AUTHORIZATION) == null) {
                             throw new WMRuntimeException("Authorization details are not specified in the request headers");
                         }
-                        restRequestInfo.setAuthorization(params.get(AUTHORIZATION).toString());
+                        restRequestInfo.setBasicAuthorization(params.get(AUTHORIZATION).toString());
                     }
                 }
             }
         }
 
         List<Parameter> parameters = operation.getParameters();
-        Map<String, Object> headers = (restRequestInfo.getHeaders() == null) ? new HashMap<String,Object>() : restRequestInfo.getHeaders();
+        Map<String, Object> headers = (restRequestInfo.getHeaders() == null) ? new HashMap<String, Object>() : restRequestInfo.getHeaders();
         Map<String, Object> queryParams = new HashMap<>();
         Map<String, String> pathParams = new HashMap<>();
         String requestBody = null;
@@ -154,9 +156,14 @@ public class RestRuntimeService {
 
     private Swagger getSwaggerDoc(String serviceId) throws IOException {
         if (!swaggerDocumentCache.containsKey(serviceId)) {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
-            Swagger swaggerDoc = JSONUtils.toObject(stream, Swagger.class);
-            swaggerDocumentCache.put(serviceId, swaggerDoc);
+            InputStream stream = null;
+            try {
+                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
+                Swagger swaggerDoc = JSONUtils.toObject(stream, Swagger.class);
+                swaggerDocumentCache.put(serviceId, swaggerDoc);
+            } finally {
+                IOUtils.closeSilently(stream);
+            }
         }
         return swaggerDocumentCache.get(serviceId);
     }

@@ -29,11 +29,17 @@ import com.wavemaker.studio.common.WMRuntimeException;
  */
 public class RestRequestInfo {
 
+    public enum AuthType {
+        NONE, BASIC, OAUTH;
+
+    }
+
     @NotNull
     private String endpointAddress;
     private String method;
     private String contentType;
     private String requestBody;
+    private AuthType authType;
     private Map<String, Object> headers;
     private RestResponse sampleRestResponse;
 
@@ -85,19 +91,19 @@ public class RestRequestInfo {
         this.sampleRestResponse = sampleRestResponse;
     }
 
-    public boolean doesHaveAuthorization() {
-        if (headers != null) {
-            for (String key : headers.keySet()) {
-                if (RestConstants.AUTHORIZATION.equals(key)) {
-                    return true;
-                }
-            }
+    public AuthType getAuthType() {
+        if (authType == null) {
+            authType = AuthType.NONE;
         }
-        return false;
+        return authType;
+    }
+
+    public void setAuthType(AuthType authType) {
+        this.authType = authType;
     }
 
     @JsonIgnore
-    public String getAuthorization() {
+    public String getBasicAuthorization() {
         headers = (headers == null) ? new HashMap<String, Object>() : headers;
         for (String key : headers.keySet()) {
             if (RestConstants.AUTHORIZATION.equals(key)) {
@@ -110,8 +116,9 @@ public class RestRequestInfo {
     }
 
     @JsonIgnore
-    public void setAuthorization(String authorization) {
+    public void setBasicAuthorization(String authorization) {
         headers = (headers == null) ? new HashMap<String, Object>() : headers;
+        this.setAuthType(AuthType.BASIC);
         headers.put(RestConstants.AUTHORIZATION, authorization);
     }
 
