@@ -135,7 +135,7 @@ WM.module('wm.widgets.live')
                         elScope = $scope.element.scope(),
                         variable = elScope.Variables[$scope.variableName],
                         isValid;
-                    if ($scope.propertiesMap.tableType === "VIEW") {
+                    if ($scope.propertiesMap && $scope.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                         return;
                     }

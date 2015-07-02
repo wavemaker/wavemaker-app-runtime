@@ -361,12 +361,22 @@ $.widget('wm.datagrid', {
             template,
             isCellCompiled = false,
             columnValue;
+        if (colDef.field && !(colDef.field in row) && colDef.field.split('.').length > 1) {
+            var f = colDef.field.split('.');
+            columnValue = row[f[0]];
+            for (var k = 1; k < f.length; k++) {
+                if (this.Utils.isDefined(columnValue) && f[k] in columnValue) {
+                    columnValue = columnValue[f[k]];
+                }
+
+            }
+        }
         if (ngClass) {
             htm += 'data-ng-class="' + ngClass + '" data-compiled-template="' + ctId + '" ';
             isCellCompiled = true;
         }
         if (colDef.datepattern && !colExpression) {
-            colExpression = "{{'" + row[colDef.field] + "' | date:'" + colDef.datepattern + "'}}";
+            colExpression = "{{'" + columnValue + "' | date:'" + colDef.datepattern + "'}}";
         }
         if (colExpression) {
             if (isCellCompiled) {
@@ -381,7 +391,7 @@ $.widget('wm.datagrid', {
             if (colDef.type !== 'custom') {
                 switch (colDef.type) {
                 case 'timestamp':
-                    htm += this._getTimestampTemplate(row[colDef.field]);
+                    htm += this._getTimestampTemplate(columnValue);
                     break;
                 default:
                     columnValue = row[colDef.field];
@@ -412,7 +422,6 @@ $.widget('wm.datagrid', {
                     htm += '';
                     break;
                 default:
-                    columnValue = row[colDef.field];
                     htm += ((this.Utils.isUndefined(columnValue) || columnValue === null)) ? '' : columnValue;
                     break;
                 }
@@ -525,10 +534,11 @@ $.widget('wm.datagrid', {
                         break;
                     }
                 }
-
-                if (isDefined(text)) {
+                if (isDefined(text) && colDef.field in item) {
                     rowData[colDef.field] = text;
-                } else {
+                } else if (!(colDef.field in item)) {
+                    rowData[colDef.field] = text;
+                } else if (fields.length > 1 && colDef.field in item) {
                     /* For case when coldef field name has ".", but data is in
                      * format [{'foo.bar': 'test'}], i.e. when the key value is
                      * not a nested object but a primitive value.
@@ -951,7 +961,7 @@ $.widget('wm.datagrid', {
                     id = $el.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id],
                     editableTemplate;
-                if (!(colDef.readonly || colDef.customExpression)) {
+                if (!(colDef.readonly || colDef.customExpression || colDef.disableInlineEditing)) {
                     editableTemplate = self._getEditableTemplate(colDef.field);
                     $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
                     // TODO: Use some other selector. Input will fail for other types.
@@ -979,9 +989,33 @@ $.widget('wm.datagrid', {
                     var $el = $(this),
                         colId = $el.attr('data-col-id'),
                         colDef = self.preparedHeaderData[colId],
+                        fields = colDef.field.split('.'),
                         text = $el.find('input').val();
                     $el.text(text);
-                    rowData[colDef.field] = text;
+                    if (fields.length === 1) {
+                        rowData[colDef.field] = text;
+                    } else if (!isNewRow && fields[0] in rowData) {
+                        var d = rowData[fields[0]];
+                        for (var k = 1; k < fields.length - 1; k++) {
+                            if (this.Utils.isDefined(d) && fields[k] in d) {
+                                d = d[fields[k]];
+                            }
+
+                        }
+                        d[fields[k]] = text;
+                    } else if (isNewRow && fields.length > 1) {
+                        if (!(fields[0] in rowData)) {
+                            rowData[fields[0]] = {};
+                        }
+                        var x = rowData[fields[0]];
+                        for (var k = 1; k < fields.length - 1; k++) {
+                            if (this.Utils.isDefined(x) && !(fields[k] in x)) {
+                                x[fields[k]] = {};
+                            }
+
+                        }
+                        x[fields[k]] = text;
+                    }
                 });
                 if (isNewRow) {
                     this.options.onRowInsert(rowData, e);

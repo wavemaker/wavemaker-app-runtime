@@ -689,6 +689,9 @@ WM.module('wm.utils', [])
             WM.forEach(propertiesMap.columns, function (val) {
                 /* if the object is nested type repeat the above process for that nested object through recursively */
                 if (val.isRelated) {
+                    if (!val.isPrimaryKey) {
+                        val.disableInlineEditing = 'true';
+                    }
                     if (val.isList) {
                         return;
                     }
@@ -700,9 +703,21 @@ WM.module('wm.utils', [])
                     columns[columnName].type = val.type;
                     columns[columnName].isPrimaryKey = val.isPrimaryKey;
                     columns[columnName].generator = val.generator;
+                    columns[columnName].disableInlineEditing = val.disableInlineEditing;
+                    columns[columnName].isRelatedPk = val.isRelatedPk;
+
                 }
             });
             WM.forEach(relatedColumnsArr, function (val) {
+                WM.forEach(val.columns, function (col) {
+                    if (!col.isPrimaryKey) {
+                        col.disableInlineEditing = 'true';
+                    } else {
+                        if (val.isRelated && col.isPrimaryKey) {
+                            col.isRelatedPk = 'true';
+                        }
+                    }
+                });
                 WM.extend(columns, fetchPropertiesMapColumns(val, val.fieldName));
             });
 

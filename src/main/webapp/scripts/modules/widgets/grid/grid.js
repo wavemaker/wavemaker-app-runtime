@@ -1549,9 +1549,9 @@ WM.module('wm.widgets.grid')
                     if (propertiesMap) {
                         columnDef.type = columns[columnDef.field].type;
                         columnDef.primaryKey = columns[columnDef.field].isPrimaryKey;
-                        columnDef.generator = columns[columnDef.field].generator;
+                        columnDef.generator = columns[columnDef.field].generator
                         columnDef.readonly = WM.isDefined(columns[columnDef.field].readonly) ?
-                            columns[columnDef.field].readonly === "true" : columnDef.generator === 'identity';
+                            columns[columnDef.field].readonly === "true" : (columnDef.generator === 'identity' && columns[columnDef.field].isRelatedPk !== 'true');
 
                         /*Prevent searching and sorting on non-primary key columns in related tables.*/
                         columnDef.searchable = columnDef.sortable = !(columnDef.field && columnDef.field.indexOf('.') !== -1 && !columnDef.primaryKey);
@@ -1563,6 +1563,7 @@ WM.module('wm.widgets.grid')
                                 columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 glyphicon glyphicon-file"></i></a>';
                             }
                         }
+                        columnDef.disableInlineEditing = columns[columnDef.field].disableInlineEditing;
                     }
                 });
 
@@ -1737,6 +1738,7 @@ WM.module('wm.widgets.grid')
                                 'type': attrs.type || 'string',
                                 'primaryKey': attrs.primaryKey ? $parse(attrs.primaryKey)() : '',
                                 'generator': attrs.generator,
+                                'isRelated': attrs.isRelatedPk === 'true',
                                 'widgetType': attrs.widgetType,
                                 'style': styleDef,
                                 'class': attrs.colClass || '',
@@ -1770,13 +1772,14 @@ WM.module('wm.widgets.grid')
                         }
                         /*Prevent searching and sorting on non-primary key columns in related tables.*/
                         columnDef.searchable = columnDef.sortable = !(columnDef.field && columnDef.field.indexOf('.') !== -1 && !columnDef.primaryKey);
-                        columnDef.readonly = WM.isDefined(attrs.readonly) ? attrs.readonly === "true" : columnDef.generator === 'identity';
+                        columnDef.readonly = WM.isDefined(attrs.readonly) ? attrs.readonly === "true" : (columnDef.generator === 'identity' && !columnDef.isRelatedPk);
 
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType !== 'image') {
                                 columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 glyphicon glyphicon-file"></i></a>';
                             }
                         }
+                        columnDef.disableInlineEditing = attrs.disableInlineEditing === 'true';
                         /* push the fieldDef in the object meant to have all fields */
                         scope.$parent.fullFieldDefs.push(columnDef);
                         /* Backward compatibility for widgetType */
