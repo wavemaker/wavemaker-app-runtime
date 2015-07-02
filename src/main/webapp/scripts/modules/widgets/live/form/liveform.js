@@ -426,9 +426,7 @@ WM.module('wm.widgets.live')
                                  * 2. Append the connection properties.*/
                                 formData.append(field.key, document.forms[formName][field.key].files[0]);
                             }
-                        } else if (field.type !== "list") {
-                            dataObject[field.key] = field.value;
-                        } else {
+                        } else if (field.type === "list") {
                             if (field.widgetType === 'Datalist') {
                                 WM.forEach(field.value, function (value, key) {
                                     if (value === field.selected) {
@@ -436,6 +434,10 @@ WM.module('wm.widgets.live')
                                     }
                                 });
                             }
+                            if (field.value) {
+                                dataObject[field.key] = field.value;
+                            }
+                        } else {
                             dataObject[field.key] = field.value;
                         }
                     });
@@ -505,7 +507,8 @@ WM.module('wm.widgets.live')
                             "maxvalue": '',
                             "isRelated": fieldObj.isRelated,
                             "readonly": fieldObj.isPrimaryKey,
-                            "required": fieldObj.notNull === "true" || fieldObj.notNull === true
+                            "required": fieldObj.notNull === "true" || fieldObj.notNull === true,
+                            "relatedFieldName": fieldObj.columns && fieldObj.columns[index] && fieldObj.columns[index].fieldName
                         };
                         if (fieldObj.defaultValue) {
                             if (fieldObj.type === 'integer') {
@@ -1214,14 +1217,20 @@ WM.module('wm.widgets.live')
                             expr = parentIsolateScope.binddataset.replace('bind:', ''); /*live form bound variable*/
                             /*Watch on the bound variable. dataset will be set after variable is populated.*/
                             dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
-                                parentIsolateScope.dataArray[index].dataset = newVal.relatedData && newVal.relatedData[columnDef.key];
-                                variableObj.type = columnDef.displayName;
-                                variableObj.isDefault = true;
-                                variableObj.category = 'wm.LiveVariable';
-                                variableData = Variables.filterByVariableKeys(variableObj, true); /*Search for the live variable with the table name*/
-                                if (variableData.length) {
-                                    parentIsolateScope.dataArray[index].displayfield = parentIsolateScope.getPrimaryKey(variableData[0].propertiesMap.columns);
-                                    parentIsolateScope.dataArray[index].datafield = "All Fields";
+                                if (newVal) {
+                                    parentIsolateScope.dataArray[index].dataset = newVal.relatedData && newVal.relatedData[columnDef.key];
+                                    variableObj.type = columnDef.displayName;
+                                    variableObj.isDefault = true;
+                                    variableObj.category = 'wm.LiveVariable';
+                                    variableData = Variables.filterByVariableKeys(variableObj, true);
+                                    /*Search for the live variable with the table name*/
+                                    if (variableData.length) {
+                                        parentIsolateScope.dataArray[index].displayfield = parentIsolateScope.getPrimaryKey(variableData[0].propertiesMap.columns);
+                                        parentIsolateScope.dataArray[index].datafield = "All Fields";
+                                    } else if (newVal.propertiesMap) {
+                                        parentIsolateScope.dataArray[index].displayfield = columnDef.relatedFieldName;
+                                        parentIsolateScope.dataArray[index].datafield = "All Fields";
+                                    }
                                 }
                             });
                         }
