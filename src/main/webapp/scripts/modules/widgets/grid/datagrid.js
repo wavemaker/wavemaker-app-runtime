@@ -361,6 +361,10 @@ $.widget('wm.datagrid', {
             template,
             isCellCompiled = false,
             columnValue;
+        if (colDef.field){
+            //setting the default value
+            columnValue = row[colDef.field];
+        }
         if (colDef.field && !(colDef.field in row) && colDef.field.split('.').length > 1) {
             var f = colDef.field.split('.');
             columnValue = row[f[0]];
