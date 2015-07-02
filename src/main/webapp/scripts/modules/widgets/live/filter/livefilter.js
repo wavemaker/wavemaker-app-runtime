@@ -279,7 +279,6 @@ WM.module('wm.widgets.live')
                                     }];
                             scope.filterContainer = element;
                             scope.primaryKey = null;
-                            scope.buttonArray = scope.buttonArray || defaultButtonsArray;
 
                             scope.getActiveLayout = function () {
                                 return layoutObj[scope.layout] || 1;
