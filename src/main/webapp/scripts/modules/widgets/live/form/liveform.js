@@ -349,6 +349,8 @@ WM.module('wm.widgets.live')
                             fieldObj.value = isNaN(Number(fieldObj.defaultValue)) ? '' : Number(fieldObj.defaultValue);
                         } else if (fieldObj.type === 'timestamp') {
                             fieldObj.timevalue = fieldObj.datevalue = new Date(Number(fieldObj.defaultValue) || fieldObj.defaultValue);
+                        } else if (fieldObj.type === 'time') {
+                            fieldObj.timevalue = fieldObj.defaultValue;
                         } else {
                             fieldObj.value = fieldObj.defaultValue;
                         }
