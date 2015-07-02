@@ -128,10 +128,11 @@ WM.module('wm.widgets.form')
         function assignModelValue(scope, dataSet, radioValue) {
             var selectedValue;
             /*if radioValue is provided use that to assign model value else use the selectedvalue property if provided*/
-            if (radioValue) {
+            /*Handling the case where the selected value itself is false*/
+            if (radioValue || radioValue === false) {
                 selectedValue = radioValue;
             } else {
-                selectedValue = scope.selectedvalue || scope._model_ || '';
+                selectedValue = scope.selectedvalue === false ? false : scope._model_ || '';
             }
 
             if (WM.isString(dataSet)) {
