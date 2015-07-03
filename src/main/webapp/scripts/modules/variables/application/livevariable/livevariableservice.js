@@ -326,7 +326,11 @@ wm.variables.services.$liveVariable = [
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "string":
-                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["anywhere"];
+                                if (WM.isArray(fieldValue)) {
+                                    filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                } else {
+                                    filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["anywhere"];
+                                }
                                 break;
                             default:
                                 break;
