@@ -138,10 +138,13 @@ WM.module('wm.widgets.form')
                          *  */
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
-                                if (this.outputformat && this.outputformat !== "timestamp") {
-                                    return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
+                                if (this.outputformat === "timestamp") {
+                                    return this._proxyModel ?  this._proxyModel.valueOf() : undefined;
                                 }
-                                return this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                                if (!this.outputformat) {
+                                    this.outputformat = 'yyyy-MM-dd';
+                                }
+                                return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
                             },
                             set: function (val) {
                                 this._proxyModel = getTimeStamp(val);

@@ -475,11 +475,11 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "autofocus": {"type": "boolean"},
                     "readonly": {"type": "boolean"},
                     "disabled": {"type": "boolean"},
-                    "mindate": {"type": "date"},
-                    "maxdate": {"type": "date"},
-                    "datepattern": {"value": "dd-MM-yyyy", "type": "list", "options": [], "widget": "datetimepatterns"},
-                    "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
-                    "datavalue": {"type": "date, string, number", "widget": "date", "bindable": "in-out-bound"}
+                    "mindate": {"type": "string", "hint": "yyyy-MM-dd"},
+                    "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
+                    "datepattern": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
+                    "outputformat": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
+                    "datavalue": {"type": "date, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd"}
                 },
                 "wm.calendar": {
                     "placeholder": {"type": "string", "value": "Select date"},
