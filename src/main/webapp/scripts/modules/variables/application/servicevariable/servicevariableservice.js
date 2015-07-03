@@ -37,6 +37,9 @@ wm.variables.services.$servicevariable = ['Variables',
             SERVICE_TYPE_SOAP = VARIABLE_CONSTANTS.SERVICE_TYPE_SOAP,
             SERVICE_TYPE_DATA = VARIABLE_CONSTANTS.SERVICE_TYPE_DATA,
             SERVICE_TYPE_JAVA = VARIABLE_CONSTANTS.SERVICE_TYPE_JAVA,
+            AUTH_TYPE_BASIC = "BASIC",
+            AUTH_TYPE_NONE = "NONE",
+            AUTH_TYPE_OAUTH = "OAUTH",
             supportedOperations = ['get','put','post','delete'],
             BASE_PATH_KEY = 'x-WM-BASE_PATH',
             RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
@@ -181,6 +184,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     target,
                     pathParamRex,
                     invokeParams,
+                    authType = AUTH_TYPE_NONE,
                     uname,
                     pswd;
 
@@ -207,6 +211,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         }
                         if(uname && pswd) {
                             headers[AUTH_HDR_KEY] = "Basic " + btoa(uname + ':' + pswd);
+                            authType = AUTH_TYPE_BASIC;
                         }
                         break;
                     case 'PATH':
@@ -244,7 +249,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     "target": target,
                     "method": operationInfo.httpMethod || operationInfo.methodType,
                     "headers": headers,
-                    "dataParams": requestBody
+                    "dataParams": requestBody,
+                    "authType": authType
                 };
 
                 return invokeParams;
