@@ -637,6 +637,9 @@ $.widget('wm.datagrid', {
         rowData.pk = rowId;
         if (this.options.allowAddNewRow) {
             $row = $(this._getRowTemplate(rowData));
+            if (!this.preparedData.length) {
+                this.setStatus('ready', this.dataStatus['ready']);
+            }
             this.gridElement.find('tbody').append($row);
             this.attachEventHandlers($row);
             $row.find('.edit-row-button').trigger('click', {action: 'edit'});
@@ -891,6 +894,9 @@ $.widget('wm.datagrid', {
         $row = $row || $(e.target).closest('tr');
         rowId = $row.attr('data-row-id');
         rowData = this.preparedData[rowId];
+        if (!rowData) {
+            return;
+        }
         selected = rowData.selected || false;
         selected = !selected;
         this.toggleRowSelection($row, selected);
@@ -1029,6 +1035,9 @@ $.widget('wm.datagrid', {
             } else {
                 if (isNewRow) {
                     $row.remove();
+                    if (!this.preparedData.length) {
+                        this.setStatus('nodata', this.dataStatus['nodata']);
+                    }
                     return;
                 }
                 // Cancel edit.
