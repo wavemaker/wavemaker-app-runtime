@@ -1185,7 +1185,8 @@ WM.module('wm.widgets.live')
                                         }
                                         parentIsolateScope.dataArray[index].defaultValue = val;
                                         parentIsolateScope.dataArray[index].selected = val;
-                                    });
+                                        parentIsolateScope.setDefaultValueToValue(columnDef);
+                                    }, true);
                                 }
                             } else {
                                 columnDef.defaultValue = attrs.defaultValue;
