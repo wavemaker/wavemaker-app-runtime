@@ -296,7 +296,7 @@ wm.variables.services.$liveVariable = [
                             fieldType = fieldOptions.type || getHibernateType(variable, fieldName) || getSqlType(variable, fieldName) || "integer",
                             filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[options.matchMode || variable.matchMode];
                         /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
-                        if (WM.isObject(fieldValue)) {
+                        if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
                             WM.forEach(fieldValue, function (subFieldValue, subFieldName) {
                                 if (subFieldValue && !WM.isObject(subFieldValue)) {
                                     filterOptions.push(fieldName + "." + subFieldName + "=" + subFieldValue);
