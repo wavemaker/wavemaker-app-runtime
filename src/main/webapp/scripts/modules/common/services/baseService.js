@@ -179,7 +179,7 @@ wm.modules.wmCommon.services.BaseService = [
             },
 
             failureHandler = function (config, successCallback, failureCallback, error) {
-                var errTitle, errMsg;
+                var errTitle, errMsg, errorDetails;
                 /*if user is unauthorized, then show login dialog*/
                 if (error.status === 401 && !error.headers('X-WM-Login-ErrorMessage')) {
                     pushToErrorCallStack(config, successCallback, failureCallback);
@@ -199,6 +199,7 @@ wm.modules.wmCommon.services.BaseService = [
                     errMsg = localeObject["MESSAGE_ERROR_HTTP_STATUS_ERROR_DESC"];
                 } else {
                     /*assigning default error messages */
+                    
                     errTitle = "Error!";
                     errMsg = "Service call failed";
                 }
@@ -206,7 +207,9 @@ wm.modules.wmCommon.services.BaseService = [
                 /* check for error code in the response */
                 if (error.data) {
                     if (error.data.errorDetails) {
-                        errMsg = parseError(error.data.errorDetails) || error.data.errorDetails || errMsg;
+                        errorDetails = error.data.errorDetails;
+                        errMsg = parseError(errorDetails) || errorDetails || errMsg;
+
                     } else if (error.data.errors) {
                         errMsg = "";
                         error.data.errors.forEach(function (errorDetails) {
@@ -224,7 +227,7 @@ wm.modules.wmCommon.services.BaseService = [
 
                 /*check if failureCallback is defined*/
                 if (WM.isFunction(failureCallback)) {
-                    Utils.triggerFn(failureCallback, errMsg);
+                    Utils.triggerFn(failureCallback, errMsg, errorDetails);
                 } else {
                     displayMessage('failure', errTitle, errMsg);
                 }
