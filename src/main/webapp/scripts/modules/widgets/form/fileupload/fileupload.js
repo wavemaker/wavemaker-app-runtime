@@ -178,7 +178,7 @@ WM.module('wm.widgets.form')
                     if (eventName.indexOf('(') !== -1) {
                         eventCallback({
                             $event: event,
-                            params: callbackParams
+                            $scope: callbackParams
                         });
                     } else {
                         if (eventName.indexOf('.show') > -1) {
@@ -251,7 +251,7 @@ WM.module('wm.widgets.form')
                         scope.isAbortVisible = false;
                         scope.filename = (scope.filename && scope.multiple ? scope.filename + scope.fileNameSeperator : "") + scope.fileName;
                         scope.filepath = (scope.filepath && scope.multiple ? scope.filepath + scope.fileNameSeperator : "")  + scope.filePath;
-                        handleEvent(evt, attrs.onSuccess || "", scope.onSuccess, scope.filePath);
+                        handleEvent(evt, attrs.onSuccess || "", scope.onSuccess, scope);
                     });
                     if (scope.multiple === false) {
                         wmToaster.show('success', 'File Uploaded');
