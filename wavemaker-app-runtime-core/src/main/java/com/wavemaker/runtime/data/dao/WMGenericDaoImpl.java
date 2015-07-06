@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
@@ -82,26 +84,33 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         Criteria countCriteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
         if (queryFilters != null && queryFilters.length > 0) {
             for (QueryFilter queryFilter : queryFilters) {
+                Criterion criterion;
+                Object attributeValue = queryFilter.getAttributeValue();
+                String attributeName = queryFilter.getAttributeName();
                 switch (queryFilter.getFilterCondition()) {
                     case EQUALS:
-                        criteria.add(Restrictions.eq(queryFilter.getAttributeName(), queryFilter.getAttributeValue()));
-                        countCriteria.add(Restrictions.eq(queryFilter.getAttributeName(), queryFilter.getAttributeValue()));
+                        if (attributeValue instanceof Collection) {
+                            criterion = Restrictions.in(attributeName, (Collection) attributeValue);
+                        } else if (attributeValue.getClass().isArray()) {
+                            criterion = Restrictions.in(attributeName, (Object []) attributeValue);
+                        } else {
+                            criterion = Restrictions.eq(attributeName, attributeValue);
+                        }
                         break;
                     case STARTING_WITH:
-                        criteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.START));
-                        countCriteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.START));
+                        criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.START);
                         break;
                     case ENDING_WITH:
-                        criteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.END));
-                        countCriteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.END));
+                        criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.END);
                         break;
                     case CONTAINING:
-                        criteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.ANYWHERE));
-                        countCriteria.add(Restrictions.ilike(queryFilter.getAttributeName(), String.valueOf(queryFilter.getAttributeValue()), MatchMode.ANYWHERE));
+                        criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.ANYWHERE);
                         break;
                     default:
                         throw new RuntimeException("Unhandled filter condition: " + queryFilter.getFilterCondition());
                 }
+                criteria.add(criterion);
+                countCriteria.add(criterion);
             }
         }
         if (pageable != null) {
