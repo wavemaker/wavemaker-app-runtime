@@ -151,6 +151,10 @@ WM.module('wm.widgets.form')
                         if (attrs.datavalue) {
                             scope._model_ = attrs.datavalue;
                         }
+
+                        if (!attrs.datavalue && !attrs.scopedatavalue) {
+                            scope._model_ = Date.now();
+                        }
                     }
                 };
             }
