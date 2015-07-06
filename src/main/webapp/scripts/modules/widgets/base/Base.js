@@ -2045,8 +2045,8 @@ base.directives.accessroles = function (CONSTANTS, $rootScope, $compile) {
  * It injects the modelUpdater function when has-model attribute is present on the element.
  * It emits invokeService event to the rootScope which can used in run mode to invoke a service
  */
-base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService', 'Utils', 'CONSTANTS', '$parse', '$timeout', 'DataFormatService', '$animate', '$routeParams',
-    function ($rootScope, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, DataFormatService/*Do not remove*/, $animate, $routeParams) {
+base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService', 'Utils', 'CONSTANTS', '$parse', '$timeout', 'DataFormatService', '$animate', '$routeParams', 'BindingManager',
+    function ($rootScope, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, DataFormatService/*Do not remove*/, $animate, $routeParams, BindingManager) {
         'use strict';
 
         var sliceFn = Array.prototype.slice;
@@ -2159,102 +2159,6 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                 });
         }
 
-        function registerWatch(scope, iScope, key, watchExpr, listenerFn, deepWatch) {
-
-            if (scope.hasOwnProperty('$$isolateBindings')) {
-                scope = scope.$parent;
-            }
-
-            var callback,
-                matchers,
-                matchCount,
-                rest,
-                expr = watchExpr,
-                lastIndex,
-                accepts,
-                index,
-                nodes,
-                nodeProps = [];
-
-            matchers = expr.match(/\[\$\i\]/g);
-            matchCount = matchers && matchers.length;
-            if (!matchCount) {
-                callback = listenerFn;
-            } else {
-                /*In the studio mode, trigger the listener function without any arguments.
-                * Return without registering a watch.*/
-                if (CONSTANTS.isStudioMode) {
-                    listenerFn();
-                    return;
-                }
-                if (matchCount > 1) {
-                    lastIndex = expr.lastIndexOf('[$i]');
-                    watchExpr = expr.substr(0, lastIndex).replace('[$i]', '[0]') + expr.substr(lastIndex);
-                }
-                index = watchExpr.indexOf('[$i]');
-
-                watchExpr = watchExpr.substr(0, index);
-
-                rest = expr.replace(watchExpr, '');
-                nodes = rest.split('.');
-                nodes.forEach(function (node) {
-                    if (node !== '[$i]') {
-                        nodeProps.push({
-                            'name': node,
-                            'isArray': false
-                        });
-                    }
-                });
-
-                callback = function (newVal, oldVal) {
-                    var formattedData;
-                    /*Check if "newVal" is a Pageable object.*/
-                    if (WM.isObject(newVal) && Utils.isPageable(newVal) && !iScope.allowPageable) {
-                        /*Check if the scope is configured to accept Pageable objects.
-                         * If configured, set the newVal.
-                         * Else, set only the content.*/
-                        newVal = newVal.content;
-                    }
-                    formattedData = newVal;
-                    accepts = iScope.widgetProps[key].type;
-                    if (WM.isArray(newVal)) {
-                        if (accepts.indexOf('array') !== -1) {
-                            nodeProps.forEach(function (node) {
-                                var intrData = [];
-                                /*Example: Grid dataset is bound to UserData.userName*/
-                                formattedData.forEach(function (datum) {
-                                    var intrDatum = {};
-                                    if (WM.isObject(datum[node.name])) {
-                                        intrDatum = datum[node.name];
-                                    } else {
-                                        intrDatum[node.name] = datum[node.name];
-                                    }
-                                    intrData.push(intrDatum);
-                                });
-                                formattedData = (intrData.length === 1) ? intrData[0] : intrData;
-                            });
-                            /*trigger with first value*/
-                            listenerFn(formattedData, oldVal);
-                            /*iterateModifiedData();
-                             trigger listenerFn*/
-                        } else {
-                            nodeProps.forEach(function (node) {
-                                if (WM.isArray(formattedData)) {/*Example: Label caption is bound to UserData.userName*/
-                                    formattedData = formattedData[0][node.name];
-                                } else {/*Example: Label caption is bound to EmployeeData.department.name*/
-                                    formattedData = formattedData[node.name];
-                                }
-                            });
-                            /*trigger with first value*/
-                            listenerFn(formattedData, oldVal);
-                        }
-                    }
-                };
-            }
-
-            return scope.$watch(watchExpr, callback, deepWatch);
-        }
-
         function onWatchExprValueChange(iScope, scope, key, watchExpr, newVal) {
             iScope[key + '__updateFromWatcher'] = true;
             if (WM.isDefined(newVal) && newVal !== null && newVal !== '') {
@@ -2289,7 +2193,9 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
         }
 
         function binddatavalue_setter(iScope, scope, ws, key, bindKey, val) {
-            var fn = iScope._watchers[key], watchExpr, listenerFn;
+            var fn = iScope._watchers[key], watchExpr, listenerFn,
+                acceptedTypes,
+                acceptsArray;
 
             ws[bindKey] = val;
 
@@ -2301,7 +2207,10 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
 
                 listenerFn = onWatchExprValueChange.bind(undefined, iScope, scope, key, watchExpr);
 
-                iScope._watchers[key] = registerWatch(scope, iScope, key, watchExpr, listenerFn, true);
+                acceptedTypes = iScope.widgetProps[key].type;
+                acceptsArray = _.includes(acceptedTypes, 'array');
+
+                iScope._watchers[key] = BindingManager.register(scope, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': iScope.allowPageable, 'acceptsArray': acceptsArray});
             } else {
                 iScope._watchers[key] = undefined;
                 iScope[key] = '';
@@ -2343,7 +2252,9 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
         }
 
         function bindproperty_setter(iScope, scope, ws, key, bindKey, val) {
-            var fn = iScope._watchers[key], watchExpr, listenerFn;
+            var fn = iScope._watchers[key], watchExpr, listenerFn,
+                acceptedTypes,
+                acceptsArray;
 
             ws[bindKey] = val;
             Utils.triggerFn(fn);
@@ -2352,7 +2263,10 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                 watchExpr = val.replace('bind:', '');
                 listenerFn = onWatchExprValueChange.bind(undefined, iScope, scope, key, watchExpr);
 
-                iScope._watchers[key] = registerWatch(scope, iScope, key, watchExpr, listenerFn, true);
+                acceptedTypes = iScope.widgetProps[key].type;
+                acceptsArray = _.includes(acceptedTypes, 'array');
+
+                iScope._watchers[key] = BindingManager.register(scope, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': iScope.allowPageable, 'acceptsArray': acceptsArray});
             } else {
                 iScope._watchers[key] = undefined;
                 if (key === 'show') {
@@ -3360,6 +3274,106 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
 
     return returnObj;
 }];
+
+base.services.BindingManager = [
+    'Utils',
+    'CONSTANTS',
+
+    function (Utils, CONSTANTS) {
+        'use strict';
+
+        var regex = /\[\$i\]/g,
+            $I = '[$i]',
+            $0 = '[0]';
+
+        function isArrayTypeExpr(expr) {
+            var matchers = expr.match(regex); // check for `[$i]` in the expression
+            return matchers && matchers.length;
+        }
+
+        function arrayConsumer(listenerFn, allowPageable, restExpr, newVal, oldVal) {
+            var data = newVal,
+                formattedData;
+            /*Check if "newVal" is a Pageable object.*/
+            if (WM.isObject(data) && Utils.isPageable(data) && !allowPageable) {
+                /*Check if the scope is configured to accept Pageable objects.
+                 * If configured, set the newVal.
+                 * Else, set only the content.*/
+                data = data.content;
+            }
+
+            if (WM.isArray(data)) {
+                formattedData = data.map(function (datum) {
+                    return Utils.findValueOf(datum, restExpr);
+                });
+
+                listenerFn(formattedData, oldVal);
+            }
+        }
+
+        function getUpdatedWatchExpr(expr, acceptsArray, allowPageable, listener) {
+            // listener doesn't accept array
+            // replace all `[$i]` with `[0]` and return the expression
+            if (!acceptsArray) {
+                return {
+                    'expr': expr.replace(regex, $0),
+                    'listener': listener
+                };
+            }
+
+            // listener accepts array
+            // replace all except the last `[$i]` with `[0]` and return the expression.
+            var index = expr.lastIndexOf($I),
+                _expr = expr.substr(0, index).replace($I, $0),
+                restExpr = expr.substr(index + 5),
+                arrayConsumerFn = listener;
+
+            if (restExpr) {
+                arrayConsumerFn = arrayConsumer.bind(undefined, listener, allowPageable, restExpr);
+            }
+
+            return {
+                'expr': _expr,
+                'listener': arrayConsumerFn
+            };
+        }
+
+        /*
+         * scope: scope on which watch needs to be registered.
+         * watchExpr: watch expression
+         * listenerFn: callback function to be triggered when the watch expression value changes
+         * config: Object containing deepWatch, allowPageable, acceptsArray keys
+         * deepWatch: if this flag is true a deep watch will be registered in the scope
+         * allowPageable: is the data pageable
+         * acceptsArray: bound entity accepts array like values
+         */
+        function register(scope, watchExpr, listenerFn, config) {
+            var watchInfo, _config = config || {},
+                deepWatch = _config.deepWatch,
+                allowPageable = _config.allowPageable,
+                acceptsArray = _config.acceptsArray;
+
+            if (isArrayTypeExpr(watchExpr)) {
+                if (CONSTANTS.isStudioMode) {
+                    listenerFn();
+                    return;
+                }
+
+                watchExpr = watchExpr.replace('.dataSet[$i]', '.dataSet.content[$i]');
+                watchInfo = getUpdatedWatchExpr(watchExpr, acceptsArray, allowPageable, listenerFn);
+            } else {
+                watchInfo = {
+                    'expr': watchExpr,
+                    'listener': listenerFn
+                };
+            }
+
+            return scope.$watch(watchInfo.expr, watchInfo.listener, deepWatch);
+        }
+
+        this.register = register;
+    }
+];
 
 base.service(base.services);
 base.directive(base.directives);
