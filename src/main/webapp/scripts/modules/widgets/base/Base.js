@@ -876,6 +876,15 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "title": {"type": "string", "bindable": "in-bound"},
                     "imgsrc": {"type": "string", "bindable": "in-bound"}
                 },
+                'wm.layouts.mobile.navbar': {
+                    "height": {"type": "string", "pattern": dimensionRegex},
+                    "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
+                    "title": {"type": "string", "bindable": "in-bound"},
+                    "leftnavpaneliconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-menu-hamburger"},
+                    "backbutton":  {"type": "boolean", "value": true},
+                    "backbuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "fa fa-arrow-left"},
+                    "backbuttonlabel":  {"type": "string"}
+                },
                 'wm.layouts.listtemplate': {
                     "height": {"type": "string", "pattern": dimensionRegex},
                     "width": {"type": "string", "pattern": dimensionRegex},
@@ -896,7 +905,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "height": {"type": "string", "pattern": dimensionRegex}
                 },
                 'wm.layouts.leftpanel': {
-                    "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], "value": "2"}
+                    "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], "value": "2"},
+                    "animation" : {"type": "list", "options": ["slide-in", "slide-over"], "value" : "slide-in"}
                 },
                 'wm.layouts.rightpanel': {
                     "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"], "value": "2"}
@@ -1059,6 +1069,14 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "onResult": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                     "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                },
+                "wm.layouts.segmentedcontrol" : {
+                    "onBeforeSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "onSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                },
+                "wm.layouts.segmentedcontrolcontent" : {
+                    "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
+                    "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex}
                 },
                 'wm.grid': {
                     "width": {"value": "100%", "pattern": dimensionRegex},
@@ -1243,6 +1261,13 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 },
                 "wm.carousel" : {
                     "animationinterval" : {"type" : "number", "value" : "3"}
+                },
+                "wm.tabbar" : {
+                    "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
+                    "dropposition": {"type": "list", "options": ["down", "up"], "value": "up"},
+                    "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    "morebuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-option-horizontal"},
+                    "morebuttonlabel":  {"type": "string", "value": "more"}
                 },
                 "wm.livelist": {
                     "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
@@ -1489,7 +1514,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "lock", "freeze", "autoscroll", "closable", "actions", "expanded",  "destroyable", "showDirtyFlag", "link",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "deletemessage", "loadingdatamsg", "showpreview", "updatemode", "errormessage", "tooltips", "showlegend", "captions", "showxaxis", "showyaxis", "showvalues",
                      "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                     "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval"], "parent": "properties"},
+                     "legendposition", "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
@@ -1507,7 +1532,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "touchevents", "properties": ["onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect",
-                    "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onActionsclick"], "parent": "events"},
+                    "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onActionsclick", "onBeforeSegmentChange", "onSegmentChange"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice"], "parent": "mobile"}
             ]

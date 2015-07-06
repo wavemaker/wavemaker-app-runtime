@@ -1,0 +1,65 @@
+/********************************************************************************
+*********************** Segmented Control classes ******************************
+*********************************************************************************/
+@app-segmented-border-color: @app-panel-border-color;
+
+.wm-app .app-segmented-control{
+
+  .nav.nav-pills{
+    display: table;
+    width: 90%;
+    margin: 5px auto;
+
+    li{
+      float: none;
+      display:table-cell;
+
+      a{
+        text-align: center;
+        border: 1px solid @app-segmented-border-color;
+        border-right-width: 0px;
+        border-radius: 0px;
+      }
+
+      &:first-child a{
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+      }
+      &:last-child a{
+        border-right-width: 1px;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
+    }
+  }
+
+  .app-segmented-control-container {
+    .calc('height', ~"calc(100% - 40px)");
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+
+    .app-segmented-control-content{
+      height: 100%;
+      width: 100%;
+      overflow: auto;
+      position: absolute;
+      top: 0;
+
+      &.left {
+        left: -100%;
+      }
+      &.right {
+        left: 100%;
+      }
+      &.active{
+        left: 0;
+      }
+    }
+  }
+  &.animate {
+    .app-segmented-control-content {
+      transition: .6s ease-in-out left;
+    }
+  }
+}

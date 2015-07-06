@@ -1,4 +1,4 @@
-/*global WM, _*/
+/*global WM*/
 
 WM.module('wm.layouts.page')
     .directive('wmPage', ['DeviceViewService', 'CONSTANTS', '$rootScope', '$routeParams', 'Utils', '$timeout', 'Variables', 'NavigationVariableService', function (DeviceViewService, CONSTANTS, $rootScope, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
@@ -91,7 +91,10 @@ WM.module('wm.layouts.page')
 
                                     // update the device after some delay
                                     $timeout(function () {
-                                        DeviceViewService.update(element, scope.layout.leftSection, scope.layout.rightSection, scope.layout.search);
+                                        if (!$rootScope.isMobileType) {
+                                            //This is not required for mobile appications.
+                                            DeviceViewService.update(element, scope.layout.leftSection, scope.layout.rightSection, scope.layout.search);
+                                        }
                                     });
                                 }
                             };
@@ -156,6 +159,9 @@ WM.module('wm.layouts.page')
                                 Variables.unload(attrs.ngController.replace('PageController', ''), scope);
                                 handlers.forEach(Utils.triggerFn);
                             });
+                        }
+                        if (CONSTANTS.isStudioMode && $rootScope.isMobileType) {
+                            element.addClass('mobile-app-page');
                         }
                     }
                 };

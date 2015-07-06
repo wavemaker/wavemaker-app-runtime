@@ -1,0 +1,127 @@
+/********************************************************************************
+*************************************** Tab Bar *********************************
+*********************************************************************************/
+@app-tabbar-background-color: #fff;
+
+.responsiveTabbar(@screenWidth, @breakEleIndex, @itemWidth){
+  @media  (max-width: @screenWidth) {
+    >.item:nth-child(n + @{breakEleIndex}){
+      display: none;
+    }
+    >.more-menu-item:nth-child(n + @{breakEleIndex}){
+      display:table-cell;
+    }
+    .more-menu .item:nth-child(n + @{breakEleIndex}){
+      display: inline-block;
+      width: @itemWidth;
+    }
+    .more-menu.dropdown-menu .item:nth-child(n + @{breakEleIndex}){
+      display: block;
+      width: 100%;
+    }
+  }
+}
+
+.wm-app .navbar.app-tabbar{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: table;
+  width: 100%;
+  padding: 0px;
+  background-color: @app-tabbar-background-color;
+  min-height: 50px;
+
+  .app-tabbar-nav{
+    li.item {
+      display: table-cell;
+      width: 1%;
+
+      a {
+        text-align: center;
+        overflow: hidden;
+        white-space: nowrap;
+        padding: 5px;
+
+        .icon{
+          display: block;
+          width: 32px;
+          height: 32px;
+          font-size: 22px;
+          margin: 3px auto;
+          padding: 5px;
+        }
+        .label{
+          font-size: 11px;
+          text-decoration: none;
+          font-weight: normal;
+        }
+      }
+    }
+    li.more-menu-item{
+      display:none;
+    }
+    .more-menu{
+      left: initial;
+      right: 0;
+
+      .item{
+        display: none;
+      }
+
+      &.dropdown-menu{
+        display: block;
+
+        .item a{
+          text-align: left;
+          padding: 0;
+          .icon {
+            display: inline-block;
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+    .responsiveTabbar(2048px, 12,  8.33%);
+    .responsiveTabbar(1024px, 10, 10%);
+    .responsiveTabbar(768px, 7, 14.2%);
+    .responsiveTabbar(480px, 5, 20%);
+    .responsiveTabbar(320px, 4, 25%);
+  }
+}
+
+/********************************************************************************
+**************************** Mobile Navbar ***********************
+*********************************************************************************/
+
+.wm-app .app-mobile-navbar{
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+
+  >.app-mobile-navbar-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 5px;
+
+    .btn {
+      margin-left: 5px;
+    }
+  }
+
+  .app-mobile-navbar-title {
+    display: inline-block;
+    margin: 0;
+  }
+
+  >.app-mobile-navbar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 5px;
+  }
+}
