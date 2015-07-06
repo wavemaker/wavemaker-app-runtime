@@ -1041,7 +1041,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left"},
                     "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left"},
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                    "editfields": {"type": "button", "hidelabel": true},
+                    "editfields": {"type": "button", "hidelabel": true, "disabled": true},
                     "height": {"type": "string", "pattern": dimensionRegex},
                     "rowdata": {"type": "string"},
                     "formdata": {"type": "object", "bindable": "in-bound", "widget": "string"},
@@ -1264,7 +1264,7 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                 "wm.livefilter": {
                     "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                     "scopedataset": {"type": "string"},
-                    "editfilters": {"type": "button", "hidelabel": true},
+                    "editfilters": {"type": "button", "hidelabel": true, "disabled": true},
                     "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
                     "layout": {"type": "list", "options": ["One Column", "Two Column", "Three Column", "Four Column"], "value": "One Column"}
                 },
