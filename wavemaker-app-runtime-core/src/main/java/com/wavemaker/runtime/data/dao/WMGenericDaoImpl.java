@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 
@@ -149,81 +151,80 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     private void validateQueryFilters(QueryFilter[] queryFilters) {
         if (queryFilters != null && queryFilters.length > 0) {
             for (QueryFilter queryFilter : queryFilters) {
-                switch (queryFilter.getAttributeType()) {
-                    case BIG_DECIMAL:
-                        queryFilter.setAttributeValue(BigDecimalType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case BIG_INTEGER:
-                        queryFilter.setAttributeValue(BigIntegerType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case BLOB:
-                        queryFilter.setAttributeValue(BlobType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case BOOLEAN:
-                        queryFilter.setAttributeValue(BooleanType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case BYTE:
-                        queryFilter.setAttributeValue(ByteType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case CHARACTER:
-                        queryFilter.setAttributeValue(CharacterType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case CURRENCY:
-                        queryFilter.setAttributeValue(CurrencyType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case DATE:
-                        queryFilter.setAttributeValue(new Date(((Number) queryFilter.getAttributeValue()).longValue()));
-                        break;
-                    case DOUBLE:
-                        queryFilter.setAttributeValue(DoubleType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case FLOAT:
-                        queryFilter.setAttributeValue(FloatType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case INTEGER:
-                        queryFilter.setAttributeValue(IntegerType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case LOCALE:
-                        queryFilter.setAttributeValue(LocaleType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case TIMEZONE:
-                        queryFilter.setAttributeValue(TimeZoneType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case TRUE_FALSE:
-                        queryFilter.setAttributeValue(TrueFalseType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case YES_NO:
-                        queryFilter.setAttributeValue(YesNoType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case CLOB:
-                        queryFilter.setAttributeValue(ClobType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case STRING:
-                        queryFilter.setAttributeValue(StringType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case SHORT:
-                        queryFilter.setAttributeValue(ShortType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case TEXT:
-                        queryFilter.setAttributeValue(TextType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-
-                    case TIME:
-                        queryFilter.setAttributeValue(TimeType.INSTANCE.fromString(queryFilter.getAttributeValue().toString()));
-                        break;
-                    case TIMESTAMP:
-                        queryFilter.setAttributeValue(new Timestamp(((Number) queryFilter.getAttributeValue()).longValue()));
-                        break;
-                    case CALENDAR:
-                        queryFilter.setAttributeValue(new Date(((Number) queryFilter.getAttributeValue()).longValue()));
-                        break;
-                    case CALENDAR_DATE:
-                        queryFilter.setAttributeValue(new Date(((Number) queryFilter.getAttributeValue()).longValue()));
-                        break;
+                Object attributeValue = queryFilter.getAttributeValue();
+                AttributeType attributeType = queryFilter.getAttributeType();
+                if (attributeValue instanceof Collection) {
+                    Collection collection = (Collection) attributeValue;
+                    Object[] objects = collection.toArray(new Object[]{});
+                    queryFilter.setAttributeValue(Arrays.asList(updateObjectsArray(objects, attributeType)));
+                } else if (attributeValue.getClass().isArray()) {
+                    Object[] objects = (Object[]) attributeValue;
+                    objects = updateObjectsArray(objects, attributeType);
+                    queryFilter.setAttributeValue(objects);
+                } else {
+                    queryFilter.setAttributeValue(getUpdatedAttributeValue(attributeValue, attributeType));
                 }
             }
         }
+    }
 
+    private Object[] updateObjectsArray(Object[] objects, AttributeType attributeType) {
+        for (int i=0; i< objects.length; i++) {
+            objects[i] = getUpdatedAttributeValue(objects[i], attributeType);
+        }
+        return objects;
+    }
+
+    private Object getUpdatedAttributeValue(Object attributeValue, AttributeType attributeType) {
+        switch (attributeType) {
+            case BIG_DECIMAL:
+                return BigDecimalType.INSTANCE.fromString(attributeValue.toString());
+            case BIG_INTEGER:
+                return BigIntegerType.INSTANCE.fromString(attributeValue.toString());
+            case BLOB:
+                return BlobType.INSTANCE.fromString(attributeValue.toString());
+            case BOOLEAN:
+                return BooleanType.INSTANCE.fromString(attributeValue.toString());
+            case BYTE:
+                return ByteType.INSTANCE.fromString(attributeValue.toString());
+            case CHARACTER:
+                return CharacterType.INSTANCE.fromString(attributeValue.toString());
+            case CURRENCY:
+                return CurrencyType.INSTANCE.fromString(attributeValue.toString());
+            case DATE:
+                return new Date(((Number) attributeValue).longValue());
+            case DOUBLE:
+                return DoubleType.INSTANCE.fromString(attributeValue.toString());
+            case FLOAT:
+                return FloatType.INSTANCE.fromString(attributeValue.toString());
+            case INTEGER:
+                return IntegerType.INSTANCE.fromString(attributeValue.toString());
+            case LOCALE:
+                return LocaleType.INSTANCE.fromString(attributeValue.toString());
+            case TIMEZONE:
+                return TimeZoneType.INSTANCE.fromString(attributeValue.toString());
+            case TRUE_FALSE:
+                return TrueFalseType.INSTANCE.fromString(attributeValue.toString());
+            case YES_NO:
+                return YesNoType.INSTANCE.fromString(attributeValue.toString());
+            case CLOB:
+                return ClobType.INSTANCE.fromString(attributeValue.toString());
+            case STRING:
+                return StringType.INSTANCE.fromString(attributeValue.toString());
+            case SHORT:
+                return ShortType.INSTANCE.fromString(attributeValue.toString());
+            case TEXT:
+                return TextType.INSTANCE.fromString(attributeValue.toString());
+            case TIME:
+                return TimeType.INSTANCE.fromString(attributeValue.toString());
+            case TIMESTAMP:
+                return new Timestamp(((Number) attributeValue).longValue());
+            case CALENDAR:
+                return new Date(((Number) attributeValue).longValue());
+            case CALENDAR_DATE:
+                return new Date(((Number) attributeValue).longValue());
+        }
+        return attributeValue;
     }
 
     @Override
