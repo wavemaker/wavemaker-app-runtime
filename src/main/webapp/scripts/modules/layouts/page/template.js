@@ -3,45 +3,52 @@
 WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
+
+        $templateCache.put('template/defaults/header.html', '<h1>HEADER</h1>');
+
+        $templateCache.put('template/defaults/topnav.html',
+                '<div class="navbar navbar-default">' +
+                    '<div class="container-fluid">' +
+                        '<div class="collapse navbar-collapse">' +
+                            '<ul class="nav navbar-nav">' +
+                                '<li class="active"><a href="#">ACTIVE</a></li>' +
+                                '<li><a href="#">LINK</a></li>' +
+                            '</ul>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            );
+
+        $templateCache.put('template/defaults/leftnav.html',
+                '<ul class="nav app-nav nav-pills nav-stacked">' +
+                    '<li class="active"><a href="#" class="active">Active</a></li>' +
+                    '<li><a href="#">Link</a></li>' +
+                '</ul>'
+            );
+
+        $templateCache.put('template/defaults/rightnav.html',
+                '<ul class="nav app-nav nav-pills nav-stacked">' +
+                    '<li class="active"><a href="#" class="active">Active</a></li>' +
+                    '<li><a href="#">Link</a></li>' +
+                '</ul>'
+            );
+
+        $templateCache.put('template/defaults/footer.html', '<h3>FOOTER</h3>');
+
         $templateCache.put('template/layouts/template.html',
                 '<div data-role="template" class="app-template app-page container" init-widget>' +
-                    '<header data-role="page-header" class="app-header clearfix" data-ng-if="showheader">' +
-                        '<h1>HEADER</h1>' +
-                    '</header>' +
-                    '<section data-role="page-topnav" class="app-top-nav" data-ng-if="showtopnav">' +
-                        '<div class="navbar navbar-default">' +
-                            '<div class="container-fluid">' +
-                                '<div class="collapse navbar-collapse">' +
-                                    '<ul class="nav navbar-nav">' +
-                                        '<li class="active"><a href="#">ACTIVE</a></li>' +
-                                        '<li><a href="#">LINK</a></li>' +
-                                    '</ul>' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
-                    '</section>' +
+                    '<header data-role="page-header" class="app-header clearfix" wm-template-container="{{header}}"></header>' +
+                    '<section data-role="page-topnav" class="app-top-nav" wm-template-container="{{topnav}}"></section>' +
                     '<main  data-role="page-content" class="app-content clearfix">' +
                         '<div class="row app-content-row clearfix">' +
-                            '<aside data-role="page-left-panel" class="app-left-panel col-md-2 col-sm-2" data-ng-if="showleftnav">' +
-                                '<ul class="nav app-nav nav-pills nav-stacked">' +
-                                    '<li class="active"><a href="#" class="active">Active</a></li>' +
-                                    '<li><a href="#">Link</a></li>' +
-                                '</ul>' +
-                            '</aside>' +
+                            '<aside data-role="page-left-panel" class="app-left-panel col-md-2 col-sm-2" wm-template-container="{{leftnav}}"></aside>' +
                             '<div class="app-page-content app-content-column">' +
                                 '<div class="app-ng-transclude" wmtransclude></div>' +
                             '</div>' +
-                            '<aside data-role="page-right-panel" class="app-right-panel col-md-2 col-sm-2" data-ng-if="showrightnav">' +
-                                '<ul class="nav app-nav nav-pills nav-stacked">' +
-                                    '<li class="active"><a href="#" class="active">Active</a></li>' +
-                                    '<li><a href="#">Link</a></li>' +
-                                '</ul>' +
-                            '</aside>' +
+                            '<aside data-role="page-right-panel" class="app-right-panel col-md-2 col-sm-2" wm-template-container="{{rightnav}}"></aside>' +
                         '</div>' +
                     '</main>' +
-                    '<footer data-role="page-footer" class="app-footer clearfix" data-ng-if="showfooter">' +
-                        '<h3>FOOTER</h3>' +
-                    '</footer>' +
+                    '<footer data-role="page-footer" class="app-footer clearfix" wm-template-container="{{footer}}"></footer>' +
                 '</div>'
             );
         $templateCache.put('template/layouts/templateshowcase.html',
@@ -228,5 +235,78 @@ WM.module('wm.layouts.page')
                 }
             };
         }
-    ]);
+    ])
+    .directive('wmTemplateContainer', function (FileService, CONSTANTS, $rootScope, Utils, $compile, $templateCache) {
+        'use strict';
+
+        var ERROR_CONTENT = '<div class="app-partial-info"><div class="partial-message">Content for the container is unavailable.</div></div>',
+            ROLE_DEFAULTCONTENTURL_MAP = {
+                'page-header': 'template/defaults/header.html',
+                'page-topnav': 'template/defaults/topnav.html',
+                'page-left-panel': 'template/defaults/leftnav.html',
+                'page-right-panel': 'template/defaults/rightnav.html',
+                'page-footer': 'template/defaults/footer.html'
+            };
+
+        function hideContent($el) {
+            $el.html('').hide();
+        }
+
+        function getTemplatePath(templateName) {
+            var templatePath = 'pages/' + templateName + '/page.min.html';
+            return CONSTANTS.isStudioMode ? '../../' + templatePath : templatePath;
+        }
+
+        function displayDefaultContent(element) {
+            var key = element.attr('data-role'),
+                url = ROLE_DEFAULTCONTENTURL_MAP[key],
+                content = $templateCache.get(url);
+
+            element.html(content).show();
+        }
+
+        function compileTemplate(scope, element, content) {
+            var $content = WM.element(content);
+
+            $content = $content.contents();
+            $compile($content)(scope);
+            element.append($content).show();
+        }
+
+        function loadTemplate(scope, element, templateName) {
+
+            var pageContent;
+
+            FileService.read({
+                path: getTemplatePath(templateName),
+                projectID : $rootScope.project.id
+            }, function (response) {
+                pageContent = Utils.parseCombinedPageContent(response, templateName);
+                compileTemplate(scope, element, pageContent.html);
+            }, function () {
+                element.html(ERROR_CONTENT);
+            });
+        }
+
+        return {
+            'link': function (scope, element, attrs) {
+
+                if (attrs.wmTemplateContainer) {
+                    attrs.$observe('wmTemplateContainer', function (nv) {
+                        if (nv) {
+                            if (nv === '_nocontent') {
+                                hideContent(element);
+                            } else if (nv === '_defaultcontent') {
+                                displayDefaultContent(element);
+                            } else {
+                                loadTemplate(scope, element, nv);
+                            }
+                        } else {
+                            hideContent(element);
+                        }
+                    });
+                }
+            }
+        };
+    });
 
