@@ -3094,7 +3094,6 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
                     "wm-slider",
                     "wm-fileupload",
                     "wm-grid",
-                    "wm-livegrid",
                     "wm-livefilter",
                     "wm-livelist",
                     "wm-datanavigator",
