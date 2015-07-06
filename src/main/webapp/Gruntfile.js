@@ -171,6 +171,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/common/services/baseService.js',
                         '<%= config.scripts %>/modules/common/services/fileService.js',
                         '<%= config.scripts %>/modules/common/services/projectService.js',
+                        '<%= config.scripts %>/modules/common/services/UIMigration.js',
                         '<%= config.scripts %>/modules/prefabs/services/prefabManager.js',
                         '<%= config.scripts %>/modules/variables/config.js',
                         '<%= config.scripts %>/modules/variables/application/base/basefactory.js',

@@ -261,7 +261,7 @@ WM.module('wm.layouts.containers')
 
                         /* initialize the widget */
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                        scope.setTabsPosition(attrs.tabsposition || (attrs.vertical === "true" ? 'left' : 'top'));
+                        scope.setTabsPosition(attrs.tabsposition);
                     }
                 };
             }

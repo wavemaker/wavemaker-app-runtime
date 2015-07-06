@@ -131,11 +131,11 @@ WM.module('wm.widgets.basic')
                         /* fields defined in scope: {} MUST be watched explicitly */
                         /*watching model attribute to the data for the message element.*/
                         if (!scope.widgetid) {
-                            scope.$watch('scopedataset', function (newVal) {
-                                if (attrs.scopedataset) {
+                            if (attrs.scopedataset) {
+                                scope.$watch('scopedataset', function (newVal) {
                                     setDataSet(newVal, scope);
-                                }
-                            });
+                                });
+                            }
                         }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
