@@ -30,7 +30,8 @@ wm.variables.services.$liveVariable = [
     "ProjectService",
     "DB_CONSTANTS",
     "wmToaster",
-    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster) {
+    "$filter",
+    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster, $filter) {
         "use strict";
 
         /*Set a flag based on whether the project is deployed or not.
@@ -673,6 +674,9 @@ wm.variables.services.$liveVariable = [
                 }
                 return isDateType;
             },
+            getDateInDefaultFormat = function (value) {
+                return $filter('date')(new Date(value).valueOf(), 'yyyy-MM-dd');
+            },
         /*Function to perform common database actions through calling DatabaseService methods*/
             performDataAction = function (action, variableDetails, options, success, error) {
                 var dbName,
@@ -814,7 +818,7 @@ wm.variables.services.$liveVariable = [
                             }
                             if (action !== "deleteTableData") {
                                 if (isDateTypeField(fieldName, variableDetails)) {
-                                    fieldValue = new Date(fieldValue).valueOf();
+                                    fieldValue = getDateInDefaultFormat(fieldValue);
                                 }
                                 rowObject[fieldName] = fieldValue;
                             }
