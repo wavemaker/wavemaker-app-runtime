@@ -266,10 +266,13 @@ WM.module('wm.layouts.page')
         }
 
         function compileTemplate(scope, element, content) {
-            var $content = WM.element(content);
+            var $content = WM.element(content),
+                _scope = scope.$new();
 
             $content = $content.contents();
-            $compile($content)(scope);
+            _scope.Widgets = {};
+
+            $compile($content)(_scope);
             element.append($content).show();
         }
 
