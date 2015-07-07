@@ -2190,9 +2190,7 @@ base.directives.initWidget = ['$rootScope', 'WidgetUtilService', 'DialogService'
                 * OR if the mode is studio and if the widget is inside a partial
                 * OR if the mode is studio and if the widget is inside a prefab
                 */
-                if (key !== 'dataset') {
-                    iScope[key] = (iScope.widgetid || (CONSTANTS.isStudioMode && (scope.partialcontainername || scope.prefabname))) ? watchExpr : '';
-                }
+                iScope[key] = (iScope.widgetid || (CONSTANTS.isStudioMode && (scope.partialcontainername || scope.prefabname))) ? watchExpr : '';
             }
         }
 
