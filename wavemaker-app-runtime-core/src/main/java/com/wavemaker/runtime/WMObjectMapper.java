@@ -15,30 +15,14 @@
  */
 package com.wavemaker.runtime;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -224,10 +208,10 @@ public class WMObjectMapper extends ObjectMapper {
 
         WMObjectReadMapper() {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            SimpleModule module = new SimpleModule("ByteArraySerializeModule", new Version(1, 0, 0, null));
-            ByteArraySerializeModule byteArrayDeserializerModule = new ByteArraySerializeModule();
-            module.addSerializer(byte[].class, byteArrayDeserializerModule);
-            registerModule(module);
+            SimpleModule byteModule = new SimpleModule("ByteArraySerializeModule", new Version(1, 0, 0, null));
+            ByteArraySerializeModule byteArraySerializeModule = new ByteArraySerializeModule();
+            byteModule.addSerializer(byte[].class, byteArraySerializeModule);
+            registerModules(byteModule);
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
     }
