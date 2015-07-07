@@ -11,8 +11,9 @@
 wm.variables.factories.BaseVariablePropertyFactory = [
     'WIDGET_CONSTANTS',
     'Utils',
+    'MobileApiDefaults',
 
-    function (WIDGET_CONSTANTS, Utils) {
+    function (WIDGET_CONSTANTS, Utils, MobileApiDefaults) {
 
         "use strict";
         var variableEventOptions = {}, /*A copy of the variable to preserve the actual value.*/
@@ -20,11 +21,15 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             properties,
             propertyGroups,
             variableMap,
-            variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$';
+            variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$',
+            mobileOperations = {};
 
         /* make events compatible to select widget options */
         WM.forEach(WM.copy(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
             variableEventOptions[event] = event;
+        });
+        WM.forEach(MobileApiDefaults, function (value, key) {
+            mobileOperations[key] = key;
         });
 
         result = {
@@ -145,6 +150,26 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "repeating": {"type": "boolean", "value": false},
                     "delay": {"type": "number", "value": 500},
                     "onTimerFire": {"type": "list", "options": variableEventOptions}
+                },
+                "wm.MobileVariable" : {
+                    "name": {"type": "string", "required": true, "pattern": variableRegex},
+                    "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
+                    "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
+                    "operation": {"type": "list", "options": mobileOperations},
+                    /* capture picture options*/
+                    "imageQuality": {"operation" : "capturePicture", "type": "number", "value": 80, "hide" : true},
+                    "imageEncodingType": {"operation" : "capturePicture", "type": "list", "options": {"0" : "JPEG", "1" : "PNG"}, "value" : "0", "hide" : true},
+                    "correctOrientation": {"operation" : "capturePicture", "type": "boolean", "value" : true, "hide" : true},
+                    "saveToPhotoAlbum": {"operation" : "capturePicture", "type": "boolean", "value" : false, "hide" : true},
+                    /* getGeoLocation options*/
+                    "geolocationHighAccuracy": {"operation" : "getGeoLocation", "type": "boolean", "value": true, "hide" : true},
+                    "geolocationMaximumAge": {"operation" : "getGeoLocation", "type": "number", "value": 3, "hide" : true},
+                    "geolocationTimeout": {"operation" : "getGeoLocation", "type": "number", "value": 5, "hide" : true},
+                    /* listContacts options */
+                    "contactFilter": {"operation" : "listContacts", "type": "string", "value": "", "hide" : true},
+                    /*events*/
+                    "onSuccess": {"type": "list", "options": variableEventOptions},
+                    "onError": {"type": "list", "options": variableEventOptions}
                 }
             },
 
@@ -161,7 +186,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
-                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "dataBinding"], "parent": "properties"},
+                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "dataBinding", "imageQuality", "imageEncodingType", "correctOrientation", "saveToPhotoAlbum", "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy", "contactFilter"], "parent": "properties"},
 
                 /* properties under data tab */
                 {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding"], "parent": "data"},
@@ -177,7 +202,6 @@ wm.variables.factories.BaseVariablePropertyFactory = [
         properties = result.properties;
         propertyGroups = result.propertyGroups;
         variableMap = {};
-
         /*
          If parents array is provided, inject the properties from the parents into variable and return,
          else return only the properties of the widget.

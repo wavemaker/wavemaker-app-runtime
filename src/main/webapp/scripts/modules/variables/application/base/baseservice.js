@@ -1140,6 +1140,15 @@ wm.variables.services.Variables = [
                 id: ProjectService.getId()
             };
         }
+        // Add mobile varibles only mobile application projects.
+        if ($rootScope.isMobileType) {
+            variableConfig.push({
+                "collectionType": "data",
+                "category": "wm.MobileVariable",
+                "labelKey": "LABEL_VARIABLE_MOBILE",
+                "defaultName": "mobileVariable"
+            });
+        }
         /*
          * This object stores the variables (name, value) pairs
          * so that widgets can access those
