@@ -40,12 +40,14 @@ WM.module('wm.widgets.live')
                     $scope.clearFilter = function () {
                         WM.forEach($scope.filterFields, function (filterField) {
                             //Added check for range field
-                            if (filterField.isRange) {
-                                filterField.minValue = '';
-                                filterField.maxValue = '';
-                            } else {
-                                filterField.selected = '';
-                                filterField.value = '';
+                            if (!filterField.readonly) {
+                                if (filterField.isRange) {
+                                    filterField.minValue = '';
+                                    filterField.maxValue = '';
+                                } else {
+                                    filterField.selected = '';
+                                    filterField.value = '';
+                                }
                             }
                         });
                         /*Setting result to the default data*/
@@ -448,7 +450,7 @@ WM.module('wm.widgets.live')
                 template = template +
                     '<wm-composite widget="slider" show="{{filterFields[' + index + '].show}}">' +
                     '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                    '<div class="col-md-8"><input type="range"/></div>' +
+                    '<div class="col-md-8"><input type="range" ng-readonly="{{filterFields[' + index + '].readonly}}"/></div>' +
                     '</wm-composite>';
                 break;
             case 'select':
@@ -458,14 +460,14 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-select></div>' +
-                        '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-select></div>' +
+                        '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-select></div>' +
+                        '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-select></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     template = template + '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-select name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"';
+                        '<div class="col-md-8"><wm-select name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"';
                     if (fieldDef.multiple) {
                         template = template + 'multiple="{{filterFields[' + index + '].multiple}}"';
                     }
@@ -476,7 +478,7 @@ WM.module('wm.widgets.live')
                 fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                 template = template + '<wm-composite widget="checkboxset" show="{{filterFields[' + index + '].show}}">' +
                     '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                    '<div class="col-md-8"><wm-checkboxset name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-checkboxset></div>' +
+                    '<div class="col-md-8"><wm-checkboxset name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-checkboxset></div>' +
                     '</wm-composite>';
                 break;
             case 'radioset':
@@ -486,14 +488,14 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-radioset name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-radioset></div>' +
-                        '<div class="col-md-4"><wm-radioset name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" dataset=""></wm-radioset></div>' +
+                        '<div class="col-md-4"><wm-radioset name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-radioset></div>' +
+                        '<div class="col-md-4"><wm-radioset name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" dataset=""></wm-radioset></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     template = template + '<wm-composite widget="radioset" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-radioset name="{{filterFields[' + index + '].field}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-radioset></div>' +
+                        '<div class="col-md-8"><wm-radioset name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-radioset></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -505,15 +507,15 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     type = (fieldDef.type === "integer") ? "number" : "string";
                     template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -525,14 +527,14 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -544,22 +546,22 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
-                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
+                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
+                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     type = 'date';
                     template = template + '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-date name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"  datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
+                        '<div class="col-md-8"><wm-date name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"  datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
                         '</wm-composite>';
                 }
                 break;
             case 'checkbox':
                 template = template + '<wm-composite widget="checkboxset" show="{{filterFields[' + index + '].show}}">' +
                     '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                    '<div class="col-md-8"><wm-checkbox name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" ></wm-checkbox></div>' +
+                    '<div class="col-md-8"><wm-checkbox name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" ></wm-checkbox></div>' +
                     '</wm-composite>';
                 break;
             default:
@@ -567,13 +569,13 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
                         '</wm-composite>';
                 } else {
                     template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
+                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -608,6 +610,7 @@ WM.module('wm.widgets.live')
                                 'primaryKey': attrs.primaryKey === "true" || attrs.primaryKey === true,
                                 'generator': attrs.generator,
                                 'isRange': attrs.isRange === "true" || attrs.isRange === true,
+                                'readonly' : attrs.readonly === "true" || attrs.readonly === true,
                                 'isRelated': attrs.isRelated === "true" || attrs.isRelated === true,
                                 'filterOn': attrs.filterOn || attrs.field || attrs.binding,
                                 'widget': attrs.widget,
