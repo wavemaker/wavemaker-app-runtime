@@ -172,9 +172,11 @@ WM.module('wm.widgets.basic')
                     }
 
                     this._binddataset = value;
+
                     endPolling(scope);
                     if (WM.isString(value)) {
-                        scope.boundServiceName = value.substr(0, value.indexOf('.'));
+                        var _value = value.replace('bind:Variables.', '');
+                        scope.boundServiceName = _value.substr(0, _value.indexOf('.'));
                         setupPolling(scope);
                     }
                 }
@@ -228,7 +230,7 @@ WM.module('wm.widgets.basic')
                         defineProperties(scope);
                         if (attrs.dataset) {
                             if (Utils.stringStartsWith(attrs.dataset, 'bind:')) {
-                                scope.binddataset = attrs.dataset.replace('bind:Variables.', '');
+                                scope.binddataset = attrs.dataset;
                             }
                         }
 
