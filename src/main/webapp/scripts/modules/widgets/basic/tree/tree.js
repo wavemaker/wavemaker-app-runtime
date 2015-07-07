@@ -163,7 +163,8 @@ WM.module('wm.widgets.basic')
                     var target = WM.element(evt.target), li = target.closest('li'),
                         fn,
                         path = '',
-                        treeIcons = ICON_CLASSES[scope.treeicons || defaultTreeIconClass];
+                        treeIcons = ICON_CLASSES[scope.treeicons || defaultTreeIconClass],
+                        data;
                     scope.selecteditem = {};
                     evt.stopPropagation();
 
@@ -178,7 +179,7 @@ WM.module('wm.widgets.basic')
                     } else if (target.is('span.title')) {
                         element.find('.selected').removeClass('selected');
                         li.addClass('selected');
-                        scope.selecteditem = WM.copy(li.data('nodedata'));
+                        data = li.data('nodedata');
 
                         target.parents('.app-tree li')
                             .each(function () {
@@ -186,8 +187,10 @@ WM.module('wm.widgets.basic')
                                 path = '/' + current + path;
                             });
 
+                        scope.selecteditem = WM.copy(data);
                         scope.selecteditem.path = path;
-                        fn = scope.onSelect({$event: evt, $scope: scope, $item: scope.selecteditem});
+
+                        fn = scope.onSelect({$event: evt, $scope: scope, $item: data, $path: path});
                         Utils.triggerFn(fn);
                         $rootScope.$safeApply(scope);
                     }
@@ -224,8 +227,8 @@ WM.module('wm.widgets.basic')
                                 $timeout(function () {
                                     scope.$watch('scopedataset', function (newVal) {
                                         onPropertyChange('scopedataset', newVal);
-                                    });
-                                }, 0, true);
+                                    }, true);
+                                }, 0);
                             }
 
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
