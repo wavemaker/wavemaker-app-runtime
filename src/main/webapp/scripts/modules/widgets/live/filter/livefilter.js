@@ -137,7 +137,7 @@ WM.module('wm.widgets.live')
                             "databaseName": variable.liveSource,
                             "query": query,
                             "page": 1,
-                            "size": 500,
+                            "size": variable.maxResults || 20,
                             "nativeSql": false,
                             "prefabName": variable.prefabName
                         }, function (data) {
@@ -310,7 +310,7 @@ WM.module('wm.widgets.live')
                                             "databaseName": variable.liveSource,
                                             "query": query,
                                             "page": 1,
-                                            "size": 500,
+                                            "size": variable.maxResults || 20,
                                             "nativeSql": false,
                                             "prefabName": variable.prefabName
                                         }, function (data) {
