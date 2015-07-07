@@ -200,6 +200,9 @@ WM.module('wm.widgets.form')
  *                  display pattern of dates. <br>
  *                  This property is bindable. <br>
  *                  Default value : 'dd-MM-yyyy'
+ * @param {string=} outputformat
+ *                  output format of the widget. <br>
+ *                  Default value : 'yyyy-MM-dd'
  *@param {boolean=} required
  *                  required is a bindable property. <br>
  *                  if the required property is set to true, `required` class is applied to the label[an asterik will be displayed next to the content of the label']. <br>

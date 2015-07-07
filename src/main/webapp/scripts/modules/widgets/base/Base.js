@@ -477,8 +477,8 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "disabled": {"type": "boolean"},
                     "mindate": {"type": "string", "hint": "yyyy-MM-dd"},
                     "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
-                    "datepattern": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
-                    "outputformat": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
+                    "datepattern": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datepatterns"},
+                    "outputformat": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datepatterns"},
                     "datavalue": {"type": "date, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd"}
                 },
                 "wm.calendar": {
@@ -508,6 +508,21 @@ base.factories.PropertiesFactory = ['WIDGET_CONSTANTS', function (WIDGET_CONSTAN
                     "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                     "required": {"type": "boolean"},
                     "datavalue": {"type": "time, string, number", "widget": "time", "bindable": "in-out-bound"}
+                },
+                "wm.datetime": {
+                    "placeholder": {"type": "string", "value": "Select date time"},
+                    "width": {"type": "string", "pattern": dimensionRegex},
+                    "autofocus": {"type": "boolean"},
+                    "readonly": {"type": "boolean"},
+                    "disabled": {"type": "boolean"},
+                    "hourstep": {"type": "number", "value": 1},
+                    "minutestep": {"type": "number", "value": 15},
+                    "ismeridian": {"type": "boolean", "value": true},
+                    "mindate": {"type": "string", "hint": "yyyy-MM-dd"},
+                    "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
+                    "datepattern": {"value": "yyyy-MM-dd HH:mm", "type": "list", "options": [], "widget": "datetimepatterns"},
+                    "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
+                    "datavalue": {"type": "timestamp, date, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"}
                 },
                 "wm.message": {
                     "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
@@ -3091,6 +3106,7 @@ base.services.Widgets = ["$rootScope", 'wmToaster', 'CONSTANTS', function ($root
                     "wm-date",
                     "wm-calendar",
                     "wm-time",
+                    "wm-datetime",
                     "wm-currency",
                     "wm-colorpicker",
                     "wm-slider",
