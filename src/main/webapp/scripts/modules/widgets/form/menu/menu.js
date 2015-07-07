@@ -96,7 +96,13 @@ WM.module('wm.widgets.form')
 
             scope.widgetProps.datafield.options = [];
             scope.widgetProps.displayfield.options = [];
-            scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': '', 'displayfield': ''});
+            /* re-initialize the property values */
+            if (scope.newcolumns) {
+                scope.newcolumns = false;
+                scope.datafield = '';
+                scope.displayfield = '';
+                scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': scope.datafield, 'displayfield': scope.displayfield});
+            }
 
             if (WM.isString(dataset)) {
                 return;
@@ -114,14 +120,6 @@ WM.module('wm.widgets.form')
                     variableKeys.splice(index, 1);
                 }
             });
-
-            /* re-initialize the property values */
-            if (scope.newcolumns) {
-                scope.newcolumns = false;
-                scope.datafield = '';
-                scope.displayfield = '';
-                scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': scope.datafield, 'displayfield': scope.displayfield});
-            }
 
             scope.widgetProps.datafield.options = ['', ALLFIELDS].concat(variableKeys);
             scope.widgetProps.displayfield.options = [''].concat(variableKeys);
