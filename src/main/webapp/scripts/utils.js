@@ -1373,12 +1373,28 @@ WM.module('wm.utils', [])
          * @params: {scope} scope of the fucntion called. Used for eval
          */
         function getDisplayExprValue(object, displayExpr, scope) {
-            var keys = Object.keys(object).filter(function (val) {
-                return displayExpr.indexOf(val) !== -1;
-            });
+            var requiredFields = [], keys, relatedFieldKeys, dataObj, str = '';
+            keys = Object.keys(object);
             keys.forEach(function (column) {
-                var regexExpr = new RegExp("\\b" + column + "\\b", "g"),
-                    val = object[column];
+                if (_.includes(displayExpr, column)) {
+                    if (WM.isObject(object[column])) {
+                        dataObj = object[column];
+                        relatedFieldKeys = Object.keys(dataObj);
+                        relatedFieldKeys.forEach(function(field) {
+                            str = column + "." + field;
+                            if (_.includes(displayExpr, column)) {
+                                requiredFields.push({'field': str, 'value': dataObj[field]});
+                            }
+                        });
+                    } else {
+                        requiredFields.push({'field': column,'value': object[column]});
+                    }
+                }
+            });
+
+            requiredFields.forEach(function (column){
+                var regexExpr = new RegExp("\\b" + column.field + "\\b", "g"),
+                    val = column.value;
                 if (WM.isString(val)) {
                     val = "'" + val + "'";
                 }
