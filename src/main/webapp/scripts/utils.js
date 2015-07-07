@@ -1220,7 +1220,29 @@ WM.module('wm.utils', [])
             }
             markupStr = getValidMarkUp(markupStr);
 
-            var content = markupStr.replace(/>\s+</g, '><');
+            var content = markupStr.replace(/>\s+</g, '><'),
+                root = WM.element('<div></div>');
+
+            /* wm-livelist and wm-login elements will have ngController directive this will result in
+             * error:multidir Multiple Directive Resource Contention
+             * to resolve this issue,
+             * RunMode: remove the ngController directive from the element and add a wrapper with the controller name
+             * StudioMode: remove the ngController directive
+             */
+            if (APPCONSTANTS.isRunMode) {
+                root.html(content).find('wm-livelist, wm-login, wm-template')
+                    .each(function () {
+                        var widget = WM.element(this),
+                            wrapper,
+                            ctrlName = widget.attr('data-ng-controller') || widget.attr('ng-controller');
+
+                        if (ctrlName) {
+                            wrapper = WM.element('<div class="app-controller"></div>').attr('data-ng-controller', ctrlName);
+                            widget.removeAttr('data-ng-controller ng-controller').wrap(wrapper);
+                        }
+                    });
+                content = root[0].innerHTML;
+            }
 
             return content;
         }

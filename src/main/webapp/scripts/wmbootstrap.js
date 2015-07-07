@@ -39,8 +39,7 @@ var Application = WM.module('Application',
         'i18nService',
         'BaseService',
         'wmToaster',
-        'UIMigration',
-        function ($rootScope, $scope, $compile, $route, $location, ProjectService, BasicVariableService, $servicevariable, $liveVariable, Variables, NavigationVariableService, NotificationVariableService, LoginVariableService, LogoutVariableService, TimerVariableService, SecurityService, Utils, i18nService, BaseService, wmToaster, UIMigration) {
+        function ($rootScope, $scope, $compile, $route, $location, ProjectService, BasicVariableService, $servicevariable, $liveVariable, Variables, NavigationVariableService, NotificationVariableService, LoginVariableService, LogoutVariableService, TimerVariableService, SecurityService, Utils, i18nService, BaseService, wmToaster) {
             'use strict';
 
             /* add a node to the DOM to determine the mobile view */
@@ -143,18 +142,16 @@ var Application = WM.module('Application',
             /* compile html-content manually in the page & update the variable context */
             function compilePageAndUpdateVariables(pageName) {
                 var htmlMarkup = loadedPages[pageName].html;
-
-                htmlMarkup = WM.element(Utils.processMarkup(htmlMarkup));
-                htmlMarkup = UIMigration.run(htmlMarkup, false, true);
-
                 /* load the new page*/
                 /*Process markup*/
                 if ($rootScope.isPrefabType) {
                     // if the project type is prefab, manipulate the response.
                     // save the markup of the page. wmPrefabRun directive will process it.
-                    $rootScope.prefabTemplate = htmlMarkup;
-                    $rootScope.isPrefabTemplate = true;
+                    $rootScope.prefabTemplate = WM.element(Utils.processMarkup(htmlMarkup));
+                    $rootScope.isPrefabTemplate = htmlMarkup;
                     htmlMarkup = WM.element("<wm-prefab-run></wm-prefab-run>");
+                } else {
+                    htmlMarkup = WM.element(Utils.processMarkup(htmlMarkup));
                 }
 
                 /* set the page-level variables, registration will occur in the page directive */

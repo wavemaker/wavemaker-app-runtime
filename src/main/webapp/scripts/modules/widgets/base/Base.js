@@ -1704,9 +1704,8 @@ base.directives.pageContainer = [
     'CONSTANTS',
     'Utils',
     'WidgetUtilService',
-    'UIMigration',
 
-    function ($compile, $rootScope, $routeParams, PropertiesFactory, Variables, FileService, CONSTANTS, Utils, WidgetUtilService, UIMigration) {
+    function ($compile, $rootScope, $routeParams, PropertiesFactory, Variables, FileService, CONSTANTS, Utils, WidgetUtilService) {
         'use strict';
 
         var props = PropertiesFactory.getPropertiesOf('wm.pagecontainer'),
@@ -1762,7 +1761,7 @@ base.directives.pageContainer = [
             } else {
                 partialMarkup = partialMarkup + '<div class="content-overlay"></div>';
                 partialMarkup = WM.element(partialMarkup);
-                UIMigration.run(partialMarkup, true, false);
+                partialMarkup.find('wm-livelist, wm-login').removeAttr('data-ng-controller');
             }
 
             /*get the element scope*/
@@ -1883,7 +1882,7 @@ base.directives.pageContainer = [
             'compile': function () {
                 return {
                     'pre': function (iScope, element, attrs) {
-                        var partialName = attrs.content;
+                        var partialName = attrs.page || attrs.content;
                         WM.extend(iScope.widgetProps || {}, WM.copy(props));
                         iScope['page-container'] = true;
                         //Trigger registerPageContainer method of page widget when the content of this widget is loaded from other page.
@@ -1898,6 +1897,11 @@ base.directives.pageContainer = [
                         }
 
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, element, attrs), iScope, notifyFor);
+
+                        //support for deprecated page attribute;
+                        if (iScope.hasOwnProperty('page') && !iScope.content) {
+                            iScope.content = iScope.page;
+                        }
                     }
                 };
             }
