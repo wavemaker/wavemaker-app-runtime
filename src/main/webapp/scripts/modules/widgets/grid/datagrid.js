@@ -206,8 +206,7 @@ $.widget('wm.datagrid', {
             if (value.selected) {
                 headerClasses += ' info';
             }
-            htm += '<th data-col-id="' + id + '" data-col-field="' + field +
-                '" class="' + headerClasses + '" style="text-align: ' +
+            htm += '<th data-col-id="' + id + '" data-col-field="' + field + '" class="' + headerClasses + '" title="' + field + '" style="text-align: ' +
                 value.textAlignment + ';"';
             if (isUndefined(value.resizable) || value.resizable) {
                 htm += ' data-col-resizable';
