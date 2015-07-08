@@ -1001,7 +1001,6 @@ $.widget('wm.datagrid', {
                         colDef = self.preparedHeaderData[colId],
                         fields = colDef.field.split('.'),
                         text = $el.find('input').val();
-                    $el.text(text);
                     if (fields.length === 1) {
                         rowData[colDef.field] = text;
                     } else if (!isNewRow && fields[0] in rowData) {
@@ -1045,11 +1044,26 @@ $.widget('wm.datagrid', {
                     var $el = $(this);
                     $el.text($el.data('originalText'));
                 });
+                $editButton.removeClass('hidden');
+                $cancelButton.addClass('hidden');
+                $saveButton.addClass('hidden');
             }
-            $editButton.removeClass('hidden');
-            $cancelButton.addClass('hidden');
-            $saveButton.addClass('hidden');
         }
+    },
+
+    hideRowEditMode: function ($row) {
+        var $editableElements = $row.find('td.cell-editing'),
+            $editButton = $row.find('.edit-row-button'),
+            $cancelButton = $row.find('.cancel-edit-row-button'),
+            $saveButton = $row.find('.save-edit-row-button');
+        $editableElements.each(function () {
+            var $el = $(this),
+                text = $el.find('input').val();
+            $el.text(text);
+        });
+        $editButton.removeClass('hidden');
+        $cancelButton.addClass('hidden');
+        $saveButton.addClass('hidden');
     },
 
     /* Deletes a row. */

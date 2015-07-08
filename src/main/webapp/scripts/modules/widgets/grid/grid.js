@@ -895,7 +895,7 @@ WM.module('wm.widgets.grid')
                         }
                     }
                 },
-                insertRecord = function (rowData) {
+                insertRecord = function (rowData, evt) {
                     /*TODO To be uncommented after onRowinsert gets the right value i.e., onRowinsert should have the value defined from the widget events.*/
                     /*if (WM.isDefined($scope.onRowinsert)) {
                         $scope.onRowinsert(rowData);
@@ -913,6 +913,8 @@ WM.module('wm.widgets.grid')
                         if (response.error) {
                             wmToaster.show('error', 'ERROR', response.error);
                         } else {
+                            var row = $(evt.target).closest('tr');
+                            $scope.datagridElement.datagrid('hideRowEditMode', row);
                             wmToaster.show('success', 'SUCCESS', 'Record added successfully');
                             $scope.initiateHighlightRow('last', response, $scope.primaryKey);
                         }
@@ -920,7 +922,7 @@ WM.module('wm.widgets.grid')
                         wmToaster.show('error', 'ERROR', error);
                     });
                 },
-                updateRecord = function (rowData, prevData) {
+                updateRecord = function (rowData, prevData, evt) {
                     /*TODO To be uncommented after onRowupdated gets the right value i.e., onRowupdated should have the value defined from the widget events.*/
                     /*if (WM.isDefined($scope.onRowupdated)) {
                         $scope.onRowupdated(rowData);
@@ -940,6 +942,8 @@ WM.module('wm.widgets.grid')
                             wmToaster.show('error', 'ERROR', response.error);
                         } else {
                             $scope.operationType = "";
+                            var row = $(evt.target).closest('tr');
+                            $scope.datagridElement.datagrid('hideRowEditMode', row);
                             wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
                             $scope.initiateHighlightRow('current', response, $scope.primaryKey);
                         }
@@ -1104,7 +1108,7 @@ WM.module('wm.widgets.grid')
                     deleteRecord(rowData, cancelRowDeleteCallback);
                 },
                 onRowInsert: function (rowData, e) {
-                    insertRecord(rowData);
+                    insertRecord(rowData, e);
                 },
                 beforeRowUpdate: function (rowData, e) {
                     /*TODO: Check why widgetid is undefined here.*/
@@ -1115,7 +1119,7 @@ WM.module('wm.widgets.grid')
 //                    $scope.beforeRowupdate({$data: rowData, $event: e});
                 },
                 afterRowUpdate: function (rowData, e) {
-                    updateRecord(rowData, $scope.prevData);
+                    updateRecord(rowData, $scope.prevData, e);
                 },
                 onSetRecord: function (rowData, e) {
                     $scope.onSetrecord({$data: rowData, $event: e});
