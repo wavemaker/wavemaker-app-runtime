@@ -173,7 +173,9 @@ var Application = WM.module('Application',
                 "$routeChangeSuccess",
                 function () {
 
-                    var pageName = (Utils.getCurrentPage() === "login.html") ? "Login" : $route.current.params.name,
+                    var locationPath = window.location.href,
+                        lastLocation = window.location.href.lastIndexOf("/"),
+                        pageName = locationPath.substr(lastLocation + 1, locationPath.length) || $route.current.params.name,
                         loadPage;
 
 
@@ -201,7 +203,7 @@ var Application = WM.module('Application',
                     };
 
                     Application.loadResources(pageName, function () {
-                        if (Utils.getCurrentPage() === "login.html" && pageName === "Login") {
+                        if (Utils.getCurrentPage() === "login.html") {
                             loadPage(pageName);
                         } else {
                             /* check the security status */
@@ -357,7 +359,7 @@ Application.config(['$routeProvider', '$controllerProvider', '$filterProvider', 
         Application.$filter = $filterProvider.register;
 
         if (window.location.pathname.split("/").pop() === "login.html") {
-            $routeProvider.when('/Login', {
+            $routeProvider.when('/:name', {
                 controllerAs: 'AppController'
             }).otherwise({
                 redirectTo: 'Login'

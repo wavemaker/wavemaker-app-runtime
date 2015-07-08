@@ -75,7 +75,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                     }
                     return;
                 }
-                variable.promise = SecurityService.appLogin(params, function () {
+                variable.promise = SecurityService.appLogin(params, function (response) {
                     if (CONSTANTS.isRunMode) {
                         $rootScope.isUserAuthenticated = true;
                         Utils.triggerFn(success);
@@ -87,7 +87,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                         });
                     }
                     if (variable.useDefaultSuccessHandler) {
-                        $window.location = 'index.html';
+                        $window.location = response && response.url ? response.url : 'index.html';
                     }
                 }, function () {
                     /* if in RUN mode, trigger error events associated with the variable */

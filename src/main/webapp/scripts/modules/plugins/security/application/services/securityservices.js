@@ -17,6 +17,7 @@ wm.plugins.security.services.SecurityService = [
 
         /* to store general options & roles */
         var _roles,
+            _rolesConfig,
             _interceptUrls,
             _generalOptions,
             loggedInUser,
@@ -626,7 +627,77 @@ wm.plugins.security.services.SecurityService = [
                     Utils.triggerFn(successCallback, _roles);
                 }
             },
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#getRolesConfig
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The API is used to retrieve the role config landing page details.
+             * This configuration defines the landing page configurations for each role. User will be re-directed
+             * to the landing page configured for the user's specific role.
+             *
+             * @param {string} projectID project id
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
 
+            getRolesConfig: function (projectID, successCallback, failureCallback) {
+                if (!_rolesConfig) {
+                    BaseService.send({
+                        target: 'Security',
+                        action: 'getRolesConfig',
+                        urlParams: {
+                            projectID: projectID
+                        }
+                    }, function (response) {
+                        _rolesConfig = response;
+                        Utils.triggerFn(successCallback, response);
+                    }, failureCallback);
+                } else {
+                    Utils.triggerFn(successCallback, _rolesConfig);
+                }
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#setRolesConfig
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * The API is used to set the role configuration details with the landing page configured for each role.
+             * The property tag in the xml file is as follows:
+             * <property name="roles">
+             *      <list>
+             *          <role name="admin" desc="">
+             *              <role-config landing-page="Admin" />
+             *          </role>
+             *          <role name="guest" desc="">
+             *              <role-config landing-page="Main" />
+             *          </role>
+             *      </list>
+             * </property>
+             *
+             * @param {object} params object containing parameters for the request
+             * @param {function} successCallback to be called on success
+             * @param {function} failureCallback to be called on failure
+             */
+
+            setRolesConfig: function (params, successCallback, failureCallback) {
+                BaseService.send({
+                    target: 'Security',
+                    action: 'setRolesConfig',
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.config
+                }, function (response) {
+                    _rolesConfig = params.config;
+                    Utils.triggerFn(successCallback, response);
+                }, failureCallback);
+            },
             /**
              * @ngdoc function
              * @name wm.security.$SecurityService#setRoles
