@@ -15,8 +15,14 @@
  */
 package com.wavemaker.runtime.security;
 
-import com.wavemaker.studio.common.CommonConstants;
-import com.wavemaker.studio.common.model.RoleConfig;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -26,12 +32,8 @@ import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.studio.common.model.RoleConfig;
 
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
@@ -77,9 +79,11 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             if (userRoles.length > 0) {
                 String role = userRoles[0];
                 RoleConfig roleConfig = roleMap.get(role);
-                final String landingPage = roleConfig.getLandingPage();
-                if (landingPage != null && !landingPage.isEmpty()) {
-                    redirectURL = redirectURL + "/index.html" + landingPage;
+                if (roleConfig != null) {
+                    String landingPage = roleConfig.getLandingPage();
+                    if (org.apache.commons.lang3.StringUtils.isNotBlank(landingPage)) {
+                        redirectURL += "/index.html" + landingPage;
+                    }
                 }
             }
 
