@@ -4,7 +4,7 @@
 /*Directive for Nav*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmNav', ['Utils', 'PropertiesFactory', 'WidgetUtilService', '$rootScope', '$compile', '$timeout', function (Utils, PropertiesFactory, WidgetUtilService, $rootScope, $compile, $timeout) {
+    .directive('wmNav', ['Utils', 'PropertiesFactory', 'WidgetUtilService', '$rootScope', '$compile', '$timeout', '$routeParams', function (Utils, PropertiesFactory, WidgetUtilService, $rootScope, $compile, $timeout, $routeParams) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.layouts']),
             notifyFor = {
@@ -73,6 +73,9 @@ WM.module('wm.layouts.containers')
                         $innericonNode,
                         ulNode,
                         $caret = WM.element('<span class="caret"></span>');
+                    if ($routeParams.name === (itemLink && itemLink.substring(1))) {
+                        $anchor.addClass("active");
+                    }
                     if (itemChildren && WM.isArray(itemChildren)) {
                         $iconNode.addClass(itemClass);
                         $anchor.html(itemLabel).attr('dropdown-toggle', '').addClass('app-anchor dropdown-toggle').prepend($iconNode).append($caret);
