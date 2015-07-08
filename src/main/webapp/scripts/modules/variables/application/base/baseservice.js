@@ -878,7 +878,7 @@ wm.variables.services.Variables = [
                 }
 
                 /* Assign a unique id to the newly created variable */
-                variableObj['_id'] = "wm-" + variableObj.category + name +  (new Date().getTime());
+                variableObj['_id'] = "wm-" + name + "-" + variableObj.category + "-" + (new Date().getTime());
 
                 /* Store variable based on type */
                 varCollectionObj[owner][name] = variableObj;
