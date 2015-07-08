@@ -36,6 +36,16 @@ WM.module('wm.widgets.live')
                 transclude: true,
                 scope: {},
                 controller: function ($scope) {
+                    $scope.dateTimeFormats = {
+                        "date": "yyyy-MM-dd",
+                        "time": "HH:mm:ss",
+                        "timestamp": "yyyy-MM-dd HH:mm:ss"
+                    };
+                    $scope.isDateTime = {
+                        "date": true,
+                        "time": true,
+                        "timestamp": true
+                    };
                     $scope.__compileWithIScope = true;
                     $scope.clearFilter = function () {
                         WM.forEach($scope.filterFields, function (filterField) {
@@ -60,7 +70,9 @@ WM.module('wm.widgets.live')
                             variable;
                         WM.forEach($scope.filterFields, function (filterField) {
                             var fieldValue,
-                                isBoolean = false;
+                                isBoolean = false,
+                                minValue = filterField.minValue,
+                                maxvalue = filterField.maxValue;
                             /* if field is part of a related entity, column name will be 'entity.fieldName' */
                             if (filterField.isRelated) {
                                 colName = filterField.field + '.' + filterField.lookupField;
@@ -69,21 +81,21 @@ WM.module('wm.widgets.live')
                             }
 
                             if (filterField.isRange) {
-                                if (filterField.widget === "date") {
-                                    filterField.minValue = $filter('date')(filterField.minValue, 'yyyy-MM-dd');
-                                    filterField.maxValue = $filter('date')(filterField.maxValue, 'yyyy-MM-dd');
+                                if ($scope.isDateTime[filterField.widget]) {
+                                    minValue = $filter('date')(minValue, $scope.dateTimeFormats[filterField.widget]);
+                                    maxvalue = $filter('date')(maxvalue, $scope.dateTimeFormats[filterField.widget]);
                                 }
-                                if (filterField.minValue && filterField.maxValue) {
+                                if (minValue && maxvalue) {
                                     filterFields.push({
-                                        clause: "('" + filterField.minValue + "'<=" + filterField.field + " AND " + filterField.field + "<='" + filterField.maxValue + "')"
+                                        clause: "('" + minValue + "'<=" + filterField.field + " AND " + filterField.field + "<='" + maxvalue + "')"
                                     });
-                                } else if (filterField.minValue) {
+                                } else if (minValue) {
                                     filterFields.push({
-                                        clause: "('" + filterField.minValue + "'<=" + filterField.field + ")"
+                                        clause: "('" + minValue + "'<=" + filterField.field + ")"
                                     });
-                                } else if (filterField.maxValue) {
+                                } else if (maxvalue) {
                                     filterFields.push({
-                                        clause: "(" + filterField.field + "<='" + filterField.maxValue + "')"
+                                        clause: "(" + filterField.field + "<='" + maxvalue + "')"
                                     });
                                 }
                             } else {
@@ -105,8 +117,10 @@ WM.module('wm.widgets.live')
                                     }
                                     break;
                                 case 'date':
+                                case 'time':
+                                case 'timestamp':
                                     if (filterField.value) {
-                                        fieldValue = $filter('date')(filterField.value, 'yyyy-MM-dd');
+                                        fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget]);
                                     }
                                     break;
                                 case 'checkbox':
@@ -174,6 +188,12 @@ WM.module('wm.widgets.live')
                                 switch (type) {
                                 case "date":
                                     widgetType = "date";
+                                    break;
+                                case "time":
+                                    widgetType = "time";
+                                    break;
+                                case "timestamp":
+                                    widgetType = "timestamp";
                                     break;
                                 case "boolean":
                                     widgetType = "checkbox";
@@ -555,6 +575,46 @@ WM.module('wm.widgets.live')
                     template = template + '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
                         '<div class="col-md-8"><wm-date name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"  datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
+                        '</wm-composite>';
+                }
+                break;
+            case 'time':
+                if (fieldDef.isRange) {
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
+                    type = 'time';
+                    template = template +
+                        '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
+                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                        '<div class="col-md-4"><wm-time name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-time></div>' +
+                        '<div class="col-md-4"><wm-time name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-time></div>' +
+                        '</wm-composite>';
+                } else {
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
+                    type = 'time';
+                    template = template + '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
+                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                        '<div class="col-md-8"><wm-time name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-time></div>' +
+                        '</wm-composite>';
+                }
+                break;
+            case 'timestamp':
+                if (fieldDef.isRange) {
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
+                    type = 'timestamp';
+                    template = template +
+                        '<wm-composite widget="datetime" show="{{filterFields[' + index + '].show}}">' +
+                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                        '<div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-datetime></div>' +
+                        '<div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-datetime></div>' +
+                        '</wm-composite>';
+                } else {
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
+                    type = 'time';
+                    template = template + '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
+                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                        '<div class="col-md-8"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-datetime></div>' +
                         '</wm-composite>';
                 }
                 break;

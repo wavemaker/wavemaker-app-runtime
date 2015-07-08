@@ -6,13 +6,11 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/datetime.html',
             '<div class="app-datetime input-group dropdown" dropdown is-open="isTimeOpen" init-widget has-model ' + $rootScope.getWidgetStyles() +
-            ' title="{{hint}}" ' +
-            ' data-ng-show="show" ' +
-            ' data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
+            ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox" data-ng-model="_displayModel">' +
-                '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate()" data-ng-model="_dateModel" datepicker-popup={{datepattern}} min-date=mindate max-date=maxdate is-open="isDateOpen">' +
+                '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" data-ng-model="_dateModel" datepicker-popup={{datepattern}} min-date=mindate max-date=maxdate is-open="isDateOpen">' +
                 '<div class="dropdown-menu">' +
-                    '<timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="_onChange({$event: $event, $scope: this})"></timepicker>' +
+                    '<timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></timepicker>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
@@ -113,15 +111,50 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        scope.formatDateTime =  function () {
+                            var date,
+                                time,
+                                dateString,
+                                timeString,
+                                value;
+                            if (scope._timeModel || scope._dateModel) {
+                                time = scope._timeModel ? new Date(scope._timeModel) : new Date();
+                                date = scope._dateModel ? new Date(scope._dateModel) : new Date();
+                                dateString = $filter('date')(date, 'yyyy-MM-dd');
+                                timeString = $filter('date')(time, 'HH:mm');
+                                value = new Date(dateString + ' ' + timeString).getTime();
+                                if (scope.datepattern && scope.datepattern !== "timestamp") {
+                                    scope._displayModel = $filter('date')(value, scope.datepattern);
+                                } else {
+                                    scope._displayModel = value;
+                                }
+                                if (scope.outputformat && scope.outputformat !== "timestamp") {
+                                    scope._proxyModel = $filter('date')(value, scope.outputformat);
+                                } else {
+                                    scope._proxyModel = value;
+                                }
+                            } else {
+                                scope._displayModel = undefined;
+                                scope._proxyModel = undefined;
+                            }
+                        };
+
                         scope._onClick = _onClick.bind(undefined, scope);
                         scope._onDateClick = _onDateClick.bind(undefined, scope);
                         scope._onTimeClick = _onTimeClick.bind(undefined, scope);
                         /*On selection of a date, open the time picker popup*/
-                        scope.selectDate = function () {
+                        scope.selectDate = function (event) {
                             if (scope.isDateOpen) {
                                 scope.isTimeOpen = true;
                             }
-                        }
+                            scope.formatDateTime();
+                            scope._onChange({$event: event, $scope: scope});
+                        };
+                        scope.selectTime = function (event) {
+                            scope.formatDateTime();
+                            scope._onChange({$event: event, $scope: scope});
+                        };
                         /* handle initial readonly/disabled values */
                         $timeout(function () {
                             onPropertyChange('disabled', scope.disabled);
@@ -133,35 +166,26 @@ WM.module('wm.widgets.form')
                          *  */
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
-                                var date,
-                                    time,
-                                    dateString,
-                                    timeString,
-                                    value;
-                                time = this._timeModel ? new Date(this._timeModel) : new Date();
-                                date = this._dateModel ? new Date(this._dateModel) : new Date();
-                                dateString = date.toDateString();
-                                timeString = time.toTimeString();
-                                value = new Date(dateString + ' ' + timeString).getTime();
-                                if (this.datepattern && this.datepattern !== "timestamp") {
-                                    this._displayModel = $filter('date')(value, this.datepattern);
-                                } else {
-                                    this._displayModel = value;
-                                }
-                                if (this.outputformat && this.outputformat !== "timestamp") {
-                                    this._proxyModel = $filter('date')(value, this.outputformat);
-                                } else {
-                                    this._proxyModel = value;
-                                }
                                 return this._proxyModel;
                             },
                             set:  function (val) {
-                                var dateTime = new Date(val);
-                                if (dateTime) {
-                                    this._dateModel = this._timeModel = dateTime.getTime();
+                                if (!isNaN(val)) {
+                                    val = parseInt(val, 10);
                                 }
+                                var dateTime = new Date(val);
+                                if (new Date(val).getTime()) {
+                                    this._proxyModel = this._dateModel = this._timeModel = dateTime.getTime();
+                                } else {
+                                    this._proxyModel = this._dateModel = this._timeModel = undefined;
+                                }
+                                scope.formatDateTime();
                             }
                         });
+
+                        if (!attrs.datavalue && !attrs.scopedatavalue) {
+                            scope._model_ = Date.now();
+                        }
+
                         /*Set default value*/
                         if (attrs.datavalue) {
                             scope._model_ = attrs.datavalue;

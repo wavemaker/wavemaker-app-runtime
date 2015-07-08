@@ -107,34 +107,19 @@ WM.module('wm.widgets.form')
                             onPropertyChange('disabled', scope.disabled);
                             onPropertyChange('readonly', scope.readonly);
                         });
-                        scope.formatTime = function (time) {
-                            if (time && time.getHours) {
-                                var hours, minutes, seconds, meridian;
-                                hours = time.getHours();
-                                minutes = time.getMinutes();
-                                seconds = time.getSeconds();
-                                meridian = hours >= 12 ? 'PM' : 'AM';
-                                hours = hours % 12;
-                                hours = hours || 12; // the hour '0' should be '12'
-                                hours = hours < 10 ? '0' + hours : hours;
-                                minutes = minutes < 10 ? '0' + minutes : minutes;
-                                seconds = seconds < 10 ? '0' + seconds : seconds;
-                                // add a zero in front of numbers<10
-                                return hours + ':' + minutes + ':' + seconds + ' ' + meridian;
-                            }
-                        };
-
                         /* _model_ acts as a converter for _proxyModel
                          * read operation of _model_/datavalue will return epoch format of the date
                          * write operation of _model_ will update _proxyModel with Date object.
                          *  */
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
-                                this._timeModel = scope.formatTime(this._proxyModel);
+                                var timeValue;
+                                this._timeModel = $filter('date')(this._proxyModel, "hh:mm a");
+                                timeValue = new Date($filter('date')(this._proxyModel, "yyyy-MM-dd HH:mm")).getTime();
                                 if (this.outputformat && this.outputformat !== "timestamp") {
-                                    return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
+                                    return timeValue ? $filter('date')(timeValue, this.outputformat) : undefined;
                                 }
-                                return this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                                return timeValue ?  timeValue.valueOf() : undefined;
                             },
                             set: function (val) {
                                 if (val) {
@@ -150,7 +135,7 @@ WM.module('wm.widgets.form')
                                 } else {
                                     this._proxyModel = undefined;
                                 }
-                                this._timeModel = scope.formatTime(this._proxyModel);
+                                this._timeModel = $filter('date')(this._proxyModel, "hh:mm a");
                             }
                         });
 
