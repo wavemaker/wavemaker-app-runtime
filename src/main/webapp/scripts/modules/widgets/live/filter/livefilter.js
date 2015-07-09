@@ -149,6 +149,9 @@ WM.module('wm.widgets.live')
                         });
 
                         variable = $scope.Variables[$scope.variableName];
+                        /* Sending size = variable.maxResults because the number of records
+                         * should be fetched according to the page size of the widget bound
+                         * to result of livefilter. */
                         QueryBuilder.executeQuery({
                             "databaseName": variable.liveSource,
                             "query": query,
@@ -171,7 +174,7 @@ WM.module('wm.widgets.live')
                             * "currentPage" is set to "1" because each time the filter is applied, the dataNavigator should display results from the 1st page.*/
                             $scope.result.pagingOptions = {
                                 "dataSize": data.totalElements,
-                                "maxResults": $scope.Variables[$scope.variableName].maxResults || 20,
+                                "maxResults": variable.maxResults || 20,
                                 "currentPage": 1
                             };
                         });
@@ -328,11 +331,16 @@ WM.module('wm.widgets.live')
                                             filterField.datafield = filterField.field;
                                             filterField.displayfield = filterField.field;
                                         }
+                                        /* Sending size = 500 because we want to populate all data values in widgets
+                                         * like select box, checkbox set etc.
+                                         * NOTE: Currently backend is returning max. 100 records for any page size
+                                         * more than 100. So this size will need to change once backend is fixed to
+                                         * return all records instead of max 100 records in this case. */
                                         QueryBuilder.executeQuery({
                                             "databaseName": variable.liveSource,
                                             "query": query,
                                             "page": 1,
-                                            "size": variable.maxResults || 20,
+                                            "size": 500,
                                             "nativeSql": false,
                                             "prefabName": variable.prefabName
                                         }, function (data) {
