@@ -287,7 +287,10 @@ wm.variables.services.$liveVariable = [
                 var filterFields,
                     filterOptions = [],
                     orderByFields,
-                    orderByOptions = '';
+                    orderByOptions = '',
+                    primaryKey = variable.getPrimaryKey(),
+                    hasCompositeKey = isCompositeKey(primaryKey),
+                    hasNoPrimaryKey = isNoPrimaryKey(primaryKey);
 
                 filterFields = (!options.filterFields || WM.element.isEmptyObject(options.filterFields)) ? variable.filterFields : options.filterFields;
                 if (variable.operation === 'read') {
@@ -343,6 +346,12 @@ wm.variables.services.$liveVariable = [
                                     attributeName = column.relatedFieldName;
                                 }
                             });
+
+                            /* check if the field is a composite key */
+                            if (hasCompositeKey && (hasNoPrimaryKey || primaryKey.indexOf(attributeName) !== -1)) {
+                                attributeName = "id." + attributeName;
+                            }
+
                             filterOptions.push({
                                 "attributeName": attributeName,
                                 "attributeValue": fieldValue,
