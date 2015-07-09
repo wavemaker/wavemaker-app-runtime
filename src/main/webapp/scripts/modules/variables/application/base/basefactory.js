@@ -52,7 +52,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operation": {"type": "list", "required": true},
                     "operationType": {"type": "string", "hide": true},
                     "startUpdate": {"type": "boolean", "value": false},
-                    "autoUpdate": {"type": "boolean", "value": false},
+                    "autoUpdate": {"type": "boolean", "value": true},
                     "inFlightBehavior": {"type": "list", "options": {"doNotExecute": "doNotExecute", "executeLast": "executeLast", "executeAll": "executeAll"}, "value": "executeLast"},
                     "transformationRequired": {"type": "boolean-labelfirst", "value": false},
                     "columnField": {"type": "list", "options": {}, "hide": true},
@@ -79,7 +79,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "ignoreCase": {"type": "boolean", "value": false},
                     "matchMode": {"type": "list", "options": {"start": "start", "end": "end", "anywhere": "anywhere", "exact": "exact"}, "value": "start"},
                     "orderBy": {"type": "string", "placeholder": "e.g: 'field1,asc&field2,desc'"},
-                    "autoUpdate": {"value": false},
+                    "autoUpdate": {"value": true},
                     "startUpdate": {"value": false},
                     "inFlightBehavior": {"type": "list", "options": {"doNotExecute": "doNotExecute", "executeLast": "executeLast", "executeAll": "executeAll"}, "value": "executeLast"}
                 },
