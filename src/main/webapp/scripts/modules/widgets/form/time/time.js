@@ -114,10 +114,12 @@ WM.module('wm.widgets.form')
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
                                 var timeValue;
-                                this._timeModel = $filter('date')(this._proxyModel, "hh:mm a");
-                                timeValue = new Date($filter('date')(this._proxyModel, "yyyy-MM-dd HH:mm")).getTime();
-                                if (this.outputformat && this.outputformat !== "timestamp") {
-                                    return timeValue ? $filter('date')(timeValue, this.outputformat) : undefined;
+                                if (this._proxyModel) {
+                                    this._timeModel = $filter('date')(this._proxyModel, "hh:mm a");
+                                    timeValue = moment($filter('date')(this._proxyModel, "yyyy-MM-dd HH:mm")).valueOf();
+                                    if (this.outputformat && this.outputformat !== "timestamp") {
+                                        return timeValue ? $filter('date')(timeValue, this.outputformat) : undefined;
+                                    }
                                 }
                                 return timeValue ?  timeValue.valueOf() : undefined;
                             },

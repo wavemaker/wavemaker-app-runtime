@@ -123,7 +123,7 @@ WM.module('wm.widgets.form')
                                 date = scope._dateModel ? new Date(scope._dateModel) : new Date();
                                 dateString = $filter('date')(date, 'yyyy-MM-dd');
                                 timeString = $filter('date')(time, 'HH:mm');
-                                value = new Date(dateString + ' ' + timeString).getTime();
+                                value = moment(dateString + ' ' + timeString).valueOf();
                                 if (scope.datepattern && scope.datepattern !== "timestamp") {
                                     scope._displayModel = $filter('date')(value, scope.datepattern);
                                 } else {
@@ -173,7 +173,7 @@ WM.module('wm.widgets.form')
                                     val = parseInt(val, 10);
                                 }
                                 var dateTime = new Date(val);
-                                if (new Date(val).getTime()) {
+                                if (dateTime.getTime()) {
                                     this._proxyModel = this._dateModel = this._timeModel = dateTime.getTime();
                                 } else {
                                     this._proxyModel = this._dateModel = this._timeModel = undefined;
