@@ -362,7 +362,7 @@ WM.module('wm.widgets.base', [])
                     "wm.text": {
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean"},
-                        "updateon": {"type": "list", "options": ["blur", "default"], "value": "blur"},
+                        "updateon": {"type": "list", "value": "blur", "widget": "updateon"},
                         "updatedelay": {"type": "number", "value": 0},
                         "type": {"type": "list", "options": ["date", "email", "number", "password", "text", "url", "file"], "value": "text"},
                         "accept": {"type": "datalist", "options": ["image/*", "audio/*", "video/*"], "show": false},
@@ -702,7 +702,7 @@ WM.module('wm.widgets.base', [])
                         "scopedatavalue": {"type": "string"},
                         "placeholder": {"type": "string", "value": "Place your text"},
                         "maxchars": {"type": "number"},
-                        "updateon": {"type": "list", "options": ["blur", "default"], "value": "blur"},
+                        "updateon": {"type": "list", "value": "blur", "widget": "updateon"},
                         "updatedelay": {"type": "number", "value": 0}
                     },
 
