@@ -484,7 +484,7 @@ WM.module('wm.widgets.live')
                         '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-select></div>' +
                         '</wm-composite>';
                 } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Value';
                     template = template + '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
                         '<div class="col-md-8"><wm-select name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"';
