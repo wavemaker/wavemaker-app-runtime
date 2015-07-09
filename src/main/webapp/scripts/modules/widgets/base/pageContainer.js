@@ -47,7 +47,7 @@ WM.module('wm.widgets.base')
             }
 
             /* to manually compile the partial page*/
-            function compilePartialAndUpdateVariables(iScope, element, partialName, partialMarkup, isAsync) {
+            function compilePartialAndUpdateVariables(iScope, element, partialName, partialMarkup) {
                 var target = iScope.target,
                     scope;
 
@@ -91,10 +91,11 @@ WM.module('wm.widgets.base')
                     loadedPartials[partialName] = undefined;
                     iScope.toolbar = target.find('button.wm-included-page-heading').first();
                     $rootScope.$safeApply(iScope);
-                } else if (CONSTANTS.isRunMode && isAsync) {
+                } else if (CONSTANTS.isRunMode) {
                     /* if the compilation of whole page along with partials happen in Async, then call the page-part-load fn
                      * else don't call as the page-part is not registered */
-                    if (isAsync) {
+                    if (iScope.isPagePartRegistered) {
+                        iScope.isPagePartRegistered = undefined;
                         Utils.triggerFn(scope.onPagePartLoad);
                     }
                 }
@@ -138,7 +139,7 @@ WM.module('wm.widgets.base')
                             /*get individual file contents like - html/js/css */
                             loadedPartials[newVal] = Utils.parseCombinedPageContent(pageContent, newVal);
                             /* to compile the partial page*/
-                            compilePartialAndUpdateVariables(iScope, element, newVal, el, true);
+                            compilePartialAndUpdateVariables(iScope, element, newVal, el);
                         }, function () {
                             if (element[0].hasAttribute('page-container-target')) {
                                 target = element;
@@ -149,7 +150,7 @@ WM.module('wm.widgets.base')
                         });
                     } else {
                         /* to compile the partial page*/
-                        compilePartialAndUpdateVariables(iScope, element, newVal, el, false);
+                        compilePartialAndUpdateVariables(iScope, element, newVal, el);
                     }
                 } else {
                     if (CONSTANTS.isStudioMode) {
@@ -168,7 +169,7 @@ WM.module('wm.widgets.base')
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler(iScope, element, attrs, key, newVal) {
                 switch (key) {
-                    case 'content':
+                case 'content':
                     // if the $lazyLoad is method is defined on the iScope of the widget (eg, tabContent and accordionContent) and if the widget is not active
                     // load the page on-demand(lazily) otherwise load immediately
                     if (iScope.$lazyLoad && !iScope.isActive) {
@@ -208,6 +209,7 @@ WM.module('wm.widgets.base')
                             //Trigger registerPageContainer method of page widget when the content of this widget is loaded from other page.
                             // if the $lazyLoad method is defined on the iScope, do not register the pagePart.
                             if (CONSTANTS.isRunMode && partialName && !loadedPartials[partialName] && !iScope.$lazyLoad) {
+                                iScope.isPagePartRegistered = true;
                                 Utils.triggerFn(element.scope().registerPagePart);
                             }
                         },

@@ -73,7 +73,9 @@ WM.module('wm.layouts.page')
                                 // if the count is zero(means the page is ready), trigger update method of DeviceViewService
                                 if (!count) {
                                     //trigger the onPageReady method
-                                    Utils.triggerFn(scope.onPageReady);
+                                    if (scope.hasOwnProperty('onPageReady')) {
+                                        Utils.triggerFn(scope.onPageReady);
+                                    }
 
                                     /* if subview element names found (appended with page-name after a '.'), navigate to the view element */
                                     if ($routeParams && $routeParams.name) {
