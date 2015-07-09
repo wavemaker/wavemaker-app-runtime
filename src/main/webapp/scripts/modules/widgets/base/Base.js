@@ -1299,7 +1299,8 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "editfilters": {"type": "button", "hidelabel": true, "disabled": true},
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
-                        "layout": {"type": "list", "options": ["One Column", "Two Column", "Three Column", "Four Column"], "value": "One Column"}
+                        "layout": {"type": "list", "options": ["One Column", "Two Column", "Three Column", "Four Column"], "value": "One Column"},
+                        "pagesize": {"type": "number", "value": 20}
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},

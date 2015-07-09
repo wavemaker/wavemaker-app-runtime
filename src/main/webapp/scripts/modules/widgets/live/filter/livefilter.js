@@ -156,7 +156,7 @@ WM.module('wm.widgets.live')
                             "databaseName": variable.liveSource,
                             "query": query,
                             "page": 1,
-                            "size": variable.maxResults || 20,
+                            "size": $scope.pagesize || 20,
                             "nativeSql": false,
                             "prefabName": variable.prefabName
                         }, function (data) {
@@ -174,7 +174,7 @@ WM.module('wm.widgets.live')
                             * "currentPage" is set to "1" because each time the filter is applied, the dataNavigator should display results from the 1st page.*/
                             $scope.result.pagingOptions = {
                                 "dataSize": data.totalElements,
-                                "maxResults": variable.maxResults || 20,
+                                "maxResults": $scope.pagesize || 20,
                                 "currentPage": 1
                             };
                         });
