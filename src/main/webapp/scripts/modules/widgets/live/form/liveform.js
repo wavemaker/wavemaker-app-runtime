@@ -18,9 +18,14 @@ WM.module('wm.widgets.live')
                 'formtype': true,
                 'layout': true
             },
-
-            isTimeStampType = function (field) {
-                return field.widgetType === 'Timestamp' || (field.type === 'timestamp' && !field.widgetType);
+            /*check if the field is of column type time or widget type time*/
+            isTimeType = function (field) {
+                return field.widgetType === 'Time' || (field.type === 'time' && !field.widgetType);
+            },
+            /*Convert time value to a valid date time value*/
+            getValidTime = function (val) {
+                var date = (new Date()).toDateString();
+                return (new Date(date + ' ' + val)).getTime();
             };
 
         return {
@@ -288,12 +293,6 @@ WM.module('wm.widgets.live')
                 /*clear the dataArray*/
                 function emptyDataModel() {
                     $scope.dataArray.forEach(function (dataValue) {
-                        if (isTimeStampType(dataValue)) {
-                            dataValue.datevalue = dataValue.timevalue = Date.now();
-                        }
-                        if (dataValue.type === "time") {
-                            dataValue.timevalue = Date.now();
-                        }
                         if (dataValue.type === 'blob') {
                             WM.element($scope.formElement).find('[name=' + dataValue.key + ']').val('');
                             dataValue.href = '';
@@ -336,6 +335,11 @@ WM.module('wm.widgets.live')
                     "video": "video/*",
                     "audio": "audio/*"
                 };
+                $scope.isDateTimeWidgets = {
+                    "Date": true,
+                    "Timestamp": true,
+                    "Time": true
+                };
                /*Set if any default values, if given*/
                 $scope.setDefaults = function () {
                     $scope.dataArray.forEach(function (fieldObj) {
@@ -343,16 +347,13 @@ WM.module('wm.widgets.live')
                     });
                 };
                 $scope.setDefaultValueToValue = function (fieldObj) {
+                    var defaultValue = fieldObj.defaultValue;
                     /*Set the default value only if it exists.*/
-                    if (fieldObj.defaultValue && fieldObj.defaultValue !== "null") {
-                        if (fieldObj.type === 'integer') {
-                            fieldObj.value = isNaN(Number(fieldObj.defaultValue)) ? '' : Number(fieldObj.defaultValue);
-                        } else if (fieldObj.type === 'timestamp') {
-                            fieldObj.timevalue = fieldObj.datevalue = new Date(Number(fieldObj.defaultValue) || fieldObj.defaultValue);
-                        } else if (fieldObj.type === 'time') {
-                            fieldObj.timevalue = fieldObj.defaultValue;
+                    if (defaultValue && defaultValue !== "null") {
+                        if (Utils.isNumberType(fieldObj.type)) {
+                            fieldObj.value = isNaN(Number(defaultValue)) ? null : Number(defaultValue);
                         } else {
-                            fieldObj.value = fieldObj.defaultValue;
+                            fieldObj.value = defaultValue;
                         }
                     }
                     if (fieldObj.type === "blob") {
@@ -394,29 +395,10 @@ WM.module('wm.widgets.live')
                         formData = new FormData();
                     }
                     dataArray.forEach(function (field) {
-                        var date,
-                            time,
-                            dateString,
-                            timeString,
-                            primaryKey;
                         /*collect the values from the fields and construct the object*/
-                        if (isTimeStampType(field)) {
-                            /*timestamp has two widgets, date and time.
-                             Hence take the date from date widget and time from time widget  and then form the timestamp*/
-                            date = field.datevalue ? new Date(field.datevalue) : new Date();
-                            time = field.timevalue ? new Date(field.timevalue) : new Date();
-                            dateString = date.toDateString();
-                            timeString = time.toTimeString();
-                            field.value = dateString + ' ' + timeString;
-                            field.value = new Date(field.value);
-                            field.value = field.value.getTime();
-                            if (field.outputformat && (field.outputformat !== "timestamp")) {
-                                dataObject[field.key] = $filter('date')(field.value, field.outputformat);
-                            } else {
-                                dataObject[field.key] = field.value;
-                            }
-                        } else if (field.type === "time" || field.widgetType === "Time") {
-                            dataObject[field.key] = field.timevalue;
+                        /*Format the output of date time widgets to the given output format*/
+                        if ($scope.isDateTimeWidgets[field.widgetType] && field.outputformat && field.outputformat !== "timestamp") {
+                            dataObject[field.key] = $filter('date')(field.value, field.outputformat);
                         } else if (field.type === "blob") {
                             if (isFormDataSupported) {
                                 $scope.multipartData = true;
@@ -534,45 +516,36 @@ WM.module('wm.widgets.live')
                     return translatedObj;
                 };
                 $scope.changeDataObject = function (dataObj) {
-                    var date,
-                        primaryKey,
+                    var primaryKey,
                         href;
                     $scope.dataArray.forEach(function (value) {
-                        if (isTimeStampType(value)) {
-                            value.datevalue = value.timevalue = dataObj[value.key];
-                        }
-                        if (value.type === "time") {
-                            date = (new Date()).toDateString();
-                            value.timevalue = (new Date(date + ' ' + dataObj[value.key])).getTime();
-                        }
-                        if (value.type === "blob") {
+                        if (isTimeType(value)) {
+                            value.value = getValidTime(dataObj[value.key]);
+                        } else if (value.type === "blob") {
                             primaryKey = $scope.dataset.propertiesMap.primaryKeys.join();
                             href = (($scope.variableObj.prefabName !== "" &&  $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
                             href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + value.key + '?' + Math.random();
                             value.href = href;
+                        } else {
+                            value.value = dataObj[value.key];
                         }
-                        value.value = dataObj[value.key];
                     });
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
-                    var dataObj = $scope.rowdata, date, primaryKey, href;
+                    var dataObj = $scope.rowdata, primaryKey, href;
                     if (!dataObj) {
                         return;
                     }
-                    if (isTimeStampType(fieldDef)) {
-                        fieldDef.datevalue = fieldDef.timevalue = dataObj[fieldDef.key];
-                    }
-                    if (fieldDef.type === "time") {
-                        date = (new Date()).toDateString();
-                        fieldDef.timevalue = (new Date(date + ' ' + dataObj[fieldDef.key])).getTime();
-                    }
-                    if (fieldDef.type === "blob") {
+                    if (isTimeType(fieldDef)) {
+                        fieldDef.value = getValidTime(dataObj[fieldDef.key]);
+                    } else if (fieldDef.type === "blob") {
                         primaryKey = $scope.dataset.propertiesMap.primaryKeys.join();
                         href = 'services/' + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + fieldDef.key + '?' + Math.random();
                         fieldDef.href = href;
+                    } else {
+                        fieldDef.value = dataObj[fieldDef.key];
                     }
-                    fieldDef.value = dataObj[fieldDef.key];
                 };
 
                 /*For related fields, get the display value from the object*/
@@ -1028,7 +1001,7 @@ WM.module('wm.widgets.live')
                         '<div class="col-md-9 col-sm-9">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy\'}}" show="{{!isUpdateMode}}"></wm-label>' +
                             '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" ' +
-                                'regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}">' +
+                                'regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}">' +
                             '</wm-time>' +
                         '</div>' +
                     '</wm-composite>';
@@ -1040,15 +1013,12 @@ WM.module('wm.widgets.live')
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                         '<div class="col-md-3 col-sm-4">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy hh:mm:ss\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].datevalue" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"  mindate="{{dataArray[' + index + '].minvalue}}" maxdate="{{dataArray[' + index + '].maxvalue}}"';
+                            '<wm-datetime name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"  mindate="{{dataArray[' + index + '].minvalue}}" maxdate="{{dataArray[' + index + '].maxvalue}}"';
                 if (fieldDef.datepattern) {
                     template = template + ' datepattern="{{dataArray[' + index + '].datepattern}}"';
                 }
                 template = template +
-                    '></wm-date></div>' +
-                        '<div class="col-md-6 col-sm-5">' +
-                            '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].timevalue" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"></wm-time>' +
-                        '</div>' +
+                    '></wm-datetime></div>' +
                     '</wm-composite>';
                 break;
             case "Slider":

@@ -44,7 +44,7 @@ WM.module('wm.utils', [])
                 NO_QUOTES_ALLOWED: /^[^'|"]*$/,
                 VALID_HTML: /<[a-z][\s\S]*>/i
             },
-            NUMBER_TYPES = ["int", "integer", "float", "double", "short", "byte"],
+            NUMBER_TYPES = ["int", "integer", "float", "double", "short", "byte", "big_integer", "big_decimal"],
             SYSTEM_FOLDER_PATHS = {
                 'project': ['../lib', '../project', '../project/services', '../project/lib', '../project/src', '../project/test', '../project/src/main', '../project/src/main/webapp', '../project/src/main/resources', '../project/src/main/webapp/services', '../project/src/main/webapp/resources', '../project/src/main/webapp/pages', '../project/src/main/webapp/resources/images', '../project/src/main/webapp/resources/WEB-INF', '../project/src/main/webapp/resources/ngLocale', '../project/src/main/webapp/resources/i18n', '../project/src/main/webapp/resources/images/imagelists', '../project/src/main/webapp/resources/audio', '../project/src/main/webapp/resources/video'],
                 'resources': ['', '/services', '/resources', '/WEB-INF', '/app', '/pages', '/resources/i18n', '/resources/ngLocale', 'resources/images', 'resources/audio', 'resources/video', 'resources/images/imagelists'],
