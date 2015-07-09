@@ -221,7 +221,8 @@ WM.module('wm.utils')
             /* converts epoch or date object to date-string in the given format */
             function toDate(data, format) {
                 var isEpoch = !isNaN(+data),
-                    isDate;
+                    isDate,
+                    timestamp;
                 if (isEpoch) {
                     return epoch2dateStr(data, format);
                 }
@@ -229,6 +230,10 @@ WM.module('wm.utils')
                 isDate = WM.isDate(data);
                 if (isDate) {
                     return date2dateStr(data, format);
+                }
+                timestamp = moment(data).valueOf();
+                if (data && timestamp) {
+                    return date2dateStr(timestamp, format);
                 }
 
                 return undefined;
