@@ -107,6 +107,8 @@ WM.module('wm.layouts.containers')
                         tab.onSelect();
                     }
 
+                    // when tabContent is set to display external page, triggering $lazyLoad on select of the tab will render the content.
+                    Utils.triggerFn(tab.tabContent.$lazyLoad);
                 };
 
                 /* make selectedTab method available to the isolateScope of the tabs directive. */
@@ -297,7 +299,8 @@ WM.module('wm.layouts.containers')
                 };
 
                 /* this method will be called by the tabcontent child */
-                this.registerContent = function () {
+                this.registerContent = function (scope) {
+                    $scope.tabContent = scope;
                     /* return the scope of tabpane, so that content will be able to listen to the properties on this */
                     return $scope;
                 };
@@ -429,21 +432,34 @@ WM.module('wm.layouts.containers')
             'compile': function () {
 
                 return {
-                    'pre': function (scope) {
-                        scope.widgetProps = WM.copy(widgetProps);
-                        if (scope.widgetProps.show) {
-                            delete scope.widgetProps.show;// show property should be handled from pane.
+                    'pre': function (iScope) {
+                        iScope.widgetProps = WM.copy(widgetProps);
+                        if (iScope.widgetProps.show) {
+                            delete iScope.widgetProps.show;// show property should be handled from pane.
                         }
+
+                        // define $lazyLoad method on iScope.
+                        // pageContainer widget will override this.
+                        iScope.$lazyLoad = WM.noop;
                     },
-                    'post': function (scope, element, attrs, ctrl) {
+                    'post': function (iScope, element, attrs, ctrl) {
                         /*
                          * register the tabcontent with the tab pane
                          * save the reference of the tabpane's scope in tabcontent's scope
                          */
-                        scope.tab = ctrl.registerContent(scope);
+                        iScope.tab = ctrl.registerContent(iScope);
+                        // define isActive property on the iScope of tab content.
+                        // this property will be used by page-container directive.
+                        // when content property is set, the page corresponding to the value of content will be loaded on demand.
+                        // if the tab is active (i.e, selected) page will be loaded immediately.
+                        Object.defineProperty(iScope, 'isActive', {
+                            get: function () {
+                                return this.tab.isActive;
+                            }
+                        });
 
                         /* initialize the widget */
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        WidgetUtilService.postWidgetCreate(iScope, element, attrs);
                     }
                 };
             }
