@@ -1420,7 +1420,6 @@ WM.module('wm.widgets.grid')
                                     $scope.readonlygrid = true;
                                 }
                             }
-
                             $scope.contentBaseUrl = (( variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                         }
                         /*if the grid is not bound to widgets*/
@@ -1428,19 +1427,24 @@ WM.module('wm.widgets.grid')
                         /*If the variable is deleted hiding the spinner and showing the no data found message*/
                         $scope.datagridElement.datagrid('setStatus', 'error', $scope.nodatamessage);
                     }
-
-                    if (CONSTANTS.isStudioMode) {
-                        /*Make the "pageSize" property readonly so that no editing is possible.*/
-                        $scope.widgetProps.pagesize.disabled = $scope.variableType === 'wm.LiveVariable';
-                    }
                 }
-                /* In Studio, disabling readonlygrid property if bound to a service variable. */
+                /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                 if (CONSTANTS.isStudioMode) {
+                    /* Make the 'pagesize' property readonly for live variable bindings.*/
+                    $scope.widgetProps.pagesize.disabled = isBoundToLiveVariable;
+                    /* In Studio, disabling readonlygrid property if bound to a service variable. */
                     if (!($scope.binddataset && isBoundToServiceVariable)) {
                         $scope.widgetProps.readonlygrid.disabled = false;
                     } else {
                         $rootScope.$emit('update-widget-property', 'readonlygrid', true);
                         $scope.widgetProps.readonlygrid.disabled = true;
+                    }
+                    /* If bound to live filter result, disable grid search. */
+                    if (isBoundToWidget && $scope.binddataset.indexOf('livefilter') !== -1) {
+                        $rootScope.$emit('update-widget-property', 'gridsearch', false);
+                        $scope.widgetProps.gridsearch.disabled = true;
+                    } else {
+                        $scope.widgetProps.gridsearch.disabled = false;
                     }
                 }
                 if (!WM.isObject(newVal) || (newVal && newVal.dataValue === '')) {
