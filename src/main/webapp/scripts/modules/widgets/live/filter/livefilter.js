@@ -50,7 +50,7 @@ WM.module('wm.widgets.live')
                     $scope.clearFilter = function () {
                         WM.forEach($scope.filterFields, function (filterField) {
                             //Added check for range field
-                            if (!filterField.readonly) {
+                            if (!filterField.readonly && filterField.show) {
                                 if (filterField.isRange) {
                                     filterField.minValue = '';
                                     filterField.maxValue = '';
