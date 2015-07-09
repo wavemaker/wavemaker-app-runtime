@@ -139,6 +139,8 @@ WM.module('wm.layouts.containers')
                                     .each(function () {
                                         Utils.triggerFn(WM.element(this).isolateScope().redraw);
                                     });
+                                // when accordionContent is set to display external page, triggering $lazyLoad on expand of the accordion pane will render the content.
+                                Utils.triggerFn(scope.accordionContent.$lazyLoad);
                                 /* trigger the onExpand call back */
                                 scope.onExpand();
                                 panesCtrl.closeOthers(scope);
@@ -222,15 +224,32 @@ WM.module('wm.layouts.containers')
             'require': '^wmAccordionpane',
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        scope.widgetProps = WM.copy(widgetProps);
-                        if (scope.widgetProps.show) {
-                            delete scope.widgetProps.show;// show property should be handled from pane.
+                    'pre': function (iScope) {
+                        iScope.widgetProps = WM.copy(widgetProps);
+                        if (iScope.widgetProps.show) {
+                            delete iScope.widgetProps.show;// show property should be handled from pane.
                         }
+                        // define $lazyLoad method on iScope.
+                        // pageContainer widget will override this.
+                        iScope.$lazyLoad = WM.noop;
                     },
-                    'post': function (scope, element, attrs, paneCtrl) {
-                        scope.pane = paneCtrl.getPaneScope();
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    'post': function (iScope, element, attrs, paneCtrl) {
+                        iScope.pane = paneCtrl.getPaneScope();
+
+                        // save a reference of accordionContent in accordionPane
+                        // accordionPane will use this reference to trigger $lazyLoad method.
+                        iScope.pane.accordionContent = iScope;
+
+                        // define isActive property on the iScope of accordion content.
+                        // this property will be used by page-container directive.
+                        // when content property is set, the page corresponding to the value of content will be loaded on demand.
+                        // if the pane is active (i.e, expanded) page will be loaded immediately.
+                        Object.defineProperty(iScope, 'isActive', {
+                            get: function () {
+                                return this.pane.active;
+                            }
+                        });
+                        WidgetUtilService.postWidgetCreate(iScope, element, attrs);
                     }
                 };
             }
