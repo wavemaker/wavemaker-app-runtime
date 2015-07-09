@@ -15,7 +15,8 @@ wm.plugins.database.services.QueryBuilder = [
     "DatabaseService",
     "Utils",
     "ProjectService",
-    function ($rootScope, DatabaseService, Utils, ProjectService) {
+    "$liveVariable",
+    function ($rootScope, DatabaseService, Utils, ProjectService, $liveVariable) {
         'use strict';
 
         return {
@@ -108,6 +109,7 @@ wm.plugins.database.services.QueryBuilder = [
                         "service": options.prefabName ? "" : "services",
                         "url": options.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + options.prefabName) : $rootScope.project.deployedUrl
                     }, function (response) {
+                        $liveVariable.processResponse(response.content);
                         Utils.triggerFn(success, response);
                     }, function (response) {
                         Utils.triggerFn(error, response);

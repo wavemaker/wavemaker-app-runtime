@@ -53,6 +53,23 @@ wm.variables.services.$liveVariable = [
                 /*Set the "isDeployReqSourceChanged" flag to true so that the deploy request queue is populated only when the deploy source changes.*/
                 isDeployReqSourceChanged = true;
             },
+        /* Fuction to process the response data if it contains composite keys. */
+            processResponse = function (responseData) {
+                if (!responseData) {
+                    return;
+                }
+                /*If the table has a composite key, key data will be wrapped in an object with the key "id".
+                 * Hence, the data is formatted to remove the extra key and merge it into the content.*/
+                responseData.forEach(function (rowData) {
+                    var tempData;
+                    /*Check if the value corresponding to the key "id" is an object.*/
+                    if (rowData && WM.isObject(rowData.id)) {
+                        tempData = rowData.id;
+                        delete rowData.id;
+                        WM.extend(rowData, tempData);
+                    }
+                });
+            },
         /*Function to get the hibernateType of the specified field.*/
             getHibernateType = function (variable, fieldName) {
                 var columns = variable.propertiesMap.columns,
@@ -113,14 +130,6 @@ wm.variables.services.$liveVariable = [
                     }
                 }
                 return true;
-            },
-        /*Function to check whether the key is a composite key or not.*/
-            isCompositeKey = function (primaryKey) {
-                return !primaryKey || (primaryKey && (!primaryKey.length || primaryKey.length > 1));
-            },
-        /*Function to check whether the table associated with the live-variable bound to the live-form has a primary key or not.*/
-            isNoPrimaryKey = function (primaryKey) {
-                return (!primaryKey || (primaryKey && !primaryKey.length));
             },
             updateVariableDataset = function (variable, data, propertiesMap, relatedData, pagingOptions) {
                 variable.dataSet = {
@@ -289,8 +298,8 @@ wm.variables.services.$liveVariable = [
                     orderByFields,
                     orderByOptions = '',
                     primaryKey = variable.getPrimaryKey(),
-                    hasCompositeKey = isCompositeKey(primaryKey),
-                    hasNoPrimaryKey = isNoPrimaryKey(primaryKey);
+                    hasCompositeKey = variable.isCompositeKey(primaryKey),
+                    hasNoPrimaryKey = variable.isNoPrimaryKey(primaryKey);
 
                 filterFields = (!options.filterFields || WM.element.isEmptyObject(options.filterFields)) ? variable.filterFields : options.filterFields;
                 if (variable.operation === 'read') {
@@ -427,17 +436,7 @@ wm.variables.services.$liveVariable = [
                         return;
                     }
 
-                    /*If the table has a composite key, key data will be wrapped in an object with the key "id".
-                    * Hence, the data is formatted to remove the extra key and merge it into the content.*/
-                    response.content.forEach(function (rowData) {
-                        var tempData;
-                        /*Check if the value corresponding to the key "id" is an object.*/
-                        if (rowData && WM.isObject(rowData.id)) {
-                            tempData = rowData.id;
-                            delete rowData.id;
-                            WM.extend(rowData, tempData);
-                        }
-                    });
+                    processResponse(response.content);
 
                     /* Also, set the data property of the variable to correspond to the table-data*/
                     $rootScope.variables[variable.name].data = response.content;
@@ -722,8 +721,8 @@ wm.variables.services.$liveVariable = [
                         primaryKey = variableDetails.getPrimaryKey();
 
                         /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
-                        if (isCompositeKey(primaryKey)) {
-                            if (isNoPrimaryKey(primaryKey)) {
+                        if (variableDetails.isCompositeKey(primaryKey)) {
+                            if (variableDetails.isNoPrimaryKey(primaryKey)) {
                                 formattedData.id = WM.copy(rowObject);
                                 rowObject = {};
                             } else {
@@ -746,8 +745,8 @@ wm.variables.services.$liveVariable = [
                         primaryKey = variableDetails.getPrimaryKey();
 
                         /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
-                        if (isCompositeKey(primaryKey)) {
-                            if (isNoPrimaryKey(primaryKey)) {
+                        if (variableDetails.isCompositeKey(primaryKey)) {
+                            if (variableDetails.isNoPrimaryKey(primaryKey)) {
                                 prevCompositeKeysData = prevData;
                                 compositeKeysData = rowObject;
                                 rowObject = {};
@@ -780,8 +779,8 @@ wm.variables.services.$liveVariable = [
                         delete options.row;
                         primaryKey = variableDetails.getPrimaryKey();
                         /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
-                        if (isCompositeKey(primaryKey)) {
-                            if (isNoPrimaryKey(primaryKey)) {
+                        if (variableDetails.isCompositeKey(primaryKey)) {
+                            if (variableDetails.isNoPrimaryKey(primaryKey)) {
                                 compositeKeysData = rowObject;
                             } else {
                                 primaryKey.forEach(function (key) {
@@ -916,6 +915,13 @@ wm.variables.services.$liveVariable = [
                         }
                     });
                     return primaryKey;
+                },
+                isCompositeKey: function (variable, primaryKey) {
+                    return !primaryKey || (primaryKey && (!primaryKey.length || primaryKey.length > 1));
+                },
+                /*Function to check whether the table associated with the live-variable bound to the live-form has a primary key or not.*/
+                isNoPrimaryKey: function (variable, primaryKey) {
+                    return (!primaryKey || (primaryKey && !primaryKey.length));
                 },
                 /*function to get the data associated with the live variable*/
                 getData: function (variable, options, success, error) {
@@ -1116,6 +1122,14 @@ wm.variables.services.$liveVariable = [
                     });
 
                     return targetObj;
+                },
+                getModifiedFieldName: function (variable, fieldName) {
+                    var primaryKey = variable.getPrimaryKey(),
+                        modifiedFieldName = fieldName;
+                    if (variable.isCompositeKey(primaryKey) && (variable.isNoPrimaryKey(primaryKey) || primaryKey.indexOf(fieldName) !== -1)) {
+                        modifiedFieldName = 'id.' + fieldName;
+                    }
+                    return modifiedFieldName;
                 }
             },
 
@@ -1217,6 +1231,12 @@ wm.variables.services.$liveVariable = [
                 getPrimaryKey: function () {
                     return methods.getPrimaryKey(this);
                 },
+                isCompositeKey: function (primaryKey) {
+                    return methods.isCompositeKey(this, primaryKey);
+                },
+                isNoPrimaryKey: function (primaryKey) {
+                    return methods.isNoPrimaryKey(this, primaryKey);
+                },
                 setOrderBy: function (expression) {
                     return methods.setOrderBy(this, expression);
                 },
@@ -1234,6 +1254,9 @@ wm.variables.services.$liveVariable = [
                 },
                 setFilter: function (key, val) {
                     return methods.setFilter(this, key, val);
+                },
+                getModifiedFieldName: function (fieldName) {
+                    return methods.getModifiedFieldName(this, fieldName);
                 }
             };
 
@@ -1241,7 +1264,8 @@ wm.variables.services.$liveVariable = [
         BaseVariablePropertyFactory.register('wm.LiveVariable', liveVariableObj, ['wm.Variable', 'wm.ServiceVariable'], methods);
 
         return {
-            reset: reset
+            reset: reset,
+            processResponse: processResponse
         };
     }
 ];

@@ -66,18 +66,17 @@ WM.module('wm.widgets.live')
                     $scope.filter = function () {
                         var filterFields = [],
                             query,
-                            colName = '',
-                            variable;
+                            variable = $scope.Variables[$scope.variableName],
+                            primaryKeys = variable.getPrimaryKey();
                         WM.forEach($scope.filterFields, function (filterField) {
                             var fieldValue,
                                 isBoolean = false,
                                 minValue = filterField.minValue,
-                                maxvalue = filterField.maxValue;
+                                maxvalue = filterField.maxValue,
+                                colName = variable.getModifiedFieldName(filterField.field);
                             /* if field is part of a related entity, column name will be 'entity.fieldName' */
                             if (filterField.isRelated) {
-                                colName = filterField.field + '.' + filterField.lookupField;
-                            } else {
-                                colName = filterField.field;
+                                colName += '.' + filterField.lookupField;
                             }
 
                             if (filterField.isRange) {
@@ -148,7 +147,6 @@ WM.module('wm.widgets.live')
                             "filterFields": filterFields
                         });
 
-                        variable = $scope.Variables[$scope.variableName];
                         /* Sending size = variable.maxResults because the number of records
                          * should be fetched according to the page size of the widget bound
                          * to result of livefilter. */
@@ -312,7 +310,9 @@ WM.module('wm.widgets.live')
                             function updateAllowedValues() {
                                 var variable = scope.Variables[scope.variableName];
                                 WM.forEach(scope.filterFields, function (filterField) {
-                                    var query, tableName, columns;
+                                    var query, tableName, columns, fieldColumn;
+
+                                    fieldColumn = variable.getModifiedFieldName(filterField.field);
                                     if (filterField.widget === 'select' || filterField.widget === 'radioset' || filterField.widget === 'checkboxset') {
                                         if (filterField.isRelated) {
                                             tableName = filterField.lookupType;
@@ -326,7 +326,7 @@ WM.module('wm.widgets.live')
                                         } else {
                                             query = QueryBuilder.getQuery({
                                                 "tableName": scope.result.propertiesMap.entityName,
-                                                "columns": [" DISTINCT " + filterField.field + " AS " + filterField.field]
+                                                "columns": [" DISTINCT " + fieldColumn + " AS " + filterField.field]
                                             });
                                             filterField.datafield = filterField.field;
                                             filterField.displayfield = filterField.field;
