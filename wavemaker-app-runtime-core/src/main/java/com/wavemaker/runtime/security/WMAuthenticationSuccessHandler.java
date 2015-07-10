@@ -39,7 +39,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
 
     private RequestCache requestCache = new HttpSessionRequestCache();
 
-    private static final String SUCCESS_URL = "url";
+    public static final String LAND_PAGE_PREPEND = "#";
 
     private Map<String, RoleConfig> roleMap;
 
@@ -82,7 +82,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                 if (roleConfig != null) {
                     String landingPage = roleConfig.getLandingPage();
                     if (org.apache.commons.lang3.StringUtils.isNotBlank(landingPage)) {
-                        redirectURL += "/index.html" + landingPage;
+                        redirectURL += "/index.html" + LAND_PAGE_PREPEND + landingPage;
                     }
                 }
             }
