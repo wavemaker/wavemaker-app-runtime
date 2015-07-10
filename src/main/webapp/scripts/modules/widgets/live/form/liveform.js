@@ -1184,7 +1184,7 @@ WM.module('wm.widgets.live')
                             } else {
                                 columnDef.dataset = attrs.dataset;
                             }
-                        } else if (CONSTANTS.isRunMode && attrs.isRelated) {
+                        } else if (attrs.isRelated) {
                             /*when the field is related and dataset is not bound, set the dataset to related data of the live form bound variable
                              and set the display field to primary key of the related table*/
                             expr = parentIsolateScope.binddataset.replace('bind:', ''); /*live form bound variable*/
