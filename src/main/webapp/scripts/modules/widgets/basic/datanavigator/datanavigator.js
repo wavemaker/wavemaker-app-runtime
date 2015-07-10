@@ -106,7 +106,7 @@ WM.module("wm.widgets.basic")
                 /*Function to check if the variable bound to the data-navigator has paging.*/
                 $scope.isVariableHasPaging = function () {
                     var dataSet = $scope.dataset;
-                    return (dataSet.pagingOptions || (WM.isObject(dataSet) && Utils.isPageable(dataSet)));
+                    return (WM.isObject(dataSet) && (dataSet.pagingOptions || Utils.isPageable(dataSet)));
                 };
 
                 /*Function to set the values needed for pagination*/
@@ -180,7 +180,7 @@ WM.module("wm.widgets.basic")
 
                 /*Function to check if the current page is the first page*/
                 $scope.isFirstPage = function () {
-                    return ($scope.currentPage === 1);
+                    return ($scope.currentPage === 1 || !$scope.currentPage);
                 };
                 /*Function to check if the current page is the last page*/
                 $scope.isLastPage = function () {
