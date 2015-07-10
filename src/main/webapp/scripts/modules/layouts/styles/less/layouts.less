@@ -62,9 +62,11 @@ body {
       margin-right: 0.5em;
     }
     .panel-title{
-      margin-right: 9em;
+      display: table;
+      width: 100%;
       > a {
         text-decoration: none;
+        display: table-cell;
       }
     }
    .heading{
@@ -75,11 +77,10 @@ body {
       margin: 0 0.5em;
     }
     .panel-actions{
-      float: right;
-      right: 0.25em;
-      top: 0.5em;
-      position: absolute;
       margin-right: 0.2em;
+      white-space: nowrap;
+      display: table-cell;
+      text-align: right;
       .app-menu .app-button, .panel-action {
         background: transparent;
         box-shadow: none;
@@ -107,6 +108,7 @@ body {
     width: 20%;
     height: 100%;
     z-index: 1000;
+    min-width: 100px;
     .panel-help-header {
       background: @app-panel-help-header-color;
       font-weight: bold;

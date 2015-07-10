@@ -176,11 +176,11 @@ WM.module('wm.widgets.grid')
                     $rootScope.getWidgetStyles('shell') + '>' +
                     '<div class="app-datagrid"></div>' +
                     '<div class="table-footer well well-sm clearfix" ng-show="shownavigation || actions.length">' +
-                        '<div class="app-datagrid-paginator col-md-6 col-sm-8 col-xs-12">' +
+                        '<div class="app-datagrid-paginator pull-left">' +
                             '<wm-datanavigator show="{{show && shownavigation}}" showrecordcount="{{show && showrecordcount}}">' +
                             '</wm-datanavigator>' +
                         '</div>' +
-                        '<div class="app-datagrid-actions col-md-6 col-sm-4 col-xs-12">' +
+                        '<div class="app-datagrid-actions pull-right" data-ng-if="actions">' +
                             '<wm-button ng-repeat="btn in actions" caption="{{btn.label}}" show="{{btn.show}}" class="btn-sm {{btn.class}}" ' +
                                 'iconname="{{btn.icon}}" on-click="{{btn.action}}"></wm-button>' +
                         '</div>' +
