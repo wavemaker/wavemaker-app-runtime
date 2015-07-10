@@ -976,7 +976,7 @@ wm.variables.services.$liveVariable = [
                             updateVariableDataset(variable, {}, variable.propertiesMap, {}, {});
                         }
                         /*Invoke the function to fetch data for the live-variable only if startUpdate/autoUpdate/forceFetch is set for the variable.*/
-                        if (variable.startUpdate || variable.autoUpdate || options.forceFetch) {
+                        if (variable.startUpdate || options.forceFetch) {
                             deployProjectAndFetchData(variable, options, success, error);
                         }
                     }
