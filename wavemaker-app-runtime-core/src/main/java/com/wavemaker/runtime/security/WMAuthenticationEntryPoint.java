@@ -34,6 +34,8 @@ public class WMAuthenticationEntryPoint extends
 
     private boolean useForward = false;
 
+    private static final String LOGIN_PAGE_PREPEND = "#";
+
     private String loginPage;
 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -87,7 +89,7 @@ public class WMAuthenticationEntryPoint extends
     protected String determineUrlToUseForThisRequest(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) {
         String loginFormUrl = super.determineUrlToUseForThisRequest(request, response, exception);
         if (StringUtils.isNotBlank(loginPage)) {
-            loginFormUrl += loginPage;
+            loginFormUrl += LOGIN_PAGE_PREPEND + loginPage;
         }
         return loginFormUrl;
     }
