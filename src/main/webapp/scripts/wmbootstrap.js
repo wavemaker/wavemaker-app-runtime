@@ -39,7 +39,8 @@ var Application = WM.module('Application',
         'i18nService',
         'BaseService',
         'wmToaster',
-        function ($rootScope, $scope, $compile, $route, $location, ProjectService, BasicVariableService, $servicevariable, $liveVariable, Variables, NavigationVariableService, NotificationVariableService, LoginVariableService, LogoutVariableService, TimerVariableService, SecurityService, Utils, i18nService, BaseService, wmToaster) {
+        'MobileVariableService',
+        function ($rootScope, $scope, $compile, $route, $location, ProjectService, BasicVariableService, $servicevariable, $liveVariable, Variables, NavigationVariableService, NotificationVariableService, LoginVariableService, LogoutVariableService, TimerVariableService, SecurityService, Utils, i18nService, BaseService, wmToaster, MobileVariableService) {
             'use strict';
 
             /* add a node to the DOM to determine the mobile view */
@@ -329,6 +330,9 @@ var Application = WM.module('Application',
                     break;
                 case "wm.TimerVariable":
                     variable.fire(options, onSuccess, onError);
+                    break;
+                case "wm.MobileVariable":
+                    variable.invoke(options, onSuccess, onError);
                     break;
                 }
             });
