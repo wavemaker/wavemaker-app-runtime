@@ -234,7 +234,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "DELETE"
         },
         searchTableData: {
-            url: "/:service/:dataModelName/:entityName/search?page=:page&size=:size",
+            url: "/:service/:dataModelName/:entityName/search?page=:page&size=:size&:sort",
             method: "POST"
         },
         readTableRelatedData: {
