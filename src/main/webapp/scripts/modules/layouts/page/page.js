@@ -146,18 +146,19 @@ WM.module('wm.layouts.page')
                                 Utils.triggerFn(scope.onPageVariablesReady);
                             } else {
                                 /* listen to the page-variables-ready event */
-                                element.on('$destroy', function () {
-                                    $rootScope.$on('on-app-variables-ready', function (event, appVariables) {
-                                        extendPageVariables(variableScope);
-                                        if (!scope.$parent.partialname && !scope.prefabname) {
-                                            extendAppVariables(variableScope);
-                                        }
-                                        /* if specified, call app variables ready function in the app.js */
-                                        Utils.triggerFn(scope.$root.onAppVariablesReady, appVariables);
-                                        /* if specified, call page variables ready function in the page.js */
-                                        Utils.triggerFn(scope.onPageVariablesReady);
-                                    });
 
+                                var onAppVariablesReadyHandler = $rootScope.$on('on-app-variables-ready', function (event, appVariables) {
+                                    extendPageVariables(variableScope);
+                                    if (!scope.$parent.partialname && !scope.prefabname) {
+                                        extendAppVariables(variableScope);
+                                    }
+                                    /* if specified, call app variables ready function in the app.js */
+                                    Utils.triggerFn(scope.$root.onAppVariablesReady, appVariables);
+                                    /* if specified, call page variables ready function in the page.js */
+                                    Utils.triggerFn(scope.onPageVariablesReady);
+                                });
+                                element.on('$destroy', function () {
+                                    onAppVariablesReadyHandler();
                                     variableScope.Variables = undefined;
                                 });
                             }
