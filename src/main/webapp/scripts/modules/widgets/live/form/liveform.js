@@ -1135,6 +1135,11 @@ WM.module('wm.widgets.live')
                             'height': attrs.height
                         };
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
+                        /*if the show property is set to false, set the required property to false (except for identity columns)
+                         * This will prevent 'required field can not be focused' error*/
+                        if (CONSTANTS.isRunMode && columnDef.show === false && columnDef.generator !== 'identity') {
+                            columnDef.required = false;
+                        }
                         /*If defaultValue is set then assign it to the attribute*/
                         if (attrs.defaultValue) {
                             if (Utils.stringStartsWith(attrs.defaultValue, 'bind:') && CONSTANTS.isRunMode) {
