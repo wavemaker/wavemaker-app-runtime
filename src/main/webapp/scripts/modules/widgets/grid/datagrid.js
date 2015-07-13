@@ -806,6 +806,12 @@ $.widget('wm.datagrid', {
         }
     },
 
+    _isCustomExpressionNonEditable: function(customTag) {
+        if (!customTag) {
+            return false;
+        }
+        return !($(customTag).find('input'));
+    },
     /* Marks the first row as selected. */
     selectFirstRow: function (value) {
         var $row = this.gridElement.find('tBody tr:first'),
@@ -941,7 +947,17 @@ $.widget('wm.datagrid', {
             }
         }
     },
-
+    _getValue: function($el, fields) {
+        var type = $el.attr('type'),
+            text;
+        if (type === 'checkbox') {
+            text = $el.prop('checked').toString();
+        } else {
+            text = $el.val();
+            $el.text(text);
+        }
+        return text;
+    },
     /* Toggles the edit state of a row. */
     toggleEditRow: function (e) {
         e.stopPropagation();
@@ -970,11 +986,15 @@ $.widget('wm.datagrid', {
                     id = $el.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id],
                     editableTemplate;
-                if (!(colDef.readonly || colDef.customExpression || colDef.disableInlineEditing)) {
+                if (!(colDef.readonly || self._isCustomExpressionNonEditable(colDef.customExpression) || colDef.disableInlineEditing)) {
                     editableTemplate = self._getEditableTemplate(colDef.field);
-                    $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
                     // TODO: Use some other selector. Input will fail for other types.
-                    $el.find('input').val(cellText);
+                    if (!colDef.customExpression) {
+                        $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
+                        $el.find('input').val(cellText);
+                    } else {
+                        $el.addClass('cell-editing');
+                    }
                 }
             });
 
@@ -999,7 +1019,9 @@ $.widget('wm.datagrid', {
                         colId = $el.attr('data-col-id'),
                         colDef = self.preparedHeaderData[colId],
                         fields = colDef.field.split('.'),
-                        text = $el.find('input').val();
+                        $ie = $el.find('input'),
+                        text;
+                    text = self._getValue($ie, fields);
                     if (fields.length === 1) {
                         rowData[colDef.field] = text;
                     } else if (!isNewRow && fields[0] in rowData) {
