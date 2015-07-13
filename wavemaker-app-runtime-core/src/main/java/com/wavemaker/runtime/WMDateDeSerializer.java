@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,9 @@ public class WMDateDeSerializer extends DateDeserializers.DateDeserializer {
     }
 
     public static Date getDate(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
         try {
             Date parsedDate = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT).parse(value);
             return new Timestamp(parsedDate.getTime());

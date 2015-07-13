@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
@@ -32,6 +34,9 @@ public class WMSqlDateDeSerializer extends JsonDeserializer<Date> {
     }
 
     public static Date getDate(String value) {
+        if (StringUtils.isBlank(value)) {
+            return null;
+        }
         try {
             java.util.Date parsedDate = new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse(value);
             return new Date(parsedDate.getTime());
