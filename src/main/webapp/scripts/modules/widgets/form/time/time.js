@@ -117,9 +117,13 @@ WM.module('wm.widgets.form')
                                 if (this._proxyModel) {
                                     this._timeModel = $filter('date')(this._proxyModel, "hh:mm a");
                                     timeValue = moment($filter('date')(this._proxyModel, "yyyy-MM-dd HH:mm")).valueOf();
-                                    if (this.outputformat && this.outputformat !== "timestamp") {
-                                        return timeValue ? $filter('date')(timeValue, this.outputformat) : undefined;
+                                    if (this.outputformat === "timestamp") {
+                                        return timeValue;
                                     }
+                                    if (!this.outputformat) {
+                                        this.outputformat = 'HH:mm:ss';
+                                    }
+                                    return timeValue ? $filter('date')(timeValue, this.outputformat) : undefined;
                                 }
                                 return timeValue ?  timeValue.valueOf() : undefined;
                             },
