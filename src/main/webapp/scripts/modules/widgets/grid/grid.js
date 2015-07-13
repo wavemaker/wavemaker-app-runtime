@@ -1007,6 +1007,9 @@ WM.module('wm.widgets.grid')
                         details['fields'] = fields;
                     }
                     return details;
+                },
+                isBoundToView = function() {
+                    return $scope.dataset.propertiesMap && $scope.dataset.propertiesMap.tableType === 'VIEW';
                 };
             /* Function to reset the column definitions dynamically. */
             $scope.resetColumnDefinitions = function () {
@@ -1434,10 +1437,6 @@ WM.module('wm.widgets.grid')
 
                             if ($scope.dataset.propertiesMap && $scope.dataset.propertiesMap.columns) {
                                 $scope.primaryKey = variableObj.getPrimaryKey();
-                                /* check if the tableTYpe is VIEW or TABLE and set readonly prop on grid for VIEW type table */
-                                if ($scope.dataset.propertiesMap.tableType === 'VIEW') {
-                                    $scope.readonlygrid = true;
-                                }
                             }
                             $scope.contentBaseUrl = (( variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                         }
@@ -1451,8 +1450,8 @@ WM.module('wm.widgets.grid')
                 if (CONSTANTS.isStudioMode) {
                     /* Make the 'pagesize' property readonly for live variable bindings.*/
                     $scope.widgetProps.pagesize.disabled = isBoundToLiveVariable;
-                    /* In Studio, disabling readonlygrid property if bound to a service variable. */
-                    if (!($scope.binddataset && isBoundToServiceVariable)) {
+                    /* In Studio, disabling readonlygrid property if bound to a service variable or view */
+                    if (!($scope.binddataset && isBoundToServiceVariable) && !isBoundToView()) {
                         $scope.widgetProps.readonlygrid.disabled = false;
                     } else {
                         $rootScope.$emit('update-widget-property', 'readonlygrid', true);
