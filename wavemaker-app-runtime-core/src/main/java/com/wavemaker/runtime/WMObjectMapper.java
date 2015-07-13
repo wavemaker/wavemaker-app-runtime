@@ -224,9 +224,7 @@ public class WMObjectMapper extends ObjectMapper {
 
         WMObjectReadMapper() {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            SimpleModule module = new SimpleModule("ByteArraySerializeModule", new Version(1, 0, 0, null));
-            ByteArraySerializeModule byteArrayDeserializerModule = new ByteArraySerializeModule();
-            module.addSerializer(byte[].class, byteArrayDeserializerModule);
+            SimpleModule module = new SimpleModule("WMDefaultDeSerializer", new Version(1, 0, 0, null));
             registerModule(module);
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
@@ -240,9 +238,8 @@ public class WMObjectMapper extends ObjectMapper {
             hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
             registerModule(hibernate4Module);
 
-            SimpleModule module = new SimpleModule("ByteArraySerializeModule",new Version(1, 0, 0, null));
-            ByteArraySerializeModule byteArrayDeserializerModule =  new ByteArraySerializeModule();
-            module.addSerializer(byte[].class, byteArrayDeserializerModule);
+            SimpleModule module = new SimpleModule("WMDefaultSerializer",new Version(1, 0, 0, null));
+            module.addSerializer(byte[].class, new ByteArraySerializer());
             registerModule(module);
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
