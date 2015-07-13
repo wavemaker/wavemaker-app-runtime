@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.DateDeserializers;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  *
@@ -34,25 +35,30 @@ public class WMDateDeSerializer extends DateDeserializers.DateDeserializer {
         JsonToken currentToken = jsonParser.getCurrentToken();
         if (currentToken == JsonToken.VALUE_STRING) {
             String value = jsonParser.getText();
-            try {
-                Date parsedDate = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT).parse(value);
-                return new Timestamp(parsedDate.getTime());
-            } catch (ParseException e) {
-                logger.trace("{} is not in the expected date time format {}", value, DEFAULT_DATE_TIME_FORMAT);
-            }
-            try {
-                Date parsedDate = new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse(value);
-                return new java.sql.Date(parsedDate.getTime());
-            } catch (ParseException e) {
-                logger.trace("{} is not in the expected date format {}", value, DEFAULT_DATE_FORMAT);
-            }
-            try {
-                Date parsedDate = new SimpleDateFormat(DEFAULT_TIME_FORMAT).parse(value);
-                return new Time(parsedDate.getTime());
-            } catch (ParseException e) {
-                logger.trace("{} is not in the expected time format {}", value, DEFAULT_TIME_FORMAT);
-            }
+            return getDate(value);
         }
         return super.deserialize(jsonParser, deserializationContext);
+    }
+
+    public static Date getDate(String value) {
+        try {
+            Date parsedDate = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT).parse(value);
+            return new Timestamp(parsedDate.getTime());
+        } catch (ParseException e) {
+            logger.trace("{} is not in the expected date time format {}", value, DEFAULT_DATE_TIME_FORMAT);
+        }
+        try {
+            Date parsedDate = new SimpleDateFormat(DEFAULT_DATE_FORMAT).parse(value);
+            return new java.sql.Date(parsedDate.getTime());
+        } catch (ParseException e) {
+            logger.trace("{} is not in the expected date format {}", value, DEFAULT_DATE_FORMAT);
+        }
+        try {
+            Date parsedDate = new SimpleDateFormat(DEFAULT_TIME_FORMAT).parse(value);
+            return new Time(parsedDate.getTime());
+        } catch (ParseException e) {
+            logger.trace("{} is not in the expected time format {}", value, DEFAULT_TIME_FORMAT);
+        }
+        throw new WMRuntimeException("Failed to parse the string " + value + "as java.util.Date");
     }
 }

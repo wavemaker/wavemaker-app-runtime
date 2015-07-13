@@ -228,6 +228,7 @@ public class WMObjectMapper extends ObjectMapper {
             SimpleModule module = new SimpleModule("WMDefaultDeSerializer", new Version(1, 0, 0, null));
 
             module.addDeserializer(Date.class, new WMDateDeSerializer());
+            module.addDeserializer(java.sql.Date.class, new WMSqlDateDeSerializer());
 
             registerModule(module);
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);

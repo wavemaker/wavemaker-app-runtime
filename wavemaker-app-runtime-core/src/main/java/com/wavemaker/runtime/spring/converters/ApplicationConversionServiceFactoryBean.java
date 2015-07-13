@@ -6,6 +6,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 
+import com.wavemaker.runtime.WMDateDeSerializer;
+import com.wavemaker.runtime.WMSqlDateDeSerializer;
 import com.wavemaker.studio.common.util.StringUtils;
 
 /**
@@ -24,14 +26,11 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 
         @Override
         public Date convert(String source) {
-            Date dt;
             if(StringUtils.isNumber(source)){
-                dt= new Date(Long.parseLong(source));
+                return new Date(Long.parseLong(source));
             } else{
-                dt = new Date(source);
+                return WMDateDeSerializer.getDate(source);
             }
-            return dt;
-
         }
     }
 
@@ -39,15 +38,11 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 
         @Override
         public java.sql.Date convert(String source) {
-            java.sql.Date dt;
             if(StringUtils.isNumber(source)){
-                dt= new java.sql.Date(Long.parseLong(source));
+                return new java.sql.Date(Long.parseLong(source));
             } else{
-                Date utilDate = new Date(new Long(source));
-                dt = new java.sql.Date(utilDate.getTime());
+                return WMSqlDateDeSerializer.getDate(source);
             }
-            return  dt;
-
         }
     }
 }
