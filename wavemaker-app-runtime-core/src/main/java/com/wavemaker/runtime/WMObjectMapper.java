@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 
@@ -225,6 +226,9 @@ public class WMObjectMapper extends ObjectMapper {
         WMObjectReadMapper() {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             SimpleModule module = new SimpleModule("WMDefaultDeSerializer", new Version(1, 0, 0, null));
+
+            module.addDeserializer(Date.class, new WMDateDeSerializer());
+
             registerModule(module);
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }
