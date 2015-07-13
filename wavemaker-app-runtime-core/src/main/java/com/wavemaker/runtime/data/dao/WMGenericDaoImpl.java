@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.runtime.WMDateDeSerializer;
 import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
@@ -192,7 +193,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             case CURRENCY:
                 return CurrencyType.INSTANCE.fromString(attributeValue.toString());
             case DATE:
-                return new Date(((Number) attributeValue).longValue());
+                if (attributeValue instanceof Number) {
+                    return new java.sql.Date(((Number) attributeValue).longValue());
+                } else {
+                    return WMDateDeSerializer.getDate((String) attributeValue);
+                }
             case DOUBLE:
                 return DoubleType.INSTANCE.fromString(attributeValue.toString());
             case FLOAT:
@@ -216,7 +221,11 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             case TEXT:
                 return TextType.INSTANCE.fromString(attributeValue.toString());
             case TIME:
-                return TimeType.INSTANCE.fromString(attributeValue.toString());
+                if (attributeValue instanceof Number) {
+                    return new java.sql.Time(((Number) attributeValue).longValue());
+                } else {
+                    WMDateDeSerializer.getDate((String) attributeValue);
+                }
             case TIMESTAMP:
                 return new Timestamp(((Number) attributeValue).longValue());
             case CALENDAR:
