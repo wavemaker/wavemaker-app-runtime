@@ -1094,7 +1094,16 @@ WM.module('wm.widgets.live')
                             variableData,
                             dataSetWatchHandler,
                             colName,
-                            exprArray;
+                            exprArray,
+                            getOutputPatterns = function (type, outputFormat) {
+                                if (type === 'date') {
+                                    return 'yyyy-MM-dd';
+                                }
+                                if (type === 'time') {
+                                    return 'HH:mm:ss';
+                                }
+                                return outputFormat;
+                            };
 
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
@@ -1114,7 +1123,7 @@ WM.module('wm.widgets.live')
                             'required': attrs.required === "true" || attrs.required === true,
                             'maxvalue': attrs.maxvalue,
                             'datepattern': attrs.datepattern,
-                            'outputformat': attrs.type === 'date' ? 'yyyy-MM-dd' : attrs.outputformat,
+                            'outputformat': getOutputPatterns(attrs.type, attrs.outputformat),
                             'minvalue': attrs.minvalue,
                             'displayvalue': attrs.displayvalue,
                             'placeholder': attrs.placeholder,

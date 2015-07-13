@@ -500,7 +500,7 @@ WM.module('wm.widgets.base', [])
                         "disabled": {"type": "boolean"},
                         "hourstep": {"type": "number", "value": 1},
                         "minutestep": {"type": "number", "value": 15},
-                        "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "timepatterns"},
+                        "outputformat": {"value": "HH:mm:ss", "type": "list", "options": [], "widget": "timepatterns"},
                         "ismeridian": {"type": "boolean", "value": true},
                         "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "required": {"type": "boolean"},
