@@ -160,9 +160,11 @@ WM.module('wm.widgets.form')
                 }
                 scope._model_ = [];
             } else {
+                if (!selectedValues || selectedValues.length === 0) {
+                    scope._model_ = [];
+                }
                 scope._model_ = scope._model_ && scope._model_.length ? scope._model_ : [];
             }
-
             /*iterating over the selectedvalues to push to model*/
             WM.forEach(selectedValues, function (value) {
                 value = WM.isString(value) ? value.trim() : value;
