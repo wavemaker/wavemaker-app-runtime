@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM,_ */
 /*Directive for Calendar */
 
 WM.module('wm.widgets.advanced')
@@ -23,17 +23,68 @@ WM.module('wm.widgets.advanced')
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 notifyFor = {
                     'dataset': true,
-                    'height': true
+                    'height': true,
+                    'controls': true,
+                    'calendartype': true,
+                    'view': true
+                },
+                defaultHeaderOptions = {
+                    'left': 'prev next today',
+                    'center': 'title',
+                    'right': 'month basicWeek basicDay'
+                },
+                VIEW_TYPES = {
+                    'BASIC': 'basic',
+                    'AGENDA': 'agenda'
                 };
+
+            function updateCalendarOptions(scope) {
+                var ctrls = scope.controls, viewType = scope.calendartype, left = '', right = '';
+                if (ctrls && viewType) {
+                    if (_.includes(ctrls, 'navigation')) {
+                        left += ' prev next';
+                    }
+
+                    if (_.includes(ctrls, 'today')) {
+                        left += ' today';
+                    }
+
+                    if (_.includes(ctrls, 'month')) {
+                        right += ' month';
+                    }
+
+                    if (_.includes(ctrls, 'week')) {
+                        right += viewType === VIEW_TYPES.BASIC ?  ' basicWeek' : ' agendaWeek';
+                    }
+
+                    if (_.includes(ctrls, 'day')) {
+                        right += viewType === VIEW_TYPES.BASIC ?  ' basicDay' : ' agendaDay';
+                    }
+
+                    WM.extend(scope.calendarOptions.calendar.header, {'left': left, 'right': right});
+                }
+            }
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler(scope, key, newVal) {
+                var calendar = scope.calendarOptions.calendar;
                 switch (key) {
                 case 'dataset':
                     scope.eventSources.push(newVal);
                     break;
                 case 'height':
-                    scope.calendarOptions.calendar.height = parseInt(newVal, 10);
+                    calendar.height = parseInt(newVal, 10);
+                    break;
+                case 'controls':
+                case 'calendartype':
+                    updateCalendarOptions(scope);
+                    break;
+                case 'view':
+                    if (newVal !== 'month') {
+                        calendar.defaultView = scope.calendartype + _.capitalize(newVal);
+                    } else {
+                        calendar.defaultView = newVal;
+                    }
                     break;
                 }
             }
@@ -67,7 +118,9 @@ WM.module('wm.widgets.advanced')
                             scope.eventSources = [scope.events];
                         },
                         'post': function (scope, element, attrs) {
-                            var handlers = [];
+                            var handlers = [],
+                                headerOptions = WM.copy(defaultHeaderOptions);
+
                             function dayProxy(date, jsEvent, view) {
                                 scope.onDayclick({$date: date, $jsEvent: jsEvent, $view: view});
                             }
@@ -86,11 +139,7 @@ WM.module('wm.widgets.advanced')
                                 calendar: {
                                     height: parseInt(scope.height, 10),
                                     editable: true,
-                                    header: {
-                                        left: 'month basicWeek basicDay agendaWeek agendaDay',
-                                        center: 'title',
-                                        right: 'today prev,next'
-                                    },
+                                    header: headerOptions,
                                     dayClick: dayProxy,
                                     eventDrop: eventProxy.bind(undefined, 'onEventdrop'),
                                     eventResize: eventProxy.bind(undefined, 'onEventresize'),
@@ -104,14 +153,6 @@ WM.module('wm.widgets.advanced')
                                 scope.calendarOptions.calendar.dayNames = $locale.DATETIME_FORMATS.DAY;
                                 scope.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
                             });
-
-
-                            /* event source that calls a function on every view switch */
-                          /*  scope.eventsF = function (start, end, timezone, callback) {
-                                if (scope.eventsFunction) {
-                                    callback(scope.eventsFunction(start, end, timezone));
-                                }
-                            };*/
 
                             /* add and removes an event source of choice */
                             scope.addRemoveEventSource = function (sources, source) {
@@ -194,23 +235,23 @@ WM.module('wm.widgets.advanced')
  * @param {string=} datavalue
  *                  This property defines the current selected value of the Calendar widget. <br>
  *                  This property is bindable
- * @param {string=} datepattern
- *                  display pattern of dates. <br>
- *                  This property is bindable.
- *@param {boolean=} required
- *                  required is a bindable property. <br>
- *                  if the required property is set to true, `required` class is applied to the label[an asterik will be displayed next to the content of the label']. <br>
- *                  Default value: `false`.
- * @param {boolean=} autofocus
- *                   This property makes the Calendar widget get focused automatically when the page loads.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the widget on the web page. <br>
  *                  Default value: `true`.
- * @param {boolean=} disabled
- *                  Disabled is a bindable property. <br>
- *                  This property will be used to disable/enable the widget on the web page. <br>
- *                  Default value: `false`.
+ * @param {string=} calendartype
+ *                  This property specifies the type of the calendar widget. <br>
+ *                  Possible Values: `basic`, `agenda` <br>
+ *                  Default value: `basic`.
+ * @param {string=} controls
+ *                  This property specifies the controls to be shown on the calendar widget calendar widget. <br>
+ *                  Accepts string in CSV format. <br>
+ *                  Possible Values: `navigation`, `today`, `month`, `week`, `day` <br>
+ *                  By default all these controls will be shown.
+ * @param {string=} view
+ *                  This property specifies defaultView of the calendar widget. <br>
+ *                  Possible Values: `month`, `week`, `day` <br>
+ *                  Default value: `month`.
  * @param {string=} on-change
  *                  Callback function which will be triggered when the widget value is changed.
  * @param {string=} on-focus
@@ -238,7 +279,6 @@ WM.module('wm.widgets.advanced')
  *       <file name="script.js">
  *          function Ctrl($scope) {
  *              $scope.placeholder="Select a date"
- *              $scope.datepattern="dd-MMMM-yyyy"
  *
  *              $scope.f = function (event, scope) {
  *                  $scope.currentDate = scope.datavalue;
