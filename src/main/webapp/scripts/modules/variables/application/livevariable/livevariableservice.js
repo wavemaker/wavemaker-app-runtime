@@ -53,6 +53,9 @@ wm.variables.services.$liveVariable = [
                 /*Set the "isDeployReqSourceChanged" flag to true so that the deploy request queue is populated only when the deploy source changes.*/
                 isDeployReqSourceChanged = true;
             },
+            getDateInDefaultFormat = function (value) {
+                return $filter('date')(new Date(value).valueOf(), 'yyyy-MM-dd');
+            },
         /* Fuction to process the response data if it contains composite keys. */
             processResponse = function (responseData) {
                 if (!responseData) {
@@ -334,6 +337,9 @@ wm.variables.services.$liveVariable = [
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "date":
+                                fieldValue = getDateInDefaultFormat(fieldValue);
+                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                break;
                             case "timestamp":
                                 fieldValue = new Date(fieldValue).getTime();
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
@@ -681,9 +687,6 @@ wm.variables.services.$liveVariable = [
                     }
                 }
                 return isDateType;
-            },
-            getDateInDefaultFormat = function (value) {
-                return $filter('date')(new Date(value).valueOf(), 'yyyy-MM-dd');
             },
         /*Function to perform common database actions through calling DatabaseService methods*/
             performDataAction = function (action, variableDetails, options, success, error) {
