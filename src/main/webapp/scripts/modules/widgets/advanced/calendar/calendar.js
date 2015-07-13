@@ -119,7 +119,8 @@ WM.module('wm.widgets.advanced')
                         },
                         'post': function (scope, element, attrs) {
                             var handlers = [],
-                                headerOptions = WM.copy(defaultHeaderOptions);
+                                headerOptions = WM.copy(defaultHeaderOptions),
+                                uiCalScope;
 
                             function dayProxy(date, jsEvent, view) {
                                 scope.onDayclick({$date: date, $jsEvent: jsEvent, $view: view});
@@ -184,10 +185,20 @@ WM.module('wm.widgets.advanced')
                                 element.attr({'tooltip': event.title, 'tooltip-append-to-body': true});
                                 $compile(element)(scope);
                             };
-                            if (CONSTANTS.isRunMode && attrs.scopedataset) {
-                                handlers.push(scope.$watch('scopedataset', function (newVal) {
-                                    scope.eventSources.push(newVal);
-                                }));
+                            if (CONSTANTS.isRunMode) {
+                                if (attrs.scopedataset) {
+                                    handlers.push(scope.$watch('scopedataset', function (newVal) {
+                                        scope.eventSources.push(newVal);
+                                    }, true));
+                                }
+                                // find the isolateScope of the ui-calendar element
+                                uiCalScope = element.children().first().isolateScope();
+                                // define the redraw method. Accordion/tabs will trigger this
+                                scope.redraw = _.debounce(function () {
+                                    // destroy the calendar and re-initialize
+                                    uiCalScope.destroy();
+                                    uiCalScope.init();
+                                }, 50);
                             }
 
                             scope.$on('$destroy', function () {
