@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 /**
  * Created by sunilp on 10/12/14.
  */
-public class ByteArraySerializeModule extends JsonSerializer<byte[]> {
+public class ByteArraySerializer extends JsonSerializer<byte[]> {
 
-    public ByteArraySerializeModule() {
+    public ByteArraySerializer() {
         super();
     }
 
