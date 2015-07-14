@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
         'use strict';
         $templateCache.put('template/widget/form/date.html',
-            '<div class="date-wrapper input-group" init-widget has-model data-ng-show="show">' +
+            '<div class="app-date input-group" init-widget has-model data-ng-show="show">' +
                 '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} ' +
                     ' title="{{hint}}" ' +
                     ' min-date=mindate max-date=maxdate is-open=isOpen' +
