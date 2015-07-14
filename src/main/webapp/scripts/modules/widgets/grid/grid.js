@@ -732,41 +732,47 @@ WM.module('wm.widgets.grid')
                             }
                         }
 
-                        Variables.call('getData', $scope.variableName, {
-                            'type': 'wm.LiveVariable',
-                            'isNotTriggerForRelated': true,
-                            'page': 1,
-                            'filterFields': filterFields,
-                            'orderBy': sortOptions,
-                            'matchMode': 'anywhere',
-                            'ignoreCase': true,
-                            'scope': $scope.gridElement.scope()
-                        }, function (data, propertiesMap, relatedData, pagingOptions) {
-                            /*Navigate to the first page upon sorting.*/
-                            $scope.dataNavigator.navigatePage("first");
-                            $scope.serverData = data;
-                            /*Check for sanity*/
-                            if ($scope.dataNavigator) {
-                                $scope.dataNavigator.dataset = {
-                                    'data': data,
-                                    'propertiesMap': propertiesMap,
-                                    'relatedData': relatedData,
-                                    'pagingOptions': pagingOptions,
-                                    'filterFields': filterFields,
-                                    'sortOptions': sortOptions,
-                                    'variableName': $scope.variableName
-                                };
+                        if ($scope.isBoundToFilter && $scope.widgetName) {
+                            /* if Grid bound to filter, get sorted data through filter widget (with applied filters in place)*/
+                            $scope.Widgets[$scope.widgetName].applyFilter({"orderBy": sortOptions});
+                        } else {
+                            /* else get sorted data through variable */
+                            Variables.call('getData', $scope.variableName, {
+                                'type': 'wm.LiveVariable',
+                                'isNotTriggerForRelated': true,
+                                'page': 1,
+                                'filterFields': filterFields,
+                                'orderBy': sortOptions,
+                                'matchMode': 'anywhere',
+                                'ignoreCase': true,
+                                'scope': $scope.gridElement.scope()
+                            }, function (data, propertiesMap, relatedData, pagingOptions) {
+                                /*Navigate to the first page upon sorting.*/
+                                $scope.dataNavigator.navigatePage("first");
+                                $scope.serverData = data;
+                                /*Check for sanity*/
+                                if ($scope.dataNavigator) {
+                                    $scope.dataNavigator.dataset = {
+                                        'data': data,
+                                        'propertiesMap': propertiesMap,
+                                        'relatedData': relatedData,
+                                        'pagingOptions': pagingOptions,
+                                        'filterFields': filterFields,
+                                        'sortOptions': sortOptions,
+                                        'variableName': $scope.variableName
+                                    };
 
-                                /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
-                                if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
-                                    $scope.dataNavigator.navigatePage('prev');
+                                    /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
+                                    if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
+                                        $scope.dataNavigator.navigatePage('prev');
+                                    }
                                 }
-                            }
-                            setGridData($scope.serverData);
+                                setGridData($scope.serverData);
 
-                        }, function (error) {
-                            wmToaster.show('error', 'ERROR', error);
-                        });
+                            }, function (error) {
+                                wmToaster.show('error', 'ERROR', error);
+                            });
+                        }
                     }
                     $scope.onSort({$event: e, $data: $scope.serverData});
                 },
@@ -1299,12 +1305,14 @@ WM.module('wm.widgets.grid')
                 /* TODO: In studio mode, service variable data should initially
                     be empty array, and metadata should be passed separately. */
                 var variableName,
+                    widgetName,
                     variableObj,
                     elScope,
                     result,
                     selectedItemIndex,
                     isBoundToSelectedItem,
-                    isBoundToSelectedItemSubset;
+                    isBoundToSelectedItemSubset,
+                    isBoundToFilter;
                 $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
 
                 result = Utils.getValidJSON(newVal);
@@ -1313,6 +1321,7 @@ WM.module('wm.widgets.grid')
                 isBoundToLiveVariable = undefined;
                 isBoundToLiveVariableRoot = undefined;
                 isBoundToServiceVariable = undefined;
+                isBoundToFilter = undefined;
                 $scope.gridVariable = '';
 
                 //Converting newval to object if it is an Object that comes as a string "{"data" : 1}"
@@ -1350,6 +1359,12 @@ WM.module('wm.widgets.grid')
                         variableName = $scope.binddataset.replace('bind:Variables.', '');
                         variableName = variableName.substr(0, variableName.indexOf('.'));
                     } else if (isBoundToWidget) {
+                        widgetName = $scope.binddataset.replace('bind:Widgets.', '').split(".")[0];
+                        isBoundToFilter = $scope.Widgets[widgetName]._widgettype === 'wm-livefilter';
+
+                        $scope.isBoundToFilter = isBoundToFilter;
+                        $scope.widgetName = widgetName;
+
                         variableName = Utils.getVariableName($scope);
                         isBoundToSelectedItem = $scope.binddataset.indexOf('selecteditem') !== -1;
                         isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
