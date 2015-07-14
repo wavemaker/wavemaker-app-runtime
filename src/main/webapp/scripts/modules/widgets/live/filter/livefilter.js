@@ -148,7 +148,7 @@ WM.module('wm.widgets.live')
                                     fieldValue = filterField.value;
                                     break;
                                 }
-                                if (WM.isDefined(fieldValue) && fieldValue !== '') {
+                                if (WM.isDefined(fieldValue) && fieldValue !== '' && fieldValue !== null) {
                                     filterFields.push({
                                         column: colName,
                                         value: fieldValue,
