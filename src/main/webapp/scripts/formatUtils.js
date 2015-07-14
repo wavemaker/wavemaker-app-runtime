@@ -7,7 +7,9 @@ WM.module('wm.utils')
     }])
     .service('DataFormatService', [
         '$filter',
-        function ($filter) {
+        'CURRENCYCONSTANTS',
+
+        function ($filter, CURRENCYCONSTANTS) {
             'use strict';
 
             var MONTH_LONG_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -17,7 +19,7 @@ WM.module('wm.utils')
                 DATE_TIME_PATTERNS = ["yyyy-MM-dd", "yyyy-M-dd", "M-dd-yyyy", "M/d/yyyy", "MM/dd/yyyy", "yyyy, MMM dd", "yyyy, dd MMMM", "MM-dd-yy hh:mm:ss a", "MM-dd-yy hh:mm:ss a Z", "yyyy-MM-dd HH:mm", "yyyy-MM-dd HH:mm:ss:sss", "yyyy-MM-dd hh:mm a", "yyyy-MM-dd hh:mm:ss a", "yyyy-MM-dd hh:mm:ss:sss Z", "yyyy-MM-dd hh:mm:ss:sss a", "EEE MMM dd hh:mm:ss Z yyyy", "EEE, dd MMM yyyy HH:mm:ss Z", "EEEE, MMMM dd, yyyy", "timestamp"],
                 TIME_PATTERNS = ['HH:mm:ss', 'HH:mm', 'hh:mm:ss', 'hh:mm', 'hh:mm a', 'H:m:s', 'h:m:s', 'timestamp'],
                 CURRENCY_OPTIONS = ["AED", "AFN", "ALL", "AMD", "ARS", "AUD", "AZN", "BAM", "BDT", "BGN", "BHD", "BIF", "BND", "BOB", "BRL", "BWP", "BYR", "BZD", "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EEK", "EGP", "ERN", "ETB", "EUR", "GBP", "GEL", "GHS", "GNF", "GTQ", "HKD", "HNL", "HRK", "HUF", "IDR", "ILS", "INR", "IQD", "IRR", "ISK", "JMD", "JOD", "JPY", "KES", "KHR", "KMF", "KRW", "KWD", "KZT", "LBP", "LKR", "LTL", "LVL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MOP", "MUR", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SDG", "SEK", "SGD", "SOS", "SYP", "THB", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VEF", "VND", "XAF", "XOF", "YER", "ZAR", "ZMK"],
-
+                FORMAT_OPTIONS = ["toDate", "toCurrency", "prefix", "suffix", "toNumber"],
             //WEEK_LONG_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
                 //WEEK_SHORT_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                 PARSE_DATE_MAP = {
@@ -48,6 +50,9 @@ WM.module('wm.utils')
             }
             function getCurrencyOptions() {
                 return CURRENCY_OPTIONS;
+            }
+            function getFormatPatterns() {
+                return FORMAT_OPTIONS;
             }
             /* converts epoch to date object */
             function epoch2date(epoch) {
@@ -248,7 +253,8 @@ WM.module('wm.utils')
 
             /* converts given input to currency */
             function toCurrency(data, currencySymbol, fracSize) {
-                return number2currency(data, currencySymbol, fracSize);
+                var _currencySymbol = (CURRENCYCONSTANTS[currencySymbol] || {}).symbol || currencySymbol;
+                return number2currency(data, _currencySymbol, fracSize);
             }
 
             /* padding string will be added to the left of the data */
@@ -296,5 +302,6 @@ WM.module('wm.utils')
             this.getDatePatterns = getDatePatterns;
             this.getTimePatterns = getTimePatterns;
             this.getCurrencyOptions = getCurrencyOptions;
+            this.getFormatPatterns = getFormatPatterns;
         }
     ]);
