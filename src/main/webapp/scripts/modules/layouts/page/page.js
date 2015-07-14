@@ -4,22 +4,18 @@ WM.module('wm.layouts.page')
     .directive('wmPage', ['DeviceViewService', 'CONSTANTS', '$rootScope', '$routeParams', 'Utils', '$timeout', 'Variables', 'NavigationVariableService', function (DeviceViewService, CONSTANTS, $rootScope, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
         'use strict';
 
-        function extend(destination, source) {
-            if (WM.isObject(destination.Variables)) {
-                // create an empty object with souce.Variables as the prototype
-                var newObj = Object.create(source.Variables);
-                // extend the newObj with destination.Variables and assign the returned value to destination.Variables
-                destination.Variables = WM.extend(newObj, destination.Variables);
-            }
-        }
-
-        function extendPageVariables(pageScope) {
-            extend(pageScope, $rootScope);
-        }
-
-        function extendAppVariables(pageScope) {
-            extend($rootScope, pageScope);
-        }
+        var extendVariables = function (scope, variables) {
+            WM.forEach(variables, function (variable, name) {
+                if (!scope.Variables.hasOwnProperty(name)) {
+                    Object.defineProperty(scope.Variables, name, {
+                        configurable: true,
+                        get: function () {
+                            return variable;
+                        }
+                    });
+                }
+            });
+        };
 
         return {
             'restrict': 'E',
@@ -138,29 +134,18 @@ WM.module('wm.layouts.page')
 
                             /* if app variables loaded, extend page variables with them */
                             if ($rootScope.Variables) {
-                                extendPageVariables(variableScope);
-                                if (!scope.$parent.partialname && !scope.prefabname) {
-                                    extendAppVariables(variableScope);
-                                }
+                                extendVariables(variableScope, $rootScope.Variables);
                                 /* if specified, call page variables ready function in the page.js */
                                 Utils.triggerFn(scope.onPageVariablesReady);
                             } else {
                                 /* listen to the page-variables-ready event */
-
-                                var onAppVariablesReadyHandler = $rootScope.$on('on-app-variables-ready', function (event, appVariables) {
-                                    extendPageVariables(variableScope);
-                                    if (!scope.$parent.partialname && !scope.prefabname) {
-                                        extendAppVariables(variableScope);
-                                    }
+                                element.on('$destroy', $rootScope.$on('on-app-variables-ready', function (event, appVariables) {
+                                    extendVariables(variableScope, $rootScope.Variables);
                                     /* if specified, call app variables ready function in the app.js */
                                     Utils.triggerFn(scope.$root.onAppVariablesReady, appVariables);
                                     /* if specified, call page variables ready function in the page.js */
                                     Utils.triggerFn(scope.onPageVariablesReady);
-                                });
-                                element.on('$destroy', function () {
-                                    onAppVariablesReadyHandler();
-                                    variableScope.Variables = undefined;
-                                });
+                                }));
                             }
                         });
                     },
@@ -174,7 +159,6 @@ WM.module('wm.layouts.page')
                             element.on('$destroy', function () {
                                 /*destroy variables*/
                                 Variables.unload(attrs.ngController.replace('PageController', ''), scope);
-                                scope.Variables = undefined;
                                 handlers.forEach(Utils.triggerFn);
                             });
                         }
