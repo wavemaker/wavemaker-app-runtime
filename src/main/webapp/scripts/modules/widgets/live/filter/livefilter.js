@@ -63,11 +63,16 @@ WM.module('wm.widgets.live')
                         /*Setting result to the default data*/
                         $scope.filter();
                     };
-                    $scope.filter = function () {
+                    $scope.filter = function (options) {
                         var filterFields = [],
                             query,
                             variable = $scope.Variables[$scope.variableName],
-                            primaryKeys = variable.getPrimaryKey();
+                            primaryKeys = variable.getPrimaryKey(),
+                            page = $scope.currentPage || 1;
+
+                        options = options || {};
+                        page = options.page || page;
+                        $scope.currentPage = page;
                         WM.forEach($scope.filterFields, function (filterField) {
                             var fieldValue,
                                 isBoolean = false,
@@ -153,7 +158,7 @@ WM.module('wm.widgets.live')
                         QueryBuilder.executeQuery({
                             "databaseName": variable.liveSource,
                             "query": query,
-                            "page": 1,
+                            "page": page,
                             "size": $scope.pagesize || 20,
                             "nativeSql": false,
                             "prefabName": variable.prefabName
@@ -173,7 +178,7 @@ WM.module('wm.widgets.live')
                             $scope.result.pagingOptions = {
                                 "dataSize": data.totalElements,
                                 "maxResults": $scope.pagesize || 20,
-                                "currentPage": 1
+                                "currentPage": page
                             };
                         });
                     };
@@ -365,6 +370,8 @@ WM.module('wm.widgets.live')
                                             scope.result = newVal;
                                             /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
                                             scope.result.variableName = scope.variableName;
+                                            scope.result.widgetName = scope.name;
+                                            scope.result.isBoundToFilter = true;
                                             /*transform the data to filter consumable data*/
                                             fieldsObj = scope.constructDefaultData(newVal);
                                             buttonsObj = defaultButtonsArray;

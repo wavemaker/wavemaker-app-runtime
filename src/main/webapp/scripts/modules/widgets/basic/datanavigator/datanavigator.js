@@ -127,6 +127,9 @@ WM.module("wm.widgets.basic")
                         if ($scope.binddataset.indexOf('bind:Variables.') !== -1) {
                             $scope.variableName = $scope.binddataset.replace('bind:Variables.', '');
                             $scope.variableName = $scope.variableName.substr(0, $scope.variableName.indexOf('.'));
+                        } else if (newVal.isBoundToFilter && newVal.widgetName) {
+                            $scope.isBoundToFilter = true;
+                            $scope.widgetName = newVal.widgetName;
                         } else {
                             $scope.variableName = newVal.variableName;
                         }
@@ -224,7 +227,15 @@ WM.module("wm.widgets.basic")
                 $scope.getPageData = function (event, callback) {
                     var variable = $scope.navigatorElement.scope().Variables[$scope.variableName],
                         data,
-                        startIndex;
+                        startIndex,
+                        widgetScope,
+                        widgets;
+                    if (CONSTANTS.isRunMode && $scope.isBoundToFilter && $scope.widgetName) {
+                        widgets = $scope.navigatorElement.scope().Widgets || {};
+                        widgetScope = widgets[$scope.widgetName];
+                        widgetScope.filter({"page": $scope.currentPage});
+                        return;
+                    }
                     if ($scope.isVariableHasPaging()) {
                         if (variable && variable.category === "wm.LiveVariable") {
                             /*Invoke the function to get the data corresponding to the specific page.*/
