@@ -377,6 +377,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/widgets/form/text/text.js',
                         '<%= config.scripts %>/modules/widgets/form/textarea/textarea.js',
                         '<%= config.scripts %>/modules/widgets/form/time/time.js',
+                        '<%= config.scripts %>/modules/widgets/form/richtexteditor/richtexteditor.js',
                         '<%= config.scripts %>/modules/widgets/grid/grid.js',
                         '<%= config.scripts %>/modules/widgets/live/form/liveform.js',
                         '<%= config.scripts %>/modules/widgets/live/filter/livefilter.js',

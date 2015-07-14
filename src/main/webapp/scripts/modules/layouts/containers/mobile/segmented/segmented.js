@@ -119,7 +119,7 @@ WM.module('wm.layouts.containers')
                             $scope.add = function () {
                                 $scope.$root.$emit('canvas-add-widget', {
                                     'parentId': $scope.widgetid,
-                                    'widgetType': 'wm-segmentedcontrolcontent'
+                                    'widgetType': 'wm-mobile-segmentedcontent'
                                 });
                             };
                         }
