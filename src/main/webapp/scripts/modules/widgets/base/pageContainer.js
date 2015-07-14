@@ -172,7 +172,7 @@ WM.module('wm.widgets.base')
                 case 'content':
                     // if the $lazyLoad is method is defined on the iScope of the widget (eg, tabContent and accordionContent) and if the widget is not active
                     // load the page on-demand(lazily) otherwise load immediately
-                    if (iScope.$lazyLoad && !iScope.isActive) {
+                    if (newVal && iScope.$lazyLoad && !iScope.isActive) {
                         // override the $lazyLoad method defined on the iScope.
                         // page will be loaded only when this method is triggered.
                         iScope.$lazyLoad = function () {
