@@ -61,18 +61,29 @@ WM.module('wm.widgets.live')
                             }
                         });
                         /*Setting result to the default data*/
+                        $scope.orderBy = '';
                         $scope.filter();
                     };
+                    $scope.applyFilter = function (options) {
+                        options = options || {};
+                        options.page = options.page || 1;
+                        options.orderBy = options.orderBy || $scope.orderBy || '';
+                        $scope.filter(options);
+                    };
+
                     $scope.filter = function (options) {
                         var filterFields = [],
                             query,
                             variable = $scope.Variables[$scope.variableName],
-                            primaryKeys = variable.getPrimaryKey(),
-                            page = $scope.currentPage || 1;
+                            page = 1,
+                            orderBy;
+
 
                         options = options || {};
                         page = options.page || page;
-                        $scope.currentPage = page;
+                        orderBy = options.orderBy || "";
+                        $scope.orderBy = options.orderBy;
+                        orderBy = orderBy.split(",").join(" ");
                         WM.forEach($scope.filterFields, function (filterField) {
                             var fieldValue,
                                 isBoolean = false,
@@ -149,7 +160,8 @@ WM.module('wm.widgets.live')
 
                         query = QueryBuilder.getQuery({
                             "tableName": $scope.result.propertiesMap.entityName,
-                            "filterFields": filterFields
+                            "filterFields": filterFields,
+                            "orderby": orderBy
                         });
 
                         /* Sending size = variable.maxResults because the number of records
@@ -361,13 +373,25 @@ WM.module('wm.widgets.live')
                                 case "dataset":
                                     var fieldsObj,
                                         buttonsObj,
-                                        designerObj;
+                                        designerObj,
+                                        oldData;
                                     /*If properties map is populated and if columns are presented for filter construction*/
                                     if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                         /*Check if propertiesMap in oldVal is defined, then it is not equal to newVal propertiesMap*/
                                         if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
+                                            /* old data cached to avoid live variable data's effect on filter */
+                                            oldData = (scope.result && scope.result.data) || [];
+
                                             scope.variableName = scope.binddataset.match(variableRegex)[1];
                                             scope.result = newVal;
+
+                                            /* In Run mode filter is not depending on variable's data, as filter is making explicit call through QUERY
+                                             * Hence, to avoid flicker when data from explicit call is rendered, the live variable's data is ignored
+                                             */
+                                            if (CONSTANTS.isRunMode) {
+                                                scope.result.data = oldData;
+                                            }
+
                                             /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
                                             scope.result.variableName = scope.variableName;
                                             scope.result.widgetName = scope.name;
@@ -381,7 +405,7 @@ WM.module('wm.widgets.live')
 
                                             /*In run mode, on load check if default value exists and apply filter*/
                                             if (CONSTANTS.isRunMode) {
-                                                scope.filterOnDefault();
+                                                scope.filter();
                                             }
                                         }
                                     } else if (!newVal && CONSTANTS.isStudioMode) { /*Clear the variables when the live-filter has not been bound.*/

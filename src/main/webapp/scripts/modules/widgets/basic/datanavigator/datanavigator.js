@@ -57,7 +57,7 @@ WM.module("wm.widgets.basic")
 
                 /*Function to calculate the paging values.*/
                 $scope.calculatePagingValues = function (pageCount) {
-                    $scope.pageCount = WM.isDefined(pageCount) ? pageCount : (($scope.dataSize > $scope.maxResults) ? (Math.ceil($scope.dataSize / $scope.maxResults)) : 1);
+                    $scope.pageCount = WM.isDefined(pageCount) ? pageCount : (($scope.dataSize > $scope.maxResults) ? (Math.ceil($scope.dataSize / $scope.maxResults)) : ($scope.dataSize < 0 ? 0 : 1));
                     $scope.currentPage = $scope.currentPage || 1;
                 };
 
@@ -91,6 +91,8 @@ WM.module("wm.widgets.basic")
                         $scope.showrecordcount = false;
                         $scope.isDisableLast = true;
                         $scope.isDisableCount = true;
+                    } else {
+                        $scope.isDisableCount = false;
                     }
                 };
 
@@ -120,6 +122,7 @@ WM.module("wm.widgets.basic")
 
                     /*Set the default value of the "result" property to the newVal so that the widgets bound to the data-navigator can have the dataSet set properly.*/
                     $scope.result = newVal;
+                    $scope.isBoundToFilter = undefined;
                     /*Check for sanity*/
                     if ($scope.binddataset) {
 
@@ -155,12 +158,12 @@ WM.module("wm.widgets.basic")
                                 2. Data corresponding to the table associated with the live-variable changes.*/
                                 if (!$scope.isPagingValuesComputed() || (newVal.pagingOptions && !newVal.pagingOptions.relatedDataChange)) {
                                     dataSize = newVal.pagingOptions.dataSize;
-                                    $scope.checkDataSize(dataSize);
 
                                     maxResults = newVal.pagingOptions.maxResults;
                                     currentPage = newVal.pagingOptions.currentPage;
                                     $scope.setDefaultPagingValues(dataSize, maxResults, currentPage);
                                     $scope.disableNavigation();
+                                    $scope.checkDataSize(dataSize);
                                 }
                             } else if (!WM.isString(newVal)) {
                                 dataSize = WM.isArray(newVal) ? newVal.length : 1;
@@ -233,7 +236,7 @@ WM.module("wm.widgets.basic")
                     if (CONSTANTS.isRunMode && $scope.isBoundToFilter && $scope.widgetName) {
                         widgets = $scope.navigatorElement.scope().Widgets || {};
                         widgetScope = widgets[$scope.widgetName];
-                        widgetScope.filter({"page": $scope.currentPage});
+                        widgetScope.applyFilter({"page": $scope.currentPage});
                         return;
                     }
                     if ($scope.isVariableHasPaging()) {
