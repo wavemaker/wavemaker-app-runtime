@@ -224,7 +224,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 if (attributeValue instanceof Number) {
                     return new java.sql.Time(((Number) attributeValue).longValue());
                 } else {
-                    WMDateDeSerializer.getDate((String) attributeValue);
+                    return WMDateDeSerializer.getDate((String) attributeValue);
                 }
             case TIMESTAMP:
                 return new Timestamp(((Number) attributeValue).longValue());
