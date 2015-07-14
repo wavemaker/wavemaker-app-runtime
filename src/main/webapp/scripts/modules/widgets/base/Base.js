@@ -504,7 +504,7 @@ WM.module('wm.widgets.base', [])
                         "ismeridian": {"type": "boolean", "value": true},
                         "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "required": {"type": "boolean"},
-                        "datavalue": {"type": "time, string, number", "widget": "time", "bindable": "in-out-bound"}
+                        "datavalue": {"type": "time, string, number", "widget": "string", "bindable": "in-out-bound", hint: "HH:mm"}
                     },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time"},

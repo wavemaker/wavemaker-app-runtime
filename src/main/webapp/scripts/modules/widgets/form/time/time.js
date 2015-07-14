@@ -132,8 +132,14 @@ WM.module('wm.widgets.form')
                                     if (WM.isDate(val)) {
                                         this._proxyModel = val;
                                     } else {
+                                        /*if the value is a timestamp string, convert it to a number*/
                                         if (!isNaN(val)) {
                                             val = parseInt(val, 10);
+                                        } else {
+                                            /*if the value is in HH:mm:ss format, it returns a wrong date. So append the date to the given value to get date*/
+                                            if (!(new Date(val).getTime())) {
+                                                val = new Date().toDateString() + ' ' + val;
+                                            }
                                         }
                                         var date = new Date(val);
                                         this._proxyModel = WM.isDate(date) ? date : undefined;
