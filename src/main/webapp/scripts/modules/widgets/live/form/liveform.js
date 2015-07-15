@@ -861,7 +861,7 @@ WM.module('wm.widgets.live')
                 } else {
                     step = 1;
                 }
-                fieldDef.placeholder = fieldDef.placeholder || '';
+                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
                 template = template +
                     '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -878,7 +878,7 @@ WM.module('wm.widgets.live')
                 template = template + '></wm-text></div></wm-composite>';
                 break;
             case "Date":
-                fieldDef.placeholder = fieldDef.placeholder || '';
+                fieldDef.placeholder = fieldDef.placeholder || 'Select date';
                 template = template +
                     '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -901,6 +901,7 @@ WM.module('wm.widgets.live')
                     '</wm-composite>';
                 break;
             case "Select":
+                fieldDef.placeholder = fieldDef.placeholder || 'Select value';
                 template = template +
                     '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                     '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -946,7 +947,7 @@ WM.module('wm.widgets.live')
                     '</wm-composite>';
                 break;
             case "Text":
-                fieldDef.placeholder = fieldDef.placeholder || '';
+                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
                 template = template +
                     '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -960,7 +961,7 @@ WM.module('wm.widgets.live')
                 template = template + '></wm-text></div></wm-composite>';
                 break;
             case "Password":
-                fieldDef.placeholder = fieldDef.placeholder || '';
+                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
                 template = template +
                     '<wm-composite widget="password" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -982,7 +983,7 @@ WM.module('wm.widgets.live')
                     '</wm-composite>';
                 break;
             case "Textarea":
-                fieldDef.placeholder = fieldDef.placeholder || '';
+                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
                 template = template +
                     '<wm-composite widget="textarea" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -995,6 +996,7 @@ WM.module('wm.widgets.live')
                 template = template + '></wm-textarea></div></wm-composite>';
                 break;
             case "Time":
+                fieldDef.placeholder = fieldDef.placeholder || 'Select time';
                 template = template +
                     '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="form-time {{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
@@ -1007,7 +1009,7 @@ WM.module('wm.widgets.live')
                     '</wm-composite>';
                 break;
             case "Timestamp":
-                /*timestamp has two widgets, date and time. Date for selecting date and Time for time*/
+                fieldDef.placeholder = fieldDef.placeholder || 'Select date time';
                 template = template +
                     '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="form-timestamp {{dataArray[' + index + '].class}}">' +
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
