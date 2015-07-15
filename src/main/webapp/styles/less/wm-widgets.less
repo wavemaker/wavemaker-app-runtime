@@ -554,6 +554,16 @@ html, body {
   }
 }
 
+.app-livefilter {
+  .app-grid-layout {
+    .col-md-6.col-sm-6, .col-md-4.col-sm-4, .col-md-3.col-sm-3 {
+      .app-date, .app-datetime, .app-timeinput {
+        width: 100%;
+      }
+    }
+  }
+}
+
 /**input required**/
 .app-required-input {
   color: @red;
@@ -1767,6 +1777,9 @@ If the height and width are not specified the video takes the height of the post
     }
     .app-label {
       padding-left: 5px;
+    }
+    div.col-md-4 {
+      padding-right: 4px;
     }
   }
 }
