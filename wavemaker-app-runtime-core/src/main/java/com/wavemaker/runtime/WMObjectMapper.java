@@ -32,7 +32,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
@@ -52,11 +51,11 @@ public class WMObjectMapper extends ObjectMapper {
     private static WMPropertyNamingStrategy PROPERTY_NAMING_STRATEGY = new WMPropertyNamingStrategy();
 
     private WMObjectReadMapper readMapper = null;
-    private WMObjectwritMapper writeMapper = null;
+    private WMObjectwriteMapper writeMapper = null;
 
     private WMObjectMapper() {
         readMapper = new WMObjectReadMapper();
-        writeMapper = new WMObjectwritMapper();
+        writeMapper = new WMObjectwriteMapper();
     }
 
     public static WMObjectMapper getInstance() {
@@ -225,7 +224,7 @@ public class WMObjectMapper extends ObjectMapper {
 
         WMObjectReadMapper() {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            SimpleModule module = new SimpleModule("WMDefaultDeSerializer", new Version(1, 0, 0, null));
+            SimpleModule module = new SimpleModule("WMDefaultDeSerializer");
 
             module.addDeserializer(Date.class, new WMDateDeSerializer());
             module.addDeserializer(java.sql.Date.class, new WMSqlDateDeSerializer());
@@ -235,15 +234,15 @@ public class WMObjectMapper extends ObjectMapper {
         }
     }
 
-    private static class WMObjectwritMapper extends ObjectMapper {
+    private static class WMObjectwriteMapper extends ObjectMapper {
 
-        WMObjectwritMapper() {
+        WMObjectwriteMapper() {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             WMHibernate4Module hibernate4Module = new WMHibernate4Module();
             hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
             registerModule(hibernate4Module);
 
-            SimpleModule module = new SimpleModule("WMDefaultSerializer",new Version(1, 0, 0, null));
+            SimpleModule module = new SimpleModule("WMDefaultSerializer");
             module.addSerializer(byte[].class, new ByteArraySerializer());
             registerModule(module);
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
