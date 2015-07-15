@@ -336,9 +336,9 @@ WM.module('wm.widgets.live')
                     "audio": "audio/*"
                 };
                 $scope.isDateTimeWidgets = {
-                    "Date": true,
-                    "Timestamp": true,
-                    "Time": true
+                    "date": true,
+                    "time": true,
+                    "timestamp": true
                 };
                /*Set if any default values, if given*/
                 $scope.setDefaults = function () {
@@ -397,8 +397,15 @@ WM.module('wm.widgets.live')
                     dataArray.forEach(function (field) {
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
-                        if ($scope.isDateTimeWidgets[field.widgetType] && field.outputformat && field.outputformat !== "timestamp") {
-                            dataObject[field.key] = $filter('date')(field.value, field.outputformat);
+                        if (((field.widgetType && $scope.isDateTimeWidgets[field.widgetType.toLowerCase()]) || $scope.isDateTimeWidgets[field.type])) {
+                            if (field.value && !isNaN(field.value)) {
+                                field.value = Number(field.value);
+                            }
+                            if (field.outputformat && field.outputformat !== "timestamp") {
+                                dataObject[field.key] = $filter('date')(field.value, field.outputformat);
+                            } else {
+                                dataObject[field.key] = field.value;
+                            }
                         } else if (field.type === "blob") {
                             if (isFormDataSupported) {
                                 $scope.multipartData = true;
