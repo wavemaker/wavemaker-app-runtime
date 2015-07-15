@@ -504,7 +504,7 @@ WM.module('wm.widgets.base', [])
                         "ismeridian": {"type": "boolean", "value": true},
                         "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "required": {"type": "boolean"},
-                        "datavalue": {"type": "time, string, number", "widget": "string", "bindable": "in-out-bound", hint: "HH:mm"}
+                        "datavalue": {"type": "time, date, string, number", "widget": "string", "bindable": "in-out-bound", hint: "HH:mm"}
                     },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time"},
@@ -519,7 +519,7 @@ WM.module('wm.widgets.base', [])
                         "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
                         "datepattern": {"value": "yyyy-MM-dd HH:mm", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
-                        "datavalue": {"type": "timestamp, date, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"}
+                        "datavalue": {"type": "timestamp, date, time, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
