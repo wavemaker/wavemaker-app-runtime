@@ -1076,6 +1076,7 @@ WM.module('wm.widgets.grid')
                 }
             };
 
+            $scope.isGridEditMode = false;
             $scope.gridOptions = {
                 data: [],
                 colDefs: $scope.fieldDefs,
@@ -1138,6 +1139,9 @@ WM.module('wm.widgets.grid')
                 },
                 getCompiledTemplate: function (htm, row, colDef) {
                     return getCompiledTemplate(htm, row, colDef);
+                },
+                setGridEditMode: function (val) {
+                    $scope.isGridEditMode = val;
                 }
             };
 

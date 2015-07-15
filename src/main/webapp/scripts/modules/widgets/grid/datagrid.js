@@ -455,8 +455,9 @@ $.widget('wm.datagrid', {
         return formattedDate + ' ' + formattedTime;
     },
 
-    _getEditableTemplate: function () {
-        return '<input class="editable form-control app-textbox" type="text" value=""/>';
+    _getEditableTemplate: function (colDef) {
+        var textboxTemplate = '<input class="editable form-control app-textbox" type="text" value=""/>';
+        return this.Utils.isDefined(colDef.customExpression) ? colDef.customExpression : textboxTemplate;
     },
 
     /* Prepares the grid header data by adding custom column definitions if needed. */
@@ -807,10 +808,14 @@ $.widget('wm.datagrid', {
     },
 
     _isCustomExpressionNonEditable: function(customTag) {
+        var $input = $(customTag);
         if (!customTag) {
             return false;
         }
-        return !($(customTag).find('input'));
+        else if ($input.attr('type') === 'checkbox') {
+            return false;
+        }
+        return true;
     },
     /* Marks the first row as selected. */
     selectFirstRow: function (value) {
@@ -976,6 +981,10 @@ $.widget('wm.datagrid', {
                 this.options.beforeRowUpdate(rowData, e);
             }
 
+            if ($.isFunction(this.options.setGridEditMode)) {
+                this.options.setGridEditMode(true);
+            }
+
             if (!this.options.allowInlineEditing) {
                 return;
             }
@@ -985,15 +994,25 @@ $.widget('wm.datagrid', {
                     cellText = $el.text(),
                     id = $el.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id],
-                    editableTemplate;
+                    editableTemplate,
+                    $input,
+                    customExp,
+                    originalTemplate,
+                    ctId,
+                    compiledTemplate;
                 if (!(colDef.readonly || self._isCustomExpressionNonEditable(colDef.customExpression) || colDef.disableInlineEditing)) {
-                    editableTemplate = self._getEditableTemplate(colDef.field);
+                    editableTemplate = self._getEditableTemplate(colDef);
                     // TODO: Use some other selector. Input will fail for other types.
                     if (!colDef.customExpression) {
                         $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
                         $el.find('input').val(cellText);
                     } else {
-                        $el.addClass('cell-editing');
+                        customExp = colDef.customExpression;
+                        ctId = $el.attr('data-compiled-template');
+                        originalTemplate = customExp;
+                        compiledTemplate = self.options.getCompiledTemplate(customExp, rowData, colDef);
+                        $el.addClass('cell-editing editable-expression').html(compiledTemplate).data(
+                            'originalTemplate', {'originalTemplate': originalTemplate, 'rowData': angular.copy(rowData), 'colDef': colDef});
                     }
                 }
             });
@@ -1013,15 +1032,14 @@ $.widget('wm.datagrid', {
                 if ($.isFunction(this.options.onSetRecord)) {
                     this.options.onSetRecord(rowData, e);
                 }
-
                 $editableElements.each(function () {
                     var $el = $(this),
+                        $input = $el.find('input'),
                         colId = $el.attr('data-col-id'),
                         colDef = self.preparedHeaderData[colId],
                         fields = colDef.field.split('.'),
                         $ie = $el.find('input'),
-                        text;
-                    text = self._getValue($ie, fields);
+                        text = self._getValue($ie, fields);
                     if (fields.length === 1) {
                         rowData[colDef.field] = text;
                     } else if (!isNewRow && fields[0] in rowData) {
@@ -1060,10 +1078,22 @@ $.widget('wm.datagrid', {
                     }
                     return;
                 }
+                if ($.isFunction(this.options.setGridEditMode)) {
+                    this.options.setGridEditMode(false);
+                }
                 // Cancel edit.
                 $editableElements.each(function () {
-                    var $el = $(this);
-                    $el.text($el.data('originalText'));
+                    var $el = $(this),
+                        ctId = $el.attr('data-compiled-template'),
+                        originalTemplate,
+                        compiledTemplate;
+                    if (!ctId) {
+                        $el.text($el.data('originalText'));
+                    } else {
+                        originalTemplate = $el.data('originalTemplate');
+                        compiledTemplate = self.options.getCompiledTemplate(originalTemplate.originalTemplate, originalTemplate.rowData, originalTemplate.colDef);
+                        $el.html(compiledTemplate);
+                    }
                 });
                 $editButton.removeClass('hidden');
                 $cancelButton.addClass('hidden');
@@ -1079,9 +1109,15 @@ $.widget('wm.datagrid', {
             $saveButton = $row.find('.save-edit-row-button');
         $editableElements.each(function () {
             var $el = $(this),
+                $input = $el.find('input'),
                 text = $el.find('input').val();
-            $el.text(text);
+            if (!$el.attr('data-compiled-template')) {
+                $el.text(text);
+            }
         });
+        if ($.isFunction(this.options.setGridEditMode)) {
+            this.options.setGridEditMode(false);
+        }
         $editButton.removeClass('hidden');
         $cancelButton.addClass('hidden');
         $saveButton.addClass('hidden');
