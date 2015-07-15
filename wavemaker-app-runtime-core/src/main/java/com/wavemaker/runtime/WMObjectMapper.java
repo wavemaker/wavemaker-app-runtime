@@ -44,6 +44,8 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.wavemaker.runtime.data.json.WMHibernate4Module;
+import com.wavemaker.studio.common.ser.WMDateDeSerializer;
+import com.wavemaker.studio.common.ser.WMSqlDateDeSerializer;
 
 public class WMObjectMapper extends ObjectMapper {
 

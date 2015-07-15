@@ -6,8 +6,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 
-import com.wavemaker.runtime.WMDateDeSerializer;
-import com.wavemaker.runtime.WMSqlDateDeSerializer;
+import com.wavemaker.studio.common.ser.WMDateDeSerializer;
+import com.wavemaker.studio.common.ser.WMSqlDateDeSerializer;
 import com.wavemaker.studio.common.util.StringUtils;
 
 /**
