@@ -501,7 +501,10 @@ WM.module('wm.widgets.live')
         /* provides the template based on the form-field definition */
         var getTemplate = function (fieldDef, index) {
             var template = '',
-                type;
+                type,
+                defaultValue = CONSTANTS.isRunMode ? "filterFields[" + index + "].value" : "",/*Displaying only in run mode*/
+                defaultMinValue = CONSTANTS.isRunMode ? "filterFields[" + index + "].minValue" : "",
+                defaultMaxValue = CONSTANTS.isRunMode ? "filterFields[" + index + "].maxValue" : "";
 
             /*Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap*/
             switch (fieldDef.widget) {
@@ -566,15 +569,15 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultMinValue + '" readonly="{{filterFields[' + index + '].readonly}}"  type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultMaxValue + '" readonly="{{filterFields[' + index + '].readonly}}" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" ></wm-text></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     type = (fieldDef.type === "integer") ? "number" : "string";
                     template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultValue + '" readonly="{{filterFields[' + index + '].readonly}}"  type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -586,14 +589,14 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultMinValue + '" readonly="{{filterFields[' + index + '].readonly}}"  type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultMaxValue + '" readonly="{{filterFields[' + index + '].readonly}}" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
                     template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
+                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultValue + '" readonly="{{filterFields[' + index + '].readonly}}"  type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
                         '</wm-composite>';
                 }
                 break;
@@ -701,6 +704,7 @@ WM.module('wm.widgets.live')
                             exprArray,
                             template,
                             index,
+                            defaultVal,
                             fieldObject = {
                                 'field': attrs.field || attrs.binding,
                                 'displayName': attrs.displayName || attrs.caption,
@@ -719,7 +723,8 @@ WM.module('wm.widgets.live')
                                 'maxPlaceholder': attrs.maxPlaceholder,
                                 'datepattern': attrs.datepattern,
                                 'multiple': attrs.multiple === "true" || attrs.multiple === true,
-                                'relatedEntityName': attrs.relatedEntityName
+                                'relatedEntityName': attrs.relatedEntityName,
+                                'value': attrs.value
                             };
                         /*Set the default value*/
                         if (attrs.value) {
@@ -727,7 +732,12 @@ WM.module('wm.widgets.live')
                             if (Utils.stringStartsWith(attrs.value, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = attrs.value.replace('bind:', '');
                                 if (scope.Variables && !Utils.isEmptyObject(scope.Variables) && scope.$eval(expr)) {
-                                    fieldObject.value = scope.$eval(expr);
+                                    defaultVal = scope.$eval(expr);
+                                    fieldObject.value = defaultVal;
+                                    if (fieldObject.isRange) {
+                                        fieldObject.minValue = defaultVal;
+                                        fieldObject.maxValue = defaultVal;
+                                    }
                                 } else {
                                     /*TODO: Replace with new common binding function*/
                                     if (expr.indexOf('.content[$i].') !== -1) {
@@ -750,18 +760,27 @@ WM.module('wm.widgets.live')
                                             val = newVal;
                                         }
                                         scope.parentIsolateScope.filterFields[index].value = val;
+                                        if (attrs.isRange) {
+                                            scope.parentIsolateScope.filterFields[index].minValue = val;
+                                            scope.parentIsolateScope.filterFields[index].maxValue = val;
+                                        }
                                         scope.parentIsolateScope.filterFields[index].selected = val;
                                         /*Apply the filter after the default value change*/
                                         scope.parentIsolateScope.filterOnDefault();
                                     });
                                 }
+
                             } else {
-                                if (fieldObject.type === 'integer') {
-                                    fieldObject.value = isNaN(Number(attrs.value)) ? '' : Number(attrs.value);
-                                    fieldObject.selected = fieldObject.value;
-                                } else {
-                                    fieldObject.value = attrs.value;
-                                    fieldObject.selected = attrs.value;
+                                defaultVal = attrs.value;
+                                /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
+                                if (fieldObject.type === 'integer' && CONSTANTS.isRunMode) {
+                                    defaultVal = isNaN(Number(attrs.value)) ? '' : Number(attrs.value);
+                                }
+                                fieldObject.selected = defaultVal;
+                                fieldObject.value = defaultVal;
+                                if (fieldObject.isRange) {
+                                    fieldObject.minValue = defaultVal;
+                                    fieldObject.maxValue = defaultVal;
                                 }
                             }
                         }
