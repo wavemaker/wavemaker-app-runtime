@@ -514,8 +514,8 @@ WM.module('wm.widgets.live')
                 break;
             case 'select':
                 if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min Value';
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max Value';
                     template = template +
                         '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
@@ -599,8 +599,8 @@ WM.module('wm.widgets.live')
                 break;
             case 'date':
                 if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min date';
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max date';
                     type = 'date';
                     template = template +
                         '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
@@ -609,7 +609,7 @@ WM.module('wm.widgets.live')
                         '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
                         '</wm-composite>';
                 } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select date';
                     type = 'date';
                     template = template + '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
@@ -619,8 +619,8 @@ WM.module('wm.widgets.live')
                 break;
             case 'time':
                 if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min time';
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max time';
                     type = 'time';
                     template = template +
                         '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
@@ -629,7 +629,7 @@ WM.module('wm.widgets.live')
                         '<div class="col-md-4"><wm-time name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-time></div>' +
                         '</wm-composite>';
                 } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select time';
                     type = 'time';
                     template = template + '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
@@ -639,8 +639,8 @@ WM.module('wm.widgets.live')
                 break;
             case 'timestamp':
                 if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min date time';
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max date time';
                     type = 'timestamp';
                     template = template +
                         '<wm-composite widget="datetime" show="{{filterFields[' + index + '].show}}">' +
@@ -649,7 +649,7 @@ WM.module('wm.widgets.live')
                         '<div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-datetime></div>' +
                         '</wm-composite>';
                 } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select date time';
                     type = 'time';
                     template = template + '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
