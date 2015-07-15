@@ -175,7 +175,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     /* special case for pageable return type */
                     if (isRestSupportedService) {
                         isList = operation[isListKey];
-                        typeRef = (isList || operation[opTypeRefsKey] === PAGE_TYPE)? (operation[listOpTypeRefsKey][0] || 'java.lang.Object') : operation[opTypeRefsKey];
+                        typeRef = (isList || operation[opTypeRefsKey] === PAGE_TYPE) ? (operation[listOpTypeRefsKey][0] || 'java.lang.Object') : ((operation[listOpTypeRefsKey] && operation[listOpTypeRefsKey][0]) || operation[opTypeRefsKey]);
                         returnObj = {typeRef: typeRef};
                     } else {
                         returnObj = operation[opTypeRefsKey];
