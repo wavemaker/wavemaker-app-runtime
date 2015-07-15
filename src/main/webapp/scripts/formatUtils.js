@@ -1,4 +1,4 @@
-/*global WM*/
+/*global WM, moment*/
 
 WM.module('wm.utils')
     .config(['$filterProvider', function ($filterProvider) {
@@ -214,8 +214,10 @@ WM.module('wm.utils')
 
             /* converts given number to currency */
             function number2currency(data, currencySymbol, fractionSize) {
-                currencySymbol = currencySymbol || '';
-                return currencySymbol + string2number(data, fractionSize);
+                var _sym = currencySymbol || '',
+                    _val = string2number(data, fractionSize);
+
+                return _val ? _sym + _val : '';
             }
 
             /* converts epoch or date object to date-string in the given format */
