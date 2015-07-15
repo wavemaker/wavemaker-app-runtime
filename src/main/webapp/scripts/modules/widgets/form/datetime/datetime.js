@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/datetime.html',
             '<div class="app-datetime input-group dropdown" dropdown is-open="isTimeOpen" init-widget has-model ' + $rootScope.getWidgetStyles() +
             ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
-                '<input class="form-control app-textbox" data-ng-model="_displayModel">' +
+                '<input class="form-control app-textbox display-input" data-ng-model="_displayModel">' +
                 '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" data-ng-model="_dateModel" datepicker-popup={{datepattern}} min-date=mindate max-date=maxdate is-open="isDateOpen">' +
                 '<div class="dropdown-menu">' +
                     '<timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></timepicker>' +
@@ -80,6 +80,7 @@ WM.module('wm.widgets.form')
                 if (!isWidgetInsideCanvas) {
                     template.attr('data-ng-click', '_onClick($event)');
                     template.find('.btn-date').attr('data-ng-click', '_onDateClick($event)');
+                    template.find('.display-input').attr('data-ng-click', '_onDateClick($event)');
                     template.find('.btn-time').attr('data-ng-click', '_onTimeClick($event)');
 
                     if (tAttrs.hasOwnProperty('onMouseenter')) {

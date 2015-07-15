@@ -11,7 +11,7 @@ WM.module('wm.widgets.form')
                 ' data-ng-show="show" ' +
                 //' is-open="isOpen" ' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})" >' +
-                '<input class="form-control app-textbox" data-ng-model="_timeModel">' +
+                '<input class="form-control app-textbox" data-ng-model="_timeModel" dropdown-toggle>' +
                 '<div class="dropdown-menu">' +
                     '<timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian"></timepicker>' +
                 '</div>' +
