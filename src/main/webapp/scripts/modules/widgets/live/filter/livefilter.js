@@ -25,10 +25,19 @@ WM.module('wm.widgets.live')
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf("wm.livefilter", ["wm.layouts", "wm.containers"]),
                 filterMarkup = '',
-                notifyFor = {
-                    'dataset': true,
-                    'layout': true
-                };
+                notifyFor;
+                if (CONSTANTS.isStudioMode) {
+                    notifyFor = {
+                        'dataset': true,
+                        'layout': true,
+                        'pagesize': true
+                    };
+                } else {
+                    notifyFor = {
+                        'dataset': true,
+                        'layout': true
+                    };
+                }
 
             return {
                 restrict: 'E',
@@ -385,12 +394,10 @@ WM.module('wm.widgets.live')
                                             scope.variableName = scope.binddataset.match(variableRegex)[1];
                                             scope.result = newVal;
 
-                                            /* In Run mode filter is not depending on variable's data, as filter is making explicit call through QUERY
+                                            /* The filter is not depending on variable's data, as filter is making explicit call through QUERY
                                              * Hence, to avoid flicker when data from explicit call is rendered, the live variable's data is ignored
                                              */
-                                            if (CONSTANTS.isRunMode) {
-                                                scope.result.data = oldData;
-                                            }
+                                            scope.result.data = oldData;
 
                                             /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
                                             scope.result.variableName = scope.variableName;
@@ -403,10 +410,9 @@ WM.module('wm.widgets.live')
                                             /* call method to update allowed values for select type filter fields */
                                             updateAllowedValues();
 
-                                            /*In run mode, on load check if default value exists and apply filter*/
-                                            if (CONSTANTS.isRunMode) {
-                                                scope.filter();
-                                            }
+                                            /*On load check if default value exists and apply filter*/
+                                            scope.filter();
+
                                         }
                                     } else if (!newVal && CONSTANTS.isStudioMode) { /*Clear the variables when the live-filter has not been bound.*/
                                         //element.empty();
@@ -445,6 +451,10 @@ WM.module('wm.widgets.live')
                                         $rootScope.$emit('filterDefs-modified', designerObj);
                                     }
                                     break;
+                                case "pagesize":
+                                    if (WM.isDefined(scope.variableName) && WM.isDefined(newVal) && !WM.equals(newVal, oldVal)) {
+                                        scope.filter();
+                                    }
                                 }
                             }
 
