@@ -175,7 +175,7 @@ var Application = WM.module('Application',
 
                     var locationPath = window.location.href,
                         lastLocation = window.location.href.lastIndexOf("/"),
-                        pageName = locationPath.substr(lastLocation + 1, locationPath.length) || $route.current.params.name,
+                        pageName = $route.current.params.name || locationPath.substr(lastLocation + 1, locationPath.length),
                         loadPage;
 
 
@@ -307,8 +307,6 @@ var Application = WM.module('Application',
                 switch (variable.category) {
                 case "wm.LiveVariable":
                     if (variable.operation === 'read') {
-                        /*Set the "forceFetch" option so that data is fetched for the live-variable irrespective of "startUpdate"/"autoUpdate" properties.*/
-                        options.forceFetch = true;
                         variable.update(options, onSuccess, onError);
                     } else {
                         /* else call the respective db operation (insert/update/delete) */

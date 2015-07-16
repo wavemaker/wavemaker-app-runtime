@@ -338,7 +338,7 @@ wm.variables.services.Variables = [
                         }
                     } else if (variable.category === "wm.LiveVariable") {
                         $rootScope.variables[name] = $rootScope.variables[name] || {};
-                        if (!runMode || variable.startUpdate) {
+                        if (variable.startUpdate) {
                             /*
                             * For variable with operation other than 'read', call respective method in RUN mode
                             * In studio mode, DB and table related data is to be fetched and saved in the variable
@@ -897,7 +897,7 @@ wm.variables.services.Variables = [
                 }
 
                 if (isUpdate) {
-                    call('getData', name, {scope: scope});
+                    call('getData', name, {scope: scope, skipFetchData: true});
                 }
             },
             initiateCallback = function (event, variable, callBackScope, response) {
