@@ -14,7 +14,7 @@ WM.module('wm.layouts.containers')
                                 '<span class="description">{{description}}</span>' +
                             '</a>' +
                             '<div class="panel-actions">' +
-                                '<span data-ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>'+
+                                '<span data-ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
                                 '<wm-menu scopedataset="actions" iconname="cog" data-ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="label" displayfield="label"></wm-menu>' +
                                 '<button class="app-icon panel-action glyphicon glyphicon-question-sign" title="{{::$root.appLocale.LABEL_HELP}}" data-ng-if="helptext" data-ng-click="toggleHelp()">&nbsp;</button>' +
                                 '<button class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="togglePanel($event);">&nbsp;</button>' +
