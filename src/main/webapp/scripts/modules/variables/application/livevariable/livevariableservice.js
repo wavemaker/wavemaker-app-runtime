@@ -85,16 +85,9 @@ wm.variables.services.$liveVariable = [
                 /*Loop through the columns of the liveVariable*/
                 for (index = 0; index < columnsCount; index += 1) {
                     column = columns[index];
-                    if (column.isRelated) {
-                        /*Return the type of the column when the columnName matches the current column.*/
-                        if (column.columnName === fieldName) {
-                            return column.hibernateType;
-                        }
-                    } else {
-                        /*Return the type of the column when the fieldName matches the current column.*/
-                        if (column.fieldName === fieldName) {
-                            return column.hibernateType;
-                        }
+                    /*Return the type of the column when the fieldName matches the current column.*/
+                    if (column.fieldName === fieldName) {
+                        return column.hibernateType;
                     }
                 }
             },
@@ -107,16 +100,9 @@ wm.variables.services.$liveVariable = [
                 /*Loop through the columns of the liveVariable*/
                 for (index = 0; index < columnsCount; index += 1) {
                     column = columns[index];
-                    if (column.isRelated) {
-                        /*Return the type of the column when the columnName matches the current column.*/
-                        if (column.columnName === fieldName) {
-                            return column.type;
-                        }
-                    } else {
-                        /*Return the type of the column when the fieldName matches the current column.*/
-                        if (column.fieldName === fieldName) {
-                            return column.type;
-                        }
+                    /*Return the type of the column when the fieldName matches the current column.*/
+                    if (column.fieldName === fieldName) {
+                        return column.type;
                     }
                 }
             },
