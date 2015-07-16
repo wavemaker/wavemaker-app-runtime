@@ -1,96 +1,91 @@
 /********************************************************************************
 *************************************** Tab Bar *********************************
 *********************************************************************************/
-@app-tabbar-background-color: #fff;
-
 .responsiveTabbar(@screenWidth, @breakEleIndex, @itemWidth){
   @media  (max-width: @screenWidth) {
-    >.item:nth-child(n + @{breakEleIndex}){
+    >li.tab-item:nth-child(n + @{breakEleIndex}){
       display: none;
     }
-    >.more-menu-item:nth-child(n + @{breakEleIndex}){
-      display:table-cell;
+    >.menu-items:nth-child(n + @{breakEleIndex}){
+      display: table-cell;
     }
-    .more-menu .item:nth-child(n + @{breakEleIndex}){
-      display: inline-block;
-      width: @itemWidth;
+    .dropdown-menu.navbar-nav li.menu-item:nth-child(n + @{breakEleIndex}){
+      display: table-cell;
     }
-    .more-menu.dropdown-menu .item:nth-child(n + @{breakEleIndex}){
+    .dropdown-menu li.menu-item:nth-child(n + @{breakEleIndex}){
       display: block;
-      width: 100%;
     }
   }
 }
 
-.wm-app .navbar.app-tabbar{
+.app-tabbar {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  display: table;
-  width: 100%;
-  padding: 0px;
-  background-color: @app-tabbar-background-color;
-  min-height: 50px;
-
-  .app-tabbar-nav{
-    li.item {
-      display: table-cell;
-      width: 1%;
-
-      a {
-        text-align: center;
-        overflow: hidden;
-        white-space: nowrap;
-        padding: 5px;
-
-        .icon{
-          display: block;
-          width: 32px;
-          height: 32px;
-          font-size: 22px;
-          margin: 3px auto;
-          padding: 5px;
-        }
-        .label{
-          font-size: 11px;
-          text-decoration: none;
-          font-weight: normal;
+  padding: 0;
+  .top {
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+  .bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .app-icon {
+    font-size: 200%;
+  }
+  .navbar {
+    .navbar-nav {
+      text-align: center;
+      background-color: inherit;
+      margin: 0;
+      width: 100%;
+      &.tab-items {
+        display: table;
+        > li {
+          display: table-cell;
+          float: none;
         }
       }
-    }
-    li.more-menu-item{
-      display:none;
-    }
-    .more-menu{
-      left: initial;
-      right: 0;
-
-      .item{
-        display: none;
-      }
-
-      &.dropdown-menu{
-        display: block;
-
-        .item a{
-          text-align: left;
-          padding: 0;
-          .icon {
-            display: inline-block;
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-            margin: 0;
-            margin-right: 10px;
+      > li {
+        > a {
+          text-align: center;
+          text-transform: uppercase;
+          > label {
+            display: block;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.8em;
           }
         }
       }
+      .dropdown {
+        background-color: inherit;
+        display: none;
+        .dropdown-menu {
+          background-color: inherit;
+          position: absolute !important;
+          &.navbar-nav {
+            > li {
+              width: 50%;
+              >  a {
+                padding: 10px 15px;
+              }
+            }
+          }
+          > li {
+            display: none;
+          }
+
+        }
+      }
+      .responsiveTabbar(2048px, 12,  8.33%);
+      .responsiveTabbar(1024px, 10, 10%);
+      .responsiveTabbar(768px, 7, 14.2%);
+      .responsiveTabbar(480px, 5, 20%);
+      .responsiveTabbar(320px, 4, 25%);
     }
-    .responsiveTabbar(2048px, 12,  8.33%);
-    .responsiveTabbar(1024px, 10, 10%);
-    .responsiveTabbar(768px, 7, 14.2%);
-    .responsiveTabbar(480px, 5, 20%);
-    .responsiveTabbar(320px, 4, 25%);
   }
 }
 
@@ -98,30 +93,66 @@
 **************************** Mobile Navbar ***********************
 *********************************************************************************/
 
-.wm-app .app-mobile-navbar{
-  border-bottom: 1px solid #ddd;
-  text-align: center;
-
-  >.app-mobile-navbar-left {
-    position: absolute;
-    left: 0;
-    top: 0;
-    padding: 5px;
-
-    .btn {
-      margin-left: 5px;
+.app-mobile-navbar{
+  position: relative;
+  .navbar {
+    background-color: inherit;
+    > div {
+      padding: 0;
+      height: 100%;
+      background-color: inherit;
     }
-  }
-
-  .app-mobile-navbar-title {
-    display: inline-block;
-    margin: 0;
-  }
-
-  >.app-mobile-navbar-right {
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 5px;
+    .navbar-header {
+      width: 100%;
+      float: none;
+      .navbar-brand {
+        text-align: center;
+        display: inline-block;
+        width: 100%;
+        float: none;
+        margin: auto 0;
+        font-size: 1.5em;
+      }
+    }
+    .navbar-nav {
+      margin: auto;
+      background-color: inherit;
+      .app-menu, .app-popover {
+        > a {
+          padding: 1em 0.85em;
+        }
+      }
+      .btn-back > *{
+        vertical-align: middle;
+        margin: 0 0.1em;
+      }
+      &.navbar-right {
+       text-align: right;
+       margin-right: 0.5em;
+        > li {
+          > button {
+             margin: 1em 0;
+          }
+        }
+        .dropdown {
+          background-color: inherit;
+        }
+        .dropdown-menu {
+          position: absolute;
+          background-color: inherit;
+        }
+      }
+      > li {
+        display: inline-block;
+        vertical-align: top;
+        background-color: inherit;
+        .glyphicon, .fa {
+          font-size: 200%;
+        }
+        > * {
+          display: inline-block;
+        }
+      }
+    }
   }
 }

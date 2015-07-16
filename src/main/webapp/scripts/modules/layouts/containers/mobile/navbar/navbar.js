@@ -6,17 +6,29 @@ WM.module('wm.layouts.containers')
         'use strict';
         $templateCache.put('template/layouts/containers/mobile/navbar.html',
                             '<header init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show"' + $rootScope.getWidgetStyles() + '>' +
-                                '<div class="app-mobile-navbar-left">' +
-                                    '<button type="button" class="btn" data-ng-show="leftNavPanel != undefined" data-ng-click="leftNavPanel.toggle();">'+
-                                        '<i data-ng-class="leftnavpaneliconclass"></i>'+
-                                    '</button>'+
-                                    '<button type="button" class="btn" data-ng-show="backbutton" data-ng-click="goBack();">'+
-                                        '<i data-ng-class="backbuttoniconclass"></i>{{backbuttonlabel}}'+
-                                    '</button>'+
+                                '<nav class="navbar">' +
+                                '<div class="col-xs-4">' +
+                                    '<ul class="nav navbar-nav">' +
+                                        '<li data-ng-if="leftNavPanel != undefined" >' +
+                                            '<a type="button" data-ng-click="leftNavPanel.toggle();">'+
+                                                '<i data-ng-class="leftnavpaneliconclass"></i>'+
+                                            '</a>' +
+                                        '</li>'+
+                                        '<li data-ng-if="backbutton">' +
+                                            '<a class="btn-back" type="button" data-ng-click="goBack();">'+
+                                                '<i data-ng-class="backbuttoniconclass"></i><label>{{backbuttonlabel}}</label>'+
+                                            '</a>' +
+                                        '</li>'+
+                                    '</ul>' +
                                 '</div>' +
-                                '<h1 class="app-mobile-navbar-title">{{title}}</h1>' +
-                                '<div class="app-mobile-navbar-right" wmtransclude>' +
+                                '<div class="col-xs-4">' +
+                                    '<div class="navbar-header"><h1 class="navbar-brand">{{title}}</h1></div>' +
                                 '</div>' +
+                                '<div class="col-xs-4">' +
+                                    '<ul class="nav navbar-nav navbar-right"><li wmtransclude>' +
+                                    '</li></ul>' +
+                                '</div>' +
+                                '</nav>' +
                             '</header>');
     }]).directive('wmMobileNavbar', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, $window) {
         'use strict';
