@@ -11,9 +11,7 @@
 wm.variables.factories.BaseVariablePropertyFactory = [
     'WIDGET_CONSTANTS',
     'Utils',
-    'MobileApiDefaults',
-
-    function (WIDGET_CONSTANTS, Utils, MobileApiDefaults) {
+    function (WIDGET_CONSTANTS, Utils) {
 
         "use strict";
         var variableEventOptions = {}, /*A copy of the variable to preserve the actual value.*/
@@ -21,15 +19,11 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             properties,
             propertyGroups,
             variableMap,
-            variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$',
-            mobileOperations = {};
+            variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$';
 
         /* make events compatible to select widget options */
         WM.forEach(WM.copy(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
             variableEventOptions[event] = event;
-        });
-        WM.forEach(MobileApiDefaults, function (value, key) {
-            mobileOperations[key] = key;
         });
 
         result = {
@@ -155,18 +149,27 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
-                    "operation": {"type": "list", "options": mobileOperations},
+                    "service": {"type": "list", "options": []},
+                    "operation": {"type": "list", "hide": true, "options": []},
+                    /*calendar event options*/
+                    "eventTitle": {"type": "number", "dataBinding": true, "hide" : true},
+                    "eventNotes": {"type": "string", "dataBinding": true, "hide" : true},
+                    "eventLocation": {"type": "string", "dataBinding": true, "hide" : true},
+                    "eventStart": {"type": "string", "dataBinding": true, "hide" : true},
+                    "eventEnd": {"type": "string", "dataBinding": true, "hide" : true},
+                    "recurringEvent": {"type": "boolean", "dataBinding": true, "hide" : true},
+                    "recurringEventFrequency": {"type": "string", "dataBinding": true, "hide" : true},
                     /* capture picture options*/
-                    "imageQuality": {"operation" : "capturePicture", "type": "number", "value": 80, "hide" : true},
-                    "imageEncodingType": {"operation" : "capturePicture", "type": "list", "options": {"0" : "JPEG", "1" : "PNG"}, "value" : "0", "hide" : true},
-                    "correctOrientation": {"operation" : "capturePicture", "type": "boolean", "value" : true, "hide" : true},
-                    "saveToPhotoAlbum": {"operation" : "capturePicture", "type": "boolean", "value" : false, "hide" : true},
+                    "imageQuality": {"type": "number", "value": 80, "hide" : true},
+                    "imageEncodingType": {"type": "list", "options": {"0" : "JPEG", "1" : "PNG"}, "value" : "0", "hide" : true},
+                    "correctOrientation": {"type": "boolean", "value" : true, "hide" : true},
+                    "saveToPhotoAlbum": {"type": "boolean", "value" : false, "hide" : true},
                     /* getGeoLocation options*/
-                    "geolocationHighAccuracy": {"operation" : "getGeoLocation", "type": "boolean", "value": true, "hide" : true},
-                    "geolocationMaximumAge": {"operation" : "getGeoLocation", "type": "number", "value": 3, "hide" : true},
-                    "geolocationTimeout": {"operation" : "getGeoLocation", "type": "number", "value": 5, "hide" : true},
+                    "geolocationHighAccuracy": {"type": "boolean", "value": true, "hide" : true},
+                    "geolocationMaximumAge": {"type": "number", "value": 3, "hide" : true},
+                    "geolocationTimeout": {"type": "number", "value": 5, "hide" : true},
                     /* listContacts options */
-                    "contactFilter": {"operation" : "listContacts", "type": "string", "value": "", "hide" : true},
+                    "contactFilter": {"type": "string", "dataBinding": true,  "value": "", "hide" : true},
                     /*events*/
                     "onSuccess": {"type": "list", "options": variableEventOptions},
                     "onError": {"type": "list", "options": variableEventOptions}
@@ -186,7 +189,11 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
-                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "dataBinding", "imageQuality", "imageEncodingType", "correctOrientation", "saveToPhotoAlbum", "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy", "contactFilter"], "parent": "properties"},
+                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "dataBinding",
+                            "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
+                            "imageQuality", "imageEncodingType", "correctOrientation", "saveToPhotoAlbum",
+                            "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",
+                            "contactFilter"], "parent": "properties"},
 
                 /* properties under data tab */
                 {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding"], "parent": "data"},

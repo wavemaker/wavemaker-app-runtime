@@ -1,4 +1,4 @@
-/*global wm, WM, navigator*/
+/*global wm, WM, _, window, navigator*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -8,12 +8,12 @@
  * @requires $rootScope
  * @requires Varibales
  * @requires BaseVariablePropertyFactory
- * @requires MobileApiDefaults
+ * @requires MobileService
  * @description
- * The 'MobileApiDefaults' provides default objects that Mobile API return. These are helpful
- * as basic schemas for variable bindings on widgets.
+ * The 'MobileService' is a wrapper over cardova. This acts as a integration point of Cardova API
+ * and Wavemaker variables.
  */
-wm.variables.services.MobileApiDefaults = [function () {
+wm.variables.services.MobileService = [function () {
     "use strict";
     var contactName = {
             formatted: '',
@@ -61,27 +61,132 @@ wm.variables.services.MobileApiDefaults = [function () {
             categories: [contactField],
             urls: [contactField]
         },
-        geoLocation = {
-            coords: {
-                latitude: 0,
-                longitude: 0,
-                altitude: 0,
-                accuracy: 0,
-                altitudeAccuracy: 0,
-                heading: 0,
-                speed: 0
-            },
-            timestamp: 0
+        event = {
+            title: '',
+            notes: '',
+            loc: '',
+            start: new Date(),
+            end: new Date()
         };
     return {
-        capturePicture: {
-            data: 'blank-image.jpg'
+        calendar : {
+            //Ref: https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
+            addEventToCalendar: {
+                model : {
+                    data: ''
+                },
+                properties : ['eventTitle', 'eventNotes', 'eventLocation', 'eventStart', 'eventEnd'],
+                invoke : function (variable, options, success, error) {
+                    window.plugins.calendar.createEvent(variable.eventTitle,
+                                                        variable.eventLocation,
+                                                        variable.eventNotes,
+                                                        variable.eventStart,
+                                                        variable.eventEnd,
+                                                        success,
+                                                        error);
+                }
+            },
+            removeEventFromCalendar: {
+                model : {
+                    data: ''
+                },
+                properties : ['eventTitle', 'eventStart', 'eventEnd'],
+                invoke : function (variable, options, success, error) {
+                    window.plugins.calendar.deleteEvent(variable.eventTitle,
+                                                        null,
+                                                        null,
+                                                        variable.eventStart,
+                                                        variable.eventEnd,
+                                                        success,
+                                                        error);
+                }
+            },
+            listEventsFromCalendar: {
+                model : [event],
+                properties : ['eventTitle', 'eventStart', 'eventEnd'],
+                invoke : function (variable, options, success, error) {
+                    window.plugins.calendar.findEvent(variable.eventTitle,
+                                                        null,
+                                                        null,
+                                                        variable.eventStart,
+                                                        variable.eventEnd,
+                                                        success,
+                                                        error);
+                }
+            },
         },
-        getGeoLocation: geoLocation,
-        getConnectionType: {
-            data: 'No network connection'
+        camera: {
+            capturePicture: {
+                model : {
+                    data: 'blank-image.jpg'
+                },
+                properties : ['imageQuality', 'imageEncodingType', 'correctOrientation', 'saveToPhotoAlbum'],
+                invoke : function (variable, options, success, error) {
+                    var cameraOptions = {
+                        quality : variable.imageQuality,
+                        destinationType : 0, //only data url
+                        sourceType : 1, //always camera
+                        allowEdit : 0, // edit not required
+                        encodingType : parseInt(variable.imageEncodingType, 10),
+                        mediaType : 0, //always picture
+                        correctOrientation : variable.correctOrientation,
+                        saveToPhotoAlbum : variable.saveToPhotoAlbum
+                    };
+                    navigator.camera.getPicture(function (data) {
+                        success({ data : data});
+                    }, error, cameraOptions);
+                }
+            }
         },
-        listContacts : [contact]
+        contacts : {
+            listContacts : {
+                model : [contact],
+                properties : ['contactFilter'],
+                invoke : function (variable, options, success, error) {
+                    var findOptions = {
+                            filter : variable.contactFilter,
+                            multiple : true
+                        };
+                    navigator.contacts.find('*', success, error, findOptions);
+                }
+            }
+        },
+        device: {
+            getConnectionType: {
+                model: {
+                    data : 'No Connection'
+                },
+                properties : [],
+                invoke : function (variable, options, success, error) {
+                    success({ data: navigator.connection.type});
+                }
+            }
+        },
+        location: {
+            getGeoLocation : {
+                model: {
+                    coords: {
+                        latitude: 0,
+                        longitude: 0,
+                        altitude: 0,
+                        accuracy: 0,
+                        altitudeAccuracy: 0,
+                        heading: 0,
+                        speed: 0
+                    },
+                    timestamp: 0
+                },
+                properties : ['geolocationHighAccuracy', 'geolocationMaximumAge', 'geolocationTimeout'],
+                invoke: function (variable, options, success, error) {
+                    var geoLocationOptions = {
+                        maximumAge: variable.geolocationMaximumAge * 1000,
+                        timeout: variable.geolocationTimeout * 1000,
+                        enableHighAccuracy: variable.geolocationHighAccuracy
+                    };
+                    navigator.geolocation.getCurrentPosition(success, error, geoLocationOptions);
+                }
+            }
+        }
     };
 }];
 
@@ -90,69 +195,16 @@ wm.variables.services.MobileApiDefaults = [function () {
  * @name wm.variables.services
  * @requires $rootScope
  * @requires Varibales
+ * @requires Utils
  * @requires BaseVariablePropertyFactory
- * @requires MobileApiDefaults
+ * @requires MobileService
  * @description
  * The 'MobileVariableService' provides methods to work with Mobile API.
  */
-wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'BaseVariablePropertyFactory', 'MobileApiDefaults',
-    function ($rootScope, Variables, BaseVariablePropertyFactory, MobileApiDefaults) {
+wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils', 'BaseVariablePropertyFactory', 'MobileService',
+    function ($rootScope, Variables, Utils, BaseVariablePropertyFactory, MobileService) {
         "use strict";
-        var initiateCallback = Variables.initiateCallback,
-            methods = {
-                capturePicture:  function (variable, options, success, error) {
-                    var cameraOptions = {
-                            quality : variable.imageQuality,
-                            destinationType : 0, //only data url
-                            sourceType : 1, //always camera
-                            allowEdit : 0, // edit not required
-                            encodingType : parseInt(variable.imageEncodingType, 10),
-                            mediaType : 0, //always picture
-                            correctOrientation : variable.correctOrientation,
-                            saveToPhotoAlbum : variable.saveToPhotoAlbum
-                        },
-                        response = MobileApiDefaults.capturePicture;
-
-                    if (navigator.camera && navigator.camera.getPicture) {
-                        navigator.camera.getPicture(function (data) {
-                            response.data = data;
-                            success(response);
-                        }, error, cameraOptions);
-                    } else {
-                        success(MobileApiDefaults.capturePicture);
-                    }
-                },
-                getGeoLocation: function (variable, options, success, error) {
-                    var geoLocationOptions = {
-                        maximumAge: variable.geolocationMaximumAge * 1000,
-                        timeout: variable.geolocationTimeout * 1000,
-                        enableHighAccuracy: variable.geolocationHighAccuracy
-                    };
-                    if (navigator.geolocation && navigator.geolocation.getCurrentPosition) {
-                        navigator.geolocation.getCurrentPosition(success, error, geoLocationOptions);
-                    } else {
-                        success(MobileApiDefaults.getGeoLocation);
-                    }
-                },
-                getConnectionType: function (variable, options, success) {
-                    var connectionType =  MobileApiDefaults.getConnectionType;
-                    if (navigator.connection) {
-                        connectionType.data = navigator.connection.type;
-                    }
-                    success(connectionType);
-                },
-                listContacts : function (variable, options, success, error) {
-                    var findOptions = {
-                            filter : variable.contactFilter,
-                            multiple : true
-                        };
-                    if (navigator.contacts) {
-                        navigator.contacts.find('*', success, error, findOptions);
-                    } else {
-                        success(MobileApiDefaults.listContacts);
-                    }
-                }
-            };
+        var initiateCallback = Variables.initiateCallback;
 
         function getCallBackScope(variable, options) {
             /* get the callback scope for the variable based on its owner */
@@ -167,24 +219,27 @@ wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'BaseV
 
         function invoke(options, success, error) {
             var variable = this,
-                fn = methods[this.operation],
-                callBackScope = getCallBackScope(variable, options);
-            if (fn) {
-                fn(this, options, function (data) {
+                operation = MobileService[this.service][this.operation],
+                callBackScope = getCallBackScope(variable, options),
+                successCb = function (data) {
                     variable.dataSet = data;
-                    if (success) {
-                        success();
-                    }
+                    Utils.triggerFn(success);
                     initiateCallback('onSuccess', variable, callBackScope, data);
-                }, function () {
-                    if (error) {
-                        error();
-                    }
+                },
+                errorCb = function () {
+                    Utils.triggerFn(error);
                     initiateCallback('onError', variable, callBackScope);
-                });
+                };
+
+            if (operation && $rootScope.hasCardova) {
+                operation.invoke(this, options, successCb, errorCb);
+            } else if (operation){
+                successCb(_.cloneDeep(operation.model));
+            } else {
+                errorCb();
             }
         }
 
-        BaseVariablePropertyFactory.register('wm.MobileVariable', {'invoke': invoke}, ['wm.mobileVariable'], methods);
+        BaseVariablePropertyFactory.register('wm.MobileVariable', {'invoke': invoke}, ['wm.mobileVariable'], {});
         return {};
     }];
