@@ -1625,6 +1625,12 @@ WM.module('wm.widgets.basic')
                     plotChartProxy(scope, element);
                 }
                 break;
+            case "showlegend":
+                scope.widgetProps.legendposition.disabled = !newVal;
+                if (scope.chartReady) {
+                    plotChartProxy(scope, element);
+                }
+                break;
             case "height":
             case "width":
             case "show":
@@ -1638,7 +1644,6 @@ WM.module('wm.widgets.basic')
             case "ynumberformat":
             case "ydigits":
             case "ydateformat":
-            case "showlegend":
             case "showvalues":
             case "showlabels":
             case "showcontrols":
