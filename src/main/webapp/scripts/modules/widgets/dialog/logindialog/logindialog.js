@@ -111,9 +111,12 @@ WM.module('wm.widgets.dialog')
                                 SecurityService.appLogin({
                                     username: element.find('[name="usernametext"]').val(),
                                     password: element.find('[name="passwordtext"]').val()
-                                }, function () {
+                                }, function (response) {
                                     scope.$root.isUserAuthenticated = true;
                                     element.trigger("success");
+                                    /*setting the received redirect url for the logged-in user's landing page configuration to the
+                                    * current scope to be propogated to the common login dialog success handler*/
+                                    scope.redirectUrl = response && response.url ? response.url : 'index.html';
                                     scope.onSuccess({$event: event, $scope: scope});
                                     scope.$root.$emit("update-loggedin-user");
                                     BaseService.executeErrorCallStack();
