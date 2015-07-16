@@ -1115,7 +1115,7 @@ WM.module('wm.widgets.base', [])
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-out-bound"},
                         "deletemessage": {"type": "string", "value": "Record deleted successfully", "bindable": "in-out-bound"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
-                        "gridcaption": {"type": "string", "value": ""},
+                        "gridcaption": {"type": "string", "bindable": "in-out-bound", "value": ""},
 
                         /* Events */
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
