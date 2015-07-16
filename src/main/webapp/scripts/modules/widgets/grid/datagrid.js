@@ -349,6 +349,23 @@ $.widget('wm.datagrid', {
         return '<input type="radio" name="" value=""' + checked + disabled + '/>';
     },
 
+    _getColumnValue: function (colDef, row) {
+        var columnValue,
+            f,
+            k;
+        if (colDef.field && !(colDef.field in row) && colDef.field.split('.').length > 1) {
+            f = colDef.field.split('.');
+            columnValue = row[f[0]];
+            for (k = 1; k < f.length; k++) {
+                if (this.Utils.isDefined(columnValue) && f[k] in columnValue) {
+                    columnValue = columnValue[f[k]];
+                    break;
+                }
+            }
+            return columnValue;
+        }
+    },
+
     /* Returns the table cell template. */
     _getColumnTemplate: function (row, colId, colDef) {
         var classes = this.options.cssClassNames.tableCell + ' ' + colDef.class,
@@ -358,28 +375,40 @@ $.widget('wm.datagrid', {
             invalidExpression = false,
             ctId = row.pk + '-' + colId,
             template,
+            value,
             isCellCompiled = false,
             columnValue;
-        if (colDef.field){
+        if (colDef.field) {
             //setting the default value
             columnValue = row[colDef.field];
         }
-        if (colDef.field && !(colDef.field in row) && colDef.field.split('.').length > 1) {
-            var f = colDef.field.split('.');
-            columnValue = row[f[0]];
-            for (var k = 1; k < f.length; k++) {
-                if (this.Utils.isDefined(columnValue) && f[k] in columnValue) {
-                    columnValue = columnValue[f[k]];
-                }
-
-            }
+        value = this._getColumnValue(colDef, row);
+        if (value) {
+            columnValue = value;
         }
         if (ngClass) {
             htm += 'data-ng-class="' + ngClass + '" data-compiled-template="' + ctId + '" ';
             isCellCompiled = true;
         }
-        if (colDef.datepattern && !colExpression) {
-            colExpression = "{{'" + columnValue + "' | date:'" + colDef.datepattern + "'}}";
+        /*constructing the expression based on the choosen format options*/
+        if (colDef.formatpattern && !colExpression) {
+            switch (colDef.formatpattern) {
+            case 'toDate':
+                colExpression = "{{'" + columnValue + "' | toDate:'" + colDef.datepattern + "'}}";
+                break;
+            case 'toCurrency':
+                colExpression = "{{'" + columnValue + "' | toCurrency:'" + colDef.currencypattern + "':'" + colDef.fractionsize + "'}}";
+                break;
+            case 'toNumber':
+                colExpression = "{{'" + columnValue + "' | toNumber:'" + colDef.fractionsize + "'}}";
+                break;
+            case 'prefix':
+                colExpression = "{{'" + columnValue + "' | prefix:'" + colDef.prefix + "'}}";
+                break;
+            case 'suffix':
+                colExpression = "{{'" + columnValue + "' | suffix:'" + colDef.suffix + "'}}";
+                break;
+            }
         }
         if (colExpression) {
             if (isCellCompiled) {
@@ -998,21 +1027,26 @@ $.widget('wm.datagrid', {
                     $input,
                     customExp,
                     originalTemplate,
-                    ctId,
                     compiledTemplate;
                 if (!(colDef.readonly || self._isCustomExpressionNonEditable(colDef.customExpression) || colDef.disableInlineEditing)) {
                     editableTemplate = self._getEditableTemplate(colDef);
                     // TODO: Use some other selector. Input will fail for other types.
-                    if (!colDef.customExpression) {
+                    if (!(colDef.customExpression || colDef.formatpattern)) {
                         $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
                         $el.find('input').val(cellText);
                     } else {
-                        customExp = colDef.customExpression;
-                        ctId = $el.attr('data-compiled-template');
-                        originalTemplate = customExp;
-                        compiledTemplate = self.options.getCompiledTemplate(customExp, rowData, colDef);
-                        $el.addClass('cell-editing editable-expression').html(compiledTemplate).data(
-                            'originalTemplate', {'originalTemplate': originalTemplate, 'rowData': angular.copy(rowData), 'colDef': colDef});
+                        if (colDef.formatpattern) {
+                            $el.addClass('cell-editing editable-expression').html(editableTemplate).data(
+                                'originalValue', cellText);
+                            // Put the original value while editing, not the formatted value.
+                            $el.find('input').val(rowData[colDef.field] || self._getColumnValue(colDef, rowData));
+                        } else if (colDef.customExpression) {
+                            customExp = colDef.customExpression;
+                            originalTemplate = customExp;
+                            compiledTemplate = self.options.getCompiledTemplate(customExp, rowData, colDef);
+                            $el.addClass('cell-editing editable-expression').html(compiledTemplate).data(
+                                'originalValue', {'template': originalTemplate, 'rowData': angular.copy(rowData), 'colDef': colDef});
+                        }
                     }
                 }
             });
@@ -1085,14 +1119,18 @@ $.widget('wm.datagrid', {
                 $editableElements.each(function () {
                     var $el = $(this),
                         ctId = $el.attr('data-compiled-template'),
-                        originalTemplate,
-                        compiledTemplate;
+                        originalValue,
+                        template;
                     if (!ctId) {
                         $el.text($el.data('originalText'));
                     } else {
-                        originalTemplate = $el.data('originalTemplate');
-                        compiledTemplate = self.options.getCompiledTemplate(originalTemplate.originalTemplate, originalTemplate.rowData, originalTemplate.colDef);
-                        $el.html(compiledTemplate);
+                        originalValue = $el.data('originalValue');
+                        if (originalValue.template) {
+                            template = self.options.getCompiledTemplate(originalValue.template, originalValue.rowData, originalValue.colDef);
+                            $el.html(template);
+                        } else {
+                            $el.html(originalValue);
+                        }
                     }
                 });
                 $editButton.removeClass('hidden');

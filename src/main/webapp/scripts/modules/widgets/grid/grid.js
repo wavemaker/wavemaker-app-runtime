@@ -1568,7 +1568,12 @@ WM.module('wm.widgets.grid')
                             columnDef.searchPlaceholder = column.searchPlaceholder || (
                                 columnDef.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd'
                             );
+                            columnDef.formatpattern = column.formatpattern;
                             columnDef.datepattern = column.datepattern;
+                            columnDef.currencypattern = column.currencypattern;
+                            columnDef.fractionsize = column.fractionsize;
+                            columnDef.suffix = column.suffix;
+                            columnDef.prefix = column.prefix;
                         }
                     });
                     /* if properties map is provided, append the same to column defs*/
@@ -1770,7 +1775,12 @@ WM.module('wm.widgets.grid')
                                 'class': attrs.colClass || '',
                                 'ngClass': attrs.colNgClass || '',
                                 'searchPlaceholder': attrs.searchPlaceholder || (attrs.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd'),
-                                'datepattern': attrs.datepattern
+                                'datepattern': attrs.datepattern,
+                                'formatpattern': attrs.formatpattern,
+                                'currencypattern': attrs.currencypattern,
+                                'fractionsize': attrs.fractionsize,
+                                'suffix': attrs.suffix,
+                                'prefix': attrs.prefix
                             },
                             updateCustomExpression = function (column) {
                                 var widgetType = column.widgetType,
