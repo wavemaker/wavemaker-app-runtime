@@ -5,28 +5,29 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layouts/containers/mobile/tabbar/tabbar.html',
-            '<nav init-widget class="navbar app-tabbar {{class}}">' +
-                '<ul class="nav app-tabbar-nav">' +
-                    '<li class="item" data-ng-repeat="item in tabItems">' +
-                        '<a data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label })">' +
-                            '<i class="icon" data-ng-class="item.icon"></i>{{item.label}}' +
-                        '</a>' +
-                    '</li>' +
-                    '<li class="item more-menu-item" data-ng-class="{\'dropup\' : dropposition == \'up\'}">' +
-                        '<a class="more-menu-btn" data-ng-class="{\'active\' : showMoreItems}" data-ng-click="showMoreItems = !showMoreItems">' +
-                            '<i class="icon {{morebuttoniconclass}}"></i>{{morebuttonlabel}}' +
-                        '</a>' +
-                        '<ul class="more-menu dropdown-menu list-unstyled" data-ng-show="showMoreItems"  data-ng-click="showMoreItems = false;">' +
-                            '<li class="item" data-ng-repeat="item in tabItems">' +
+            '<div class="app-tabbar app-top-nav {{class}} {{position}}" init-widget>' +
+                '<nav class="navbar navbar-default">' +
+                    '<ul class="tab-items nav navbar-nav">' +
+                        '<li class="tab-item" data-ng-repeat="item in tabItems">' +
+                            '<a data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label })">' +
+                                '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +
+                            '</a>' +
+                        '</li>' +
+                        '<li class="menu-items dropdown" data-ng-class="{\'dropup\' : position == \'bottom\'}" dropdown>' +
+                            '<a dropdown-toggle>' +
+                                '<i class="app-icon {{morebuttoniconclass}}"></i><label>{{morebuttonlabel}}</label>' +
+                            '</a>' +
+                            '<ul class="dropdown-menu dropdown-menu-right" data-ng-class="{\'nav navbar-nav\' : menutype == \'thumbnail\'}">' +
+                            '<li class="menu-item" data-ng-repeat="item in tabItems">' +
                                 '<a data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label });">' +
-                                    '<i class="icon" data-ng-class="item.icon"></i>{{item.label}}' +
+                                '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +
                                 '</a>' +
                             '</li>' +
-                         '</ul>' +
-                    '</li>' +
-                '</ul>' +
-            '</nav>');
-
+                        '</ul>' +
+                        '</li>' +
+                    '</ul>' +
+                '</nav>' +
+            '</div>');
     }]).directive('wmMobileTabbar', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($templateCache, PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabbar', ['wm.base']),
@@ -41,7 +42,7 @@ WM.module('wm.layouts.containers')
                         WM.forEach(newVal.split(","), function (value) {
                             scope.tabItems.push({
                                 "label" : value,
-                                "icon" : ''
+                                "icon" : 'glyphicon glyphicon-'+ value
                             });
                         });
                     }
@@ -50,7 +51,9 @@ WM.module('wm.layouts.containers')
             };
         return {
             'scope' : {
-                'onSelect': '&'
+                'onSelect': '&',
+                'menutype': '&',
+                'position': '&'
             },
             'restrict' : 'E',
             'replace' : true,
@@ -59,6 +62,8 @@ WM.module('wm.layouts.containers')
                 return {
                     'pre' : function (scope) {
                         scope.widgetProps = widgetProps;
+                        scope.position = "bottom"; /**top | bottom**/
+                        scope.menutype = "thumbnail"; /**thumbnail | list**/
                     },
                     'post' : function (scope, element, attrs) {
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);

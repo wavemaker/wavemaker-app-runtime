@@ -892,7 +892,7 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "bindable": "in-bound"},
                         "leftnavpaneliconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-menu-hamburger"},
                         "backbutton":  {"type": "boolean", "value": true},
-                        "backbuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "fa fa-arrow-left"},
+                        "backbuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-menu-left"},
                         "backbuttonlabel":  {"type": "string"}
                     },
                     'wm.layouts.listtemplate': {
