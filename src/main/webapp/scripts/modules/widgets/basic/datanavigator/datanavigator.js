@@ -93,6 +93,7 @@ WM.module("wm.widgets.basic")
                         $scope.isDisableCount = true;
                     } else {
                         $scope.isDisableCount = false;
+                        $scope.showrecordcount = true;
                     }
                 };
 
