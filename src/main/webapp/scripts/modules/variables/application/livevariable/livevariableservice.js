@@ -47,16 +47,19 @@ wm.variables.services.$liveVariable = [
             invalidVariables = [],
             isDeployReqSourceChanged,
             packageDetails = {},
+            dateTimeFormats = Utils.getDateTimeDefaultFormats(),
+            isDateTime = Utils.getDateTimeTypes(),
         /*Function to clear set variables*/
             reset = function () {
                 isProjectDeployed = (CONSTANTS.isRunMode);
                 /*Set the "isDeployReqSourceChanged" flag to true so that the deploy request queue is populated only when the deploy source changes.*/
                 isDeployReqSourceChanged = true;
             },
-            getDateInDefaultFormat = function (value) {
-                return $filter('date')(new Date(value).valueOf(), 'yyyy-MM-dd');
+        /*Function to convert values of date time types into default formats*/
+            getDateInDefaultFormat = function (value, type) {
+                return value && $filter('date')(moment(value).valueOf(), dateTimeFormats[type]);
             },
-        /* Fuction to process the response data if it contains composite keys. */
+        /* Function to process the response data if it contains composite keys. */
             processResponse = function (responseData) {
                 if (!responseData) {
                     return;
@@ -337,11 +340,15 @@ wm.variables.services.$liveVariable = [
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "date":
-                                fieldValue = getDateInDefaultFormat(fieldValue);
+                                fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "timestamp":
                                 fieldValue = new Date(fieldValue).getTime();
+                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                break;
+                            case "datetime":
+                                fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "string":
@@ -669,24 +676,18 @@ wm.variables.services.$liveVariable = [
                 }
             },
         /* Function to check if specified field is of type date*/
-            isDateTypeField = function (fieldName, variable) {
-                var columns,
-                    numColumns,
-                    i,
-                    isDateType = false;
+            getFieldType = function (fieldName, variable) {
+                var fieldType,
+                    columns,
+                    result;
                 if (variable.propertiesMap) {
                     columns = variable.propertiesMap.columns || [];
-                    numColumns = columns.length;
-                    for (i = 0; i < numColumns; i += 1) {
-                        if (columns[i].fieldName === fieldName) {
-                            if (columns[i].type === 'date') {
-                                isDateType = true;
-                            }
-                            break;
-                        }
-                    }
+                    result = _.find(columns, function (obj) {
+                        return obj.fieldName === fieldName;
+                    });
+                    fieldType = result && result.type;
                 }
-                return isDateType;
+                return fieldType;
             },
         /*Function to perform common database actions through calling DatabaseService methods*/
             performDataAction = function (action, variableDetails, options, success, error) {
@@ -813,6 +814,7 @@ wm.variables.services.$liveVariable = [
                     rowObject = options.row;
                 } else {
                     WM.forEach(variableDetails.inputFields, function (fieldValue, fieldName) {
+                        var fieldType;
                         if (WM.isDefined(fieldValue) && fieldValue !== "") {
                             /*For delete action, the inputFields need to be set in the request URL. Hence compositeId is set.
                             * For insert action inputFields need to be set in the request data. Hence rowObject is set.
@@ -828,8 +830,9 @@ wm.variables.services.$liveVariable = [
                                 });
                             }
                             if (action !== "deleteTableData") {
-                                if (isDateTypeField(fieldName, variableDetails)) {
-                                    fieldValue = getDateInDefaultFormat(fieldValue);
+                                fieldType = getFieldType(fieldName, variableDetails);
+                                if (isDateTime[fieldType] && fieldType !== 'timestamp') {
+                                    fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
                                 }
                                 rowObject[fieldName] = fieldValue;
                             }

@@ -519,7 +519,7 @@ WM.module('wm.widgets.base', [])
                         "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
                         "datepattern": {"value": "yyyy-MM-dd HH:mm", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
-                        "datavalue": {"type": "timestamp, date, time, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"}
+                        "datavalue": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},

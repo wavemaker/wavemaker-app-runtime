@@ -45,16 +45,8 @@ WM.module('wm.widgets.live')
                 transclude: true,
                 scope: {},
                 controller: function ($scope) {
-                    $scope.dateTimeFormats = {
-                        "date": "yyyy-MM-dd",
-                        "time": "HH:mm:ss",
-                        "timestamp": "yyyy-MM-dd HH:mm:ss"
-                    };
-                    $scope.isDateTime = {
-                        "date": true,
-                        "time": true,
-                        "timestamp": true
-                    };
+                    $scope.dateTimeFormats = Utils.getDateTimeDefaultFormats();
+                    $scope.isDateTime = Utils.getDateTimeTypes();
                     $scope.__compileWithIScope = true;
                     $scope.clearFilter = function () {
                         WM.forEach($scope.filterFields, function (filterField) {
@@ -142,6 +134,7 @@ WM.module('wm.widgets.live')
                                     break;
                                 case 'date':
                                 case 'time':
+                                case 'datetime':
                                 case 'timestamp':
                                     if (filterField.value) {
                                         fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget]);
@@ -221,6 +214,9 @@ WM.module('wm.widgets.live')
                                     break;
                                 case "timestamp":
                                     widgetType = "timestamp";
+                                    break;
+                                case "datetime":
+                                    widgetType = "datetime";
                                     break;
                                 case "boolean":
                                     widgetType = "checkbox";
@@ -650,11 +646,12 @@ WM.module('wm.widgets.live')
                         '</wm-composite>';
                 }
                 break;
+            case 'datetime':
             case 'timestamp':
                 if (fieldDef.isRange) {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min date time';
                     fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max date time';
-                    type = 'timestamp';
+                    type = fieldDef.widget;
                     template = template +
                         '<wm-composite widget="datetime" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +

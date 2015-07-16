@@ -335,11 +335,7 @@ WM.module('wm.widgets.live')
                     "video": "video/*",
                     "audio": "audio/*"
                 };
-                $scope.isDateTimeWidgets = {
-                    "date": true,
-                    "time": true,
-                    "timestamp": true
-                };
+                $scope.isDateTimeWidgets = Utils.getDateTimeTypes();
                /*Set if any default values, if given*/
                 $scope.setDefaults = function () {
                     $scope.dataArray.forEach(function (fieldObj) {
@@ -1016,6 +1012,7 @@ WM.module('wm.widgets.live')
                     '</wm-composite>';
                 break;
             case "Timestamp":
+            case "Datetime":
                 fieldDef.placeholder = fieldDef.placeholder || 'Select date time';
                 template = template +
                     '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="form-timestamp {{dataArray[' + index + '].class}}">' +
@@ -1104,12 +1101,10 @@ WM.module('wm.widgets.live')
                             dataSetWatchHandler,
                             colName,
                             exprArray,
+                            dateTimeFormats = Utils.getDateTimeDefaultFormats(),
                             getOutputPatterns = function (type, outputFormat) {
-                                if (type === 'date') {
-                                    return 'yyyy-MM-dd';
-                                }
-                                if (type === 'time') {
-                                    return 'HH:mm:ss';
+                                if (type === 'date' || type === 'time' || type === 'datetime') {
+                                    return dateTimeFormats[type];
                                 }
                                 return outputFormat;
                             };

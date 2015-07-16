@@ -125,7 +125,20 @@ WM.module('wm.utils', [])
                 'blob': ['Upload', 'Textarea', 'Text', 'RichText'],
                 'time': ['Time', 'Text', 'Select', 'Radioset'],
                 'timestamp': ['Timestamp', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
+                'datetime': ['Datetime', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
                 'custom': ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp']
+            },
+            dateTimeTypes = {
+                "date": true,
+                "time": true,
+                "timestamp": true,
+                "datetime": true
+            },
+            dateTimeDefaultFormats = {
+                "date": "yyyy-MM-dd",
+                "time": "HH:mm:ss",
+                "timestamp": "yyyy-MM-dd HH:mm:ss",
+                "datetime": "yyyy-MM-ddTHH:mm:ss"
             },
             indexPage = getIndexPage();
 
@@ -1249,6 +1262,14 @@ WM.module('wm.utils', [])
         function getFieldTypeWidgetTypesMap() {
             return fieldTypeWidgetTypeMap;
         }
+        /*Function to get date time types*/
+        function getDateTimeTypes() {
+            return dateTimeTypes;
+        }
+        /*Function to get date time default formats*/
+        function getDateTimeDefaultFormats() {
+            return dateTimeDefaultFormats;
+        }
 
         /*Function that checks if the dataset is valid or not*/
         function isValidDataSet(dataset) {
@@ -1485,6 +1506,8 @@ WM.module('wm.utils', [])
             isFileUploadSupported: isFileUploadSupported,
             processMarkup: processMarkup,
             getFieldTypeWidgetTypesMap: getFieldTypeWidgetTypesMap,
+            getDateTimeTypes: getDateTimeTypes,
+            getDateTimeDefaultFormats:  getDateTimeDefaultFormats,
             isValidDataSet: isValidDataSet,
             parseCombinedPageContent: parseCombinedPageContent,
             extractType: extractType,

@@ -377,7 +377,8 @@ $.widget('wm.datagrid', {
             template,
             value,
             isCellCompiled = false,
-            columnValue;
+            columnValue,
+            dateTimeValue;
         if (colDef.field) {
             //setting the default value
             columnValue = row[colDef.field];
@@ -424,6 +425,11 @@ $.widget('wm.datagrid', {
                 switch (colDef.type) {
                 case 'timestamp':
                     htm += this._getTimestampTemplate(columnValue);
+                    break;
+                case 'datetime':
+                    /*Convert the value in to a epoch timestamp and format the value*/
+                    dateTimeValue = columnValue ? moment(columnValue).valueOf() : undefined;
+                    htm += this._getTimestampTemplate(dateTimeValue);
                     break;
                 default:
                     columnValue = row[colDef.field];
