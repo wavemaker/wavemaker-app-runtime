@@ -278,29 +278,32 @@ WM.module('wm.widgets.form')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/select.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Binding widget properties obtained from PropertiesFactory to scope*/
+                    'pre': function (iScope) {
+                        /*Binding widget properties obtained from PropertiesFactory to iScope*/
                         /*used deep.copy, as widgetProps are being modified for property panel changes */
-                        scope.widgetProps = WM.copy(widgetProps);
+                        iScope.widgetProps = WM.copy(widgetProps);
                     },
-                    'post': function (scope, element, attrs) {
+                    'post': function (iScope, element, attrs) {
+
+                        // expose the `changeLocale` method defined on $rootScope as `changeAppLocale` on widget scope.
+                        var scope = element.scope();
+                        scope.changeAppLocale = scope.$root.changeLocale;
 
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, element, attrs), iScope, notifyFor);
 
                         /* fields defined in scope: {} MUST be watched explicitly */
                         /*watching scopedataset attribute to create options for the select element.*/
                         if (!attrs.widgetid) {
-                            scope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, scope, element));
-                            scope.$watch('_model_', updateModelProxy.bind(undefined, scope));
+                            iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
+                            iScope.$watch('_model_', updateModelProxy.bind(undefined, iScope));
                         }
 
                         /*decorate onChange function*/
-                        scope.onChangeProxy = onChangeProxy.bind(undefined, scope);
+                        iScope.onChangeProxy = onChangeProxy.bind(undefined, iScope);
 
                         /*Executing WidgetUtilService method to initialize the widget with the essential configurations.*/
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
+                        WidgetUtilService.postWidgetCreate(iScope, element, attrs);
                     }
                 };
             }
