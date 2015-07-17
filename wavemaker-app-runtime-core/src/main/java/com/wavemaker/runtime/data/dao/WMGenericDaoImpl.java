@@ -11,21 +11,18 @@ import java.util.Iterator;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.hibernate.type.*;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.wavemaker.studio.common.ser.WMDateDeSerializer;
 import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.studio.common.ser.WMDateDeSerializer;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
@@ -95,7 +92,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                         if (attributeValue instanceof Collection) {
                             criterion = Restrictions.in(attributeName, (Collection) attributeValue);
                         } else if (attributeValue.getClass().isArray()) {
-                            criterion = Restrictions.in(attributeName, (Object []) attributeValue);
+                            criterion = Restrictions.in(attributeName, (Object[]) attributeValue);
                         } else {
                             criterion = Restrictions.eq(attributeName, attributeValue);
                         }
@@ -170,7 +167,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     private Object[] updateObjectsArray(Object[] objects, AttributeType attributeType) {
-        for (int i=0; i< objects.length; i++) {
+        for (int i = 0; i < objects.length; i++) {
             objects[i] = getUpdatedAttributeValue(objects[i], attributeType);
         }
         return objects;
@@ -226,6 +223,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 } else {
                     return WMDateDeSerializer.getDate((String) attributeValue);
                 }
+            case DATETIME:
+                return ISODateTimeFormat.localDateOptionalTimeParser().parseLocalDateTime((String) attributeValue);
             case TIMESTAMP:
                 return new Timestamp(((Number) attributeValue).longValue());
             case CALENDAR:

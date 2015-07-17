@@ -23,6 +23,7 @@ public enum AttributeType {
     SHORT,
     TEXT,
     TIME,
+    DATETIME,
     TIMESTAMP,
     TIMEZONE,
     TRUE_FALSE,
