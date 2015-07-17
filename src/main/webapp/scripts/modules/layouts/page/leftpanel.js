@@ -9,7 +9,7 @@ WM.module('wm.layouts.page')
                 '</aside>'
             );
     }])
-    .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
+    .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', '$timeout',function (PropertiesFactory, WidgetUtilService, $rootScope, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.leftpanel', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
@@ -81,7 +81,7 @@ WM.module('wm.layouts.page')
                                 skipEvent = true;
                             element.addClass('visible');
                             if (scope.animation === 'slide-in') {
-                                appPage.addClass('slide-in-left-panel-container');
+                                appPage.addClass('slide-in-left-panel-container slide-left');
                             }
                             element.on(eventName, function () {
                                 skipEvent = true;
@@ -99,7 +99,10 @@ WM.module('wm.layouts.page')
                             element.off(eventName);
                             appPage.off(eventName);
                             if (scope.animation === 'slide-in') {
-                                appPage.removeClass('slide-in-left-panel-container');
+                                appPage.removeClass('slide-left');
+                                $timeout(function () {
+                                    appPage.removeClass('slide-in-left-panel-container');
+                                }, 600)
                             }
                         };
                         /* register the property change handler */

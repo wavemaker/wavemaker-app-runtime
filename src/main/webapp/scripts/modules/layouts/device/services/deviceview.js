@@ -40,9 +40,9 @@ WM.module("wm.layouts.device")
          */
         function hidePageContainers() {
             if (Utils.isMobile()) {
-                WM.element(roleSelector(LEFT_PANEL_CLASS_NAME) + ", " + roleSelector(HEADER_CLASS_NAME) + " " + classSelector(SEARCH_CONTAINER_CLASS_NAME)).hide();
+                WM.element(roleSelector(LEFT_PANEL_CLASS_NAME)).isolateScope().collapse();
+                WM.element(roleSelector(HEADER_CLASS_NAME) + " " + classSelector(SEARCH_CONTAINER_CLASS_NAME)).hide();
                 $rootScope.sidebarCollapsed = true;
-
             } else {
                 WM.element(roleSelector(LEFT_PANEL_CLASS_NAME)).show();
                 WM.element(classSelector(SEARCH_CONTAINER_CLASS_NAME)).show().css('display', 'inline-table');

@@ -9,7 +9,7 @@
 
   &.slide-over {
     left: -100%;
-    z-index: 1;
+    z-index: 100000;
 
     &.visible {
       left: 0;
@@ -29,13 +29,21 @@
   .wm-app {
 
     .app-page{
-      position: fixed;
       overflow: auto;
       left: 0;
-      transition: left 0.5s  ease-in-out;
 
       &.slide-in-left-panel-container{
-        left: @left-panel-width;
+        position: fixed;
+        overflow: hidden;
+        transition: left 0.5s  ease-in-out;
+
+        &.slide-left {
+          left: @left-panel-width;
+          .app-header,
+          .app-search{
+            left: @left-panel-width;
+          }
+        }
       }
     }
     #wm-mobile-display {
@@ -45,9 +53,11 @@
     .app-header {
       height: 4em !important;
       width: 100%;
-      position: absolute;
+      position: fixed;
+      z-index: 99999;
       top: 0;
       left: 0;
+      transition: left 0.5s  ease-in-out;
 
       /********provide the margin top if the header exist*******/
       & + .app-top-nav, & + .app-content {
@@ -66,8 +76,11 @@
       }
     /*Search widget container (available only in Mobile)*/
       .app-search{
-        position: absolute;
+        z-index: 99999;
+        position: fixed;
+        left: 0;
         top: 4em;
+        transition: left 0.5s  ease-in-out;
         display: none;
         margin: 0;
         right: 0;
