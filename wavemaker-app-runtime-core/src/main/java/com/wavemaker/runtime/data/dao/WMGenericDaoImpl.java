@@ -11,9 +11,12 @@ import java.util.Iterator;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.*;
-import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,6 +26,7 @@ import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.studio.common.ser.WMDateDeSerializer;
+import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
@@ -224,7 +228,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                     return WMDateDeSerializer.getDate((String) attributeValue);
                 }
             case DATETIME:
-                return ISODateTimeFormat.localDateOptionalTimeParser().parseLocalDateTime((String) attributeValue);
+                return WMLocalDateTimeDeSerializer.getLocalDateTime((String) attributeValue);
             case TIMESTAMP:
                 return new Timestamp(((Number) attributeValue).longValue());
             case CALENDAR:
