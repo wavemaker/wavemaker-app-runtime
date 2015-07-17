@@ -174,12 +174,19 @@ var Application = WM.module('Application',
                 function () {
 
                     var locationPath = window.location.href,
-                        lastLocation = window.location.href.lastIndexOf("/"),
-                        pageName = $route.current.params.name || locationPath.substr(lastLocation + 1, locationPath.length),
-                        loadPage;
+                        pageName = $route.current.params.name,
+                        loadPage,
+                        index;
 
+                    // if the pageName $routeParam is not found, try to fetch it from location.href
+                    if (!pageName) {
+                        index = locationPath.indexOf('#/');
+                        if (index !== -1) {
+                            pageName = locationPath.substr(index + 2, locationPath.length);
+                        }
+                    }
 
-                    /*check for pageName*/
+                    /* if the pageName is still not found, return */
                     if (!pageName) {
                         return;
                     }
