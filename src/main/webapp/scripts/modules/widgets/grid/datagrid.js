@@ -395,19 +395,34 @@ $.widget('wm.datagrid', {
         if (colDef.formatpattern && !colExpression) {
             switch (colDef.formatpattern) {
             case 'toDate':
-                colExpression = "{{'" + columnValue + "' | toDate:'" + colDef.datepattern + "'}}";
+                if (colDef.datepattern) {
+                    colExpression = "{{'" + columnValue + "' | toDate:'" + colDef.datepattern + "'}}";
+                }
                 break;
             case 'toCurrency':
-                colExpression = "{{'" + columnValue + "' | toCurrency:'" + colDef.currencypattern + "':'" + colDef.fractionsize + "'}}";
+                if (colDef.currencypattern) {
+                    colExpression = "{{'" + columnValue + "' | toCurrency:'" + colDef.currencypattern;
+                    if (colDef.fractionsize) {
+                        colExpression +=  "':'" + colDef.fractionsize + "'}}";
+                    } else {
+                        colExpression += "'}}";
+                    }
+                }
                 break;
             case 'toNumber':
-                colExpression = "{{'" + columnValue + "' | toNumber:'" + colDef.fractionsize + "'}}";
+                if (colDef.fractionsize) {
+                    colExpression = "{{'" + columnValue + "' | toNumber:'" + colDef.fractionsize + "'}}";
+                }
                 break;
             case 'prefix':
-                colExpression = "{{'" + columnValue + "' | prefix:'" + colDef.prefix + "'}}";
+                if (colDef.prefix) {
+                    colExpression = "{{'" + columnValue + "' | prefix:'" + colDef.prefix + "'}}";
+                }
                 break;
             case 'suffix':
-                colExpression = "{{'" + columnValue + "' | suffix:'" + colDef.suffix + "'}}";
+                if (colDef.suffix) {
+                    colExpression = "{{'" + columnValue + "' | suffix:'" + colDef.suffix + "'}}";
+                }
                 break;
             }
         }
