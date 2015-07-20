@@ -668,15 +668,15 @@ WM.module('wm.widgets.live')
                     template = template +
                         '<wm-composite widget="datetime" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-datetime></div>' +
-                        '<div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-datetime></div>' +
+                        '<div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-datetime></div>' +
+                        '<div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-datetime></div>' +
                         '</wm-composite>';
                 } else {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select date time';
                     type = 'time';
                     template = template + '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
                         '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-datetime></div>' +
+                        '<div class="col-md-8"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-datetime></div>' +
                         '</wm-composite>';
                 }
                 break;
