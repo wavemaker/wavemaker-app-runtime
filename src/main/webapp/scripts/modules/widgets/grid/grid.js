@@ -1145,6 +1145,10 @@ WM.module('wm.widgets.grid')
                 },
                 setGridEditMode: function (val) {
                     $scope.isGridEditMode = val;
+                },
+                noChangesDetected: function() {
+                    wmToaster.show('info', '', 'No changes detected');
+                    $scope.$root.$safeApply($scope);
                 }
             };
 
@@ -1586,7 +1590,14 @@ WM.module('wm.widgets.grid')
 
                         /*Prevent searching and sorting on non-primary key columns in related tables.*/
                         columnDef.searchable = columnDef.sortable = !(columnDef.field && columnDef.field.indexOf('.') !== -1 && !columnDef.primaryKey);
-
+                        if (columnDef.type === 'timestamp' || columnDef.type === 'datetime') {
+                            if (!columnDef.formatpattern) {
+                                columnDef.formatpattern = 'toDate';
+                            }
+                            if (!columnDef.datepattern) {
+                                columnDef.datepattern = 'dd-MMM-yyyy HH:mm:ss';
+                            }
+                        }
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType === 'image') {
                                 columnDef.customExpression = '<img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';

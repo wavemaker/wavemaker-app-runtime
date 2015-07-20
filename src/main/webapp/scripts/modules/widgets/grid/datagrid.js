@@ -396,6 +396,9 @@ $.widget('wm.datagrid', {
             switch (colDef.formatpattern) {
             case 'toDate':
                 if (colDef.datepattern) {
+                    if (colDef.type === 'datetime') {
+                        columnValue = columnValue ? moment(columnValue).valueOf() : undefined;
+                    }
                     colExpression = "{{'" + columnValue + "' | toDate:'" + colDef.datepattern + "'}}";
                 }
                 break;
@@ -437,26 +440,14 @@ $.widget('wm.datagrid', {
         } else {
             htm += '>';
             if (colDef.type !== 'custom') {
-                switch (colDef.type) {
-                case 'timestamp':
-                    htm += this._getTimestampTemplate(columnValue);
-                    break;
-                case 'datetime':
-                    /*Convert the value in to a epoch timestamp and format the value*/
-                    dateTimeValue = columnValue ? moment(columnValue).valueOf() : undefined;
-                    htm += this._getTimestampTemplate(dateTimeValue);
-                    break;
-                default:
-                    columnValue = row[colDef.field];
-                    /* 1. Show "null" values as null if filterNullRecords is true, else show empty string.
-                     * 2. Show "undefined" values as empty string. */
-                    if ((this.options.filterNullRecords && columnValue === null) ||
-                        this.Utils.isUndefined(columnValue)) {
-                        columnValue = '';
-                    }
-                    htm += columnValue;
-                    break;
+                columnValue = row[colDef.field];
+                /* 1. Show "null" values as null if filterNullRecords is true, else show empty string.
+                * 2. Show "undefined" values as empty string. */
+                if ((this.options.filterNullRecords && columnValue === null) ||
+                    this.Utils.isUndefined(columnValue)) {
+                    columnValue = '';
                 }
+               htm += columnValue;
             } else {
                 switch (colDef.field) {
                 case 'checkbox':
@@ -485,24 +476,6 @@ $.widget('wm.datagrid', {
             this.compiledCellTemplates[ctId] = this.options.getCompiledTemplate(htm, row, colDef) || '';
         }
         return htm;
-    },
-
-    _getTimestampTemplate: function (timestamp) {
-        if (this.Utils.isUndefined(timestamp) || timestamp === null) {
-            return '';
-        }
-        var SHORT_MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            d = new Date(timestamp),
-            formattedDate = d.getDate() + '-' + (SHORT_MONTH_NAMES[d.getMonth()]) + '-' + d.getFullYear(),
-            hours = d.getHours(),
-            h = (hours < 10) ? '0' + hours : hours,
-            minutes = d.getMinutes(),
-            m = (minutes < 10) ? '0' + minutes : minutes,
-            seconds = d.getSeconds(),
-            s = (seconds < 10) ? '0' + seconds : seconds,
-            formattedTime = h + ':' + m + ':' + s;
-
-        return formattedDate + ' ' + formattedTime;
     },
 
     _getEditableTemplate: function (colDef) {
@@ -1013,6 +986,33 @@ $.widget('wm.datagrid', {
         }
         return text;
     },
+    isDataModified: function($editableElements, rowData) {
+        var isDataChanged = false,
+            self = this;
+        $editableElements.each(function () {
+            var $el = $(this),
+                colId = $el.attr('data-col-id'),
+                colDef = self.preparedHeaderData[colId],
+                fields = colDef.field.split('.'),
+                $ie = $el.find('input'),
+                text = self._getValue($ie, fields);
+            if (fields.length === 1) {
+                isDataChanged = !text && rowData[colDef.field] === null ? false : !(rowData[colDef.field] == text);
+            } else {
+                var d = rowData[fields[0]];
+                for (var k = 1; k < fields.length - 1; k++) {
+                    if (this.Utils.isDefined(d) && fields[k] in d) {
+                        d = d[fields[k]];
+                    }
+                }
+                isDataChanged = !text && d[fields[k]] === null ? false : !(d[fields[k]] == text);
+            }
+            if (isDataChanged) {
+                return !isDataChanged;
+            }
+        });
+        return isDataChanged;
+    },
     /* Toggles the edit state of a row. */
     toggleEditRow: function (e) {
         e.stopPropagation();
@@ -1025,7 +1025,8 @@ $.widget('wm.datagrid', {
             self = this,
             rowId = parseInt($row.attr('data-row-id'), 10),
             isNewRow,
-            $editableElements;
+            $editableElements,
+            isDataChanged = false;
         if (e.data.action === 'edit') {
             if ($.isFunction(this.options.beforeRowUpdate)) {
                 this.options.beforeRowUpdate(rowData, e);
@@ -1058,7 +1059,7 @@ $.widget('wm.datagrid', {
                     } else {
                         if (colDef.formatpattern) {
                             $el.addClass('cell-editing editable-expression').html(editableTemplate).data(
-                                'originalValue', cellText);
+                                'originalText', cellText);
                             // Put the original value while editing, not the formatted value.
                             $el.find('input').val(rowData[colDef.field] || self._getColumnValue(colDef, rowData));
                         } else if (colDef.customExpression) {
@@ -1087,43 +1088,53 @@ $.widget('wm.datagrid', {
                 if ($.isFunction(this.options.onSetRecord)) {
                     this.options.onSetRecord(rowData, e);
                 }
-                $editableElements.each(function () {
-                    var $el = $(this),
-                        $input = $el.find('input'),
-                        colId = $el.attr('data-col-id'),
-                        colDef = self.preparedHeaderData[colId],
-                        fields = colDef.field.split('.'),
-                        $ie = $el.find('input'),
-                        text = self._getValue($ie, fields);
-                    if (fields.length === 1) {
-                        rowData[colDef.field] = text;
-                    } else if (!isNewRow && fields[0] in rowData) {
-                        var d = rowData[fields[0]];
-                        for (var k = 1; k < fields.length - 1; k++) {
-                            if (this.Utils.isDefined(d) && fields[k] in d) {
-                                d = d[fields[k]];
-                            }
-
-                        }
-                        d[fields[k]] = text;
-                    } else if (isNewRow && fields.length > 1) {
-                        if (!(fields[0] in rowData)) {
-                            rowData[fields[0]] = {};
-                        }
-                        var x = rowData[fields[0]];
-                        for (var k = 1; k < fields.length - 1; k++) {
-                            if (this.Utils.isDefined(x) && !(fields[k] in x)) {
-                                x[fields[k]] = {};
-                            }
-
-                        }
-                        x[fields[k]] = text;
-                    }
-                });
                 if (isNewRow) {
-                    this.options.onRowInsert(rowData, e);
+                    isDataChanged = true;
                 } else {
-                    this.options.afterRowUpdate(rowData, e);
+                    isDataChanged = this.isDataModified($editableElements, rowData);
+                }
+                if (isDataChanged) {
+                    $editableElements.each(function () {
+                        var $el = $(this),
+                            colId = $el.attr('data-col-id'),
+                            colDef = self.preparedHeaderData[colId],
+                            fields = colDef.field.split('.'),
+                            $ie = $el.find('input'),
+                            text = self._getValue($ie, fields);
+                        if (fields.length === 1) {
+                            rowData[colDef.field] = text;
+                        } else if (!isNewRow && fields[0] in rowData) {
+                            var d = rowData[fields[0]];
+                            for (var k = 1; k < fields.length - 1; k++) {
+                                if (this.Utils.isDefined(d) && fields[k] in d) {
+                                    d = d[fields[k]];
+                                }
+                            }
+                            d[fields[k]] = text;
+                        } else if (isNewRow && fields.length > 1) {
+                            if (!(fields[0] in rowData)) {
+                                rowData[fields[0]] = {};
+                            }
+                            var x = rowData[fields[0]];
+                            for (var k = 1; k < fields.length - 1; k++) {
+                                if (this.Utils.isDefined(x) && !(fields[k] in x)) {
+                                    x[fields[k]] = {};
+                                }
+                            }
+                            x[fields[k]] = text;
+                        }
+                    });
+                    if (isNewRow) {
+                        this.options.onRowInsert(rowData, e);
+                    } else {
+                        this.options.afterRowUpdate(rowData, e);
+                    }
+                } else {
+                    this.cancelEdit($editableElements);
+                    $editButton.removeClass('hidden');
+                    $cancelButton.addClass('hidden');
+                    $saveButton.addClass('hidden');
+                    this.options.noChangesDetected();
                 }
             } else {
                 if (isNewRow) {
@@ -1137,30 +1148,32 @@ $.widget('wm.datagrid', {
                     this.options.setGridEditMode(false);
                 }
                 // Cancel edit.
-                $editableElements.each(function () {
-                    var $el = $(this),
-                        ctId = $el.attr('data-compiled-template'),
-                        originalValue,
-                        template;
-                    if (!ctId) {
-                        $el.text($el.data('originalText'));
-                    } else {
-                        originalValue = $el.data('originalValue');
-                        if (originalValue.template) {
-                            template = self.options.getCompiledTemplate(originalValue.template, originalValue.rowData, originalValue.colDef);
-                            $el.html(template);
-                        } else {
-                            $el.html(originalValue);
-                        }
-                    }
-                });
+                this.cancelEdit($editableElements);
                 $editButton.removeClass('hidden');
                 $cancelButton.addClass('hidden');
                 $saveButton.addClass('hidden');
             }
         }
     },
-
+    cancelEdit: function($editableElements) {
+        $editableElements.each(function () {
+            var $el = $(this),
+                value = $el.data('originalValue'),
+                originalValue,
+                template;
+            if (!value) {
+                $el.text($el.data('originalText'));
+            } else {
+                originalValue = value;
+                if (originalValue.template) {
+                    template = self.options.getCompiledTemplate(originalValue.template, originalValue.rowData, originalValue.colDef);
+                    $el.html(template);
+                } else {
+                    $el.html(originalValue);
+                }
+            }
+        });
+    },
     hideRowEditMode: function ($row) {
         var $editableElements = $row.find('td.cell-editing'),
             $editButton = $row.find('.edit-row-button'),
@@ -1168,10 +1181,19 @@ $.widget('wm.datagrid', {
             $saveButton = $row.find('.save-edit-row-button');
         $editableElements.each(function () {
             var $el = $(this),
-                $input = $el.find('input'),
-                text = $el.find('input').val();
-            if (!$el.attr('data-compiled-template')) {
-                $el.text(text);
+                value = $el.data('originalValue'),
+                originalValue,
+                template;
+            if (!value) {
+                $el.text($el.find('input').val());
+            } else {
+                originalValue = value;
+                if (originalValue.template) {
+                    template = self.options.getCompiledTemplate(originalValue.template, originalValue.rowData, originalValue.colDef);
+                    $el.html(template);
+                } else {
+                    $el.html(originalValue);
+                }
             }
         });
         if ($.isFunction(this.options.setGridEditMode)) {
@@ -1181,7 +1203,6 @@ $.widget('wm.datagrid', {
         $cancelButton.addClass('hidden');
         $saveButton.addClass('hidden');
     },
-
     /* Deletes a row. */
     deleteRow: function (e) {
         e.stopPropagation();
