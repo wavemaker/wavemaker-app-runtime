@@ -57,7 +57,11 @@ wm.variables.services.$liveVariable = [
             },
         /*Function to convert values of date time types into default formats*/
             getDateInDefaultFormat = function (value, type) {
-                return value && $filter('date')(moment(value).valueOf(), dateTimeFormats[type]);
+                var epoch = moment(value).valueOf();
+                if (type === 'time' && !epoch) {
+                    epoch = moment(new Date().toDateString() + ' ' + value).valueOf();
+                }
+                return value && $filter('date')(epoch, dateTimeFormats[type]);
             },
         /* Function to process the response data if it contains composite keys. */
             processResponse = function (responseData) {
