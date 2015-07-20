@@ -341,6 +341,10 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "sql_type": "date",
             "default_value": "null"
         },
+        "datetime": {
+            "sql_type": "datetime",
+            "default_value": "null"
+        },
         "double": {
             "sql_type": "double",
             "default_value": "0"
@@ -371,10 +375,6 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         },
         "timestamp": {
             "sql_type": "timestamp",
-            "default_value": "null"
-        },
-        "datetime": {
-            "sql_type": "datetime",
             "default_value": "null"
         }
     },
