@@ -95,23 +95,32 @@ WM.module('wm.widgets.live')
                             if (filterField.isRelated) {
                                 colName += '.' + filterField.lookupField;
                             }
+                            /*For timestamp column time, filter on UNIX timestamp to avoid the timezone differences*/
+                            if (filterField.widget === 'timestamp') {
+                                colName = 'UNIX_TIMESTAMP(' + colName + ')';
+                            }
 
                             if (filterField.isRange) {
                                 if ($scope.isDateTime[filterField.widget]) {
-                                    minValue = $filter('date')(minValue, $scope.dateTimeFormats[filterField.widget]);
-                                    maxvalue = $filter('date')(maxvalue, $scope.dateTimeFormats[filterField.widget]);
+                                    if (filterField.widget === 'timestamp') {
+                                        minValue = minValue && moment(minValue).unix();
+                                        maxvalue = maxvalue && moment(maxvalue).unix();
+                                    } else {
+                                        minValue = $filter('date')(minValue, $scope.dateTimeFormats[filterField.widget]);
+                                        maxvalue = $filter('date')(maxvalue, $scope.dateTimeFormats[filterField.widget]);
+                                    }
                                 }
                                 if (minValue && maxvalue) {
                                     filterFields.push({
-                                        clause: "('" + minValue + "'<=" + filterField.field + " AND " + filterField.field + "<='" + maxvalue + "')"
+                                        clause: "('" + minValue + "'<=" + colName + " AND " + colName + "<='" + maxvalue + "')"
                                     });
                                 } else if (minValue) {
                                     filterFields.push({
-                                        clause: "('" + minValue + "'<=" + filterField.field + ")"
+                                        clause: "('" + minValue + "'<=" + colName + ")"
                                     });
                                 } else if (maxvalue) {
                                     filterFields.push({
-                                        clause: "(" + filterField.field + "<='" + maxvalue + "')"
+                                        clause: "(" + colName + "<='" + maxvalue + "')"
                                     });
                                 }
                             } else {
@@ -135,9 +144,13 @@ WM.module('wm.widgets.live')
                                 case 'date':
                                 case 'time':
                                 case 'datetime':
-                                case 'timestamp':
                                     if (filterField.value) {
                                         fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget]);
+                                    }
+                                    break;
+                                case 'timestamp':
+                                    if (filterField.value) {
+                                        fieldValue = moment(filterField.value).unix();
                                     }
                                     break;
                                 case 'checkbox':
