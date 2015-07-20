@@ -106,23 +106,11 @@ WM.module('wm.widgets.form')
             /*initialize the data, for 'All Fields'*/
             _dataSetModelProxyMap[scope.$id] = {};
             _dataSetModelMap[scope.$id] = {};
-
-            /* set a flag to determine whether datavalue needs to be trimmed */
-            scope.trimDatavalue = false;
-
             /*if filter dataSet if dataField is selected other than 'All Fields'*/
             if (dataField && dataField !== ALLFIELDS) {
                 data = {};
                 WM.forEach(dataSet, function (option) {
-                    var key = WidgetUtilService.getObjValueByKey(option, dataField);
-                    /* if key is a number, prefixing it with space to convert it into string.
-                     * This will avoid the default sorting on integer field performed by certain browsers.
-                     */
-                    if (WM.isNumber(key) || (key && WM.isString(key) && !isNaN(+key))) {
-                        key =  " " + key;
-                        scope.trimDatavalue = true;
-                    }
-                    data[key] = WidgetUtilService.getDisplayFieldData(scope, option, displayField);
+                    data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getDisplayFieldData(scope, option, displayField);
                 });
             } else {
                 data = {};
@@ -264,7 +252,7 @@ WM.module('wm.widgets.form')
 
             /* assign the modelProxy to the model when the selected datafield isn't all-fields*/
             if (scope.datafield !== ALLFIELDS) {
-                scope._model_ = scope.trimDatavalue && WM.isString(scope.modelProxy) ? scope.modelProxy.trim() : scope.modelProxy;
+                scope._model_ = scope.modelProxy;
             } else if (_dataSetModelProxyMap[scope.$id]) { /* check for sanity */
                 scope._model_ = _dataSetModelProxyMap[scope.$id][scope.modelProxy];
             }
