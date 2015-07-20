@@ -15,8 +15,6 @@
  */
 package com.wavemaker.runtime.data.dialect;
 
-import java.sql.Types;
-
 import org.hibernate.dialect.MySQL5Dialect;
 import org.hibernate.dialect.function.NoArgSQLFunction;
 import org.hibernate.type.StringType;
@@ -29,9 +27,6 @@ public class MySQLDialect extends MySQL5Dialect {
     public MySQLDialect() {
         super();
         registerFunction("uuid", new NoArgSQLFunction("uuid", StringType.INSTANCE));
-
-        //as hibernate timestamp is mapping to sql datetime in mysql,So forcing hibernate timestamp to map sql timestamp.
-        registerColumnType( Types.TIMESTAMP, "timestamp" );
     }
 
 }
