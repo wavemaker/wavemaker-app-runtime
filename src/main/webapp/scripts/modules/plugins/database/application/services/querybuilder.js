@@ -27,6 +27,8 @@ wm.plugins.database.services.QueryBuilder = [
                     whereClause = "",
                     groupByClause,
                     orderByClause,
+                    logicalOp = options.logicalOp && options.logicalOp.toLowerCase() === "or" ? " OR " : " AND ",
+                    logicalOpSliceLength = logicalOp === " OR " ? -4 : -5,
                     query;
 
                 selectClause = "SELECT ";
@@ -46,7 +48,7 @@ wm.plugins.database.services.QueryBuilder = [
                     whereClause = " WHERE ";
                     WM.forEach(options.filterFields, function (field) {
                         if (field.clause) {
-                            whereClause += field.clause + " AND ";
+                            whereClause += field.clause + logicalOp;
                         } else {
                             /*If value is an array, loop through the array and build the query with OR clause*/
                             if (WM.isArray(field.value)) {
@@ -58,19 +60,19 @@ wm.plugins.database.services.QueryBuilder = [
                                         whereClause += element + "' OR " + field.column + "='";
                                     }
                                 });
-                                whereClause += "') AND ";
+                                whereClause += "')" + logicalOp;
                             } else {
                                 /*If the field is a boolean value, quotes should not be added to the values*/
                                 if (field.isBoolean) {
-                                    whereClause += field.column + "=" + field.value + " AND ";
+                                    whereClause += field.column + "=" + field.value + logicalOp;
                                 } else {
-                                    whereClause += field.column + "='" + field.value + "' AND ";
+                                    whereClause += field.column + "='" + field.value + "'" + logicalOp;
                                 }
 
                             }
                         }
                     });
-                    whereClause = whereClause.slice(0, -5);
+                    whereClause = whereClause.slice(0, logicalOpSliceLength);
                 } else if (!WM.element.isEmptyObject(options.filterFields)) {
                     whereClause = " WHERE ";
                     WM.forEach(options.filterFields, function (field, fieldName) {
@@ -83,9 +85,9 @@ wm.plugins.database.services.QueryBuilder = [
                         } else {
                             return;
                         }
-                        whereClause += fieldName + "='" + fieldValue + "' AND ";
+                        whereClause += fieldName + "='" + fieldValue + "'" + logicalOp;
                     });
-                    whereClause = whereClause.slice(0, -5);
+                    whereClause = whereClause.slice(0, logicalOpSliceLength);
                 }
                 groupByClause = options.groupby ? (" GROUP BY " + options.groupby) : "";
                 orderByClause = options.orderby ? (" ORDER BY " + options.orderby) : "";
