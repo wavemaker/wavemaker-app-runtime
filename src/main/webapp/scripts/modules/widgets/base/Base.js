@@ -932,7 +932,9 @@ WM.module('wm.widgets.base', [])
                         "expanded": {"type": "boolean", "value": true},
                         "closable": {"type": "boolean"},
                         "helptext": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
-                        "actions": {"type": "object", "bindable": "in-bound", "widget": "string"},
+                        "actions": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
+                        "datafield": {"type": "list", "options": [""]},
+                        "displayfield": {"type": "list", "options": [""]},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
@@ -1514,7 +1516,7 @@ WM.module('wm.widgets.base', [])
                     {"name": "values", "properties": [ "scopedatavalue", "datavalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultvalue", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                     {"name": "valuedisplay", "properties": ["places", "datepattern", "ismeridian", "hourstep", "minutestep", "limit"], "parent": "properties"},
                     {"name": "output", "properties": ["outputformat"], "parent": "properties"},
-                    {"name": "dataset", "properties": ["operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "datafield", "itemicon", "itemlabel", "itemlink", "itemchildren", "displayfield", "displayexpression",  "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
+                    {"name": "dataset", "properties": ["operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "actions",  "datafield", "itemicon", "itemlabel", "itemlink", "itemchildren", "displayfield", "displayexpression",  "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
                     {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
                     {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},
                     {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
@@ -1522,7 +1524,7 @@ WM.module('wm.widgets.base', [])
                     {"name": "help", "properties": ["helptext"], "parent": "properties"},
                     {"name": "behavior", "properties": ["pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "ignoreparentreadonly", "readonlygrid",
                         "multiple", "show", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
-                        "lock", "freeze", "autoscroll", "closable", "actions", "expanded",  "destroyable", "showDirtyFlag", "link",
+                        "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link",
                         "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "deletemessage", "loadingdatamsg", "showpreview", "updatemode", "errormessage", "tooltips", "showlegend", "legendposition", "captions", "showxaxis", "showyaxis", "showvalues",
                          "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                           "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel"], "parent": "properties"},
@@ -1824,6 +1826,56 @@ WM.module('wm.widgets.base', [])
         return directive;
     })
 
+    /**
+    * @ngdoc directive
+    * @name wm.widgets.directive:wmupdateProperties
+    * @restrict A
+    * @element ANY
+    *
+    * @description update datafield, display field in the property panel
+    *
+    */
+    .service('wmupdateProperties', ['WidgetUtilService',
+        function (WidgetUtilService) {
+            "use strict";
+            function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
+                var variableKeys = [],
+                    ALLFIELDS = "All Fields";
+
+                scope.widgetProps.datafield.options = [];
+                scope.widgetProps.displayfield.options = [];
+                /* re-initialize the property values */
+                if (scope.newcolumns) {
+                    scope.newcolumns = false;
+                    scope.datafield = '';
+                    scope.displayfield = '';
+                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': scope.datafield, 'displayfield': scope.displayfield});
+                }
+
+                if (WM.isString(dataset)) {
+                    return;
+                }
+
+                /* on binding of data*/
+                if (WM.isArray(dataset)) {
+                    dataset = dataset[0] || dataset;
+                    variableKeys = WidgetUtilService.extractDataSetFields(dataset, propertiesMap) || [];
+                }
+
+                /*removing null values from the variableKeys*/
+                WM.forEach(variableKeys, function (variableKey, index) {
+                    if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
+                        variableKeys.splice(index, 1);
+                    }
+                });
+
+                scope.widgetProps.datafield.options = ['', ALLFIELDS].concat(variableKeys);
+                scope.widgetProps.displayfield.options = [''].concat(variableKeys);
+            }
+            return {
+                updatePropertyPanelOptions: updatePropertyPanelOptions
+            };
+        }])
     /**
      * @ngdoc directive
      * @name wm.widgets.directive:initWidget

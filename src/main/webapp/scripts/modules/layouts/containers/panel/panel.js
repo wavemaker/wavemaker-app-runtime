@@ -15,7 +15,7 @@ WM.module('wm.layouts.containers')
                             '</a>' +
                             '<div class="panel-actions">' +
                                 '<span data-ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
-                                '<wm-menu scopedataset="actions" iconname="cog" data-ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="label" displayfield="label"></wm-menu>' +
+                                '<wm-menu scopedataset="actions" iconname="cog" data-ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" displayfield="{{displayfield}}"></wm-menu>' +
                                 '<button class="app-icon panel-action glyphicon glyphicon-question-sign" title="{{::$root.appLocale.LABEL_HELP}}" data-ng-if="helptext" data-ng-click="toggleHelp()">&nbsp;</button>' +
                                 '<button class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="togglePanel($event);">&nbsp;</button>' +
                                 '<button class="app-icon glyphicon panel-action glyphicon-remove" title="{{::$root.appLocale.LABEL_CLOSE}}" data-ng-if="closable" data-ng-click="closePanel();onClose({$event: $event, $scope: this})">&nbsp;</button>' +
@@ -30,11 +30,12 @@ WM.module('wm.layouts.containers')
             );
         $templateCache.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" data-ng-show="expanded" wmtransclude></div>');
     }])
-    .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
+    .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', 'wmupdateProperties', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, wmupdateProperties) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.layouts', 'wm.containers', 'wm.base.events.touch']),
             notifyFor = {
-                'height': true
+                'height': true,
+                'actions': true
             };
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
@@ -42,6 +43,11 @@ WM.module('wm.layouts.containers')
             case 'height':
                 if (newVal && CONSTANTS.isStudioMode) {
                     scope.minheight = 0;
+                }
+                break;
+            case 'actions':
+                if (CONSTANTS.isStudioMode) {
+                    wmupdateProperties.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
                 }
                 break;
             }

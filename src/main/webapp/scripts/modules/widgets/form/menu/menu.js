@@ -40,11 +40,10 @@ WM.module('wm.widgets.form')
                 '</li>'
             );
     }])
-    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout) {
+    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'wmupdateProperties', 'Utils', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, wmupdateProperties, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base.editors', 'wm.base.editors.dataseteditors']),
-            ALLFIELDS = 'All Fields',
             notifyFor = {
                 'iconname': true,
                 'scopedataset': true,
@@ -67,10 +66,10 @@ WM.module('wm.widgets.form')
                 if (WM.isObject(newVal[0])) {
                     transformFn = function (item) {
                         return {
-                            'label': scope.displayfield ? item[scope.displayfield] : item.label,
+                            'label': scope.displayfield ? Utils.findValueOf(item, scope.displayfield) : item.label,
                             'icon': item.icon,
                             'disabled': item.disabled,
-                            'value': scope.datafield ? (scope.datafield === 'All Fields' ? item : item[scope.datafield]) : item,
+                            'value': scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
                             'children' : (item.children || []).map(transformFn)
                         };
                     };
@@ -88,50 +87,13 @@ WM.module('wm.widgets.form')
             return menuItems;
         }
 
-        /*
-         * update datafield, display field in the property panel
-         */
-        function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
-            var variableKeys = [];
-
-            scope.widgetProps.datafield.options = [];
-            scope.widgetProps.displayfield.options = [];
-            /* re-initialize the property values */
-            if (scope.newcolumns) {
-                scope.newcolumns = false;
-                scope.datafield = '';
-                scope.displayfield = '';
-                scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': scope.datafield, 'displayfield': scope.displayfield});
-            }
-
-            if (WM.isString(dataset)) {
-                return;
-            }
-
-            /* on binding of data*/
-            if (WM.isArray(dataset)) {
-                dataset = dataset[0] || dataset;
-                variableKeys = WidgetUtilService.extractDataSetFields(dataset, propertiesMap) || [];
-            }
-
-            /*removing null values from the variableKeys*/
-            WM.forEach(variableKeys, function (variableKey, index) {
-                if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
-                    variableKeys.splice(index, 1);
-                }
-            });
-
-            scope.widgetProps.datafield.options = ['', ALLFIELDS].concat(variableKeys);
-            scope.widgetProps.displayfield.options = [''].concat(variableKeys);
-        }
-
         function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case 'scopedataset':
             case 'dataset':
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && WM.isDefined(newVal) && newVal !== null) {
-                    updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
+                    wmupdateProperties.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
                 }
                 if (!scope.widgetid && newVal) {
                     scope.menuItems = getMenuItems(newVal.data || newVal, scope);
