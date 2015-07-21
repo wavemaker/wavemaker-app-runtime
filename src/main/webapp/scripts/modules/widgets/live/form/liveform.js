@@ -842,7 +842,7 @@ WM.module('wm.widgets.live')
             }
         };
     }])
-    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "Variables", function (Utils, $compile, CONSTANTS, Variables) {
+    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "Variables", "BindingManager", function (Utils, $compile, CONSTANTS, Variables, BindingManager) {
         'use strict';
 
         /* provides the template based on the form-field definition */
@@ -1099,8 +1099,6 @@ WM.module('wm.widgets.live')
                             variableObj = {},
                             variableData,
                             dataSetWatchHandler,
-                            colName,
-                            exprArray,
                             dateTimeFormats = Utils.getDateTimeDefaultFormats(),
                             getOutputPatterns = function (type, outputFormat) {
                                 if (type === 'date' || type === 'time' || type === 'datetime') {
@@ -1151,30 +1149,11 @@ WM.module('wm.widgets.live')
                                 if (scope.Variables && !Utils.isEmptyObject(scope.Variables) && scope.$eval(expr)) {
                                     columnDef.defaultValue = scope.$eval(expr);
                                 } else {
-                                    /*TODO: Replace with new common binding function*/
-                                    if (expr.indexOf('.content[$i].') !== -1) {
-                                        exprArray = expr.split('.content[$i].');
-                                        expr = exprArray[0];
-                                        colName = exprArray[1];
-                                    } else if (expr.indexOf('.data[$i].') !== -1) {
-                                        exprArray = expr.split('.data[$i].');
-                                        expr = exprArray[0];
-                                        colName = exprArray[1];
-                                    }
-                                    exprWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
-                                        var val;
-                                        variable = parentIsolateScope.Variables[expr.split('.')[1]];
-                                        if (exprArray && WM.isObject(newVal) && Utils.isPageable(newVal)) {
-                                            val = newVal.content[0][colName];
-                                        } else if (exprArray && variable.category === "wm.LiveVariable") {
-                                            val = newVal.data && newVal.data[0][colName];
-                                        } else {
-                                            val = newVal;
-                                        }
-                                        parentIsolateScope.dataArray[index].defaultValue = val;
-                                        parentIsolateScope.dataArray[index].selected = val;
+                                    exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
+                                        parentIsolateScope.dataArray[index].defaultValue = newVal;
+                                        parentIsolateScope.dataArray[index].selected = newVal;
                                         parentIsolateScope.setDefaultValueToValue(columnDef);
-                                    }, true);
+                                    }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                                 }
                             } else {
                                 columnDef.defaultValue = attrs.defaultValue;

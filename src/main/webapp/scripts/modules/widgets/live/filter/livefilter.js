@@ -496,7 +496,7 @@ WM.module('wm.widgets.live')
                 }
             };
         }])
-    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", function ($compile, Utils, CONSTANTS) {
+    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", "BindingManager", function ($compile, Utils, CONSTANTS, BindingManager) {
         'use strict';
 
         /* provides the template based on the form-field definition */
@@ -709,12 +709,10 @@ WM.module('wm.widgets.live')
 
                         var expr,
                             exprWatchHandler,
-                            variable,
-                            colName,
-                            exprArray,
                             template,
                             index,
                             defaultVal,
+                            parentIsolateScope = scope.parentIsolateScope,
                             fieldObject = {
                                 'field': attrs.field || attrs.binding,
                                 'displayName': attrs.displayName || attrs.caption,
@@ -733,8 +731,7 @@ WM.module('wm.widgets.live')
                                 'maxPlaceholder': attrs.maxPlaceholder,
                                 'datepattern': attrs.datepattern,
                                 'multiple': attrs.multiple === "true" || attrs.multiple === true,
-                                'relatedEntityName': attrs.relatedEntityName,
-                                'value': attrs.value
+                                'relatedEntityName': attrs.relatedEntityName
                             };
                         /*Set the default value*/
                         if (attrs.value) {
@@ -749,37 +746,17 @@ WM.module('wm.widgets.live')
                                         fieldObject.maxValue = defaultVal;
                                     }
                                 } else {
-                                    /*TODO: Replace with new common binding function*/
-                                    if (expr.indexOf('.content[$i].') !== -1) {
-                                        exprArray = expr.split('.content[$i].');
-                                        expr = exprArray[0];
-                                        colName = exprArray[1];
-                                    } else if (expr.indexOf('.data[$i].') !== -1) {
-                                        exprArray = expr.split('.data[$i].');
-                                        expr = exprArray[0];
-                                        colName = exprArray[1];
-                                    }
-                                    exprWatchHandler = scope.parentIsolateScope.$watch(expr, function (newVal) {
-                                        var val;
-                                        variable = scope.parentIsolateScope.Variables[expr.split('.')[1]];
-                                        if (exprArray && WM.isObject(newVal) && Utils.isPageable(newVal)) {
-                                            val = newVal.content[0][colName];
-                                        } else if (exprArray && variable.category === "wm.LiveVariable") {
-                                            val = newVal.data && newVal.data[0][colName];
-                                        } else {
-                                            val = newVal;
-                                        }
-                                        scope.parentIsolateScope.filterFields[index].value = val;
+                                    exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
+                                        parentIsolateScope.filterFields[index].value = newVal;
+                                        parentIsolateScope.filterFields[index].selected = newVal;
                                         if (attrs.isRange) {
-                                            scope.parentIsolateScope.filterFields[index].minValue = val;
-                                            scope.parentIsolateScope.filterFields[index].maxValue = val;
+                                            parentIsolateScope.filterFields[index].minValue = newVal;
+                                            parentIsolateScope.filterFields[index].maxValue = newVal;
                                         }
-                                        scope.parentIsolateScope.filterFields[index].selected = val;
                                         /*Apply the filter after the default value change*/
-                                        scope.parentIsolateScope.filterOnDefault();
-                                    });
+                                        parentIsolateScope.filterOnDefault();
+                                    }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                                 }
-
                             } else {
                                 defaultVal = attrs.value;
                                 /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
@@ -794,15 +771,15 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        scope.parentIsolateScope.filterFields = scope.parentIsolateScope.filterFields || [];
-                        scope.parentIsolateScope.fieldObjectCreated = true;
-                        index = scope.parentIsolateScope.filterFields.push(fieldObject) - 1;
+                        parentIsolateScope.filterFields = parentIsolateScope.filterFields || [];
+                        parentIsolateScope.fieldObjectCreated = true;
+                        index = parentIsolateScope.filterFields.push(fieldObject) - 1;
 
                         template = getTemplate(fieldObject, index);
                         element.html(template);
-                        $compile(element.contents())(scope.parentIsolateScope);
+                        $compile(element.contents())(parentIsolateScope);
 
-                        scope.parentIsolateScope.$on('$destroy', function () {
+                        parentIsolateScope.$on('$destroy', function () {
                             if (exprWatchHandler) {
                                 exprWatchHandler();
                             }
