@@ -21,12 +21,13 @@ import org.hibernate.dialect.MySQL5Dialect;
 import org.hibernate.dialect.function.NoArgSQLFunction;
 import org.hibernate.type.StringType;
 
+import com.wavemaker.studio.common.CommonConstants;
+
 /**
  * @author Simon Toens
  */
 public class MySQLDialect extends MySQL5Dialect {
 
-    public static final Integer DATE_TIME_WM_TYPE_CODE = -777;
 
     public MySQLDialect() {
         super();
@@ -34,7 +35,7 @@ public class MySQLDialect extends MySQL5Dialect {
 
         //as hibernate timestamp is mapping to sql datetime in mysql,So forcing hibernate timestamp to map sql timestamp.
         registerColumnType( Types.TIMESTAMP, "timestamp" );
-        registerColumnType( DATE_TIME_WM_TYPE_CODE, "datetime" );
+        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime" );
     }
 
 }
