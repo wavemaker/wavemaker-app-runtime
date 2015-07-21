@@ -416,6 +416,7 @@ WM.module('wm.widgets.live')
                                         buttonsObj = [];
                                     }
                                     if (CONSTANTS.isStudioMode && scope.newcolumns && fieldsObj) {
+                                        scope.newcolumns = false;
                                         designerObj = {
                                             widgetName: scope.name,
                                             fieldDefs: fieldsObj,

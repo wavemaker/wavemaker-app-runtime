@@ -1471,6 +1471,7 @@ WM.module('wm.widgets.grid')
                         if (CONSTANTS.isStudioMode && $scope.newcolumns) {
                             /* if new columns to be rendered, create new column defs*/
                             $scope.prepareFieldDefs();
+                            $scope.newcolumns = false;
                         }
                         if (!$scope.variableInflight) {
                             /* If variable has finished loading and resultSet is empty,
@@ -1484,6 +1485,7 @@ WM.module('wm.widgets.grid')
                 if (newVal) {
                     if (CONSTANTS.isStudioMode) {
                         $scope.createGridColumns(isBoundToLiveVariableRoot ? newVal.data : newVal, newVal.propertiesMap || undefined);
+                        $scope.newcolumns = false;
                     }
                     populateGridData(newVal);
                     if (isBoundToServiceVariable && CONSTANTS.isStudioMode) {
@@ -1503,6 +1505,7 @@ WM.module('wm.widgets.grid')
                     /* if new columns to be rendered, create new column defs*/
                     if ($scope.newcolumns) {
                         $scope.prepareFieldDefs();
+                        $scope.newcolumns = false;
                     }
                 }
             };
