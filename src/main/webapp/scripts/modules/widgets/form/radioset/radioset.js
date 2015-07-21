@@ -303,7 +303,7 @@ WM.module('wm.widgets.form')
                         /* fields defined in scope: {} MUST be watched explicitly */
                         /*watching scopedataset attribute to create options for the checkboxset element.*/
                         scope.$watch('scopedataset', function () {
-                            if (CONSTANTS.isRunMode && scope.scopedataset) {
+                            if (scope.scopedataset) {
                                 /*generating the radioset based on the values provided*/
                                 constructRadioSet(scope, element, scope.scopedataset);
                             }
