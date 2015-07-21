@@ -1844,30 +1844,20 @@ WM.module('wm.widgets.grid')
                             }
                         }
 
-                        /* This condition is for:
-                         * Mobile/Tablet view in STUDIO mode.
-                         * if page is in iFrame, we are in mobile/tablet view in studio mode
-                         * hence, check for mobileDisplay flag
+                        /* this condition will run for:
+                         *  1. PC view in STUDIO mode
+                         *  2. Mobile/tablet view in RUN mode
                          */
-                        if (window.self !== window.top) {
+                        if (Utils.isMobile()) {
                             if (!columnDef.mobileDisplay) {
                                 return;
                             }
                         } else {
-                            /* this condition will run for:
-                             *  1. PC view in STUDIO mode
-                             *  2. Mobile/tablet view in RUN mode
-                             */
-                            if (Utils.isMobile()) {
-                                if (!columnDef.mobileDisplay) {
-                                    return;
-                                }
-                            } else {
-                                if (!columnDef.pcDisplay) {
-                                    return;
-                                }
+                            if (!columnDef.pcDisplay) {
+                                return;
                             }
                         }
+
                         /* push the fieldDef in the object meant for actual display in the grid (this will be passed to ng-grid) */
                         scope.$parent.fieldDefs.push(columnDef);
                         element.remove();
