@@ -138,8 +138,8 @@ WM.module("wm.widgets.basic")
                             $scope.variableName = newVal.variableName;
                         }
 
-                        /*Check for sanity*/
-                        if (newVal) {
+                        /*Check for number of elements in the data set*/
+                        if (newVal && newVal.numberOfElements > 0) {
                             if ($scope.isVariableHasPaging()) {
                                 /*If "filterFields" and "sortOptions" have been set, then set them so that the filters can be retained while fetching data upon page navigation.*/
                                 $scope.filterFields = newVal.filterFields || {};
