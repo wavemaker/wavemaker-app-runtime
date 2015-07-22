@@ -1101,6 +1101,9 @@ $.widget('wm.datagrid', {
                             fields = colDef.field.split('.'),
                             $ie = $el.find('input'),
                             text = self._getValue($ie, fields);
+                        if (colDef.type === 'timestamp') {
+                            text = parseInt(text);
+                        }
                         if (fields.length === 1) {
                             rowData[colDef.field] = text;
                         } else if (!isNewRow && fields[0] in rowData) {

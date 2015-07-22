@@ -1633,7 +1633,7 @@ WM.module('wm.widgets.grid')
                 if (WM.isDefined(newVal) && !WM.equals(newVal, $scope.gridOptions[optionName])) {
                     option[optionName] = newVal;
                     $scope.datagridElement.datagrid('option', option);
-                    $scope.gridOptions[optionName] = newVal;
+                    $scope.gridOptions[optionName] = WM.copy(newVal);
                 }
             };
 
