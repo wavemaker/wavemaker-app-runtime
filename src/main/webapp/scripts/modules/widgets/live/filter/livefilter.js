@@ -77,7 +77,12 @@ WM.module('wm.widgets.live')
                             query,
                             variable = $scope.Variables[$scope.variableName],
                             page = 1,
-                            orderBy;
+                            orderBy,
+                            ORACLE_DB_SYSTEM = "oracle",
+                            DB_SYS_KEY = "dbSystem",
+                            isOracleDbSystem = function () {
+                                return variable[DB_SYS_KEY].toLowerCase() === ORACLE_DB_SYSTEM;
+                            };
 
 
                         options = options || {};
@@ -87,7 +92,7 @@ WM.module('wm.widgets.live')
                         orderBy = orderBy.split(",").join(" ");
                         WM.forEach($scope.filterFields, function (filterField) {
                             var fieldValue,
-                                isBoolean = false,
+                                noQuotes = false,
                                 minValue = filterField.minValue,
                                 maxvalue = filterField.maxValue,
                                 colName = variable.getModifiedFieldName(filterField.field);
@@ -121,7 +126,7 @@ WM.module('wm.widgets.live')
                                         if (WM.isDefined(filterField.selected) && !WM.isString(filterField.selected)) {
                                             fieldValue = filterField.selected;
                                         }
-                                        isBoolean = true;
+                                        noQuotes = true;
                                     } else {
                                         fieldValue = filterField.selected;
                                     }
@@ -133,16 +138,27 @@ WM.module('wm.widgets.live')
                                     break;
                                 case 'date':
                                 case 'time':
-                                case 'datetime':
                                     if (filterField.value) {
                                         fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget]);
+                                    }
+                                    break;
+                                case 'datetime':
+                                    if (filterField.value) {
+                                        /* Case: if the database type is oracle, for 'datetime' fields append native 'toDate' function in the query */
+                                        if (isOracleDbSystem()) {
+                                            fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget + "_oracle"]);
+                                            fieldValue = "to_date('" + fieldValue + "', 'YYYY-MM-DD HH24:MI:SS')";
+                                            noQuotes = true;
+                                        } else {
+                                            fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget]);
+                                        }
                                     }
                                     break;
                                 case 'checkbox':
                                     if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
                                         fieldValue = filterField.value;
                                     }
-                                    isBoolean = true;
+                                    noQuotes = true;
                                     break;
                                 default:
                                     fieldValue = filterField.value;
@@ -152,7 +168,7 @@ WM.module('wm.widgets.live')
                                     filterFields.push({
                                         column: colName,
                                         value: fieldValue,
-                                        isBoolean: isBoolean
+                                        noQuotes: noQuotes
                                     });
                                 }
                             }

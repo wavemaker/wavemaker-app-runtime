@@ -61,7 +61,7 @@ wm.plugins.database.services.QueryBuilder = [
                                 whereClause += "') AND ";
                             } else {
                                 /*If the field is a boolean value, quotes should not be added to the values*/
-                                if (field.isBoolean) {
+                                if (field.noQuotes) {
                                     whereClause += field.column + "=" + field.value + " AND ";
                                 } else {
                                     whereClause += field.column + "='" + field.value + "' AND ";

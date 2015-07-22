@@ -138,7 +138,8 @@ WM.module('wm.utils', [])
                 "date": "yyyy-MM-dd",
                 "time": "HH:mm:ss",
                 "timestamp": "yyyy-MM-dd HH:mm:ss",
-                "datetime": "yyyy-MM-ddTHH:mm:ss"
+                "datetime": "yyyy-MM-ddTHH:mm:ss",
+                "datetime_oracle": "yyyy-MM-dd HH:mm:ss"
             },
             indexPage = getIndexPage();
 
