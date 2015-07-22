@@ -1783,7 +1783,7 @@ WM.module('wm.widgets.grid')
                                 'type': attrs.type || 'string',
                                 'primaryKey': attrs.primaryKey ? $parse(attrs.primaryKey)() : '',
                                 'generator': attrs.generator,
-                                'isRelated': attrs.isRelatedPk === 'true',
+                                'isRelatedPk': attrs.isRelatedPk === 'true',
                                 'widgetType': attrs.widgetType,
                                 'style': styleDef,
                                 'class': attrs.colClass || '',
