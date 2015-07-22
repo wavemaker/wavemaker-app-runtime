@@ -1323,7 +1323,8 @@ WM.module('wm.widgets.grid')
                     selectedItemIndex,
                     isBoundToSelectedItem,
                     isBoundToSelectedItemSubset,
-                    isBoundToFilter;
+                    isBoundToFilter,
+                    columns;
                 $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
 
                 result = Utils.getValidJSON(newVal);
@@ -1488,6 +1489,17 @@ WM.module('wm.widgets.grid')
                 if (newVal) {
                     if (CONSTANTS.isStudioMode) {
                         $scope.createGridColumns(isBoundToLiveVariableRoot ? newVal.data : newVal, newVal.propertiesMap || undefined);
+                    }
+                    /*Set the type of the column to the default variable type*/
+                    if($scope.fieldDefs && $scope.columnDefsExists() && newVal.propertiesMap) {
+                        columns = Utils.fetchPropertiesMapColumns(newVal.propertiesMap);
+                        $scope.fieldDefs.forEach(function (fieldDef) {
+                            Object.keys(columns).forEach(function (key) {
+                                if (key === fieldDef.field) {
+                                    fieldDef.type = columns[key].type;
+                                }
+                            });
+                        });
                     }
                     populateGridData(newVal);
                     if (isBoundToServiceVariable && CONSTANTS.isStudioMode) {

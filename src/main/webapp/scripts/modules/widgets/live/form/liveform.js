@@ -645,7 +645,14 @@ WM.module('wm.widgets.live')
                                 gridObj,
                                 variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
                                 variableObj,
-                                elScope = element.scope();
+                                elScope = element.scope(),
+                                dateTimeFormats = Utils.getDateTimeDefaultFormats(),
+                                getOutputPatterns = function (type, outputFormat) {
+                                    if (type === 'date' || type === 'time' || type === 'datetime') {
+                                        return dateTimeFormats[type];
+                                    }
+                                    return outputFormat;
+                                };
 
                             switch (key) {
                             case "dataset":
@@ -666,6 +673,8 @@ WM.module('wm.widgets.live')
                                             translatedObj.forEach(function (transObj) {
                                                 if (transObj.key === fieldObject.key) {
                                                     fieldObject.isRelated = transObj.isRelated;
+                                                    fieldObject.type = transObj.type; /*Set the type of the column to the default variable type*/
+                                                    fieldObject.outputformat = getOutputPatterns(fieldObject.type, fieldObject.outputformat);
                                                 }
                                             });
                                         });
@@ -1098,17 +1107,9 @@ WM.module('wm.widgets.live')
                             variable,
                             variableObj = {},
                             variableData,
-                            dataSetWatchHandler,
                             colName,
                             exprArray,
-                            dateTimeFormats = Utils.getDateTimeDefaultFormats(),
-                            getOutputPatterns = function (type, outputFormat) {
-                                if (type === 'date' || type === 'time' || type === 'datetime') {
-                                    return dateTimeFormats[type];
-                                }
-                                return outputFormat;
-                            };
-
+                            dataSetWatchHandler;
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
                         } else {
@@ -1127,7 +1128,7 @@ WM.module('wm.widgets.live')
                             'required': attrs.required === "true" || attrs.required === true,
                             'maxvalue': attrs.maxvalue,
                             'datepattern': attrs.datepattern,
-                            'outputformat': getOutputPatterns(attrs.type, attrs.outputformat),
+                            'outputformat': attrs.outputformat,
                             'minvalue': attrs.minvalue,
                             'displayvalue': attrs.displayvalue,
                             'placeholder': attrs.placeholder,
