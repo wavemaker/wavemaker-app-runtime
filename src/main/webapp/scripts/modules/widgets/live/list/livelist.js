@@ -3,7 +3,7 @@
 /*Directive for liveList */
 
 WM.module('wm.widgets.live')
-    .controller('listController', ["$rootScope", "$scope", "CONSTANTS", "Utils", "Variables", "$servicevariable", function ($rootScope, $scope, CONSTANTS, Utils, Variables, $servicevariable) {
+    .controller('listController', ["$rootScope", "$scope", "CONSTANTS", "Utils", "Variables", "$servicevariable", "$timeout", function ($rootScope, $scope, CONSTANTS, Utils, Variables, $servicevariable, $timeout) {
         "use strict";
         $scope.dataset = []; // The data that is bound to the list. Stores the name for reference.
         $scope.fieldDefs = [];// The data required by the wmListItem directive to populate the items
@@ -169,7 +169,7 @@ WM.module('wm.widgets.live')
                     if (newVal.length === 0 && CONSTANTS.isRunMode) {
                         $scope.noDataFound = true;
                     }
-                    $scope.createListItems(newVal);
+                    $scope.createListItems(newVal, element);
                 }
                 /*Check for sanity*/
                 if (CONSTANTS.isStudioMode && $scope.binddataset) {
@@ -184,13 +184,27 @@ WM.module('wm.widgets.live')
             return this.listScope;
         };
         /** With given data, creates list items and updates the markup*/
-        $scope.createListItems = function (data) {
-            var newData = WM.copy(data);
+        $scope.createListItems = function (data, element) {
+            var newData = WM.copy(data),
+                unbindWatcher;
             /*If the "maxResults" property has been set in the dataNavigator, that takes precedence. Hence splice the data only if it is not set.*/
             /** Set the data to field-definitions, now the template will be modified and rendered,
              * If pageSize is mentioned then splice the data to get the required data*/
             $scope.fieldDefs = ($scope.dataNavigator && !$scope.shownavigation && $scope.pagesize) ? newData.splice(0, $scope.pagesize) : data;
             $scope.elementScope.fieldDefs = $scope.fieldDefs;
+
+            /* In run mode, making the first element selected, if flag is set */
+            if (CONSTANTS.isRunMode && $scope.selectfirstitem) {
+                unbindWatcher = $scope.$watch(function () {
+                    var items = element.find('.list-group li:first-of-type');
+                    if (items.length) {
+                        $rootScope.$safeApply($scope, function () {
+                            $timeout(function () {items.first().click(); }, 0, false);
+                            unbindWatcher();
+                        });
+                    }
+                });
+            }
         };
 
     }])
@@ -206,7 +220,7 @@ WM.module('wm.widgets.live')
             );
 
     }])
-    .directive('wmLivelist', ["$rootScope", "$templateCache", "$compile", "PropertiesFactory", "WidgetUtilService", "Utils", "CONSTANTS", "$timeout", function ($rootScope, $templateCache, $compile, PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, $timeout) {
+    .directive('wmLivelist', ["$rootScope", "$templateCache", "$compile", "PropertiesFactory", "WidgetUtilService", "Utils", "CONSTANTS", function ($rootScope, $templateCache, $compile, PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         "use strict";
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.livelist", ["wm.base.editors", "wm.base.events"]),
             listItemsMarkup = '',
@@ -348,17 +362,6 @@ WM.module('wm.widgets.live')
                         /**Compile the elements, remove the content from the ul and append the compiled one*/
                         if (CONSTANTS.isRunMode) {
                             WM.element(itemsEle).insertAfter(element.find("[data-identifier=listtemplate]"));
-                            if (attrs.selectfirstitem === "true") {
-                                unbindWatcher = scope.$watch(function () {
-                                    var items = element.find('.list-group li:first-of-type');
-                                    if (items.length) {
-                                        $rootScope.$safeApply(scope, function () {
-                                            $timeout(function () {items.first().click(); }, 0, false);
-                                            unbindWatcher();
-                                        });
-                                    }
-                                });
-                            }
                         }
 
                         /** In case of run mode, the field-definitions will be generated from the markup*/
