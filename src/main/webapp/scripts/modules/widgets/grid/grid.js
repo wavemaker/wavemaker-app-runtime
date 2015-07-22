@@ -1593,12 +1593,12 @@ WM.module('wm.widgets.grid')
 
                         /*Prevent searching and sorting on non-primary key columns in related tables.*/
                         columnDef.searchable = columnDef.sortable = !(columnDef.field && columnDef.field.indexOf('.') !== -1 && !columnDef.primaryKey);
-                        if (columnDef.type === 'timestamp' || columnDef.type === 'datetime') {
+                        if (columnDef.type === 'timestamp' || columnDef.type === 'datetime' || columnDef.type === 'date' ) {
                             if (!columnDef.formatpattern) {
                                 columnDef.formatpattern = 'toDate';
                             }
                             if (!columnDef.datepattern) {
-                                columnDef.datepattern = 'dd-MMM-yyyy HH:mm:ss';
+                                columnDef.datepattern = columnDef.type === 'date' ? 'yyyy-MM-dd' : 'dd-MMM-yyyy HH:mm:ss';
                             }
                         }
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
