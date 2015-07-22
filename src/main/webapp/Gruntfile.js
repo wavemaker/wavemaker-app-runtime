@@ -457,8 +457,7 @@ module.exports = function (grunt) {
         'less',
         'concat',
         'concat:wm-loader',
-        'copy',
-        'uglify'
+        'copy'
     ]);
 
     grunt.registerTask('unitTest', ['build', 'karma:unit']);
