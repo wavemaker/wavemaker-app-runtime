@@ -81,7 +81,7 @@ WM.module('wm.widgets.live')
                             ORACLE_DB_SYSTEM = "oracle",
                             DB_SYS_KEY = "dbSystem",
                             isOracleDbSystem = function () {
-                                return variable[DB_SYS_KEY].toLowerCase() === ORACLE_DB_SYSTEM;
+                                return variable && variable[DB_SYS_KEY] && variable[DB_SYS_KEY].toLowerCase() === ORACLE_DB_SYSTEM;
                             };
 
 
@@ -412,6 +412,16 @@ WM.module('wm.widgets.live')
                                             scope.result.isBoundToFilter = true;
                                             /*transform the data to filter consumable data*/
                                             fieldsObj = scope.constructDefaultData(newVal);
+                                            /*Set the type of the column to the default variable type*/
+                                            if (scope.filterFields && fieldsObj) {
+                                                scope.filterFields.forEach(function (filterField) {
+                                                    fieldsObj.forEach(function (fieldsObj) {
+                                                        if (fieldsObj.field === filterField.field) {
+                                                            filterField.type = fieldsObj.type;
+                                                        }
+                                                    });
+                                                });
+                                            }
                                             buttonsObj = defaultButtonsArray;
 
                                             /* call method to update allowed values for select type filter fields */
