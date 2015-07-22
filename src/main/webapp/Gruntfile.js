@@ -94,23 +94,25 @@ module.exports = function (grunt) {
                 options: {
                     mangle: true,
                     preserveComments: false,
-                    report: 'min'
+                    report: 'min',
+                    sourceMap: true
                 },
                 files: {
-                    '<%= config.application %>/scripts/wm-libs.js': ['<%= config.application %>/scripts/wm-libs.js']
+                    '<%= config.application %>/scripts/wm-libs.min.js': ['<%= config.application %>/scripts/wm-libs.js']
                 }
             },
             'min-mangle-false' : {
                 options: {
                     mangle: false,
                     preserveComments: false,
-                    report: 'min'
+                    report: 'min',
+                    sourceMap: true
                 },
                 files: {
-                    '<%= config.application %>/scripts/runtimeloader.js' : ['<%= config.application %>/scripts/runtimeloader.js'],
-                    '<%= config.application %>/scripts/mobileruntimeloader.js' : ['<%= config.application %>/scripts/mobileruntimeloader.js'],
-                    '<%= config.application %>/scripts/wm-loader.js' : ['<%= config.application %>/scripts/wm-loader.js'],
-                    '<%= config.application %>/scripts/wm-mobileloader.js' : ['<%= config.application %>/scripts/wm-mobileloader.js']
+                    '<%= config.application %>/scripts/runtimeloader.min.js' : ['<%= config.application %>/scripts/runtimeloader.js'],
+                    '<%= config.application %>/scripts/mobileruntimeloader.min.js' : ['<%= config.application %>/scripts/mobileruntimeloader.js'],
+                    '<%= config.application %>/scripts/wm-loader.min.js' : ['<%= config.application %>/scripts/wm-loader.js'],
+                    '<%= config.application %>/scripts/wm-mobileloader.min.js' : ['<%= config.application %>/scripts/wm-mobileloader.js']
                 }
             }
         },
@@ -129,9 +131,27 @@ module.exports = function (grunt) {
             'wm-loader': {
                 nonull: true,
                 files: {
-                    '<%= config.application %>/scripts/placeholders.js': ['<%= config.components %>/placeholders/js/utils.js', '<%= config.components %>/placeholders/js/main.js'],
-                    '<%= config.application %>/scripts/wm-loader.js': ['<%= config.application %>/scripts/runtimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
-                    '<%= config.application %>/scripts/wm-mobileloader.js': ['<%= config.application %>/scripts/mobileruntimeloader.js', '<%= config.scripts %>/wmbootstrap.js'],
+                    '<%= config.application %>/scripts/placeholders.js': [
+                        '<%= config.components %>/placeholders/js/utils.js',
+                        '<%= config.components %>/placeholders/js/main.js'
+                    ],
+                    '<%= config.application %>/scripts/placeholders.min.js': [
+                        '<%= config.application %>/scripts/placeholders.js'
+                    ],
+                    '<%= config.application %>/scripts/wm-loader.js': [
+                        '<%= config.application %>/scripts/runtimeloader.js',
+                        '<%= config.scripts %>/wmbootstrap.js'
+                    ],
+                    '<%= config.application %>/scripts/wm-loader.min.js': [
+                        '<%= config.application %>/scripts/wm-loader.js'
+                    ],
+                    '<%= config.application %>/scripts/wm-mobileloader.js': [
+                        '<%= config.application %>/scripts/mobileruntimeloader.js',
+                        '<%= config.scripts %>/wmbootstrap.js'
+                    ],
+                    '<%= config.application %>/scripts/wm-mobileloader.min.js': [
+                        '<%= config.application %>/scripts/wm-mobileloader.min.js'
+                    ],
                     '<%= config.application %>/scripts/wm-libs.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
@@ -156,6 +176,9 @@ module.exports = function (grunt) {
                         '<%= config.components %>/ocLazyLoad/ocLazyLoad.min.js',
                         '<%= config.components %>/hammerjs/hammer.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js'
+                    ],
+                    '<%= config.application %>/scripts/wm-libs.min.js' : [
+                        '<%= config.application %>/scripts/wm-libs.js'
                     ]
                 }
             },
@@ -280,7 +303,11 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/variables/application/mobilevariable/mobilevariableservice.js',
                         '<%= config.scripts %>/modules/i18n/config.js',
                         '<%= config.scripts %>/modules/i18n/services/i18nService.js'
+                    ],
+                    '<%= config.application %>/scripts/runtimeloader.min.js': [
+                        '<%= config.application %>/scripts/runtimeloader.js'
                     ]
+
                 }
             },
             'mobile-runtime-files': {
@@ -402,6 +429,9 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/variables/application/mobilevariable/mobilevariableservice.js',
                         '<%= config.scripts %>/modules/i18n/config.js',
                         '<%= config.scripts %>/modules/i18n/services/i18nService.js'
+                    ],
+                    '<%= config.application %>/scripts/mobileruntimeloader.min.js': [
+                        '<%= config.application %>/scripts/mobileruntimeloader.js'
                     ]
                 }
             }
@@ -427,7 +457,8 @@ module.exports = function (grunt) {
         'less',
         'concat',
         'concat:wm-loader',
-        'copy'
+        'copy',
+        'uglify'
     ]);
 
     grunt.registerTask('unitTest', ['build', 'karma:unit']);
