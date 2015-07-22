@@ -1613,6 +1613,9 @@ wm.variables.services.Variables = [
                     createdVariable.type = variableDetails.table;
                     createdVariable.category = variableCategory;
                     createdVariable.isDefault = true;
+
+                    /*adding a property to identify the database-type for the created live-variable*/
+                    createdVariable.dbSystem = variableDetails.dbSystem;
                     delete createdVariable.name;
 
                     /* Store the variable in proper category */
