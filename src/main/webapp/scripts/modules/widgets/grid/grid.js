@@ -1334,6 +1334,10 @@ WM.module('wm.widgets.grid')
                 isBoundToServiceVariable = undefined;
                 isBoundToFilter = undefined;
                 $scope.gridVariable = '';
+                /* Always set newcolumns equal to value of redrawColumns coming from datamodel design controller. */
+                if (CONSTANTS.isStudioMode && WM.isDefined($scope.$parent) && $scope.$parent.redrawColumns) {
+                    $scope.newcolumns = $scope.$parent.redrawColumns;
+                }
 
                 //Converting newval to object if it is an Object that comes as a string "{"data" : 1}"
                 if (result) {
