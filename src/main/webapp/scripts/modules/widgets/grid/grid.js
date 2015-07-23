@@ -1066,7 +1066,7 @@ WM.module('wm.widgets.grid')
                     if (!gridOptions.colDefs.length && $scope.fieldDefs.length) {
                         $scope.setDataGridOption('colDefs', WM.copy($scope.fieldDefs));
                     }
-                    $scope.setDataGridOption('data', newValue);
+                    $scope.setDataGridOption('data', WM.copy(newValue));
                 }
             });
 
@@ -1080,8 +1080,9 @@ WM.module('wm.widgets.grid')
             };
 
             $scope.isGridEditMode = false;
+            $scope.gridData = [];
             $scope.gridOptions = {
-                data: [],
+                data: WM.copy($scope.gridData),
                 colDefs: $scope.fieldDefs,
                 startRowIndex: 1,
                 onRowSelect: function (rowData, e) {
@@ -1649,7 +1650,7 @@ WM.module('wm.widgets.grid')
                 if (WM.isDefined(newVal) && !WM.equals(newVal, $scope.gridOptions[optionName])) {
                     option[optionName] = newVal;
                     $scope.datagridElement.datagrid('option', option);
-                    $scope.gridOptions[optionName] = WM.copy(newVal);
+                    $scope.gridOptions[optionName] = newVal;
                 }
             };
 
