@@ -15,33 +15,33 @@
  */
 package com.wavemaker.runtime.rest.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wavemaker.runtime.rest.RestConstants;
+import com.wavemaker.studio.common.WMRuntimeException;
 
 /**
  * @author Uday Shankar
  */
 public class RestRequestInfo {
 
+    public enum AuthType {
+        NONE, BASIC, OAUTH;
+
+    }
+
     @NotNull
     private String endpointAddress;
     private String method;
     private String contentType;
     private String requestBody;
-    private boolean basicAuth;
-    private String userName;
-    private String password;
+    private AuthType authType;
     private Map<String, Object> headers;
     private RestResponse sampleRestResponse;
-
-    public boolean getBasicAuth() {
-        return basicAuth;
-    }
-
-    public void setBasicAuth(boolean basicAuth) {
-        this.basicAuth = basicAuth;
-    }
 
     public String getContentType() {
         return contentType;
@@ -75,28 +75,12 @@ public class RestRequestInfo {
         this.method = method;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getRequestBody() {
         return requestBody;
     }
 
     public void setRequestBody(String requestBody) {
         this.requestBody = requestBody;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public RestResponse getSampleRestResponse() {
@@ -107,6 +91,38 @@ public class RestRequestInfo {
         this.sampleRestResponse = sampleRestResponse;
     }
 
+    public AuthType getAuthType() {
+        if (authType == null) {
+            authType = AuthType.NONE;
+        }
+        return authType;
+    }
+
+    public void setAuthType(AuthType authType) {
+        this.authType = authType;
+    }
+
+    @JsonIgnore
+    public String getBasicAuthorization() {
+        headers = (headers == null) ? new HashMap<String, Object>() : headers;
+        for (String key : headers.keySet()) {
+            if (RestConstants.AUTHORIZATION.equals(key)) {
+                if (headers.get(key) != null) {
+                    return headers.get(key).toString();
+                }
+            }
+        }
+        throw new WMRuntimeException("Authorization is not there in rest request info");
+    }
+
+    @JsonIgnore
+    public void setBasicAuthorization(String authorization) {
+        headers = (headers == null) ? new HashMap<String, Object>() : headers;
+        this.setAuthType(AuthType.BASIC);
+        headers.put(RestConstants.AUTHORIZATION, authorization);
+    }
+
+
     @Override
     public String toString() {
         return "RestRequestInfo{" +
@@ -114,9 +130,6 @@ public class RestRequestInfo {
                 ", method='" + method + '\'' +
                 ", contentType='" + contentType + '\'' +
                 ", requestBody='" + requestBody + '\'' +
-                ", basicAuth=" + basicAuth +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
                 ", headers=" + headers +
                 ", sampleRestResponse=" + sampleRestResponse +
                 '}';
