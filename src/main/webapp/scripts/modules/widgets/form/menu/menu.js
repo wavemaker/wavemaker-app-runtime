@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
                 '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown>' +
-                    '<button class="btn btn-default app-button dropdown-toggle {{menuclass}}" dropdown-toggle' +
+                    '<button class="btn app-button dropdown-toggle {{menuclass}}" dropdown-toggle' +
                         $rootScope.getWidgetStyles() +
                         '><i class="{{iconclass}}"></i>' +
                         ' {{caption}} ' +
