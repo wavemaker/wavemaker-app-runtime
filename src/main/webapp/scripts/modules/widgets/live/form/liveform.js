@@ -4,7 +4,7 @@
 WM.module('wm.widgets.live')
     /*Define controller for the liveform in dialog mode - required*/
     .controller('liveFormDialogController', WM.noop)
-    .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', '$templateCache', 'wmToaster', '$filter', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, $templateCache, wmToaster, $filter) {
+    .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', '$templateCache', 'wmToaster', '$filter', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, $templateCache, wmToaster, $filter, LiveWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.layouts.liveform", ["wm.layouts", "wm.base.events.successerror"]),
             notifyFor = {
@@ -346,11 +346,7 @@ WM.module('wm.widgets.live')
                     var defaultValue = fieldObj.defaultValue;
                     /*Set the default value only if it exists.*/
                     if (defaultValue && defaultValue !== "null") {
-                        if (Utils.isNumberType(fieldObj.type)) {
-                            fieldObj.value = isNaN(Number(defaultValue)) ? null : Number(defaultValue);
-                        } else {
-                            fieldObj.value = defaultValue;
-                        }
+                        fieldObj.value = LiveWidgetUtils.getDefaultValue(defaultValue, fieldObj.type);
                     }
                     if (fieldObj.type === "blob") {
                         /*Handle default*/
@@ -498,11 +494,7 @@ WM.module('wm.widgets.live')
                             "relatedFieldName": fieldObj.columns && fieldObj.columns[index] && fieldObj.columns[index].fieldName
                         };
                         if (fieldObj.defaultValue) {
-                            if (fieldObj.type === 'integer') {
-                                translatedObj[index].defaultValue = isNaN(Number(fieldObj.defaultValue)) ? '' : Number(fieldObj.defaultValue);
-                            } else {
-                                translatedObj[index].defaultValue = fieldObj.defaultValue;
-                            }
+                            translatedObj[index].defaultValue = LiveWidgetUtils.getDefaultValue(fieldObj.defaultValue, fieldObj.type);
                         }
                         if (fieldObj.type === "string" || fieldObj.type === "character" || fieldObj.type === "text" || fieldObj.type === "blob" || fieldObj.type === "clob") {
                             translatedObj[index].maxvalue = fieldObj.length;

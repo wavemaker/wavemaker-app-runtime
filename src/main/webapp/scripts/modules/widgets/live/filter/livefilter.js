@@ -523,7 +523,7 @@ WM.module('wm.widgets.live')
                 }
             };
         }])
-    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", "BindingManager", function ($compile, Utils, CONSTANTS, BindingManager) {
+    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", "BindingManager", "LiveWidgetUtils", function ($compile, Utils, CONSTANTS, BindingManager, LiveWidgetUtils) {
         'use strict';
 
         /* provides the template based on the form-field definition */
@@ -776,7 +776,7 @@ WM.module('wm.widgets.live')
                                     exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
                                         parentIsolateScope.filterFields[index].value = newVal;
                                         parentIsolateScope.filterFields[index].selected = newVal;
-                                        if (attrs.isRange) {
+                                        if (fieldObject.isRange) {
                                             parentIsolateScope.filterFields[index].minValue = newVal;
                                             parentIsolateScope.filterFields[index].maxValue = newVal;
                                         }
@@ -787,8 +787,8 @@ WM.module('wm.widgets.live')
                             } else {
                                 defaultVal = attrs.value;
                                 /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
-                                if (fieldObject.type === 'integer' && CONSTANTS.isRunMode) {
-                                    defaultVal = isNaN(Number(attrs.value)) ? '' : Number(attrs.value);
+                                if (CONSTANTS.isRunMode) {
+                                    defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, fieldObject.type);
                                 }
                                 fieldObject.selected = defaultVal;
                                 fieldObject.value = defaultVal;
