@@ -713,7 +713,8 @@ WM.module('wm.widgets.grid')
                 },
                 sortHandler = function (sortObj, e) {
                     var filterFields,
-                        sortOptions = sortObj.field + ',' + sortObj.direction;
+                        fieldName = Variables.call('getModifiedFieldName', $scope.variableName, sortObj.field),
+                        sortOptions = fieldName + ',' + sortObj.direction;
                     /* Update the sort info for passing to datagrid */
                     $scope.gridOptions.sortInfo.field = sortObj.field;
                     $scope.gridOptions.sortInfo.direction = sortObj.direction;
@@ -1123,7 +1124,7 @@ WM.module('wm.widgets.grid')
                 beforeRowUpdate: function (rowData, e) {
                     /*TODO: Check why widgetid is undefined here.*/
                     $scope.$emit('update-row', $scope.widgetid, rowData);
-                    $scope.prevData = rowData;
+                    $scope.prevData = WM.copy(rowData);
                     $rootScope.$safeApply($scope);
                     /*TODO: Bind this event.*/
 //                    $scope.beforeRowupdate({$data: rowData, $event: e});
