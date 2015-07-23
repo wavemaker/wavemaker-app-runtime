@@ -35,16 +35,21 @@ WM.module("wm.layouts.device")
             return "." + className;
         }
 
+        function getLeftPanelScope() {
+            return WM.element(roleSelector(LEFT_PANEL_CLASS_NAME)).isolateScope();
+        }
+
         /**
          * hide the mobile toolbar actions
          */
         function hidePageContainers() {
+            var leftPanelScope = getLeftPanelScope();
             if (Utils.isMobile()) {
-                WM.element(roleSelector(LEFT_PANEL_CLASS_NAME)).isolateScope().collapse();
+                leftPanelScope && leftPanelScope.collapse();
                 WM.element(roleSelector(HEADER_CLASS_NAME) + " " + classSelector(SEARCH_CONTAINER_CLASS_NAME)).hide();
                 $rootScope.sidebarCollapsed = true;
             } else {
-                WM.element(roleSelector(LEFT_PANEL_CLASS_NAME)).show();
+                leftPanelScope && leftPanelScope.expand();
                 WM.element(classSelector(SEARCH_CONTAINER_CLASS_NAME)).show().css('display', 'inline-table');
             }
         }
@@ -79,7 +84,8 @@ WM.module("wm.layouts.device")
         function bindLeftPanelEvents() {
             //tap left to show/hide left panel
             MobileEventService.touch(roleSelector(SWIPE_ELEM_CLASS_NAME), function () {
-                WM.element(roleSelector(LEFT_PANEL_CLASS_NAME)).isolateScope().toggle();
+                var leftPanel = getLeftPanelScope();
+                leftPanel && leftPanel.toggle();
             });
         }
 
