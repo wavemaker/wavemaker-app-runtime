@@ -26,7 +26,8 @@ WM.module('wm.widgets.live')
             getValidTime = function (val) {
                 var date = (new Date()).toDateString();
                 return (new Date(date + ' ' + val)).getTime();
-            };
+            },
+            dateTimeFormats = Utils.getDateTimeDefaultFormats();
 
         return {
             restrict: 'E',
@@ -553,6 +554,13 @@ WM.module('wm.widgets.live')
                     }
                     return object;
                 };
+                /*returns the default output formats for date time types*/
+                $scope.getOutputPatterns = function (type, outputFormat) {
+                    if (type === 'date' || type === 'time' || type === 'datetime') {
+                        return dateTimeFormats[type];
+                    }
+                    return outputFormat;
+                };
             },
             compile: function () {
                 return {
@@ -637,14 +645,7 @@ WM.module('wm.widgets.live')
                                 gridObj,
                                 variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
                                 variableObj,
-                                elScope = element.scope(),
-                                dateTimeFormats = Utils.getDateTimeDefaultFormats(),
-                                getOutputPatterns = function (type, outputFormat) {
-                                    if (type === 'date' || type === 'time' || type === 'datetime') {
-                                        return dateTimeFormats[type];
-                                    }
-                                    return outputFormat;
-                                };
+                                elScope = element.scope();
 
                             switch (key) {
                             case "dataset":
@@ -666,7 +667,7 @@ WM.module('wm.widgets.live')
                                                 if (transObj.key === fieldObject.key) {
                                                     fieldObject.isRelated = transObj.isRelated;
                                                     fieldObject.type = transObj.type; /*Set the type of the column to the default variable type*/
-                                                    fieldObject.outputformat = getOutputPatterns(fieldObject.type, fieldObject.outputformat);
+                                                    fieldObject.outputformat = scope.getOutputPatterns(fieldObject.type, fieldObject.outputformat);
                                                 }
                                             });
                                         });
@@ -1099,7 +1100,8 @@ WM.module('wm.widgets.live')
                             variable,
                             variableObj = {},
                             variableData,
-                            dataSetWatchHandler;
+                            dataSetWatchHandler,
+                            defaultObj;
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
                         } else {
@@ -1145,7 +1147,9 @@ WM.module('wm.widgets.live')
                                     exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
                                         parentIsolateScope.dataArray[index].defaultValue = newVal;
                                         parentIsolateScope.dataArray[index].selected = newVal;
-                                        parentIsolateScope.setDefaultValueToValue(columnDef);
+                                        if (parentIsolateScope.operationType !== 'update') {
+                                            parentIsolateScope.setDefaultValueToValue(columnDef);
+                                        }
                                     }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                                 }
                             } else {
@@ -1205,6 +1209,14 @@ WM.module('wm.widgets.live')
                         }
 
                         if (scope.isLayoutDialog) {
+                            defaultObj = _.find(parentIsolateScope.translatedObj, function (obj) {
+                                return obj.key === columnDef.key;
+                            });
+                            if (defaultObj) {
+                                columnDef.isRelated = defaultObj.isRelated;
+                                columnDef.type = defaultObj.type;
+                                columnDef.outputformat = parentIsolateScope.getOutputPatterns(columnDef.type, columnDef.outputformat);
+                            }
                             parentIsolateScope.setDefaultValueToValue(columnDef);
                             parentIsolateScope.setFieldVal(columnDef);
                             if (scope.operationType === 'update') {
