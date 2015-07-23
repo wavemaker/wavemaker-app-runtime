@@ -295,7 +295,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 return;
             }
             /*Call the specified variable category's method*/
-            variableMap[variableType].methods[method](variable, options, successCallBack, errorCallBack);
+            return variableMap[variableType].methods[method](variable, options, successCallBack, errorCallBack);
         }
 
         return {
