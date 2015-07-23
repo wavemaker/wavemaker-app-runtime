@@ -29,16 +29,22 @@
   .wm-app {
 
     .app-page{
-      //overflow: auto;
       left: 0;
 
-      &.slide-in-left-panel-container{
+      &.slide-in-left-panel-container {
         position: fixed;
-        overflow: hidden;
+        overflow: visible;
         transition: left 0.5s  ease-in-out;
+
+        /* Move all fixed position elements as well */
+        .app-header,
+        .app-search {
+          transition: left 0.5s  ease-in-out;
+        }
 
         &.slide-left {
           left: @left-panel-width;
+
           .app-header,
           .app-search{
             left: @left-panel-width;
@@ -57,7 +63,6 @@
       z-index: 99999;
       top: 0;
       left: 0;
-      transition: left 0.5s  ease-in-out;
 
       /********provide the margin top if the header exist*******/
       & + .app-top-nav, & + .app-content {
@@ -80,7 +85,6 @@
         position: fixed;
         left: 0;
         top: 4em;
-        transition: left 0.5s  ease-in-out;
         display: none;
         margin: 0;
         right: 0;
@@ -236,10 +240,6 @@
 }
 }
 
-
-.wm-app .wm-mobile-app-left-panel{
-  .mobile-left-panel(90%)
-}
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen
 and (min-device-width : 299px)
@@ -250,6 +250,12 @@ and (max-device-width : 480px) {
 @media only screen
 and (min-width : 299px)
 and (max-width : 480px) {
+    .mobile-common(90%)
+}
+/* Small web screens(portrait and landscape) ----------- */
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 768px) {
     .mobile-common(90%)
 }
 

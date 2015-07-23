@@ -1,38 +1,20 @@
 /********************************************************************************
 *************************************** Tab Bar *********************************
 *********************************************************************************/
-.responsiveTabbar(@screenWidth, @breakEleIndex, @itemWidth){
-  @media  (max-width: @screenWidth) {
-    >li.tab-item:nth-child(n + @{breakEleIndex}){
-      display: none;
-    }
-    >.menu-items:nth-child(n + @{breakEleIndex}){
-      display: table-cell;
-    }
-    .dropdown-menu.navbar-nav li.menu-item:nth-child(n + @{breakEleIndex}){
-      display: table-cell;
-    }
-    .dropdown-menu li.menu-item:nth-child(n + @{breakEleIndex}){
-      display: block;
-    }
-  }
-}
-
 .app-tabbar {
-  position: absolute;
   padding: 0;
-  .top {
+  width: 100%;
+  &.top {
     top: 0;
-    left: 0;
-    right: 0;
   }
-  .bottom {
+  &.bottom {
     bottom: 0;
-    left: 0;
-    right: 0;
   }
   .app-icon {
     font-size: 200%;
+  }
+  >.navbar {
+    height: 6em;
   }
   .navbar {
     .navbar-nav {
@@ -45,6 +27,9 @@
         > li {
           display: table-cell;
           float: none;
+          >a {
+            padding:10px 5px;
+          }
         }
       }
       > li {
@@ -66,25 +51,17 @@
         .dropdown-menu {
           background-color: inherit;
           position: absolute !important;
+          min-width: 80px;
           &.navbar-nav {
             > li {
-              width: 50%;
+              min-width: 80px;
               >  a {
                 padding: 10px 15px;
               }
             }
           }
-          > li {
-            display: none;
-          }
-
         }
       }
-      .responsiveTabbar(2048px, 12,  8.33%);
-      .responsiveTabbar(1024px, 10, 10%);
-      .responsiveTabbar(768px, 7, 14.2%);
-      .responsiveTabbar(480px, 5, 20%);
-      .responsiveTabbar(320px, 4, 25%);
     }
   }
 }
@@ -94,8 +71,9 @@
 *********************************************************************************/
 
 .app-mobile-navbar{
-  position: relative;
+  overflow: hidden;
   .navbar {
+    min-height: 0;
     background-color: inherit;
     > div {
       padding: 0;
@@ -120,11 +98,21 @@
       .app-menu, .app-popover {
         > a {
           padding: 1em 0.85em;
+          line-height: normal;
         }
       }
       .btn-back > *{
         vertical-align: middle;
         margin: 0 0.1em;
+      }
+      &.navbar-left {
+        white-space:nowrap;
+        >li {
+          width: 40px;
+          >a{
+            padding:10px 5px;
+          }
+        }
       }
       &.navbar-right {
        text-align: right;
@@ -132,6 +120,9 @@
         > li {
           > button {
              margin: 1em 0;
+          }
+          >a{
+            padding:10px 5px;
           }
         }
         .dropdown {
@@ -153,6 +144,35 @@
           display: inline-block;
         }
       }
+    }
+  }
+}
+/********************************************************************************
+*************************************** Mobile Left Panel ***********************
+*********************************************************************************/
+.wm-mobile-app-left-panel{
+  .mobile-left-panel(90%)
+}
+/********************************************************************************
+*************************************** Mobile layouts *********************************
+*********************************************************************************/
+.wm-app{
+  .app-page {
+    .app-mobile-navbar {
+      position: static;
+      &+.app-content {
+        .calc('height', ~"calc(100% - 4em)");
+        margin: 0;
+        min-height: 0!important;
+        overflow: auto;
+
+        .app-content-row {
+          min-height: 0!important;
+        }
+      }
+    }
+    &.has-tabbar .app-mobile-navbar + .app-content{
+      .calc('height', ~"calc(100% - 10em)") !important;
     }
   }
 }

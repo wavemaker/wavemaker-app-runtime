@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$rootScope', '$templateCache', function ($rootScope, $templateCache) {
         'use strict';
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentedcontrol.html',
-            '<div class="app-segmented-control {{class}}" data-ng-class="{\'animate\' : animate}" init-widget data-ng-show="show" ' + $rootScope.getWidgetStyles("shell") + '>' +
+            '<div class="app-segmented-control {{class}}" data-ng-class="{\'animate\' : animate}" init-widget data-ng-show="show" '  + $rootScope.getWidgetStyles('container') + '>' +
                 '<div class="btn-group btn-group-justified">' +
                     '<a class="btn btn-default" data-ng-repeat="content in contents" data-ng-class="{\'active\' : content.show}" data-ng-click=" $event.stopPropagation(); showContent($index);">' +
                        '<i class="app-icon" data-ng-class="content.iconclass"></i> {{content.caption}}' +
@@ -14,7 +14,7 @@ WM.module('wm.layouts.containers')
                        '<i class="glyphicon glyphicon-plus"></i> Add' +
                     '</a>' +
                 '</div>' +
-                '<div class="app-segmented-control-container"'  + $rootScope.getWidgetStyles('container') + ' wmtransclude></div>' +
+                '<div class="app-segmented-control-container" wmtransclude></div>' +
             '</div>');
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentedcontrolcontent.html',
                 '<div init-widget wmtransclude data-ng-class="[\'app-segmented-control-content\', class, slide, {\'active\' : show}]" ' +

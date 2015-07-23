@@ -3,13 +3,16 @@
 *********************************************************************************/
 .app-segmented-control{
   position: relative;
+  height: 100%;
   .app-segmented-control-container {
     position: relative;
     overflow-x: hidden;
+    .calc('height', ~"calc(100% - 40px)");
     .app-segmented-control-content{
       height: 100%;
       width: 100%;
       position: absolute;
+      overflow: hidden;
       top: 0;
       &.left {
         left: -100%;
@@ -19,6 +22,7 @@
       }
       &.active{
         left: 0;
+        overflow: auto;
       }
     }
   }

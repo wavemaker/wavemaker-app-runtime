@@ -8,7 +8,7 @@ WM.module('wm.layouts.containers')
                             '<header init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show"' + $rootScope.getWidgetStyles() + '>' +
                                 '<nav class="navbar">' +
                                 '<div class="col-xs-4">' +
-                                    '<ul class="nav navbar-nav">' +
+                                    '<ul class="nav navbar-nav navbar-left">' +
                                         '<li data-ng-if="leftNavPanel != undefined" >' +
                                             '<a type="button" data-ng-click="leftNavPanel.toggle();">'+
                                                 '<i data-ng-class="leftnavpaneliconclass"></i>'+
@@ -30,7 +30,7 @@ WM.module('wm.layouts.containers')
                                 '</div>' +
                                 '</nav>' +
                             '</header>');
-    }]).directive('wmMobileNavbar', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, $window) {
+    }]).directive('wmMobileNavbar', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$window', 'CONSTANTS', function ($templateCache, PropertiesFactory, WidgetUtilService, $window, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mobile.navbar', ['wm.layouts']);
         return {
@@ -46,10 +46,12 @@ WM.module('wm.layouts.containers')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
-                        scope.goBack = function () {
-                            $window.history.go(-1);
-                        };
                         scope.leftNavPanel = WM.element(element.closest('.app-page').find('.app-left-panel:first')).isolateScope();
+                        if (CONSTANTS.isRunMode) {
+                            scope.goBack = function () {
+                                $window.history.go(-1);
+                            };
+                        }
                         /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
                          * style declarations.*/
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);

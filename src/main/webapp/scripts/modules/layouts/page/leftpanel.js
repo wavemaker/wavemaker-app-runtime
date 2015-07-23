@@ -100,6 +100,7 @@ WM.module('wm.layouts.page')
                             appPage.off(eventName);
                             if (scope.animation === 'slide-in') {
                                 appPage.removeClass('slide-left');
+                                //Remove the container class after the animation completion.
                                 $timeout(function () {
                                     appPage.removeClass('slide-in-left-panel-container');
                                 }, 600)

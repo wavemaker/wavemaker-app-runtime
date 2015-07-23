@@ -151,7 +151,9 @@ WM.module('wm.layouts.page')
                     },
                     'post': function (scope, element, attrs) {
                         element.addClass('layout-' + attrs.layouttype);
-
+                        if (element.find('>.app-tabbar').length > 0){
+                            element.addClass('has-tabbar');
+                        }
                         var handlers = [];
                         //check if the view is run mode then initialize the mobile behavior
                         if (CONSTANTS.isRunMode) {
@@ -161,9 +163,6 @@ WM.module('wm.layouts.page')
                                 Variables.unload(attrs.ngController.replace('PageController', ''), scope);
                                 handlers.forEach(Utils.triggerFn);
                             });
-                        }
-                        if (CONSTANTS.isStudioMode && $rootScope.isMobileType) {
-                            element.addClass('mobile-app-page');
                         }
                     }
                 };
