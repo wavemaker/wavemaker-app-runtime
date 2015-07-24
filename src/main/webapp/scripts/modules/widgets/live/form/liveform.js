@@ -92,7 +92,7 @@ WM.module('wm.widgets.live')
                         }
 
                     };
-
+                $scope.prevDataValues = {};
                 /*Function to check whether the key is a composite key or not.*/
                 $scope.isCompositeKey = function () {
                     return !$scope.primaryKey || ($scope.primaryKey && (!$scope.primaryKey.length || $scope.primaryKey.length > 1));
@@ -291,6 +291,25 @@ WM.module('wm.widgets.live')
                     }
                     $scope.$emit("on-cancel");
                 };
+                /*Method to save the previous data values. This will be used on form reset*/
+                $scope.setPrevDataValues = function () {
+                    if ($scope.dataArray) {
+                        $scope.prevDataValues = $scope.dataArray.map(function (obj) {
+                            return {'key': obj.key, 'value': obj.value};
+                        });
+                    }
+                };
+                /*Method to reset the form to original state*/
+                $scope.formReset = function () {
+                    if (WM.isArray($scope.dataArray)) {
+                        $scope.dataArray.forEach(function (dataValue) {
+                            var prevObj = _.find($scope.prevDataValues, function (obj) {
+                                return obj.key === dataValue.key;
+                            });
+                            dataValue.value = prevObj ? prevObj.value : undefined;
+                        });
+                    }
+                };
                 /*clear the dataArray*/
                 function emptyDataModel() {
                     $scope.dataArray.forEach(function (dataValue) {
@@ -328,6 +347,7 @@ WM.module('wm.widgets.live')
                         emptyDataModel();
                     }
                     $scope.setDefaults();
+                    $scope.setPrevDataValues();
                     $scope.isUpdateMode = true;
                     $scope.operationType = "insert";
                 };
@@ -359,6 +379,7 @@ WM.module('wm.widgets.live')
                     if (fieldObj.primaryKey && fieldObj.generator === "assigned") {
                         fieldObj.readonly = false;
                     }
+                    $scope.setPrevDataValues();
                 };
                 $scope.setReadonlyFields = function () {
                     $scope.dataArray.forEach(function (column) {
@@ -526,6 +547,7 @@ WM.module('wm.widgets.live')
                             value.value = dataObj[value.key];
                         }
                     });
+                    $scope.setPrevDataValues();
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
@@ -681,27 +703,9 @@ WM.module('wm.widgets.live')
                                         }
                                     } else {
                                         /*Defining two buttons for default actions*/
-                                        scope.buttonArray = [
-                                            {
-                                                key : 'cancel',
-                                                class: 'form-cancel btn-secondary',
-                                                iconclass: 'glyphicon glyphicon-remove-circle',
-                                                action: 'formCancel()',
-                                                displayName: 'cancel',
-                                                show: true,
-                                                type: 'button',
-                                                updateMode: true
-                                            },
-                                            {
-                                                key : 'save',
-                                                class: 'form-save btn-success',
-                                                iconclass: 'glyphicon glyphicon-save',
-                                                action: '',
-                                                displayName: 'save',
-                                                show: true,
-                                                type: 'submit',
-                                                updateMode: true
-                                            }];
+                                        scope.buttonArray = LiveWidgetUtils.getFormButtons().filter(function (button) {
+                                            return button.key === 'cancel' || button.key === 'save';
+                                        });
                                         variableObj = elScope.Variables && elScope.Variables[scope.variableName];
                                         scope.variableObj = variableObj;
                                         if (variableObj) {
@@ -1227,6 +1231,9 @@ WM.module('wm.widgets.live')
                         scope.options = columnDef;
                         parentIsolateScope.dataArray = parentIsolateScope.dataArray || [];
                         index = parentIsolateScope.dataArray.push(columnDef) - 1;
+                        if (scope.isLayoutDialog) {
+                            parentIsolateScope.setPrevDataValues();
+                        }
                         parentIsolateScope.formCreated = true;
                         parentIsolateScope.formFieldCompiled = true;
 
