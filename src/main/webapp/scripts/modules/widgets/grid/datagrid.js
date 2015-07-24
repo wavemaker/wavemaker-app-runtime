@@ -1101,6 +1101,10 @@ $.widget('wm.datagrid', {
                             fields = colDef.field.split('.'),
                             $ie = $el.find('input'),
                             text = self._getValue($ie, fields);
+                        /* TODO: to remove this once, edit mode configuration is taken from the column-def */
+                        if (colDef.type === 'timestamp') {
+                            text = parseInt(text) || text;
+                        }
                         if (fields.length === 1) {
                             rowData[colDef.field] = text;
                         } else if (!isNewRow && fields[0] in rowData) {
