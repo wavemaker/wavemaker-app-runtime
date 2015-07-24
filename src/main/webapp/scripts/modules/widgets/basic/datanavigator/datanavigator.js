@@ -139,7 +139,7 @@ WM.module("wm.widgets.basic")
                         }
 
                         /*Check for number of elements in the data set*/
-                        if (newVal && newVal.numberOfElements > 0) {
+                        if (newVal) {
                             if ($scope.isVariableHasPaging()) {
                                 /*If "filterFields" and "sortOptions" have been set, then set them so that the filters can be retained while fetching data upon page navigation.*/
                                 $scope.filterFields = newVal.filterFields || {};
@@ -149,7 +149,11 @@ WM.module("wm.widgets.basic")
                                     $scope.checkDataSize(dataSize);
 
                                     maxResults = newVal.size;
-                                    currentPage = $scope.currentPage || 1;
+                                    if (newVal.numberOfElements > 0) {
+                                        currentPage = $scope.currentPage || 1;
+                                    } else {
+                                        currentPage = 1;
+                                    }
                                     /* Sending pageCount undefined to calculate it again for query.*/
                                     $scope.setDefaultPagingValues(dataSize, maxResults, currentPage, pageCount);
                                     $scope.disableNavigation();
