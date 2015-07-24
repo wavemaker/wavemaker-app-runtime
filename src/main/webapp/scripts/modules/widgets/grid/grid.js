@@ -239,6 +239,8 @@ WM.module('wm.widgets.grid')
                         scope.datagridElement = element.find('.app-datagrid');
                         var handlers = [], gridController;
 
+                        scope.isPartOfLiveGrid = element.closest('.app-livegrid').length > 0;
+
                         scope.$on('$destroy', function () {
                             handlers.forEach(Utils.triggerFn);
                             Utils.triggerFn(scope.toggleVariableStateHandler);
@@ -1465,7 +1467,19 @@ WM.module('wm.widgets.grid')
                     if (!($scope.binddataset && isBoundToServiceVariable) && !isBoundToView()) {
                         $scope.widgetProps.readonlygrid.disabled = false;
                     } else {
-                        $rootScope.$emit('update-widget-property', 'readonlygrid', true);
+                        if ($scope.isPartOfLiveGrid) {
+                            $scope.insertrow = false;
+                            $scope.updaterow = false;
+                            $scope.deleterow = false;
+                            $rootScope.$emit('set-markup-attr', $scope.widgetid, {
+                                'readonlygrid': true,
+                                'insertrow': $scope.insertrow,
+                                'updaterow': $scope.updaterow,
+                                'deleterow': $scope.deleterow
+                            });
+                        } else {
+                            $rootScope.$emit('update-widget-property', 'readonlygrid', true);
+                        }
                         $scope.widgetProps.readonlygrid.disabled = true;
                     }
                     /* If bound to live filter result, disable grid search. */
