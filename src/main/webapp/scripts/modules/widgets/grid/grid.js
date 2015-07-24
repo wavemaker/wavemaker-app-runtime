@@ -1177,9 +1177,9 @@ WM.module('wm.widgets.grid')
                             return;
                         }
                         /*Register a watch on the "result" property of the "dataNavigator" so that the paginated data is displayed in the live-list.*/
-                        navigatorResultWatch = $scope.dataNavigator.$watch('result', function (newVal, oldVal) {
+                        navigatorResultWatch = $scope.dataNavigator.$watch('result', function (newVal) {
                             /* Check for sanity. */
-                            if (WM.isDefined(newVal) && !WM.equals(newVal, oldVal)) {
+                            if (WM.isDefined(newVal)) {
                                 $scope.watchVariableDataSet(newVal, $scope.gridElement);
                             }
                         });
