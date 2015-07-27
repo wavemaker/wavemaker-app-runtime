@@ -88,12 +88,16 @@ WM.module("wm.widgets.basic")
                      * 1. Hide the "Total Record Count".
                      * 2. Disable the "GoToLastPage" link as the page number of the last page is not known.*/
                     if (dataSize === -1) {
-                        $scope.showrecordcount = false;
+                        /*
+                         * TODO: to remove the 'prevshowrecordcount' and handle the dataSize = -1 case
+                         */
+                        $scope.prevshowrecordcount = $scope.showrecordcount;
                         $scope.isDisableLast = true;
                         $scope.isDisableCount = true;
+                        $scope.showrecordcount = false;
                     } else {
                         $scope.isDisableCount = false;
-                        $scope.showrecordcount = true;
+                        $scope.showrecordcount = $scope.prevshowrecordcount || $scope.showrecordcount;
                     }
                 };
 
