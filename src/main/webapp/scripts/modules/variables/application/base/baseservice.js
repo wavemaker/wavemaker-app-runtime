@@ -633,7 +633,10 @@ wm.variables.services.Variables = [
 
             /*function to return a variable object respective to a name*/
             getVariableByName = function (variableName, scope) {
-                var variables = self.variableCollection;
+                var variables = self.variableCollection,
+                    scopes,
+                    i,
+                    n;
 
                 /* if scope provided, return the variable in that scope */
                 if (scope) {
@@ -649,6 +652,13 @@ wm.variables.services.Variables = [
                     scope = pageScopeMap[VARIABLE_CONSTANTS.OWNER.APP];
                     if (scope && variables[scope.$id][variableName]) {
                         return variables[scope.$id][variableName];
+                    }
+                    /* case of searching a partial's variable, partial being loaded in a page */
+                    for (i = 0, scopes = Object.keys(variables), n = scopes.length; i < n; i += 1) {
+                        scope = scopes[i];
+                        if (variables[scopes[i]][variableName]) {
+                            return variables[scopes[i]][variableName];
+                        }
                     }
                 }
 
