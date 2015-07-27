@@ -180,33 +180,31 @@ wm.variables.services.$servicevariable = ['Variables',
                 /* loop through all the parameters */
                 WM.forEach(operationInfo.parameters, function (param) {
                     var paramValue = param.sampleValue;
-                    switch (param.parameterType) {
-                    case 'QUERY':
-                    case 'AUTH':
-                        if (!queryParams) {
-                            if (paramValue) {
+                    if (WM.isDefined(paramValue) && paramValue !== '') {
+                        switch (param.parameterType) {
+                        case 'QUERY':
+                        case 'AUTH':
+                            if (!queryParams) {
                                 queryParams = "?" + param.name + "=" + encodeURIComponent(paramValue);
-                            }
-                        } else {
-                            if (paramValue) {
+                            } else {
                                 queryParams += "&" + param.name + "=" + encodeURIComponent(paramValue);
                             }
+                            break;
+                        case 'PATH':
+                            /* replacing the path param based on the regular expression in the relative path */
+                            pathParamRex = new RegExp("\\s*\\{\\s*" + param.name + "(:\\.\\+)?\\s*\\}\\s*");
+                            endPointRelativePath = endPointRelativePath.replace(pathParamRex, paramValue);
+                            break;
+                        case 'HEADER':
+                            headers[param.name] = paramValue;
+                            break;
+                        case 'BODY':
+                            requestBody = paramValue;
+                            break;
+                        case 'FORM':
+                            /* to be handled*/
+                            break;
                         }
-                        break;
-                    case 'PATH':
-                        /* replacing the path param based on the regular expression in the relative path */
-                        pathParamRex = new RegExp("\\s*\\{\\s*" + param.name + "(:\\.\\+)?\\s*\\}\\s*");
-                        endPointRelativePath = endPointRelativePath.replace(pathParamRex, paramValue);
-                        break;
-                    case 'HEADER':
-                        headers[param.name] = paramValue;
-                        break;
-                    case 'BODY':
-                        requestBody = paramValue;
-                        break;
-                    case 'FORM':
-                        /* to be handled*/
-                        break;
                     }
                 });
 
@@ -258,6 +256,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (serviceType === SERVICE_TYPE_DATA) {
                     /* loop over the parameters required for the variable and push them request dataParams */
                     WM.forEach(variable.dataBinding, function (paramValue, paramName) {
+                        paramValue = WM.isDefined(paramValue) ? paramValue : '';
                         requestParams += paramName + "=" + encodeURIComponent(paramValue) + "&";
                     });
                     requestParams = requestParams.slice(0, -1);
