@@ -1956,17 +1956,15 @@ WM.module('wm.widgets.base', [])
 
             function overrideEventHandlers(iScope, scope, element, attrs) {
 
-                var overrideFlg,
-                    getParentMethod,
-                    fn,
-                    eleParent;
-
                 Object.keys(iScope.widgetProps)
                     .filter(function (key) {
                         return iScope.widgetProps[key].type === 'event';
                     })
                     .forEach(function (evt) {
-                        overrideFlg = false;
+                        var overrideFlg = false,
+                            fn,
+                            getParentMethod,
+                            eleParent;
                         if (!attrs[evt]) {
                             return;
                         }

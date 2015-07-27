@@ -232,7 +232,7 @@ WM.module('wm.prefabs')
                                                 if (subParts.length === 2) { // check if it is related to dialogs placed inside prefab
                                                     dialogId = subParts[0];
                                                     if (subParts[1] === 'show') { // handle dialog related events
-                                                        DialogService.showDialog(dialogId);
+                                                        DialogService.showDialog(dialogId, {'scope': iScope.ctrlScope});
                                                     } else if (subParts[1] === 'hide') {
                                                         DialogService.hideDialog(dialogId);
                                                     }
