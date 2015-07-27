@@ -79,11 +79,10 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             if (userRoles.length > 0) {
                 String role = userRoles[0];
                 RoleConfig roleConfig = roleMap.get(role);
-                if (roleConfig != null) {
-                    String landingPage = roleConfig.getLandingPage();
-                    if (org.apache.commons.lang3.StringUtils.isNotBlank(landingPage)) {
-                        redirectURL += "/index.html" + LAND_PAGE_PREPEND + landingPage;
-                    }
+                if (roleConfig != null && org.apache.commons.lang3.StringUtils.isNotBlank(roleConfig.getLandingPage())) {
+                    redirectURL += "/index.html" + LAND_PAGE_PREPEND + roleConfig.getLandingPage();
+                } else {
+                    redirectURL += "/index.html" + LAND_PAGE_PREPEND + "Main";//Redirecting to Main Page if no config available for the role or landingPage is blank
                 }
             }
 
