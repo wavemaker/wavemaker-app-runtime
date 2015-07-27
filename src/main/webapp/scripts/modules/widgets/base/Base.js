@@ -1934,7 +1934,8 @@ WM.module('wm.widgets.base', [])
 
                 if (parts.length === 2) {
                     if (parts[1] === 'show') {
-                        DialogService.showDialog(parts[0]);
+                        // Pass the scope of the controller. if the controller scope is not found, dialog will be compiled with the rootScope.
+                        DialogService.showDialog(parts[0], {scope: scope.ctrlScope || scope});
                         return;
                     }
                     if (parts[1] === 'hide') {
