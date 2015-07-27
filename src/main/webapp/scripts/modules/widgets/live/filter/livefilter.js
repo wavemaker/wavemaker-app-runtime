@@ -47,6 +47,27 @@ WM.module('wm.widgets.live')
                 controller: function ($scope) {
                     $scope.dateTimeFormats = Utils.getDateTimeDefaultFormats();
                     $scope.isDateTime = Utils.getDateTimeTypes();
+                    $scope.getWidgetType = function (type) {
+                        var widgetType;
+                        switch (type) {
+                        case "date":
+                            widgetType = "date";
+                            break;
+                        case "time":
+                            widgetType = "time";
+                            break;
+                        case "datetime":
+                            widgetType = "datetime";
+                            break;
+                        case "boolean":
+                            widgetType = "checkbox";
+                            break;
+                        default:
+                            widgetType = "text";
+                            break;
+                        }
+                        return widgetType;
+                    };
                     $scope.__compileWithIScope = true;
                     $scope.clearFilter = function () {
                         WM.forEach($scope.filterFields, function (filterField) {
@@ -216,34 +237,13 @@ WM.module('wm.widgets.live')
                             colDefArray = [],
                             column,
                             numColumns = Math.min(columnObj.length, 5),
-                            index,
-                            getWidgetType = function (type) {
-                                var widgetType;
-                                switch (type) {
-                                case "date":
-                                    widgetType = "date";
-                                    break;
-                                case "time":
-                                    widgetType = "time";
-                                    break;
-                                case "datetime":
-                                    widgetType = "datetime";
-                                    break;
-                                case "boolean":
-                                    widgetType = "checkbox";
-                                    break;
-                                default:
-                                    widgetType = "text";
-                                    break;
-                                }
-                                return widgetType;
-                            };
+                            index;
                         for (index = 0; index < numColumns; index++) {
                             column = columnObj[index];
                             colDef = {};
                             colDef.field = column.fieldName;
                             colDef.displayName = Utils.prettifyLabel(column.fieldName);
-                            colDef.widget = getWidgetType(column.type);
+                            colDef.widget = $scope.getWidgetType(column.type);
                             colDef.isRange = false;
                             colDef.filterOn = column.fieldName;
                             colDef.lookupType = '';
@@ -413,13 +413,19 @@ WM.module('wm.widgets.live')
                                             /*transform the data to filter consumable data*/
                                             fieldsObj = scope.constructDefaultData(newVal);
                                             /*Set the type of the column to the default variable type*/
-                                            if (scope.filterFields && fieldsObj) {
+                                            if (scope.filterFields && newVal && newVal.propertiesMap) {
                                                 scope.filterFields.forEach(function (filterField) {
-                                                    fieldsObj.forEach(function (fieldsObj) {
-                                                        if (fieldsObj.field === filterField.field) {
-                                                            filterField.type = fieldsObj.type;
-                                                        }
+                                                    var filterObj = _.find(newVal.propertiesMap.columns, function (obj) {
+                                                        return obj.fieldName === filterField.field;
                                                     });
+                                                    if (filterObj) {
+                                                        filterField.type = filterObj.type;
+                                                        /*For backward compatibility of datetime column types, set widget to datetime*/
+                                                        if (CONSTANTS.isStudioMode && filterField.type === 'datetime' && (!filterField.widget || filterField.widget === 'text')) {
+                                                            filterField.widget = scope.getWidgetType(filterField.type);
+                                                            scope.$root.$emit("set-markup-attr", scope.widgetid, {'type': filterField.type, 'widget': filterField.widget}, 'wm-filter-field[field=' + filterField.field + ']');
+                                                        }
+                                                    }
                                                 });
                                             }
                                             buttonsObj = defaultButtonsArray;
