@@ -354,7 +354,7 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                         "menuclass": {"type": "string", "pattern": classRegex},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
-                        "dropposition": {"type": "list", "options": ["down", "up"], "value": "down"},
+                        "menuposition": {"type": "list", "options": ["down,right", "down,left", "up,right", "up,left", "inline"], "value": "down,right"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.tree": {
@@ -1536,7 +1536,7 @@ WM.module('wm.widgets.base', [])
                         "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link",
                         "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "deletemessage", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "captions", "showxaxis", "showyaxis", "showvalues",
                          "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                          "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel"], "parent": "properties"},
+                          "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition"], "parent": "properties"},
                     {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                     {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                     {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
