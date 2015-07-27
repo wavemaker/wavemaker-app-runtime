@@ -78,8 +78,8 @@ WM.module('wm.widgets.live')
             controller: function ($scope, Variables) {
                 $scope.__compileWithIScope = true;
                 /* when the service call ended this function will be called */
-                /* prevDataArray is used for showing the previous data when cancel is clicked and also for update calls*/
-                var prevDataArray,
+                /* prevformFields is used for showing the previous data when cancel is clicked and also for update calls*/
+                var prevformFields,
                     prevDataObject = {},
                     onResult = function (data, status, event) {
                         /* whether service call success or failure call this method*/
@@ -161,12 +161,12 @@ WM.module('wm.widgets.live')
                         }
                     }
                     $scope.operationType = $scope.operationType || $scope.findOperationType();
-                    /*Construct the data object with required values from the dataArray*/
+                    /*Construct the data object with required values from the formFields*/
                     /*If it is an update call send isUpdate true for constructDataObject so the dataObject is
                     constructed out of the previous object*/
-                    data = $scope.constructDataObject($scope.dataArray);
+                    data = $scope.constructDataObject($scope.formFields);
                     $scope.dataoutput = data;
-                    prevData = prevDataArray ? $scope.constructDataObject(prevDataArray) : data;
+                    prevData = prevformFields ? $scope.constructDataObject(prevformFields) : data;
                     try {
                         isValid = $scope.onBeforeservicecall({$event: event, $operation: $scope.operationType, $data: data});
                         if (isValid === false) {
@@ -283,8 +283,8 @@ WM.module('wm.widgets.live')
                     }
                 };
                 /*Function to set the previous data array to be used while updating records in a live-form.*/
-                $scope.setPrevDataArray = function (dataArray) {
-                    prevDataArray = WM.copy(dataArray);
+                $scope.setPrevformFields = function (formFields) {
+                    prevformFields = WM.copy(formFields);
                     prevDataObject = WM.copy($scope.rowdata);
                 };
                 /*Method to clear the fields and set the form to readonly*/
@@ -292,22 +292,23 @@ WM.module('wm.widgets.live')
                     $scope.clearData();
                     /*Show the previous selected data*/
                     if ($scope.isSelected) {
-                        $scope.dataArray = WM.copy(prevDataArray) || $scope.dataArray;
+                        $scope.formFields = WM.copy(prevformFields) || $scope.formFields;
                     }
                     $scope.$emit("on-cancel");
                 };
+                /*clear the formFields*/
                 /*Method to save the previous data values. This will be used on form reset*/
                 $scope.setPrevDataValues = function () {
-                    if ($scope.dataArray) {
-                        $scope.prevDataValues = $scope.dataArray.map(function (obj) {
+                    if ($scope.formFields) {
+                        $scope.prevDataValues = $scope.formFields.map(function (obj) {
                             return {'key': obj.key, 'value': obj.value};
                         });
                     }
                 };
                 /*Method to reset the form to original state*/
                 $scope.reset = function () {
-                    if (WM.isArray($scope.dataArray)) {
-                        $scope.dataArray.forEach(function (dataValue) {
+                    if (WM.isArray($scope.formFields)) {
+                        $scope.formFields.forEach(function (dataValue) {
                             var prevObj = _.find($scope.prevDataValues, function (obj) {
                                 return obj.key === dataValue.key;
                             });
@@ -315,9 +316,9 @@ WM.module('wm.widgets.live')
                         });
                     }
                 };
-                /*clear the dataArray*/
+                /*clear the formFields*/
                 function emptyDataModel() {
-                    $scope.dataArray.forEach(function (dataValue) {
+                    $scope.formFields.forEach(function (dataValue) {
                         if (dataValue.type === 'blob') {
                             WM.element($scope.formElement).find('[name=' + dataValue.key + ']').val('');
                             dataValue.href = '';
@@ -327,12 +328,12 @@ WM.module('wm.widgets.live')
                 }
                 /*Method to update, sets the operationType to "update" disables the readonly*/
                 $scope.edit = function () {
-                    /*set the dataArray into the prevDataArray only in case of inline form
-                    * in case of dialog layout the set prevDataArray is called before manually clearing off the dataArray*/
+                    /*set the formFields into the prevformFields only in case of inline form
+                    * in case of dialog layout the set prevformFields is called before manually clearing off the formFields*/
 
                     if (!$scope.isLayoutDialog) {
                         if ($scope.isSelected) {
-                            prevDataArray = WM.copy($scope.dataArray);
+                            prevformFields = WM.copy($scope.formFields);
                         }
                         /*Set the rowdata to prevDataObject irrespective whether the row is selected
                          or not*/
@@ -346,9 +347,9 @@ WM.module('wm.widgets.live')
                  disables the readonly, and sets the operationType to "insert"*/
                 $scope.new = function () {
                     if ($scope.isSelected && !$scope.isLayoutDialog) {
-                        prevDataArray = WM.copy($scope.dataArray);
+                        prevformFields = WM.copy($scope.formFields);
                     }
-                    if ($scope.dataArray && $scope.dataArray.length > 0) {
+                    if ($scope.formFields && $scope.formFields.length > 0) {
                         emptyDataModel();
                     }
                     $scope.setDefaults();
@@ -364,7 +365,7 @@ WM.module('wm.widgets.live')
                 $scope.isDateTimeWidgets = Utils.getDateTimeTypes();
                /*Set if any default values, if given*/
                 $scope.setDefaults = function () {
-                    $scope.dataArray.forEach(function (fieldObj) {
+                    $scope.formFields.forEach(function (fieldObj) {
                         $scope.setDefaultValueToValue(fieldObj);
                     });
                 };
@@ -389,7 +390,7 @@ WM.module('wm.widgets.live')
                     $scope.setPrevDataValues();
                 };
                 $scope.setReadonlyFields = function () {
-                    $scope.dataArray.forEach(function (column) {
+                    $scope.formFields.forEach(function (column) {
                         if (column.primaryKey) {
                             column.readonly = true;
                         }
@@ -404,8 +405,8 @@ WM.module('wm.widgets.live')
                 $scope.isInReqdFormat = function (data) {
                     return (WM.isArray(data) && data[0].key && data[0].type);
                 };
-                /*construct the data object from the dataArray*/
-                $scope.constructDataObject = function (dataArray) {
+                /*construct the data object from the formFields*/
+                $scope.constructDataObject = function (formFields) {
                     var dataObject = ($scope.operationType === 'update') ? WM.copy(Utils.isEmptyObject(prevDataObject) ? $scope.formdata : prevDataObject) : {},
                         formName = $scope.name,
                         isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
@@ -415,7 +416,7 @@ WM.module('wm.widgets.live')
                         /* Angular does not bind file values so using native object to send files */
                         formData = new FormData();
                     }
-                    dataArray.forEach(function (field) {
+                    formFields.forEach(function (field) {
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
                         if (((field.widgetType && $scope.isDateTimeWidgets[field.widgetType.toLowerCase()]) || $scope.isDateTimeWidgets[field.type])) {
@@ -465,7 +466,7 @@ WM.module('wm.widgets.live')
 
                 /*Clear the fields in the array*/
                 $scope.clearData = function () {
-                    if ($scope.dataArray && $scope.dataArray.length > 0) {
+                    if ($scope.formFields && $scope.formFields.length > 0) {
                         emptyDataModel();
                     }
                 };
@@ -501,7 +502,7 @@ WM.module('wm.widgets.live')
                     }
                 };
 
-                /*Translate the variable rawObject into the dataArray for form construction*/
+                /*Translate the variable rawObject into the formFields for form construction*/
                 $scope.translateVariableObject = function (rawObject) {
                     $scope.propertiesMap = rawObject.propertiesMap;
                     $scope.columnArray = $scope.propertiesMap.columns;
@@ -542,7 +543,7 @@ WM.module('wm.widgets.live')
                 $scope.changeDataObject = function (dataObj) {
                     var primaryKey,
                         href;
-                    $scope.dataArray.forEach(function (value) {
+                    $scope.formFields.forEach(function (value) {
                         if (isTimeType(value)) {
                             value.value = getValidTime(dataObj[value.key]);
                         } else if (value.type === "blob") {
@@ -671,7 +672,7 @@ WM.module('wm.widgets.live')
                         function getNonEmptyDatSetGridObj() {
                             return {
                                 widgetName: scope.name,
-                                fieldDefs: scope.dataArray,
+                                fieldDefs: scope.formFields,
                                 buttonDefs: scope.buttonArray,
                                 scopeId: scope.$id,
                                 numColumns: scope.getActiveLayout()
@@ -701,11 +702,11 @@ WM.module('wm.widgets.live')
                                     }
                                     scope.variableName = tempVarName;
                                     /*Check if form has been created, if true translate the variable object.*/
-                                    if ((scope.formCreated || scope.formConstructed) && scope.dataArray) {
+                                    if ((scope.formCreated || scope.formConstructed) && scope.formFields) {
                                         translatedObj = scope.translateVariableObject(newVal);
                                         scope.translatedObj = translatedObj;
-                                        /*Check if the dataArray is defined, then in the dataArray array override only certain fields.*/
-                                        scope.dataArray.forEach(function (fieldObject) {
+                                        /*Check if the formFields is defined, then in the formFields array override only certain fields.*/
+                                        scope.formFields.forEach(function (fieldObject) {
                                             translatedObj.forEach(function (transObj) {
                                                 if (transObj.key === fieldObject.key) {
                                                     fieldObject.isRelated = transObj.isRelated;
@@ -741,7 +742,7 @@ WM.module('wm.widgets.live')
                                             translatedObj = scope.translateVariableObject(newVal);
                                         }
                                         scope.translatedObj = translatedObj;
-                                        scope.dataArray = translatedObj;
+                                        scope.formFields = translatedObj;
                                     }
                                     gridObj = getNonEmptyDatSetGridObj();
                                     if (CONSTANTS.isRunMode) {
@@ -835,7 +836,7 @@ WM.module('wm.widgets.live')
                             handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup, newVal, fromDesigner) {
                                 /* as multiple form directives will be listening to the event, apply field-definitions only for current form */
                                 if (scope.$id === scopeId) {
-                                    scope.dataArray = undefined;
+                                    scope.formFields = undefined;
                                     scope.buttonArray = undefined;
                                     element.find('.form-elements').empty();
                                     element.find('.basic-btn-grp').empty();
@@ -877,251 +878,8 @@ WM.module('wm.widgets.live')
             }
         };
     }])
-    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "Variables", "BindingManager", function (Utils, $compile, CONSTANTS, Variables, BindingManager) {
+    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "Variables", "BindingManager", "LiveWidgetUtils", function (Utils, $compile, CONSTANTS, Variables, BindingManager, LiveWidgetUtils) {
         'use strict';
-
-        /* provides the template based on the form-field definition */
-        var getTemplate = function (fieldDef, index) {
-            var template = '',
-                step,
-                fieldTypeWidgetTypeMap = Utils.getFieldTypeWidgetTypesMap();
-            /*Set "Readonly field" placeholder for fields which are readonly and contain generated values if the user has not given any placeholder*/
-            if (fieldDef.readonly && fieldDef.generator === "identity") {
-                fieldDef.placeholder = fieldDef.placeholder || '';
-            }
-            /*Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap*/
-            switch (fieldDef.widgetType || fieldTypeWidgetTypeMap[fieldDef.type][0]) {
-            case "Number":
-                if (fieldDef.type === 'float' || fieldDef.type === 'double') {
-                    step = 0.01;
-                } else if (fieldDef.type === 'double') {
-                    step = 0.001;
-                } else {
-                    step = 1;
-                }
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
-                template = template +
-                    '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" show="{{isUpdateMode}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}"  type="number" step="' + step + '"';
-                if (fieldDef.maxvalue) {
-                    template = template + ' minvalue="{{dataArray[' + index + '].minvalue}}"';
-                }
-                if (fieldDef.minvalue) {
-                    template = template + ' maxvalue="{{dataArray[' + index + '].maxvalue}}"';
-                }
-                template = template + '></wm-text></div></wm-composite>';
-                break;
-            case "Rating":
-                template = template +
-                    '<wm-composite widget="rating" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                        '<wm-rating name="{{dataArray[' + index + '].key}}" readonly="{{!isUpdateMode}}" scopedatavalue="dataArray[' + index + '].value" maxvalue="{{dataArray[' + index + '].maxvalue}}"';
-                if (fieldDef.maxvalue) {
-                    template = template + ' maxvalue="{{dataArray[' + index + '].maxvalue}}"';
-                }
-                template = template + '></wm-rating></div></wm-composite>';
-                break;
-            case "Date":
-                fieldDef.placeholder = fieldDef.placeholder || 'Select date';
-                template = template +
-                    '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:dataArray[' + index + '].datepattern}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-date name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}" mindate="{{dataArray[' + index + '].minvalue}}" maxdate="{{dataArray[' + index + '].maxvalue}}"';
-                if (fieldDef.datepattern) {
-                    template = template + ' datepattern="{{dataArray[' + index + '].datepattern}}"';
-                }
-                template = template + '></wm-date></div></wm-composite>';
-                break;
-            case "Checkbox":
-                template = template +
-                    '<wm-composite widget="checkbox" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-checkbox name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-checkbox>' +
-                        '</div>' +
-                    '</wm-composite>';
-                break;
-            case "Select":
-                fieldDef.placeholder = fieldDef.placeholder || 'Select value';
-                template = template +
-                    '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9">' +
-                    '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].isRelated ? getDisplayExpr(dataArray[' + index + '].value, dataArray[' + index + '].displayvalue || dataArray[' + index + '].displayfield) : dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-select name="{{dataArray[' + index + '].key}}" placeholder="{{dataArray[' + index + '].placeholder}}"  required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" datafield="{{dataArray[' + index + '].datafield}}" displayfield="{{dataArray[' + index + '].displayfield}}"';
-                template = fieldDef.displayvalue ? template + 'displayexpression="{{dataArray[' + index + '].displayvalue}}"' : template;
-                template = fieldDef.multiple ? template + 'multiple="{{dataArray[' + index + '].multiple}}"' : template;
-                template = template + '></wm-select></div></wm-composite>';
-                break;
-            case "Checkboxset":
-                template = template +
-                    '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9">' +
-                    '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-checkboxset name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" datafield="{{dataArray[' + index + '].datafield}}" displayfield="{{dataArray[' + index + '].displayfield}}" dataset=""';
-                template = fieldDef.displayvalue ? template + 'displayexpression="{{dataArray[' + index + '].displayvalue}}"' : template;
-                template = template + '></wm-checkboxset></div></wm-composite>';
-                break;
-            case "Radioset":
-                template = template +
-                    '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9">' +
-                    '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                    '<wm-radioset name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedataset="dataArray[' + index + '].dataset" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" datafield="{{dataArray[' + index + '].datafield}}" displayfield="{{dataArray[' + index + '].displayfield}}" dataset=""';
-                template = fieldDef.displayvalue ? template + 'displayexpression="{{dataArray[' + index + '].displayvalue}}"' : template;
-                template = template + '></wm-radioset></div></wm-composite>';
-                break;
-            case "Datalist":
-                template = template +
-                    '<wm-composite widget="select" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}""{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value[dataArray[' + index + '].selected]}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<datalist data-ng-show="isUpdateMode" id="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}">' +
-                                '<option data-ng-repeat="(key, value) in dataArray[' + index + '].value">{{value}}</option>' +
-                            '</datalist>' +
-                            '<input class="form-control app-textbox" data-ng-show="isUpdateMode" list="{{dataArray[' + index + '].key}}"' +
-                                'type="text" data-ng-model="dataArray[' + index + '].selected"/>' +
-                        '</div>' +
-                    '</wm-composite>';
-                break;
-            case "Text":
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
-                template = template +
-                    '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"';
-                if (fieldDef.maxvalue && fieldDef.maxvalue !== 'null' && fieldDef.maxvalue !== 'undefined') {
-                    template = template + ' maxchars="{{dataArray[' + index + '].maxvalue}}">';
-                }
-                template = template + '></wm-text></div></wm-composite>';
-                break;
-            case "Password":
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
-                template = template +
-                    '<wm-composite widget="password" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="********" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}" type="password"';
-                if (fieldDef.maxvalue && fieldDef.maxvalue !== 'null' && fieldDef.maxvalue !== 'undefined') {
-                    template = template + ' maxchars="{{dataArray[' + index + '].maxvalue}}"';
-                }
-                template = template + '></wm-text></div></wm-composite>';
-                break;
-            case "RichText":
-                template = template +
-                    '<wm-composite widget="richtext" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-richtexteditor name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}"></wm-richtexteditor>' +
-                        '</div>' +
-                    '</wm-composite>';
-                break;
-            case "Textarea":
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
-                template = template +
-                    '<wm-composite widget="textarea" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9"><wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-textarea name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" width="{{dataArray[' + index + '].width}}" height="{{dataArray[' + index + '].height}}" ' +
-                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}"show="{{isUpdateMode}}"';
-                if (fieldDef.maxvalue && fieldDef.maxvalue !== 'null' && fieldDef.maxvalue !== 'undefined') {
-                    template = template + ' maxchars="{{dataArray[' + index + '].maxvalue}}"';
-                }
-                template = template + '></wm-textarea></div></wm-composite>';
-                break;
-            case "Time":
-                fieldDef.placeholder = fieldDef.placeholder || 'Select time';
-                template = template +
-                    '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="form-time {{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'HH:mm:ss\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                                'regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}">' +
-                            '</wm-time>' +
-                        '</div>' +
-                    '</wm-composite>';
-                break;
-            case "Timestamp":
-            case "Datetime":
-                fieldDef.placeholder = fieldDef.placeholder || 'Select date time';
-                template = template +
-                    '<wm-composite widget="date" show="{{dataArray[' + index + '].show}}" class="form-timestamp {{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:dataArray[' + index + '].datepattern}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-datetime name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"  mindate="{{dataArray[' + index + '].minvalue}}" maxdate="{{dataArray[' + index + '].maxvalue}}"';
-                if (fieldDef.datepattern) {
-                    template = template + ' datepattern="{{dataArray[' + index + '].datepattern}}"';
-                }
-                template = template +
-                    '></wm-datetime></div>' +
-                    '</wm-composite>';
-                break;
-            case "Slider":
-                if (fieldDef.type === 'float' || fieldDef.type === 'double') {
-                    step = 0.01;
-                } else if (fieldDef.type === 'double') {
-                    step = 0.001;
-                } else {
-                    step = 1;
-                }
-                template = template +
-                    '<wm-composite widget="slider" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-slider name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" show="{{isUpdateMode}}" scopedatavalue="dataArray[' + index + '].value" step="' + step + '"';
-                if (fieldDef.minvalue) {
-                    template = template + ' minvalue="{{dataArray[' + index + '].minvalue}}"';
-                }
-                if (fieldDef.maxvalue) {
-                    template = template + ' maxvalue="{{dataArray[' + index + '].maxvalue}}"';
-                }
-                template = template + '></wm-slider></div></wm-composite>';
-                break;
-            case "Upload":
-                template = template +
-                    '<wm-composite widget="upload" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}"  hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label><div class="col-md-9 col-sm-9">';
-                if (fieldDef.filetype === 'image') {
-                    template = template + '<a class="col-md-9 col-sm-9 form-control-static" target="_blank" href="{{dataArray[' + index + '].href}}" data-ng-show="dataArray[' + index + '].value || dataArray[' + index + '].href"><img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" src="{{dataArray[' + index + '].href}}"/></a>';
-                } else {
-                    template = template + '<a class="col-md-9 col-sm-9 form-control-static" target="_blank" href="{{dataArray[' + index + '].href}}" data-ng-show="dataArray[' + index + '].value != null"><i class="wm-icon wm-icon24 glyphicon glyphicon-file"></i></a>';
-                }
-                template = template +  '<input data-ng-class="{\'form-control app-textbox\': true, \'file-readonly\': dataArray[' + index + '].readonly}" required="{{dataArray[' + index + '].required}}" type="file" name="{{dataArray[' + index + '].key}}" ng-required="{{dataArray[' + index + '].required}}" ng-readonly="{{dataArray[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="dataArray[' + index + '].value" accept="{{dataArray[' + index + '].permitted}}"/>' + '</div></wm-composite>';
-                break;
-            default:
-                template = template +
-                    '<wm-composite widget="text" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
-                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
-                        '<div class="col-md-9 col-sm-9">' +
-                            '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-text name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
-                                'title="{{dataArray[' + index + '].placeholder}}" regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" placeholder="{{dataArray[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-text>' +
-                        '</div>' +
-                    '</wm-composite>';
-                break;
-            }
-
-            return template;
-        };
-
         return {
             "restrict": 'E',
             "template": "",
@@ -1152,29 +910,18 @@ WM.module('wm.widgets.live')
                             parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         }
 
-                        columnDef = {
+                        columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                             'key': attrs.key || attrs.binding,
-                            'displayName': attrs.displayName || attrs.caption,
-                            'show': (attrs.show === "1" || attrs.show === "true"),
-                            'class': attrs.class || '',
-                            'type': attrs.type || 'string',
-                            'primaryKey': attrs.primaryKey === "true" || attrs.primaryKey === true,
-                            'generator': attrs.generator,
-                            'readonly': attrs.readonly === "true" || attrs.readonly === true,
-                            'required': attrs.required === "true" || attrs.required === true,
-                            'maxvalue': attrs.maxvalue,
-                            'datepattern': attrs.datepattern,
                             'outputformat': attrs.outputformat,
-                            'minvalue': attrs.minvalue,
                             'displayvalue': attrs.displayvalue,
-                            'placeholder': attrs.placeholder,
                             'regexp': attrs.regexp || ".*",
                             'datafield': attrs.datafield,
                             'displayfield': attrs.displayfield,
-                            'multiple': attrs.multiple === "true" || attrs.multiple === true,
                             'width' : attrs.width,
-                            'height': attrs.height
-                        };
+                            'height': attrs.height,
+                            'maxvalue' : attrs.maxvalue,
+                            'minvalue' : attrs.minvalue
+                        });
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
                         /*if the show property is set to false, set the required property to false (except for identity columns)
                          * This will prevent 'required field can not be focused' error*/
@@ -1189,8 +936,8 @@ WM.module('wm.widgets.live')
                                     columnDef.defaultValue = scope.$eval(expr);
                                 } else {
                                     exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
-                                        parentIsolateScope.dataArray[index].defaultValue = newVal;
-                                        parentIsolateScope.dataArray[index].selected = newVal;
+                                        parentIsolateScope.formFields[index].defaultValue = newVal;
+                                        parentIsolateScope.formFields[index].selected = newVal;
                                         if (parentIsolateScope.operationType !== 'update') {
                                             parentIsolateScope.setDefaultValueToValue(columnDef);
                                         }
@@ -1211,15 +958,15 @@ WM.module('wm.widgets.live')
                                     variable = parentIsolateScope.Variables[expr.split('.')[1]];
                                     if (WM.isObject(variable)) {
                                         if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
-                                            parentIsolateScope.dataArray[index].dataset = newVal.content;
+                                            parentIsolateScope.formFields[index].dataset = newVal.content;
                                         } else if (variable.category === "wm.LiveVariable") {
-                                            parentIsolateScope.dataArray[index].dataset = newVal.data;
+                                            parentIsolateScope.formFields[index].dataset = newVal.data;
                                         } else {
-                                            parentIsolateScope.dataArray[index].dataset = newVal;
+                                            parentIsolateScope.formFields[index].dataset = newVal;
                                         }
                                         /* fallback to set datafield to 'All Fields' for backward compatibility */
                                         if (!attrs.datafield) {
-                                            parentIsolateScope.dataArray[index].datafield = "All Fields";
+                                            parentIsolateScope.formFields[index].datafield = "All Fields";
                                         }
                                     }
                                 });
@@ -1233,18 +980,18 @@ WM.module('wm.widgets.live')
                             /*Watch on the bound variable. dataset will be set after variable is populated.*/
                             dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
                                 if (newVal) {
-                                    parentIsolateScope.dataArray[index].dataset = newVal.relatedData && newVal.relatedData[columnDef.key];
+                                    parentIsolateScope.formFields[index].dataset = newVal.relatedData && newVal.relatedData[columnDef.key];
                                     variableObj.type = columnDef.displayName;
                                     variableObj.isDefault = true;
                                     variableObj.category = 'wm.LiveVariable';
                                     variableData = Variables.filterByVariableKeys(variableObj, true);
                                     /*Search for the live variable with the table name*/
                                     if (variableData.length) {
-                                        parentIsolateScope.dataArray[index].displayfield = parentIsolateScope.getPrimaryKey(variableData[0].propertiesMap.columns);
-                                        parentIsolateScope.dataArray[index].datafield = "All Fields";
+                                        parentIsolateScope.formFields[index].displayfield = parentIsolateScope.getPrimaryKey(variableData[0].propertiesMap.columns);
+                                        parentIsolateScope.formFields[index].datafield = "All Fields";
                                     } else if (newVal.propertiesMap) {
-                                        parentIsolateScope.dataArray[index].displayfield = columnDef.relatedFieldName;
-                                        parentIsolateScope.dataArray[index].datafield = "All Fields";
+                                        parentIsolateScope.formFields[index].displayfield = columnDef.relatedFieldName;
+                                        parentIsolateScope.formFields[index].datafield = "All Fields";
                                     }
                                 }
                             });
@@ -1273,15 +1020,15 @@ WM.module('wm.widgets.live')
                         }
 
                         scope.options = columnDef;
-                        parentIsolateScope.dataArray = parentIsolateScope.dataArray || [];
-                        index = parentIsolateScope.dataArray.push(columnDef) - 1;
+                        parentIsolateScope.formFields = parentIsolateScope.formFields || [];
+                        index = parentIsolateScope.formFields.push(columnDef) - 1;
                         if (scope.isLayoutDialog) {
                             parentIsolateScope.setPrevDataValues();
                         }
                         parentIsolateScope.formCreated = true;
                         parentIsolateScope.formFieldCompiled = true;
 
-                        template = getTemplate(columnDef, index);
+                        template = LiveWidgetUtils.getTemplate(columnDef, index, "form");
                         element.html(template);
                         $compile(element.contents())(parentIsolateScope);
 

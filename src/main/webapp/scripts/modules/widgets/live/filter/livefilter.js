@@ -26,18 +26,18 @@ WM.module('wm.widgets.live')
             var widgetProps = PropertiesFactory.getPropertiesOf("wm.livefilter", ["wm.layouts", "wm.containers"]),
                 filterMarkup = '',
                 notifyFor;
-                if (CONSTANTS.isStudioMode) {
-                    notifyFor = {
-                        'dataset': true,
-                        'layout': true,
-                        'pagesize': true
-                    };
-                } else {
-                    notifyFor = {
-                        'dataset': true,
-                        'layout': true
-                    };
-                }
+            if (CONSTANTS.isStudioMode) {
+                notifyFor = {
+                    'dataset': true,
+                    'layout': true,
+                    'pagesize': true
+                };
+            } else {
+                notifyFor = {
+                    'dataset': true,
+                    'layout': true
+                };
+            }
 
             return {
                 restrict: 'E',
@@ -47,6 +47,7 @@ WM.module('wm.widgets.live')
                 controller: function ($scope) {
                     $scope.dateTimeFormats = Utils.getDateTimeDefaultFormats();
                     $scope.isDateTime = Utils.getDateTimeTypes();
+                    $scope.isUpdateMode = true;
                     $scope.getWidgetType = function (type) {
                         var widgetType;
                         switch (type) {
@@ -70,7 +71,7 @@ WM.module('wm.widgets.live')
                     };
                     $scope.__compileWithIScope = true;
                     $scope.clearFilter = function () {
-                        WM.forEach($scope.filterFields, function (filterField) {
+                        WM.forEach($scope.formFields, function (filterField) {
                             //Added check for range field
                             if (!filterField.readonly && filterField.show) {
                                 if (filterField.isRange) {
@@ -94,7 +95,7 @@ WM.module('wm.widgets.live')
                     };
 
                     $scope.filter = function (options) {
-                        var filterFields = [],
+                        var formFields = [],
                             query,
                             variable = $scope.Variables[$scope.variableName],
                             page = 1,
@@ -111,7 +112,7 @@ WM.module('wm.widgets.live')
                         orderBy = options.orderBy || "";
                         $scope.orderBy = options.orderBy;
                         orderBy = orderBy.split(",").join(" ");
-                        WM.forEach($scope.filterFields, function (filterField) {
+                        WM.forEach($scope.formFields, function (filterField) {
                             var fieldValue,
                                 noQuotes = false,
                                 minValue = filterField.minValue,
@@ -127,15 +128,15 @@ WM.module('wm.widgets.live')
                                     maxvalue = $filter('date')(maxvalue, $scope.dateTimeFormats[filterField.widget]);
                                 }
                                 if (minValue && maxvalue) {
-                                    filterFields.push({
+                                    formFields.push({
                                         clause: "('" + minValue + "'<=" + colName + " AND " + colName + "<='" + maxvalue + "')"
                                     });
                                 } else if (minValue) {
-                                    filterFields.push({
+                                    formFields.push({
                                         clause: "('" + minValue + "'<=" + colName + ")"
                                     });
                                 } else if (maxvalue) {
-                                    filterFields.push({
+                                    formFields.push({
                                         clause: "(" + colName + "<='" + maxvalue + "')"
                                     });
                                 }
@@ -186,7 +187,7 @@ WM.module('wm.widgets.live')
                                     break;
                                 }
                                 if (WM.isDefined(fieldValue) && fieldValue !== '' && fieldValue !== null) {
-                                    filterFields.push({
+                                    formFields.push({
                                         column: colName,
                                         value: fieldValue,
                                         noQuotes: noQuotes
@@ -197,7 +198,7 @@ WM.module('wm.widgets.live')
 
                         query = QueryBuilder.getQuery({
                             "tableName": $scope.result.propertiesMap.entityName,
-                            "filterFields": filterFields,
+                            "filterFields": formFields,
                             "orderby": orderBy
                         });
 
@@ -215,13 +216,13 @@ WM.module('wm.widgets.live')
                             var tempObj = {};
                             /*Set the response in "result" so that all widgets bound to "result" of the live-filter are updated.*/
                             $scope.result.data = data.content;
-                            /*Create an object as required by the filterFields for live-variable so that all further calls to getData take place properly.
+                            /*Create an object as required by the formFields for live-variable so that all further calls to getData take place properly.
                             * This is used by widgets such as dataNavigator.*/
-                            WM.forEach(filterFields, function (filterField) {
+                            WM.forEach(formFields, function (filterField) {
                                 tempObj[filterField.column] = {};
                                 tempObj[filterField.column]['value'] = filterField.value;
                             });
-                            $scope.result.filterFields = tempObj;
+                            $scope.result.formFields = tempObj;
                             /*Set the paging options also in the result so that it could be used by the dataNavigator.
                             * "currentPage" is set to "1" because each time the filter is applied, the dataNavigator should display results from the 1st page.*/
                             $scope.result.pagingOptions = {
@@ -250,7 +251,12 @@ WM.module('wm.widgets.live')
                             colDef.lookupField = '';
                             colDef.minPlaceholder = '';
                             colDef.maxPlaceholder = '';
+                            colDef.placeholder = '';
                             colDef.datepattern = '';
+                            colDef.class = '';
+                            colDef.required = '';
+                            colDef.minValue = '';
+                            colDef.maxValue = '';
                             colDef.multiple = '';
                             colDef.value = '';
                             colDef.type = column.type;
@@ -281,7 +287,7 @@ WM.module('wm.widgets.live')
                     /*Calls the filter function if default values are present*/
                     $scope.filterOnDefault = function () {
                         /*Check if default value is present for any filter field*/
-                        var defaultObj = _.find($scope.filterFields, function (obj) {
+                        var defaultObj = _.find($scope.formFields, function (obj) {
                             return obj.value;
                         });
                         /*If default value exists and data is loaded, apply the filter*/
@@ -342,7 +348,7 @@ WM.module('wm.widgets.live')
 
                             function updateAllowedValues() {
                                 var variable = scope.Variables[scope.variableName];
-                                WM.forEach(scope.filterFields, function (filterField) {
+                                WM.forEach(scope.formFields, function (filterField) {
                                     var query, tableName, columns, fieldColumn;
 
                                     fieldColumn = variable.getModifiedFieldName(filterField.field);
@@ -412,8 +418,8 @@ WM.module('wm.widgets.live')
                                         /*transform the data to filter consumable data*/
                                         fieldsObj = scope.constructDefaultData(newVal);
                                         /*Set the type of the column to the default variable type*/
-                                        if (scope.filterFields && newVal && newVal.propertiesMap) {
-                                            scope.filterFields.forEach(function (filterField) {
+                                        if (scope.formFields && newVal && newVal.propertiesMap) {
+                                            scope.formFields.forEach(function (filterField) {
                                                 var filterObj = _.find(newVal.propertiesMap.columns, function (obj) {
                                                     return obj.fieldName === filterField.field;
                                                 });
@@ -438,7 +444,7 @@ WM.module('wm.widgets.live')
                                         //element.empty();
                                         scope.variableName = '';
                                         scope.result = '';
-                                        scope.filterFields = '';
+                                        scope.formFields = '';
                                         scope.filterConstructed = false;
                                         scope.fieldObjectCreated = false;
                                         fieldsObj = [];
@@ -463,7 +469,7 @@ WM.module('wm.widgets.live')
                                         scope.newcolumns = false;
                                         designerObj = {
                                             widgetName: scope.name,
-                                            fieldDefs: scope.filterFields,
+                                            fieldDefs: scope.formFields,
                                             buttonDefs: scope.buttonArray,
                                             variableName: scope.variableName,
                                             scopeId: scope.$id,
@@ -493,7 +499,7 @@ WM.module('wm.widgets.live')
 
                                     scope.filterConstructed = fromDesigner;
                                     scope.variableName = variableName;
-                                    scope.filterFields = undefined;
+                                    scope.formFields = undefined;
                                     scope.buttonArray = undefined;
 
                                     element.find('[data-identifier="filter-elements"]').empty();
@@ -532,208 +538,6 @@ WM.module('wm.widgets.live')
     .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", "BindingManager", "LiveWidgetUtils", function ($compile, Utils, CONSTANTS, BindingManager, LiveWidgetUtils) {
         'use strict';
 
-        /* provides the template based on the form-field definition */
-        var getTemplate = function (fieldDef, index) {
-            var template = '',
-                type,
-                defaultValue = CONSTANTS.isRunMode ? "filterFields[" + index + "].value" : "",/*Displaying only in run mode*/
-                defaultMinValue = CONSTANTS.isRunMode ? "filterFields[" + index + "].minValue" : "",
-                defaultMaxValue = CONSTANTS.isRunMode ? "filterFields[" + index + "].maxValue" : "";
-
-            /*Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap*/
-            switch (fieldDef.widget) {
-            case 'slider':
-                template = template +
-                    '<wm-composite widget="slider" show="{{filterFields[' + index + '].show}}">' +
-                    '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                    '<div class="col-md-8"><input type="range" ng-readonly="{{filterFields[' + index + '].readonly}}"/></div>' +
-                    '</wm-composite>';
-                break;
-            case 'select':
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max Value';
-                    template = template +
-                        '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-select></div>' +
-                        '<div class="col-md-4"><wm-select name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-select></div>' +
-                        '</wm-composite>';
-                } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Value';
-                    template = template + '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-select name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}"';
-                    if (fieldDef.multiple) {
-                        template = template + 'multiple="{{filterFields[' + index + '].multiple}}"';
-                    }
-                    template = template + '></wm-select></div></wm-composite>';
-                }
-                break;
-            case 'checkboxset':
-                fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
-                template = template + '<wm-composite widget="checkboxset" show="{{filterFields[' + index + '].show}}">' +
-                    '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                    '<div class="col-md-8"><wm-checkboxset name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-checkboxset></div>' +
-                    '</wm-composite>';
-                break;
-            case 'radioset':
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
-                    template = template +
-                        '<wm-composite widget="select" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-radioset name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].minValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-radioset></div>' +
-                        '<div class="col-md-4"><wm-radioset name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].maxValue" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" dataset=""></wm-radioset></div>' +
-                        '</wm-composite>';
-                } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
-                    template = template + '<wm-composite widget="radioset" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-radioset name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedataset="filterFields[' + index + '].dataset" scopedatavalue="filterFields[' + index + '].selected" datafield="{{filterFields[' + index + '].datafield}}" displayfield="{{filterFields[' + index + '].displayfield}}" placeholder="{{filterFields[' + index + '].minPlaceholder}}" dataset=""></wm-radioset></div>' +
-                        '</wm-composite>';
-                }
-                break;
-            case 'text':
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
-                    type = (fieldDef.type === "integer") ? "number" : "string";
-                    template = template +
-                        '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultMinValue + '" readonly="{{filterFields[' + index + '].readonly}}"  type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultMaxValue + '" readonly="{{filterFields[' + index + '].readonly}}" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" ></wm-text></div>' +
-                        '</wm-composite>';
-                } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
-                    type = (fieldDef.type === "integer") ? "number" : "string";
-                    template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultValue + '" readonly="{{filterFields[' + index + '].readonly}}"  type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
-                        '</wm-composite>';
-                }
-                break;
-            case 'number':
-                type = "number";
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
-                    template = template +
-                        '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultMinValue + '" readonly="{{filterFields[' + index + '].readonly}}"  type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultMaxValue + '" readonly="{{filterFields[' + index + '].readonly}}" type="' + type + '" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-text></div>' +
-                        '</wm-composite>';
-                } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Value';
-                    template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" scopedatavalue="' + defaultValue + '" readonly="{{filterFields[' + index + '].readonly}}"  type="' + type + '" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-text></div>' +
-                        '</wm-composite>';
-                }
-                break;
-            case "rating":
-                template = template + '<wm-composite widget="rating" show="{{filterFields[' + index + '].show}}">' +
-                    '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                    '<div class="col-md-8"><wm-rating name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" ></wm-rating></div>' +
-                    '</wm-composite>';
-                break;
-            case 'date':
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min date';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max date';
-                    type = 'date';
-                    template = template +
-                        '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
-                        '<div class="col-md-4"><wm-date name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}" datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
-                        '</wm-composite>';
-                } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select date';
-                    type = 'date';
-                    template = template + '<wm-composite widget="date" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-date name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"  datepattern="{{filterFields[' + index + '].datepattern}}"></wm-date></div>' +
-                        '</wm-composite>';
-                }
-                break;
-            case 'time':
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min time';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max time';
-                    type = 'time';
-                    template = template +
-                        '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-time name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-time></div>' +
-                        '<div class="col-md-4"><wm-time name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"></wm-time></div>' +
-                        '</wm-composite>';
-                } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select time';
-                    type = 'time';
-                    template = template + '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-time name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"></wm-time></div>' +
-                        '</wm-composite>';
-                }
-                break;
-            case 'datetime':
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min date time';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max date time';
-                    type = fieldDef.widget;
-                    template = template +
-                        '<wm-composite widget="datetime" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].minValue" placeholder="{{filterFields[' + index + '].minPlaceholder}}"';
-                    if (fieldDef.datepattern) {
-                        template = template + ' datepattern="{{filterFields[' + index + '].datepattern}}"';
-                    }
-                    template = template + '></wm-datetime></div><div class="col-md-4"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].maxValue" placeholder="{{filterFields[' + index + '].maxPlaceholder}}"';
-                    if (fieldDef.datepattern) {
-                        template = template + ' datepattern="{{filterFields[' + index + '].datepattern}}"';
-                    }
-                    template = template + '></wm-datetime></div></wm-composite>';
-                } else {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select date time';
-                    type = 'time';
-                    template = template + '<wm-composite widget="time" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-datetime name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" placeholder="{{filterFields[' + index + '].minPlaceholder}}"';
-                    if (fieldDef.datepattern) {
-                        template = template + ' datepattern="{{filterFields[' + index + '].datepattern}}"';
-                    }
-                    template = template + '></wm-datetime></div></wm-composite>';
-                }
-                break;
-            case 'checkbox':
-                template = template + '<wm-composite widget="checkboxset" show="{{filterFields[' + index + '].show}}">' +
-                    '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                    '<div class="col-md-8"><wm-checkbox name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" ></wm-checkbox></div>' +
-                    '</wm-composite>';
-                break;
-            default:
-                if (fieldDef.isRange) {
-                    template = template +
-                        '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
-                        '<div class="col-md-4"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
-                        '</wm-composite>';
-                } else {
-                    template = template + '<wm-composite widget="text" show="{{filterFields[' + index + '].show}}">' +
-                        '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
-                        '<div class="col-md-8"><wm-text name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" type="string"></wm-text></div>' +
-                        '</wm-composite>';
-                }
-                break;
-            }
-            return template;
-        };
-
         return {
             "restrict": 'E',
             "scope": true,
@@ -752,26 +556,20 @@ WM.module('wm.widgets.live')
                             index,
                             defaultVal,
                             parentIsolateScope = scope.parentIsolateScope,
-                            fieldObject = {
+                            columnsDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                                 'field': attrs.field || attrs.binding,
-                                'displayName': attrs.displayName || attrs.caption,
-                                'show': attrs.show === "true" || attrs.show === true,
-                                'type': attrs.type || 'string',
-                                'primaryKey': attrs.primaryKey === "true" || attrs.primaryKey === true,
-                                'generator': attrs.generator,
-                                'isRange': attrs.isRange === "true" || attrs.isRange === true,
-                                'readonly' : attrs.readonly === "true" || attrs.readonly === true,
-                                'isRelated': attrs.isRelated === "true" || attrs.isRelated === true,
                                 'filterOn': attrs.filterOn || attrs.field || attrs.binding,
+                                'isRange': attrs.isRange === "true" || attrs.isRange === true,
                                 'widget': attrs.widget,
                                 'lookupType': attrs.lookupType,
                                 'lookupField': attrs.lookupField,
                                 'minPlaceholder': attrs.minPlaceholder,
                                 'maxPlaceholder': attrs.maxPlaceholder,
-                                'datepattern': attrs.datepattern,
-                                'multiple': attrs.multiple === "true" || attrs.multiple === true,
                                 'relatedEntityName': attrs.relatedEntityName
-                            };
+                            });
+
+                        columnsDef.key = columnsDef.field;
+
                         /*Set the default value*/
                         if (attrs.value) {
                             /*If the default value is bound variable, keep watch on the expression*/
@@ -779,18 +577,18 @@ WM.module('wm.widgets.live')
                                 expr = attrs.value.replace('bind:', '');
                                 if (scope.Variables && !Utils.isEmptyObject(scope.Variables) && scope.$eval(expr)) {
                                     defaultVal = scope.$eval(expr);
-                                    fieldObject.value = defaultVal;
-                                    if (fieldObject.isRange) {
-                                        fieldObject.minValue = defaultVal;
-                                        fieldObject.maxValue = defaultVal;
+                                    columnsDef.value = defaultVal;
+                                    if (columnsDef.isRange) {
+                                        columnsDef.minValue = defaultVal;
+                                        columnsDef.maxValue = defaultVal;
                                     }
                                 } else {
                                     exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
-                                        parentIsolateScope.filterFields[index].value = newVal;
-                                        parentIsolateScope.filterFields[index].selected = newVal;
-                                        if (fieldObject.isRange) {
-                                            parentIsolateScope.filterFields[index].minValue = newVal;
-                                            parentIsolateScope.filterFields[index].maxValue = newVal;
+                                        parentIsolateScope.formFields[index].value = newVal;
+                                        parentIsolateScope.formFields[index].selected = newVal;
+                                        if (columnsDef.isRange) {
+                                            parentIsolateScope.formFields[index].minValue = newVal;
+                                            parentIsolateScope.formFields[index].maxValue = newVal;
                                         }
                                         /*Apply the filter after the default value change*/
                                         parentIsolateScope.filterOnDefault();
@@ -800,21 +598,21 @@ WM.module('wm.widgets.live')
                                 defaultVal = attrs.value;
                                 /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
                                 if (CONSTANTS.isRunMode) {
-                                    defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, fieldObject.type);
+                                    defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, columnsDef.type);
                                 }
-                                fieldObject.selected = defaultVal;
-                                fieldObject.value = defaultVal;
-                                if (fieldObject.isRange) {
-                                    fieldObject.minValue = defaultVal;
-                                    fieldObject.maxValue = defaultVal;
+                                columnsDef.selected = defaultVal;
+                                columnsDef.value = defaultVal;
+                                if (columnsDef.isRange) {
+                                    columnsDef.minValue = defaultVal;
+                                    columnsDef.maxValue = defaultVal;
                                 }
                             }
                         }
-                        parentIsolateScope.filterFields = parentIsolateScope.filterFields || [];
-                        parentIsolateScope.fieldObjectCreated = true;
-                        index = parentIsolateScope.filterFields.push(fieldObject) - 1;
+                        parentIsolateScope.formFields = parentIsolateScope.formFields || [];
+                        parentIsolateScope.columnsDefCreated = true;
+                        index = parentIsolateScope.formFields.push(columnsDef) - 1;
 
-                        template = getTemplate(fieldObject, index);
+                        template = LiveWidgetUtils.getTemplate(columnsDef, index, "filter");
                         element.html(template);
                         $compile(element.contents())(parentIsolateScope);
 
@@ -853,7 +651,7 @@ WM.module('wm.widgets.live')
                         };
                         scope.parentIsolateScope.buttonArray = scope.parentIsolateScope.buttonArray || [];
                         index = scope.parentIsolateScope.buttonArray.push(buttonDef) - 1;
-                        scope.parentIsolateScope.fieldObjectCreated = true;
+                        scope.parentIsolateScope.columnsDefCreated = true;
 
                         buttonTemplate = '<wm-button caption="{{buttonArray[' + index + '].displayName}}" show="{{buttonArray[' + index + '].show}}" ' +
                             'class="{{buttonArray[' + index + '].class}}" iconname="{{buttonArray[' + index + '].iconname}}" ' +
