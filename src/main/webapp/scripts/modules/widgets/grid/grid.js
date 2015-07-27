@@ -1225,7 +1225,8 @@ WM.module('wm.widgets.grid')
             $scope.fetchDynamicData = function () {
                 var reference,
                     referenceVariableKey,
-                    watchSelectedItem;
+                    watchSelectedItem,
+                    referenceVariable;
 
                 /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
                 reference = fetchReferenceDetails();
@@ -1238,10 +1239,12 @@ WM.module('wm.widgets.grid')
 
                         /*Check for sanity of newVal.*/
                         if (newVal && !WM.equals(newVal, oldVal)) {
+
+                            referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
                             /*Check if "referenceVariableKey" has already been computed.*/
-                            if (!referenceVariableKey) {
+                            if (!referenceVariableKey && referenceVariable) {
                                 /*Invoke the function to get the primary key.*/
-                                referenceVariableKey = Variables.getVariableByName(reference.referenceVariableName).getPrimaryKey();
+                                referenceVariableKey = referenceVariable .getPrimaryKey();
 
                                 /*If the there is a single primary key, fetch the first element of the array.*/
                                 if (referenceVariableKey.length === 1) {
@@ -1256,7 +1259,7 @@ WM.module('wm.widgets.grid')
                                     /*Check for sanity.*/
                                     if (newVal) {
                                         /*Invoke the function to update the related data of the variable for the specified relatedFieldName.*/
-                                        Variables.getVariableByName(reference.referenceVariableName).updateRelatedData({
+                                        referenceVariable.updateRelatedData({
                                             'id': reference.referenceWidget.selecteditem[referenceVariableKey],
                                             'relatedFieldName': reference.relatedFieldName,
                                             'scope': $scope.gridElement.scope()
