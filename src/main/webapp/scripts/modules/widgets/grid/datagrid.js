@@ -941,6 +941,20 @@ $.widget('wm.datagrid', {
         }
     },
 
+    /*Handles the double click of the grid row*/
+    rowDblClickHandler: function (e, $row) {
+        e.stopPropagation();
+        $row = $row || $(e.target).closest('tr');
+        var rowData, rowId = $row.attr('data-row-id');
+        rowData = this.preparedData[rowId];
+        if (!rowData) {
+            return;
+        }
+        if ($.isFunction(this.options.beforeRowUpdate)) {
+            this.options.beforeRowUpdate(rowData, e, 'dblclick');
+        }
+    },
+
     /* Handles column selection. */
     columnSelectionHandler: function (e) {
         e.stopImmediatePropagation();
@@ -1294,6 +1308,7 @@ $.widget('wm.datagrid', {
 
         if (this.options.enableRowSelection) {
             $htm.on('click', this.rowSelectionHandler.bind(this));
+            $htm.on('dblclick', this.rowDblClickHandler.bind(this));
             if (this.options.selectFirstRow) {
                 this.selectFirstRow(true);
             }
