@@ -909,9 +909,9 @@ WM.module('wm.widgets.basic')
                 coordinates,
                 y,
                 getChartHeight = function () {
-                    var chartHeight = $("#" + chartId + ">svg>.nvd3.nv-wrap")[0].getBoundingClientRect().height;
+                    var chartHeight = $("#" + chartId + " svg>.nvd3.nv-wrap")[0].getBoundingClientRect().height;
                     if (chartHeight === 0) { /*fix for IE*/
-                        chartHeight = ($("#" + chartId + ">svg")[0].getBoundingClientRect().height - (legendWrapHeight + 15));
+                        chartHeight = ($("#" + chartId + " svg")[0].getBoundingClientRect().height - (legendWrapHeight + 15));
                     }
                     return chartHeight;
                 },
@@ -936,9 +936,9 @@ WM.module('wm.widgets.basic')
                 if (scope.offsetbottom > legendWrapHeight) {
                     y = getChartHeight() - (legendWrapHeight + 15);
 
-                    if ((scope.type !== "Bar") && scope.xaxislabel) {
+                    if (scope.type !== "Bar") {
                         y = y - getAxisLabelHeight('x');
-                    } else if ((scope.type === "Bar") && scope.yaxislabel) {
+                    } else if (scope.type === "Bar") {
                         y = y - getAxisLabelHeight('y');
                     }
                 }
