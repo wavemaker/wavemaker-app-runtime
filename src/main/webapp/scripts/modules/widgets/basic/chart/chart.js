@@ -1203,9 +1203,7 @@ WM.module('wm.widgets.basic')
                 chart.showXAxis(scope.showxaxis)
                     .showYAxis(scope.showyaxis);
             }
-            if (scope.tooltip) {
-                chart.tooltip.enabled();
-            }
+            chart.tooltip.enabled(scope.tooltips);
             /*setting the no data message*/
             chart.noData(scope.message);
             return chart;
