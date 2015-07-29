@@ -393,50 +393,47 @@ WM.module('wm.widgets.live')
                                         oldData;
                                     /*If properties map is populated and if columns are presented for filter construction*/
                                     if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
-                                        /*Check if propertiesMap in oldVal is defined, then it is not equal to newVal propertiesMap*/
-                                        if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
-                                            /* old data cached to avoid live variable data's effect on filter */
-                                            oldData = (scope.result && scope.result.data) || [];
+                                        /*TODO: Add oldval and newval equality check after equality check fix*/
+                                        /* old data cached to avoid live variable data's effect on filter */
+                                        oldData = (scope.result && scope.result.data) || [];
 
-                                            scope.variableName = scope.binddataset.match(variableRegex)[1];
-                                            scope.result = newVal;
+                                        scope.variableName = scope.binddataset.match(variableRegex)[1];
+                                        scope.result = newVal;
 
-                                            /* The filter is not depending on variable's data, as filter is making explicit call through QUERY
-                                             * Hence, to avoid flicker when data from explicit call is rendered, the live variable's data is ignored
-                                             */
-                                            scope.result.data = oldData;
+                                        /* The filter is not depending on variable's data, as filter is making explicit call through QUERY
+                                         * Hence, to avoid flicker when data from explicit call is rendered, the live variable's data is ignored
+                                         */
+                                        scope.result.data = oldData;
 
-                                            /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
-                                            scope.result.variableName = scope.variableName;
-                                            scope.result.widgetName = scope.name;
-                                            scope.result.isBoundToFilter = true;
-                                            /*transform the data to filter consumable data*/
-                                            fieldsObj = scope.constructDefaultData(newVal);
-                                            /*Set the type of the column to the default variable type*/
-                                            if (scope.filterFields && newVal && newVal.propertiesMap) {
-                                                scope.filterFields.forEach(function (filterField) {
-                                                    var filterObj = _.find(newVal.propertiesMap.columns, function (obj) {
-                                                        return obj.fieldName === filterField.field;
-                                                    });
-                                                    if (filterObj) {
-                                                        filterField.type = filterObj.type;
-                                                        /*For backward compatibility of datetime column types, set widget to datetime*/
-                                                        if (CONSTANTS.isStudioMode && filterField.type === 'datetime' && (!filterField.widget || filterField.widget === 'text')) {
-                                                            filterField.widget = scope.getWidgetType(filterField.type);
-                                                            scope.$root.$emit("set-markup-attr", scope.widgetid, {'type': filterField.type, 'widget': filterField.widget}, 'wm-filter-field[field=' + filterField.field + ']');
-                                                        }
-                                                    }
+                                        /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
+                                        scope.result.variableName = scope.variableName;
+                                        scope.result.widgetName = scope.name;
+                                        scope.result.isBoundToFilter = true;
+                                        /*transform the data to filter consumable data*/
+                                        fieldsObj = scope.constructDefaultData(newVal);
+                                        /*Set the type of the column to the default variable type*/
+                                        if (scope.filterFields && newVal && newVal.propertiesMap) {
+                                            scope.filterFields.forEach(function (filterField) {
+                                                var filterObj = _.find(newVal.propertiesMap.columns, function (obj) {
+                                                    return obj.fieldName === filterField.field;
                                                 });
-                                            }
-                                            buttonsObj = defaultButtonsArray;
-
-                                            /* call method to update allowed values for select type filter fields */
-                                            updateAllowedValues();
-
-                                            /*On load check if default value exists and apply filter*/
-                                            scope.filter();
-
+                                                if (filterObj) {
+                                                    filterField.type = filterObj.type;
+                                                    /*For backward compatibility of datetime column types, set widget to datetime*/
+                                                    if (CONSTANTS.isStudioMode && filterField.type === 'datetime' && (!filterField.widget || filterField.widget === 'text')) {
+                                                        filterField.widget = scope.getWidgetType(filterField.type);
+                                                        scope.$root.$emit("set-markup-attr", scope.widgetid, {'type': filterField.type, 'widget': filterField.widget}, 'wm-filter-field[field=' + filterField.field + ']');
+                                                    }
+                                                }
+                                            });
                                         }
+                                        buttonsObj = defaultButtonsArray;
+
+                                        /* call method to update allowed values for select type filter fields */
+                                        updateAllowedValues();
+
+                                        /*On load check if default value exists and apply filter*/
+                                        scope.filter();
                                     } else if (!newVal && CONSTANTS.isStudioMode) { /*Clear the variables when the live-filter has not been bound.*/
                                         //element.empty();
                                         scope.variableName = '';
@@ -479,6 +476,7 @@ WM.module('wm.widgets.live')
                                     if (WM.isDefined(scope.variableName) && WM.isDefined(newVal) && !WM.equals(newVal, oldVal)) {
                                         scope.filter();
                                     }
+                                    break;
                                 }
                             }
 
