@@ -160,7 +160,7 @@ WM.module('wm.widgets.form')
                 }
                 scope._model_ = [];
             } else {
-                if (!selectedValues || selectedValues.length === 0) {
+                if ((!selectedValues || selectedValues.length === 0) && !scope._model_) {
                     scope._model_ = [];
                 }
                 scope._model_ = scope._model_ && scope._model_.length ? scope._model_ : [];
