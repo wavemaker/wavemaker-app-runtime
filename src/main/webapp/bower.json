@@ -47,6 +47,10 @@
       "css": ["dist/css/*.css", "dist/css/*.map"],
       "fonts": "fonts/"
     },
+    "font-awesome": {
+	"css" : "css/*.css",
+	"fonts": "fonts/*"
+    },  	
     "placeholders": {
       "js": "lib/*.js"
     },
