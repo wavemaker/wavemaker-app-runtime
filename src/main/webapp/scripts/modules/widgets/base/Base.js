@@ -2177,30 +2177,11 @@ WM.module('wm.widgets.base', [])
                 WidgetUtilService.onScopeValueChangeProxy(iScope, element, attrs, key, newVal, oldVal);
             }
 
-            function processEventAttr(iScope, attrs, attrName) {
-                var evtName = attrName.substring('3'), /* extract the event name from the attr name */
-                    onEvtName = 'on' + evtName.charAt(0).toUpperCase() + evtName.substring(1), /* prepend the event name with "on" eg, 'click' with on --> onClick */
-                    fnNamesKey = evtName + 'FnNames';
+            function processEventAttr($is, attrName, attrValue) {
+                var onEvtName = _.camelCase(attrName); /* prepend the event name with "on" eg, 'click' with on --> onClick */
 
-                /*
-                 * save the list of fnNames to be executed.
-                 * i.e, if on-click="f1();f2();" then isolateScope.clickFnNames = ['f1', 'f2']
-                 * */
-                iScope[fnNamesKey] = [];
-
-                /* find the function names from the attribute value and store them in an array */
-                attrs[onEvtName]
-                    .split(';')
-                    .forEach(function (token) {
-                        token = token.trim();
-                        if (token.length) {
-                            var index = token.indexOf('(');
-                            if (index >= 0) {
-                                token = token.substring(0, token.indexOf("("));
-                            }
-                            iScope[fnNamesKey].push(token);
-                        }
-                    });
+                // save the attrValue in isolateScope. eg, $is.__onClick = "f1();dialog1.show;f2();"
+                $is['__' + onEvtName] = attrValue;
             }
 
             function isInterpolated(propValue) {
@@ -2267,7 +2248,7 @@ WM.module('wm.widgets.base', [])
 
                         if (attrName.indexOf('on-') === 0) {
                             if (attrs.widgetid) { // widget is inside canvas
-                                processEventAttr(iScope, attrs, attrName);
+                                processEventAttr(iScope, attrName, attrValue);
                             } else {
                                 attrNameInCamelCase = Utils.camelCase(attrName);
                                 fn = $parse(attrs[attrNameInCamelCase]);
