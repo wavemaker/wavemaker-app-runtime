@@ -68,10 +68,6 @@ public class RestConnector {
             headersMap.add(RestConstants.CONTENT_TYPE, contentType);
         }
 
-        if (RestRequestInfo.AuthType.BASIC.equals(restRequestInfo.getAuthType())) {
-            headersMap.add(RestConstants.AUTHORIZATION, restRequestInfo.getBasicAuthorization());
-        }
-
         wmRestTemplate.setRequestFactory(commonsClientHttpRequestFactory);
         wmRestTemplate.setErrorHandler(new WMRestServicesErrorHandler());
 
