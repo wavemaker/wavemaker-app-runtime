@@ -839,31 +839,6 @@ WM.module('wm.widgets.grid')
                         $scope.datagridElement.datagrid('setStatus', 'ready');
                     }
                 },
-                onRecordDelete = function () {
-                    /*Check for sanity*/
-                    if ($scope.dataNavigator) {
-                        $scope.dataNavigator.dataSize -= 1;
-                        $scope.dataNavigator.calculatePagingValues();
-                        /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
-                        if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
-                            $scope.dataNavigator.navigatePage('prev');
-                        } else {
-                            $scope.dataNavigator.navigatePage();
-                        }
-                    } else {
-                        Variables.call('getData', $scope.variableName, {
-                            'type': 'wm.LiveVariable',
-                            'isNotTriggerForRelated': true,
-                            'page': $scope.dataNavigator ? $scope.dataNavigator.currentPage : 1,
-                            'scope': $scope.gridElement.scope()
-                        }, function (data) {
-                            $scope.serverData = data;
-                            setGridData($scope.serverData);
-                        }, function (error) {
-                            wmToaster.show('error', 'ERROR', error);
-                        });
-                    }
-                },
                 deleteRecord = function (row, cancelRowDeleteCallback) {
                     if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
@@ -887,7 +862,7 @@ WM.module('wm.widgets.grid')
                             /*Emit on row delete to handle any events listening to the delete action*/
                             $scope.$emit('on-row-delete', row);
 
-                            onRecordDelete();
+                            $scope.onRecordDelete();
 
                             wmToaster.show("success", "SUCCESS", $scope.deletemessage);
                             /*custom EventHandler for row deleted event*/
@@ -1122,9 +1097,9 @@ WM.module('wm.widgets.grid')
                 onRowInsert: function (rowData, e) {
                     insertRecord(rowData, e);
                 },
-                beforeRowUpdate: function (rowData, e) {
+                beforeRowUpdate: function (rowData, e, eventName) {
                     /*TODO: Check why widgetid is undefined here.*/
-                    $scope.$emit('update-row', $scope.widgetid, rowData);
+                    $scope.$emit('update-row', $scope.widgetid, rowData, eventName);
                     $scope.prevData = WM.copy(rowData);
                     $rootScope.$safeApply($scope);
                     /*TODO: Bind this event.*/
@@ -1658,7 +1633,7 @@ WM.module('wm.widgets.grid')
                 }
             };
 
-            $scope.initiateHighlightRow = function (index, row, primaryKey) {
+            $scope.initiateHighlightRow = function (index, row, primaryKey, skipHighlightRow) {
                 /*index === "last" indicates that an insert operation has been successfully performed and navigation to the last page is required.
                 * Hence increment the "dataSize" by 1.*/
                 if (index === 'last') {
@@ -1673,9 +1648,12 @@ WM.module('wm.widgets.grid')
                 $scope.dataNavigator.navigatePage(index, null, true, function () {
                     /*$timeout is used so that by then $scope.dataset has the updated value.
                     * Highlighting of the row is done in the callback of page navigation so that the row that needs to be highlighted actually exists in the grid.*/
-                    $timeout(function () {
-                        $scope.highlightRow(row, $scope.dataset.data);
-                    }, null, false);
+                    /*Do not highlight the row if skip highlight row is specified*/
+                    if (!skipHighlightRow) {
+                        $timeout(function () {
+                            $scope.highlightRow(row, $scope.dataset.data);
+                        }, null, false);
+                    }
                 });
             };
 
@@ -1716,6 +1694,33 @@ WM.module('wm.widgets.grid')
             $scope.addRow = function () {
                 $scope.addNewRow();
             };
+
+            $scope.onRecordDelete = function () {
+                /*Check for sanity*/
+                if ($scope.dataNavigator) {
+                    $scope.dataNavigator.dataSize -= 1;
+                    $scope.dataNavigator.calculatePagingValues();
+                    /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
+                    if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
+                        $scope.dataNavigator.navigatePage('prev');
+                    } else {
+                        $scope.dataNavigator.navigatePage();
+                    }
+                } else {
+                    Variables.call('getData', $scope.variableName, {
+                        'type': 'wm.LiveVariable',
+                        'isNotTriggerForRelated': true,
+                        'page': $scope.dataNavigator ? $scope.dataNavigator.currentPage : 1,
+                        'scope': $scope.gridElement.scope()
+                    }, function (data) {
+                        $scope.serverData = data;
+                        setGridData($scope.serverData);
+                    }, function (error) {
+                        wmToaster.show('error', 'ERROR', error);
+                    });
+                }
+            };
+
         }])
 
 /**

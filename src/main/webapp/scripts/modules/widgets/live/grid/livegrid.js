@@ -92,10 +92,13 @@ WM.module('wm.widgets.live')
                                         } else {
                                             scope.gridform.rowdata = newValue[newValue.length - 1];
                                         }
+                                        /*If the form is already in update mode, call the form update function*/
+                                        if (scope.gridform.isUpdateMode) {
+                                            scope.gridform.update();
+                                        }
                                     } else {
                                         scope.gridform.isSelected = false;
                                         scope.gridform.rowdata = '';
-                                        scope.gridform.isUpdateMode = false;
                                         scope.gridform.clearData();
                                     }
                                 }, true);
@@ -118,22 +121,24 @@ WM.module('wm.widgets.live')
                                         scope.gridform.setPrevDataArray(scope.gridform.dataArray);
                                         scope.gridform.dataArray = [];
                                     }
-                                    scope.gridform.formNew();
+                                    scope.gridform.new();
                                     if (scope.isLayoutDialog) {
                                         DialogService.showDialog(scope.gridform._dialogid, { 'resolve': {}, 'scope' : scope.gridform });
                                     }
                                 }));
                                 /*On update row call the form update function*/
-                                handlers.push(scope.grid.$on('update-row', function (event, widgetid, row) {
+                                handlers.push(scope.grid.$on('update-row', function (event, widgetid, row, eventName) {
                                     scope.gridform.rowdata = row;
                                     /*In case of dialog layout set the previous data Array before clearing off*/
                                     if (scope.gridform.isLayoutDialog) {
                                         scope.gridform.setPrevDataArray(scope.gridform.dataArray);
                                         scope.gridform.dataArray = [];
                                     }
-                                    scope.gridform.formUpdate();
+                                    scope.gridform.update();
                                     scope.$root.$safeApply(scope);
                                     if (scope.isLayoutDialog) {
+                                        /*Open the dialog in view or edit mode based on the defaultview property*/
+                                        scope.gridform.isUpdateMode = (eventName === 'dblclick') ? scope.gridform.updateMode : true;
                                         DialogService.showDialog(scope.gridform._dialogid, {
                                             'resolve': {},
                                             'scope': scope.gridform
@@ -157,12 +162,18 @@ WM.module('wm.widgets.live')
                                     }
                                 }));
                                 /* this function will be called from liveform , when the service call ended */
-                                handlers.push(scope.gridform.$on('on-result', function (event, operation, response) {
-                                    scope.gridform.isUpdateMode = false;
+                                handlers.push(scope.gridform.$on('on-result', function (event, operation, response, newForm) {
+                                    scope.gridform.isUpdateMode = newForm ? true : false;
                                     switch (operation) {
                                     case 'insert':
-                                        /*The new row would always be inserted at the end of all existing records. Hence navigate to the last page and highlight the inserted row.*/
-                                        scope.grid.initiateHighlightRow('last', response, scope.primaryKey);
+                                        if (newForm) {
+                                            /*if new form is to be shown after insert, skip the highlight of the row*/
+                                            scope.grid.gridfirstrowselect = false;
+                                            scope.grid.initiateHighlightRow('last', response, scope.primaryKey, true);
+                                        } else {
+                                            /*The new row would always be inserted at the end of all existing records. Hence navigate to the last page and highlight the inserted row.*/
+                                            scope.grid.initiateHighlightRow('last', response, scope.primaryKey);
+                                        }
                                         if (WM.isDefined(scope.grid.onRowinsert)) {
                                             scope.grid.onRowinsert(response);
                                         }
@@ -172,11 +183,20 @@ WM.module('wm.widgets.live')
                                         scope.grid.initiateHighlightRow('current', response, scope.primaryKey);
                                         break;
                                     case 'delete':
-                                        scope.grid.handleDelete();
+                                        scope.grid.onRecordDelete();
                                         break;
                                     }
                                     if (scope.isLayoutDialog) {
-                                        DialogService.hideDialog(scope.gridform._dialogid);
+                                        /*if new form is to be shown after update or insert, don't close the dialog*/
+                                        if (newForm) {
+                                            if (operation === 'insert') {
+                                                scope.gridform.new();
+                                            } else if (operation === 'update') {
+                                                scope.gridform.update();
+                                            }
+                                        } else {
+                                            DialogService.hideDialog(scope.gridform._dialogid);
+                                        }
                                     }
                                 }));
                             }

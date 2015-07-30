@@ -16,7 +16,8 @@ WM.module('wm.widgets.live')
                 'formdata': true,
                 'updatemode': true,
                 'formtype': true,
-                'layout': true
+                'layout': true,
+                'defaultview': true
             },
             /*check if the field is of column type time or widget type time*/
             isTimeType = function (field) {
@@ -132,9 +133,13 @@ WM.module('wm.widgets.live')
                     return operation || 'insert';
                 };
 
+                /*Function use to save the form and open new form after save*/
+                $scope.saveAndNew = function () {
+                    $scope.formSave(undefined, true);
+                };
                 /*Method to handle the insert, update, delete actions*/
                 /*The operationType decides the type of action*/
-                $scope.formSave = function (event) {
+                $scope.formSave = function (event, newForm) {
                     var data,
                         prevData,
                         requestData = {},
@@ -201,7 +206,7 @@ WM.module('wm.widgets.live')
                                 onResult(response, true, event);
                                 if ($scope.ctrl) {
                                     /* highlight the current updated row */
-                                    $scope.$emit("on-result", "update", response);
+                                    $scope.$emit("on-result", "update", response, newForm);
                                 } else {
                                     /*get updated data without refreshing page*/
                                     variable.update({
@@ -227,7 +232,7 @@ WM.module('wm.widgets.live')
                                 /* if successfully inserted  change editable mode to false */
                                 if ($scope.ctrl) {
                                     /* highlight the current updated row */
-                                    $scope.$emit("on-result", "insert", response);
+                                    $scope.$emit("on-result", "insert", response, newForm);
                                 } else {
                                     /*get updated data without refreshing page*/
                                     variable.update({
@@ -262,7 +267,7 @@ WM.module('wm.widgets.live')
                             $scope.isSelected = false;
                             /*get updated data without refreshing page*/
                             if ($scope.ctrl) {
-                                $scope.ctrl.onResult(success, "delete");
+                                $scope.$emit("on-result", "delete", success);
                             } else {
                                 variable.update({
                                     "type": "wm.LiveVariable",
@@ -287,7 +292,7 @@ WM.module('wm.widgets.live')
                     $scope.clearData();
                     /*Show the previous selected data*/
                     if ($scope.isSelected) {
-                        $scope.dataArray = WM.copy(prevDataArray);
+                        $scope.dataArray = WM.copy(prevDataArray) || $scope.dataArray;
                     }
                     $scope.$emit("on-cancel");
                 };
@@ -300,7 +305,7 @@ WM.module('wm.widgets.live')
                     }
                 };
                 /*Method to reset the form to original state*/
-                $scope.formReset = function () {
+                $scope.reset = function () {
                     if (WM.isArray($scope.dataArray)) {
                         $scope.dataArray.forEach(function (dataValue) {
                             var prevObj = _.find($scope.prevDataValues, function (obj) {
@@ -321,7 +326,7 @@ WM.module('wm.widgets.live')
                     });
                 }
                 /*Method to update, sets the operationType to "update" disables the readonly*/
-                $scope.formUpdate = function () {
+                $scope.update = function () {
                     /*set the dataArray into the prevDataArray only in case of inline form
                     * in case of dialog layout the set prevDataArray is called before manually clearing off the dataArray*/
 
@@ -339,7 +344,7 @@ WM.module('wm.widgets.live')
                 };
                 /*Method clears the fields, sets any defaults if available,
                  disables the readonly, and sets the operationType to "insert"*/
-                $scope.formNew = function () {
+                $scope.new = function () {
                     if ($scope.isSelected && !$scope.isLayoutDialog) {
                         prevDataArray = WM.copy($scope.dataArray);
                     }
@@ -368,6 +373,8 @@ WM.module('wm.widgets.live')
                     /*Set the default value only if it exists.*/
                     if (defaultValue && defaultValue !== "null") {
                         fieldObj.value = LiveWidgetUtils.getDefaultValue(defaultValue, fieldObj.type);
+                    } else {
+                        fieldObj.value = undefined;
                     }
                     if (fieldObj.type === "blob") {
                         /*Handle default*/
@@ -389,7 +396,7 @@ WM.module('wm.widgets.live')
                     });
                 };
                 /*Sets the operationType to "delete" and calls the formSave function to handle the action*/
-                $scope.formDelete = function () {
+                $scope.delete = function () {
                     $scope.operationType = "delete";
                     $scope.formSave();
                 };
@@ -583,6 +590,15 @@ WM.module('wm.widgets.live')
                     }
                     return outputFormat;
                 };
+
+                /*Call respective functions for save and cancel*/
+                $scope.save = function () {
+                    $scope.formSave();
+                };
+
+                $scope.cancel = function () {
+                    $scope.formCancel();
+                };
             },
             compile: function () {
                 return {
@@ -775,6 +791,14 @@ WM.module('wm.widgets.live')
                                 break;
                             case "updatemode":
                                 scope.isUpdateMode = (newVal === true || newVal === "true");
+                                break;
+                            case "defaultview":
+                                if (newVal && newVal === 'Edit') {
+                                    scope.updateMode = true;
+                                } else {
+                                    scope.updateMode = false;
+                                }
+                                scope.isUpdateMode = scope.updateMode;
                                 break;
                             case "formtype":
                                 scope.isLayoutDialog = newVal === 'dialog';
