@@ -71,7 +71,7 @@ wm.variables.services.MobileService = [function () {
     return {
         calendar : {
             //Ref: https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
-            addEventToCalendar: {
+            addEvent: {
                 model : {
                     data: ''
                 },
@@ -86,7 +86,7 @@ wm.variables.services.MobileService = [function () {
                                                         error);
                 }
             },
-            removeEventFromCalendar: {
+            removeEvent: {
                 model : {
                     data: ''
                 },
@@ -101,7 +101,7 @@ wm.variables.services.MobileService = [function () {
                                                         error);
                 }
             },
-            listEventsFromCalendar: {
+            listEvents: {
                 model : [event],
                 properties : ['eventTitle', 'eventStart', 'eventEnd'],
                 invoke : function (variable, options, success, error) {
@@ -139,7 +139,7 @@ wm.variables.services.MobileService = [function () {
             }
         },
         contacts : {
-            listContacts : {
+            list : {
                 model : [contact],
                 properties : ['contactFilter'],
                 invoke : function (variable, options, success, error) {
@@ -201,8 +201,8 @@ wm.variables.services.MobileService = [function () {
  * @description
  * The 'MobileVariableService' provides methods to work with Mobile API.
  */
-wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils', 'BaseVariablePropertyFactory', 'MobileService',
-    function ($rootScope, Variables, Utils, BaseVariablePropertyFactory, MobileService) {
+wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils', 'BaseVariablePropertyFactory', 'MobileService', 'CONSTANTS',
+    function ($rootScope, Variables, Utils, BaseVariablePropertyFactory, MobileService, CONSTANTS) {
         "use strict";
         var initiateCallback = Variables.initiateCallback;
 
@@ -231,7 +231,7 @@ wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils
                     initiateCallback('onError', variable, callBackScope);
                 };
 
-            if (operation && $rootScope.hasCardova) {
+            if (operation && CONSTANTS.hasCardova) {
                 operation.invoke(this, options, successCb, errorCb);
             } else if (operation){
                 successCb(_.cloneDeep(operation.model));

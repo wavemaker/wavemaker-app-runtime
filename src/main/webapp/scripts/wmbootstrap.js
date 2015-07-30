@@ -17,7 +17,8 @@ var Application = WM.module('Application',
             "i18n",
             "angular-gestures"
         ]).constant('CONSTANTS', {
-        "isRunMode": true
+        "isRunMode": true,
+        "hasCardova": (window.device && window.device.cordova ? true : false)
     }).controller('AppController', [
         '$rootScope',
         '$scope',
@@ -64,8 +65,6 @@ var Application = WM.module('Application',
             $rootScope.isMobileType = projectType === 'MOBILE';
             $rootScope.isApplicationType = projectType === 'APPLICATION';
             $rootScope.isTemplateBundleType = projectType === 'TEMPLATEBUNDLE';
-            $rootScope.isMobileType = projectType === 'MOBILE';
-            $rootScope.hasCardova = (window.device && window.device.cordova ? true : false);
 
             if ($rootScope.isMobileType || $rootScope.isPrefabType) {
                 Utils.fetchContent(
