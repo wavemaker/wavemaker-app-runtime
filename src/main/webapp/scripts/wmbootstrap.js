@@ -1,4 +1,4 @@
-/*global WM, window */
+/*global WM, window, device */
 /*Init file for run mode*/
 var Application = WM.module('Application',
         [
@@ -64,6 +64,8 @@ var Application = WM.module('Application',
             $rootScope.isMobileType = projectType === 'MOBILE';
             $rootScope.isApplicationType = projectType === 'APPLICATION';
             $rootScope.isTemplateBundleType = projectType === 'TEMPLATEBUNDLE';
+            $rootScope.isMobileType = projectType === 'MOBILE';
+            $rootScope.hasCardova = (window.device && window.device.cordova ? true : false);
 
             if ($rootScope.isMobileType || $rootScope.isPrefabType) {
                 Utils.fetchContent(
