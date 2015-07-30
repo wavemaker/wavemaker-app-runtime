@@ -321,6 +321,15 @@ WM.module('wm.widgets.base', [])
                         "animation": {"type": "list", "options": animationOptions}
                     },
 
+                    "wm.rating": {
+                        "maxvalue": {"type": "list", "options": [5, 10],  "value": 5},
+                        "readonly": {"type": "boolean", "value": false},
+                        "scopedatavalue": {"type": "string"},
+                        "datavalue": {"type": "number", "bindable": "in-bound", "widget": "string"},
+                        "iconsize": {"type": "string", "pattern": dimensionRegex},
+                        "caption": {"type": "string", "bindable": "in-bound", "maxlength": 256}
+                    },
+
                     "wm.buttongroup": {
                         "hint": {"type": "string", "bindable": "in-out-bound"},
                         "vertical": {"type": "boolean"}
@@ -2085,7 +2094,7 @@ WM.module('wm.widgets.base', [])
                     // convert the comma separated list into array and update _model_
                     modifiedVal = val.split(',').map(function (opt) {return ('' + opt).trim(); });
 
-                } else if (element.is('input[type="number"]') || element.is('.app-currency') || element.is('.app-slider')) {
+                } else if (element.is('input[type="number"]') || element.is('.app-currency') || element.is('.app-slider') || element.is('.app-rating')) {
                     temp = +val; // convert the value to number and update the scope property
                     if (isNaN(temp)) {
                         temp = 0;

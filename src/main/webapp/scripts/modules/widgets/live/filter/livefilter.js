@@ -632,6 +632,12 @@ WM.module('wm.widgets.live')
                         '</wm-composite>';
                 }
                 break;
+            case "rating":
+                template = template + '<wm-composite widget="rating" show="{{filterFields[' + index + '].show}}">' +
+                    '<wm-label class="col-md-4" caption="{{filterFields[' + index + '].displayName}}"></wm-label>' +
+                    '<div class="col-md-8"><wm-rating name="{{filterFields[' + index + '].field}}" readonly="{{filterFields[' + index + '].readonly}}" scopedatavalue="filterFields[' + index + '].value" ></wm-rating></div>' +
+                    '</wm-composite>';
+                break;
             case 'date':
                 if (fieldDef.isRange) {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min date';

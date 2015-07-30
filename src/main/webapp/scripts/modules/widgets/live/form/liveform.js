@@ -914,6 +914,17 @@ WM.module('wm.widgets.live')
                 }
                 template = template + '></wm-text></div></wm-composite>';
                 break;
+            case "Rating":
+                template = template +
+                    '<wm-composite widget="rating" show="{{dataArray[' + index + '].show}}" class="{{dataArray[' + index + '].class}}">' +
+                        '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
+                        '<div class="col-md-9 col-sm-9">' +
+                        '<wm-rating name="{{dataArray[' + index + '].key}}" readonly="{{!isUpdateMode}}" scopedatavalue="dataArray[' + index + '].value" maxvalue="{{dataArray[' + index + '].maxvalue}}"';
+                if (fieldDef.maxvalue) {
+                    template = template + ' maxvalue="{{dataArray[' + index + '].maxvalue}}"';
+                }
+                template = template + '></wm-rating></div></wm-composite>';
+                break;
             case "Date":
                 fieldDef.placeholder = fieldDef.placeholder || 'Select date';
                 template = template +

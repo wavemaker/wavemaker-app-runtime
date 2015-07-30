@@ -108,7 +108,7 @@ WM.module('wm.utils', [])
                 "wm.TimerVariable": "time"
             },
             fieldTypeWidgetTypeMap = {
-                'integer': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                'integer': ['Number', 'Text', 'Slider', 'Select', 'Radioset', 'Rating'],
                 'big_integer': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
                 'short': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
                 'byte': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
