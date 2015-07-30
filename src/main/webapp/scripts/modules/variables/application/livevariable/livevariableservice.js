@@ -413,7 +413,7 @@ wm.variables.services.$liveVariable = [
                         /* process next requests in the queue */
                         if (CONSTANTS.isRunMode) {
                             variableActive[variable.activeScope.$id][variable.name] = false;
-                            processRequestQueue(variable, requestQueue, deployProjectAndFetchData);
+                            processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                         }
                     };
 
@@ -484,7 +484,7 @@ wm.variables.services.$liveVariable = [
                     /* process next requests in the queue */
                     if (CONSTANTS.isRunMode) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
-                        processRequestQueue(variable, requestQueue, deployProjectAndFetchData);
+                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                     }
                 }, function (error) {
                     Utils.triggerFn(handleError, error);

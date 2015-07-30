@@ -132,7 +132,7 @@ wm.variables.services.Variables = [
                     /* if binding is present, watch on the expression */
                     watchers[variableScope.$id][variableName].push(variableScope.$watch(bindingVal.replace("bind:", ""), function (newVal, oldVal) {
                         /* don't perform any action if new value is coming as undefined(data source getting destroyed) */
-                        if (WM.isUndefined(newVal) && !WM.isUndefined(oldVal)) {
+                        if (newVal === oldVal || (WM.isUndefined(newVal) && !WM.isUndefined(oldVal))) {
                             return;
                         }
                         if (variable.category === "wm.Variable") {
@@ -221,7 +221,7 @@ wm.variables.services.Variables = [
             processBindNode = function (node, parentNode, scope, variable) {
                 if (Utils.stringStartsWith(node.value, "bind:")) {
                     scope.$watch(node.value.replace("bind:", ""), function (newVal, oldVal) {
-                        if (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(parentNode[node.name]))) {
+                        if ((newVal === oldVal) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(parentNode[node.name])))) {
                             return;
                         }
                         parentNode[node.name] = newVal;
@@ -964,7 +964,7 @@ wm.variables.services.Variables = [
             /* process the requests in the queue for a variable based on the inFlightBehavior flag of the variable */
             processRequestQueue = function (variable, requestQueue, handler) {
                 /* process request queue for the variable only if it is not empty */
-                if (requestQueue[variable.name] && requestQueue[variable.name].length) {
+                if (requestQueue && requestQueue[variable.name] && requestQueue[variable.name].length) {
                     var requestObj;
                     switch (variable.inFlightBehavior) {
                     case 'executeLast':
