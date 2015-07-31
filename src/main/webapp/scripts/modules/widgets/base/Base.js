@@ -63,7 +63,7 @@ WM.module('wm.widgets.base', [])
      * The `PropertiesFactory` contains properties of all the widgets in the studio and
      * provides utility methods for getting a specific widget's property
      */
-    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', function (WIDGET_CONSTANTS) {
+    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', '$rootScope', function (WIDGET_CONSTANTS, $rootScope) {
         "use strict";
         /**
          * TODO: fetch the properties from the config-properties.json
@@ -1553,6 +1553,9 @@ WM.module('wm.widgets.base', [])
             properties = result.properties,
             propertyGroups = result.propertyGroups;
 
+        if ($rootScope.isMobileType) {
+            widgetEventOptions.push("New MobileVariable");
+        }
         /**
          * @ngdoc function
          * @name wm.widgets.$PropertiesFactory#getPropertiesOf
