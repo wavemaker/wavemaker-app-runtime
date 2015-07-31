@@ -1217,9 +1217,9 @@ WM.module('wm.widgets.grid')
 
                             referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
                             /*Check if "referenceVariableKey" has already been computed.*/
-                            if (!referenceVariableKey && referenceVariable) {
+                            if (!referenceVariableKey && referenceVariable && referenceVariable.category === 'wm.LiveVariable') {
                                 /*Invoke the function to get the primary key.*/
-                                referenceVariableKey = referenceVariable .getPrimaryKey();
+                                referenceVariableKey = referenceVariable.getPrimaryKey();
 
                                 /*If the there is a single primary key, fetch the first element of the array.*/
                                 if (referenceVariableKey.length === 1) {
@@ -1368,7 +1368,7 @@ WM.module('wm.widgets.grid')
                             if (variableName === null) {
                                 var widgetBindingDetails = fetchReferenceDetails();
                                 if (!widgetBindingDetails.fields) {
-                                    var relatedTables = widgetBindingDetails.referenceVariable.relatedTables;
+                                    var relatedTables = widgetBindingDetails.referenceVariable.relatedTables || [];
                                     variableName = widgetBindingDetails.referenceVariableName;
                                     relatedTables.forEach(function(val) {
                                         if (val.columnName === widgetBindingDetails.relatedFieldName) {
