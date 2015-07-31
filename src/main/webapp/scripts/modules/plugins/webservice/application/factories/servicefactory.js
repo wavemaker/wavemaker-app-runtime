@@ -193,11 +193,16 @@ wm.plugins.webServices.factories.ServiceFactory = [
             processOperations = function (serviceObj, operations, swagger) {
                 var paramsKey = "parameters",
                     isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1,
-                    definitions = swagger.definitions,
-                    securityDefinitions = swagger.securityDefinitions;
+                    definitions,
+                    securityDefinitions;
 
                 /*Empty the "operations" so that they are set based on the response.*/
                 serviceObj.operations = [];
+
+                if (isRestSupportedService) {
+                    definitions = swagger.definitions;
+                    securityDefinitions = swagger.securityDefinitions;
+                }
 
                 /*loop through the operations to append them to the respective service object*/
                 WM.forEach(operations, function (operation) {
@@ -211,7 +216,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     if (operation.operationType === "hqlquery" || operation.operationType === "nativequery") {
                         returnType = operation.return;
                     } else {
-                        if(operation.responses['200'].schema) {
+                        if (operation.responses['200'].schema) {
                             returnType = getReturnType(operation.responses['200'].schema, definitions);
                         } else {
                             returnType = "void";
@@ -238,7 +243,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     if (!WM.element.isEmptyObject(operation[paramsKey])) {
                         operationObject.parameter = [];
                         WM.forEach(operation[paramsKey], function (param) {
-                            if(param.type) {
+                            if (param.type) {
                                 typeRef = param.type
                             } else {
                                 if (param.schema) {
@@ -258,7 +263,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     }
 
                     if (securityDefinitions && securityDefinitions[AUTH_TYPE_KEY] && securityDefinitions[AUTH_TYPE_KEY].type === "basic" && operation.security[0][AUTH_TYPE_KEY]) {
-                        if(!operationObject.parameter) {
+                        if (!operationObject.parameter) {
                             operationObject.parameter = [];
                         }
                         operationObject.parameter.push({
