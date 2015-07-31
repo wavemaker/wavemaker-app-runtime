@@ -192,7 +192,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 WM.forEach(operationInfo.parameters, function (param) {
                     var paramValue = param.sampleValue;
                     if (WM.isDefined(paramValue) && paramValue !== '') {
-                        switch (param.parameterType) {
+                        switch (param.parameterType.toUpperCase()) {
                         case 'QUERY':
                             if (!queryParams) {
                                 queryParams = "?" + param.name + "=" + encodeURIComponent(paramValue);
@@ -203,14 +203,14 @@ wm.variables.services.$servicevariable = ['Variables',
                         case 'AUTH':
                             if (param.name === 'wm_auth_username') {
                                 uname = paramValue;
-                            } else if(param.name === 'wm_auth_password'){
+                            } else if (param.name === 'wm_auth_password') {
                                 pswd = paramValue;
                             }
                             if (uname && pswd) {
                                 headers[AUTH_HDR_KEY] = "Basic " + btoa(uname + ':' + pswd);
                                 authType = AUTH_TYPE_BASIC;
                             }
-                            break;                            
+                            break;
                         case 'PATH':
                             /* replacing the path param based on the regular expression in the relative path */
                             pathParamRex = new RegExp("\\s*\\{\\s*" + param.name + "(:\\.\\+)?\\s*\\}\\s*");
