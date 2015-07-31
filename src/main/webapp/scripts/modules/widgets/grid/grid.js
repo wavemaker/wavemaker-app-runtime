@@ -1140,7 +1140,7 @@ WM.module('wm.widgets.grid')
             $scope.enablePageNavigation = function () {
                 if ($scope.dataset) {
                     /*Check for sanity*/
-                    if ($scope.shownavigation && $scope.dataNavigator) {
+                    if ($scope.dataNavigator) {
 
                         $scope.dataNavigator.pagingOptions = {
                             maxResults: $scope.pagesize || 5
