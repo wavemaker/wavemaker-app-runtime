@@ -26,8 +26,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 'serviceDef': {}
             },
             serviceDefMap = {},
-            supportedOperations = ['get','put','post','delete'],
-            primitiveDataTypes = ['integer','boolean','string'],
+            supportedOperations = ['get', 'put', 'post', 'delete'],
+            primitiveDataTypes = ['integer', 'boolean', 'string'],
             IS_LIST_KEY = 'x-WM-IS_LIST',
             UNIQUE_ITEMS_KEY = 'uniqueItems',
             FULLY_QUALIFIED_NAME_KEY = 'x-WM-FULLY_QUALIFIED_NAME',
@@ -146,43 +146,40 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
             /*Getting the fully qualified name*/
             getFullyQualifiedName = function (refValue, definitions) {
-                var refValues = refValue.split('/'),
-                    returnType = definitions[refValues[refValues.length - 1]];
-                if(returnType) {
-                    return returnType[FULLY_QUALIFIED_NAME_KEY];
-                } else {
-                    return 'Object';
-                }
+                var returnType;
+                refValue = refValue.split('/').pop();
+                returnType = definitions[refValue];
+                returnType = returnType ? returnType[FULLY_QUALIFIED_NAME_KEY] : 'Object';
+                return returnType;
             },
 
             getReturnType = function (responseObject, definitions) {
-                var refObject,
-                    type,
-                    values;
-                if(responseObject.type) {
+                var type;
+                if (responseObject.type) {
                     /*In case of primitive type*/
-                    if(primitiveDataTypes.indexOf(responseObject.type) !== -1) {
+                    if (primitiveDataTypes.indexOf(responseObject.type) !== -1) {
                         return responseObject.type;
-                    } else if(responseObject.type === 'array'){
+                    }
+                    if (responseObject.type === 'array') {
                         /*In case of list type*/
                         if (responseObject[IS_LIST_KEY]) {
-                            if(responseObject.items.type) {
+                            if (responseObject.items.type) {
                                 type = responseObject.items.type;
                             } else {
-                                if(responseObject.items.$ref) {
+                                if (responseObject.items.$ref) {
                                     type = getFullyQualifiedName(responseObject.items.$ref, definitions);
                                 }
                             }
-                            return responseObject[UNIQUE_ITEMS_KEY] ? 'Set<' + type + '>' : 'List<' + type + '>';
                         } else {
-                            if(responseObject.items.type) {
-                                return responseObject.items.type + "[]";
+                            if (responseObject.items.type) {
+                                type = responseObject.items.type;
                             } else {
-                                if(responseObject.items.$ref) {
-                                    return getFullyQualifiedName(responseObject.items.$ref, definitions) + "[]";
+                                if (responseObject.items.$ref) {
+                                    type = getFullyQualifiedName(responseObject.items.$ref, definitions);
                                 }
                             }
                         }
+                        return type;
                     }
                 } else {
                     /*In case of object type*/
@@ -244,11 +241,11 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         operationObject.parameter = [];
                         WM.forEach(operation[paramsKey], function (param) {
                             if (param.type) {
-                                typeRef = param.type
+                                typeRef = param.type;
                             } else {
                                 if (param.schema) {
                                     typeRef = getReturnType(param.schema, definitions);
-                                } else if(param.items) {
+                                } else if (param.items) {
                                     typeRef = getReturnType(param.items, definitions);
                                 }
                             }
@@ -329,7 +326,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         WM.forEach(response.paths, function (path) {
                             /*iterate over the operations available in each path*/
                             WM.forEach(supportedOperations, function (operation) {
-                                if(path[operation]) {
+                                if (path[operation]) {
                                     path[operation].operationType = operation;
                                     operations.push(path[operation]);
                                 }
