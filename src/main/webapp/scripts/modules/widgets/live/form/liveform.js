@@ -1201,6 +1201,10 @@ WM.module('wm.widgets.live')
                                         } else {
                                             parentIsolateScope.dataArray[index].dataset = newVal;
                                         }
+                                        /* fallback to set datafield to 'All Fields' for backward compatibility */
+                                        if (!attrs.datafield) {
+                                            parentIsolateScope.dataArray[index].datafield = "All Fields";
+                                        }
                                     }
                                 });
                             } else {
