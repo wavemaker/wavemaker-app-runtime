@@ -14,14 +14,14 @@ WM.module('wm.layouts.containers')
                        '<i class="glyphicon glyphicon-plus"></i> Add' +
                     '</a>' +
                 '</div>' +
-                '<div class="app-segmented-control-container" wmtransclude></div>' +
+                '<div class="app-segments-container" wmtransclude></div>' +
             '</div>');
-        $templateCache.put('template/widget/mobile/segmentedcontrol/segmentedcontrolcontent.html',
-                '<div init-widget wmtransclude data-ng-class="[\'app-segmented-control-content\', class, slide, {\'active\' : show}]" ' +
+        $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
+                '<div init-widget wmtransclude data-ng-class="[\'app-segment-content\', class, slide, {\'active\' : show}]" ' +
                     ' data-ng-show="show" hm-swipe-left="parentCtrl.goToNext()" hm-swipe-right="parentCtrl.goToPrev()">' +
                 '</div>');
     }])
-    .directive('wmMobileSegmentedcontrol', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
+    .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrol', ['wm.base', 'wm.containers']);
         return {
@@ -115,7 +115,7 @@ WM.module('wm.layouts.containers')
                             $scope.add = function () {
                                 $scope.$root.$emit('canvas-add-widget', {
                                     'parentId': $scope.widgetid,
-                                    'widgetType': 'wm-mobile-segmentedcontent'
+                                    'widgetType': 'wm-segment-content'
                                 });
                             };
                         }
@@ -125,16 +125,16 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmMobileSegmentedcontent', ['$templateCache', 'PropertiesFactory', function ($templateCache, PropertiesFactory) {
+    .directive('wmSegmentContent', ['$templateCache', 'PropertiesFactory', function ($templateCache, PropertiesFactory) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrolcontent', ['wm.base']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base']);
         return {
             'restrict' : 'E',
             'replace' : 'true',
             'scope' : {},
             'transclude': true,
-            'template' : $templateCache.get('template/widget/mobile/segmentedcontrol/segmentedcontrolcontent.html'),
-            'require': '^wmMobileSegmentedcontrol',
+            'template' : $templateCache.get('template/widget/mobile/segmentedcontrol/segmentcontent.html'),
+            'require': '^wmSegmentedControl',
             'compile' : function () {
                 return {
                     'pre' : function ($scope) {
@@ -155,11 +155,11 @@ WM.module('wm.layouts.containers')
     }]);
 /**
  * @ngdoc directive
- * @name wm.layouts.containers:wmMobileSegmentedcontrol
+ * @name wm.layouts.containers:wmSegmentedControl
  * @restrict E
  *
  * @description
- * The `wmMobileSegmentedcontrol` directive defines wm-mobile-segmentedcontrol widget.
+ * The `wmSegmentedControl` directive defines wm-segmented-control widget.
  *
  *
  * @scope
@@ -178,17 +178,17 @@ WM.module('wm.layouts.containers')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *                 <wm-mobile-segmentedcontrol height="400" name="segmentedcontrol3">
- *                      <wm-mobile-segmentedcontent caption="" name="segmentedcontrolcontent7" iconclass="glyphicon glyphicon-link">
+ *                 <wm-segmented-control height="400" name="segmentedcontrol3">
+ *                      <wm-segment-content caption="" name="segmentedcontrolcontent7" iconclass="glyphicon glyphicon-link">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#db6a2c"></wm-tile>
- *                      </wm-mobile-segmentedcontent>
- *                      <wm-mobile-segmentedcontent caption="" name="segmentedcontrolcontent9" iconclass="glyphicon glyphicon-facetime-video">
+ *                      </wm-segment-content>
+ *                      <wm-segment-content caption="" name="segmentedcontrolcontent9" iconclass="glyphicon glyphicon-facetime-video">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#72a68a"></wm-tile>
- *                      </wm-mobile-segmentedcontent>
- *                      <wm-mobile-segmentedcontent caption="" name="segmentedcontrolcontent4" iconclass="glyphicon glyphicon-picture">
+ *                      </wm-edcontent>
+ *                      <wm-segment-content caption="" name="segmentedcontrolcontent4" iconclass="glyphicon glyphicon-picture">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#80d3ed"></wm-tile>
- *                      </wm-mobile-segmentedcontent>
- *                  </wm-mobile-segmentedcontrol>
+ *                      </wm-segment-content>
+ *                  </wm-segmented-control>
  *           </div>
  *       </file>
  *       <file name="script.js">
@@ -201,11 +201,11 @@ WM.module('wm.layouts.containers')
 
 /**
  * @ngdoc directive
- * @name wm.layouts.containers:wmMobileSegmentedcontent
+ * @name wm.layouts.containers:wmSegmentContent
  * @restrict E
  *
  * @description
- * The `wmMobileSegmentedcontent` directive defines wm-mobile-segmentedcontent widget.
+ * The `wmSegmentContent` directive defines wm-segment-content widget.
  *
  *
  * @scope
@@ -222,11 +222,11 @@ WM.module('wm.layouts.containers')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *                 <wm-mobile-segmentedcontrol height="400" name="segmentedcontrol3">
- *                      <wm-mobile-segmentedcontent caption="" name="segmentedcontrolcontent7" iconclass="glyphicon glyphicon-link">
+ *                 <wm-segmented-control height="400" name="segmentedcontrol3">
+ *                      <wm-segment-content caption="" name="segmentedcontrolcontent7" iconclass="glyphicon glyphicon-link">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#db6a2c"></wm-tile>
- *                      </wm-mobile-segmentedcontent>
- *                  </wm-mobile-segmentedcontrol>
+ *                      </wm-segment-content>
+ *                  </wm-segmented-control>
  *           </div>
  *       </file>
  *       <file name="script.js">

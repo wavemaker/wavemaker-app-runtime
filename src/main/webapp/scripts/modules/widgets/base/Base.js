@@ -1086,7 +1086,7 @@ WM.module('wm.widgets.base', [])
                         "onBeforeSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
-                    "wm.layouts.segmentedcontrolcontent" : {
+                    "wm.layouts.segmentcontent" : {
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex}
                     },

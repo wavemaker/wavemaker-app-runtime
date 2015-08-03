@@ -4,11 +4,16 @@
 .app-segmented-control{
   position: relative;
   height: 100%;
-  .app-segmented-control-container {
+  > .btn-group {
+    .app-icon {
+      width: auto;
+    }
+  }
+  .app-segments-container {
     position: relative;
     overflow-x: hidden;
     .calc('height', ~"calc(100% - 40px)");
-    .app-segmented-control-content{
+    .app-segment-content{
       height: 100%;
       width: 100%;
       position: absolute;
@@ -27,7 +32,7 @@
     }
   }
   &.animate {
-    .app-segmented-control-content {
+    .app-segment-content {
       transition: .6s ease-in-out left;
     }
   }
