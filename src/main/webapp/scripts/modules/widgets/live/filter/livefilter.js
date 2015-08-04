@@ -320,7 +320,7 @@ WM.module('wm.widgets.live')
                                         class: 'btn-primary',
                                         iconname: 'filter',
                                         action: 'filter()',
-                                        displayName: 'filter',
+                                        displayName: 'Filter',
                                         show: true,
                                         type: 'button'
                                     },
@@ -329,7 +329,7 @@ WM.module('wm.widgets.live')
                                         class: 'btn',
                                         iconname: 'clear',
                                         action: 'clearFilter()',
-                                        displayName: 'clear',
+                                        displayName: 'Clear',
                                         show: true,
                                         type: 'button'
                                     }];
