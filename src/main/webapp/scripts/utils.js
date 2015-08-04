@@ -1389,22 +1389,22 @@ WM.module('wm.utils', [])
         }
 
         /*
-         * Converts the object passed in to display value based on the display expression given
+         * Evaluates expression passed and returns corresponding value of object
          * @params: {object} object from which values are extracted
-         * @params: {displayExpr} expression to be evaluated
+         * @params: {expression} expression to be evaluated
          * @params: {scope} scope of the fucntion called. Used for eval
          */
-        function getDisplayExprValue(object, displayExpr, scope) {
+        function getEvaluatedExprValue(object, expression, scope) {
             var requiredFields = [], keys, relatedFieldKeys, dataObj, str = '';
             keys = Object.keys(object);
             keys.forEach(function (column) {
-                if (_.includes(displayExpr, column)) {
+                if (_.includes(expression, column)) {
                     if (WM.isObject(object[column])) {
                         dataObj = object[column];
                         relatedFieldKeys = Object.keys(dataObj);
                         relatedFieldKeys.forEach(function(field) {
                             str = column + "." + field;
-                            if (_.includes(displayExpr, column)) {
+                            if (_.includes(expression, column)) {
                                 requiredFields.push({'field': str, 'value': dataObj[field]});
                             }
                         });
@@ -1420,12 +1420,12 @@ WM.module('wm.utils', [])
                 if (WM.isString(val)) {
                     val = "'" + val + "'";
                 }
-                displayExpr = displayExpr.replace(regexExpr, val);
+                expression = expression.replace(regexExpr, val);
             });
             try {
-                return scope.$eval(displayExpr);
+                return scope.$eval(expression);
             } catch (e) {
-                return displayExpr;
+                return expression;
             }
         }
         return {
@@ -1518,6 +1518,6 @@ WM.module('wm.utils', [])
             getValidMarkUp: getValidMarkUp,
             scrollIntoView: scrollIntoView,
             arraysEqual: arraysEqual,
-            getDisplayExprValue: getDisplayExprValue
+            getEvaluatedExprValue: getEvaluatedExprValue
         };
     }]);

@@ -579,7 +579,7 @@ WM.module('wm.widgets.live')
                         if (!displayExpr) {
                             displayExpr = Object.keys(object)[0];
                         }
-                        return Utils.getDisplayExprValue(object, displayExpr, $scope);
+                        return Utils.getEvaluatedExprValue(object, displayExpr, $scope);
                     }
                     return object;
                 };

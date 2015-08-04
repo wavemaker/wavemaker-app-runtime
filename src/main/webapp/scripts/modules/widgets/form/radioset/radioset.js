@@ -80,11 +80,11 @@ WM.module('wm.widgets.form')
                         data = {};
                         if (dataField !== 'All Fields') {
                             WM.forEach(dataSet, function (option) {
-                                data[WidgetUtilService.getDisplayFieldData(scope, option, displayField)] = option[dataField];
+                                data[WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField)] = option[dataField];
                             });
                         } else {
                             WM.forEach(dataSet, function (option) {
-                                data[WidgetUtilService.getDisplayFieldData(scope, option, displayField)] = option;
+                                data[WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField)] = option;
                             });
                         }
                     }

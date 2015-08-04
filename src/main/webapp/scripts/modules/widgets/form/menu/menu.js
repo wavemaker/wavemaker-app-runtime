@@ -13,7 +13,7 @@ WM.module('wm.widgets.form')
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
                     '</button>' +
-                    '<wm-menu-dropdown items="menuItems" menualign="menualign"/>' +
+                    '<wm-menu-dropdown items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
@@ -23,32 +23,33 @@ WM.module('wm.widgets.form')
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
                     '</a>' +
-                    '<wm-menu-dropdown items="menuItems" menualign="menualign"/>' +
+                    '<wm-menu-dropdown items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',
             '<ul class="dropdown-menu {{menualign}}">' +
-            '<wm-menu-dropdown-item data-ng-repeat="item in items" item="item" menualign="menualign"/>' +
+            '<wm-menu-dropdown-item data-ng-repeat="item in items" linktarget="linktarget" item="item" menualign="menualign"/>' +
                 '</ul>'
             );
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
                 '<li data-ng-class="{\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}">' +
-                    '<a title="{{item.label}}">' +
+                    '<a title="{{item.label}}" ng-href="{{item.link}}" target="{{linktarget}}">' +
                         '<i class="{{item.icon}}"></i>' +
                         '{{item.label}}' +
                     '</a>' +
                 '</li>'
             );
     }])
-    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'wmupdateProperties', 'Utils', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, wmupdateProperties, Utils) {
+    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'wmupdateProperties', 'Utils', 'CONSTANTS', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, wmupdateProperties, Utils, CONSTANTS) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base.editors', 'wm.base.editors.dataseteditors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base.editors', 'wm.menu.dataProps']),
             notifyFor = {
                 'iconname': true,
                 'scopedataset': true,
                 'dataset': true,
-                'menuposition': true
+                'menuposition': true,
+                'linktarget': true
             },
             POSITION = {
                 DOWN_RIGHT : "down,right",
@@ -72,12 +73,14 @@ WM.module('wm.widgets.form')
             } else if (WM.isArray(newVal)) {
                 if (WM.isObject(newVal[0])) {
                     transformFn = function (item) {
+                        var children = (WidgetUtilService.getEvaluatedData(scope, item, {expressionName: "itemchildren"}) ||item.children);
                         return {
-                            'label': scope.displayfield ? Utils.findValueOf(item, scope.displayfield) : item.label,
-                            'icon': item.icon,
+                            'label': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: "itemlabel"}) || item.label,
+                            'icon': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: "itemicon"}) || item.icon,
                             'disabled': item.disabled,
+                            'link': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: "itemlink"}) || item.link,
                             'value': scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
-                            'children' : (item.children || []).map(transformFn)
+                            'children' :WM.isArray(children) ? children : [] .map(transformFn)
                         };
                     };
                     menuItems = newVal.map(transformFn);
@@ -97,15 +100,19 @@ WM.module('wm.widgets.form')
         function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case 'scopedataset':
-            case 'dataset':
-                /*if studio-mode, then update the displayField & dataField in property panel*/
-                if (scope.widgetid && WM.isDefined(newVal) && newVal !== null) {
+                case 'dataset':
+                /*if studio-mode, then update the itemlabel, itemicon, itemlink & itemchildren in property panel*/
+                if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
                     wmupdateProperties.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
                 }
-                if (!scope.widgetid && newVal) {
+                    scope.itemlabel = scope.itemlabel || scope.displayfield;
+                if (CONSTANTS.isRunMode && newVal) {
                     scope.menuItems = getMenuItems(newVal.data || newVal, scope);
                 }
                 break;
+            case 'linktarget':
+                    scope.linktarget = newVal;
+                    break;
             case 'menuposition':
                 switch (newVal) {
                 case POSITION.DOWN_RIGHT:
@@ -197,14 +204,17 @@ WM.module('wm.widgets.form')
             'replace': true,
             'scope': {
                 'items': '=',
-                'menualign': '='
+                'menualign': '=',
+                'linktarget': '='
             },
             'template': $templateCache.get('template/widget/form/menu/dropdown.html'),
             'compile': function () {
                 return {
                     'post': function (scope) {
                         scope.onSelect = function (args) {
-                            scope.$parent.onSelect(args);
+                            if (!args.$scope.item.link) {
+                                scope.$parent.onSelect(args);
+                            }
                         };
                     }
                 };
@@ -218,7 +228,8 @@ WM.module('wm.widgets.form')
             'replace': true,
             'scope': {
                 'item': '=',
-                'menualign': '='
+                'menualign': '=',
+                'linktarget': '='
             },
             'template': function () {
                 var template = WM.element($templateCache.get('template/widget/form/menu/dropdownItem.html'));
@@ -229,12 +240,14 @@ WM.module('wm.widgets.form')
             },
             'link': function (scope, element) {
                 if (scope.item.children && scope.item.children.length > 0) {
-                    element.append('<wm-menu-dropdown items="item.children" menualign="menualign"/>');
+                    element.append('<wm-menu-dropdown items="item.children"  target="linktarget" menualign="menualign"/>');
                     element.off('click');
                     $compile(element.contents())(scope);
                 }
                 scope.onSelect = function (args) {
-                    scope.$parent.onSelect(args);
+                    if (!args.$scope.item.link) {
+                        scope.$parent.onSelect(args);
+                    }
                 };
             }
         };

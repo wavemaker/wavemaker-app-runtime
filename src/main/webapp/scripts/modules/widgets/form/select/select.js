@@ -110,19 +110,19 @@ WM.module('wm.widgets.form')
             if (dataField && dataField !== ALLFIELDS) {
                 data = {};
                 WM.forEach(dataSet, function (option) {
-                    data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getDisplayFieldData(scope, option, displayField);
+                    data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
                 });
             } else {
                 data = {};
                 WM.forEach(dataSet, function (option, index) {
                     if (WM.isObject(option)) {
                         if (scope.datafield === ALLFIELDS) {
-                            data[index] = WidgetUtilService.getDisplayFieldData(scope, option, displayField);
+                            data[index] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
                             /*store parsed dataSet in scope*/
                             _dataSetModelProxyMap[scope.$id][index] = option;
                             _dataSetModelMap[scope.$id][JSON.stringify(option)] = index.toString();
                         } else {
-                            data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getDisplayFieldData(scope, option, displayField);
+                            data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
                         }
                     } else {
                         if (WM.isArray(dataSet)) {

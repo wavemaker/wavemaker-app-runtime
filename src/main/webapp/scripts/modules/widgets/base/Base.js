@@ -356,8 +356,17 @@ WM.module('wm.widgets.base', [])
                         "menuclass": {"type": "string", "pattern": classRegex},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "menuposition": {"type": "list", "options": ["down,right", "down,left", "up,right", "up,left", "inline"], "value": ""},
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "linktarget": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_blank", "widget": "datalist"}
                     },
+
+                    "wm.menu.dataProps": {
+                        "itemlabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
+                        "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
+                        "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
+                        "itemchildren": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"}
+                    },
+
                     "wm.tree": {
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "object", "bindable": "in-bound", "widget": "string", "value": "node1, node2, node3"},
@@ -943,8 +952,6 @@ WM.module('wm.widgets.base', [])
                         "closable": {"type": "boolean"},
                         "helptext": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
                         "actions": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "datafield": {"type": "list", "options": [""]},
-                        "displayfield": {"type": "list", "options": [""]},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
@@ -1529,7 +1536,7 @@ WM.module('wm.widgets.base', [])
                     {"name": "values", "properties": [ "scopedatavalue", "datavalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultvalue", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                     {"name": "valuedisplay", "properties": ["places", "datepattern", "ismeridian", "hourstep", "minutestep", "limit"], "parent": "properties"},
                     {"name": "output", "properties": ["outputformat"], "parent": "properties"},
-                    {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "actions",  "datafield", "itemicon", "itemlabel", "itemlink", "itemchildren", "displayfield", "displayexpression",  "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
+                    {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "actions",  "datafield", "itemlabel", "itemicon", "itemlink", "itemchildren", "displayfield", "displayexpression", "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
                     {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
                     {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},
                     {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
@@ -1537,7 +1544,7 @@ WM.module('wm.widgets.base', [])
                     {"name": "help", "properties": ["helptext"], "parent": "properties"},
                     {"name": "behavior", "properties": ["pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "deletemessage", "ignoreparentreadonly", "readonlygrid",
                         "multiple", "show", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
-                        "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link",
+                        "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                         "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "captions", "showxaxis", "showyaxis", "showvalues",
                          "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                           "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition"], "parent": "properties"},
@@ -1858,14 +1865,18 @@ WM.module('wm.widgets.base', [])
                 var variableKeys = [],
                     ALLFIELDS = "All Fields";
 
-                scope.widgetProps.datafield.options = [];
-                scope.widgetProps.displayfield.options = [];
+                scope.widgetProps.itemlabel.options = [];
+                scope.widgetProps.itemicon.options = [];
+                scope.widgetProps.itemlink.options = [];
+                scope.widgetProps.itemchildren.options = [];
                 /* re-initialize the property values */
                 if (scope.newcolumns) {
                     scope.newcolumns = false;
-                    scope.datafield = '';
-                    scope.displayfield = '';
-                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': scope.datafield, 'displayfield': scope.displayfield});
+                    scope.itemlabel = '';
+                    scope.itemicon = '';
+                    scope.itemlink = '';
+                    scope.itemchildren = '';
+                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'itemlabel': scope.itemlabel, 'itemicon': scope.itemicon, 'itemlink': scope.itemlink, 'itemchildren': scope.itemchildren});
                 }
 
                 if (WM.isString(dataset)) {
@@ -1885,8 +1896,10 @@ WM.module('wm.widgets.base', [])
                     }
                 });
 
-                scope.widgetProps.datafield.options = ['', ALLFIELDS].concat(variableKeys);
-                scope.widgetProps.displayfield.options = [''].concat(variableKeys);
+                scope.widgetProps.itemlabel.options = [''].concat(variableKeys);
+                scope.widgetProps.itemicon.options = [''].concat(variableKeys);
+                scope.widgetProps.itemlink.options = [''].concat(variableKeys);
+                scope.widgetProps.itemchildren.options = [''].concat(variableKeys);
             }
             return {
                 updatePropertyPanelOptions: updatePropertyPanelOptions
@@ -2771,23 +2784,32 @@ WM.module('wm.widgets.base', [])
                 }
                 return obj;
             }
-
-            function getDisplayFieldData(scope, option, displayField) {
-                /* if displayExpression is set*/
-                if (scope.binddisplayexpression) {
-                    /*remove 'bind:' prefix from the binded displayExpression*/
-                    displayField = scope.binddisplayexpression.replace("bind:", "");
-                    /* parse the displayExpression for replacing all the expressions with values in the object */
-                    return scope.$eval(displayField.replace(/\$\[(\w)+(\w+(\[\$i\])?\.+\w+)*\]/g, function (expr) {
+            /*
+            * Function evaluates passed key(expression/bound expression) and returns corresponding value of dataObj
+            * @params: {dataObj} object from which values are extracted
+            * @params: {scope} scope of the function called. Used for eval
+            * @params: {propertyObj} Ex :{fieldName : "displayfield", expressionName : "displayexpression" }
+            * @params: {value} previously computed key passed as an extra argument
+            * Priority : boundExpressionName >> expressionName >> value >> fieldName
+            * */
+            function getEvaluatedData(scope, dataObj, propertyObj, value) {
+                var boundExpressionName = propertyObj ? ("bind" + propertyObj.expressionName) : undefined,
+                    expressionValue;
+                /* if key is bound expression*/
+                if (scope[boundExpressionName]) {
+                    /*remove 'bind:' prefix from the boundExpressionName*/
+                    expressionValue = scope[boundExpressionName].replace("bind:", "");
+                    /* parse the expressionValue for replacing all the expressions with values in the object */
+                    return scope.$eval(expressionValue.replace(/\$\[(\w)+(\w+(\[\$i\])?\.+\w+)*\]/g, function (expr) {
                         var val;
                         /*remove '$[' prefix & ']' suffix from each expression pattern */
                         expr = expr.replace(/[\$\[\]]/gi, '');
                         /*split to get all keys in the expr*/
                         expr.split('.').forEach(function (key) {
-                            /* get the value for the 'key' from the option first & then value itself,
+                            /* get the value for the 'key' from the dataObj first & then value itself,
                              * as it will be the object to scan
                              * */
-                            val = (val && val[key]) || option[key];
+                            val = (val && val[key]) || dataObj[key];
                             /*if val is a string, append single quotes to it */
                             if (WM.isString(val)) {
                                 val = "'" + val + "'";
@@ -2797,13 +2819,18 @@ WM.module('wm.widgets.base', [])
                         return val;
                     }));
                 }
-                /*If any column of the option object is present in the display expression,
-                 replace it with the option value*/
-                if (scope.displayexpression) {
-                    return Utils.getDisplayExprValue(option, scope.displayexpression, scope);
+                /*If key is expression*/
+                if (propertyObj && scope[propertyObj.expressionName]) {
+                    return Utils.getEvaluatedExprValue(dataObj, scope[propertyObj.expressionName], scope);
                 }
-                /*return just the displayField from the option object, if displayExpr is not set*/
-                return getObjValueByKey(option, displayField);
+                /*If value is passed*/
+                if (value) {
+                    return getObjValueByKey(dataObj, value);
+                }
+                /*If fieldName is defined*/
+                if (propertyObj && scope[propertyObj.fieldName]) {
+                    return getObjValueByKey(dataObj, scope[propertyObj.fieldName]);
+                }
             }
 
             return {
@@ -2881,7 +2908,7 @@ WM.module('wm.widgets.base', [])
                  * Based on the bind display expression or display expression or display name,
                  * data is extracted and formatted from the passed option object
                  */
-                getDisplayFieldData: getDisplayFieldData
+                getEvaluatedData: getEvaluatedData
             };
         }])
 
