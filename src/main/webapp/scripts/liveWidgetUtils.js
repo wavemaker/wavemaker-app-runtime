@@ -72,7 +72,7 @@ WM.module('wm.widgets.live')
                         class: 'form-reset btn-secondary',
                         iconclass: 'glyphicon glyphicon-refresh',
                         action: 'reset()',
-                        displayName: 'reset',
+                        displayName: 'Reset',
                         show: true,
                         type: 'button',
                         updateMode: true
@@ -82,7 +82,7 @@ WM.module('wm.widgets.live')
                         class: 'form-cancel btn-secondary',
                         iconclass: 'glyphicon glyphicon-remove-circle',
                         action: 'cancel()',
-                        displayName: 'cancel',
+                        displayName: 'Cancel',
                         show: true,
                         type: 'button',
                         updateMode: true
@@ -92,9 +92,9 @@ WM.module('wm.widgets.live')
                         class: 'form-save btn-success',
                         iconclass: 'glyphicon glyphicon-save',
                         action: '',
-                        displayName: 'save',
+                        displayName: 'Save',
                         show: true,
-                        type: 'submit',
+                        type: 'Submit',
                         updateMode: true
                     },
                     {
@@ -102,17 +102,17 @@ WM.module('wm.widgets.live')
                         class: 'form-delete btn-secondary',
                         iconclass: 'glyphicon glyphicon-remove',
                         action: 'delete()',
-                        displayName: 'delete',
+                        displayName: 'Delete',
                         show: true,
                         type: 'button',
                         updateMode: false
                     },
                     {
-                        key : 'update',
+                        key : 'edit',
                         class: 'form-update btn-secondary',
                         iconclass: 'glyphicon glyphicon-pencil',
-                        action: 'update()',
-                        displayName: 'update',
+                        action: 'edit()',
+                        displayName: 'Edit',
                         show: true,
                         type: 'button',
                         updateMode: false
@@ -122,14 +122,41 @@ WM.module('wm.widgets.live')
                         class: 'form-new btn-success',
                         iconclass: 'glyphicon glyphicon-plus',
                         action: 'new()',
-                        displayName: 'new',
+                        displayName: 'New',
                         show: true,
                         type: 'button',
                         updateMode: false
                     }];
             }
 
+            /*
+            * @ngdoc function
+            * @name wm.widgets.live.LiveWidgetUtils#getCustomActions
+            * @methodOf wm.widgets.live.LiveWidgetUtils
+            * @function
+            *
+            * @description
+            * return the array of custom actions defined by the user.
+            *
+            * @param {string} actions actions of a button
+            * @param {array} definedActions Predefined actions for the widget
+            */
+            function getCustomActions(actions, definedActions) {
+                var customActions = [];
+                actions = actions && actions.split(';');
+                if (WM.isArray(actions)) {
+                    actions.forEach(function (action) {
+                        if (definedActions.indexOf(action) === -1) {
+                            action = action.substring(0, action.indexOf('('));
+                            customActions.push(action);
+                        }
+                    });
+                }
+                return customActions;
+            }
+
             this.getDefaultValue = getDefaultValue;
             this.getFormButtons = getFormButtons;
+            this.getCustomActions = getCustomActions;
         }
     ]);

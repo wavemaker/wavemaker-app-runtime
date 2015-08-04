@@ -94,7 +94,7 @@ WM.module('wm.widgets.live')
                                         }
                                         /*If the form is already in update mode, call the form update function*/
                                         if (scope.gridform.isUpdateMode) {
-                                            scope.gridform.update();
+                                            scope.gridform.edit();
                                         }
                                     } else {
                                         scope.gridform.isSelected = false;
@@ -134,7 +134,7 @@ WM.module('wm.widgets.live')
                                         scope.gridform.setPrevDataArray(scope.gridform.dataArray);
                                         scope.gridform.dataArray = [];
                                     }
-                                    scope.gridform.update();
+                                    scope.gridform.edit();
                                     scope.$root.$safeApply(scope);
                                     if (scope.isLayoutDialog) {
                                         /*Open the dialog in view or edit mode based on the defaultview property*/
@@ -192,7 +192,7 @@ WM.module('wm.widgets.live')
                                             if (operation === 'insert') {
                                                 scope.gridform.new();
                                             } else if (operation === 'update') {
-                                                scope.gridform.update();
+                                                scope.gridform.edit();
                                             }
                                         } else {
                                             DialogService.hideDialog(scope.gridform._dialogid);
