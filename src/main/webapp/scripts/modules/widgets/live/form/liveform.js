@@ -326,7 +326,7 @@ WM.module('wm.widgets.live')
                     });
                 }
                 /*Method to update, sets the operationType to "update" disables the readonly*/
-                $scope.update = function () {
+                $scope.edit = function () {
                     /*set the dataArray into the prevDataArray only in case of inline form
                     * in case of dialog layout the set prevDataArray is called before manually clearing off the dataArray*/
 
@@ -598,6 +598,10 @@ WM.module('wm.widgets.live')
 
                 $scope.cancel = function () {
                     $scope.formCancel();
+                };
+                /*For backward compatibility of update action*/
+                $scope.update = function () {
+                    $scope.edit();
                 };
             },
             compile: function () {
