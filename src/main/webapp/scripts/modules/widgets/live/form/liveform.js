@@ -17,7 +17,7 @@ WM.module('wm.widgets.live')
                 'updatemode': true,
                 'formtype': true,
                 'layout': true,
-                'defaultview': true
+                'defaultmode': true
             },
             /*check if the field is of column type time or widget type time*/
             isTimeType = function (field) {
@@ -796,7 +796,7 @@ WM.module('wm.widgets.live')
                             case "updatemode":
                                 scope.isUpdateMode = (newVal === true || newVal === "true");
                                 break;
-                            case "defaultview":
+                            case "defaultmode":
                                 if (newVal && newVal === 'Edit') {
                                     scope.updateMode = true;
                                 } else {

@@ -137,7 +137,7 @@ WM.module('wm.widgets.live')
                                     scope.gridform.edit();
                                     scope.$root.$safeApply(scope);
                                     if (scope.isLayoutDialog) {
-                                        /*Open the dialog in view or edit mode based on the defaultview property*/
+                                        /*Open the dialog in view or edit mode based on the defaultmode property*/
                                         scope.gridform.isUpdateMode = (eventName === 'dblclick') ? scope.gridform.updateMode : true;
                                         DialogService.showDialog(scope.gridform._dialogid, {
                                             'resolve': {},
