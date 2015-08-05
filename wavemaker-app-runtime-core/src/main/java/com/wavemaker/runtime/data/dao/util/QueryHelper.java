@@ -15,7 +15,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 public class QueryHelper {
 
     private static final String SELECT_COUNT = "select count(*) from (";
-    private static final String ALIAS=" ) tempTable";
+    private static final String ALIAS=" ) wmTempTable";
     private static final String FROM = " FROM ";
     private static final String FROM_HQL = "FROM ";//For a Select (*) hibernate query.
     private static final String SELECT_COUNT1 = "select count(*) ";
