@@ -1,20 +1,63 @@
+.wm-app {
+@app-mobile-nav-font-size: 14pt;
+@app-mobile-nav-icon-size: 22pt;
+@app-mobile-nav-height: 44pt;
+@app-mobile-tabbar-height: 49pt;
+@app-mobile-nav-button-padding: (@app-mobile-nav-height - @app-mobile-nav-font-size)/2;
+/********************************************************************************
+*************************************** Mobile Left Panel ***********************
+*********************************************************************************/
+.wm-mobile-app-left-panel{
+  .mobile-left-panel(90%)
+}
+/********************************************************************************
+*************************************** Mobile layouts *********************************
+*********************************************************************************/
+.app-page {
+  .app-mobile-navbar {
+    &+.app-content {
+      .calc('height', ~"calc( 100% - @{app-mobile-nav-height} ) )") !important;
+      margin: 0;
+      min-height: 0!important;
+      overflow: auto;
+      display: block;
+      .app-content-row {
+        min-height: 0 !important;
+      }
+    }
+  }
+  &.has-tabbar {
+    .app-mobile-navbar + .app-content {
+      .calc('height', ~"calc( 100% -( @{app-mobile-nav-height} + @{app-mobile-tabbar-height} ) )") !important;
+    }
+  }
+  &.has-tabbar-top .app-mobile-navbar + .app-content {
+      margin-top: @app-mobile-tabbar-height;
+  }
+}
 /********************************************************************************
 *************************************** Tab Bar *********************************
 *********************************************************************************/
 .app-tabbar {
+  position: absolute;
   padding: 0;
   width: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   &.top {
-    top: 0;
+    top: @app-mobile-nav-height;
   }
   &.bottom {
     bottom: 0;
+    position: absolute;
   }
   .app-icon {
-    font-size: 200%;
+    font-size: @app-mobile-nav-icon-size;
   }
   >.navbar {
-    height: 6em;
+    border: none;
+    border-radius: 0 !important;
   }
   .navbar {
     .navbar-nav {
@@ -24,40 +67,45 @@
       width: 100%;
       &.tab-items {
         display: table;
+        height: 100%;
         > li {
           display: table-cell;
           float: none;
-          >a {
-            padding:10px 5px;
-          }
+          vertical-align: middle;
+          height: 100%;
         }
       }
       > li {
         > a {
           text-align: center;
           text-transform: uppercase;
+          padding: 8pt 0;
+          height: @app-mobile-tabbar-height;
           > label {
             display: block;
             text-align: center;
             overflow: hidden;
             text-overflow: ellipsis;
             font-size: 0.8em;
+            margin: 0;
           }
         }
       }
       .dropdown {
         background-color: inherit;
         display: none;
+        position: initial;
         .dropdown-menu {
           background-color: inherit;
           position: absolute !important;
-          min-width: 80px;
+          border-radius: 0;
+          border: 0;
+          left: 0;
+          right: 0;
           &.navbar-nav {
             > li {
-              min-width: 80px;
-              >  a {
-                padding: 10px 15px;
-              }
+              float: left;
+              width: 25%;
             }
           }
         }
@@ -69,27 +117,29 @@
 /********************************************************************************
 **************************** Mobile Navbar ***********************
 *********************************************************************************/
-
 .app-mobile-navbar{
-  overflow: hidden;
+  position: relative;
+  z-index: 1000;
+  overflow: inherit;
+  font-size: @app-mobile-nav-font-size;
   .navbar {
-    min-height: 0;
     background-color: inherit;
+    height: @app-mobile-nav-height;
+    border: 0;
     > div {
       padding: 0;
       height: 100%;
       background-color: inherit;
     }
     .navbar-header {
-      width: 100%;
-      float: none;
+      .width-height();
       .navbar-brand {
         text-align: center;
-        display: inline-block;
-        width: 100%;
+        height: 100%;
         float: none;
-        margin: auto 0;
-        font-size: 1.5em;
+        margin: 0;
+        padding: @app-mobile-nav-button-padding 0;
+        font-size: @app-mobile-nav-font-size;
       }
     }
     .navbar-nav {
@@ -97,32 +147,20 @@
       background-color: inherit;
       .app-menu, .app-popover {
         > a {
-          padding: 1em 0.85em;
-          line-height: normal;
+          line-height: @app-mobile-nav-height;
         }
       }
-      .btn-back > *{
+      .btn-back > * {
         vertical-align: middle;
-        margin: 0 0.1em;
       }
       &.navbar-left {
         white-space:nowrap;
-        >li {
-          width: 40px;
-          >a{
-            padding:10px 5px;
-          }
-        }
       }
       &.navbar-right {
        text-align: right;
-       margin-right: 0.5em;
         > li {
           > button {
              margin: 1em 0;
-          }
-          >a{
-            padding:10px 5px;
           }
         }
         .dropdown {
@@ -137,42 +175,21 @@
         display: inline-block;
         vertical-align: top;
         background-color: inherit;
+        white-space: nowrap;
         .glyphicon, .fa {
-          font-size: 200%;
+          font-size: @app-mobile-nav-icon-size;
+          vertical-align: middle;
         }
         > * {
           display: inline-block;
+          line-height: @app-mobile-nav-height;
+          padding: 0;
+          &:hover {
+            background-color: transparent;
+          }
         }
       }
     }
   }
 }
-/********************************************************************************
-*************************************** Mobile Left Panel ***********************
-*********************************************************************************/
-.wm-mobile-app-left-panel{
-  .mobile-left-panel(90%)
-}
-/********************************************************************************
-*************************************** Mobile layouts *********************************
-*********************************************************************************/
-.wm-app{
-  .app-page {
-    .app-mobile-navbar {
-      position: static;
-      &+.app-content {
-        .calc('height', ~"calc(100% - 4em)");
-        margin: 0;
-        min-height: 0!important;
-        overflow: auto;
-
-        .app-content-row {
-          min-height: 0!important;
-        }
-      }
-    }
-    &.has-tabbar .app-mobile-navbar + .app-content{
-      .calc('height', ~"calc(100% - 10em)") !important;
-    }
-  }
 }

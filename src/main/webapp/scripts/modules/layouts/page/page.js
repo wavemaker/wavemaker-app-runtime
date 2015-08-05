@@ -21,7 +21,7 @@ WM.module('wm.layouts.page')
             'restrict': 'E',
             'replace': true,
             'transclude': true,
-            'template': '<div data-role="pageContainer" class="app-page container" wmtransclude></div>',
+            'template': '<div data-role="pageContainer" class="app-page container {{layoutClass}}" wmtransclude></div>',
             'compile': function () {
                 return {
                     'pre': function (scope, element, attrs) {
@@ -56,7 +56,6 @@ WM.module('wm.layouts.page')
                                 containerScope.Widgets = scope.Widgets;
                             }
                         }
-
                         // define registerPageContainer and onPageContainerLoad methods in Run Mode.
                         if (!scope.registerPageContainer && CONSTANTS.isRunMode) {
                             count = 0;
@@ -90,7 +89,6 @@ WM.module('wm.layouts.page')
                                     scope.layout.search = element.find('.app-header .app-search').length > 0;
                                     scope.layout.leftSection = element.find('[data-role="page-left-panel"]').length > 0;
                                     scope.layout.rightSection = element.find('[data-role="page-right-panel"]').length > 0;
-
                                     // update the device after some delay
                                     $timeout(function () {
                                         if (!$rootScope.isMobileType) {
@@ -150,9 +148,10 @@ WM.module('wm.layouts.page')
                         });
                     },
                     'post': function (scope, element, attrs) {
-                        element.addClass('layout-' + attrs.layouttype);
-                        if (element.find('>.app-tabbar').length > 0){
-                            element.addClass('has-tabbar');
+                        /**fnding the tabbar so that we can adjust the layout**/
+                        var tabbar = element.find('[data-role="mobile-tabbar"]');
+                        if ( tabbar.length > 0 ) {
+                            scope.layoutClass = "has-tabbar";
                         }
                         var handlers = [];
                         //check if the view is run mode then initialize the mobile behavior
@@ -291,7 +290,7 @@ WM.module('wm.layouts.page')
  *<example module="wmCore">
  *    <file name="index.html">
  *        <div class="wm-app">
- *            <wm-page layouttype="three-column" columns="3" name="page1" data-ng-controller="MainPageController">
+ *            <wm-page  columns="3" name="page1" data-ng-controller="MainPageController">
  *                <wm-header name="header1" backgroundcolor="#b4d5e0">
  *                </wm-header>
  *                <wm-top-nav name="top-nav1" backgroundcolor="#879488">

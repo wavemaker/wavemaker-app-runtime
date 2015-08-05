@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layouts/containers/mobile/tabbar/tabbar.html',
-            '<div class="app-tabbar app-top-nav {{class}} {{position}}" init-widget>' +
+            '<div data-role="mobile-tabbar" class="app-tabbar app-top-nav {{class}} {{position}}" init-widget>' +
                 '<nav class="navbar navbar-default">' +
                     '<ul class="tab-items nav navbar-nav">' +
                         '<li class="tab-item" data-ng-repeat="item in tabItems" data-ng-show="(tabItems.length == layout.max) || $index+1 < layout.max" >' +

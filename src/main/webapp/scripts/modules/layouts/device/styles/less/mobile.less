@@ -1,3 +1,5 @@
+@app-mobile-header-height: 44pt;
+
 .mobile-left-panel(@left-panel-width){
   display: block;
   height: 100%;
@@ -57,7 +59,7 @@
     }
 
     .app-header {
-      height: 4em !important;
+      height: @app-mobile-header-height !important;
       width: 100%;
       position: fixed;
       z-index: 99999;
@@ -66,15 +68,15 @@
 
       /********provide the margin top if the header exist*******/
       & + .app-top-nav, & + .app-content {
-        margin-top: 4em;
+        margin-top: @app-mobile-header-height;
       }
 
       .app-search {
         display: none;
       }
       .app-picture {
-        max-height: 3em;
-        margin-left: 3em;
+        max-height: 30pt;
+        margin: 5pt 0 5pt 35pt;
       }
       .application-name {
         display: none;
@@ -84,7 +86,7 @@
         z-index: 99999;
         position: fixed;
         left: 0;
-        top: 4em;
+        top: @app-mobile-header-height;
         display: none;
         margin: 0;
         right: 0;
@@ -100,7 +102,7 @@
       .app-mobile-header {
         display: block;
         height: 100%;
-        font-size: 2em;
+        font-size: 22pt;
         position: absolute;
         a {
           display: inline-block;
