@@ -207,13 +207,16 @@ html, body {
   position: relative;
 }
 
-
 .app-menu {
   display: inline-block;
   position: relative;
   .dropdown-menu {
     z-index: 1040;
     width: 100%;
+    &.dropinline-menu {
+      position: relative;
+      float: none;
+    }
   }
   ul > li > a {
     cursor: pointer;
@@ -230,10 +233,13 @@ html, body {
     position: relative;
     > .dropdown-menu{
         display: block;
-        left: 100%;
+        right: 100%;
         top: 0px;
         margin-top: -2px;
         margin-left: -2px;
+      &.pull-left{
+        left:100%;
+      }
     }
     &.pull-left{
         > .dropdown-menu{

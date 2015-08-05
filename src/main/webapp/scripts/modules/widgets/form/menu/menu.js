@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
-                '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown>' +
+                '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown >' +
                     '<button class="btn app-button dropdown-toggle {{menuclass}}" dropdown-toggle' +
                         $rootScope.getWidgetStyles() +
                         '><i class="{{iconclass}}"></i>' +
@@ -13,7 +13,7 @@ WM.module('wm.widgets.form')
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
                     '</button>' +
-                    '<wm-menu-dropdown items="menuItems"/>' +
+                    '<wm-menu-dropdown items="menuItems" menualign="menualign"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
@@ -23,12 +23,12 @@ WM.module('wm.widgets.form')
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
                     '</a>' +
-                    '<wm-menu-dropdown items="menuItems"/>' +
+                    '<wm-menu-dropdown items="menuItems" menualign="menualign"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',
-                '<ul class="dropdown-menu pull-right">' +
-                    '<wm-menu-dropdown-item data-ng-repeat="item in items" item="item"/>' +
+            '<ul class="dropdown-menu {{menualign}}">' +
+            '<wm-menu-dropdown-item data-ng-repeat="item in items" item="item" menualign="menualign"/>' +
                 '</ul>'
             );
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
@@ -48,7 +48,14 @@ WM.module('wm.widgets.form')
                 'iconname': true,
                 'scopedataset': true,
                 'dataset': true,
-                'dropposition': true
+                'menuposition': true
+            },
+            POSITION = {
+                DOWN_RIGHT : "down,right",
+                DOWN_LEFT : "down,left",
+                UP_RIGHT : "up,right",
+                UP_LEFT : "up,left",
+                INLINE : "inline"
             };
 
         function getMenuItems(newVal, scope) {
@@ -99,11 +106,27 @@ WM.module('wm.widgets.form')
                     scope.menuItems = getMenuItems(newVal.data || newVal, scope);
                 }
                 break;
-            case 'dropposition':
-                if (newVal === 'up') {
-                    element.addClass('dropup');
-                } else {
+            case 'menuposition':
+                switch (newVal) {
+                case POSITION.DOWN_RIGHT:
                     element.removeClass('dropup');
+                    scope.menualign = " pull-left ";
+                    break;
+                case POSITION.DOWN_LEFT:
+                    element.removeClass('dropup');
+                    scope.menualign = " pull-right ";
+                    break;
+                case POSITION.UP_LEFT:
+                    element.addClass('dropup');
+                    scope.menualign = " pull-right ";
+                    break;
+                case POSITION.UP_RIGHT:
+                    element.addClass('dropup');
+                    scope.menualign = " pull-left ";
+                    break;
+                case POSITION.INLINE:
+                    scope.menualign = " dropinline-menu ";
+                    break;
                 }
                 break;
             }
@@ -134,6 +157,20 @@ WM.module('wm.widgets.form')
                             WM.element(tElement.context).attr('iconclass', 'glyphicon glyphicon-' + attrs.iconname);
                             attrs.iconclass = 'glyphicon glyphicon-' + attrs.iconname;
                         }
+                        /* support for dropposition */
+                        if (attrs.dropposition === 'up') {
+                            if (attrs.menuposition === POSITION.DOWN_RIGHT) {
+                                attrs.menuposition = POSITION.UP_RIGHT;
+                            } else if (attrs.menuposition === POSITION.DOWN_LEFT) {
+                                attrs.menuposition = POSITION.UP_LEFT;
+                            }
+                        } else if (attrs.dropposition === 'down') {
+                            if (attrs.menuposition === POSITION.UP_RIGHT) {
+                                attrs.menuposition = POSITION.DOWN_RIGHT;
+                            } else if (attrs.menuposition === POSITION.UP_LEFT) {
+                                attrs.menuposition = POSITION.DOWN_LEFT;
+                            }
+                        }
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
@@ -141,7 +178,6 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
                         if (!scope.widgetid && attrs.scopedataset) {
                             $timeout(function () {
                                 scope.$watch('scopedataset', function (newVal) {
@@ -160,7 +196,8 @@ WM.module('wm.widgets.form')
             'restrict': "E",
             'replace': true,
             'scope': {
-                'items': '='
+                'items': '=',
+                'menualign': '='
             },
             'template': $templateCache.get('template/widget/form/menu/dropdown.html'),
             'compile': function () {
@@ -180,7 +217,8 @@ WM.module('wm.widgets.form')
             'restrict': "E",
             'replace': true,
             'scope': {
-                'item': '='
+                'item': '=',
+                'menualign': '='
             },
             'template': function () {
                 var template = WM.element($templateCache.get('template/widget/form/menu/dropdownItem.html'));
@@ -191,7 +229,7 @@ WM.module('wm.widgets.form')
             },
             'link': function (scope, element) {
                 if (scope.item.children && scope.item.children.length > 0) {
-                    element.append('<wm-menu-dropdown items="item.children"/>');
+                    element.append('<wm-menu-dropdown items="item.children" menualign="menualign"/>');
                     element.off('click');
                     $compile(element.contents())(scope);
                 }
@@ -254,7 +292,7 @@ WM.module('wm.widgets.form')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *              <wm-menu scopedataset="nodes" caption="Menu" iconclass="glyphicon glyphicon-align-justify"></wm-menu>
+ *              <wm-menu scopedataset="nodes" menuposition="down,left" caption="Menu" iconclass="glyphicon glyphicon-align-justify"></wm-menu>
  *           </div>
  *       </file>
  *       <file name="script.js">
@@ -282,7 +320,17 @@ WM.module('wm.widgets.form')
  *                          },
  *                          {
  *                              "label": "sub-menu-item2",
- *                              "icon": "glyphicon glyphicon-euro"
+ *                              "icon": "glyphicon glyphicon-euro",
+ *                               "children" : [
+ *                                   {
+ *                                      "label": "sub-menu-child-item1",
+ *                                      "icon": "glyphicon glyphicon-euro"
+ *                                  },
+ *                                  {
+ *                                      "label": "sub-menu-child-item2",
+ *                                      "icon": "glyphicon glyphicon-euro"
+ *                                 }
+ *                            ]
  *                          }
  *                      ]
  *                  }
