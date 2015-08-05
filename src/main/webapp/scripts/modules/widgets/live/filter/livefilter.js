@@ -515,6 +515,8 @@ WM.module('wm.widgets.live')
                                         $compile(fieldsObj)(scope);
                                         $compile(actionsObj)(scope);
                                     }
+                                    /*To get dataset up on saving designer dialog for fields with widget type as checkboxsex, radioset */
+                                    updateAllowedValues();
                                     scope.filterConstructed = true;
                                 }
                             }));
