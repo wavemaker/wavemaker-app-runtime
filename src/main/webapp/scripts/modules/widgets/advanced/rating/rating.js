@@ -9,13 +9,13 @@ WM.module('wm.widgets.advanced')
             '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model' + $rootScope.getWidgetStyles() + '>' +
                 '<div data-ng-if="!readonly" class="rating-style">' +
                 '<label data-ng-class="{active : rate.value <= datavalue}" for="{{$id}}+{{rate.value}}" data-ng-style="{\'font-size\':iconsize}" data-ng-repeat="rate in range track by $index" title="{{rate.value}}">' +
-                    '<input type="radio" id="{{$id}}+{{rate.value}}" data-ng-click="getActiveStars($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
+                    '<input type="radio" id="{{$id}}+{{rate.value}}" data-ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
                 '</label>' +
                 '</div>' +
                 '<div data-ng-if="readonly" data-ng-style="{\'font-size\':iconsize}" class="ratings-container disabled count-{{maxvalue}}" >' +
                     '<div class="ratings active" data-ng-style="{width: ratingsWidth()}"></div>' +
                 '</div>' +
-                '<label class="caption"></label>' +
+                '<label class="caption">{{caption}}</label>' +
             '</div>'
              );
     }])
@@ -56,7 +56,7 @@ WM.module('wm.widgets.advanced')
 
                     },
                     'post': function (iScope, $el, attrs) {
-                        iScope.getActiveStars = function ($event) {
+                        iScope.getActiveElements = function ($event) {
                             iScope._model_ = $el.find(':checked').val();
                             iScope._onChange($event);
                         };
