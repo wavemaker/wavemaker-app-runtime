@@ -19,7 +19,7 @@ WM.module('wm.widgets.form')
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
                 '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></button>' +
+                    '<button type="button" class="btn btn-default btn-date"><i class="glyphicon glyphicon-calendar"></i></button>' +
                 '</span>' +
             '</div>'
             );
@@ -69,17 +69,6 @@ WM.module('wm.widgets.form')
         function _onClick(scope, evt) {
             evt.stopPropagation();
             scope.isOpen = !scope.isOpen;
-            /*TODO: Remove this code after updating angular ui to 0.13 version
-            * As timestamp is not accepted, converting timestamp to other date formats*/
-            if (scope.isOpen) {
-                var epoch,
-                    val = scope._proxyModel,
-                    format = scope.datepattern || 'dd-MM-yyyy';
-                epoch = getTimeStamp(val);
-                if (epoch) {
-                    scope._proxyModel = $filter('date')(epoch, format);
-                }
-            }
             if (scope.onClick) {
                 scope.onClick({$event: evt, $scope: scope});
             }
@@ -97,7 +86,8 @@ WM.module('wm.widgets.form')
                 template.find('.model-holder').attr('name', tAttrs.name);
                 if (!isWidgetInsideCanvas) {
 
-                    template.attr('data-ng-click', '_onClick($event)');
+                    template.find('.btn-date').attr('data-ng-click', '_onClick($event)');
+                    template.find('.app-dateinput').attr('data-ng-click', '_onClick($event)');
 
                     if (tAttrs.hasOwnProperty('onMouseenter')) {
                         template.attr('data-ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
