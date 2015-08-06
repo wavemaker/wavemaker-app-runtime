@@ -1152,6 +1152,8 @@ WM.module('wm.widgets.base', [])
                         'formlayout': {"type": "list", "options": ["inline", "dialog"], "value": "inline"}
                     },
                     'wm.fileupload': {
+                        "service": {"type": "list", "widget": "list"},
+                        "operation": {"type": "list", "widget": "list"},
                         "multiple": {"type": "boolean", "value": false},
                         "contenttype": {"type": "list", "options": ["all", "audio", "image", "video"], "value": "all"},
                         "fileuploadtitle": {"type": "string", "value": "Drop your files here to start uploading."},
@@ -1524,7 +1526,7 @@ WM.module('wm.widgets.base', [])
                     {"name": "values", "properties": [ "scopedatavalue", "datavalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultvalue", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                     {"name": "valuedisplay", "properties": ["places", "datepattern", "ismeridian", "hourstep", "minutestep", "limit"], "parent": "properties"},
                     {"name": "output", "properties": ["outputformat"], "parent": "properties"},
-                    {"name": "dataset", "properties": ["operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "actions",  "datafield", "itemicon", "itemlabel", "itemlink", "itemchildren", "displayfield", "displayexpression",  "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
+                    {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "actions",  "datafield", "itemicon", "itemlabel", "itemlink", "itemchildren", "displayfield", "displayexpression",  "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
                     {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
                     {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},
                     {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},

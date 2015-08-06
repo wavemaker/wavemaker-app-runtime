@@ -747,31 +747,73 @@ body.modal-open {
 /**single file upload classes**/
   .app-single-file-upload, .app-multi-file-upload {
     position: relative;
-    .app-files-upload-status {
-      display: inline-block;
-      vertical-align: middle;
-      .status {
-        display: inline-block;
-        > div {
-          display: inline-block;
-          margin-right: 4px;
-        }
-        .progress {
-          width: 10em;
-          display: inline-block;
-        }
-        .upload-status label {
-          margin: 0;
-        }
-        .name {
-          max-width: 200px;
-        }
-      }
-    }
+    height: 3em;
     .app-button-wrapper {
       position: relative;
       display: inline-block;
       margin-right: 4px;
+    }
+  }
+  .app-files-upload-status {
+    overflow: auto;
+    width: 100%;
+    height: 9.5em;
+    display: inline-block;
+    vertical-align: middle;
+    overflow-y: auto;
+    .status {
+      border-bottom: 1px solid @app-fileupload-border-color;
+      padding: 0;
+      > div {
+        display: inline-block;
+        margin-right: 4px;
+      }
+      .name, .title, .size, .badge {
+        font-size: 0.8em;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .name {
+        width: 15em;
+      }
+      .size {
+        width: 8em;
+      }
+      .state.glyphicon-ok {
+        color: lightgreen;
+      }
+      .state.glyphicon-remove {
+          color: red;
+        }
+    }
+    .upload-status {
+      display: inline-block;
+      margin-right: 4px;
+      font-size: 0.8em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      label {
+        margin: 0px;
+        margin-right: 5px;
+      }
+      .progress {
+        width: 10em;
+        display: inline-block;
+        margin: 0px;
+        height: 0.8em;
+      }
+    }
+    .action {
+      font-size: 0.8em;
+      vertical-align: top;
+      display: inline-block;
+      .cancel {
+        background: transparent;
+        border: 0;
+        padding: 0;
+      }
     }
   }
   .form-horizontal {
@@ -789,7 +831,7 @@ body.modal-open {
 
 /**  multiple file upload classes**/
   .app-multi-file-upload {
-    border: 1px solid @app-fileupload-border-color;
+
     .width-height();
     .status {
       border-bottom: 1px @app-fileupload-border-color solid;
@@ -807,31 +849,6 @@ body.modal-open {
       &.file-dragover {
         background-color: @app-fileupload-hover-color;
         color: #fff;
-      }
-    }
-  }
-/**file upload status**/
-  .app-files-upload-status {
-    overflow-y: auto;
-    .status {
-      padding: 0;
-      .name, .title, .size, .upload-status, .badge {
-        font-size: 0.8em;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-      .action, .badge {
-        font-size: 0.8em;
-      }
-      .progress {
-        margin: 0.1em;
-        height: 0.8em;
-      }
-      .cancel {
-        background: transparent;
-        border: 0;
-        padding: 0;
       }
     }
   }
