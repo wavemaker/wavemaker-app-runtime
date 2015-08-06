@@ -33,9 +33,15 @@ WM.module('wm.widgets.advanced')
             case 'maxvalue':
                 var range = [],
                     i,
-                    MAX_RATING = 5;
-                for (i = parseInt(newVal, 10) || MAX_RATING; i > 0; i--) {
+                    MAX_RATING = 5,
+                    maxValue = parseInt(newVal, 10);
+                for (i = maxValue || MAX_RATING; i > 0; i--) {
                     range.push({"value": i});
+                }
+                if (maxValue === 10) {
+                    scope.widgetProps.datavalue.pattern = '^(?:10|[0-9]([.][0-9]+)?)$|^$|^bind.*$';
+                } else if (maxValue === 5) {
+                    scope.widgetProps.datavalue.pattern = '^(?:5|[0-4]([.][0-9]+)?)$|^$|^bind.*$';
                 }
                 scope.range = range;
                 scope.ratingname = "ratings-" + scope.$id;
@@ -53,7 +59,6 @@ WM.module('wm.widgets.advanced')
                     'pre': function (scope) {
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
-
                     },
                     'post': function (iScope, $el, attrs) {
                         iScope.getActiveElements = function ($event) {
@@ -64,7 +69,9 @@ WM.module('wm.widgets.advanced')
                             if (iScope.datavalue === undefined) {
                                 return 0;
                             }
-                            return 100 * (iScope.datavalue / iScope.maxvalue) + '%';
+                            if (iScope.datavalue <= iScope.maxvalue && iScope.datavalue >= 0) {
+                                return 100 * (iScope.datavalue / iScope.maxvalue) + '%';
+                            }
                         };
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope), iScope, notifyFor);
                         WidgetUtilService.postWidgetCreate(iScope, $el, attrs);

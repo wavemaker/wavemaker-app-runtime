@@ -327,7 +327,9 @@ WM.module('wm.widgets.base', [])
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "width": {"type": "string", "pattern": dimensionRegex, "show": false}
+                        "width": {"type": "string", "pattern": dimensionRegex, "show": false},
+                        "height": {"type": "string", "pattern": dimensionRegex, "show": false}
+
                     },
                     "wm.buttongroup": {
                         "hint": {"type": "string", "bindable": "in-out-bound"},
