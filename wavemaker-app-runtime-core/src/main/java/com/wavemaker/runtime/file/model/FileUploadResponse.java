@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.wavemaker.runtime.server;
+package com.wavemaker.runtime.file.model;
 
-/**
- * Response object to return when sending a file via the "html" version of the DojoFileUpload widget
- */
 public class FileUploadResponse {
 
     private String path;
-
-    private String error;
-
-    private String width;
-
-    private String height;
+    private String fileName;
 
     public String getPath() {
         return this.path;
@@ -36,27 +28,11 @@ public class FileUploadResponse {
         this.path = path;
     }
 
-    public String getError() {
-        return this.error;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public void setError(String error) {
-        this.error = error;
-    }
-
-    public String getWidth() {
-        return this.width;
-    }
-
-    public void setWidth(String width) {
-        this.width = width;
-    }
-
-    public String getHeight() {
-        return this.height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
+    public String getFileName() {
+        return fileName;
     }
 }

@@ -78,16 +78,7 @@
         <property name="basename" value="views"/>
     </bean>
 
-    <bean id="fileController"
-          class="com.wavemaker.runtime.FileController">
-
-        <property name="serviceResponse">
-            <ref bean="serviceResponse"/>
-        </property>
-
-        <!-- controller configuration -->
-        <!--property name="supportedMethods" value="GET" /-->
-    </bean>
+    <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
 
 
     <beans profile="default">
