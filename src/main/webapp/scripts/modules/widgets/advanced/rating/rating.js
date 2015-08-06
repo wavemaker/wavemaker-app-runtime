@@ -61,6 +61,9 @@ WM.module('wm.widgets.advanced')
                             iScope._onChange($event);
                         };
                         iScope.ratingsWidth = function () {
+                            if (iScope.datavalue === undefined) {
+                                return 0;
+                            }
                             return 100 * (iScope.datavalue / iScope.maxvalue) + '%';
                         };
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope), iScope, notifyFor);
