@@ -29,10 +29,8 @@
 .mobile-common(@left-panel-width){
 /* Styles */
   .wm-app {
-
     .app-page{
       left: 0;
-
       &.slide-in-left-panel-container {
         position: fixed;
         overflow: visible;
@@ -65,24 +63,47 @@
       z-index: 99999;
       top: 0;
       left: 0;
-
+      .app-header-action {
+        font-size: 22pt;
+        text-decoration: none;
+        cursor: pointer;
+        line-height: @app-mobile-header-height;
+        vertical-align: middle;
+        color: inherit;
+      }
+      .app-grid-layout {
+        display: table;
+        padding: 0;
+        white-space: nowrap;
+        .app-grid-row {
+          display: table-row;
+          padding: 0;
+          .app-grid-column {
+            display: table-cell;
+            padding: 0 0.5em !important;
+          }
+        }
+      }
+      .application-name {
+        font-size: 14pt !important;
+        max-width: 80pt;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+      }
       /********provide the margin top if the header exist*******/
       & + .app-top-nav, & + .app-content {
         margin-top: @app-mobile-header-height;
       }
 
-      .app-search {
-        display: none;
-      }
       .app-picture {
-        max-height: 30pt;
-        margin: 5pt 0 5pt 35pt;
-      }
-      .application-name {
-        display: none;
+        max-height: 36pt;
+        max-width: 36pt;
+        margin: 4pt 0;
       }
     /*Search widget container (available only in Mobile)*/
-      .app-search{
+      .app-search {
         z-index: 99999;
         position: fixed;
         left: 0;
@@ -98,54 +119,12 @@
           width: 95%;
         }
       }
-      /***enabling the mobile actions****/
-      .app-mobile-header {
-        display: block;
-        height: 100%;
-        font-size: 22pt;
-        position: absolute;
-        a {
-          display: inline-block;
-          z-index: 99999;
-          text-decoration: none;
-          vertical-align: middle;
-          position: absolute;
-          color: #ccc;
-          top: 0.5em;
-        }
-
-        .glyphicon-menu-hamburger {
-          left: 0.25em;
-          cursor: pointer;
-        }
-
-        .glyphicon-option-vertical {
-          right: 0.25em;
-        }
-
-        .glyphicon-search {
-          right: 1em;
-          cursor: pointer;
-        }
-      }
     }
     /***setting back the behavior of bootstrap for mobile****/
     .app-grid-layout{
       height: auto !important;
     }
 
-  /***specificity for layout on column*******/
-    .layout-one-column {
-      .app-picture {
-        margin-left: 0;
-      }
-
-      .app-header {
-        .app-picture {
-          margin-left: 3em;
-        }
-      }
-    }
     /***making the height of the datagrid auto****/
     .app-datagrid {
       .table-container {

@@ -5,11 +5,8 @@ WM.module('wm.layouts.page')
         'use strict';
         $templateCache.put('template/layout/page/header.html',
                 '<header data-role="page-header"  page-container init-widget class="app-header clearfix"' + $rootScope.getWidgetStyles('container') + '>' +
-                    '<div class="app-header-container" wmtransclude page-container-target></div>' +
-                    '<div class="app-mobile-header">' +
-                        '<a data-role="page-left-panel-icon" class="glyphicon glyphicon-menu-hamburger"></a>' +
-                        '<a data-role="page-search-icon" class="glyphicon glyphicon-search" style="display: none"></a>' +
-                    '</div>' +
+                    '<div class="visible-xs-block col-xs-1" data-role="page-left-panel-icon"><a class="app-header-action glyphicon glyphicon-menu-hamburger"></a></div>' +
+                    '<div class="col-sm-12 col-xs-11 app-header-container" wmtransclude page-container-target></div>' +
                 '</header>'
             );
     }])

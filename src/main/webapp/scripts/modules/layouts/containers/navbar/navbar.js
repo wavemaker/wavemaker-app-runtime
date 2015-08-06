@@ -27,7 +27,7 @@ WM.module('wm.layouts.containers')
                     '<div class="container-fluid">' +
                     /* Brand and toggle get grouped for better mobile display */
                         '<div class="navbar-header"> ' +
-                            '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="collapse-content" ng-click="navbarCollapsed = !navbarCollapsed">' +
+                            '<button type="button" class="btn-transparent navbar-toggle collapsed" data-toggle="collapse" data-target="collapse-content" ng-click="navbarCollapsed = !navbarCollapsed">' +
                                 '<span class="sr-only">Toggle navigation</span>' +
                                 '<i class="glyphicon glyphicon-option-vertical"></i>' +
                             '</button>' +

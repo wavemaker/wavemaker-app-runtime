@@ -86,7 +86,7 @@ WM.module('wm.layouts.page')
 
                                     /* update layout after the page is rendered */
 
-                                    scope.layout.search = element.find('.app-header .app-search').length > 0;
+                                    scope.layout.search = element.find('[data-role="page-header"] .app-search');
                                     scope.layout.leftSection = element.find('[data-role="page-left-panel"]').length > 0;
                                     scope.layout.rightSection = element.find('[data-role="page-right-panel"]').length > 0;
                                     // update the device after some delay

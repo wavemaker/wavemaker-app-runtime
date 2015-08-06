@@ -69,8 +69,8 @@ WM.module("wm.layouts.device")
         /**
          * toggles the search container
          */
-        function toggleSearchContainer() {
-            var searchEle = WM.element(roleSelector(HEADER_CLASS_NAME) + " " + classSelector(SEARCH_CONTAINER_CLASS_NAME));
+        function toggleSearchContainer(ele) {
+            var searchEle = WM.element(ele);
             if (searchEle.css('display') === 'none') {
                 hidePageContainers();
                 searchEle.css('display', 'inline-table');
@@ -92,9 +92,17 @@ WM.module("wm.layouts.device")
         /**
          * Bind event with Search icon in header
          */
-        function bindSearchIconEvent() {
-            //Tap icon to show/hide search box
-            MobileEventService.touch(roleSelector(SEARCH_ELEM_CLASS_NAME), toggleSearchContainer);
+        function bindSearchIconEvent(searchElements) {
+
+            WM.forEach(searchElements, function (ele) {
+                var searchEle = WM.element('<a class="visible-xs-inline-block app-header-action glyphicon glyphicon-search"></a>');
+                WM.element(ele).before(searchEle);
+                //Tap icon to show/hide search box
+                MobileEventService.touch(searchEle, function(){
+                    toggleSearchContainer(ele);
+                });
+            });
+
         }
 
         /**
@@ -116,7 +124,7 @@ WM.module("wm.layouts.device")
             /**
              * updates view and binds with necessary events for mobile devices
              */
-            update: function (element, hasLeftNav, hasRightNav, hasHeaderSearch) {
+            update: function (element, hasLeftNav, hasRightNav, searchElements) {
 
                 bindContentEvents();
 
@@ -124,17 +132,15 @@ WM.module("wm.layouts.device")
                     bindLeftPanelEvents();
                 } else {
                     //hide the icon
-                    element.find(roleSelector(SWIPE_ELEM_CLASS_NAME)).hide();
+                    element.find(roleSelector(SWIPE_ELEM_CLASS_NAME)).remove();
                 }
 
                 if (hasRightNav) {
                     bindRightPanelEvents();
                 }
 
-                if (hasHeaderSearch) {
-                    bindSearchIconEvent();
-                    //show the search icon
-                    element.find(roleSelector(SEARCH_ELEM_CLASS_NAME)).show();
+                if (searchElements) {
+                    bindSearchIconEvent(searchElements);
                 }
             }
         };
