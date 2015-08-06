@@ -1050,7 +1050,7 @@ WM.module('wm.widgets.live')
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                         '<div class="col-md-9 col-sm-9">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'HH:mm:ss\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" ' +
+                            '<wm-time name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" ' +
                                 'regexp="{{dataArray[' + index + '].regexp}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}">' +
                             '</wm-time>' +
                         '</div>' +
@@ -1064,7 +1064,7 @@ WM.module('wm.widgets.live')
                         '<wm-label class="col-md-3 col-sm-3" caption="{{dataArray[' + index + '].displayName}}" hint="{{dataArray[' + index + '].displayName}}" required="{{dataArray[' + index + '].required}}"></wm-label>' +
                         '<div class="col-md-9 col-sm-9">' +
                             '<wm-label class="form-control-static" caption="{{dataArray[' + index + '].value | date:\'dd-MMM-yyyy HH:mm:ss\'}}" show="{{!isUpdateMode}}"></wm-label>' +
-                            '<wm-datetime name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"  mindate="{{dataArray[' + index + '].minvalue}}" maxdate="{{dataArray[' + index + '].maxvalue}}"';
+                            '<wm-datetime name="{{dataArray[' + index + '].key}}" required="{{dataArray[' + index + '].required}}" readonly="{{dataArray[' + index + '].readonly}}" scopedatavalue="dataArray[' + index + '].value" show="{{isUpdateMode}}" outputformat="{{dataArray[' + index + '].outputformat}}"  mindate="{{dataArray[' + index + '].minvalue}}" maxdate="{{dataArray[' + index + '].maxvalue}}"';
                 if (fieldDef.datepattern) {
                     template = template + ' datepattern="{{dataArray[' + index + '].datepattern}}"';
                 }
