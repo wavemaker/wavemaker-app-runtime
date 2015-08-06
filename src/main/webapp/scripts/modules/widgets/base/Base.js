@@ -304,7 +304,6 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "value": '150px', "pattern": dimensionRegex},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'}
                     },
-
                     "wm.button": {
                         "hint": {"type": "string", "bindable": "in-out-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
@@ -320,16 +319,16 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions}
                     },
-
                     "wm.rating": {
                         "maxvalue": {"type": "list", "options": [5, 10],  "value": 5},
                         "readonly": {"type": "boolean", "value": false},
                         "scopedatavalue": {"type": "string"},
-                        "datavalue": {"type": "number", "bindable": "in-bound", "widget": "string"},
+                        "datavalue": {"type": "number", "bindable": "in-out-bound"},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
-                        "caption": {"type": "string", "bindable": "in-bound", "maxlength": 256}
+                        "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "width": {"type": "string", "pattern": dimensionRegex, "show": false}
                     },
-
                     "wm.buttongroup": {
                         "hint": {"type": "string", "bindable": "in-out-bound"},
                         "vertical": {"type": "boolean"}
@@ -2947,7 +2946,8 @@ WM.module('wm.widgets.base', [])
                             "wm-switch",
                             "wm-nav",
                             "wm-tree",
-                            "wm-liveform"
+                            "wm-liveform",
+                            "wm-rating"
                             ];
                     } else if (types === 'page-container-widgets') {
                         types = [
