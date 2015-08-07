@@ -263,7 +263,7 @@ WM.module('wm.widgets.live')
                             }
                             onResult(success, true);
                             $scope.clearData();
-                            wmToaster.show('success', 'SUCCESS', 'Record deleted successfully');
+                            wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
                             $scope.isSelected = false;
                             /*get updated data without refreshing page*/
                             if ($scope.ctrl) {
@@ -616,7 +616,8 @@ WM.module('wm.widgets.live')
                         }
 
                         scope.Variables = element.scope().Variables;
-                        scope.Widgets = element.scope().Widgets;
+                        /*Set Widgets to any empty object. Widgets will not inherit page's widgets and will have only present live form widgets */
+                        scope.Widgets = {};
                     },
                     post: function (scope, element, attrs, controller) {
                         scope.ctrl = controller;
@@ -1303,9 +1304,9 @@ WM.module('wm.widgets.live')
         var getTemplate = function (btnField, index) {
             var template = '';
             if (btnField.updateMode) {
-                template  = '<wm-button caption="{{buttonArray[' + index + '].displayName}}" show="{{isUpdateMode && buttonArray[' + index + '].show}}" class="{{buttonArray[' + index + '].class}}" iconname="{{buttonArray[' + index + '].iconname}}"  iconclass="{{buttonArray[' + index + '].iconclass}}" on-click="' + btnField.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
+                template  = '<wm-button name="{{buttonArray[' + index + '].key}}" caption="{{buttonArray[' + index + '].displayName}}" show="{{isUpdateMode && buttonArray[' + index + '].show}}" class="{{buttonArray[' + index + '].class}}" iconname="{{buttonArray[' + index + '].iconname}}"  iconclass="{{buttonArray[' + index + '].iconclass}}" on-click="' + btnField.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
             } else {
-                template  = '<wm-button caption="{{buttonArray[' + index + '].displayName}}" show="{{!isUpdateMode && buttonArray[' + index + '].show}}" class="{{buttonArray[' + index + '].class}}" iconname="{{buttonArray[' + index + '].iconname}}" iconclass="{{buttonArray[' + index + '].iconclass}}" on-click="' + btnField.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
+                template  = '<wm-button name="{{buttonArray[' + index + '].key}}" caption="{{buttonArray[' + index + '].displayName}}" show="{{!isUpdateMode && buttonArray[' + index + '].show}}" class="{{buttonArray[' + index + '].class}}" iconname="{{buttonArray[' + index + '].iconname}}" iconclass="{{buttonArray[' + index + '].iconclass}}" on-click="' + btnField.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
             }
 
             return template;
