@@ -473,6 +473,10 @@ wm.variables.services.$servicevariable = ['Variables',
                                 operationInfo.methodType = opType;
                                 operationInfo.name = selectedOperation;
                                 operationInfo.relativePath = (path[BASE_PATH_KEY] || "") + path[RELATIVE_PATH_KEY];
+                                /*saving the mime type only if it explicitly mentioned used in the file upload widget to decide the mime type from swagger path object*/
+                                if (operation.consumes && operation.consumes.length) {
+                                    operationInfo.consumes = operation.consumes;
+                                }
                                 operationInfo.parameters = [];
 
                                 if (operation.parameters && operation.parameters.length) {
