@@ -394,7 +394,7 @@ WM.module('wm.utils', [])
             }
 
             if (WM.isFunction(fn)) {
-                fn.apply(null, args);
+                return fn.apply(null, args);
             }
         }
 
