@@ -37,11 +37,12 @@ WM.module('wm.widgets.form')
                             '<label title="{{status_messsage}}" data-ng-bind="status_messsage" data-ng-show="showStatusMessage"></label>' +
                             '<div class="progress" data-ng-show="showProgress"><div class="progress-bar progress-bar-info progress-bar-striped" data-ng-style="{width:progressWidth}"></div></div>' +
                         '</div>' +
-                        '<div class="status" data-ng-repeat="file in files">' +
+                        '<div class="status" data-ng-show="uploadedFiles.length" data-ng-repeat="file in uploadedFiles">' +
                                 '<div class="action"><span class="badge" data-ng-bind="file.extension"></span></div>' +
-                                '<div class="name" title="{{file.name}}" data-ng-bind="file.name"></div>' +
-                                '<div class="size" title="{{file.size}}" data-ng-bind="file.size | suffix: \' bytes\'"></div>' +
-                                '<span class="state glyphicon" data-ng-class="{\'glyphicon-ok\' : file.state === \'Success\', \'glyphicon-remove\' : file.state === \'Fail\'}"></span>' +
+                                '<div class="name" title="{{file.fileName}}" data-ng-bind="file.fileName"></div>' +
+                                '<div class="size" title="{{file.length}}" data-ng-bind="file.length | suffix: \' bytes\'"></div>' +
+                                '<span class="state glyphicon" data-ng-class="{\'glyphicon-ok\' : file.status === \'success\', \'glyphicon-remove\' : file.status === \'Fail\'}"></span>' +
+                                '<span data-ng-show="{{file.state === \'success\'}}" title="{{file.errorMessage}}">{{file.errorMessage}}</span>' +
                         '</div>' +
                         '<div class="action" data-ng-if="isAbortVisible"><button class="cancel glyphicon glyphicon-remove" title="Cancel" data-ng-click="abortUpload()"></button></div>' +
                     '</div>' +
@@ -194,8 +195,16 @@ WM.module('wm.widgets.form')
                         scope.isAborted = false;
                         scope.fileNameSeperator = ";";
                         scope.destination = '';
-
-                        scope.$emit('update-fileupload', scope.service, true);
+                        scope.uploadedFiles = {
+                            "fileName": "",
+                            "path": "",
+                            "length": "",
+                            "status": ""
+                        };
+                        /*fetching the list of the services only in studio mode for properties panel*/
+                        if (CONSTANTS.isStudioMode) {
+                            scope.$emit('update-fileupload', scope.service, true);
+                        }
 
                         /*to set the upload url for the widget*/
                         (function setUploadUrl() {
@@ -310,6 +319,7 @@ WM.module('wm.widgets.form')
 
                             onSuccess = function (evt) {
                                 scope.filename = '';
+                                scope.filepath = '';
                                 if (window.FormData) { // Check for IE9
                                     var response,
                                         name = '',
@@ -331,26 +341,27 @@ WM.module('wm.widgets.form')
                                         return;
                                     }
                                     if (scope.multiple) {
-                                        scope.filepath = [];
-                                        scope.filename = [];
                                         WM.forEach(response, function (file) {
-                                            file.extension = file.name && (file.name.lastIndexOf('.') > -1 ? file.name.substring(file.name.lastIndexOf('.') + 1) : 'file');
-                                            scope.filename.push(file.name);
+                                            name = file.fileName;
+                                            scope.filename += name + ';';
+                                            file.extension = name && (name.lastIndexOf('.') > -1 ? name.substring(name.lastIndexOf('.') + 1) : 'file');
                                             path = file.path.replace($rootScope.project.id + UPLOAD_LOCATION, "*");
                                             path = path.split('*')[1];
-                                            scope.filepath.push({'path' : path});
-                                            file.state = 'Success';
+                                            scope.filepath += path + ';';
+                                            file.path = path;
+                                            file.status = file.success ? 'success' : 'fail';
                                         });
                                     } else {
-                                        scope.filename = '';
-                                        scope.filepath = '';
                                         fileObject = response[0];
-                                        fileObject.extension = fileObject.name && (fileObject.name.lastIndexOf('.') > -1 ? fileObject.name.substring(fileObject.name.lastIndexOf('.') + 1) : 'file');
-                                        scope.filename = fileObject.name;
+                                        name = fileObject.fileName;
+                                        fileObject.extension = name && (name.lastIndexOf('.') > -1 ? name.substring(name.lastIndexOf('.') + 1) : 'file');
                                         path = fileObject.path.replace($rootScope.project.id + UPLOAD_LOCATION, "*");
-                                        scope.filepath = path.split('*')[1];
+                                        fileObject.path = path.split('*')[1];
+                                        scope.filename = fileObject.name;
+                                        scope.filepath = fileObject.path;
+                                        fileObject.status = fileObject.success ? 'success' : 'fail';
                                     }
-                                    scope.files = response;
+                                    scope.uploadedFiles = response;
                                 }
                                 scope.$apply(function () {
                                     scope.status_messsage = 'Complete';
@@ -402,8 +413,8 @@ WM.module('wm.widgets.form')
                                     uploadUrl,
                                     destination,
                                     variableObject,
-                                    contentType,
-                                    boundary;
+                                    contentType;
+                                xhr = undefined;
                                 if (window.FormData) {
                                     if (xhr !== undefined) {
                                         return;
@@ -440,7 +451,7 @@ WM.module('wm.widgets.form')
                                     xhr.addEventListener('error', onFail, null);
                                     xhr.addEventListener('abort', onAbort, null);
                                     xhr.open('POST', scope.uploadUrl + uploadUrl + destination);
-                                    contentType = variableObject.wmServiceOperationInfo.consumes[0];
+                                    contentType = variableObject.wmServiceOperationInfo && variableObject.wmServiceOperationInfo.consumes && variableObject.wmServiceOperationInfo.consumes[0];
                                     if (contentType && contentType !== MULTIPART_FORM_DATA) {
                                         xhr.setRequestHeader("Content-Type", contentType);
                                     }
