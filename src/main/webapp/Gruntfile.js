@@ -180,7 +180,8 @@ module.exports = function (grunt) {
                         '<%= config.components %>/nvd3/nv.d3.js',
                         '<%= config.components %>/ocLazyLoad/ocLazyLoad.min.js',
                         '<%= config.components %>/hammerjs/hammer.js',
-                        '<%= config.scripts %>/modules/gestures/gestures.js'
+                        '<%= config.scripts %>/modules/gestures/gestures.js',
+                        '<%= config.scripts %>/modules/base64/base64.js'
                     ],
                     '<%= config.application %>/scripts/wm-libs.min.js' : [
                         '<%= config.application %>/scripts/wm-libs.js'

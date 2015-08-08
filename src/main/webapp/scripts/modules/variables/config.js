@@ -8,7 +8,7 @@
  * @description
  * The 'wm.variables' module provides variables for access in the studio and the applications.
  */
-wm.variables = WM.module('wm.variables', []);
+wm.variables = WM.module('wm.variables', ['base64']);
 
 wm.variables.controllers = {};
 wm.variables.services = {};

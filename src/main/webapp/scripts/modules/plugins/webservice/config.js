@@ -1,7 +1,7 @@
 /*global WM, wm*/
 
 /*Defining module for Web services */
-wm.plugins.webServices = WM.module('wm.plugins.webServices', []);
+wm.plugins.webServices = WM.module('wm.plugins.webServices', ['base64']);
 
 wm.plugins.webServices.controllers = {};
 wm.plugins.webServices.services = {};

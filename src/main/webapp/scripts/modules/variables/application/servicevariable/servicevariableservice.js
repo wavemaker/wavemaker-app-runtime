@@ -22,8 +22,9 @@ wm.variables.services.$servicevariable = ['Variables',
     'ProjectService',
     'VARIABLE_CONSTANTS',
     'DatabaseService',
+    '$base64',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, DatabaseService) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, DatabaseService, $base64) {
         "use strict";
 
         var serviceModel = {},
@@ -207,7 +208,7 @@ wm.variables.services.$servicevariable = ['Variables',
                                 pswd = paramValue;
                             }
                             if (uname && pswd) {
-                                headers[AUTH_HDR_KEY] = "Basic " + btoa(uname + ':' + pswd);
+                                headers[AUTH_HDR_KEY] = "Basic " + $base64.encode(uname + ':' + pswd);
                                 authType = AUTH_TYPE_BASIC;
                             }
                             break;
