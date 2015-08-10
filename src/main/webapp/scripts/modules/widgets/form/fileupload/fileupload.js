@@ -169,17 +169,23 @@ WM.module('wm.widgets.form')
                     },
 
                     post: function (scope, element, attrs) {
-                        var handlers = [], services = [];
-                        handlers.push($rootScope.$on('update-fileupload', function (event, serviceId) {
-                            /*fetching all the java services*/
-                            ServiceFactory.getServicesWithType(function (response) {
-                                WM.forEach(response, function (service) {
-                                    services.push(service.name);
+                        var handlers = [], services = [],
+                            fetchServices = function (serviceId) {
+                                services = [];
+                                /*fetching all the services*/
+                                ServiceFactory.getServicesWithType(function (response) {
+                                    WM.forEach(response, function (service) {
+                                        services.push(service.name);
+                                    });
+                                    /*Pushing the services and operation options into the widget properties*/
+                                    scope.widgetProps.service.options = services;
+                                    scope.service =  serviceId;
                                 });
-                                /*Pushing the services and operation options into the widget properties*/
-                                scope.widgetProps.service.options = services;
-                                scope.service =  serviceId;
-                            });
+                            };
+                        handlers.push($rootScope.$on('update-fileupload', function (event, widgetId, serviceId) {
+                            if (scope.widgetid === widgetId) {
+                                fetchServices(serviceId);
+                            }
                         }));
                         scope.uploadData = {
                             file: undefined,
@@ -202,8 +208,8 @@ WM.module('wm.widgets.form')
                             "status": ""
                         };
                         /*fetching the list of the services only in studio mode for properties panel*/
-                        if (CONSTANTS.isStudioMode) {
-                            scope.$emit('update-fileupload', scope.service, true);
+                        if (CONSTANTS.isStudioMode && scope.service) {
+                            fetchServices(scope.service);
                         }
 
                         /*to set the upload url for the widget*/
@@ -529,7 +535,7 @@ WM.module('wm.widgets.form')
                                             /*Invoke the function to create a variable.*/
                                             varName = Variables.createServiceVariable(variableDetails, true);
                                         }
-                                        scope.$root.$emit("set-markup-attr", scope.widgetid, {'service': service, 'operation': operation});
+                                        $rootScope.$emit("set-markup-attr", scope.widgetid, {'service': service, 'operation': operation});
                                         /*setting flag to save variables*/
                                         $rootScope.saveVariables = true;
                                     }, {}, true);
