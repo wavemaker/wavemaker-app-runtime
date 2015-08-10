@@ -118,7 +118,7 @@ WM.module('wm.widgets.basic')
                 if (scope.widgetid) { // when the widget is inside canvas
                     scope.keys = WM.isObject(nodes[0]) ? Object.keys(nodes[0]) : [];
                     /*Changing the properties like labels,children and icons*/
-                    scope.widgetProps.nodelabel.options = scope.widgetProps.nodechildren.options = scope.widgetProps.nodeicon.options = scope.keys;
+                    scope.widgetProps.nodelabel.options = scope.widgetProps.nodechildren.options = scope.widgetProps.nodeicon.options = [''].concat(scope.keys);
                 }
                 return nodes;
             }
@@ -143,7 +143,7 @@ WM.module('wm.widgets.basic')
                 switch (key) {
                 case 'scopedataset':
                 case 'dataset':
-                    scope.nodes = getNodes(scope, newVal);
+                    scope.nodes = getNodes(scope, newVal.data || newVal);
                     renderTree(element, scope);
                     break;
                 case 'nodeicon':

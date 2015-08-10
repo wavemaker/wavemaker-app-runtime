@@ -369,7 +369,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.tree": {
                         "scopedataset": {"type": "string"},
-                        "dataset": {"type": "object", "bindable": "in-bound", "widget": "string", "value": "node1, node2, node3"},
+                        "dataset": {"type": "object, array", "bindable": "in-bound", "widget": "string", "value": "node1, node2, node3"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "treeicons": {"type": "list", "options": ["folder", "plus-minus", "circle-plus-minus", "chevron", "menu", "triangle", "expand-collapse"], "value": "triangle"},
