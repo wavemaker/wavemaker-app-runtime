@@ -235,6 +235,10 @@ html, body {
   }
   .dropdown-submenu:hover {
     > .dropdown-menu{
+      &.pull-right{
+        float: right;
+        left: -100%;
+      }
         display: block;
         left:100%;
         top: 0px;
@@ -245,10 +249,7 @@ html, body {
         float: none;
         left: 0;
       }
-      &.pull-right{
-        float: right;
-        left: -100%;
-      }
+
     }
     &.pull-left{
         > .dropdown-menu{
@@ -267,6 +268,10 @@ html, body {
         bottom: 0px;
         margin-bottom: -2px;
         margin-left: -2px;
+      &.pull-right{
+        float: right;
+        left: -100%;
+      }
     }
   }
 }
