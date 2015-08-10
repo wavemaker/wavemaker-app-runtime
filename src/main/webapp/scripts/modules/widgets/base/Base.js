@@ -355,7 +355,7 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                         "menuclass": {"type": "string", "pattern": classRegex},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
-                        "menuposition": {"type": "list", "options": ["down,right", "down,left", "up,right", "up,left", "inline"], "value": ""},
+                        "menuposition": {"type": "list", "options": ["", "down,right", "down,left", "up,right", "up,left", "inline"], "value": ""},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "linktarget": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_blank", "widget": "datalist"}
                     },
