@@ -1,10 +1,12 @@
 package com.wavemaker.runtime.file.manager;
 
+import com.wavemaker.studio.common.util.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 
@@ -24,7 +26,7 @@ public class FileServiceManager {
      * @return File
      * ******************************************************************************
      */
-    public File uploadFile(MultipartFile file, String relativePath, File uploadDirectory) throws IOException {
+    public File uploadFile(MultipartFile file, String targetFilename, String relativePath, File uploadDirectory) throws IOException {
         File targetDir = uploadDirectory;
         if (StringUtils.isNotBlank(relativePath)) {
             relativePath = relativePath.trim();
@@ -35,7 +37,12 @@ public class FileServiceManager {
                 targetDir.mkdirs();
         }
 
-        File outputFile = createUniqueFile(file.getOriginalFilename(), targetDir);
+        File outputFile = createUniqueFile(targetFilename, targetDir);
+
+                       /* Write the file to the filesystem */
+        FileOutputStream fos = new FileOutputStream(outputFile);
+        IOUtils.copy(file.getInputStream(), fos, true, true);
+
         return outputFile;
     }
 
