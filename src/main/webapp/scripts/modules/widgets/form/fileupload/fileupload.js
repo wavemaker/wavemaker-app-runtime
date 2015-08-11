@@ -32,12 +32,12 @@ WM.module('wm.widgets.form')
                         '</div>' +
                         '<div class="app-files-upload-status single"></div>' +
                     '</div>' +
-                    '<div class="app-files-upload-status multiple" data-ng-style="{height: height, overflow: overflow}" >' +
+                    '<div class="app-files-upload-status multiple" data-ng-show="isValidFiles()" data-ng-style="{height: height, overflow: overflow}" >' +
                         '<div class="upload-status">' +
                             '<label title="{{status_messsage}}" data-ng-bind="status_messsage" data-ng-show="showStatusMessage"></label>' +
                             '<div class="progress" data-ng-show="showProgress"><div class="progress-bar progress-bar-info progress-bar-striped" data-ng-style="{width:progressWidth}"></div></div>' +
                         '</div>' +
-                        '<div class="status" data-ng-show="uploadedFiles.length" data-ng-repeat="file in uploadedFiles">' +
+                        '<div class="status" data-ng-repeat="file in uploadedFiles">' +
                                 '<div class="action"><span class="badge" data-ng-bind="file.extension"></span></div>' +
                                 '<div class="name" title="{{file.fileName}}" data-ng-bind="file.fileName"></div>' +
                                 '<div class="size" title="{{file.length}}" data-ng-bind="file.length | suffix: \' bytes\'"></div>' +
@@ -418,8 +418,7 @@ WM.module('wm.widgets.form')
                                 var uploadConfig, fd,
                                     uploadUrl,
                                     destination,
-                                    variableObject,
-                                    contentType;
+                                    variableObject;
                                 xhr = undefined;
                                 if (window.FormData) {
                                     if (xhr !== undefined) {
@@ -457,10 +456,6 @@ WM.module('wm.widgets.form')
                                     xhr.addEventListener('error', onFail, null);
                                     xhr.addEventListener('abort', onAbort, null);
                                     xhr.open('POST', scope.uploadUrl + uploadUrl + destination);
-                                    contentType = variableObject.wmServiceOperationInfo && variableObject.wmServiceOperationInfo.consumes && variableObject.wmServiceOperationInfo.consumes[0];
-                                    if (contentType && contentType !== MULTIPART_FORM_DATA) {
-                                        xhr.setRequestHeader("Content-Type", contentType);
-                                    }
                                     xhr.send(fd);
                                 } else { // IE9 patch
                                     uploadConfig = {
@@ -556,6 +551,7 @@ WM.module('wm.widgets.form')
                                 break;
                             case 'service':
                                 if (CONSTANTS.isStudioMode) {
+                                    operations = [];
                                     ServiceFactory.getServiceOperations(scope.service, function (response) {
                                         WM.forEach(response, function (operation) {
                                             operations.push(operation.name);
@@ -643,6 +639,11 @@ WM.module('wm.widgets.form')
                                 uploadFile($evt, $file[0], statusEle, true);
                             }
                         };
+
+                        scope.isValidFiles = function () {
+                            return WM.isArray(scope.uploadedFiles) && scope.uploadedFiles.length;
+                        };
+
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
