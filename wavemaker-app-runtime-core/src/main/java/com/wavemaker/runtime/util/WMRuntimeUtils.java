@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.util;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.List;
 
 import javax.xml.transform.Source;
 
+import com.wavemaker.runtime.WMAppContext;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -84,5 +86,11 @@ public class WMRuntimeUtils {
             return true;
         }
         return false;
+    }
+
+    public static String getContextRelativePath(File file) {
+        int index = file.getPath().indexOf(WMAppContext.getInstance().getContext().getContextPath());
+        String filteredPath = file.getPath().substring(index + 1);
+        return filteredPath;
     }
 }
