@@ -174,11 +174,11 @@ WM.module('wm.widgets.live')
             function getCaptionByWidget(type, index) {
                 var caption = 'formFields[' + index + '].value';
                 if (type === "datetime" || type === "timestamp") {
-                    caption += " | date:\'dd-MMM-yyyy HH:mm:ss\'";
+                    caption += " | date:formFields[" + index + "].datepattern";
                 } else if (type === "time") {
                     caption += " | date:\'HH:mm:ss\'";
                 } else if (type === "date") {
-                    caption += " | date:\'dd-MMM-yyyy\'";
+                    caption += " | date:formFields[" + index + "].datepattern";
                 } else if (type === "password") {
                     caption = "********";
                 } else if (type === "select") {
@@ -190,7 +190,6 @@ WM.module('wm.widgets.live')
             function getFormFields(fieldDef, index, type) {
                 var fields = "";
                 Object.keys(fieldDef).forEach(function (field) {
-                    console.log(field, fieldDef[field]);
                     if (fieldDef[field]) {
                         if (field === "key" || field === "field") {
                             fields += ' name="{{formFields[' + index + '].' + field + '}}"';
