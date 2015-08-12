@@ -69,8 +69,10 @@ WM.module('wm.widgets.advanced')
                             if (iScope.datavalue === undefined) {
                                 return 0;
                             }
-                            if (iScope.datavalue <= iScope.maxvalue && iScope.datavalue >= 0) {
-                                return 100 * (iScope.datavalue / iScope.maxvalue) + '%';
+                            var dataValue = parseInt(iScope.datavalue,10);
+                            var maxValue = parseInt(iScope.maxvalue,10);
+                            if (dataValue <= maxValue && dataValue >= 0) {
+                                return 100 * (dataValue / maxValue) + '%';
                             }
                         };
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope), iScope, notifyFor);
