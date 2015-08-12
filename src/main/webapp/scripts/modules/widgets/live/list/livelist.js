@@ -106,7 +106,7 @@ WM.module('wm.widgets.live')
                         getColumnsFromDataSet($scope.dataset);
             if (!columns.length) {
                 /* If live list is bound to a widget, fetch the columns accordingly. */
-                if ($scope.binddataset.indexOf('bind:Widgets.') !== -1) {
+                if ($scope.binddataset && $scope.binddataset.indexOf('bind:Widgets.') !== -1) {
                     columns = fetchDynamicColumns();
                 }
             }
