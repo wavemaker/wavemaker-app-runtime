@@ -852,8 +852,8 @@ $.widget('wm.datagrid', {
     },
 
     /* Selects a row. */
-    selectRow: function (rowData, value) {
-        var rowIndex = this.Utils.getObjectIndex(this.options.data, rowData),
+    selectRow: function (row, value) {
+        var rowIndex = angular.isNumber(row) ? row : this.Utils.getObjectIndex(this.options.data, row),
             selector,
             $row;
         if (rowIndex !== -1) {

@@ -1709,6 +1709,8 @@ WM.module('wm.widgets.grid')
                 $scope.addNewRow();
             };
 
+            $scope.selectRow = $scope.highlightRow;
+
             $scope.onRecordDelete = function () {
                 /*Check for sanity*/
                 if ($scope.dataNavigator) {
