@@ -15,10 +15,44 @@ public class FileServiceManager {
 
 
     /**
-     * Delegate method for java service upload method.
+     * Delegate method for file service upload method. This method creates a unique file name from the filename
+     * if necessary.
      * <p/>
      * PARAMS:
      * file : multipart file to be uploaded.
+     * relativePath : This is the relative path where file will be uploaded.
+     * uploadDirectory : The directory to which the file needs to be uploaded.
+     * <p/>
+     *
+     * @return File
+     * ******************************************************************************
+     */
+    public File uploadFile(MultipartFile file, String relativePath, File uploadDirectory) throws IOException {
+        File targetDir = uploadDirectory;
+        if (StringUtils.isNotBlank(relativePath)) {
+            relativePath = relativePath.trim();
+            targetDir = new File(uploadDirectory.getAbsolutePath(), relativePath);
+
+            /* Find our upload directory, make sure it exists */
+            if (!targetDir.exists())
+                targetDir.mkdirs();
+        }
+
+        File outputFile = createUniqueFile(file.getOriginalFilename(), targetDir);
+
+                /* Write the file to the filesystem */
+        FileOutputStream fos = new FileOutputStream(outputFile);
+        IOUtils.copy(file.getInputStream(), fos, true, true);
+
+        return outputFile;
+    }
+
+    /**
+     * Delegate method for file service upload method. This method accepts the name of the file to be uploaded,
+     * <p/>
+     * PARAMS:
+     * file : multipart file to be uploaded.
+     * targetFilename: the file name for the file to be uploaded.
      * relativePath : This is the relative path where file will be uploaded.
      * uploadDirectory : The directory to which the file needs to be uploaded.
      * <p/>
@@ -37,11 +71,12 @@ public class FileServiceManager {
                 targetDir.mkdirs();
         }
 
-        File outputFile = createUniqueFile(targetFilename, targetDir);
+        File outputFile = new File(targetDir, targetFilename);
 
-                       /* Write the file to the filesystem */
+        /* Write the file to the filesystem */
         FileOutputStream fos = new FileOutputStream(outputFile);
         IOUtils.copy(file.getInputStream(), fos, true, true);
+
 
         return outputFile;
     }
