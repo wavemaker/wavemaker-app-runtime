@@ -66,29 +66,7 @@ WM.module('wm.layouts.containers')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs, ctrl) {
-                        var addNewBtnTemplate, defaultPane;
-
-                        if (scope.widgetid) { /* if the widget is inside canvas, show add button */
-                            addNewBtnTemplate =
-                                    '<div class="wm-widget-toolbar">' +
-                                        '<button class="btn app-button add-new-accordionpane" data-ng-click="_addNewAccordionPane()">' +
-                                            '<i class="wm-icon add"></i>' +
-                                            '{{::$root.locale.LABEL_ADD}}' +
-                                        '</button>' +
-                                    '</div>';
-
-                            scope._addNewAccordionPane = function () {
-                                scope.$root.$emit('canvas-add-widget', {
-                                    'parentId': scope.widgetid,
-                                    'widgetType': 'wm-accordionpane'
-                                });
-                                addNewBtnTemplate.appendTo(element);
-                                // Open the accordion pane that just got added.
-                                ctrl.panes[ctrl.panes.length - 1].expand();
-                            };
-                            addNewBtnTemplate = $compile(addNewBtnTemplate)(scope);
-                            addNewBtnTemplate.appendTo(element);
-                        }
+                        var defaultPane;
                         defaultPane = _.find(ctrl.panes, function (pane) { return pane.isdefaultpane; }) || ctrl.panes[0];
                         defaultPane.expand();
 

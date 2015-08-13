@@ -124,15 +124,7 @@ WM.module('wm.layouts.containers')
 
                         var tabs = scope.tabs,
                             activeTab,
-                            tab,
-                            toolTipTarget,
-                            addNewBtnTemplate =
-                                '<li class="wm-widget-toolbar">' +
-                                    '<button class="btn app-button add-new-tab" data-ng-click="_addNewTab()">' +
-                                        '<i class="wm-icon add"></i>' +
-                                        '{{::$root.locale.LABEL_ADD}}' +
-                                    '</button>' +
-                                '</li>';
+                            tab;
                         /* find the first tab which has isdefaulttab set and make it active.
                          * mark the other tabs as inactive
                          */
@@ -228,33 +220,14 @@ WM.module('wm.layouts.containers')
                             selectTab(tab, onBeforeSwitchTab);
                         };
 
-                        if (scope.widgetid) { /* if the widget is inside canvas, show add button */
-
-                            toolTipTarget = element.find('ul.nav-tabs').first();
-
-                            scope._addNewTab = function () {
-
-                                scope.$root.$emit('canvas-add-widget', {
-                                    'parentId': scope.widgetid,
-                                    'widgetType': 'wm-tabpane'
-                                });
-
-                                selectTab(tabs[tabs.length - 1]);
-                                addNewBtnTemplate.appendTo(toolTipTarget);
-                            };
-
-                            addNewBtnTemplate = $compile(addNewBtnTemplate)(scope);
-                            addNewBtnTemplate.appendTo(toolTipTarget);
-                        }
-
                         scope.setTabsPosition = function (tabsposition) {
-                            var tabs = element.find('>ul.nav-tabs');
+                            var _tabs = element.find('>ul.nav-tabs');
                             element.removeClass('inverted');
                             if (tabsposition === 'bottom' || tabsposition === 'right') {
                                 element.addClass('inverted');
-                                element.append(tabs);
+                                element.append(_tabs);
                             } else {
-                                element.prepend(tabs);
+                                element.prepend(_tabs);
                             }
                             scope.vertical = (tabsposition === 'left' || tabsposition === 'right');
                         };

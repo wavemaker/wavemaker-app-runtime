@@ -1239,6 +1239,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordion": {
+                        "addchild": {"hidelabel": true, "widgettype": "wm-accordionpane", "widget": "add-widget"},
                         "closeothers": { "type": "boolean", "value": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -1272,6 +1273,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.tabs": {
+                        "addchild": {"hidelabel": true, "widgettype": "wm-tabpane", "widget": "add-widget"},
                         "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
                         "taborder": {"type": "list", "widget": "tabordering", "dataset": []}
                     },
@@ -1526,7 +1528,7 @@ WM.module('wm.widgets.base', [])
                     {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                     {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
                     {"properties": ["caption", "gridcaption", "title", "heading", "name", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
-                    {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition"], "parent": "properties"},
+                    {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild"], "parent": "properties"},
                     {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
                     {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                     {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
