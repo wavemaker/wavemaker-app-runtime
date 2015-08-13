@@ -398,7 +398,7 @@ WM.module('wm.widgets.live')
                                         oldData = (scope.result && scope.result.data) || [];
 
                                         scope.variableName = scope.binddataset.match(variableRegex)[1];
-                                        scope.result = newVal;
+                                        scope.result = WM.extend({}, newVal);
 
                                         /* The filter is not depending on variable's data, as filter is making explicit call through QUERY
                                          * Hence, to avoid flicker when data from explicit call is rendered, the live variable's data is ignored
