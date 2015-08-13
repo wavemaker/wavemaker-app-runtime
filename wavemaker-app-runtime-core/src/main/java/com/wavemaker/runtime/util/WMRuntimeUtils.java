@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 
 import com.wavemaker.runtime.WMAppContext;
@@ -23,6 +24,8 @@ import org.springframework.util.ClassUtils;
 
 import com.wavemaker.studio.common.CommonConstants;
 import com.wavemaker.studio.common.WMRuntimeException;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author Uday Shankar
@@ -65,8 +68,7 @@ public class WMRuntimeUtils {
         }
         if (jackson2Present) {
             messageConverters.add(new MappingJackson2HttpMessageConverter());
-        }
-        else if (jacksonPresent) {
+        } else if (jacksonPresent) {
             messageConverters.add(new org.springframework.http.converter.json.MappingJacksonHttpMessageConverter());
         }
     }
@@ -80,17 +82,22 @@ public class WMRuntimeUtils {
         try {
             declaredField = instance.getDeclaredField(field);
         } catch (NoSuchFieldException e) {
-            throw new WMRuntimeException("Filed "+ field + " does not exist in class " + instance.getName(), e);
+            throw new WMRuntimeException("Filed " + field + " does not exist in class " + instance.getName(), e);
         }
-        if (declaredField != null && ( BYTE_ARRAY.equals(declaredField.getType().getSimpleName()) || BLOB.equals(declaredField.getType().getSimpleName()))) {
+        if (declaredField != null && (BYTE_ARRAY.equals(declaredField.getType().getSimpleName()) || BLOB.equals(declaredField.getType().getSimpleName()))) {
             return true;
         }
         return false;
     }
 
-    public static String getContextRelativePath(File file) {
-        int index = file.getPath().indexOf(WMAppContext.getInstance().getContext().getContextPath());
-        String filteredPath = file.getPath().substring(index + 1);
-        return filteredPath;
+    public static String getContextRelativePath(File file, HttpServletRequest request) {
+        final StringBuffer requestURL = request.getRequestURL();
+        final int index = requestURL.lastIndexOf("/");
+        if (index != -1) {
+            requestURL.delete(index, requestURL.length());
+        }
+        requestURL.append("/downloadFile?file=" + file.getName() + "&" + "returnName=" + file.getName());
+        return requestURL.toString();
     }
+
 }

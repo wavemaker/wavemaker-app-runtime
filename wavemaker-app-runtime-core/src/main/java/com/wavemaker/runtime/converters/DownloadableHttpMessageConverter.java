@@ -42,9 +42,13 @@ public class DownloadableHttpMessageConverter extends WMCustomAbstractHttpMessag
         if (contents != null) {
             String fileName = downloadable.getFileName();
             String contentType = StringUtils.isNotBlank(downloadable.getContentType()) ? downloadable.getContentType() : new Tika().detect(fileName);
-            servletServerHttpResponse.getServletResponse().setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+            if(downloadable.isInline()){
+                servletServerHttpResponse.getServletResponse().setHeader("Content-Disposition", "inline;filename=\"" + fileName + "\"");
+            }else{
+                servletServerHttpResponse.getServletResponse().setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+            }
             servletServerHttpResponse.getServletResponse().setContentType(contentType);
-            if(downloadable.getContentLength() != null){
+            if (downloadable.getContentLength() != null){
                 servletServerHttpResponse.getServletResponse().setContentLength(downloadable.getContentLength());
             }
             IOUtils.copy(downloadable.getContents(), servletServerHttpResponse.getServletResponse().getOutputStream(), true, false);
