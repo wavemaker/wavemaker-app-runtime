@@ -1102,7 +1102,9 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.layouts.segmentedcontrol" : {
                         "onBeforeSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "width": {"show": false},
+                        "height": {"value": "100%", "pattern": dimensionRegex}
                     },
                     "wm.layouts.segmentcontent" : {
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
