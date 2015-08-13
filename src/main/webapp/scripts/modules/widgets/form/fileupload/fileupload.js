@@ -521,7 +521,7 @@ WM.module('wm.widgets.form')
                                             variableDetails = {
                                                 "service": service,
                                                 "operation": operation,
-                                                "owner": VARIABLE_CONSTANTS.OWNER.APP,
+                                                "owner": $rootScope.isPrefabTemplate ? VARIABLE_CONSTANTS.OWNER.PAGE : VARIABLE_CONSTANTS.OWNER.APP,
                                                 "serviceType": getServiceType(service),
                                                 "sampleParamValues": {'relativePath' : ''}
                                             };
