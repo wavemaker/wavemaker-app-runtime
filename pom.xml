@@ -51,7 +51,7 @@
         <fasterxml.json.version>2.4.0-rc3</fasterxml.json.version>
         <wm.jackson.databind.version>2.4.0-rc3-wm1</wm.jackson.databind.version>
 
-        <wavemaker-api-tools.version>1.0.4</wavemaker-api-tools.version>
+        <wavemaker-api-tools.version>1.0.5</wavemaker-api-tools.version>
         <mimemagic.version>0.1.3</mimemagic.version>
         <cxf-tools-wsdlto-databinding-jaxb.version>2.7.11</cxf-tools-wsdlto-databinding-jaxb.version>
         <cxf-tools-wsdlto-frontend-jaxws.version>2.7.11</cxf-tools-wsdlto-frontend-jaxws.version>
