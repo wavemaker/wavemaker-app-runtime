@@ -20,7 +20,7 @@ import java.io.InputStream;
 /**
  * A class containing a download response. This should be used as the return type for any operation which handles
  * download requests.
- * 
+ *
  * @author Matt Small
  */
 public class DownloadResponse implements Downloadable {
@@ -30,6 +30,8 @@ public class DownloadResponse implements Downloadable {
     private String contentType;
 
     private String fileName;
+
+    private boolean inline;
 
     public DownloadResponse() {
     }
@@ -65,6 +67,14 @@ public class DownloadResponse implements Downloadable {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public boolean isInline() {
+        return inline;
+    }
+
+    public void setInline(boolean inline) {
+        this.inline = inline;
     }
 
     @Override
