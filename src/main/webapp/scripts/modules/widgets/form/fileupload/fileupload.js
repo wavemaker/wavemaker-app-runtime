@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
                             '<div class="message">' +
                                 '<label data-ng-bind="fileuploadtitle"></label>' +
                                     '<form class="form-horizontal" name="{{multipleFileFormName}}">' +
-                                        '<input class="file-input" type="file" name="file" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" multiple>' +
+                                        '<input class="file-input" type="file" name="files" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" multiple>' +
                                         '<a href="javascript:void(0);" class="app-anchor" data-ng-bind="fileuploadmessage"></a>' +
                                     '</form>' +
                             '</div>' +
@@ -23,7 +23,7 @@ WM.module('wm.widgets.form')
                     '<div class="app-single-file-upload" data-ng-hide="multiple">' +
                         '<div class="app-button-wrapper">' +
                             '<form class="form-horizontal" name="{{singleFileFormName}}">' +
-                                '<input class="file-input" type="file"  name="file" on-file-select="uploadSingleFile($event, $files)" data-ng-attr-accept="{{chooseFilter}}">' +
+                                '<input class="file-input" type="file"  name="files" on-file-select="uploadSingleFile($event, $files)" data-ng-attr-accept="{{chooseFilter}}">' +
                                 '<button class="app-button btn btn-default">' +
                                     '<i class="{{iconclass}}"></i> ' +
                                     '<span>{{caption}}</span>' +
@@ -417,9 +417,24 @@ WM.module('wm.widgets.form')
                             uploadContent = function (newVal) {
                                 var uploadConfig, fd,
                                     uploadUrl,
-                                    destination,
+                                    destination = '',
                                     variableObject;
                                 xhr = undefined;
+                                /*fetching the variable object with service, operation*/
+                                variableObject = Variables.filterByVariableKeys({'service' : scope.service, 'operation' : scope.operation, 'category' : 'wm.ServiceVariable'}, true)[0];
+                                if (variableObject) {
+                                    uploadUrl = variableObject.wmServiceOperationInfo.relativePath + '?relativePath=';
+                                } else {
+                                    /*fallback for old projects when there is no associated variable*/
+                                    uploadUrl = '/file/uploadFile';
+                                }
+
+                                if (WM.isArray(newVal)) {
+                                    destination = newVal[0].destination;
+                                } else if (WM.isObject(newVal)) {
+                                    destination = newVal.destination;
+                                }
+
                                 if (window.FormData) {
                                     if (xhr !== undefined) {
                                         return;
@@ -428,7 +443,6 @@ WM.module('wm.widgets.form')
                                     fd = new FormData();
                                     /* append file to form data */
                                     if (WM.isArray(newVal)) {
-                                        destination = newVal[0].destination;
                                         WM.forEach(newVal, function (fileObject) {
                                             if (fileObject.file && fileObject.uploadPath) {
                                                 fd.append('files', fileObject.file, fileObject.file.name);
@@ -438,15 +452,6 @@ WM.module('wm.widgets.form')
                                         if (newVal.file && newVal.uploadPath) {
                                             fd.append('files', newVal.file, newVal.file.name);
                                         }
-                                        destination = newVal.destination;
-                                    }
-                                    /*fetching the variable object with service, operation*/
-                                    variableObject = Variables.filterByVariableKeys({'service' : scope.service, 'operation' : scope.operation, 'category' : 'wm.ServiceVariable'}, true)[0];
-                                    if (variableObject) {
-                                        uploadUrl = variableObject.wmServiceOperationInfo.relativePath + '?relativePath=';
-                                    } else {
-                                        /*fallback for old projects when there is no associated variable*/
-                                        uploadUrl = 'file/upload';
                                     }
                                     /* create ajax xmlHttp request */
                                     xhr = new XMLHttpRequest();
@@ -459,8 +464,8 @@ WM.module('wm.widgets.form')
                                     xhr.send(fd);
                                 } else { // IE9 patch
                                     uploadConfig = {
-                                        url: scope.uploadUrl + destination,
-                                        formName: scope.singlefileupload ? scope.singleFileFormName : scope.multipleFileFormName
+                                        url: scope.uploadUrl + uploadUrl + destination,
+                                        formName: scope.multiple ? scope.multipleFileFormName : scope.singleFileFormName
                                     };
                                     Utils.fileUploadFallback(uploadConfig, onSuccess, onFail);
                                 }
