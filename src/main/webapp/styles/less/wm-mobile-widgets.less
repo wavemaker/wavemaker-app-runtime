@@ -3,37 +3,28 @@
 *********************************************************************************/
 .app-segmented-control{
   position: relative;
-  height: 100%;
   > .btn-group {
     .app-icon {
       width: auto;
     }
   }
   .app-segments-container {
+    .width-height(100%, 90%);
+    .calc('height', ~"calc(100% - 24px)");
+    overflow: hidden;
     position: relative;
-    overflow-x: hidden;
-    .calc('height', ~"calc(100% - 40px)");
-    .app-segment-content{
-      height: 100%;
-      width: 100%;
-      position: absolute;
-      overflow: hidden;
-      top: 0;
-      &.left {
-        left: -100%;
+    > ul {
+      .width-height();
+      white-space: nowrap;
+      margin: 0;
+      padding: 0;
+      display: table;
+      table-layout: fixed;
+      > li.app-segment-content{
+        .width-height();
+        overflow: hidden;
+        position: relative;
       }
-      &.right {
-        left: 100%;
-      }
-      &.active{
-        left: 0;
-        overflow: auto;
-      }
-    }
-  }
-  &.animate {
-    .app-segment-content {
-      transition: .6s ease-in-out left;
     }
   }
 }

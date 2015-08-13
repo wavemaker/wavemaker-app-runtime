@@ -5,21 +5,18 @@ WM.module('wm.layouts.containers')
     .run(['$rootScope', '$templateCache', function ($rootScope, $templateCache) {
         'use strict';
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentedcontrol.html',
-            '<div class="app-segmented-control {{class}}" data-ng-class="{\'animate\' : animate}" init-widget data-ng-show="show" '  + $rootScope.getWidgetStyles('container') + '>' +
+            '<div class="app-segmented-control {{class}}"  hm-swipe-left="goToNext()"  hm-swipe-right="goToPrev();"  init-widget data-ng-show="show" '  + $rootScope.getWidgetStyles('container') + '>' +
                 '<div class="btn-group btn-group-justified">' +
-                    '<a class="btn btn-default" data-ng-repeat="content in contents" data-ng-class="{\'active\' : content.show}" data-ng-click=" $event.stopPropagation(); showContent($index);">' +
+                    '<a class="btn btn-default" data-ng-repeat="content in contents" data-ng-class="{\'active\' : $index == currentSelectedIndex}" data-ng-click="$event.stopPropagation(); showContent($index);">' +
                        '<i class="app-icon" data-ng-class="content.iconclass"></i> {{content.caption}}' +
                     '</a>' +
-                    '<a class="btn btn-default"  data-ng-if="add" data-ng-click="add()">' +
-                       '<i class="glyphicon glyphicon-plus"></i> Add' +
-                    '</a>' +
                 '</div>' +
-                '<div class="app-segments-container" wmtransclude></div>' +
+                '<div class="app-segments-container">' +
+                '<ul class="list-inline" wmtransclude></ul>' +
+                '</div>' +
             '</div>');
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
-                '<div init-widget wmtransclude data-ng-class="[\'app-segment-content\', class, slide, {\'active\' : show}]" ' +
-                    ' data-ng-show="show" hm-swipe-left="parentCtrl.goToNext()" hm-swipe-right="parentCtrl.goToPrev()">' +
-                '</div>');
+            '<li init-widget wmtransclude class="app-segment-content"></li>');
     }])
     .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
         'use strict';
@@ -36,20 +33,17 @@ WM.module('wm.layouts.containers')
             'controller' : function ($scope) {
                 this.addContent = function ($contentScope) {
                     $scope.contents.push($contentScope);
-                    if ($scope.showContent) {
-                        $scope.showContent($scope.contents.length - 1);
-                    }
                 };
                 /**
                  * Hides the current content and displays the next in position.
                  */
-                this.goToNext = function () {
+                $scope.goToNext = function () {
                     $scope.showContent($scope.lastShownContentIndex + 1);
                 };
                 /**
                  * Hides the current content and displays the previous in position.
                  */
-                this.goToPrev = function () {
+                $scope.goToPrev = function () {
                     $scope.showContent($scope.lastShownContentIndex - 1);
                 };
                 /**
@@ -77,7 +71,7 @@ WM.module('wm.layouts.containers')
                         $scope.contents = [];
                         $scope.animate = true;
                     },
-                    'post' : function ($scope) {
+                    'post' : function ($scope, $element, attrs, ctrl) {
                         /**
                          * Displays content at the given index.
                          */
@@ -85,47 +79,49 @@ WM.module('wm.layouts.containers')
                             if (index < 0 || index >= $scope.contents.length) {
                                 return;
                             }
+
                             var i = $scope.lastShownContentIndex,
-                                slide = (i > index ? 'right' : 'left'),
                                 contents = $scope.contents,
+                                currentContent = contents[index],
                                 eventData = {$scope: this,
                                             $old: $scope.lastShownContentIndex,
-                                            $new: index};
+                                            $new: index},
+                                $segmentsCtr = $element.find(".app-segments-container"),
+                                $segment = $element.find(".app-segments-container > ul > li:nth-child(" + (index + 1) + ")") ,
+                                scrollPos = $segmentsCtr.scrollLeft(),
+                                left = $segment.position().left;
+                            $scope.currentSelectedIndex = index;
                             $scope.onBeforesegmentchange(eventData);
-                            if (contents[i]) {
-                                contents[i].show = false;
+
+                            if (currentContent && CONSTANTS.isStudioMode) {
+                                $scope.$root.$emit('set-active-widget', currentContent.widgetid);
                             }
-                            contents[index].show = true;
-                            if ($scope.animate) {
-                                while (i !== undefined && i !== index) {
-                                    contents[i].slide = slide;
-                                    i = i > index ? i - 1 : i + 1;
-                                }
-                                contents[index].slide = '';
+
+                            if (CONSTANTS.isRunMode) {
+                                $segmentsCtr.animate(
+                                    { scrollLeft: (scrollPos + left)},
+                                    { duration: "slow" });
                             }
-                            if ($scope.lastShownContentIndex >= 0 && CONSTANTS.isStudioMode) {
-                                $scope.$root.$emit('set-active-widget', contents[index].widgetid);
-                            }
+
                             $scope.lastShownContentIndex = index;
                             $scope.onSegmentchange(eventData);
                         };
                         /**add studio mode changes**/
                         if (CONSTANTS.isStudioMode) {
-                            $scope.animate = false;
                             $scope.add = function () {
                                 $scope.$root.$emit('canvas-add-widget', {
                                     'parentId': $scope.widgetid,
                                     'widgetType': 'wm-segment-content'
                                 });
+                                $scope.currentSelectedIndex =  ($scope.contents.length - 1);
                             };
                         }
-                        $scope.showContent(0);
                     }
                 };
             }
         };
     }])
-    .directive('wmSegmentContent', ['$templateCache', 'PropertiesFactory', function ($templateCache, PropertiesFactory) {
+    .directive('wmSegmentContent', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base']);
         return {
@@ -141,13 +137,13 @@ WM.module('wm.layouts.containers')
                         $scope.widgetProps = widgetProps;
                     },
                     'post' : function ($scope, element, attrs, controller) {
-                        $scope.show = false;
-                        $scope.slide = 'right';
-                        $scope.parentCtrl = controller;
-                        $scope.$on('$destroy', function () {
-                            $scope.parentCtrl.removeContent($scope);
-                        });
                         controller.addContent($scope);
+                        //remove the segment links
+                        if (CONSTANTS.isStudioMode) {
+                            $scope.$on('$destroy', function () {
+                                controller.removeContent($scope);
+                            });
+                        }
                     }
                 };
             }
