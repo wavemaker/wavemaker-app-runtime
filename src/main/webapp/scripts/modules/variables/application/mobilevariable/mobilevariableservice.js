@@ -15,53 +15,7 @@
  */
 wm.variables.services.MobileService = [function () {
     "use strict";
-    var contactName = {
-            formatted: '',
-            familyName: '',
-            givenName: '',
-            middleName: '',
-            honorificPrefix: '',
-            honorificSuffix: ''
-        },
-        contactField = {
-            type: '',
-            value: '',
-            pref: false
-        },
-        contactOrganization = {
-            pref: false,
-            type: '',
-            name: '',
-            department: '',
-            title: ''
-        },
-        contactAddress =  {
-            pref: false,
-            type: '',
-            formatted: '',
-            streetAddress: '',
-            locality: '',
-            region: '',
-            postalCode: '',
-            country: ''
-        },
-        contact = {
-            id: '',
-            displayName: '',
-            name: contactName,
-            nickname: '',
-            phoneNumbers: [contactField],
-            emails: [contactField],
-            addresses: [contactAddress],
-            ims:  [contactField],
-            organizations: [contactOrganization],
-            birthday: new Date(),
-            note: '',
-            photos: [contactField],
-            categories: [contactField],
-            urls: [contactField]
-        },
-        event = {
+    var event = {
             title: '',
             notes: '',
             loc: '',
@@ -69,7 +23,8 @@ wm.variables.services.MobileService = [function () {
             end: new Date()
         };
     return {
-        calendar : {
+        //TODO: Enable calendar variable after the cordova plugin is added.
+        /*calendar : {
             //Ref: https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
             addEvent: {
                 model : {
@@ -114,40 +69,29 @@ wm.variables.services.MobileService = [function () {
                                                         error);
                 }
             },
-        },
-        camera: {
-            capturePicture: {
-                model : {
-                    data: 'blank-image.jpg'
-                },
-                properties : ['imageQuality', 'imageEncodingType', 'correctOrientation', 'saveToPhotoAlbum'],
-                invoke : function (variable, options, success, error) {
-                    var cameraOptions = {
-                        quality : variable.imageQuality,
-                        destinationType : 0, //only data url
-                        sourceType : 1, //always camera
-                        allowEdit : 0, // edit not required
-                        encodingType : parseInt(variable.imageEncodingType, 10),
-                        mediaType : 0, //always picture
-                        correctOrientation : variable.correctOrientation,
-                        saveToPhotoAlbum : variable.saveToPhotoAlbum
-                    };
-                    navigator.camera.getPicture(function (data) {
-                        success({ data : data});
-                    }, error, cameraOptions);
-                }
-            }
-        },
+        },*/
         contacts : {
             list : {
-                model : [contact],
-                properties : ['contactFilter'],
+                model : [{
+                    id: '',
+                    displayName: '',
+                    phoneNumbers: [{value : ''}]
+                }],
+                properties : ['startUpdate', 'contactFilter'],
                 invoke : function (variable, options, success, error) {
+                    var fields       = [navigator.contacts.fieldType.id,
+                                        navigator.contacts.fieldType.displayName,
+                                        navigator.contacts.fieldType.phoneNumbers];
                     var findOptions = {
                             filter : variable.contactFilter,
                             multiple : true
                         };
-                    navigator.contacts.find('*', success, error, findOptions);
+                    navigator.contacts.find(fields, function(data) {
+                        data = _.filter(data, function (c) {
+                            return c.phoneNumbers && c.phoneNumbers.length > 0;
+                        });
+                        success(data);
+                    }, error, findOptions);
                 }
             }
         },
@@ -156,13 +100,31 @@ wm.variables.services.MobileService = [function () {
                 model: {
                     data : 'No Connection'
                 },
-                properties : [],
+                properties : ['startUpdate'],
                 invoke : function (variable, options, success, error) {
                     success({ data: navigator.connection.type});
                 }
-            }
-        },
-        location: {
+            },
+            capturePicture: {
+                model : {
+                    data: 'resources/images/imagelists/default-image.png'
+                },
+                properties : ['allowImageEdit', 'imageQuality', 'imageEncodingType', 'correctOrientation'],
+                invoke : function (variable, options, success, error) {
+                    var cameraOptions = {
+                        quality : variable.imageQuality,
+                        destinationType : 0, //only data url
+                        sourceType : 1, //camera
+                        allowEdit : variable.allowImageEdit,
+                        encodingType : parseInt(variable.imageEncodingType, 10),
+                        mediaType : 0, //always picture
+                        correctOrientation : variable.correctOrientation
+                    };
+                    navigator.camera.getPicture(function (data) {
+                        success({ data : 'data:image/'+variable.imageEncodingType.toLowerCase()+';base64, ' +data});
+                    }, error, cameraOptions);
+                }
+            },
             getGeoLocation : {
                 model: {
                     coords: {
@@ -176,7 +138,7 @@ wm.variables.services.MobileService = [function () {
                     },
                     timestamp: 0
                 },
-                properties : ['geolocationHighAccuracy', 'geolocationMaximumAge', 'geolocationTimeout'],
+                properties : ['startUpdate', 'geolocationHighAccuracy', 'geolocationMaximumAge', 'geolocationTimeout'],
                 invoke: function (variable, options, success, error) {
                     var geoLocationOptions = {
                         maximumAge: variable.geolocationMaximumAge * 1000,
@@ -230,8 +192,7 @@ wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils
                     Utils.triggerFn(error);
                     initiateCallback('onError', variable, callBackScope);
                 };
-
-            if (operation && CONSTANTS.hasCardova) {
+            if (operation && CONSTANTS.hasCordova) {
                 operation.invoke(this, options, successCb, errorCb);
             } else if (operation){
                 successCb(_.cloneDeep(operation.model));

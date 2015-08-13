@@ -18,7 +18,7 @@ var Application = WM.module('Application',
             "angular-gestures"
         ]).constant('CONSTANTS', {
         "isRunMode": true,
-        "hasCardova": (window.device && window.device.cordova ? true : false)
+        "hasCordova": (window.device && window.device.cordova ? true : false)
     }).controller('AppController', [
         '$rootScope',
         '$scope',
@@ -41,13 +41,13 @@ var Application = WM.module('Application',
         'BaseService',
         'wmToaster',
         'MobileVariableService',
-        function ($rootScope, $scope, $compile, $route, $location, ProjectService, BasicVariableService, $servicevariable, $liveVariable, Variables, NavigationVariableService, NotificationVariableService, LoginVariableService, LogoutVariableService, TimerVariableService, SecurityService, Utils, i18nService, BaseService, wmToaster, MobileVariableService) {
+        'CONSTANTS',
+        function ($rootScope, $scope, $compile, $route, $location, ProjectService, BasicVariableService, $servicevariable, $liveVariable, Variables, NavigationVariableService, NotificationVariableService, LoginVariableService, LogoutVariableService, TimerVariableService, SecurityService, Utils, i18nService, BaseService, wmToaster, MobileVariableService, CONSTANTS) {
             'use strict';
 
             /* add a node to the DOM to determine the mobile view */
             WM.element('<i id="wm-mobile-display"></i>').appendTo(".wm-app");
             var projectID = ProjectService.getId(), /*ProjectID will always be at the same index in the URL*/
-                projectDeployedUrl,
             /*variable to know whether a page is loaded or not*/
                 loadedPages = {},
             /*variable to hold to track the previous route path*/
@@ -65,8 +65,15 @@ var Application = WM.module('Application',
             $rootScope.isMobileType = projectType === 'MOBILE';
             $rootScope.isApplicationType = projectType === 'APPLICATION';
             $rootScope.isTemplateBundleType = projectType === 'TEMPLATEBUNDLE';
-
-            if ($rootScope.isMobileType || $rootScope.isPrefabType) {
+            /*create the project object*/
+            $rootScope.project = {
+                id: projectID,
+                deployedUrl: ProjectService.getDeployedUrl()
+            };
+            $rootScope.changeLocale = function ($isolateScope) {
+                i18nService.setSelectedLocale($isolateScope.datavalue);
+            };
+            if (($rootScope.isMobileType && CONSTANTS.hasCordova) || $rootScope.isPrefabType) {
                 Utils.fetchContent(
                     'json',
                     Utils.preventCachingOf('./config.json'),
@@ -74,29 +81,15 @@ var Application = WM.module('Application',
                         if (!response.error) {
                             if ($rootScope.isPrefabType) {
                                 $rootScope.prefabConfig = response;
-                                projectDeployedUrl  = ProjectService.getDeployedUrl();
                             } else if ($rootScope.isMobileType) {
-                                projectDeployedUrl = response.baseUrl;
+                                $rootScope.project.deployedUrl = response.baseUrl;
                             }
                         }
                     },
                     WM.noop,
                     true
                 );
-            } else {
-                projectDeployedUrl  = ProjectService.getDeployedUrl();
             }
-
-            /*create the project object*/
-            $rootScope.project = {
-                id: projectID,
-                deployedUrl: projectDeployedUrl
-            };
-
-            $rootScope.changeLocale = function ($isolateScope) {
-                i18nService.setSelectedLocale($isolateScope.datavalue);
-            };
-
             function updateLoggedInUser(checkVariable) {
                 var loggedInUser = $rootScope.Variables && $rootScope.Variables.loggedInUser;
 

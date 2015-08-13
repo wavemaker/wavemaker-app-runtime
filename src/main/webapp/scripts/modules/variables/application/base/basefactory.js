@@ -151,6 +151,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
                     "service": {"type": "list", "options": []},
                     "operation": {"type": "list", "hide": true, "options": []},
+                    "startUpdate": {"type": "boolean", "value": false, "hide": true},
                     /*calendar event options*/
                     "eventTitle": {"type": "number", "dataBinding": true, "hide" : true},
                     "eventNotes": {"type": "string", "dataBinding": true, "hide" : true},
@@ -162,6 +163,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     /* capture picture options*/
                     "imageQuality": {"type": "number", "value": 80, "hide" : true},
                     "imageEncodingType": {"type": "list", "options": {"0" : "JPEG", "1" : "PNG"}, "value" : "0", "hide" : true},
+                    "allowImageEdit": {"type": "boolean", "value" : false, "hide" : true},
                     "correctOrientation": {"type": "boolean", "value" : true, "hide" : true},
                     "saveToPhotoAlbum": {"type": "boolean", "value" : false, "hide" : true},
                     /* getGeoLocation options*/
@@ -191,7 +193,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "dataBinding",
                             "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
-                            "imageQuality", "imageEncodingType", "correctOrientation", "saveToPhotoAlbum",
+                            "allowImageEdit", "imageEncodingType", "imageQuality", "correctOrientation", "saveToPhotoAlbum",
                             "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",
                             "contactFilter"], "parent": "properties"},
 

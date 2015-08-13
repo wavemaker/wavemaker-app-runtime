@@ -375,6 +375,13 @@ wm.variables.services.Variables = [
                                 variable.fire();
                             }, null, false);
                         }
+                    } else if (variable.category === "wm.MobileVariable") {
+                        if (runMode && variable.startUpdate) {
+                            /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
+                            $timeout(function () {
+                                variable.invoke();
+                            }, null, false);
+                        }
                     }
                 });
             },

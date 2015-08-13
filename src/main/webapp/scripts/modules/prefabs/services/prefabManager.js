@@ -368,7 +368,7 @@ WM.module('wm.prefabs')
             function getPrefabScriptResourceUrl(resourcePath, resourceBasePath, preventCache) {
                 var _url = resourcePath;
                 if (!Utils.stringStartsWith(resourcePath, 'http://|https://|//')) {
-                    _url = resourceBasePath + _url;
+                    _url = (resourceBasePath + _url).replace('//','/');
                 }
                 if (preventCache) {
                     _url = Utils.preventCachingOf(_url);
@@ -378,7 +378,7 @@ WM.module('wm.prefabs')
             }
 
             function extendAppLocale(root) {
-                var localePath = root + '/resources/i18n/';
+                var localePath = root + (root.lastIndexOf('/') === root.length - 1? '' : '/') + 'resources/i18n/';
 
                 if (CONSTANTS.isRunMode) {
                     i18nService.loadComponentLocaleBundle(localePath);
