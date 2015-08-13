@@ -66,13 +66,14 @@ WM.module('wm.widgets.advanced')
                             iScope._onChange($event);
                         };
                         iScope.ratingsWidth = function () {
-                            if (iScope.datavalue === undefined) {
+                            if (iScope.datavalue === undefined || iScope.datavalue === "") {
                                 return 0;
                             }
                             var dataValue = parseInt(iScope.datavalue,10);
                             var maxValue = parseInt(iScope.maxvalue,10);
                             if (dataValue <= maxValue && dataValue >= 0) {
                                 return 100 * (dataValue / maxValue) + '%';
+
                             }
                         };
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope), iScope, notifyFor);
