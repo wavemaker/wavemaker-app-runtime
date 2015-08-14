@@ -302,7 +302,7 @@ WM.module('wm.widgets.base', [])
                         "hint": {"type": "string", "bindable": "in-out-bound"},
                         "width": {"type": "string", "value": '300px', "pattern": dimensionRegex},
                         "height": {"type": "string", "value": '150px', "pattern": dimensionRegex},
-                        "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'}
+                        "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all"}
                     },
                     "wm.button": {
                         "hint": {"type": "string", "bindable": "in-out-bound"},
