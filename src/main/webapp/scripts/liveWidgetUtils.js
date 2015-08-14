@@ -188,7 +188,8 @@ WM.module('wm.widgets.live')
             }
 
             function getFormFields(fieldDef, index, type) {
-                var fields = "";
+                var fields = "",
+                    dateTypes = ["date", "datetime"];
                 Object.keys(fieldDef).forEach(function (field) {
                     if (fieldDef[field]) {
                         if (field === "key" || field === "field") {
@@ -199,6 +200,15 @@ WM.module('wm.widgets.live')
                             fields += ' accept="{{formFields[' + index + '].' + field + '}}"';
                         } else if (field === "caption" || field === "type" || field === "show" || field === "placeholder" || field === "minPlaceholder" || field === "maxPlaceholder") {
                             // Avoid show attribute to support edit mode using isUpdateMode.
+                        } else if (_.includes(dateTypes, type)) {
+                            //For date, datetime, timestamp special cases
+                            if (field === "minvalue"){
+                                fields += ' mindate="{{formFields[' + index + '].' + field + '}}"';
+                            } else if (field === "maxvalue")
+                            {
+                                fields += ' maxdate="{{formFields[' + index + '].' + field + '}}"';
+                            }
+
                         } else {
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
                         }
@@ -219,7 +229,7 @@ WM.module('wm.widgets.live')
                         '<div class="col-md-4 col-sm-4"><wm-datetime ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}" ></wm-datetime></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.placeholder || 'Select date time';
-                    template = template + '<wm-datetime ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}" ></wm-datetime>';
+                    template = template + '<wm-datetime ' + getFormFields(fieldDef, index, "datetime") + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}" ></wm-datetime>';
                 }
                 return template;
             }
@@ -251,7 +261,7 @@ WM.module('wm.widgets.live')
                          '<div class="col-md-4 col-sm-4"><wm-date ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}"></wm-date></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.placeholder || 'Select date';
-                    template = template + '<wm-date ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}"show="{{isUpdateMode}}"> </wm-date>';
+                    template = template + '<wm-date ' + getFormFields(fieldDef, index, "date") + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}"show="{{isUpdateMode}}"> </wm-date>';
                 }
                 return template;
             }
