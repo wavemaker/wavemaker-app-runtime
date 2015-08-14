@@ -1,4 +1,4 @@
-/*global WM */
+/*global WM, _ */
 /*Directive for menu */
 
 WM.module('wm.widgets.form')
@@ -34,6 +34,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
                 '<li data-ng-class="{\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}">' +
                     '<a title="{{item.label}}" ng-href="{{item.link}}" target="{{linktarget}}">' +
+                    '<span data-ng-if="item.children.length" class="pull-right fa" data-ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
                         '<i class="{{item.icon}}"></i>' +
                         '{{item.label}}' +
                     '</a>' +
@@ -45,18 +46,18 @@ WM.module('wm.widgets.form')
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base.editors', 'wm.menu.dataProps']),
             notifyFor = {
-                'iconname': true,
-                'scopedataset': true,
-                'dataset': true,
-                'menuposition': true,
-                'linktarget': true
+                'iconname'      : true,
+                'scopedataset'  : true,
+                'dataset'       : true,
+                'menuposition'  : true,
+                'linktarget'    : true
             },
             POSITION = {
-                DOWN_RIGHT : "down,right",
-                DOWN_LEFT : "down,left",
-                UP_RIGHT : "up,right",
-                UP_LEFT : "up,left",
-                INLINE : "inline"
+                DOWN_RIGHT  : 'down,right',
+                DOWN_LEFT   : 'down,left',
+                UP_RIGHT    : 'up,right',
+                UP_LEFT     : 'up,left',
+                INLINE      : 'inline'
             };
 
         function getMenuItems(newVal, scope) {
@@ -73,14 +74,14 @@ WM.module('wm.widgets.form')
             } else if (WM.isArray(newVal)) {
                 if (WM.isObject(newVal[0])) {
                     transformFn = function (item) {
-                        var children = (WidgetUtilService.getEvaluatedData(scope, item, {expressionName: "itemchildren"}) ||item.children);
+                        var children = (WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemchildren'}) || item.children);
                         return {
-                            'label': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: "itemlabel"}) || item.label,
-                            'icon': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: "itemicon"}) || item.icon,
-                            'disabled': item.disabled,
-                            'link': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: "itemlink"}) || item.link,
-                            'value': scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
-                            'children' :WM.isArray(children) ? children : [] .map(transformFn)
+                            'label'     : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label,
+                            'icon'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'}) || item.icon,
+                            'disabled'  : item.disabled,
+                            'link'      : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item.link,
+                            'value'     : scope.datafield ? (scope.datafield === 'All Fields' ? item : Utils.findValueOf(item, scope.datafield)) : item,
+                            'children'  : (WM.isArray(children) ? children : []).map(transformFn)
                         };
                     };
                     menuItems = newVal.map(transformFn);
@@ -100,39 +101,39 @@ WM.module('wm.widgets.form')
         function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case 'scopedataset':
-                case 'dataset':
+            case 'dataset':
                 /*if studio-mode, then update the itemlabel, itemicon, itemlink & itemchildren in property panel*/
                 if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
                     WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
                 }
-                    scope.itemlabel = scope.itemlabel || scope.displayfield;
+                scope.itemlabel = scope.itemlabel || scope.displayfield;
                 if (CONSTANTS.isRunMode && newVal) {
                     scope.menuItems = getMenuItems(newVal.data || newVal, scope);
                 }
                 break;
             case 'linktarget':
-                    scope.linktarget = newVal;
-                    break;
+                scope.linktarget = newVal;
+                break;
             case 'menuposition':
                 switch (newVal) {
                 case POSITION.DOWN_RIGHT:
                     element.removeClass('dropup');
-                    scope.menualign = " pull-left ";
+                    scope.menualign = 'pull-left';
                     break;
                 case POSITION.DOWN_LEFT:
                     element.removeClass('dropup');
-                    scope.menualign = " pull-right ";
+                    scope.menualign = 'pull-right';
                     break;
                 case POSITION.UP_LEFT:
                     element.addClass('dropup');
-                    scope.menualign = " pull-right ";
+                    scope.menualign = 'pull-right';
                     break;
                 case POSITION.UP_RIGHT:
                     element.addClass('dropup');
-                    scope.menualign = " pull-left ";
+                    scope.menualign = 'pull-left';
                     break;
                 case POSITION.INLINE:
-                    scope.menualign = " dropinline-menu ";
+                    scope.menualign = 'dropinline-menu';
                     break;
                 }
                 break;
@@ -240,7 +241,7 @@ WM.module('wm.widgets.form')
             },
             'link': function (scope, element) {
                 if (scope.item.children && scope.item.children.length > 0) {
-                    element.append('<wm-menu-dropdown items="item.children"  target="linktarget" menualign="menualign"/>');
+                    element.append('<wm-menu-dropdown items="item.children"  linktarget="linktarget" menualign="menualign"/>');
                     element.off('click');
                     $compile(element.contents())(scope);
                 }
@@ -269,7 +270,7 @@ WM.module('wm.widgets.form')
  * @requires WidgetUtilService
  *
  * @param {string=} caption
- *                  Content / Lebel of the Menu widget. <br>
+ *                  Content / Label of the Menu widget. <br>
  *                  This property is bindable.
  * @param {string=} name
  *                  Name of the menu widget.
