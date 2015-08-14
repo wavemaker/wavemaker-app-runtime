@@ -132,7 +132,7 @@ wm.variables.services.Variables = [
                     /* if binding is present, watch on the expression */
                     watchers[variableScope.$id][variableName].push(variableScope.$watch(bindingVal.replace("bind:", ""), function (newVal, oldVal) {
                         /* don't perform any action if new value is coming as undefined(data source getting destroyed) */
-                        if (newVal === oldVal || (WM.isUndefined(newVal) && !WM.isUndefined(oldVal))) {
+                        if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && !WM.isUndefined(oldVal))) {
                             return;
                         }
                         if (variable.category === "wm.Variable") {
@@ -221,7 +221,7 @@ wm.variables.services.Variables = [
             processBindNode = function (node, parentNode, scope, variable) {
                 if (Utils.stringStartsWith(node.value, "bind:")) {
                     scope.$watch(node.value.replace("bind:", ""), function (newVal, oldVal) {
-                        if ((newVal === oldVal) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(parentNode[node.name])))) {
+                        if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(parentNode[node.name])))) {
                             return;
                         }
                         parentNode[node.name] = newVal;
