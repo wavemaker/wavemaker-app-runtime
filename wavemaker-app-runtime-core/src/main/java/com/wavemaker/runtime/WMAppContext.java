@@ -16,7 +16,6 @@
 package com.wavemaker.runtime;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import javax.servlet.ServletContext;
@@ -32,6 +31,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.wavemaker.runtime.data.util.DataServiceConstants;
 import com.wavemaker.studio.common.CommonConstants;
+import com.wavemaker.studio.common.util.PropertiesFileUtils;
 
 /**
  * This singleton class is to store any properties in the scope of the application context.
@@ -92,12 +92,9 @@ public class WMAppContext {
             Properties props;
 
             try {
-                props = new Properties();
-                InputStream is = appPropsResource.getInputStream();
-                props.load(is);
-                is.close();
+                props = PropertiesFileUtils.loadProperties(appPropsResource.getInputStream());
             } catch (IOException ioe) {
-                ioe.printStackTrace();
+                logger.warn("Couldn't load props file", ioe);
                 return;
             }
 
