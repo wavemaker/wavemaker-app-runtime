@@ -647,7 +647,7 @@ wm.variables.services.Variables = [
 
                 /* if scope provided, return the variable in that scope */
                 if (scope) {
-                    return variables[scope.$id][variableName] || self.variableCollection[$rootScope.$id][variableName];
+                    return (variables[scope.$id] && variables[scope.$id][variableName]) || self.variableCollection[$rootScope.$id][variableName];
                 }
 
                 /* in Run Mode, find and return the variable against active page or app */

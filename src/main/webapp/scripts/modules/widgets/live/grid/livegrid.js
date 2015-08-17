@@ -118,8 +118,8 @@ WM.module('wm.widgets.live')
                                     scope.gridform.rowdata = '';
                                     /*In case of dialog layout set the previous data Array before clearing off*/
                                     if (scope.gridform.isLayoutDialog) {
-                                        scope.gridform.setPrevDataArray(scope.gridform.dataArray);
-                                        scope.gridform.dataArray = [];
+                                        scope.gridform.setPrevformFields(scope.gridform.formFields);
+                                        scope.gridform.formFields = [];
                                     }
                                     scope.gridform.new();
                                     if (scope.isLayoutDialog) {
@@ -131,8 +131,8 @@ WM.module('wm.widgets.live')
                                     scope.gridform.rowdata = row;
                                     /*In case of dialog layout set the previous data Array before clearing off*/
                                     if (scope.gridform.isLayoutDialog) {
-                                        scope.gridform.setPrevDataArray(scope.gridform.dataArray);
-                                        scope.gridform.dataArray = [];
+                                        scope.gridform.setPrevformFields(scope.gridform.formFields);
+                                        scope.gridform.formFields = [];
                                     }
                                     scope.gridform.edit();
                                     scope.$root.$safeApply(scope);
