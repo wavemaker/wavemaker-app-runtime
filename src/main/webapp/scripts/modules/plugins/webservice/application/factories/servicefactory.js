@@ -187,9 +187,13 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 }
             },
 
+            isRESTSupported = function (type) {
+                return (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(type) !== -1);// || VARIABLE_CONSTANTS.SERVICE_TYPE_DATA === type);
+            },
+
             processOperations = function (serviceObj, operations, swagger) {
                 var paramsKey = "parameters",
-                    isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1,
+                    isRestSupportedService = isRESTSupported(serviceObj.type),
                     definitions,
                     securityDefinitions;
 
@@ -208,12 +212,15 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         isList,
                         typeRef,
                         returnObj,
-                        returnType;
+                        returnType,
+                        isDbServiceOp = function (type) {
+                            return type === "hqlquery" || type === "nativequery" || type === "procedure";
+                        };
 
-                    if (operation.operationType === "hqlquery" || operation.operationType === "nativequery") {
+                    if (isDbServiceOp(operation.operationType)) {
                         returnType = operation.return;
                     } else {
-                        if (operation.responses['200'].schema) {
+                        if (operation.responses && operation.responses['200'].schema) {
                             returnType = getReturnType(operation.responses['200'].schema, definitions);
                         } else {
                             returnType = "void";
@@ -315,7 +322,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 }
 
 
-                if (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1) {
+                if (isRESTSupported(serviceObj.type)) {
                     operations = [];
 
                     /* invoking a service to get the operations that a particular service has and it's
@@ -377,7 +384,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                     paramTypeListRefsKey,
                                     isList,
                                     typeRef,
-                                    isRestSupportedService = VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceObj.type) !== -1;
+                                    isRestSupportedService = isRESTSupported(serviceObj.type);
                                 if (isRestSupportedService) {
                                     paramTypeRefsKey = "fullyQualifiedType";
                                     paramTypeListRefsKey = "fullyQualifiedTypeArguments";
@@ -423,7 +430,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     return;
                 }
 
-                if (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(getServiceObjectByName(serviceId).type) !== -1) {
+                if (isRESTSupported(serviceObj.type)) {
                     getServiceOperations(serviceId, function () {
                         onOperationParamsFetch(getServiceOperationObjectByName(serviceId, operationId), true);
                     }, true);
