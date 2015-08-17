@@ -62,6 +62,8 @@ public class DataServiceConstants {
 
     public static final String QUERY_EXECUTION_CONTROLLER_JAVA = "QueryExecutionController.java";
 
+    public static final String PROCEDURE_EXECUTION_CONTROLLER_JAVA = "ProcedureExecutionController.java";
+
     public static final String CONTROLLER_DIR = "controller/";
 
     private DataServiceConstants() {
