@@ -1700,37 +1700,6 @@ WM.module('wm.widgets.base', [])
         };
     }])
 
-    /** A directive for compiling the content and inserting inside a container.Used in LiveList widget */
-    .directive('compile', function ($compile) {
-        "use strict";
-
-        return function (scope, element, attrs) {
-            var unbindWatcher = scope.$watch(
-                function (scope) {
-                    // watch the 'compile' expression for changes
-                    return scope.$eval(attrs.compile);
-                },
-                function (value) {
-
-                    /*Add a clone of the element to the current dom.
-                     * This is needed in case of elements with children.*/
-                    var clone = value ? value.clone() : value;
-
-                    // when the 'compile' expression changes
-                    // assign it into the current DOM
-                    element.html(clone);
-
-                    // compile the new DOM and link it to the current
-                    // scope.
-                    // NOTE: we only compile .childNodes so that
-                    // we don't get into infinite loop compiling ourselves
-                    $compile(element.contents())(element.scope());
-                    unbindWatcher();
-                }
-            );
-        };
-    })
-
     .directive('ngController', function ($rootScope, CONSTANTS) {
         'use strict';
 
