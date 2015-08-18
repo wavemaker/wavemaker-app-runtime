@@ -1,4 +1,4 @@
-/*global WM, wm, window, document, navigator, Image, location, console*/
+/*global WM, wm, window, document, navigator, Image, location, console, _*/
 /*jslint todo: true */
 
 /**
@@ -214,15 +214,22 @@ WM.module('wm.utils', [])
                 var variableName,
                     widgetScope,
                     widgetName,
-                    isBoundToVariable = iScope.binddataset.indexOf('bind:Variables.') !== -1,
-                    isBoundToWidget = iScope.binddataset.indexOf('bind:Widgets.') !== -1;
+                    isBoundToVariable,
+                    isBoundToWidget,
+                    parts = iScope.binddataset.split('.');
+
+                isBoundToVariable = _.includes(iScope.binddataset, 'bind:Variables.');
+
+                if (!isBoundToVariable) {
+                    isBoundToWidget = _.includes(iScope.binddataset, 'bind:Widgets.');
+                }
+
                 if (isBoundToVariable) {
-                    variableName = iScope.binddataset.replace("bind:Variables.", "");
-                    variableName = variableName.substr(0, variableName.indexOf("."));
+                    variableName = parts[1];
                 } else if (isBoundToWidget) {
                     if (WM.isString(iScope.binddataset) && iScope.binddataset !== '') {
-                        if (iScope.binddataset.indexOf('selecteditem.') === -1) {
-                            widgetName = iScope.binddataset.split('.')[1];
+                        if (!_.includes(iScope.binddataset, 'selecteditem.')) {
+                            widgetName = parts[1];
                             widgetScope = (scope || iScope).Widgets[widgetName];
                             variableName = getVariableName(widgetScope);
                         } else {

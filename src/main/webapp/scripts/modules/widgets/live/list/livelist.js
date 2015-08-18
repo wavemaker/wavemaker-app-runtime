@@ -57,7 +57,7 @@ WM.module('wm.widgets.live')
                 },
                 directiveDefn;
 
-            function getBoundVariable($is, variableName) {
+            function getVariable($is, variableName) {
 
                 if (!variableName) {
                     return undefined;
@@ -69,7 +69,7 @@ WM.module('wm.widgets.live')
 
             /* update the selectedItem dataType onchange of bindDataSet*/
             function updateSelectedItemDataType($is) {
-                var variable = getBoundVariable($is, $is.boundVariableName);
+                var variable = getVariable($is, $is.boundVariableName);
 
                 if (variable) {
                     /* set the variable type info to the live-list selected-entry type, so that type matches to the variable for which variable is created*/
@@ -106,11 +106,8 @@ WM.module('wm.widgets.live')
              * corresponding bindings for the live list.*/
             function getBoundWidgetDatasetDetails($is) {
                 var dataSetParts,
-                    refWidget,
-                    refWidgetName,
                     refVariable,
                     refVariableName,
-                    refBindDataSet,
                     relFieldName,
                     relFieldType,
                     fields,
@@ -118,22 +115,14 @@ WM.module('wm.widgets.live')
                     isBoundToSelectedItemSubset = _.includes($is.binddataset, 'selecteditem.');
 
                 dataSetParts = $is.binddataset.split('.');
-
-                refWidgetName = dataSetParts[1];
-                refWidget = $is.Widgets[refWidgetName];
-                refBindDataSet = refWidget.binddataset;
-
-                /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
-                refVariableName = refBindDataSet.replace('bind:Variables.', '');
-                refVariableName = refVariableName.substr(0, refVariableName.indexOf('.'));
-                refVariable = getBoundVariable($is, refVariableName);
+                refVariableName = Utils.getVariableName($is);
+                refVariable = getVariable($is, refVariableName);
 
                 relFieldName = isBoundToSelectedItemSubset && dataSetParts[3];
 
                 fields = $rs.dataTypes[refVariable.package].fields;
                 details = {
                     'refVariableName': refVariableName,
-                    'refWidget': refWidget,
                     'refVariable': refVariable
                 };
                 /* If binddataset is of the format: bind:Widgets.widgetName.selecteditem.something,
@@ -219,7 +208,7 @@ WM.module('wm.widgets.live')
 
                 if (newVal) {
                     $is.noDataFound = false;
-                    var variableObj = getBoundVariable($is, $is.boundVariableName);
+                    var variableObj = getVariable($is, $is.boundVariableName);
 
                     if (newVal.data) {
                         newVal = newVal.data;
