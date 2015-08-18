@@ -607,6 +607,7 @@ WM.module('wm.widgets.live')
             compile: function () {
                 return {
                     pre: function (scope, element, attrs) {
+                        var elScope = element.scope();
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
                         //remove this condition later. for backward compatibility
@@ -615,9 +616,8 @@ WM.module('wm.widgets.live')
                             scope._dialogid = attrs.dialogid;
                         }
 
-                        scope.Variables = element.scope().Variables;
-                        /*Set Widgets to any empty object. Widgets will not inherit page's widgets and will have only present live form widgets */
-                        scope.Widgets = {};
+                        scope.Variables = elScope.Variables;
+                        scope.Widgets = elScope.Widgets;
                     },
                     post: function (scope, element, attrs, controller) {
                         scope.ctrl = controller;
