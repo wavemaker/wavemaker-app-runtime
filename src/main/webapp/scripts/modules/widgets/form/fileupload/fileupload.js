@@ -329,7 +329,6 @@ WM.module('wm.widgets.form')
                                 if (window.FormData) { // Check for IE9
                                     var response,
                                         name = '',
-                                        path = '',
                                         fileObject;
                                     if (evt.target.status !== 200) {
                                         handleError(evt);
@@ -347,22 +346,20 @@ WM.module('wm.widgets.form')
                                         return;
                                     }
                                     if (scope.multiple) {
-                                        WM.forEach(response, function (file) {
+                                        WM.forEach(response, function (file, index) {
                                             name = file.fileName;
                                             scope.filename += name + ';';
                                             file.extension = name && (name.lastIndexOf('.') > -1 ? name.substring(name.lastIndexOf('.') + 1) : 'file');
-                                            path = file.path.replace($rootScope.project.id + UPLOAD_LOCATION, "*");
-                                            path = path.split('*')[1];
-                                            scope.filepath += path + ';';
-                                            file.path = path;
+                                            scope.filepath += file.path;
+                                            if (index !== response.length - 1) {
+                                                scope.filepath += ';';
+                                            }
                                             file.status = file.success ? 'success' : 'fail';
                                         });
                                     } else {
                                         fileObject = response[0];
                                         name = fileObject.fileName;
                                         fileObject.extension = name && (name.lastIndexOf('.') > -1 ? name.substring(name.lastIndexOf('.') + 1) : 'file');
-                                        path = fileObject.path.replace($rootScope.project.id + UPLOAD_LOCATION, "*");
-                                        fileObject.path = path.split('*')[1];
                                         scope.filename = fileObject.name;
                                         scope.filepath = fileObject.path;
                                         fileObject.status = fileObject.success ? 'success' : 'fail';
