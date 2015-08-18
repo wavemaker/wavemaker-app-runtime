@@ -238,6 +238,7 @@ wm.plugins.database.services.DatabaseService = [
                         "url": params.url,
                         "tableFilter": params.tableFilter,
                         "schemaFilter": params.schemaFilter,
+                        "schemaName": params.schemaName || '',
                         "driver_class": params.driver_class,
                         "dialect": params.dialect,
                         "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
