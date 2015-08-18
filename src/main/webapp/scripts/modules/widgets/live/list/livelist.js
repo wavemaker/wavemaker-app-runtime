@@ -57,11 +57,19 @@ WM.module('wm.widgets.live')
                 },
                 directiveDefn;
 
+            function getBoundVariable($is, variableName) {
+
+                if (!variableName) {
+                    return undefined;
+                }
+
+                var variables = $is.Variables || {};
+                return variables[variableName];
+            }
+
             /* update the selectedItem dataType onchange of bindDataSet*/
-            function updateSelectedItemDataType($is, $el) {
-                var _s = $el.scope(),
-                    _v = _s && _s.Variables,
-                    variable = _v && _v[$is.boundVariableName];
+            function updateSelectedItemDataType($is) {
+                var variable = getBoundVariable($is, $is.boundVariableName);
 
                 if (variable) {
                     /* set the variable type info to the live-list selected-entry type, so that type matches to the variable for which variable is created*/
@@ -118,7 +126,7 @@ WM.module('wm.widgets.live')
                 /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
                 refVariableName = refBindDataSet.replace('bind:Variables.', '');
                 refVariableName = refVariableName.substr(0, refVariableName.indexOf('.'));
-                refVariable = Variables.getVariableByName(refVariableName);
+                refVariable = getBoundVariable($is, refVariableName);
 
                 relFieldName = isBoundToSelectedItemSubset && dataSetParts[3];
 
@@ -141,10 +149,10 @@ WM.module('wm.widgets.live')
             }
 
             /* Fetch column bindings for the live list in case it is bound to a widget. */
-            function fetchDynamicColumns() {
+            function fetchDynamicColumns($is) {
                 var fields = [],
                     result;
-                result = getBoundWidgetDatasetDetails();
+                result = getBoundWidgetDatasetDetails($is);
                 if (result.fields) {
                     fields = result.fields;
                 } else if (result.relFieldType) {
@@ -166,10 +174,10 @@ WM.module('wm.widgets.live')
                     getColumnsFromDataSet($is.dataset);
                 }
 
-                if (!columns.length) {
+                if (!columns || !columns.length) {
                     /* If live list is bound to a widget, fetch the columns accordingly. */
                     if (_.includes($is.binddataset, 'bind:Widgets.')) {
-                        columns = fetchDynamicColumns();
+                        columns = fetchDynamicColumns($is);
                     }
                 }
                 /* emit event to modify the liveList template*/
@@ -186,13 +194,11 @@ WM.module('wm.widgets.live')
 
             /** With given data, creates list items and updates the markup*/
             function createListItems($is, $el, data) {
-                var newData = WM.copy(data),
-                    unbindWatcher;
+                var unbindWatcher;
                 /*If the "maxResults" property has been set in the dataNavigator, that takes precedence. Hence splice the data only if it is not set.*/
                 /** Set the data to field-definitions, now the template will be modified and rendered,
                  * If pageSize is mentioned then splice the data to get the required data*/
-                $is.fieldDefs = ($is.dataNavigator && !$is.shownavigation && $is.pagesize) ? newData.splice(0, $is.pagesize) : data;
-                $is.$liScope.fieldDefs = $is.fieldDefs;
+                $is.$liScope.fieldDefs = ($is.dataNavigator && !$is.shownavigation && $is.pagesize) ? data.slice(0, $is.pagesize - 1) : data;
 
                 /* In run mode, making the first element selected, if flag is set */
                 if (CONSTANTS.isRunMode && $is.selectfirstitem) {
@@ -213,13 +219,11 @@ WM.module('wm.widgets.live')
 
                 if (newVal) {
                     $is.noDataFound = false;
-                    var _s = $el.scope(),
-                        _v = _s && _s.Variables,
-                        variableObj = _v && _v[$is.boundVariableName];
+                    var variableObj = getBoundVariable($is, $is.boundVariableName);
 
                     if (newVal.data) {
                         newVal = newVal.data;
-                    } else if (variableObj && variableObj.category === 'wm.LiveVariable' && _.includes($is.binddataset, 'bind:Widgets.')) {
+                    } else if (variableObj && variableObj.category === 'wm.LiveVariable' && !_.includes($is.binddataset, 'bind:Widgets.')) {
                         return;
                     }
                     /*If the data is a pageable object, then display the content.*/
@@ -267,7 +271,6 @@ WM.module('wm.widgets.live')
                 }
             }
 
-
             /** In case of run mode, the field-definitions will be generated from the markup*/
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, $el, attrs, key, newVal, oldVal) {
@@ -286,7 +289,7 @@ WM.module('wm.widgets.live')
                         }
                         $is.oldbinddataset = $is.binddataset;
                         /*update selectedItem dataType*/
-                        updateSelectedItemDataType($is, $el);
+                        updateSelectedItemDataType($is);
                     }
                     break;
                 case 'shownavigation':
@@ -447,7 +450,6 @@ WM.module('wm.widgets.live')
                         $is.$watch('scopedataset', function (newVal) {
                             if (newVal && !$is.dataset) {
                                 createListItems($is, $el, newVal);
-                                $liScope.fieldDefs = $is.fieldDefs;
                             }
                         }, true);
                     }
