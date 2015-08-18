@@ -30,7 +30,7 @@ WM.module('wm.layouts.containers')
             );
         $templateCache.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" data-ng-show="expanded" wmtransclude></div>');
     }])
-    .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', 'wmupdateProperties', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS, wmupdateProperties) {
+    .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.layouts', 'wm.containers', 'wm.base.events.touch', 'wm.menu.dataProps']),
             notifyFor = {
@@ -47,7 +47,7 @@ WM.module('wm.layouts.containers')
                 break;
             case 'actions':
                 if (CONSTANTS.isStudioMode) {
-                    wmupdateProperties.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
+                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
                     scope.itemlabel = scope.itemlabel || scope.displayfield;
                 }
                 break;

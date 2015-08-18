@@ -40,7 +40,7 @@ WM.module('wm.widgets.form')
                 '</li>'
             );
     }])
-    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'wmupdateProperties', 'Utils', 'CONSTANTS', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, wmupdateProperties, Utils, CONSTANTS) {
+    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'Utils', 'CONSTANTS', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, Utils, CONSTANTS) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base.editors', 'wm.menu.dataProps']),
@@ -103,7 +103,7 @@ WM.module('wm.widgets.form')
                 case 'dataset':
                 /*if studio-mode, then update the itemlabel, itemicon, itemlink & itemchildren in property panel*/
                 if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
-                    wmupdateProperties.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
+                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
                 }
                     scope.itemlabel = scope.itemlabel || scope.displayfield;
                 if (CONSTANTS.isRunMode && newVal) {
@@ -178,7 +178,7 @@ WM.module('wm.widgets.form')
                                 attrs.menuposition = POSITION.DOWN_LEFT;
                             }
                         }
-                        scope.widgetProps = widgetProps;
+                        scope.widgetProps = WM.copy(widgetProps);
                     },
                     'post': function (scope, element, attrs) {
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);

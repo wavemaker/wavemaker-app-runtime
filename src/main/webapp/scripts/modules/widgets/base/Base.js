@@ -1823,62 +1823,6 @@ WM.module('wm.widgets.base', [])
 
     /**
     * @ngdoc directive
-    * @name wm.widgets.directive:wmupdateProperties
-    * @restrict A
-    * @element ANY
-    *
-    * @description update datafield, display field in the property panel
-    *
-    */
-    .service('wmupdateProperties', ['WidgetUtilService',
-        function (WidgetUtilService) {
-            "use strict";
-            function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
-                var variableKeys = [],
-                    ALLFIELDS = "All Fields";
-
-                scope.widgetProps.itemlabel.options = [];
-                scope.widgetProps.itemicon.options = [];
-                scope.widgetProps.itemlink.options = [];
-                scope.widgetProps.itemchildren.options = [];
-                /* re-initialize the property values */
-                if (scope.newcolumns) {
-                    scope.newcolumns = false;
-                    scope.itemlabel = '';
-                    scope.itemicon = '';
-                    scope.itemlink = '';
-                    scope.itemchildren = '';
-                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'itemlabel': scope.itemlabel, 'itemicon': scope.itemicon, 'itemlink': scope.itemlink, 'itemchildren': scope.itemchildren});
-                }
-
-                if (WM.isString(dataset)) {
-                    return;
-                }
-
-                /* on binding of data*/
-                if (WM.isArray(dataset)) {
-                    dataset = dataset[0] || dataset;
-                    variableKeys = WidgetUtilService.extractDataSetFields(dataset, propertiesMap) || [];
-                }
-
-                /*removing null values from the variableKeys*/
-                WM.forEach(variableKeys, function (variableKey, index) {
-                    if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
-                        variableKeys.splice(index, 1);
-                    }
-                });
-
-                scope.widgetProps.itemlabel.options = [''].concat(variableKeys);
-                scope.widgetProps.itemicon.options = [''].concat(variableKeys);
-                scope.widgetProps.itemlink.options = [''].concat(variableKeys);
-                scope.widgetProps.itemchildren.options = [''].concat(variableKeys);
-            }
-            return {
-                updatePropertyPanelOptions: updatePropertyPanelOptions
-            };
-        }])
-    /**
-     * @ngdoc directive
      * @name wm.widgets.directive:initWidget
      * @restrict A
      * @element ANY
@@ -2466,7 +2410,34 @@ WM.module('wm.widgets.base', [])
                 element.find('*').removeAttr(attrsToBeRemoved);
                 element.removeAttr(attrsToBeRemoved);
             }
+            function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
+                var variableKeys = [],
+                    wp = scope.widgetProps;
 
+                wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = wp.itemchildren.options = [];
+
+                /* re-initialize the property values */
+                if (scope.newcolumns) {
+                    scope.newcolumns = false;
+                    scope.itemlabel = scope.itemicon = scope.itemlink = scope.itemchildren = '';
+                    $rootScope.$emit('set-markup-attr', scope.widgetid, {'itemlabel': scope.itemlabel, 'itemicon': scope.itemicon, 'itemlink': scope.itemlink, 'itemchildren': scope.itemchildren});
+                }
+
+                if (WM.isString(dataset)) {
+                    return;
+                }
+
+                /* on binding of data*/
+                if (WM.isArray(dataset)) {
+                    dataset = dataset[0] || dataset;
+                    variableKeys = extractDataSetFields(dataset, propertiesMap) || [];
+                }
+                /*removing keys of null and object type*/
+                variableKeys = variableKeys.filter(function (variableKey) {
+                    return (dataset[variableKey] !== null) && !WM.isObject(dataset[variableKey]);
+                });
+                wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = wp.itemchildren.options = [''].concat(variableKeys);
+            }
             function onScopeValueChangeProxy(scope, element, attrs, key, newVal, oldVal) {
                 if (key === "placeholder" || key === "type") {
                     if (element.is('input') || element.is('textarea')) {
@@ -2832,6 +2803,8 @@ WM.module('wm.widgets.base', [])
                 injectModelUpdater: injectModelUpdater,
 
                 onScopeValueChangeProxy: onScopeValueChangeProxy,
+
+                updatePropertyPanelOptions:updatePropertyPanelOptions,
 
                 extractDataSetFields: extractDataSetFields,
 
