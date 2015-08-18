@@ -226,25 +226,29 @@ wm.plugins.database.services.DatabaseService = [
              */
 
             importDB: function (params, successCallback, failureCallback) {
+                var data = {
+                    "serviceId": params.serviceId,
+                    "packageName": params.packageName,
+                    "username": params.username,
+                    "password": params.password,
+                    "url": params.url,
+                    "tableFilter": params.tableFilter,
+                    "schemaFilter": params.schemaFilter,
+                    "driver_class": params.driver_class,
+                    "dialect": params.dialect,
+                    "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                    "impersonateUser": false,
+                    "activeDirectoryDomain": params.activeDirectoryDomain
+                };
+
+                if (params.schemaName) {
+                    data['schemaName'] =  params.schemaName ;
+                }
 
                 BaseService.execute({
                     target: "Database",
                     action: "importDB",
-                    data: {
-                        "serviceId": params.serviceId,
-                        "packageName": params.packageName,
-                        "username": params.username,
-                        "password": params.password,
-                        "url": params.url,
-                        "tableFilter": params.tableFilter,
-                        "schemaFilter": params.schemaFilter,
-                        "schemaName": params.schemaName || '',
-                        "driver_class": params.driver_class,
-                        "dialect": params.dialect,
-                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                        "impersonateUser": false,
-                        "activeDirectoryDomain": params.activeDirectoryDomain
-                    },
+                    data: data,
                     urlParams: {
                         "projectID": params.projectID
                     }
