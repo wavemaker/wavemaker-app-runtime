@@ -440,13 +440,6 @@ WM.module('wm.widgets.live')
                                 formData.append(field.key, document.forms[formName][field.key].files[0]);
                             }
                         } else if (field.type === "list") {
-                            if (field.widgetType === 'Datalist') {
-                                WM.forEach(field.value, function (value, key) {
-                                    if (value === field.selected) {
-                                        field.selected = key;
-                                    }
-                                });
-                            }
                             if (field.value) {
                                 dataObject[field.key] = field.value;
                             }
@@ -937,7 +930,6 @@ WM.module('wm.widgets.live')
                                 } else {
                                     exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
                                         parentIsolateScope.formFields[index].defaultValue = newVal;
-                                        parentIsolateScope.formFields[index].selected = newVal;
                                         if (parentIsolateScope.operationType !== 'update') {
                                             parentIsolateScope.setDefaultValueToValue(columnDef);
                                         }

@@ -78,7 +78,6 @@ WM.module('wm.widgets.live')
                                     filterField.minValue = '';
                                     filterField.maxValue = '';
                                 } else {
-                                    filterField.selected = '';
                                     filterField.value = '';
                                 }
                             }
@@ -145,17 +144,17 @@ WM.module('wm.widgets.live')
                                 case 'select':
                                 case 'radioset':
                                     if (filterField.type === "boolean") {
-                                        if (WM.isDefined(filterField.selected) && !WM.isString(filterField.selected)) {
-                                            fieldValue = filterField.selected;
+                                        if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
+                                            fieldValue = filterField.value;
                                         }
                                         noQuotes = true;
                                     } else {
-                                        fieldValue = filterField.selected;
+                                        fieldValue = filterField.value;
                                     }
                                     break;
                                 case 'checkboxset':
-                                    if (filterField.selected && filterField.selected.length) {
-                                        fieldValue = filterField.selected;
+                                    if (filterField.value && filterField.value.length) {
+                                        fieldValue = filterField.value;
                                     }
                                     break;
                                 case 'date':
@@ -560,6 +559,7 @@ WM.module('wm.widgets.live')
                                 'field': attrs.field || attrs.binding,
                                 'filterOn': attrs.filterOn || attrs.field || attrs.binding,
                                 'isRange': attrs.isRange === "true" || attrs.isRange === true,
+                                'isRelated': attrs.isRelated === "true" || attrs.isRelated === true,
                                 'widget': attrs.widget,
                                 'lookupType': attrs.lookupType,
                                 'lookupField': attrs.lookupField,
@@ -585,7 +585,6 @@ WM.module('wm.widgets.live')
                                 } else {
                                     exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
                                         parentIsolateScope.formFields[index].value = newVal;
-                                        parentIsolateScope.formFields[index].selected = newVal;
                                         if (columnsDef.isRange) {
                                             parentIsolateScope.formFields[index].minValue = newVal;
                                             parentIsolateScope.formFields[index].maxValue = newVal;
@@ -600,7 +599,6 @@ WM.module('wm.widgets.live')
                                 if (CONSTANTS.isRunMode) {
                                     defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, columnsDef.type);
                                 }
-                                columnsDef.selected = defaultVal;
                                 columnsDef.value = defaultVal;
                                 if (columnsDef.isRange) {
                                     columnsDef.minValue = defaultVal;
