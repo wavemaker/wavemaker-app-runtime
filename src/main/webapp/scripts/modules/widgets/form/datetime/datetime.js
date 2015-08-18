@@ -5,12 +5,14 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
         'use strict';
         $templateCache.put('template/widget/form/datetime.html',
-            '<div class="app-datetime input-group dropdown" dropdown is-open="isTimeOpen" init-widget has-model ' + $rootScope.getWidgetStyles() +
+            '<div class="app-datetime input-group" init-widget has-model ' + $rootScope.getWidgetStyles() +
             ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox display-input" data-ng-model="_displayModel">' +
                 '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" data-ng-model="_dateModel" datepicker-popup={{datepattern}} min-date=mindate max-date=maxdate is-open="isDateOpen">' +
-                '<div class="dropdown-menu">' +
-                    '<timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></timepicker>' +
+                '<div dropdown is-open="isTimeOpen" class="dropdown">' +
+                    '<div class="dropdown-menu">' +
+                        '<timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></timepicker>' +
+                    '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
@@ -125,12 +127,12 @@ WM.module('wm.widgets.form')
                                 dateString = $filter('date')(date, 'yyyy-MM-dd');
                                 timeString = $filter('date')(time, 'HH:mm');
                                 value = moment(dateString + ' ' + timeString).valueOf();
-                                if (scope.datepattern && scope.datepattern !== "timestamp") {
+                                if (scope.datepattern && scope.datepattern !== 'timestamp') {
                                     scope._displayModel = $filter('date')(value, scope.datepattern);
                                 } else {
                                     scope._displayModel = value;
                                 }
-                                if (scope.outputformat && scope.outputformat !== "timestamp") {
+                                if (scope.outputformat && scope.outputformat !== 'timestamp') {
                                     scope._proxyModel = $filter('date')(value, scope.outputformat);
                                 } else {
                                     scope._proxyModel = value;
