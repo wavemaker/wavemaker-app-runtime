@@ -331,6 +331,21 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex, "show": false}
 
                     },
+                    "wm.camera": {
+                        "capturetype": {"type": "list", "options": ["IMAGE", "VIDEO"], "value" : "IMAGE"},
+                        "datavalue": {"type": "string", "value": "", "bindable": "in-out-bound"},
+                        "title": {"type": "string", "bindable": "in-out-bound"},
+                        "iconclass": {"type": "string", "value": "glyphicon glyphicon-camera", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "3em"},
+                        /* capture picture options*/
+                        "imagequality": {"type": "number", "value": 80, "show": true},
+                        "imageencodingtype": {"type": "list", "options": [ "JPEG", "PNG"], "value" : "JPEG", "show": true},
+                        "savetogallery": {"type": "boolean", "value" : false, "show": true},
+                        "allowedit": {"type": "boolean", "value" : false, "show": true},
+                        /* Events */
+                        "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    },
+
                     "wm.buttongroup": {
                         "hint": {"type": "string", "bindable": "in-out-bound"},
                         "vertical": {"type": "boolean"}
@@ -1550,7 +1565,7 @@ WM.module('wm.widgets.base', [])
                         "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                         "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "captions", "showxaxis", "showyaxis", "showvalues",
                          "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                          "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition"], "parent": "properties"},
+                          "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype"], "parent": "properties"},
                     {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                     {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                     {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
@@ -1570,7 +1585,8 @@ WM.module('wm.widgets.base', [])
                     {"name": "callbackevents", "properties": ["onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect",
                         "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onActionsclick", "onBeforeSegmentChange", "onSegmentChange"], "parent": "events"},
                     {"name": "security", "properties": ["accessroles"], "parent": "security"},
-                    {"name": "devicesize", "properties": ["showindevice"], "parent": "mobile"}
+                    {"name": "devicesize", "properties": ["showindevice"], "parent": "mobile"},
+                    {"name": "imageproperties", "properties": [ "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"],"parent": "properties"}
                 ]
             },
             properties = result.properties,
@@ -2924,7 +2940,8 @@ WM.module('wm.widgets.base', [])
                             "wm-nav",
                             "wm-tree",
                             "wm-liveform",
-                            "wm-rating"
+                            "wm-rating",
+                            "wm-camera"
                             ];
                     } else if (types === 'page-container-widgets') {
                         types = [

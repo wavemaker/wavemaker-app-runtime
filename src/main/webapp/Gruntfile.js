@@ -464,6 +464,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/widgets/advanced/login/login.js',
                         '<%= config.scripts %>/modules/widgets/advanced/carousel/carousel.js',
                         '<%= config.scripts %>/modules/widgets/advanced/rating/rating.js',
+                        '<%= config.scripts %>/modules/widgets/advanced/camera/camera.js',
                         '<%= config.scripts %>/modules/widgets/prefabs/prefabs.js',
                         '<%= config.scripts %>/modules/plugins/database/config.js',
                         '<%= config.scripts %>/modules/plugins/database/application/services/querybuilder.js',
