@@ -18,10 +18,9 @@ WM.module('wm.widgets.live')
         '$compile',
         'CONSTANTS',
         'QueryBuilder',
-        'Variables',
         '$filter',
         'Utils',
-        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, Variables, $filter, Utils) {
+        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf("wm.livefilter", ["wm.layouts", "wm.containers"]),
                 filterMarkup = '',
@@ -104,8 +103,6 @@ WM.module('wm.widgets.live')
                             isOracleDbSystem = function () {
                                 return variable && variable[DB_SYS_KEY] && variable[DB_SYS_KEY].toLowerCase() === ORACLE_DB_SYSTEM;
                             };
-
-
                         options = options || {};
                         page = options.page || page;
                         orderBy = options.orderBy || "";
@@ -116,27 +113,51 @@ WM.module('wm.widgets.live')
                                 noQuotes = false,
                                 minValue = filterField.minValue,
                                 maxvalue = filterField.maxValue,
-                                colName = variable.getModifiedFieldName(filterField.field);
+                                colName = variable.getModifiedFieldName(filterField.field),
+                                minQuery,
+                                maxQuery,
+                                getFormattedDateTime = function (value, widget) {
+                                    var formattedValue;
+                                    if (!value) {
+                                        return undefined;
+                                    }
+                                    /* Case: if the database type is oracle, for 'datetime' fields append native 'toDate' function in the query */
+                                    if (widget === 'datetime' && isOracleDbSystem()) {
+                                        formattedValue = $filter('date')(value, $scope.dateTimeFormats[widget + "_oracle"]);
+                                        formattedValue = "to_date('" + formattedValue + "', 'YYYY-MM-DD HH24:MI:SS')";
+                                        noQuotes = true;
+                                    } else {
+                                        formattedValue = $filter('date')(value, $scope.dateTimeFormats[widget]);
+                                    }
+                                    return formattedValue;
+                                };
                             /* if field is part of a related entity, column name will be 'entity.fieldName' */
                             if (filterField.isRelated) {
                                 colName += '.' + filterField.lookupField;
                             }
                             if (filterField.isRange) {
                                 if ($scope.isDateTime[filterField.widget]) {
-                                    minValue = $filter('date')(minValue, $scope.dateTimeFormats[filterField.widget]);
-                                    maxvalue = $filter('date')(maxvalue, $scope.dateTimeFormats[filterField.widget]);
+                                    minValue = getFormattedDateTime(minValue, filterField.widget);
+                                    maxvalue = getFormattedDateTime(maxvalue, filterField.widget);
+                                }
+                                if (noQuotes) {
+                                    minQuery = "(" + minValue + "<=" + colName;
+                                    maxQuery = colName + "<=" + maxvalue + ")";
+                                } else {
+                                    minQuery = "('" + minValue + "'<=" + colName;
+                                    maxQuery = colName + "<='" + maxvalue + "')";
                                 }
                                 if (minValue && maxvalue) {
                                     formFields.push({
-                                        clause: "('" + minValue + "'<=" + colName + " AND " + colName + "<='" + maxvalue + "')"
+                                        clause:  minQuery + " AND " + maxQuery
                                     });
                                 } else if (minValue) {
                                     formFields.push({
-                                        clause: "('" + minValue + "'<=" + colName + ")"
+                                        clause: minQuery + ")"
                                     });
                                 } else if (maxvalue) {
                                     formFields.push({
-                                        clause: "(" + colName + "<='" + maxvalue + "')"
+                                        clause: "(" + maxQuery
                                     });
                                 }
                             } else {
@@ -159,21 +180,8 @@ WM.module('wm.widgets.live')
                                     break;
                                 case 'date':
                                 case 'time':
-                                    if (filterField.value) {
-                                        fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget]);
-                                    }
-                                    break;
                                 case 'datetime':
-                                    if (filterField.value) {
-                                        /* Case: if the database type is oracle, for 'datetime' fields append native 'toDate' function in the query */
-                                        if (isOracleDbSystem()) {
-                                            fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget + "_oracle"]);
-                                            fieldValue = "to_date('" + fieldValue + "', 'YYYY-MM-DD HH24:MI:SS')";
-                                            noQuotes = true;
-                                        } else {
-                                            fieldValue = $filter('date')(filterField.value, $scope.dateTimeFormats[filterField.widget]);
-                                        }
-                                    }
+                                    fieldValue = getFormattedDateTime(filterField.value, filterField.widget);
                                     break;
                                 case 'checkbox':
                                     if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
