@@ -132,7 +132,7 @@ WM.module('wm.widgets.form')
             if (radioValue || radioValue === false) {
                 selectedValue = radioValue;
             } else {
-                selectedValue = scope.selectedvalue === false ? false : scope._model_ || '';
+                selectedValue = scope.selectedvalue === false ? false : WM.isDefined(scope._model_) ? scope._model_ : '';
             }
 
             if (WM.isString(dataSet)) {
