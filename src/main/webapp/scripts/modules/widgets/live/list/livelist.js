@@ -11,7 +11,7 @@ WM.module('wm.widgets.live')
                         '<ul data-identifier="list" class="clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}"></ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                        '<wm-datanavigator class="well well-sm clearfix" show="{{show && shownavigation}}" showrecordcount="{{show && showrecordcount}}"></wm-datanavigator>' +
+                        '<wm-datanavigator class="well well-sm clearfix" data-ng-if="shownavigation" showrecordcount="{{showrecordcount}}"></wm-datanavigator>' +
                     '</div>'
                 );
 
@@ -39,11 +39,10 @@ WM.module('wm.widgets.live')
         '$compile',
         'Utils',
         '$rootScope',
-        'Variables',
         '$servicevariable',
         '$timeout',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, Variables, $servicevariable, $timeout) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base.editors', 'wm.base.events']),
@@ -57,6 +56,15 @@ WM.module('wm.widgets.live')
                 },
                 directiveDefn;
 
+            /* to return the bootstrap classes for the <li> w.r.t no. of items per row */
+            function getRowClass(itemsperrow) {
+                if (!itemsperrow) {
+                    return '';
+                }
+                var col = itemsperrow && 12 / (+itemsperrow);
+                return ' col-sm-' + col + ' col-md-' + col;
+            }
+
             function getVariable($is, variableName) {
 
                 if (!variableName) {
@@ -68,9 +76,7 @@ WM.module('wm.widgets.live')
             }
 
             /* update the selectedItem dataType onchange of bindDataSet*/
-            function updateSelectedItemDataType($is) {
-                var variable = getVariable($is, $is.boundVariableName);
-
+            function updateSelectedItemDataType($is, variable) {
                 if (variable) {
                     /* set the variable type info to the live-list selected-entry type, so that type matches to the variable for which variable is created*/
                     $is.widgetProps.selecteditem.type = variable.type;
@@ -160,7 +166,7 @@ WM.module('wm.widgets.live')
                 if ($is.dataset && $is.dataset.propertiesMap) {
                     columns = getColumnsFromPropertiesMap($is.dataset.propertiesMap);
                 } else {
-                    getColumnsFromDataSet($is.dataset);
+                    columns = getColumnsFromDataSet($is.dataset);
                 }
 
                 if (!columns || !columns.length) {
@@ -187,7 +193,11 @@ WM.module('wm.widgets.live')
                 /*If the "maxResults" property has been set in the dataNavigator, that takes precedence. Hence splice the data only if it is not set.*/
                 /** Set the data to field-definitions, now the template will be modified and rendered,
                  * If pageSize is mentioned then splice the data to get the required data*/
-                $is.$liScope.fieldDefs = ($is.dataNavigator && !$is.shownavigation && $is.pagesize) ? data.slice(0, $is.pagesize - 1) : data;
+                $is.$liScope.fieldDefs = data;
+
+                if (!data.length) {
+                    $is.noDataFound = true;
+                }
 
                 /* In run mode, making the first element selected, if flag is set */
                 if (CONSTANTS.isRunMode && $is.selectfirstitem) {
@@ -202,84 +212,117 @@ WM.module('wm.widgets.live')
                     });
                 }
             }
-            /** This method is called whenever there is a change in the dataSet. It gets the new data and modifies the dom and emits an
-             * event to update the markup*/
-            function watchVariableDataSet($is, $el, newVal) {
 
-                if (newVal) {
+            function onDataChange($is, $el, nv) {
+                if (nv) {
                     $is.noDataFound = false;
-                    var variableObj = getVariable($is, $is.boundVariableName);
 
-                    if (newVal.data) {
-                        newVal = newVal.data;
-                    } else if (variableObj && variableObj.category === 'wm.LiveVariable' && !_.includes($is.binddataset, 'bind:Widgets.')) {
-                        return;
+                    if (nv.data) {
+                        nv = nv.data;
                     }
+
                     /*If the data is a pageable object, then display the content.*/
-                    if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
-                        newVal = newVal.content;
+                    if (WM.isObject(nv) && Utils.isPageable(nv)) {
+                        nv = nv.content;
                     }
-                    if (newVal.dataSet) {
-                        newVal = newVal.dataSet;
-                    }
-                    if (WM.isObject(newVal) && !WM.isArray(newVal)) {
-                        newVal = [newVal];
+
+                    if (WM.isObject(nv) && !WM.isArray(nv)) {
+                        nv = [nv];
                     }
                     if (!$is.binddataset) {
-                        if (WM.isString(newVal)) {
-                            newVal = newVal.split(',');
+                        if (WM.isString(nv)) {
+                            nv = nv.split(',');
                         }
                     }
-                    if (WM.isArray(newVal)) {
-                        $is.dataNavigator.pagingOptions = {
+                    if (WM.isArray(nv)) {
+                        createListItems($is, $el, nv);
+                    }
+                } else {
+                    if (CONSTANTS.isRunMode) {
+                        createListItems($is, $el, []);
+                    }
+                }
+            }
+
+            function setupDataSource($is, $el, nv) {
+
+                var $dataNavigator, // dataNavigator element
+                    dataNavigator,  // dataNavigator scope
+                    binddataset;
+                if ($is.shownavigation) {
+
+                    binddataset = $is.binddataset;
+                    Utils.triggerFn($is._watchers.dataset);
+
+                    $timeout(function () {
+                        $dataNavigator = $el.find('> [data-identifier=datanavigator]');
+                        dataNavigator = $dataNavigator.isolateScope();
+
+                        dataNavigator.pagingOptions = {
                             maxResults: $is.pagesize || 20
                         };
-                        if (!$is.dataNavigatorWatched && $is.dataNavigator && $is.shownavigation) {
-                            $is.dataNavigator.dataset = $is.binddataset;
-                            $is.dataNavigatorWatched = true;
-                            /*Register a watch on the "result" property of the "dataNavigator" so that the paginated data is displayed in the live-list.*/
-                            $is.dataNavigator.$watch('result', function (newVal) {
-                                watchVariableDataSet($is, $el, newVal);
-                            });
-                            /*Register a watch on the "maxResults" property of the "dataNavigator" so that the "pageSize" is displayed in the live-list.*/
-                            $is.dataNavigator.$watch('maxResults', function (newVal) {
-                                $is.pagesize = newVal;
-                            });
-                        }
-                        if (newVal.length === 0 && CONSTANTS.isRunMode) {
-                            $is.noDataFound = true;
-                        }
-                        createListItems($is, $el, newVal);
-                    }
-                    /*Check for sanity*/
-                    if (CONSTANTS.isStudioMode && $is.binddataset) {
-                        handlePageSizeDisplay($is, variableObj);
-                    }
-                } else if (!newVal && CONSTANTS.isRunMode) {
-                    createListItems($is, $el, []);
+
+                        // remove the existing watchers
+                        Utils.triggerFn($is._watchers.dataNavigatorResult);
+                        Utils.triggerFn($is._watchers.dataNavigatorMaxResults);
+
+                        // create a watch on dataNavigator.result
+                        $is._watchers.dataNavigatorResult = dataNavigator.$watch('result', function (_nv) {
+                            onDataChange($is, $el, _nv);
+                        });
+                        $is._watchers.dataNavigatorMaxResults = dataNavigator.$watch('maxResults', function (_nv) {
+                            $is.pagesize = _nv;
+                        });
+
+                        dataNavigator.dataset = binddataset;
+                    });
+                } else {
+                    onDataChange($is, $el, nv);
                 }
+            }
+
+            function studioMode_onDataSetChange($is, doNotRemoveTemplate) {
+                var boundVariableName = Utils.getVariableName($is),
+                    variable = getVariable($is, boundVariableName);
+                if ($is.oldbinddataset !== $is.binddataset) {
+                    if (!doNotRemoveTemplate) {
+                        updateLiveListBindings($is, true);
+                    }
+                }
+                handlePageSizeDisplay($is, variable);
+                updateSelectedItemDataType($is, variable);
+            }
+
+            function runMode_onDataSetChange($is, $el, nv) {
+                if ($is.oldbinddataset !== $is.binddataset) {
+                    setupDataSource($is, $el, nv);
+                } else {
+                    onDataChange($is, $el, nv);
+                }
+            }
+
+            function onDataSetChange($is, $el, doNotRemoveTemplate, nv) {
+
+                if (CONSTANTS.isStudioMode) {
+                    studioMode_onDataSetChange($is, doNotRemoveTemplate);
+                } else {
+                    runMode_onDataSetChange($is, $el, nv);
+                }
+
+                $is.oldbinddataset = $is.binddataset;
             }
 
             /** In case of run mode, the field-definitions will be generated from the markup*/
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, $el, attrs, key, newVal, oldVal) {
+                var doNotRemoveTemplate,
+                    oldClass,
+                    newClass;
+
                 switch (key) {
                 case 'dataset':
-                    $is.boundVariableName = Utils.getVariableName($is);
-                    watchVariableDataSet($is, $el, newVal);
-                    /* to add <wm-labels> in the markup, based on dataSet*/
-                    if (CONSTANTS.isStudioMode) {
-                        if (attrs.template !== 'true') {
-                            if (($is.oldbinddataset !== -1 && $is.oldbinddataset !== $is.binddataset)) {
-                                updateLiveListBindings($is, true);
-                            } else if ($is.oldbinddataset === -1 && !attrs.dataset) {
-                                updateLiveListBindings($is);
-                            }
-                        }
-                        $is.oldbinddataset = $is.binddataset;
-                        /*update selectedItem dataType*/
-                        updateSelectedItemDataType($is);
-                    }
+                    doNotRemoveTemplate = attrs.template === 'true';
+                    onDataSetChange($is, $el, doNotRemoveTemplate, newVal);
                     break;
                 case 'shownavigation':
                     /*Check for sanity*/
@@ -290,8 +333,8 @@ WM.module('wm.widgets.live')
                 case 'itemsperrow':
                     /*Check for studio mode*/
                     if (CONSTANTS.isStudioMode) {
-                        var oldClass = oldVal && 'col-md-' + 12 / (+oldVal),
-                            newClass = newVal && 'col-md-' + 12 / (+newVal);
+                        oldClass = oldVal && 'col-md-' + 12 / (+oldVal);
+                        newClass = newVal && 'col-md-' + 12 / (+newVal);
                         $el.find('.app-listtemplate').removeClass(oldClass).addClass(newClass);
                     }
                     break;
@@ -318,7 +361,7 @@ WM.module('wm.widgets.live')
                 });
             }
 
-            function createChildScope($is, $el) {
+            function createChildScope($is, $el, attrs) {
                 var _scope = $el.scope(), // scop which inherits controller's scope
                     $liScope = _scope.$new(); // create a new child scope. List Items will be compiled with this scope.
 
@@ -330,7 +373,7 @@ WM.module('wm.widgets.live')
                     'onEnterkeypress'   : $is.onEnterkeypress,
                     'onSetrecord'       : $is.onSetrecord,
                     'itemclass'         : $is.itemclass,
-                    'itemsPerRowClass'  : $is.itemsPerRowClass
+                    'itemsPerRowClass'  : getRowClass(attrs.itemsperrow)
                 });
 
                 return $liScope;
@@ -384,16 +427,11 @@ WM.module('wm.widgets.live')
                 $el.on('click.wmActive', 'ul', function (evt) {
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
                         $liScope = $li.scope();
-                    /* sanity-check: for li-element*/
                     if ($li) {
-                        /*removing active class from previous selectedItem*/
-                        $el.find('li.active').removeClass('active');
-                        /*adding active class to current selectedItem*/
-                        $li.addClass('active');
-                        /*check for liElement scope*/
+                        $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
+                        $li.addClass('active'); // adding active class to current selectedItem
                         if ($liScope) {
-                            /*update the selectedItem with current clicked li*/
-                            $is.selecteditem = $liScope.item || null;
+                            $is.selecteditem = $liScope.item || null; // update the selectedItem with current clicked li
                             /*trigger $apply, as 'click' is out of angular-scope*/
 
                             Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
@@ -403,13 +441,13 @@ WM.module('wm.widgets.live')
                 });
             }
 
-            function preLinkFn($is, $el) {
+            function preLinkFn($is, $el, attrs) {
                 $is.widgetProps = WM.copy(widgetProps);
 
                 // initialising oldDataSet to -1, so as to handle live-list with variable binding with live variables, during page 'switches' or 'refreshes'
-                $is.oldbinddataset = -1;
-                $is.dataset = []; // The data that is bound to the list. Stores the name for reference.
-                $is.fieldDefs = [];// The data required by the wmListItem directive to populate the items
+                $is.oldbinddataset = CONSTANTS.isStudioMode ? attrs.dataset : undefined;
+                $is.dataset = [];   // The data that is bound to the list. Stores the name for reference.
+                $is.fieldDefs = []; // The data required by the wmListItem directive to populate the items
                 $is.noDataFound = false;
 
                 defineProps($is, $el);
@@ -419,26 +457,19 @@ WM.module('wm.widgets.live')
                 var $liScope,
                     $liTemplate;
 
-                $is.dataNavigator = $el.find('[data-identifier=datanavigator]').isolateScope();
-
-                $liScope = createChildScope($is, $el);
+                $liScope = createChildScope($is, $el, attrs);
                 $is.$liScope = $liScope;
-
-                if (!$is.binddataset && $is.dataset === undefined) {
-                    watchVariableDataSet($is, $el, '');
-                }
 
                 if (CONSTANTS.isRunMode) {
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
+                    $el.find('[data-identifier=list]').append($liTemplate);
                     $compile($liTemplate)($liScope);
 
-                    $el.find('[data-identifier=list]').append($liTemplate);
-
                     if (attrs.scopedataset) {
-                        $is.$watch('scopedataset', function (newVal) {
-                            if (newVal && !$is.dataset) {
-                                createListItems($is, $el, newVal);
+                        $is.$watch('scopedataset', function (nv) {
+                            if (nv && !$is.dataset) {
+                                createListItems($is, $el, nv);
                             }
                         }, true);
                     }

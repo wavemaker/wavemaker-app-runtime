@@ -165,7 +165,7 @@ WM.module("wm.widgets.basic")
                                 /*Re-compute the paging values in the following cases.
                                 1. Paging values have not been computed.
                                 2. Data corresponding to the table associated with the live-variable changes.*/
-                                if (!$scope.isPagingValuesComputed() || (newVal.pagingOptions && !newVal.pagingOptions.relatedDataChange)) {
+                                if (!$scope.isPagingValuesComputed() || newVal.pagingOptions) {
                                     dataSize = newVal.pagingOptions.dataSize;
 
                                     maxResults = newVal.pagingOptions.maxResults;

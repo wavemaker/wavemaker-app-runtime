@@ -27,12 +27,6 @@ WM.module('wm.layouts.containers')
                 };
             }
 
-            /* to return the bootstrap classes for the <li> w.r.t no. of items per row */
-            function getRowClass(itemsperrow) {
-                var col = itemsperrow && 12 / (+itemsperrow);
-                return ' col-sm-' + col + ' col-md-' + col;
-            }
-
             /**
              * Update the live list template
              * @param scope
@@ -78,7 +72,6 @@ WM.module('wm.layouts.containers')
 
             function runMode_preLinkFn($is, $el, attrs, listCtrl) {
                 listCtrl.$set('listTemplate', $el.children());
-                listCtrl.$set('itemsPerRowClass', getRowClass(attrs.itemsperrow));
                 $el.remove();
             }
 
