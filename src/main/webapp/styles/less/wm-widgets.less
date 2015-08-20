@@ -449,6 +449,9 @@ html, body {
 /**checkbox set**/
 .app-checkboxset, .app-radioset {
   overflow: auto;
+  .app-checkbox.checkbox, .app-radio.radio {
+    float: none;
+  }
   li label {
     .ellipsis(100%);
   }
@@ -470,11 +473,79 @@ html, body {
   display: inline-block;
 }
 
-.app-radio, .app-checkbox {
+.radio.app-radio, .app-checkbox.checkbox {
   display: inline-block;
+  margin-right: 30px;
+  margin-top: 10px !important;
   float: left;
+  input[type="checkbox"], input[type="radio"] {
+    margin: 0;
+  }
+  label {
+    vertical-align: middle;
+  }
+  .caption {
+    vertical-align: middle;
+    display: inline-block;
+    height: 100%;
+  }
 }
-
+/****************************************Toggle classes******************************************/
+.app-toggle {
+  label {
+    width: 60px;
+    height: 32px;
+    overflow: hidden;
+    box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
+    border-radius: 500px;
+    position: relative;
+    background-color: #2ecc71;
+    border: 1px rgba(0, 0, 0, 0.2) solid;
+    &.unchecked {
+      background-color: #fff !important;
+    }
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+  input[type="checkbox"]{
+    position: absolute;
+    display: block;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    z-index: 6;
+  }
+  .caption {
+    visibility: hidden;
+  }
+  .switch {
+    position: absolute;
+    display: block;
+    left: 0;
+    top: 0;
+    background-color: #fff;
+    border-radius: 500px;
+    z-index: 1;
+    transition: 0.25s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    transition-property: left, right;
+    transition-delay: 0s, .08s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    height: 100%;
+    border: 1px rgba(0, 0, 0, 0.1) solid;
+  }
+   input[type="checkbox"]:checked ~ .switch {
+      right: 0;
+      left: auto;
+      transition: 0.25s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+      transition-property: left, right;
+      transition-delay: .08s, 0s;
+   }
+}
 .order-by {
   li button{
     padding: 0;
@@ -489,32 +560,36 @@ html, body {
 .app-switch {
   position: relative;
   display: inline-block;
+  height: 32px;
   .btn-group {
     position: relative;
     overflow: hidden;
     width: 100%;
     height: 100%;
-    & > button.btn.btn-default:last-of-type {
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-    }
-    span.btn.btn-primary {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: -100%;
-      border-radius: 4px;
-      z-index: 10;
-      pointer-events: none;
-      margin-left: 0;
-      &.switch-handle {
-        pointer-events: inherit;
-        opacity: 0.3;
+    > .btn {
+      border-radius: 500px;
+      height: 100%;
+      &:not(:first-child):not(:last-child) {
+       border-right-color: transparent;
+       border-left-color: transparent;
+      }
+      &:last-child {
+        border-left-color: transparent;
       }
     }
-    .btn.btn-default {
-      height: 100%;
-    }
+  }
+  span.app-switch-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -100%;
+    z-index: 10;
+    pointer-events: none;
+    margin-left: 0;
+    border-radius: 500px;
+    vertical-align: middle;
+    pointer-events: inherit;
+    height: 100%;
   }
 }
 

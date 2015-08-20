@@ -13,11 +13,11 @@ WM.module('wm.widgets.form')
                     '<div class="btn-group">' +
                         '<button class="btn btn-default" data-ng-disabled="disabled" ' +
                             ' data-ng-style="{\'width\': btnwidth + \'%\'}"' +
-                            ' data-ng-repeat="opt in options track by $index" data-ng-class="{active: selected.index === $index}"' +
+                            ' data-ng-repeat="opt in options track by $index" data-ng-class="{\'selected\': selected.index === $index}"' +
                             ' data-ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</button>' +
-                        '<span class="btn btn-primary" data-ng-style="{\'width\': btnwidth + \'%\'}"></span>' +
                     '</div>' +
-                '<input type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
+                    '<span class="btn btn-primary app-switch-overlay switch-handle" data-ng-style="{\'width\': btnwidth + \'%\'}"><b>{{_model_}}</b></span>' +
+                    '<input type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
                 '</div>'
                 );
         }
@@ -98,26 +98,14 @@ WM.module('wm.widgets.form')
             }
 
             function updateHighlighter(scope, element) {
-                var handler = element.children().first().find('span.btn-primary'),
+                var handler = element.find('span.app-switch-overlay'),
                     left,
                     index = scope.selected.index,
                     isToggle = scope.options.length === 2;
                 if (index === undefined || index === null) {
                     index = -1;
                 }
-
-                if (isToggle && index !== -1) {
-                    index = index === 0 ? 1 : 0;
-                }
-
                 left = index * scope.btnwidth;
-
-                if (!isToggle) {
-                    handler.addClass('switch-handle');
-                } else {
-                    handler.removeClass('switch-handle');
-                }
-
                 handler.animate({
                     left: left + '%'
                 }, 300);

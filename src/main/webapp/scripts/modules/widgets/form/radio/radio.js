@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                         ' data-ng-disabled="disabled" ' +
                         ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + /* private method defined in this scope */
                     '/>' +
-                    '{{caption || "&nbsp;"}}' +
+                    '<span class="caption">{{caption || "&nbsp;"}}</span>' +
                 '</label>' +
             '</div>'
             );

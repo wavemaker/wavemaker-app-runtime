@@ -231,11 +231,10 @@ WM.module('wm.widgets.form')
             WM.forEach(scope.dataKeys, function (dataKey) {
                 dataKey = WM.isString(dataKey) ? dataKey.trim() : dataKey;
                 template = template +
-                    '<li>' +
-                        '<div class="checkbox"><label class="app-checkboxset-label" title="' + dataKey + '">' +
-                            '<input type="checkbox" ' + (scope.disabled ? ' disabled="disabled" ' : '') +
-                                ' value="' + dataKey + '" data-ng-checked="_model_.indexOf(' + "'" + dataKey + "'" + ') !== -1 || _model_ === ' + "'" + dataKey + "'" + ' || valueInModel(_model_, dataObject[' + "'" + dataKey + "'" + '])"/>' +
-                         dataKey + '</label></div>' +
+                    '<li class="checkbox app-checkbox">' +
+                    '<label class="app-checkboxset-label" data-ng-class="{\'disabled\':disabled, \'unchecked\': !valueInModel(_model_, dataObject[' + "'" + dataKey + "'" + '])}" title="' + dataKey + '">' +
+                            '<input type="checkbox" ' + (scope.disabled ? ' disabled="disabled" ' : '') +  ' value="' + dataKey + '" data-ng-checked="_model_.indexOf(' + "'" + dataKey + "'" + ') !== -1 || _model_ === ' + "'" + dataKey + "'" + ' || valueInModel(_model_, dataObject[' + "'" + dataKey + "'" + '])"/>' +
+                         '<span class="caption">'+ dataKey + '</span><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/></label>' +
                     '</li>';
             });
             /*Holder for the model for submitting values in a form and a wrapper to for readonly mode*/

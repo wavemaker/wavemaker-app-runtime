@@ -11,8 +11,8 @@ WM.module('wm.widgets.form')
         * note: attribute 'ng-checked' removed as it is conflicting with the new property 'datavalue'
         */
         $templateCache.put('template/widget/form/checkbox.html',
-            '<div class="app-checkbox checkbox" init-widget has-model data-ng-show="show" title="{{hint}}">' +
-                '<label ' + $rootScope.getWidgetStyles() + '>' +
+            '<div class="app-checkbox checkbox" data-ng-class="{\'app-toggle\' : (type === \'toggle\')}" init-widget has-model data-ng-show="show" title="{{hint}}">' +
+                '<label data-ng-class="{\'disabled\':disabled,\'unchecked\': (_model_=== uncheckedvalue || _model_ === false)}"' + $rootScope.getWidgetStyles() + '>' +
                     '<input type="checkbox" ' +
                         ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                         ' data-ng-readonly="readonly" ' +
@@ -20,7 +20,9 @@ WM.module('wm.widgets.form')
                         ' data-ng-disabled="disabled" ' +
                         ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                     '</input>' +
-                '{{caption || "&nbsp;"}}</label>' +
+                '<span class="caption">{{caption || "&nbsp;"}}</span>' +
+                '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>'+
+                '</label>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
             '</div>'
