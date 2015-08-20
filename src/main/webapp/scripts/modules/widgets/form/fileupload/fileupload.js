@@ -145,7 +145,6 @@ WM.module('wm.widgets.form')
             notifyFor = {
                 'uploadpath': true,
                 'contenttype': true,
-                'destination': true,
                 'service': true,
                 'operation': true
             };
@@ -200,7 +199,7 @@ WM.module('wm.widgets.form')
                         scope.isAbortVisible = false;
                         scope.isAborted = false;
                         scope.fileNameSeperator = ";";
-                        scope.destination = '';
+                        scope.destination = scope.destination || '';
                         scope.uploadedFiles = {
                             "fileName": "",
                             "path": "",
@@ -414,22 +413,21 @@ WM.module('wm.widgets.form')
                             uploadContent = function (newVal) {
                                 var uploadConfig, fd,
                                     uploadUrl,
-                                    destination = '',
-                                    variableObject;
+                                    variableObject,
+                                    completeUrl;
                                 xhr = undefined;
                                 /*fetching the variable object with service, operation*/
                                 variableObject = Variables.filterByVariableKeys({'service' : scope.service, 'operation' : scope.operation, 'category' : 'wm.ServiceVariable'}, true)[0];
                                 if (variableObject) {
-                                    uploadUrl = variableObject.wmServiceOperationInfo.relativePath + '?relativePath=';
+                                    uploadUrl = variableObject.wmServiceOperationInfo.relativePath;
                                 } else {
                                     /*fallback for old projects when there is no associated variable*/
                                     uploadUrl = '/file/uploadFile';
                                 }
 
-                                if (WM.isArray(newVal)) {
-                                    destination = newVal[0].destination;
-                                } else if (WM.isObject(newVal)) {
-                                    destination = newVal.destination;
+                                completeUrl = scope.uploadUrl + uploadUrl;
+                                if (scope.destination) {
+                                    completeUrl += '?relativePath=' + scope.destination;
                                 }
 
                                 if (window.FormData) {
@@ -457,11 +455,11 @@ WM.module('wm.widgets.form')
                                     xhr.addEventListener('load', onSuccess, null);
                                     xhr.addEventListener('error', onFail, null);
                                     xhr.addEventListener('abort', onAbort, null);
-                                    xhr.open('POST', scope.uploadUrl + uploadUrl + destination);
+                                    xhr.open('POST', completeUrl);
                                     xhr.send(fd);
                                 } else { // IE9 patch
                                     uploadConfig = {
-                                        url: scope.uploadUrl + uploadUrl + destination,
+                                        url: completeUrl,
                                         formName: scope.multiple ? scope.multipleFileFormName : scope.singleFileFormName
                                     };
                                     Utils.fileUploadFallback(uploadConfig, onSuccess, onFail);
@@ -493,8 +491,7 @@ WM.module('wm.widgets.form')
                                 $file.formattedSize = fileSize;
                                 uploadData = {
                                     file: $file,
-                                    uploadPath: selectedUploadTypePath,
-                                    destination: scope.destination || ''
+                                    uploadPath: selectedUploadTypePath
                                 };
 
                                 /*pushing every content of the file into an array*/
@@ -519,8 +516,7 @@ WM.module('wm.widgets.form')
                                                 "service": service,
                                                 "operation": operation,
                                                 "owner": $rootScope.isPrefabTemplate ? VARIABLE_CONSTANTS.OWNER.PAGE : VARIABLE_CONSTANTS.OWNER.APP,
-                                                "serviceType": getServiceType(service),
-                                                "sampleParamValues": {'relativePath' : ''}
+                                                "serviceType": getServiceType(service)
                                             };
                                         /*if variable already exists, just update it and save the variable*/
                                         if (Variables.isExists(varName)) {
@@ -547,9 +543,6 @@ WM.module('wm.widgets.form')
                                 break;
                             case 'contenttype':
                                 changeFilter(newVal);
-                                break;
-                            case 'destination':
-                                scope.destination = newVal;
                                 break;
                             case 'service':
                                 if (CONSTANTS.isStudioMode) {
