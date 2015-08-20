@@ -40,7 +40,7 @@ WM.module('wm.widgets.form')
                         '<div class="status" data-ng-repeat="file in uploadedFiles">' +
                                 '<div class="action"><span class="badge" data-ng-bind="file.extension"></span></div>' +
                                 '<div class="name" title="{{file.fileName}}" data-ng-bind="file.fileName"></div>' +
-                                '<div class="size" title="{{file.length}}" data-ng-bind="file.length | suffix: \' bytes\'"></div>' +
+                                '<div class="size" title="{{file.length}}" data-ng-if="file.length !== 0" data-ng-bind="file.length | suffix: \' bytes\'"></div>' +
                                 '<span class="state glyphicon" data-ng-class="{\'glyphicon-ok\' : file.status === \'success\', \'glyphicon-remove\' : file.status === \'Fail\'}"></span>' +
                                 '<span data-ng-show="{{file.state === \'success\'}}" title="{{file.errorMessage}}">{{file.errorMessage}}</span>' +
                         '</div>' +
@@ -322,6 +322,10 @@ WM.module('wm.widgets.form')
                                 });
                             },
 
+                            getExtensionName = function (name) {
+                                return name && (name.lastIndexOf('.') > -1 ? name.substring(name.lastIndexOf('.') + 1) : 'file');
+                            },
+
                             onSuccess = function (evt) {
                                 scope.filename = '';
                                 scope.filepath = '';
@@ -348,7 +352,7 @@ WM.module('wm.widgets.form')
                                         WM.forEach(response, function (file, index) {
                                             name = file.fileName;
                                             scope.filename += name + ';';
-                                            file.extension = name && (name.lastIndexOf('.') > -1 ? name.substring(name.lastIndexOf('.') + 1) : 'file');
+                                            file.extension = getExtensionName(name);
                                             scope.filepath += file.path;
                                             if (index !== response.length - 1) {
                                                 scope.filepath += ';';
@@ -358,7 +362,7 @@ WM.module('wm.widgets.form')
                                     } else {
                                         fileObject = response[0];
                                         name = fileObject.fileName;
-                                        fileObject.extension = name && (name.lastIndexOf('.') > -1 ? name.substring(name.lastIndexOf('.') + 1) : 'file');
+                                        fileObject.extension = getExtensionName(name);
                                         scope.filename = fileObject.name;
                                         scope.filepath = fileObject.path;
                                         fileObject.status = fileObject.success ? 'success' : 'fail';
@@ -414,8 +418,10 @@ WM.module('wm.widgets.form')
                                 var uploadConfig, fd,
                                     uploadUrl,
                                     variableObject,
-                                    completeUrl;
+                                    completeUrl,
+                                    fileName;
                                 xhr = undefined;
+                                scope.uploadedFiles = [];
                                 /*fetching the variable object with service, operation*/
                                 variableObject = Variables.filterByVariableKeys({'service' : scope.service, 'operation' : scope.operation, 'category' : 'wm.ServiceVariable'}, true)[0];
                                 if (variableObject) {
@@ -458,6 +464,12 @@ WM.module('wm.widgets.form')
                                     xhr.open('POST', completeUrl);
                                     xhr.send(fd);
                                 } else { // IE9 patch
+                                    fileName = newVal[0].file.split('\\').pop();
+                                    scope.uploadedFiles.push({
+                                        'fileName' : fileName,
+                                        'extension' : getExtensionName(fileName),
+                                        'length' : 0
+                                    });
                                     uploadConfig = {
                                         url: completeUrl,
                                         formName: scope.multiple ? scope.multipleFileFormName : scope.singleFileFormName
