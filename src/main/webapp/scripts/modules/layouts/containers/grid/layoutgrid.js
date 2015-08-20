@@ -132,7 +132,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<div init-widget class="app-grid-row clearfix"' + $rootScope.getWidgetStyles("container") + ' wmtransclude></div>',
+            'template': '<div init-widget data-ng-class="show"  class="app-grid-row clearfix"' + $rootScope.getWidgetStyles("container") + ' wmtransclude></div>',
             'compile': function () {
                 return {
                     'pre': function (scope) {
@@ -181,7 +181,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<div init-widget class="app-grid-column"' + $rootScope.getWidgetStyles("container") + '><div class="app-ng-transclude" wmtransclude></div></div>',
+            'template': '<div init-widget data-ng-class="show" class="app-grid-column"' + $rootScope.getWidgetStyles("container") + '><div class="app-ng-transclude" wmtransclude></div></div>',
             'compile': function () {
                 return {
                     'pre': function (scope, element, attrs) {
