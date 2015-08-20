@@ -16,8 +16,7 @@ WM.module('wm.layouts.containers')
                 directiveDefn = {
                     'restrict'  : 'E',
                     'replace'   : true,
-                    'terminal'  : true,
-                    'require'   : '^wmLivelist'
+                    'terminal'  : true
                 };
 
             if (CONSTANTS.isStudioMode) {
@@ -27,25 +26,27 @@ WM.module('wm.layouts.containers')
                 };
             }
 
-            /**
-             * Update the live list template
-             * @param scope
-             */
-            function updateLiveListTemplate(scope) {
+            function updateLiveListTemplate($is) {
                 $timeout(function () {
                     /* emit event to modify the liveList template*/
-                    $rootScope.$emit("livelist-template-modified", {"widgetName": scope.name, "bindDataset": null, "fields": null, "forceUpdate": true, "isTemplateUpdate": true});
+                    $rootScope.$emit('livelist-template-modified', {
+                        'widgetName'        : $is.name,
+                        'bindDataset'       : null,
+                        'fields'            : null,
+                        'forceUpdate'       : true,
+                        'isTemplateUpdate'  : true
+                    });
                 }, undefined);
             }
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler(scope, key, newVal) {
+            function propertyChangeHandler($is, key, newVal) {
                 switch (key) {
                 case 'layout':
-                    if (newVal && CONSTANTS.isStudioMode) {
-                        if (scope.newcolumns) {
-                            updateLiveListTemplate(scope);
-                            scope.newcolumns = false;
+                    if (newVal) {
+                        if ($is.newcolumns) {
+                            updateLiveListTemplate($is);
+                            $is.newcolumns = false;
                         }
                     }
                     break;
@@ -63,7 +64,7 @@ WM.module('wm.layouts.containers')
             }
 
             // post link function of studio directive
-            function postLinkFn($is, $el, attrs) {
+            function studioMode_postLinkFn($is, $el, attrs) {
                 var onPropertyChange = propertyChangeHandler.bind(undefined, $is);
                 onPropertyChange.notifyFor = notifyFor;
                 $is.propertyManager.add($is.propertyManager.ACTIONS.CHANGE, onPropertyChange);
@@ -75,26 +76,22 @@ WM.module('wm.layouts.containers')
                 $el.remove();
             }
 
-
             if (CONSTANTS.isStudioMode) {
                 WM.extend(directiveDefn, {
                     'transclude': true,
                     'scope'     : {},
                     'template'  : templateFn,
-                    'compile'   : function () {
-                        return {
-                            'pre' : preLinkFn,
-                            'post': postLinkFn
-                        };
+                    'link'      : {
+                        'pre' : preLinkFn,
+                        'post': studioMode_postLinkFn
                     }
                 });
             } else {
                 WM.extend(directiveDefn, {
                     'terminal': true,
-                    'compile' : function () {
-                        return {
-                            'pre': runMode_preLinkFn
-                        };
+                    'require' : '^wmLivelist',
+                    'link'    : {
+                        'pre' : runMode_preLinkFn
                     }
                 });
             }

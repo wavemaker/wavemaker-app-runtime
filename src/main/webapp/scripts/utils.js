@@ -1,4 +1,4 @@
-/*global WM, wm, window, document, navigator, Image, location, console, _*/
+/*global WM, wm, window, document, navigator, Image, location, console, _, $*/
 /*jslint todo: true */
 
 /**
@@ -14,15 +14,14 @@
  */
 
 WM.module('wm.utils', [])
-    .service("Utils", ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', function ($rootScope, $location, $window, APPCONSTANTS, $sce) {
-        "use strict";
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', function ($rootScope, $location, $window, APPCONSTANTS, $sce) {
+        'use strict';
 
         var userAgent = navigator.userAgent,
             scriptEl = document.createElement('script'),
             linkEl = document.createElement('link'),
-            headNode = document.getElementsByTagName("head")[0],
+            headNode = document.getElementsByTagName('head')[0],
             isAppleProduct = /Mac|iPod|iPhone|iPad/.test(navigator.platform),
-            sliceFn = Array.prototype.slice,
             REGEX = {
                 SNAKE_CASE: /[A-Z]/g,
                 ANDROID: /Android/i,
@@ -44,7 +43,7 @@ WM.module('wm.utils', [])
                 NO_QUOTES_ALLOWED: /^[^'|"]*$/,
                 VALID_HTML: /<[a-z][\s\S]*>/i
             },
-            NUMBER_TYPES = ["int", "integer", "float", "double", "short", "byte", "big_integer", "big_decimal"],
+            NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
                 'project': ['../lib', '../project', '../project/services', '../project/lib', '../project/src', '../project/test', '../project/src/main', '../project/src/main/webapp', '../project/src/main/resources', '../project/src/main/webapp/services', '../project/src/main/webapp/resources', '../project/src/main/webapp/pages', '../project/src/main/webapp/resources/images', '../project/src/main/webapp/resources/WEB-INF', '../project/src/main/webapp/resources/ngLocale', '../project/src/main/webapp/resources/i18n', '../project/src/main/webapp/resources/images/imagelists', '../project/src/main/webapp/resources/audio', '../project/src/main/webapp/resources/video'],
                 'resources': ['', '/services', '/resources', '/WEB-INF', '/app', '/pages', '/resources/i18n', '/resources/ngLocale', 'resources/images', 'resources/audio', 'resources/video', 'resources/images/imagelists'],
@@ -82,7 +81,7 @@ WM.module('wm.utils', [])
             },
             getNode = function (tree, nodeId) {
                 var index, treeLength;
-                /*Return undefined if the "tree" is undefined*/
+                /*Return undefined if the 'tree' is undefined*/
                 if (WM.isUndefined(tree)) {
                     return undefined;
                 }
@@ -98,54 +97,54 @@ WM.module('wm.utils', [])
                 return undefined;
             },
             variableCategoryMap = {
-                "wm.Variable": "variable",
-                "wm.ServiceVariable": "service-variable",
-                "wm.LiveVariable": "live-variable",
-                "wm.LoginVariable": "login-variable",
-                "wm.LogoutVariable": "logout-variable",
-                "wm.NavigationVariable": "navigation-variable",
-                "wm.NotificationVariable": "notification-variable",
-                "wm.TimerVariable": "time"
+                'wm.Variable'            : 'variable',
+                'wm.ServiceVariable'     : 'service-variable',
+                'wm.LiveVariable'        : 'live-variable',
+                'wm.LoginVariable'       : 'login-variable',
+                'wm.LogoutVariable'      : 'logout-variable',
+                'wm.NavigationVariable'  : 'navigation-variable',
+                'wm.NotificationVariable': 'notification-variable',
+                'wm.TimerVariable'       : 'time'
             },
             fieldTypeWidgetTypeMap = {
-                'integer': ['Number', 'Text', 'Slider', 'Select', 'Radioset', 'Rating'],
+                'integer'    : ['Number', 'Text', 'Slider', 'Select', 'Radioset', 'Rating'],
                 'big_integer': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'short': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'byte': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'date': ['Date', 'Text', 'Select', 'Radioset'],
-                'boolean': ['Checkbox', 'Text', 'Select', 'Radioset'],
-                'list': ['Select', 'Radioset', 'Text', 'Datalist'],
-                'float': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                'short'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                'byte'       : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                'date'       : ['Date', 'Text', 'Select', 'Radioset'],
+                'boolean'    : ['Checkbox', 'Text', 'Select', 'Radioset'],
+                'list'       : ['Select', 'Radioset', 'Text', 'Datalist'],
+                'float'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
                 'big_decimal': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'double': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'string': ['Text', 'Textarea', 'Password', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                'character': ['Text', 'Textarea', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                'text': ['Textarea', 'Text', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                'clob': ['Textarea', 'Text', 'RichText'],
-                'blob': ['Upload', 'Textarea', 'Text', 'RichText'],
-                'time': ['Time', 'Text', 'Select', 'Radioset'],
-                'timestamp': ['Timestamp', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
-                'datetime': ['Datetime', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
-                'custom': ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp']
+                'double'     : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                'string'     : ['Text', 'Textarea', 'Password', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
+                'character'  : ['Text', 'Textarea', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
+                'text'       : ['Textarea', 'Text', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
+                'clob'       : ['Textarea', 'Text', 'RichText'],
+                'blob'       : ['Upload', 'Textarea', 'Text', 'RichText'],
+                'time'       : ['Time', 'Text', 'Select', 'Radioset'],
+                'timestamp'  : ['Timestamp', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
+                'datetime'   : ['Datetime', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
+                'custom'     : ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp']
             },
             dateTimeTypes = {
-                "date": true,
-                "time": true,
-                "timestamp": true,
-                "datetime": true
+                'date'      : true,
+                'time'      : true,
+                'timestamp' : true,
+                'datetime'  : true
             },
             dateTimeDefaultFormats = {
-                "date": "yyyy-MM-dd",
-                "time": "HH:mm:ss",
-                "timestamp": "epoch format",
-                "datetime": "yyyy-MM-ddTHH:mm:ss",
-                "datetime_oracle": "yyyy-MM-dd HH:mm:ss"
+                'date'           : 'yyyy-MM-dd',
+                'time'           : 'HH:mm:ss',
+                'timestamp'      : 'epoch format',
+                'datetime'       : 'yyyy-MM-ddTHH:mm:ss',
+                'datetime_oracle': 'yyyy-MM-dd HH:mm:ss'
             },
             indexPage = getIndexPage();
 
         /* set default attrs for link */
-        linkEl.rel = "stylesheet";
-        linkEl.type = "text/css";
+        linkEl.rel = 'stylesheet';
+        linkEl.type = 'text/css';
 
         /* convert camelCase string to a snake-case string */
         function hyphenate(name) {
@@ -275,8 +274,8 @@ WM.module('wm.utils', [])
      * @return {String}
      */
         function getValidMarkUp(htmlString, handleValidMarkUp, handleInValidMarkUp) {
-            var newMarkup = "", checkValidRootElement = function (ele) {
-                return WM.element(ele).is("wm-page, wm-partial, wm-template");
+            var newMarkup = '', checkValidRootElement = function (ele) {
+                return WM.element(ele).is('wm-page, wm-partial, wm-template');
             },
                 $htm,
                 $outerEle,
@@ -291,8 +290,8 @@ WM.module('wm.utils', [])
                 //handle the invalid condition
                 triggerFn(handleInValidMarkUp);
                 //the page markup is not valid
-                $outerEle = WM.element("<div>" + htmlString + "</div>");
-                $innerEle = $outerEle.find("wm-page, wm-partial, wm-template");
+                $outerEle = WM.element('<div>' + htmlString + '</div>');
+                $innerEle = $outerEle.find('wm-page, wm-partial, wm-template');
 
                 if ($innerEle.length > 0) {
                     newMarkup = $innerEle[0].outerHTML;
@@ -320,12 +319,12 @@ WM.module('wm.utils', [])
                         /*Replace '.' with space and capitalize the next letter*/
                         modifiedTitle = periodSeparate(modifiedTitle);
                         modifiedTitle = deHyphenate(modifiedTitle);
-                        modifiedTitle = namePrefix ? initCaps(namePrefix) + " " + modifiedTitle : modifiedTitle;
+                        modifiedTitle = namePrefix ? initCaps(namePrefix) + ' ' + modifiedTitle : modifiedTitle;
                     } else {
                         modifiedTitle = title;
                     }
                 }
-                title = namePrefix ? namePrefix + "." + title : title;
+                title = namePrefix ? namePrefix + '.' + title : title;
                 var defObj = propObj.setBindingField ? {'displayName': modifiedTitle, 'field': title} : {'displayName': modifiedTitle};
                 /*if field is a leaf node, push it in the columnDefs*/
                 if (!WM.isObject(value) || (WM.isArray(value) && !value[0])) {
@@ -346,7 +345,7 @@ WM.module('wm.utils', [])
 
                     /* if field is an array node, process its first child */
                     if (WM.isArray(value) && value[0]) {
-                        pushFieldDef(value[0], columnDefObj, title + "[0]", propObj);
+                        pushFieldDef(value[0], columnDefObj, title + '[0]', propObj);
                     } else {
                         pushFieldDef(value, columnDefObj, title, propObj);
                     }
@@ -362,7 +361,7 @@ WM.module('wm.utils', [])
             /*if no data provided, initialize default column definitions*/
             if (!data || data.length === 0) {
                 data = [
-                    {"column1": '', "column2": '', "column3": '', "column4": '', "column5": ''}
+                    {'column1': '', 'column2': '', 'column3': '', 'column4': '', 'column5': ''}
                 ];
                 defaultDefs = true;
             }
@@ -407,12 +406,12 @@ WM.module('wm.utils', [])
 
         /*function to check if the stylesheet is already loaded */
         function isStyleSheetLoaded(href) {
-            return WM.element("link[href='" + href + "']").length > 0;
+            return WM.element('link[href="' + href + '"]').length > 0;
         }
 
         /*function to remove stylesheet if the stylesheet is already loaded */
         function removeStyleSheetLoaded(href) {
-            var styleTag = WM.element("link[href='" + href + "']");
+            var styleTag = WM.element('link[href="' + href + '"]');
             if (styleTag.length) {
                 styleTag.remove();
             }
@@ -446,7 +445,7 @@ WM.module('wm.utils', [])
 
         /*function to check if the script is already loaded*/
         function isScriptLoaded(src) {
-            return WM.element("script[src='" + src + "']").length > 0 || WM.element("script[data-src='" + src + "']").length > 0;
+            return WM.element('script[src="' + src + '"]').length > 0 || WM.element('script[data-src="' + src + '"]').length > 0;
         }
 
         /* util function to load the content from a url */
@@ -610,23 +609,23 @@ WM.module('wm.utils', [])
             if (APPCONSTANTS.isRunMode) {
                 return urlString;
             }
-            /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in "styles/images/" path or not.
-             * When page is refreshed, loader.gif will be loaded first and it will be in "style/images/".
-             * Prepend "services/projects/" + $rootScope.project.id + "/web/resources/images/imagelists/"  if the image url is just image name in the project root,
-             * and if the url pointing to resources/images/ then "services/projects/" + $rootScope.project.id + "/web/"*/
+            /*In studio mode before setting picturesource, check if the studioController is loaded and new picturesource is in 'styles/images/' path or not.
+             * When page is refreshed, loader.gif will be loaded first and it will be in 'style/images/'.
+             * Prepend 'services/projects/' + $rootScope.project.id + '/web/resources/images/imagelists/'  if the image url is just image name in the project root,
+             * and if the url pointing to resources/images/ then 'services/projects/' + $rootScope.project.id + '/web/'*/
             if (isValidWebURL(urlString)) {
                 return urlString;
             }
             if (!isImageFile(urlString)) {
-                urlString = "resources/images/imagelists/default-image.png";
+                urlString = 'resources/images/imagelists/default-image.png';
             }
 
             // if the resource to be loaded is inside a prefab
-            if (stringStartsWith(urlString, "services/prefabs")) {
+            if (stringStartsWith(urlString, 'services/prefabs')) {
                 return urlString;
             }
 
-            urlString = "services/projects/" + $rootScope.project.id + "/resources/web/" + urlString;
+            urlString = 'services/projects/' + $rootScope.project.id + '/resources/web/' + urlString;
             return urlString;
         }
 
@@ -640,20 +639,20 @@ WM.module('wm.utils', [])
             }
 
             // if the resource to be loaded is inside a prefab
-            if (stringStartsWith(urlString, "services/prefabs")) {
+            if (stringStartsWith(urlString, 'services/prefabs')) {
                 return urlString;
             }
 
-            urlString = "services/projects/" + $rootScope.project.id + "/resources/web/" + urlString;
+            urlString = 'services/projects/' + $rootScope.project.id + '/resources/web/' + urlString;
             return urlString;
         }
 
         /*This function returns the url to the backgroundImage*/
         function getBackGroundImageUrl(urlString) {
-            if (urlString === "" || urlString === "none") {
+            if (urlString === '' || urlString === 'none') {
                 return urlString;
             }
-            return "url(" + getImageUrl(urlString) + ")";
+            return 'url(' + getImageUrl(urlString) + ')';
         }
 
         /* defining safe apply on root scope, so that it is accessible to all other $scope variables.*/
@@ -674,7 +673,7 @@ WM.module('wm.utils', [])
                 return false;
             }
 
-            var regEx = new RegExp('^' + startsWith, ignoreCase ? "i" : []);
+            var regEx = new RegExp('^' + startsWith, ignoreCase ? 'i' : []);
 
             return regEx.test(str);
         }
@@ -685,7 +684,7 @@ WM.module('wm.utils', [])
                 return false;
             }
 
-            var regEx = new RegExp(endsWith + '$', ignoreCase ? "i" : []);
+            var regEx = new RegExp(endsWith + '$', ignoreCase ? 'i' : []);
 
             return regEx.test(str);
         }
@@ -719,14 +718,14 @@ WM.module('wm.utils', [])
                     relatedColumnsArr.push(val);
                 } else {
                     /* otherwise build object with required configuration */
-                    var columnName = namePrefix ? namePrefix + "." + val.fieldName : val.fieldName;
-                    columns[columnName] = {};
-                    columns[columnName].type = val.type;
-                    columns[columnName].isPrimaryKey = val.isPrimaryKey;
-                    columns[columnName].generator = val.generator;
-                    columns[columnName].disableInlineEditing = val.disableInlineEditing;
-                    columns[columnName].isRelatedPk = val.isRelatedPk;
-
+                    var columnName = namePrefix ? namePrefix + '.' + val.fieldName : val.fieldName;
+                    columns[columnName] = {
+                        'type'                : val.type,
+                        'isPrimaryKey'        : val.isPrimaryKey,
+                        'generator'           : val.generator,
+                        'disableInlineEditing': val.disableInlineEditing,
+                        'isRelatedPk'         : val.isRelatedPk
+                    };
                 }
             });
             WM.forEach(relatedColumnsArr, function (val) {
@@ -760,7 +759,7 @@ WM.module('wm.utils', [])
         /*function get current Page*/
         function getCurrentPage() {
             var pathName = location.pathname;
-            return pathName.split("/").pop() || 'index.html';
+            return pathName.split('/').pop() || 'index.html';
         }
 
         /*function to find if executing in debug mode or normal mode*/
@@ -798,10 +797,10 @@ WM.module('wm.utils', [])
         function handleUploadIFrameOnLoad(iFrameElement, successCallback, errorCallback, evt) {
             var serverResponse;
             /*removing event listener for the iframe*/
-            iFrameElement.off("load", handleUploadIFrameOnLoad);
+            iFrameElement.off('load', handleUploadIFrameOnLoad);
             /*obtaining the server response of the form submit and prefab import*/
             serverResponse = WM.element('#fileUploadIFrame').contents().find('body').text();
-            if(evt && evt.currentTarget) {
+            if (evt && evt.currentTarget) {
                 evt.currentTarget.responseText = serverResponse;
             }
             /*removing the iframe element from the DOM markup after import/upload is successful.*/
@@ -818,7 +817,7 @@ WM.module('wm.utils', [])
         /*function to facilitate file upload fallback when HTML5 File API is not supported by the browser*/
         function fileUploadFallback(uploadConfig, successCallback, errorCallback) {
             /*creating a hidden iframe to facilitate file upload by way of form submit.*/
-            var iFrameElement = WM.element("<iframe id='fileUploadIFrame' name='fileUploadIFrame' style='display: none;'></iframe>"),
+            var iFrameElement = WM.element('<iframe id="fileUploadIFrame" name="fileUploadIFrame" class="ng-hide"></iframe>'),
                 formElement,
                 formAction,
                 dataArray,
@@ -837,11 +836,11 @@ WM.module('wm.utils', [])
             WM.element('body').append(iFrameElement);
 
             /*event handler for handling load event of iframe*/
-            iFrameElement.on("load", function (evt) {
+            iFrameElement.on('load', function (evt) {
                 handleUploadIFrameOnLoad(iFrameElement, successCallback, errorCallback, evt);
             });
 
-            formElement = WM.element("*[name=" + uploadConfig.formName + "]").first();
+            formElement = WM.element('*[name=' + uploadConfig.formName + ']').first();
 
             /*creating fields which are necessary as params for importing resources.*/
             if (uploadConfig.data) {
@@ -865,11 +864,11 @@ WM.module('wm.utils', [])
 
             /*setting form attributes before form submit. Applying iframe as form target to avoid page reflow.*/
             formElement.attr({
-                "target": "fileUploadIFrame",
-                "action": formAction,
-                "method": "post",
-                "enctype": "multipart/form-data",
-                "encoding": "multipart/form-data"
+                'target'  : 'fileUploadIFrame',
+                'action'  : formAction,
+                'method'  : 'post',
+                'enctype' : 'multipart/form-data',
+                'encoding': 'multipart/form-data'
             });
 
             /*triggering the form submit event*/
@@ -882,19 +881,19 @@ WM.module('wm.utils', [])
          * var a = {
          *  b: {
          *      c : {
-         *          d: "test"
+         *          d: 'test'
          *      }
          * }
-         * Utils.findValue(a, "b.c.d") --> "test"
-         * Utils.findValue(a, "b.c") --> {d: "test"}
-         * Utils.findValue(a, "e") --> undefined
+         * Utils.findValue(a, 'b.c.d') --> 'test'
+         * Utils.findValue(a, 'b.c') --> {d: 'test'}
+         * Utils.findValue(a, 'e') --> undefined
          */
         function findValueOf(obj, key) {
             if (!obj || !key) {
                 return;
             }
 
-            var parts = key.split(".");
+            var parts = key.split('.');
 
             /* iterate through the parts and find the value of obj[key] */
             while (parts.length !== 0 && obj) {
@@ -907,8 +906,8 @@ WM.module('wm.utils', [])
         /*
          * Util method to replace patterns in string with object keys or array values
          * Examples:
-         * Utils.replace("Hello, ${first} ${last} !", {first: "wavemaker", last: "ng"}) --> Hello, wavemaker ng
-         * Utils.replace("Hello, ${0} ${1} !", ["wavemaker","ng"]) --> Hello, wavemaker ng
+         * Utils.replace('Hello, ${first} ${last} !', {first: 'wavemaker', last: 'ng'}) --> Hello, wavemaker ng
+         * Utils.replace('Hello, ${0} ${1} !', ['wavemaker','ng']) --> Hello, wavemaker ng
          */
         function replace(template, map) {
             if (!template) {
@@ -922,13 +921,13 @@ WM.module('wm.utils', [])
 
         /* returns the prefab names loaded in the markup of current page */
         function getLoadedPrefabNames() {
-            return WM.element("[prefabname]").map(function (i, el) {return WM.element(el).attr("prefabname"); });
+            return WM.element('[prefabname]').map(function () {return WM.element(this).attr('prefabname'); });
         }
 
         function initializeAction(op, callback) {
-            var img = new Image(),
-                version = ($rootScope.studioInfo && $rootScope.studioInfo.product && $rootScope.studioInfo.product.version) || '',
-                revision = ($rootScope.studioInfo && $rootScope.studioInfo.product && $rootScope.studioInfo.product.revision) || '';
+            var img = new Image();
+                //version = ($rootScope.studioInfo && $rootScope.studioInfo.product && $rootScope.studioInfo.product.version) || '',
+                //revision = ($rootScope.studioInfo && $rootScope.studioInfo.product && $rootScope.studioInfo.product.revision) || '';
             img.onload = function () {
                 /* image loaded successfully. trigger the callback */
                 triggerFn(callback);
@@ -938,7 +937,7 @@ WM.module('wm.utils', [])
                 triggerFn(callback);
             };
 
-           // img.src = "http://wavemaker.com/img/blank.gif?op=" + op + "&v=" + version + "&r=" + revision + "&preventCache=" + String(Math.random(new Date().getTime())).replace(/\D/, "").substring(0, 8);
+           // img.src = 'http://wavemaker.com/img/blank.gif?op=' + op + '&v=' + version + '&r=' + revision + '&preventCache=' + String(Math.random(new Date().getTime())).replace(/\D/, '').substring(0, 8);
         }
 
         function getNodeFromJson(tree, nodeId, parentNodeId) {
@@ -959,7 +958,7 @@ WM.module('wm.utils', [])
                     }
                     /*Check if the name of the parent node matches with the parentNodeId.
                     * If matched, break out of the loop.*/
-                    parentNodeUId = nodeUId.substr(0, nodeUId.lastIndexOf("-"));
+                    parentNodeUId = nodeUId.substr(0, nodeUId.lastIndexOf('-'));
                     if (tree[0].nodeMap[parentNodeUId] === parentNodeId) {
                         return false;
                     }
@@ -968,7 +967,7 @@ WM.module('wm.utils', [])
 
             /*Check for sanity.*/
             if (nodeUId) {
-                nodeIndex = nodeUId.split("-");
+                nodeIndex = nodeUId.split('-');
                 nodeStartIndex = nodeIndex.shift();
                 node = tree[nodeStartIndex];
 
@@ -985,21 +984,21 @@ WM.module('wm.utils', [])
             options = options || {};
 
             var node = {
-                    "id": nodeId,
-                    "label": options.label,
-                    "collapsed": options.collapsed,
-                    "class": options.class,
-                    "active": options.active,
-                    "props": options.nodeProps,
-                    "isDeletable": options.isDeletable,
-                    "onDelete": options.onDelete
+                    'id'         : nodeId,
+                    'label'      : options.label,
+                    'collapsed'  : options.collapsed,
+                    'class'      : options.class,
+                    'active'     : options.active,
+                    'props'      : options.nodeProps,
+                    'isDeletable': options.isDeletable,
+                    'onDelete'   : options.onDelete
                 },
                 parentIndex,
                 parentStartIndex,
                 parentNode,
                 existingNode;
 
-            /*Return if the "tree" is undefined*/
+            /*Return if the 'tree' is undefined*/
             if (WM.isUndefined(tree)) {
                 return;
             }
@@ -1010,7 +1009,7 @@ WM.module('wm.utils', [])
                 if (parentNodeId && !parentNodeUId) {
                     parentNodeUId = getNodeFromJson(tree, parentNodeId).uid;
                 }
-                parentIndex = parentNodeUId.split("-");
+                parentIndex = parentNodeUId.split('-');
                 parentStartIndex = parentIndex.shift();
                 parentNode = tree[parentStartIndex];
                 parentIndex.forEach(function (index) {
@@ -1021,9 +1020,9 @@ WM.module('wm.utils', [])
             /* case, no node in the tree (empty tree) */
             if (!parentNode) {
                 /* make it as a root node and push into the tree */
-                node.uid = "0";
+                node.uid = '0';
                 node.nodeMap = {
-                    "0": node.id
+                    '0': node.id
                 };
                 tree.push(node);
                 return node;
@@ -1040,7 +1039,7 @@ WM.module('wm.utils', [])
                     return existingNode;
                 }
             }
-            node.uid = parentNode.uid + "-" + (parentNode.children.length);
+            node.uid = parentNode.uid + '-' + (parentNode.children.length);
             /*Insert the node as a child to the tree and return*/
             parentNode.children.push(node);
 
@@ -1074,7 +1073,7 @@ WM.module('wm.utils', [])
             if (window.js_beautify) {
                 return window.js_beautify(content);
             }
-            loadScriptsInSync(["_static_/components/js-beautify/js/lib/beautify.js"]);
+            loadScriptsInSync(['_static_/components/js-beautify/js/lib/beautify.js']);
             return window.js_beautify(content);
         }
 
@@ -1083,7 +1082,7 @@ WM.module('wm.utils', [])
             if (window.html_beautify) {
                 return window.html_beautify(content);
             }
-            loadScriptsInSync(["_static_/components/js-beautify/js/lib/beautify-html.js"]);
+            loadScriptsInSync(['_static_/components/js-beautify/js/lib/beautify-html.js']);
             return window.html_beautify(content);
         }
 
@@ -1092,7 +1091,7 @@ WM.module('wm.utils', [])
             if (window.css_beautify) {
                 return window.css_beautify(content);
             }
-            loadScriptsInSync(["_static_/components/js-beautify/js/lib/beautify-css.js"]);
+            loadScriptsInSync(['_static_/components/js-beautify/js/lib/beautify-css.js']);
             return window.css_beautify(content);
         }
 
@@ -1113,9 +1112,9 @@ WM.module('wm.utils', [])
             if (ctrlOrMetaKey) {
                 switch (event.which) {
                 case 82:
-                    return altKey ? "RUN" : "UNKNOWN";
+                    return altKey ? 'RUN' : 'UNKNOWN';
                 case 68:
-                    return altKey ? "DEPLOY" : "UNKNOWN";
+                    return altKey ? 'DEPLOY' : 'UNKNOWN';
                 case 83:
                     return 'SAVE';
                 case 88:
@@ -1148,15 +1147,15 @@ WM.module('wm.utils', [])
             //    return;
             //}
             //
-            //var _url = url + (url.indexOf("?") !== -1 ? "&" : "?");
-            //_url += "preventCache=" + Date.now();
+            //var _url = url + (url.indexOf('?') !== -1 ? '&' : '?');
+            //_url += 'preventCache=' + Date.now();
 
             return url;
         }
 
         function getAllKeysOf(obj, prefix) {
             var keys = [];
-            prefix = prefix ? prefix + "." : "";
+            prefix = prefix ? prefix + '.' : '';
 
             if (WM.isObject(obj) && !WM.isArray(obj)) {
                 Object.keys(obj).forEach(function (key) {
@@ -1173,7 +1172,7 @@ WM.module('wm.utils', [])
                 return;
             }
             /* get a reference to the element where ng-app is defined */
-            var appEl = WM.element("[id=ng-app]"), injector;
+            var appEl = WM.element('[id=ng-app]'), injector;
             if (appEl) {
                 try {
                     injector = appEl.injector(); // get the angular injector
@@ -1203,10 +1202,10 @@ WM.module('wm.utils', [])
         }
 
         function getCookieByName(name) {
-            var cookiesArray = document.cookie.split("; "),
+            var cookiesArray = document.cookie.split('; '),
                 cookies = {};
             cookiesArray.forEach(function (cookie) {
-                var cookieArray = cookie.split("=");
+                var cookieArray = cookie.split('=');
                 cookies[cookieArray[0]] = cookieArray[1];
             });
             return cookies[name];
@@ -1215,17 +1214,17 @@ WM.module('wm.utils', [])
         /*Function to check whether the specified object is a pageable object or not.*/
         function isPageable(obj) {
             var pageable = {
-                "content": [],
-                "first": true,
-                "firstPage": true,
-                "last": true,
-                "lastPage": true,
-                "number": 0,
-                "numberOfElements": 10,
-                "size": 20,
-                "sort": null,
-                "totalElements": 10,
-                "totalPages": 1
+                'content'         : [],
+                'first'           : true,
+                'firstPage'       : true,
+                'last'            : true,
+                'lastPage'        : true,
+                'number'          : 0,
+                'numberOfElements': 10,
+                'size'            : 20,
+                'sort'            : null,
+                'totalElements'   : 10,
+                'totalPages'      : 1
             };
             return (WM.equals(Object.keys(pageable), Object.keys(obj).sort()));
         }
@@ -1287,9 +1286,9 @@ WM.module('wm.utils', [])
         /* to generate all individual contents from the combined version(min.html) of the page */
         function parseCombinedPageContent(pageContent, pageName) {
             /*creating a parent for the content & converting to dom-like element, to process the content*/
-            var pageDom = WM.element("<div>" + pageContent + "</div>"),
+            var pageDom = WM.element('<div>' + pageContent + '</div>'),
                 htmlEle = pageDom.find('script[id="' + pageName + '.html' + '"]'),
-                variableContext = "_" + pageName + "Page_Variables_";
+                variableContext = '_' + pageName + 'Page_Variables_';
             /* remove the previously loaded styles in studio-mode*/
             if (APPCONSTANTS.isStudioMode) {
                 WM.element('script[id="' + pageName + '.css' + '"]').remove();
@@ -1315,7 +1314,7 @@ WM.module('wm.utils', [])
             if (!typeRef) {
                 return 'string';
             }
-            return typeRef.substring(typeRef.lastIndexOf(".") + 1);
+            return typeRef.substring(typeRef.lastIndexOf('.') + 1);
         }
 
         /* returns true if the provided data type matches number type */
@@ -1409,23 +1408,23 @@ WM.module('wm.utils', [])
                     if (WM.isObject(object[column])) {
                         dataObj = object[column];
                         relatedFieldKeys = Object.keys(dataObj);
-                        relatedFieldKeys.forEach(function(field) {
-                            str = column + "." + field;
+                        relatedFieldKeys.forEach(function (field) {
+                            str = column + '.' + field;
                             if (_.includes(expression, column)) {
                                 requiredFields.push({'field': str, 'value': dataObj[field]});
                             }
                         });
                     } else {
-                        requiredFields.push({'field': column,'value': object[column]});
+                        requiredFields.push({'field': column, 'value': object[column]});
                     }
                 }
             });
 
-            requiredFields.forEach(function (column){
-                var regexExpr = new RegExp("\\b" + column.field + "\\b", "g"),
+            requiredFields.forEach(function (column) {
+                var regexExpr = new RegExp('\\b' + column.field + '\\b', 'g'),
                     val = column.value;
                 if (WM.isString(val)) {
-                    val = "'" + val + "'";
+                    val = '"' + val + '"';
                 }
                 expression = expression.replace(regexExpr, val);
             });
@@ -1435,96 +1434,118 @@ WM.module('wm.utils', [])
                 return expression;
             }
         }
-        return {
-            camelCase: WM.element.camelCase,
-            initCaps: initCaps,
-            firstCaps: firstCaps,
-            periodSeparate: periodSeparate,
-            spaceSeparate: spaceSeparate,
-            prettifyLabel: prettifyLabel,
-            getVariableName: getVariableName,
-            getImageUrl: getImageUrl,
-            getResourceUrl: getResourceURL,
-            formatVariableIconClass: formatVariableIconClass,
-            getBackGroundImageUrl: getBackGroundImageUrl,
-            getParentOverlayElZIndex: getParentOverlayElZIndex,
-            hyphenate: hyphenate,
-            deHyphenate: deHyphenate,
-            isAndroid: isAndroid,
-            isAndroidPhone: isAndroidPhone,
-            isIphone: isIphone,
-            isIpod: isIpod,
-            isMobile: isMobile,
-            isScriptLoaded: isScriptLoaded,
-            isValidJavaPackageName: isValidJavaPackageName,
-            isValidHtml: isValidHtml,
-            isQuoteNotPresent: isQuoteNotPresent,
-            stringStartsWith: stringStartsWith,
-            stringEndsWith: stringEndsWith,
-            isStyleSheetLoaded: isStyleSheetLoaded,
-            isValidWebURL: isValidWebURL,
-            loadScripts: loadScripts,
-            loadStyleSheets: loadStyleSheets,
-            loadStyleSheet: loadStyleSheet,
-            prepareFieldDefs: prepareFieldDefs,
-            prettifyCSS: prettifyCSS,
-            prettifyHTML: prettifyHTML,
-            prettifyJS: prettifyJS,
-            swapArrayElements: swapArrayElements,
-            swapProperties: swapProperties,
-            triggerFn: triggerFn,
-            isEmptyObject: isEmptyObject,
-            isValidEmail: isValidEmail,
-            resetObjectWithEmptyValues: resetObjectWithEmptyValues,
-            isImageFile: isImageFile,
-            isZipFile: isZipFile,
-            isExeFile: isExeFile,
-            isTextLikeFile: isTextLikeFile,
-            isAudioFile: isAudioFile,
-            isVideoFile: isVideoFile,
-            isPageResource: isPageResource,
-            findValueOf: findValueOf,
-            replace: replace,
-            removeStyleSheetLoaded: removeStyleSheetLoaded,
-            fileUploadFallback: fileUploadFallback,
-            getCurrentPage: getCurrentPage,
-            isDebugMode: isDebugMode,
-            getIndexPage: getIndexPage,
-            redirectToIndexPage: redirectToIndexPage,
-            redirectToLoginPage: redirectToLoginPage,
-            browserStorage: browserStorage,
-            fetchPropertiesMapColumns: fetchPropertiesMapColumns,
-            getLoadedPrefabNames: getLoadedPrefabNames,
-            initializeAction: initializeAction,
-            addNodeToJson: addNodeToJson,
-            getNodeFromJson: getNodeFromJson,
-            removeJsonNodeChildren: removeJsonNodeChildren,
-            isIE: isIE,
-            isIE11: isIE11,
-            getValidJSON: getValidJSON,
-            getActionFromKey: getActionFromKey,
-            preventCachingOf: preventCachingOf,
-            getAllKeysOf: getAllKeysOf,
-            fetchContent: fetchContent,
-            getService: getService,
-            removeProtocol: removeProtocol,
-            getCookieByName: getCookieByName,
-            isPageable: isPageable,
-            isNumberType: isNumberType,
-            isFileUploadSupported: isFileUploadSupported,
-            processMarkup: processMarkup,
-            getFieldTypeWidgetTypesMap: getFieldTypeWidgetTypesMap,
-            getDateTimeTypes: getDateTimeTypes,
-            getDateTimeDefaultFormats:  getDateTimeDefaultFormats,
-            isValidDataSet: isValidDataSet,
-            parseCombinedPageContent: parseCombinedPageContent,
-            extractType: extractType,
-            isDeleteResourceAllowed: isDeleteResourceAllowed,
-            generateGUId: generateGUId,
-            isDuplicateName: isDuplicateName,
-            getValidMarkUp: getValidMarkUp,
-            scrollIntoView: scrollIntoView,
-            arraysEqual: arraysEqual,
-            getEvaluatedExprValue: getEvaluatedExprValue
-        };
+
+        //extend jQuery -- referred from jQuery-UI
+        $.fn.extend({
+            scrollParent: function (includeHidden) {
+                var position = this.css('position'),
+                    excludeStaticParent = position === 'absolute',
+                    overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/,
+                    docHeight = document.body.clientHeight,
+                    scrollParent = this.parents().filter(function () {
+                        var parent = $(this),
+                            hasOverFlowAuto;
+                        if (excludeStaticParent && parent.css('position') === 'static') {
+                            return false;
+                        }
+                        hasOverFlowAuto = overflowRegex.test(parent.css('overflow') + parent.css('overflow-y'));
+                        return hasOverFlowAuto && this.clientHeight <= docHeight;
+                    }).eq(0);
+
+                return position === 'fixed' || !scrollParent.length ? $(this[0].ownerDocument || document) : scrollParent;
+            }
+        });
+
+        // expose the methods on the service instance.
+
+        this.camelCase                  = WM.element.camelCase;
+        this.initCaps                   = initCaps;
+        this.firstCaps                  = firstCaps;
+        this.periodSeparate             = periodSeparate;
+        this.spaceSeparate              = spaceSeparate;
+        this.prettifyLabel              = prettifyLabel;
+        this.getVariableName            = getVariableName;
+        this.getImageUrl                = getImageUrl;
+        this.getResourceUrl             = getResourceURL;
+        this.formatVariableIconClass    = formatVariableIconClass;
+        this.getBackGroundImageUrl      = getBackGroundImageUrl;
+        this.getParentOverlayElZIndex   = getParentOverlayElZIndex;
+        this.hyphenate                  = hyphenate;
+        this.deHyphenate                = deHyphenate;
+        this.isAndroid                  = isAndroid;
+        this.isAndroidPhone             = isAndroidPhone;
+        this.isIphone                   = isIphone;
+        this.isIpod                     = isIpod;
+        this.isMobile                   = isMobile;
+        this.isScriptLoaded             = isScriptLoaded;
+        this.isValidJavaPackageName     = isValidJavaPackageName;
+        this.isValidHtml                = isValidHtml;
+        this.isQuoteNotPresent          = isQuoteNotPresent;
+        this.stringStartsWith           = stringStartsWith;
+        this.stringEndsWith             = stringEndsWith;
+        this.isStyleSheetLoaded         = isStyleSheetLoaded;
+        this.isValidWebURL              = isValidWebURL;
+        this.loadScripts                = loadScripts;
+        this.loadStyleSheets            = loadStyleSheets;
+        this.loadStyleSheet             = loadStyleSheet;
+        this.prepareFieldDefs           = prepareFieldDefs;
+        this.prettifyCSS                = prettifyCSS;
+        this.prettifyHTML               = prettifyHTML;
+        this.prettifyJS                 = prettifyJS;
+        this.swapArrayElements          = swapArrayElements;
+        this.swapProperties             = swapProperties;
+        this.triggerFn                  = triggerFn;
+        this.isEmptyObject              = isEmptyObject;
+        this.isValidEmail               = isValidEmail;
+        this.resetObjectWithEmptyValues = resetObjectWithEmptyValues;
+        this.isImageFile                = isImageFile;
+        this.isZipFile                  = isZipFile;
+        this.isExeFile                  = isExeFile;
+        this.isTextLikeFile             = isTextLikeFile;
+        this.isAudioFile                = isAudioFile;
+        this.isVideoFile                = isVideoFile;
+        this.isPageResource             = isPageResource;
+        this.findValueOf                = findValueOf;
+        this.replace                    = replace;
+        this.removeStyleSheetLoaded     = removeStyleSheetLoaded;
+        this.fileUploadFallback         = fileUploadFallback;
+        this.getCurrentPage             = getCurrentPage;
+        this.isDebugMode                = isDebugMode;
+        this.getIndexPage               = getIndexPage;
+        this.redirectToIndexPage        = redirectToIndexPage;
+        this.redirectToLoginPage        = redirectToLoginPage;
+        this.browserStorage             = browserStorage;
+        this.fetchPropertiesMapColumns  = fetchPropertiesMapColumns;
+        this.getLoadedPrefabNames       = getLoadedPrefabNames;
+        this.initializeAction           = initializeAction;
+        this.addNodeToJson              = addNodeToJson;
+        this.getNodeFromJson            = getNodeFromJson;
+        this.removeJsonNodeChildren     = removeJsonNodeChildren;
+        this.isIE                       = isIE;
+        this.isIE11                     = isIE11;
+        this.getValidJSON               = getValidJSON;
+        this.getActionFromKey           = getActionFromKey;
+        this.preventCachingOf           = preventCachingOf;
+        this.getAllKeysOf               = getAllKeysOf;
+        this.fetchContent               = fetchContent;
+        this.getService                 = getService;
+        this.removeProtocol             = removeProtocol;
+        this.getCookieByName            = getCookieByName;
+        this.isPageable                 = isPageable;
+        this.isNumberType               = isNumberType;
+        this.isFileUploadSupported      = isFileUploadSupported;
+        this.processMarkup              = processMarkup;
+        this.getFieldTypeWidgetTypesMap = getFieldTypeWidgetTypesMap;
+        this.getDateTimeTypes           = getDateTimeTypes;
+        this.getDateTimeDefaultFormats  =  getDateTimeDefaultFormats;
+        this.isValidDataSet             = isValidDataSet;
+        this.parseCombinedPageContent   = parseCombinedPageContent;
+        this.extractType                = extractType;
+        this.isDeleteResourceAllowed    = isDeleteResourceAllowed;
+        this.generateGUId               = generateGUId;
+        this.isDuplicateName            = isDuplicateName;
+        this.getValidMarkUp             = getValidMarkUp;
+        this.scrollIntoView             = scrollIntoView;
+        this.arraysEqual                = arraysEqual;
+        this.getEvaluatedExprValue      = getEvaluatedExprValue;
     }]);

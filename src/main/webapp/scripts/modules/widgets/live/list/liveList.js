@@ -1,4 +1,4 @@
-/*global WM, window, _*/
+/*global WM, window, _, document*/
 /*jslint todo: true */
 /*Directive for liveList */
 
@@ -9,9 +9,11 @@ WM.module('wm.widgets.live')
         $tc.put('template/widget/list.html',
                     '<div class="app-livelist" init-widget ' + $rs.getWidgetStyles('shell') + ' data-ng-show="show">' +
                         '<ul data-identifier="list" class="clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
-                                'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}"></ul>' +
+                                'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
+                            '<li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>' +
+                        '</ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                        '<wm-datanavigator class="well well-sm clearfix" data-ng-if="shownavigation" showrecordcount="{{showrecordcount}}"></wm-datanavigator>' +
+                        '<wm-datanavigator class="well well-sm clearfix" data-ng-if="hasNavigation" show="{{shownavigation}}" showrecordcount="{{showrecordcount}}"></wm-datanavigator>' +
                     '</div>'
                 );
 
@@ -49,10 +51,10 @@ WM.module('wm.widgets.live')
                 liTemplateWrapper_start = '<li data-ng-repeat="item in fieldDefs track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ',
                 liTemplateWrapper_end = '></li>',
                 notifyFor = {
-                    'dataset': true,
-                    'shownavigation': true,
+                    'dataset'        : true,
+                    'shownavigation' : true,
                     'showrecordcount': true,
-                    'itemsperrow': true
+                    'itemsperrow'    : true
                 },
                 directiveDefn;
 
@@ -87,9 +89,9 @@ WM.module('wm.widgets.live')
             function getColumnsFromDataSet(dataset) {
                 if (WM.isObject(dataset)) {
                     if (WM.isArray(dataset) && WM.isObject(dataset[0])) {
-                        return Object.keys(dataset[0]);
+                        return _.keys(dataset[0]);
                     }
-                    return Object.keys(dataset);
+                    return _.keys(dataset);
                 }
                 return [];
             }
@@ -157,7 +159,7 @@ WM.module('wm.widgets.live')
                         variable: result.refVariable
                     });
                 }
-                return WM.isObject(fields) ? Object.keys(fields) : fields;
+                return WM.isObject(fields) ? _.keys(fields) : fields;
             }
 
             function updateLiveListBindings($is, forceUpdate) {
@@ -176,31 +178,85 @@ WM.module('wm.widgets.live')
                     }
                 }
                 /* emit event to modify the liveList template*/
-                $rs.$emit('livelist-template-modified', {'widgetName': $is.name, 'bindDataset': $is.binddataset, 'fields': columns, 'forceUpdate': forceUpdate});
+                $rs.$emit('livelist-template-modified', {
+                    'widgetName' : $is.name,
+                    'bindDataset': $is.binddataset,
+                    'fields'     : columns,
+                    'forceUpdate': forceUpdate
+                });
             }
 
             function handlePageSizeDisplay($is, variableObj) {
-                /*Check for sanity*/
                 if (variableObj) {
                     /*Make the "pageSize" property readonly so that no editing is possible.*/
                     $is.widgetProps.pagesize.disabled = (variableObj.category === 'wm.LiveVariable');
                 }
             }
 
+            function bindScrollEvt($is, $el) {
+                var $dataNavigator = $el.find('> [data-identifier=datanavigator]'),
+                    navigator = $dataNavigator.isolateScope();
+
+                $el.find('> ul')
+                    .children()
+                    .first()
+                    .scrollParent(false)
+                    .off('scroll.livelist')
+                    .on('scroll.livelist', function (evt) {
+                        var target = evt.target,
+                            clientHeight,
+                            totalHeight,
+                            scrollTop;
+
+                        target =  target === document ? target.scrollingElement : target;
+
+                        clientHeight = target.clientHeight;
+                        totalHeight  = target.scrollHeight;
+                        scrollTop    = target.scrollTop;
+
+                        if (totalHeight * 0.75 < scrollTop + clientHeight) {
+                            $rs.$safeApply($is, function () {
+                                $is.fetchInProgress = true;
+                                navigator.navigatePage('next');
+                                if (navigator.isLastPage()) {
+                                    $is.fetchInProgress = false;
+                                }
+                            });
+                        }
+                    });
+            }
+
             /** With given data, creates list items and updates the markup*/
-            function createListItems($is, $el, data) {
-                var unbindWatcher;
-                /*If the "maxResults" property has been set in the dataNavigator, that takes precedence. Hence splice the data only if it is not set.*/
-                /** Set the data to field-definitions, now the template will be modified and rendered,
-                 * If pageSize is mentioned then splice the data to get the required data*/
-                $is.$liScope.fieldDefs = data;
+            function updateFieldDefs($is, $el, data) {
+                var unbindWatcher,
+                    _s = $is.$liScope,
+                    fieldDefs = _s.fieldDefs;
+
+                if ($is.infscroll) {
+                    if (WM.isUndefined(fieldDefs)) {
+                        _s.fieldDefs = fieldDefs = [];
+                    }
+                    _.forEach(data, function (item) {
+                        fieldDefs.push(item);
+                    });
+
+                    $timeout(function () {
+                        $is.fetchInProgress = false;
+                        if (fieldDefs.length) {
+                            bindScrollEvt($is, $el);
+                        }
+                    });
+                } else {
+                    _s.fieldDefs = data;
+                }
 
                 if (!data.length) {
                     $is.noDataFound = true;
+                    $is.selecteditem = undefined;
                 }
 
                 /* In run mode, making the first element selected, if flag is set */
-                if (CONSTANTS.isRunMode && $is.selectfirstitem) {
+                if ($is.selectfirstitem) {
                     unbindWatcher = $is.$watch(function () {
                         var items = $el.find('.list-group li:first-of-type');
                         if (items.length) {
@@ -219,6 +275,15 @@ WM.module('wm.widgets.live')
 
                     if (nv.data) {
                         nv = nv.data;
+                    } else {
+                        if (!_.includes($is.binddataset, 'bind:Widgets.')) {
+                            var boundVariableName = Utils.getVariableName($is),
+                                variable = getVariable($is, boundVariableName);
+                            // data from the live list must have .data filed
+                            if (variable && variable.category === 'wm.LiveVariable') {
+                                return;
+                            }
+                        }
                     }
 
                     /*If the data is a pageable object, then display the content.*/
@@ -235,11 +300,11 @@ WM.module('wm.widgets.live')
                         }
                     }
                     if (WM.isArray(nv)) {
-                        createListItems($is, $el, nv);
+                        updateFieldDefs($is, $el, nv);
                     }
                 } else {
                     if (CONSTANTS.isRunMode) {
-                        createListItems($is, $el, []);
+                        updateFieldDefs($is, $el, []);
                     }
                 }
             }
@@ -249,7 +314,7 @@ WM.module('wm.widgets.live')
                 var $dataNavigator, // dataNavigator element
                     dataNavigator,  // dataNavigator scope
                     binddataset;
-                if ($is.shownavigation) {
+                if ($is.hasNavigation) {
 
                     binddataset = $is.binddataset;
                     Utils.triggerFn($is._watchers.dataset);
@@ -317,27 +382,29 @@ WM.module('wm.widgets.live')
             function propertyChangeHandler($is, $el, attrs, key, newVal, oldVal) {
                 var doNotRemoveTemplate,
                     oldClass,
-                    newClass;
+                    newClass,
+                    wp;
 
-                switch (key) {
-                case 'dataset':
+                if (key === 'dataset') {
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, newVal);
-                    break;
-                case 'shownavigation':
-                    /*Check for sanity*/
-                    if (CONSTANTS.isStudioMode) {
-                        $is.widgetProps.showrecordcount.show = newVal;
-                    }
-                    break;
-                case 'itemsperrow':
-                    /*Check for studio mode*/
-                    if (CONSTANTS.isStudioMode) {
+                }
+
+                if (CONSTANTS.isStudioMode) {
+                    wp = $is.widgetProps;
+                    switch (key) {
+                    case 'infscroll':
+                        wp.shownavigation.disabled = true;
+                        break;
+                    case 'shownavigation':
+                        wp.showrecordcount.show = newVal;
+                        break;
+                    case 'itemsperrow':
                         oldClass = oldVal && 'col-md-' + 12 / (+oldVal);
                         newClass = newVal && 'col-md-' + 12 / (+newVal);
                         $el.find('.app-listtemplate').removeClass(oldClass).addClass(newClass);
+                        break;
                     }
-                    break;
                 }
             }
 
@@ -459,17 +526,21 @@ WM.module('wm.widgets.live')
 
                 $liScope = createChildScope($is, $el, attrs);
                 $is.$liScope = $liScope;
+                $is.hasNavigation = $is.shownavigation || $is.infscroll;
+                if ($is.infscroll) {
+                    $is.shownavigation = false;
+                }
 
                 if (CONSTANTS.isRunMode) {
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
-                    $el.find('[data-identifier=list]').append($liTemplate);
+                    $el.find('> [data-identifier=list]').prepend($liTemplate);
                     $compile($liTemplate)($liScope);
 
                     if (attrs.scopedataset) {
                         $is.$watch('scopedataset', function (nv) {
                             if (nv && !$is.dataset) {
-                                createListItems($is, $el, nv);
+                                updateFieldDefs($is, $el, nv);
                             }
                         }, true);
                     }
@@ -500,12 +571,12 @@ WM.module('wm.widgets.live')
                 'replace'   : true,
                 'transclude': true,
                 'scope'     : {},
-                'controller': 'listController',
                 'template'  : $tc.get('template/widget/list.html'),
                 'compile'   : compileFn
             };
 
             if (CONSTANTS.isRunMode) {
+                directiveDefn.controller = 'listController';
                 directiveDefn.scope = {
                     'scopedataset'      : '=?',
                     'onClick'           : '&',

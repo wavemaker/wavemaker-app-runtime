@@ -1334,7 +1334,8 @@ WM.module('wm.widgets.base', [])
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "itemclass": {"type": "string", "pattern": classRegex},
                         "listclass": {"type": "string", "pattern": classRegex},
-                        "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"}
+                        "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
+                        "infscroll": {"type": "boolean", "value": false}
                     },
                     "wm.livefilter": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1566,7 +1567,7 @@ WM.module('wm.widgets.base', [])
                         "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "captions", "showxaxis", "showyaxis", "showvalues",
                          "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                           "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype"], "parent": "properties"},
-                    {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
+                    {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "infscroll", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                     {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                     {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
                     {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "rows", "columns", "columnwidth", "taborder"], "parent": "properties"},

@@ -358,7 +358,7 @@ module.exports = function (grunt) {
 
                 }
             },
-           'mobile-runtime-files': { // mobile changes
+            'mobile-runtime-files': { // mobile changes
                 nonull: true,
                 files: {
                     '<%= config.mobile %>/scripts/mobileruntimeloader.js': [
@@ -422,7 +422,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/widgets/basic/spinner/spinner.js',
                         '<%= config.scripts %>/modules/widgets/basic/tree/tree.js',
                         '<%= config.scripts %>/modules/widgets/basic/chart/chart.js',
-                        '<%= config.scripts %>/modules/widgets/basic/datanavigator/datanavigator.js',
+                        '<%= config.scripts %>/modules/widgets/basic/dataNavigator/dataNavigator.js',
                         '<%= config.scripts %>/modules/widgets/basic/wmtoaster/wmtoaster.js',
                         '<%= config.scripts %>/modules/widgets/basic/progressbar/progressbar.js',
                         '<%= config.scripts %>/modules/widgets/grid/datagrid.js',
@@ -458,8 +458,8 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/widgets/live/form/liveform.js',
                         '<%= config.scripts %>/modules/widgets/live/filter/livefilter.js',
                         '<%= config.scripts %>/modules/widgets/live/grid/livegrid.js',
-                        '<%= config.scripts %>/modules/widgets/live/list/listtemplate.js',
-                        '<%= config.scripts %>/modules/widgets/live/list/livelist.js',
+                        '<%= config.scripts %>/modules/widgets/live/list/listTemplate.js',
+                        '<%= config.scripts %>/modules/widgets/live/list/liveList.js',
                         '<%= config.scripts %>/modules/widgets/advanced/calendar/calendar.js',
                         '<%= config.scripts %>/modules/widgets/advanced/login/login.js',
                         '<%= config.scripts %>/modules/widgets/advanced/carousel/carousel.js',
