@@ -18,7 +18,7 @@ var Application = WM.module('Application',
             "angular-gestures"
         ]).constant('CONSTANTS', {
         "isRunMode": true,
-        "hasCordova": (window.device && window.device.cordova ? true : false)
+        "hasCordova": (window.location.origin === 'file://')
     }).controller('AppController', [
         '$rootScope',
         '$scope',
@@ -347,6 +347,12 @@ var Application = WM.module('Application',
                 invokeServiceEvent();
                 updateLoggedInUserEvent();
             });
+            if (CONSTANTS.hasCordova) {
+                var pageReadyDeregister = $rootScope.$on('page-ready', function () {
+                        navigator.splashscreen.hide();
+                        pageReadyDeregister();
+                });
+            }
         }]);
 Application.config(['$routeProvider', '$controllerProvider', '$filterProvider', '$compileProvider',
     function ($routeProvider, $controllerProvider, $filterProvider, $compileProvider) {
