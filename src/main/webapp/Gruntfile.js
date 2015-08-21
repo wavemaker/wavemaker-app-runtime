@@ -220,6 +220,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/nvd3/nv.d3.js',
                         '<%= config.components %>/ocLazyLoad/ocLazyLoad.min.js',
                         '<%= config.components %>/hammerjs/hammer.js',
+                        '<%= config.components %>/ngCordova/ng-cordova.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
                         '<%= config.scripts %>/modules/base64/base64.js'
                     ],
