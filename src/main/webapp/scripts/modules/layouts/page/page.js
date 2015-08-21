@@ -95,6 +95,7 @@ WM.module('wm.layouts.page')
                                             //This is not required for mobile appications.
                                             DeviceViewService.update(element, scope.layout.leftSection, scope.layout.rightSection, scope.layout.search);
                                         }
+                                        $rootScope.$emit('page-ready');
                                     });
                                 }
                             };
