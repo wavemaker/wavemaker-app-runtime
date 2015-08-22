@@ -8,7 +8,7 @@
   transition: left 0.5s  ease-in-out;
   position: fixed;
   top: 0;
-
+  z-index: 99999;
   &.slide-over {
     left: -100%;
     z-index: 100000;
@@ -51,6 +51,7 @@
       width: 100%;
       position: fixed;
       z-index: 99999;
+      display: block;
       top: 0;
       left: 0;
       .app-header-action {
@@ -148,9 +149,6 @@
 
     .app-content {
       width: 100%;
-      display: block;
-      padding: 0;
-      height: auto;
     /***setting back the behavior of bootstrap for mobile****/
       .app-content-row {
         display: block;

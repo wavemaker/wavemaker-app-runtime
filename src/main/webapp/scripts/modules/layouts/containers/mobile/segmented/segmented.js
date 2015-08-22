@@ -7,7 +7,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentedcontrol.html',
             '<div class="app-segmented-control {{class}}"  hm-swipe-left="goToNext()"  hm-swipe-right="goToPrev();"  init-widget data-ng-show="show" '  + $rootScope.getWidgetStyles('container') + '>' +
                 '<div class="btn-group btn-group-justified">' +
-                    '<a class="btn btn-default" data-ng-repeat="content in contents" data-ng-class="{\'active\' : $index == currentSelectedIndex}" data-ng-click="$event.stopPropagation(); showContent($index);">' +
+                    '<a class="btn btn-default" data-ng-repeat="content in contents" data-ng-class="{\'active btn-primary\' : $index == currentSelectedIndex}" data-ng-click="$event.stopPropagation(); showContent($index);">' +
                        '<i class="app-icon" data-ng-class="content.iconclass"></i> {{content.caption}}' +
                     '</a>' +
                 '</div>' +
@@ -16,11 +16,11 @@ WM.module('wm.layouts.containers')
                 '</div>' +
             '</div>');
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
-            '<li init-widget wmtransclude class="app-segment-content"></li>');
+            '<li init-widget wmtransclude class="app-segment-content clearfix" ' + $rootScope.getWidgetStyles('container') +'></li>');
     }])
     .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrol', ['wm.base', 'wm.containers']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrol', ['wm.base', 'wm.layouts', 'wm.containers']);
         return {
             'restrict' : 'E',
             'scope'    : {
@@ -70,6 +70,7 @@ WM.module('wm.layouts.containers')
                         $scope.widgetProps = widgetProps;
                         $scope.contents = [];
                         $scope.animate = true;
+                        $scope.currentSelectedIndex = 0;
                     },
                     'post' : function ($scope, $element, attrs, ctrl) {
                         /**
@@ -93,15 +94,13 @@ WM.module('wm.layouts.containers')
                             $scope.currentSelectedIndex = index;
                             $scope.onBeforesegmentchange(eventData);
 
-                            if (currentContent && CONSTANTS.isStudioMode) {
+                            if (currentContent && currentContent.widgetid && CONSTANTS.isStudioMode) {
                                 $scope.$root.$emit('set-active-widget', currentContent.widgetid);
                             }
 
-                            if (CONSTANTS.isRunMode) {
-                                $segmentsCtr.animate(
-                                    { scrollLeft: (scrollPos + left)},
-                                    { duration: "slow" });
-                            }
+                            $segmentsCtr.animate(
+                                { scrollLeft: (scrollPos + left)},
+                                { duration: "slow" });
 
                             $scope.lastShownContentIndex = index;
                             $scope.onSegmentchange(eventData);
@@ -123,7 +122,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmSegmentContent', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base', 'wm.layouts', 'wm.containers']);
         return {
             'restrict' : 'E',
             'replace' : 'true',

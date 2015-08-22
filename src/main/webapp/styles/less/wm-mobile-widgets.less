@@ -3,14 +3,25 @@
 *********************************************************************************/
 .app-segmented-control{
   position: relative;
-  > .btn-group {
+  .width-height();
+  > .btn-group.btn-group-justified {
+    position: absolute;
+    padding: 1em;
+    left: 0;
+    top: 0;
+    right: 0;
+    z-index: 1;
     .app-icon {
       width: auto;
     }
   }
+  &.bottom {
+    > .btn-group {
+      bottom: 0;
+    }
+  }
   .app-segments-container {
-    .width-height(100%, 90%);
-    .calc('height', ~"calc(100% - 24px)");
+    .width-height();
     overflow: hidden;
     position: relative;
     > ul {
@@ -21,9 +32,14 @@
       display: table;
       table-layout: fixed;
       > li.app-segment-content{
+        white-space: normal;
         .width-height();
-        overflow: hidden;
+        padding-top: 50px;
         position: relative;
+        vertical-align: top;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-sizing: content-box;
       }
     }
   }
