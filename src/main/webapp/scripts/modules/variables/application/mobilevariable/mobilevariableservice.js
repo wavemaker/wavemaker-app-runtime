@@ -13,7 +13,7 @@
  * The 'MobileService' is a wrapper over cardova. This acts as a integration point of Cardova API
  * and Wavemaker variables.
  */
-wm.variables.services.MobileService = ['$cordovaContacts', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', function ($cordovaContacts, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera) {
+wm.variables.services.MobileService = ['$cordovaContacts', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', '$cordovaBarcodeScanner', function ($cordovaContacts, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera, $cordovaBarcodeScanner) {
     "use strict";
     var event = {
             title: '',
@@ -144,6 +144,23 @@ wm.variables.services.MobileService = ['$cordovaContacts', '$cordovaNetwork', '$
                         enableHighAccuracy: variable.geolocationHighAccuracy
                     };
                     $cordovaGeolocation.getCurrentPosition(geoLocationOptions).then(success, error);
+                }
+            }
+        },
+        scan : {
+            scanBarCode : {
+                model: {
+                    data : {
+                        text : 'BAR CODE',
+                        format : "TEXT",
+                        cancelled : false,
+                    },
+                },
+                properties : [],
+                invoke: function (variable, options, success, error) {
+                    $cordovaBarcodeScanner.scan().then(function (data) {
+                        success({data : data})
+                    }, error);
                 }
             }
         }
