@@ -79,6 +79,9 @@ $.widget('wm.datagrid', {
                 sorter = sortFn(sortInfo.field, sortInfo.direction),
                 data = $.extend(true, [], this.options.data);
             this._setOption('data', data.sort(sorter));
+            if ($.isFunction(this.options.afterSort)) {
+                this.options.afterSort();
+            }
         }
     },
     customColumnDefs: {

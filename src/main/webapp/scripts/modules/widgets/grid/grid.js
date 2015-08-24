@@ -1139,6 +1139,9 @@ WM.module('wm.widgets.grid')
                 noChangesDetected: function() {
                     wmToaster.show('info', '', 'No changes detected');
                     $scope.$root.$safeApply($scope);
+                },
+                afterSort: function() {
+                    $rootScope.$safeApply($scope);
                 }
             };
 
