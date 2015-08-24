@@ -365,10 +365,10 @@ WM.module('wm.prefabs')
                 return deferred.promise;
             }
 
-            function getPrefabScriptResourceUrl(resourcePath, resourceBasePath, preventCache) {
+            function getPrefabResourceUrl(resourcePath, resourceBasePath, preventCache) {
                 var _url = resourcePath;
                 if (!Utils.stringStartsWith(resourcePath, 'http://|https://|//')) {
-                    _url = (resourceBasePath + _url).replace('//','/');
+                    _url = (resourceBasePath + _url).replace('//', '/');
                 }
                 if (preventCache) {
                     _url = Utils.preventCachingOf(_url);
@@ -378,7 +378,7 @@ WM.module('wm.prefabs')
             }
 
             function extendAppLocale(root) {
-                var localePath = root + (root.lastIndexOf('/') === root.length - 1? '' : '/') + 'resources/i18n/';
+                var localePath = root + (root.lastIndexOf('/') === root.length - 1 ? '' : '/') + 'resources/i18n/';
 
                 if (CONSTANTS.isRunMode) {
                     i18nService.loadComponentLocaleBundle(localePath);
@@ -422,19 +422,19 @@ WM.module('wm.prefabs')
                     modules = resources.modules || [];
 
                     scriptFiles = scriptFiles.map(function (file) {
-                        return getPrefabScriptResourceUrl(file, resourcePath, true);
+                        return getPrefabResourceUrl(file, resourcePath, true);
                     });
 
                     modules = modules.map(function (module) {
                         module.files = module.files.map(function (file) {
-                            return getPrefabScriptResourceUrl(file, resourcePath, true);
+                            return getPrefabResourceUrl(file, resourcePath, true);
                         });
                         return module;
                     });
 
                     styleFiles = styleFiles.map(function (file) {
                         if (!Utils.stringEndsWith(file, '/pages/Main/Main.css')) {
-                            return Utils.preventCachingOf(resourcePath + file);
+                            return getPrefabResourceUrl(file, resourcePath, true);
                         }
                         return undefined;
                     }).filter(function (file) {
