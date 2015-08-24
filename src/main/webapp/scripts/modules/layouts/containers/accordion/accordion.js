@@ -2,17 +2,17 @@
 /*jslint todo: true */
 /*Directive for Accordion */
 WM.module('wm.layouts.containers')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
 
-        $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget data-ng-show="show"' + $rootScope.getWidgetStyles("container") + '></div>');
+        $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget data-ng-show="show" apply-styles="container"></div>');
 
         $templateCache.put('template/layout/container/accordion-pane.html',
             '<div class="app-accordion-panel panel panel-default" init-widget wmtransclude data-ng-show="show" wm-navigable-element="true"></div>'
             );
 
         $templateCache.put('template/layout/container/accordion-header.html',
-                '<div class="panel-heading" data-ng-click="pane.togglePane()" init-widget' + $rootScope.getWidgetStyles('container') + '>' +
+                '<div class="panel-heading" data-ng-click="pane.togglePane()" init-widget apply-styles="container">' +
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0)" class="accordion-toggle" wmtransclude></a>' +
                     '</h3>' +
@@ -20,12 +20,12 @@ WM.module('wm.layouts.containers')
                 '</div>'
             );
         $templateCache.put('template/layout/container/accordion-content.html',
-                '<div class="panel-collapse collapse"  data-ng-class="pane.active ? \'collapse in\' : \'collapse\'" init-widget page-container ' + $rootScope.getWidgetStyles("container") + '>' +
+                '<div class="panel-collapse collapse"  data-ng-class="pane.active ? \'collapse in\' : \'collapse\'" init-widget page-container apply-styles="container">' +
                     '<div class="panel-body" wmtransclude page-container-target></div>' +
                 '</div>'
             );
     }])
-    .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', '$compile', function ($templateCache, WidgetUtilService, PropertiesFactory, $compile) {
+    .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', function ($templateCache, WidgetUtilService, PropertiesFactory) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordion', ['wm.base',  'wm.containers']);
@@ -188,7 +188,7 @@ WM.module('wm.layouts.containers')
                 };
             }
         };
-    }]).directive('wmAccordioncontent', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', function ($templateCache, WidgetUtilService, PropertiesFactory) {
+    }]).directive('wmAccordioncontent', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, WidgetUtilService, PropertiesFactory, CONSTANTS) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordioncontent', ['wm.base', 'wm.layouts',  'wm.containers']);
@@ -203,10 +203,14 @@ WM.module('wm.layouts.containers')
             'compile': function () {
                 return {
                     'pre': function (iScope) {
-                        iScope.widgetProps = WM.copy(widgetProps);
-                        if (iScope.widgetProps.show) {
-                            delete iScope.widgetProps.show;// show property should be handled from pane.
+
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                            delete iScope.widgetProps.show;
+                        } else {
+                            iScope.widgetProps = widgetProps;
                         }
+
                         // define $lazyLoad method on iScope.
                         // pageContainer widget will override this.
                         iScope.$lazyLoad = WM.noop;

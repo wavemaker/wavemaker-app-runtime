@@ -1,11 +1,11 @@
 /*global WM*/
 
 WM.module('wm.layouts.containers')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/form.html',
                 '<form role="form" data-ng-show="show" init-widget class="panel app-form" ng-class="[captionAlignClass, captionPositionClass, formClassName]"' +
-                ' autocomplete="autocomplete" ' + $rootScope.getWidgetStyles('container') +
+                ' autocomplete="autocomplete" apply-styles="container"' +
                 ' ><div class="panel-heading" data-ng-if="title"><h4 class="form-header panel-title">{{title}}</h4></div>' +
                     '<div class="form-body panel-body" wmtransclude></div>' +
                     '</form>'

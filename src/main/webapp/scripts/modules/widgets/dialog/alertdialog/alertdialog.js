@@ -89,14 +89,19 @@ WM.module('wm.widgets.dialog')
             },
             "compile": function () {
                 return {
-                    "pre": function (scope, element, attrs) {
-                        scope.widgetProps = WM.copy(widgetProps);
+                    "pre": function (iScope, element, attrs) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
 
                         /* for the notification-alert dialogs do not allow the user to edit the properties other than class */
                         if (attrs.widgetid && attrs.notificationdialog) { //widget is in canvas
-                            _.forEach(Object.keys(scope.widgetProps), function (propName) {
-                                if (propName !== "class") {
-                                    scope.widgetProps[propName].disabled = true;
+                            var wp = iScope.widgetProps;
+                            _.keys(wp).forEach(function (propName) {
+                                if (propName !== 'class') {
+                                    wp[propName].disabled = true;
                                 }
                             });
                         }

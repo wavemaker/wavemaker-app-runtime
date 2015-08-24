@@ -1,15 +1,14 @@
-/*global WM */
+/*global WM,moment */
 /*Directive for time */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/time.html',
-            '<div class="app-timeinput input-group dropdown" dropdown init-widget has-model ' + $rootScope.getWidgetStyles() +
+            '<div class="app-timeinput input-group dropdown" dropdown init-widget has-model apply-styles ' +
                 ' title="{{hint}}" ' +
                 ' data-ng-model="_proxyModel"' + /* _proxyModel is a private variable inside this scope */
                 ' data-ng-show="show" ' +
-                //' is-open="isOpen" ' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})" >' +
                 '<input class="form-control app-textbox" data-ng-model="_timeModel" dropdown-toggle>' +
                 '<div class="dropdown-menu">' +

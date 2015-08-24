@@ -2,10 +2,10 @@
 /*Directive for picture */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/picture.html',
-                '<img init-widget alt="{{hint}}" title="{{hint}}" ng-class="[imgClass]" class="app-picture" data-ng-src="{{imagesource}}" ' +  $rootScope.getWidgetStyles() + ' data-ng-show="show">'
+                '<img init-widget alt="{{hint}}" title="{{hint}}" ng-class="[imgClass]" class="app-picture" data-ng-src="{{imagesource}}" apply-styles data-ng-show="show">'
             );
     }])
     .directive('wmPicture', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {

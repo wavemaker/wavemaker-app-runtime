@@ -1,10 +1,10 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/topnav.html',
-                '<section data-role="page-topnav" page-container init-widget class="app-top-nav"' + $rootScope.getWidgetStyles() + ' wmtransclude page-container-target></section>'
+                '<section data-role="page-topnav" page-container init-widget class="app-top-nav" apply-styles wmtransclude page-container-target></section>'
             );
     }])
     .directive('wmTopNav', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
@@ -19,12 +19,11 @@ WM.module('wm.layouts.page')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/topnav.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope, element) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
-
-                        if (CONSTANTS.isRunMode) {
-                            // this flag is used to change the layout of the mobile view accordingly
+                    'pre': function (iScope, element) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
                             element.scope().layout.navigationBar = true;
                         }
                     },

@@ -2,12 +2,11 @@
 /*Directive for button */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
 
         $templateCache.put('template/widget/form/button.html',
-            '<button class="btn app-button" init-widget title="{{hint}}" ' + $rootScope.getWidgetStyles() +
-                ' data-ng-disabled="disabled" data-ng-show="show">' +
+            '<button class="btn app-button" init-widget title="{{hint}}" apply-styles data-ng-disabled="disabled" data-ng-show="show">' +
                 '<img data-identifier="img" class="button-image-icon" data-ng-src="{{iconsrc}}"  data-ng-if="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                 '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" data-ng-if="showicon"></i> ' +
                 '<span class="btn-caption"></span>' +

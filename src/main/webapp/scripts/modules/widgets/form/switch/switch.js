@@ -4,12 +4,11 @@
 WM.module('wm.widgets.form')
     .run([
         '$templateCache',
-        '$rootScope',
 
-        function ($templateCache, $rootScope) {
+        function ($templateCache) {
             'use strict';
             $templateCache.put('template/widget/form/switch.html',
-                '<div data-ng-show="show" class="app-switch" init-widget has-model ' + $rootScope.getWidgetStyles() + '>' +
+                '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles>' +
                     '<div class="btn-group">' +
                         '<button class="btn btn-default" data-ng-disabled="disabled" ' +
                             ' data-ng-style="{\'width\': btnwidth + \'%\'}"' +
@@ -25,9 +24,8 @@ WM.module('wm.widgets.form')
     .directive('wmSwitch', [
         'PropertiesFactory',
         'WidgetUtilService',
-        'CONSTANTS',
 
-        function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
+        function (PropertiesFactory, WidgetUtilService) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.switch', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
@@ -100,8 +98,7 @@ WM.module('wm.widgets.form')
             function updateHighlighter(scope, element) {
                 var handler = element.find('span.app-switch-overlay'),
                     left,
-                    index = scope.selected.index,
-                    isToggle = scope.options.length === 2;
+                    index = scope.selected.index;
                 if (index === undefined || index === null) {
                     index = -1;
                 }

@@ -3,10 +3,10 @@
 
 WM.module('wm.widgets.form').requires = WM.module('wm.widgets.form').requires.concat(['textAngular']);
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/richtexteditor.html',
-            '<div class="app-richtexteditor clearfix" init-widget has-model' + $rootScope.getWidgetStyles() + ' data-ng-show="show">' +
+            '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles data-ng-show="show">' +
                 '<div text-angular data-ng-model="_model_"></div>' +
                 '<div data-ng-bind-html="_model_" class="ta-preview" data-ng-show="showpreview"></div>' +
                 /*Holder for the model for submitting values in a form*/

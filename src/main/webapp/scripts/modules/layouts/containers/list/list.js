@@ -4,7 +4,7 @@
 /*Directive for List*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmList', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
+    .directive('wmList', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.list', ['wm.layouts']);
 
@@ -13,7 +13,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<ul class="app-list" ng-class="[layout]" data-ng-show="show"' + $rootScope.getWidgetStyles('container') + ' data-element-type="wmList" wmtransclude init-widget has-model ></ul>',
+            'template': '<ul class="app-list" ng-class="[layout]" data-ng-show="show" apply-styles="container" data-element-type="wmList" wmtransclude init-widget has-model ></ul>',
             'compile': function () {
                 return {
                     'pre': function (scope) {
@@ -30,7 +30,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmListItem', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
+    .directive('wmListItem', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.listitem', ['wm.layouts']);
 
@@ -39,7 +39,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<li init-widget class="app-list-item"' + $rootScope.getWidgetStyles('container') + ' wmtransclude></li>',
+            'template': '<li init-widget class="app-list-item" apply-styles="container" wmtransclude></li>',
             'compile': function () {
                 return {
                     'pre': function (scope) {

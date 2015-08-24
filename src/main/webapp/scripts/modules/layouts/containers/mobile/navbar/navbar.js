@@ -2,34 +2,34 @@
 /*Directive for Navbar*/
 
 WM.module('wm.layouts.containers')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layouts/containers/mobile/navbar.html',
-                            '<header data-role="mobile-navbar" init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show"' + $rootScope.getWidgetStyles() + '>' +
-                                '<nav class="navbar">' +
-                                '<div class="col-xs-4">' +
-                                    '<ul class="nav navbar-nav navbar-left">' +
-                                        '<li data-ng-if="leftNavPanel != undefined" >' +
-                                            '<a data-ng-click="leftNavPanel.toggle();">'+
-                                                '<i data-ng-class="leftnavpaneliconclass"></i>'+
-                                            '</a>' +
-                                        '</li>'+
-                                        '<li data-ng-if="backbutton">' +
-                                            '<a class="btn-back" type="button" data-ng-click="goBack();">'+
-                                                '<i data-ng-class="backbuttoniconclass"></i><span>{{backbuttonlabel}}</span>'+
-                                            '</a>' +
-                                        '</li>'+
-                                    '</ul>' +
-                                '</div>' +
-                                '<div class="col-xs-4">' +
-                                    '<div class="navbar-header"><h1 class="navbar-brand">{{title}}</h1></div>' +
-                                '</div>' +
-                                '<div class="col-xs-4">' +
-                                    '<ul class="nav navbar-nav navbar-right"><li wmtransclude>' +
-                                    '</li></ul>' +
-                                '</div>' +
-                                '</nav>' +
-                            '</header>');
+                '<header data-role="mobile-navbar" init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show" apply-styles>' +
+                    '<nav class="navbar">' +
+                        '<div class="col-xs-4">' +
+                            '<ul class="nav navbar-nav navbar-left">' +
+                                '<li data-ng-if="leftNavPanel != undefined" >' +
+                                    '<a data-ng-click="leftNavPanel.toggle();">' +
+                                        '<i data-ng-class="leftnavpaneliconclass"></i>' +
+                                    '</a>' +
+                                '</li>' +
+                                '<li data-ng-if="backbutton">' +
+                                    '<a class="btn-back" type="button" data-ng-click="goBack();">' +
+                                        '<i data-ng-class="backbuttoniconclass"></i><span>{{backbuttonlabel}}</span>' +
+                                    '</a>' +
+                                '</li>' +
+                            '</ul>' +
+                        '</div>' +
+                        '<div class="col-xs-4">' +
+                            '<div class="navbar-header"><h1 class="navbar-brand">{{title}}</h1></div>' +
+                        '</div>' +
+                        '<div class="col-xs-4">' +
+                            '<ul class="nav navbar-nav navbar-right"><li wmtransclude></li></ul>' +
+                        '</div>' +
+                    '</nav>' +
+                '</header>'
+            );
     }]).directive('wmMobileNavbar', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$window', 'CONSTANTS', function ($templateCache, PropertiesFactory, WidgetUtilService, $window, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mobile.navbar', ['wm.layouts']);

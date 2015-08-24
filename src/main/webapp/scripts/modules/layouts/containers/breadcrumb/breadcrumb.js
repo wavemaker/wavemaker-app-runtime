@@ -2,7 +2,7 @@
 /*Directive for Navbar*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
+    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.layouts']),
             notifyFor = {
@@ -67,14 +67,13 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<ol class="breadcrumb app-breadcrumb" data-ng-show="show" ' + $rootScope.getWidgetStyles() + 'data-element-type="wmBreadCrumb"  init-widget has-model >' +
-                '<li data-ng-repeat="item in nodes" data-ng-class="{\'active\':$last}">' +
-                '<i class="{{item.icon}}"></i> ' +
-                '<a title="{{item.label}}" href="{{item.link}}" data-ng-if="!$last">' +
-                '{{item.label}}' +
-                '</a>' +
-                '<label data-ng-if="$last">{{item.label}}</label>' +
-                '</li>' +
+            'template':
+                '<ol class="breadcrumb app-breadcrumb" data-ng-show="show" apply-styles data-element-type="wmBreadCrumb"  init-widget has-model >' +
+                    '<li data-ng-repeat="item in nodes" data-ng-class="{\'active\':$last}">' +
+                        '<i class="{{item.icon}}"></i> ' +
+                        '<a title="{{item.label}}" href="{{item.link}}" data-ng-if="!$last">{{item.label}}</a>' +
+                        '<label data-ng-if="$last">{{item.label}}</label>' +
+                    '</li>' +
                 '</ol> ',
             'compile': function () {
                 return {

@@ -1,10 +1,10 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/header.html',
-                '<header data-role="page-header"  page-container init-widget class="app-header clearfix"' + $rootScope.getWidgetStyles('container') + '>' +
+                '<header data-role="page-header"  page-container init-widget class="app-header clearfix" apply-styles="container">' +
                     '<div class="visible-xs-block col-xs-1" data-role="page-left-panel-icon"><a class="app-header-action glyphicon glyphicon-menu-hamburger"></a></div>' +
                     '<div class="col-sm-12 col-xs-11 app-header-container" wmtransclude page-container-target></div>' +
                 '</header>'
@@ -22,11 +22,11 @@ WM.module('wm.layouts.page')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/header.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope, element) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
-                        if (CONSTANTS.isRunMode) {
-                            // this flag is used to change the layout of the mobile view accordingly
+                    'pre': function (iScope, element) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
                             element.scope().layout.header = true;
                         }
                     },

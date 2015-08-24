@@ -48,8 +48,7 @@ WM.module('wm.widgets.live')
                                 '<wm-dialog width="{{dialogWidth}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
                                     '<wm-dialogheader></wm-dialogheader>' +
                                     '<wm-dialogcontent class="noscroll">' +
-                                        '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" ' +
-                                            $rootScope.getWidgetStyles("shell") + '>' +
+                                        '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" apply-styles="shell">' +
                                             '<div class="form-elements" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
                                                 '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                             '</div>' +
@@ -62,8 +61,7 @@ WM.module('wm.widgets.live')
                                 //'<div ng-transclude></div>' +
                             '</div>';
                 }
-                return '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" ' +
-                            $rootScope.getWidgetStyles('shell') + '>' +
+                return '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
                             '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
                             '<div class="form-header panel-heading" data-ng-show="!isLayoutDialog" data-ng-if="title"><h3 class="panel-title">' +
                                 '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +

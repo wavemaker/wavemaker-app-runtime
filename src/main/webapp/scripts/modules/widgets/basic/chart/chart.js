@@ -2,10 +2,10 @@
 /*Directive for chart */
 
 WM.module('wm.widgets.basic')
-    .run(["$templateCache", '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/form/chart.html",
-            '<div init-widget class="app-chart" title="{{hint}}" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' ><div class="app-chart-inner">' +
+            '<div init-widget class="app-chart" title="{{hint}}" data-ng-show="show" apply-styles ><div class="app-chart-inner">' +
                 '<svg></svg>' +
                 '<div class="wm-content-info readonly-wrapper {{class}}" data-ng-show="showContentLoadError"><p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p></div>' +
             '</div></div>'
@@ -80,26 +80,26 @@ WM.module('wm.widgets.basic')
             },
            /* properties of the respective chart type */
             options = {
-                'Column': ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Line': ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Area': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Column'         : ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Line'           : ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Area'           : ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
                 'Cumulative Line': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Bar': ['showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Pie': ['showlabels', 'labeltype', 'showlabelsoutside'],
-                'Donut': ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside', 'title'],
-                'Bubble' : ['showxdistance', 'showydistance', 'bubblesize', 'shape']
+                'Bar'            : ['showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Pie'            : ['showlabels', 'labeltype', 'showlabelsoutside'],
+                'Donut'          : ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside', 'title'],
+                'Bubble'         : ['showxdistance', 'showydistance', 'bubblesize', 'shape']
             },
             /*all properties of the chart*/
             allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'shape', 'captions', 'showxaxis', 'showyaxis', 'title'],
             advanceDataProps = ['aggregation', 'aggregationcolumn', 'groupby', 'orderby'],
             chartTypes = ["Column", "Line", "Area", "Cumulative Line", "Bar", "Pie", "Donut", "Bubble"],
             styleProps = {
-                "fontunit": "font-size",
-                "fontsize": "font-size",
-                "color": "fill",
-                "fontfamily": "font-family",
-                "fontweight": "font-weight",
-                "fontstyle": "font-style",
+                "fontunit"      : "font-size",
+                "fontsize"      : "font-size",
+                "color"         : "fill",
+                "fontfamily"    : "font-family",
+                "fontweight"    : "font-weight",
+                "fontstyle"     : "font-style",
                 "textdecoration": "text-decoration"
             },
             tickformats = {
@@ -122,59 +122,59 @@ WM.module('wm.widgets.basic')
             allShapes = ["circle", "square", "diamond", "cross", "triangle-up", "triangle-down"],
             sampleData = {},
             notifyFor = {
-                'dataset': true,
-                'xaxisdatakey': true,
-                'yaxisdatakey': true,
-                'type': true,
-                'height': true,
-                'width': true,
-                'show': true,
-                'xaxislabel': true,
-                'yaxislabel': true,
-                'xunits': true,
-                'yunits': true,
-                'xnumberformat': true,
-                'xdigits': true,
-                'xdateformat': true,
-                'ynumberformat': true,
-                'ydigits': true,
-                'ydateformat': true,
-                'showlegend': true,
-                'showvalues': true,
-                'showlabels': true,
-                'showcontrols': true,
-                'staggerlabels': true,
-                'reducexticks': true,
-                'offsettop': true,
-                'offsetbottom': true,
-                'offsetright': true,
-                'offsetleft': true,
-                'barspacing': true,
+                'dataset'           : true,
+                'xaxisdatakey'      : true,
+                'yaxisdatakey'      : true,
+                'type'              : true,
+                'height'            : true,
+                'width'             : true,
+                'show'              : true,
+                'xaxislabel'        : true,
+                'yaxislabel'        : true,
+                'xunits'            : true,
+                'yunits'            : true,
+                'xnumberformat'     : true,
+                'xdigits'           : true,
+                'xdateformat'       : true,
+                'ynumberformat'     : true,
+                'ydigits'           : true,
+                'ydateformat'       : true,
+                'showlegend'        : true,
+                'showvalues'        : true,
+                'showlabels'        : true,
+                'showcontrols'      : true,
+                'staggerlabels'     : true,
+                'reducexticks'      : true,
+                'offsettop'         : true,
+                'offsetbottom'      : true,
+                'offsetright'       : true,
+                'offsetleft'        : true,
+                'barspacing'        : true,
                 'xaxislabeldistance': true,
                 'yaxislabeldistance': true,
-                'theme': true,
-                'labeltype': true,
-                'donutratio': true,
-                'showlabelsoutside': true,
-                'aggregation': true,
-                'aggregationcolumn': true,
-                'groupby': true,
-                'orderby': true,
-                'fontsize': true,
-                'fontunit': true,
-                'color': true,
-                'fontfamily': true,
-                'fontweight': true,
-                'fontstyle': true,
-                'textdecoration': true,
-                'legendposition': true,
-                'shape': true,
-                'nodatamessage': true,
-                'captions': true,
-                'showxaxis': true,
-                'showyaxis': true,
-                'title': true,
-                'customcolors': true
+                'theme'             : true,
+                'labeltype'         : true,
+                'donutratio'        : true,
+                'showlabelsoutside' : true,
+                'aggregation'       : true,
+                'aggregationcolumn' : true,
+                'groupby'           : true,
+                'orderby'           : true,
+                'fontsize'          : true,
+                'fontunit'          : true,
+                'color'             : true,
+                'fontfamily'        : true,
+                'fontweight'        : true,
+                'fontstyle'         : true,
+                'textdecoration'    : true,
+                'legendposition'    : true,
+                'shape'             : true,
+                'nodatamessage'     : true,
+                'captions'          : true,
+                'showxaxis'         : true,
+                'showyaxis'         : true,
+                'title'             : true,
+                'customcolors'      : true
             };
 
         /* returns true if chart type is pie */
@@ -1747,9 +1747,12 @@ WM.module('wm.widgets.basic')
             template: $templateCache.get("template/widget/form/chart.html"),
             compile: function () {
                 return {
-                    pre: function (scope) {
-                        /*Binding widget properties obtained from PropertiesFactory to scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
+                    pre: function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     post: function (scope, element, attrs) {
                         var handlers = [],

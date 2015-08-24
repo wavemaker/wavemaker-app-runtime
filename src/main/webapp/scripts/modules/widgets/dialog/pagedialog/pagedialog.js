@@ -71,8 +71,12 @@ WM.module('wm.widgets.dialog')
             },
             "compile": function () {
                 return {
-                    "pre": function (scope) {
-                        scope.widgetProps = WM.copy(widgetProps);
+                    "pre": function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     "post": function (scope, element, attrs, dialogCtrl) {
                         /* handles ok button click*/

@@ -2,13 +2,13 @@
 /* Directive for Container */
 
 WM.module('wm.layouts.containers')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/container.html',
-            '<div page-container init-widget class="app-container" data-ng-show="show" ' + $rootScope.getWidgetStyles('container') + ' wmtransclude page-container-target></div>'
+            '<div page-container init-widget class="app-container" data-ng-show="show" apply-styles="container" wmtransclude page-container-target></div>'
             );
     }])
-    .directive('wmContainer', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
+    .directive('wmContainer', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.container', ['wm.layouts', 'wm.containers', 'wm.base.events.touch']);
 
@@ -30,9 +30,12 @@ WM.module('wm.layouts.containers')
             },
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
+                    'pre': function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     'post': function (scope, element, attrs) {
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);

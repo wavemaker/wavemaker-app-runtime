@@ -2,11 +2,10 @@
 /*Directive for DataNavigator */
 
 WM.module("wm.widgets.basic")
-    .run(["$templateCache", '$rootScope', function ($templateCache, $rootScope) {
+    .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/datanavigator.html",
-            '<nav data-identifier="datanavigator" class="app-datanavigator clearfix" data-ng-show="show" init-widget' +
-                $rootScope.getWidgetStyles() + '>' +
+            '<nav data-identifier="datanavigator" class="app-datanavigator clearfix" data-ng-show="show" init-widget apply-styles>' +
                 '<ul class="pagination pagination-sm">' +
                     '<li data-ng-class="{\'disabled\':isDisableFirst}"><a name="first" href="javascript:void(0);" aria-label="First" data-ng-click="navigatePage(\'first\', $event)"><i class="glyphicon glyphicon-fast-backward"></i></a></li>' +
                     '<li data-ng-class="{\'disabled\':isDisablePrevious}"><a name="prev" href="javascript:void(0);" aria-label="Previous" data-ng-click="navigatePage(\'prev\', $event)"><i class="glyphicon glyphicon-step-backward"></i></a></li>' +

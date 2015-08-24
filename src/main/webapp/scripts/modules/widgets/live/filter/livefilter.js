@@ -1,14 +1,13 @@
-/*global WM, window */
+/*global WM, window, _ */
 
 WM.module('wm.widgets.live')
-    .run(["$templateCache", '$rootScope', function ($templateCache, $rootScope) {
+    .run(["$templateCache", function ($templateCache) {
         "use strict";
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
-            '<div data-identifier="livefilter" class="app-livefilter clearfix" init-widget title="{{hint}}" data-ng-show="show" ' +
-                $rootScope.getWidgetStyles() +
-                '><div data-identifier="filter-elements" ng-transclude></div>' +
-                '<div class="basic-btn-grp form-action clearfix app-button-group" style="text-align: right;"></div>' +
+                '<div data-identifier="livefilter" class="app-livefilter clearfix" init-widget title="{{hint}}" data-ng-show="show" apply-styles>' +
+                    '<div data-identifier="filter-elements" ng-transclude></div>' +
+                    '<div class="basic-btn-grp form-action clearfix app-button-group" style="text-align: right;"></div>' +
                 '</div>'
             );
     }]).directive('wmLivefilter', ['PropertiesFactory',
@@ -227,7 +226,7 @@ WM.module('wm.widgets.live')
                             * This is used by widgets such as dataNavigator.*/
                             WM.forEach(formFields, function (filterField) {
                                 tempObj[filterField.column] = {};
-                                tempObj[filterField.column]['value'] = filterField.value;
+                                tempObj[filterField.column].value = filterField.value;
                             });
                             $scope.result.formFields = tempObj;
                             /*Set the paging options also in the result so that it could be used by the dataNavigator.
@@ -311,12 +310,16 @@ WM.module('wm.widgets.live')
                     tAttr.gridColumnMarkup = filterMarkup;
 
                     return {
-                        pre: function (scope, element) {
+                        pre: function (iScope, element) {
                             var elScope = element.scope();
-                            scope.widgetProps = WM.copy(widgetProps);
-                            scope.filterElement = element;
-                            scope.Variables = elScope.Variables;
-                            scope.Widgets = elScope.Widgets;
+                            if (CONSTANTS.isStudioMode) {
+                                iScope.widgetProps = WM.copy(widgetProps);
+                            } else {
+                                iScope.widgetProps = widgetProps;
+                            }
+                            iScope.filterElement = element;
+                            iScope.Variables = elScope.Variables;
+                            iScope.Widgets = elScope.Widgets;
                         },
                         post: function (scope, element, attrs) {
                             var variableRegex = /^bind:Variables\.(.*)\.dataSet$/,

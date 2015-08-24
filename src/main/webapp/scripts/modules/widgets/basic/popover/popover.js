@@ -1,14 +1,14 @@
-/*global WM */
+/*global WM, document */
 /*jslint sub: true*/
 /*Directive for popover */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
 
         $templateCache.put('template/widget/basic/popover.html',
             '<div init-widget page-container class="app-popover {{showPopover ? \'open\' : \'\'}}" >' +
-                '<a data-identifier="popover" class="app-popover-link" init-widget data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" ' + $rootScope.getWidgetStyles('shell') + ' >' +
+                '<a data-identifier="popover" class="app-popover-link" init-widget data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" apply-styles="shell">' +
                     '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}"  data-ng-show="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +
@@ -112,7 +112,7 @@ WM.module('wm.widgets.basic')
                     var popoverDims = this.getDimensions(this.popover),
                         arrow = this.element.find('.arrow'),
                         placement = this.config.placement,
-                        arrowDims = false ? this.getDimensions(arrow) : {'width' : 0, height : 0},
+                        arrowDims = {'width' : 0, height : 0},
                         documentDims = this.getDimensions(WM.element(document)),
                         targetDims = this.getDimensions(this.element),
                         targetPosition = this.element.position(),

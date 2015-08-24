@@ -1,15 +1,12 @@
 /*global WM, window,confirm */
 
 WM.module('wm.widgets.live')
-    .run(["$templateCache", '$rootScope', function ($templateCache, $rootScope) {
+    .run(["$templateCache", function ($templateCache) {
         "use strict";
 
         $templateCache.put("template/widget/livegrid/livegrid.html",
-            '<div class="app-livegrid" init-widget title="{{hint}}" ' +
-                $rootScope.getWidgetStyles() +
-                ' data-ng-show="show">' +
-                /*TODO To be moved to dataGrid'<wm-spinner show="{{grid.isGridDisabled}}" name="grid-spinner"></wm-spinner>' +*/
-                '<div wmtransclude></div>' +
+                '<div class="app-livegrid" init-widget title="{{hint}}" apply-styles="container" data-ng-show="show">' +
+                    '<div wmtransclude></div>' +
                 '</div>'
             );
     }]).directive('wmLivegrid', ['PropertiesFactory',
@@ -19,7 +16,8 @@ WM.module('wm.widgets.live')
         '$compile',
         '$timeout',
         'Utils',
-        function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils) {
+        'CONSTANTS',
+        function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils, CONSTANTS) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livegrid', ['wm.base']),
                 gridMarkup = '',
@@ -48,8 +46,12 @@ WM.module('wm.widgets.live')
                     tAttr.gridColumnMarkup = gridMarkup;
 
                     return {
-                        pre: function (scope) {
-                            scope.widgetProps = WM.copy(widgetProps);
+                        pre: function (iScope) {
+                            if (CONSTANTS.isStudioMode) {
+                                iScope.widgetProps = WM.copy(widgetProps);
+                            } else {
+                                iScope.widgetProps = widgetProps;
+                            }
                         },
                         post: function (scope, element, attrs) {
                             var handlers = [],

@@ -1,15 +1,15 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/leftpanel.html',
-                '<aside data-role="page-left-panel" page-container init-widget class="app-left-panel" data-ng-class="animation" ' + $rootScope.getWidgetStyles('container') + ' >' +
+                '<aside data-role="page-left-panel" page-container init-widget class="app-left-panel" data-ng-class="animation" apply-styles="container">' +
                     '<div class="app-ng-transclude" wmtransclude page-container-target></div>' +
                 '</aside>'
             );
     }])
-    .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', '$timeout',function (PropertiesFactory, WidgetUtilService, $rootScope, $timeout) {
+    .directive('wmLeftPanel', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', '$timeout', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $rootScope, $timeout, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.leftpanel', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
@@ -54,9 +54,12 @@ WM.module('wm.layouts.page')
             },
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
+                    'pre': function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
 
                     'post': function (scope, element, attrs) {
@@ -103,7 +106,7 @@ WM.module('wm.layouts.page')
                                 //Remove the container class after the animation completion.
                                 $timeout(function () {
                                     appPage.removeClass('slide-in-left-panel-container');
-                                }, 600)
+                                }, 600);
                             }
                         };
                         /* register the property change handler */

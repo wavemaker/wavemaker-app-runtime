@@ -6,55 +6,6 @@ WM.module('wm.widgets.base', [])
     .constant('WIDGET_CONSTANTS', {
         EVENTS_OPTIONS: ["No Event", "Javascript", "New ServiceVariable", "New LiveVariable", "New NavigationCall", "New NotificationCall"]
     })
-    .run(["$rootScope", function ($rootScope) {
-        /*
-         *  Util method to get ng styles for widgets
-         */
-        "use strict";
-        $rootScope.getWidgetStyles = function (type) {
-            return ' data-ng-style="{' +
-                'backgroundColor: backgroundcolor,' +
-                'backgroundGradient: backgroundgradient,' +
-                'backgroundImage :picturesource,' +
-                'backgroundRepeat: backgroundrepeat,' +
-                'backgroundSize: backgroundsize,' +
-                'backgroundPosition: backgroundposition,' +
-                'backgroundAttachment: backgroundattachment,' +
-                'borderBottomWidth: borderbottom + borderunit,' +
-                'borderColor: bordercolor,' +
-                'borderLeftWidth: borderleft + borderunit,' +
-                'borderRadius: borderradius,' +
-                'borderRightWidth: borderright + borderunit,' +
-                'borderStyle: borderstyle,' +
-                'borderTopWidth: bordertop + borderunit,' +
-                'color: color,' +
-                'cursor: cursor,' +
-                'fontFamily: fontfamily,' +
-                'fontSize: fontsize + fontunit,' +
-                'fontStyle: fontstyle,' +
-                'fontVariant: fontvariant,' +
-                'fontWeight: fontweight,' +
-                'lineHeight: lineheight,' +
-                'marginBottom:  marginbottom + marginunit,' +
-                'marginLeft: marginleft + marginunit,' +
-                'marginRight: marginright + marginunit,' +
-                'marginTop: margintop + marginunit,' +
-                'maxWidth: maxwidth,' +
-                'minWidth: minwidth,' +
-                'opacity: opacity,' +
-                ((type === "shell") ? '' : 'height: height, maxHeight: maxheight, minHeight: minheight, overflow: overflow, paddingBottom: paddingbottom + paddingunit, paddingLeft: paddingleft + paddingunit, paddingRight: paddingright + paddingunit, paddingTop: paddingtop + paddingunit,') +
-                ((type === "container") ? 'textAlign: horizontalalign,' : 'textAlign: textalign,') +
-                'textDecoration: textdecoration,' +
-                'verticalAlign: verticalalign,' +
-                'whiteSpace: whitespace,' +
-                'width: width,' +
-                'wordBreak: wordbreak,' +
-                'zIndex: zindex,' +
-                'visibility: visibility,' +
-                'display: display' +
-                '}" ';
-        };
-    }])
 
     /**
      * @ngdoc service
@@ -63,7 +14,7 @@ WM.module('wm.widgets.base', [])
      * The `PropertiesFactory` contains properties of all the widgets in the studio and
      * provides utility methods for getting a specific widget's property
      */
-    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', '$rootScope', function (WIDGET_CONSTANTS, $rootScope) {
+    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', '$rootScope', 'CONSTANTS', function (WIDGET_CONSTANTS, $rootScope, CONSTANTS) {
         "use strict";
         /**
          * TODO: fetch the properties from the config-properties.json
@@ -86,11 +37,11 @@ WM.module('wm.widgets.base', [])
                 'name': 'Large',
                 'value': 'lg'
             }],
-            nameRegex = '^[a-zA-Z_][A-Za-z0-9_]+$',
-            numberRegex = '(^$|[0-9]+$)',
-            classRegex = '(^$|^-?[_a-zA-Z ]+[_a-zA-Z0-9- ]*)$',
+            nameRegex      = '^[a-zA-Z_][A-Za-z0-9_]+$',
+            numberRegex    = '(^$|[0-9]+$)',
+            classRegex     = '(^$|^-?[_a-zA-Z ]+[_a-zA-Z0-9- ]*)$',
             dimensionRegex = '(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)',
-            zindexRegex = '(^$|auto|initial|inherit|^[0-9]+$)',
+            zindexRegex    = '(^$|auto|initial|inherit|^[0-9]+$)',
             roles = ["Everyone"],
             dateOptions = [
                 {
@@ -1537,61 +1488,65 @@ WM.module('wm.widgets.base', [])
                         "rightnav": {"type": "list", "options": [], "widget": "templates-list", value: "_nocontent"},
                         "footer": {"type": "list", "options": [], "widget": "templates-list", value: "_nocontent"}
                     }
-                },
-
-                "propertyGroups": [
-                    {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic"},
-                    {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style"},
-                    {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
-                    {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
-                    {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
-                    {"properties": ["caption", "gridcaption", "title", "heading", "name", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
-                    {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild"], "parent": "properties"},
-                    {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
-                    {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
-                    {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
-                    {"name": "content", "properties": ["content", "url"], "parent": "properties"},
-                    {"name": "display", "properties": ["picturesource", "modal", "vertical", "fileuploadtitle", "fileuploadmessage"], "parent": "properties"},
-                    {"name": "values", "properties": [ "scopedatavalue", "datavalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultvalue", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
-                    {"name": "valuedisplay", "properties": ["places", "datepattern", "ismeridian", "hourstep", "minutestep", "limit"], "parent": "properties"},
-                    {"name": "output", "properties": ["outputformat"], "parent": "properties"},
-                    {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "actions",  "datafield", "itemlabel", "itemicon", "itemlink", "itemchildren", "displayfield", "displayexpression", "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
-                    {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
-                    {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},
-                    {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
-                    {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "novalidate", "maxchars"], "parent": "properties"},
-                    {"name": "help", "properties": ["helptext"], "parent": "properties"},
-                    {"name": "behavior", "properties": ["pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "deletemessage", "ignoreparentreadonly", "readonlygrid",
-                        "multiple", "show", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
-                        "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
-                        "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "captions", "showxaxis", "showyaxis", "showvalues",
-                         "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                          "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype"], "parent": "properties"},
-                    {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "infscroll", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
-                    {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
-                    {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
-                    {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "rows", "columns", "columnwidth", "taborder"], "parent": "properties"},
-                    {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
-                    {"name": "operations", "properties": ["submitbutton", "resetbutton"], "parent": "properties"},
-                    {"properties": [ "class", "menuclass", "listclass", "itemclass", "gridclass",  "theme", "customcolors"], "parent": "styles"},
-                    {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontweight", "fontstyle", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
-                    {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
-                    {"name": "border", "properties": ["bordercolor", "borderstyle", "border", "borderunit"], "parent": "styles"},
-                    {"name": "displaystyle", "properties": ["padding", "paddingunit", "margin", "marginunit", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},
-                    {"name": "prefablifecycleevents", "properties": ["onLoad", "onDestroy"], "parent": "events"},
-                    {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
-                    {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onDayclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
-                    {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
-                    {"name": "touchevents", "properties": ["onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
-                    {"name": "callbackevents", "properties": ["onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect",
-                        "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onActionsclick", "onBeforeSegmentChange", "onSegmentChange"], "parent": "events"},
-                    {"name": "security", "properties": ["accessroles"], "parent": "security"},
-                    {"name": "devicesize", "properties": ["showindevice"], "parent": "mobile"},
-                    {"name": "imageproperties", "properties": [ "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"],"parent": "properties"}
-                ]
+                }
             },
-            properties = result.properties,
-            propertyGroups = result.propertyGroups;
+            properties,
+            propertyGroups;
+
+        if (CONSTANTS.isStudioMode) {
+            result.propertyGroups = [
+                {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic"},
+                {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style"},
+                {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
+                {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
+                {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
+                {"properties": ["caption", "gridcaption", "title", "heading", "name", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild"], "parent": "properties"},
+                {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
+                {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
+                {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
+                {"name": "content", "properties": ["content", "url"], "parent": "properties"},
+                {"name": "display", "properties": ["picturesource", "modal", "vertical", "fileuploadtitle", "fileuploadmessage"], "parent": "properties"},
+                {"name": "values", "properties": [ "scopedatavalue", "datavalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultvalue", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
+                {"name": "valuedisplay", "properties": ["places", "datepattern", "ismeridian", "hourstep", "minutestep", "limit"], "parent": "properties"},
+                {"name": "output", "properties": ["outputformat"], "parent": "properties"},
+                {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "actions",  "datafield", "itemlabel", "itemicon", "itemlink", "itemchildren", "displayfield", "displayexpression", "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype"], "parent": "properties"},
+                {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
+                {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},
+                {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
+                {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "novalidate", "maxchars"], "parent": "properties"},
+                {"name": "help", "properties": ["helptext"], "parent": "properties"},
+                {"name": "behavior", "properties": ["pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "deletemessage", "ignoreparentreadonly", "readonlygrid",
+                    "multiple", "show", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
+                    "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
+                    "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "captions", "showxaxis", "showyaxis", "showvalues",
+                    "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
+                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype"], "parent": "properties"},
+                {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "infscroll", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
+                {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
+                {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
+                {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "rows", "columns", "columnwidth", "taborder"], "parent": "properties"},
+                {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
+                {"name": "operations", "properties": ["submitbutton", "resetbutton"], "parent": "properties"},
+                {"properties": [ "class", "menuclass", "listclass", "itemclass", "gridclass",  "theme", "customcolors"], "parent": "styles"},
+                {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontweight", "fontstyle", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
+                {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
+                {"name": "border", "properties": ["bordercolor", "borderstyle", "border", "borderunit"], "parent": "styles"},
+                {"name": "displaystyle", "properties": ["padding", "paddingunit", "margin", "marginunit", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},
+                {"name": "prefablifecycleevents", "properties": ["onLoad", "onDestroy"], "parent": "events"},
+                {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
+                {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onDayclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
+                {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
+                {"name": "touchevents", "properties": ["onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
+                {"name": "callbackevents", "properties": ["onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect",
+                    "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onActionsclick", "onBeforeSegmentChange", "onSegmentChange"], "parent": "events"},
+                {"name": "security", "properties": ["accessroles"], "parent": "security"},
+                {"name": "devicesize", "properties": ["showindevice"], "parent": "mobile"},
+                {"name": "imageproperties", "properties": [ "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
+            ];
+        }
+        properties = result.properties;
+        propertyGroups = result.propertyGroups;
 
         if ($rootScope.isMobileType) {
             widgetEventOptions.push("New MobileVariable");
@@ -1631,7 +1586,7 @@ WM.module('wm.widgets.base', [])
                     if (!WM.isObject(properties[parent])) {
                         return;
                     }
-                    Object.keys(properties[parent])
+                    _.keys(properties[parent])
                         .forEach(function (propName) {
                             var propObj = properties[parent][propName];
                             if (!widgetProps[propName]) {
@@ -1645,14 +1600,21 @@ WM.module('wm.widgets.base', [])
             }
 
             /* Inject show and disabled fields into each property object */
-            Object.keys(widgetProps)
-                .forEach(function (key) {
-                    var property = widgetProps[key];
-                    if (!property.hasOwnProperty('show')) {
-                        property.show = true;
-                    }
-                    property.disabled = property.disabled || false;
+            if (CONSTANTS.isStudioMode) {
+                _.keys(widgetProps)
+                    .forEach(function (key) {
+                        var property = widgetProps[key];
+                        if (!property.hasOwnProperty('show')) {
+                            property.show = true;
+                        }
+                        property.disabled = property.disabled || false;
+                    });
+            } else {
+                _.keys(widgetProps).forEach(function (propName) {
+                    var propDetails = widgetProps[propName];
+                    widgetProps[propName] = _.pick(propDetails, ['type', 'value', 'bindable', 'displaytype']);
                 });
+            }
 
             return widgetProps;
         }
@@ -1707,13 +1669,13 @@ WM.module('wm.widgets.base', [])
         }
 
         return {
-            getPropertiesOf: getPropertiesOf,
-            getPropertyGroups: getPropertyGroups,
-            getPrimaryPropertyGroups: getPrimaryPropertyGroups,
-            getGroupProperties: getGroupProperties,
-            getPropertyGroup: getPropertyGroup,
-            getRoles: getRoles,
-            setRoles: setRoles
+            getPropertiesOf          : getPropertiesOf,
+            getPropertyGroups        : getPropertyGroups,
+            getPrimaryPropertyGroups : getPrimaryPropertyGroups,
+            getGroupProperties       : getGroupProperties,
+            getPropertyGroup         : getPropertyGroup,
+            getRoles                 : getRoles,
+            setRoles                 : setRoles
         };
     }])
 
@@ -1839,547 +1801,13 @@ WM.module('wm.widgets.base', [])
     })
 
     /**
-    * @ngdoc directive
-     * @name wm.widgets.directive:initWidget
-     * @restrict A
-     * @element ANY
-     * @requires $rootScope
-     * @requires WidgetUtilService
-     * @requires DialogService
-     * @requires Utils
-     * @requires CONSTANTS
-     * @description
-     * This directive is for the widgets.
-     * It sets the default values and values passed as attributes into the isolateScope of the widget.
-     * It triggers the onScopeValueChange function defined on the isolateScope when a scope value changes.
-     * It injects the modelUpdater function when has-model attribute is present on the element.
-     * It emits invokeService event to the rootScope which can used in run mode to invoke a service
-     */
-
-    .directive('initWidget', ['$rootScope', 'WidgetUtilService', 'DialogService', 'Utils', 'CONSTANTS', '$parse', '$timeout', 'DataFormatService', '$animate', '$routeParams', 'BindingManager',
-        function ($rootScope, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, DataFormatService/*Do not remove*/, $animate, $routeParams, BindingManager) {
-            'use strict';
-
-            var sliceFn = Array.prototype.slice;
-
-            function isBooleanAttr(key) {
-                return key === 'readonly' || key === 'autofocus' || key === 'disabled' || key === 'startchecked' || key === 'multiple' || key === 'selected' || key === 'required' || key === 'controls' || key === 'autoplay' || key === 'loop' || key === 'muted';
-            }
-
-            function PropertyManager() {
-                var handlers = {
-                    'change': []
-                };
-
-                this.ACTIONS = {
-                    'CHANGE': 'change'
-                };
-
-                this.add = function (action, handler) {
-                    handlers[action].push(handler);
-                };
-                this.get = function (action) {
-                    return handlers[action];
-                };
-            }
-
-            function handleAppCustomEvent(iScope, scope, isAnchor, $evt, customEvtName) {
-
-                var parts;
-
-                /* For anchor elements suppressing the default action to refresh the page */
-                if (isAnchor) {
-                    $evt.preventDefault();
-                }
-
-                parts = customEvtName.split('.');
-
-                if (parts.length === 2) {
-                    if (parts[1] === 'show') {
-                        // Pass the scope of the controller. if the controller scope is not found, dialog will be compiled with the rootScope.
-                        DialogService.showDialog(parts[0], {scope: scope.ctrlScope || scope});
-                        return;
-                    }
-                    if (parts[1] === 'hide') {
-                        DialogService.hideDialog(parts[0]);
-                        return;
-                    }
-                }
-
-                /* Emit the event in a timeout, so that any variable watching on current widget is updated with its value */
-                $timeout(function () {
-                    $rootScope.$emit('invoke-service', customEvtName, {scope: scope});
-                });
-            }
-
-            if (CONSTANTS.isRunMode) {
-                $rootScope._handleAppCustomEvent = handleAppCustomEvent;
-            }
-
-            function overrideEventHandlers(iScope, scope, element, attrs) {
-
-                Object.keys(iScope.widgetProps)
-                    .filter(function (key) {
-                        return iScope.widgetProps[key].type === 'event';
-                    })
-                    .forEach(function (evt) {
-                        var overrideFlg = false,
-                            fn,
-                            getParentMethod,
-                            eleParent;
-                        if (!attrs[evt]) {
-                            return;
-                        }
-                        if (attrs[evt] === ('goToPage-' + $routeParams.name)) {
-                            element.addClass('active');
-                            if (iScope._widgettype === 'wm-anchor') {
-                                eleParent = element.parent();
-                                if (eleParent && eleParent.hasClass('app-nav-item')) {
-                                    eleParent.addClass('active');
-                                }
-                            }
-                        }
-                        fn = attrs[evt]
-                            .split(";")
-                            .map(function (fnName) {
-                                var trimmedFnName = fnName.trim(),
-                                    isAnchor = false;
-                                if (trimmedFnName.length && fnName.indexOf('(') === -1 && fnName.indexOf('=') === -1) {
-                                    overrideFlg = true;
-
-                                    if (element.is('a')) {
-                                        isAnchor = true;
-                                    }
-                                    return '$root._handleAppCustomEvent(iScope, scope, ' + isAnchor + ', $event, "' + trimmedFnName + '")';
-                                }
-                                return trimmedFnName;
-                            })
-                            .join(';');
-
-                        //override the functions
-                        if (overrideFlg) {
-                            getParentMethod = $parse(fn);
-                            iScope[evt] = function (locals) {
-                                locals = locals || {};
-                                locals.iScope = iScope;
-                                locals.scope = element.scope();
-                                return getParentMethod(scope, locals);
-                            };
-                        }
-                    });
-            }
-
-            function onWatchExprValueChange(iScope, scope, key, watchExpr, newVal) {
-                iScope[key + '__updateFromWatcher'] = true;
-                if (WM.isDefined(newVal) && newVal !== null && newVal !== '') {
-                    /*Check if "newVal" is a Pageable object.*/
-                    if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
-                        /*Check if the scope is configured to accept Pageable objects.
-                         * If configured, set the newVal.
-                         * Else, set only the content.*/
-                        if (iScope.allowPageable) {
-                            iScope[key] = newVal;
-                        } else {
-                            iScope[key] = newVal.content;
-                        }
-                    } else {
-                        iScope[key] = newVal;
-                    }
-                } else {
-                    /*In studio mode, remove ".data[$i]" in the watch-expression so that it is not visible in the canvas.*/
-                    if (CONSTANTS.isStudioMode) {
-                        watchExpr = watchExpr.replace('.data[$i]', '');
-                    }
-                    /*
-                    * Show the binding text
-                    * if the widget is having a widget(i.e, inside canvas)
-                    * OR if the mode is studio and if the widget is inside a partial
-                    * OR if the mode is studio and if the widget is inside a prefab
-                    */
-                    iScope[key] = (iScope.widgetid || (CONSTANTS.isStudioMode && (scope.partialcontainername || scope.prefabname))) ? watchExpr : '';
-                }
-            }
-
-            function binddatavalue_setter(iScope, scope, ws, key, bindKey, val) {
-                var fn = iScope._watchers[key], watchExpr, listenerFn,
-                    acceptedTypes,
-                    acceptsArray;
-
-                ws[bindKey] = val;
-
-                Utils.triggerFn(fn);
-
-                /* if property is bound to a variable/widget, watch on it */
-                if (val) {
-                    watchExpr = val.replace('bind:', '');
-
-                    listenerFn = onWatchExprValueChange.bind(undefined, iScope, scope, key, watchExpr);
-
-                    acceptedTypes = iScope.widgetProps[key].type;
-                    acceptsArray = _.includes(acceptedTypes, 'array');
-
-                    iScope._watchers[key] = BindingManager.register(scope, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': iScope.allowPageable, 'acceptsArray': acceptsArray});
-                } else {
-                    iScope._watchers[key] = undefined;
-                    iScope[key] = '';
-                }
-            }
-
-            function datavalue_setter(iScope, element, attrs, key, bindKey, val) {
-                /* if the property is bound, add watcher on bind-property */
-                var modifiedVal = val, temp;
-
-                if (!iScope[key + '__updateFromWatcher']) {
-                    Utils.triggerFn(iScope._watchers[key]);
-                } else {
-                    iScope[key + '__updateFromWatcher'] = false;
-                }
-
-                if (Utils.stringStartsWith(val, 'bind:')) {
-                    iScope[bindKey] = val;
-                    return;
-                }
-
-                if (element.is('select') && attrs.multiple) {
-                    // convert the comma separated list into array and update _model_
-                    modifiedVal = val.split(',').map(function (opt) {return ('' + opt).trim(); });
-
-                } else if (element.is('input[type="number"]') || element.is('.app-currency') || element.is('.app-slider') || element.is('.app-rating')) {
-                    temp = +val; // convert the value to number and update the scope property
-                    if (isNaN(temp)) {
-                        temp = 0;
-                    }
-                    modifiedVal = temp;
-                } else if (element.is('input[type="checkbox"]')) {
-                    if (!iScope.checkedvalue) {
-                        modifiedVal = val === 'true' || val === true;
-                    }
-                }
-                iScope._model_ = modifiedVal;
-                Utils.triggerFn(iScope._onChange);
-            }
-
-            function bindproperty_setter(iScope, scope, ws, key, bindKey, val) {
-                var fn = iScope._watchers[key], watchExpr, listenerFn,
-                    acceptedTypes,
-                    acceptsArray;
-
-                ws[bindKey] = val;
-                Utils.triggerFn(fn);
-
-                if (val) {
-                    watchExpr = val.replace('bind:', '');
-                    listenerFn = onWatchExprValueChange.bind(undefined, iScope, scope, key, watchExpr);
-
-                    acceptedTypes = iScope.widgetProps[key].type;
-                    acceptsArray = _.includes(acceptedTypes, 'array');
-
-                    iScope._watchers[key] = BindingManager.register(scope, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': iScope.allowPageable, 'acceptsArray': acceptsArray});
-                } else {
-                    iScope._watchers[key] = undefined;
-                    if (key === 'show') {
-                        iScope[key] = true;
-                    } else {
-                        iScope[key] = '';
-                    }
-                }
-            }
-
-            function property_setter(iScope, scope, element, attrs, props, ws, key, bindKey, isBindableProperty, newVal) {
-                var oldVal = ws[key], numVal;
-
-                if (isBindableProperty) {
-                    if (!iScope[key + '__updateFromWatcher']) {
-                        Utils.triggerFn(iScope._watchers[key]);
-                    } else {
-                        iScope[key + '__updateFromWatcher'] = false;
-                    }
-
-                    if (WM.isString(newVal)) {
-                        if (Utils.stringStartsWith(newVal, 'bind:')) {
-                            iScope[bindKey] = newVal;
-                            return;
-                        }
-                    }
-                }
-
-                if (props.type === 'boolean') {
-                    if (isBooleanAttr(key)) {
-                        newVal = newVal === key || newVal === true || newVal === 'true';
-                    } else {
-                        newVal = newVal === true || newVal === 'true';
-                    }
-                } else if (props.type === 'number') {
-                    numVal = +newVal;
-                    if (key === 'fontsize') {
-                        if (WM.isString(newVal) && newVal.trim().length !== 0) {
-                            newVal = numVal;
-                        }
-                    } else {
-                        newVal = +newVal;
-                    }
-                }
-
-                /*When both "oldVal" and "newVal" are objects/arrays, comparison is not done.*/
-                if ((newVal === oldVal) && !(WM.isObject(newVal) && WM.isObject(oldVal))) {
-                    return;
-                }
-
-                /* if the name is changed, update the tree and registry of the Widgets service */
-                if (key === 'name') {
-                    if (attrs.widgetid) { // widget is insde the canvas
-                        $rootScope.$emit('name-change', attrs.widgetid, newVal, oldVal, iScope);
-                    } else if (scope.Widgets) { // widget may be inside canvas inside a page container or in run mode.
-                        scope.Widgets[attrs.name] = iScope;
-                    }
-                }
-
-                ws[key] = newVal;
-
-                WidgetUtilService.onScopeValueChangeProxy(iScope, element, attrs, key, newVal, oldVal);
-            }
-
-            function processEventAttr($is, attrName, attrValue) {
-                var onEvtName = _.camelCase(attrName); /* prepend the event name with "on" eg, 'click' with on --> onClick */
-
-                // save the attrValue in isolateScope. eg, $is.__onClick = "f1();dialog1.show;f2();"
-                $is['__' + onEvtName] = attrValue;
-            }
-
-            function isInterpolated(propValue) {
-                return propValue.charAt(0) === '{' && propValue.charAt(1) === '{';
-            }
-
-            function watchProperty(iScope, attrs, attrName) {
-                attrs.$observe(attrName, function (newValue) {
-                    iScope[attrName] = newValue;
-                });
-            }
-
-            function processAttr(iScope, scope, attrs, widgetProps, attrName, attrValue) {
-                var propValue = attrValue;
-
-                /* monitor only the properties that are defined inside widgetProps and which are not defined in scope {} */
-
-                /*
-                 * if the attribute is inside widget property,
-                 * update the attribute value in _widgetState
-                 * These values will be updated in the scope after the postWidgetCreate */
-                if (widgetProps.hasOwnProperty(attrName)) {
-                    /* class can't have interpolated value.
-                     * As angular will combine the templateEl(eg.<wm-button>) and template(eg. <button>) classes, read the class value from templateEl */
-                    if (attrName === 'class') {
-                        iScope._initState[attrName] = propValue;
-                    } else {
-                        // if the resource to be loaded is from a prefab
-                        if (scope.prefabname && Utils.stringStartsWith(propValue, 'resources/')) {
-                            if (CONSTANTS.isRunMode) {
-                                propValue = './app/prefabs/' + scope.prefabname + '/' + propValue;
-                            } else {
-                                propValue = 'services/prefabs/' + scope.prefabid + '/files/webapp/' + propValue;
-                            }
-                            iScope._initState[attrName] = propValue;
-                        } else {
-                            /* if the value is other than class read it from the attrs, which will have resolved interpolated values */
-                            if (isInterpolated(propValue)) {
-                                watchProperty(iScope, attrs, attrName);
-                            } else {
-                                iScope._initState[attrName] = attrs[attrName];
-                            }
-                        }
-                    }
-                } else {
-                    /* attributes which not part of widgetProps like wigetid, widgettype will be handled here. */
-
-                    if (isInterpolated(propValue)) {
-                        watchProperty(iScope, attrs, attrName);
-                    } else {
-                        iScope[attrName] = attrs[attrName];
-                    }
-                }
-            }
-
-            function processAttrs(iScope, scope, tElement, attrs) {
-                var widgetProps = iScope.widgetProps;
-                sliceFn.call(tElement.context.attributes)
-                    .forEach(function (attr) {
-                        var attrName = attr.name,
-                            attrValue = attr.value.trim(),
-                            attrNameInCamelCase,
-                            fn;
-
-                        if (attrName.indexOf('on-') === 0) {
-                            if (attrs.widgetid) { // widget is inside canvas
-                                processEventAttr(iScope, attrName, attrValue);
-                            } else {
-                                attrNameInCamelCase = Utils.camelCase(attrName);
-                                fn = $parse(attrs[attrNameInCamelCase]);
-                                iScope[attrNameInCamelCase] = function (locals) {
-                                    return fn(scope, locals);
-                                };
-                            }
-
-                        } else {
-                            if (attrs.hasOwnProperty(attrName) && !iScope.$$isolateBindings[attrName]) {
-                                processAttr(iScope, scope, attrs, widgetProps, attrName, attrValue);
-                            }
-                        }
-                    });
-            }
-
-            function deregisterWatchersOniScope(iScope) {
-                Object
-                    .keys(iScope._watchers)
-                    .forEach(function (key) {
-                        Utils.triggerFn(iScope._watchers[key]);
-                    });
-            }
-
-            return {
-                'restrict': 'A',
-                'compile': function (tElement) {
-                    return {
-                        pre: function (tScope, element, attrs) {
-                            var iScope = element.isolateScope(),
-                                hasModel = attrs.hasOwnProperty('hasModel'),
-                                hasDataValue,
-                                isBindableProperty,
-                                datavalue_value,
-                                ws,
-                                scope = element.scope(),
-                                scopeVarName;
-
-                            if (!iScope || !iScope.widgetProps) {
-                                return;
-                            }
-
-                            iScope.propertyManager = new PropertyManager();
-
-                            ws = iScope._widgetState = {};
-                            /* widgetState : private variable to scope. */
-                            iScope._watchers = {};
-
-                            iScope.$on('$destroy', deregisterWatchersOniScope.bind(undefined, iScope));
-                            /*Register a watch on the element for destroy and destroy the scope.
-                            In some cases such as tabs, the tab-content couldn't be destroyed from isolateScope if the parent tabs was destroyed first*/
-                            if (attrs.widgetid) {
-                                element.on('$destroy', iScope.$destroy.bind(iScope));
-                            } else {
-                                iScope._widgettype = tElement.context.tagName.toLowerCase();
-                            }
-                            iScope._initState = {};
-
-                            if (hasModel && !attrs.widgetid) {
-                                scopeVarName = tElement.context.attributes.scopedatavalue;
-                                scopeVarName = scopeVarName && scopeVarName.value;
-                                if (scopeVarName && isInterpolated(scopeVarName)) {
-                                    attrs.$observe('scopedatavalue', function (newValue) {
-                                        WidgetUtilService.injectModelUpdater(element, newValue);
-                                    });
-                                } else {
-                                    WidgetUtilService.injectModelUpdater(element, scopeVarName);
-                                }
-                            }
-
-                            /* initialize setters and getters */
-
-                            if (CONSTANTS.isStudioMode) {
-                                WM.extend(iScope.widgetProps, {'active': {}});
-                            }
-
-                            Object.keys(iScope.widgetProps)
-                                .forEach(function (key) { /* properties supported by widget */
-
-                                    var bindKey,
-                                        props = iScope.widgetProps[key];
-
-                                    if (iScope.$$isolateBindings[key] || props.type === 'event') {
-                                        return;
-                                    }
-
-                                    bindKey = 'bind' + key;
-
-
-                                    /* special case for binding dataValue attribute to _model_ */
-                                    if (hasModel && key === 'datavalue') {
-                                        Object.defineProperty(iScope, bindKey, {
-                                            get: function () {
-                                                return ws[bindKey];
-                                            },
-                                            set: binddatavalue_setter.bind(undefined, iScope, scope, ws, key, bindKey)
-                                        });
-
-                                        Object.defineProperty(iScope, key, {
-                                            get: function () {
-                                                return iScope._model_;
-                                            },
-                                            set: datavalue_setter.bind(undefined, iScope, element, attrs, key, bindKey)
-                                        });
-                                        return;
-                                    }
-
-                                    isBindableProperty = props.bindable === 'in-bound' || props.bindable === 'in-out-bound';
-                                    if (isBindableProperty) {
-                                        Object.defineProperty(iScope, bindKey, {
-                                            get: function () {
-                                                return ws[bindKey];
-                                            },
-                                            set: bindproperty_setter.bind(undefined, iScope, scope, ws, key, bindKey)
-                                        });
-                                    }
-
-                                    Object.defineProperty(iScope, key, {
-                                        get: function () {
-                                            return ws[key];
-                                        },
-                                        set: property_setter.bind(undefined, iScope, scope, element, attrs, props, ws, key, bindKey, isBindableProperty)
-                                    });
-
-                                    /* set the default value */
-                                    if (WM.isDefined(props.value)) {
-                                        iScope._initState[key] = props.value;
-                                    }
-                                });
-
-                            processAttrs(iScope, scope, tElement, attrs);
-
-                            /* remove the datavalue property from scope and store it temporarily, so that all dependencies are intialized first */
-                            if (iScope._initState.hasOwnProperty('datavalue')) {
-                                hasDataValue = true;
-                                datavalue_value = iScope._initState.datavalue;
-                                delete iScope._initState.datavalue;
-                            }
-
-                            Object.keys(iScope._initState)
-                                .forEach(function (key) {
-                                    var value = iScope._initState[key];
-
-                                    // set the value in scope;
-                                    iScope[key] = value;
-                                });
-
-                            /* if element has datavalue, populate it into the isolateScope */
-                            if (hasDataValue) {
-                                iScope.datavalue = datavalue_value;
-                            }
-
-                            if (CONSTANTS.isRunMode) {
-                                overrideEventHandlers(iScope, scope, element, attrs);
-                            }
-                        }
-                    };
-                }
-            };
-        }])
-
-    /**
      * @ngdoc service
      * @name wm.widgets.$WidgetUtilService
      * @description
      * The `WidgetUtilService` provides utility methods for the widgets
      */
-    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache',
-        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache) {
+    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache', '$timeout',
+        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache, $timeout) {
             "use strict";
 
             var deviceSizeArray = {
@@ -2418,14 +1846,23 @@ WM.module('wm.widgets.base', [])
                     'onPinchin':        {'name': 'hm-pinch-in',         'value': 'onPinchin({$event: $event, $scope: this})'},
                     'onPinchout':       {'name': 'hm-pinch-out',        'value': 'onPinchout({$event: $event, $scope: this})'}
                 },
-                triggerFn;
+                triggerFn,
+                cleanUpTimer;
 
-            function cleanupMarkup(element) {
-                var attrsToBeRemoved = "data-ng-style data-ng-change data-ng-click data-ng-dblclick data-ng-mouseout data-ng-mouseover data-ng-blur data-ng-focus" +
-                    " data-ng-show data-ng-hide data-ng-readonly data-ng-disabled data-ng-required data-ng-attr-placeholder ng-attr-name" +
-                    " on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect";
-                element.find('*').removeAttr(attrsToBeRemoved);
-                element.removeAttr(attrsToBeRemoved);
+            function cleanupMarkup() {
+                $timeout.cancel(cleanUpTimer);
+                cleanUpTimer = $timeout(function () {
+                    var attrsToBeRemoved = 'data-ng-style data-ng-change data-ng-click data-ng-dblclick data-ng-mouseout data-ng-mouseover data-ng-blur data-ng-focus' +
+                        ' data-ng-show data-ng-hide data-ng-readonly data-ng-disabled data-ng-required data-ng-attr-placeholder ng-attr-name' +
+                        ' on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect ';
+
+                    attrsToBeRemoved += ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius borderstyle color cursor display fontfamily fontstyle fontvariant fontweight height horizontalalign lineheight maxheight maxwidth minheight minwidth opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility whitespace width wordbreak zindex ';
+                    attrsToBeRemoved += ' bordertop borderright borderbottom borderleft borderunit ' +
+                        'paddingtop paddingright paddingbottom paddingleft paddingunit ' +
+                        'margintop marginright marginbottom marginleft marginunit fontsize fontunit' +
+                        'show hint caption animation backgroundimage';
+                    WM.element(document.body).find('*').removeAttr(attrsToBeRemoved);
+                }, undefined, false);
             }
             function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
                 var variableKeys = [],
@@ -2455,7 +1892,9 @@ WM.module('wm.widgets.base', [])
                 });
                 wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = wp.itemchildren.options = [''].concat(variableKeys);
             }
+
             function onScopeValueChangeProxy(scope, element, attrs, key, newVal, oldVal) {
+
                 if (key === "placeholder" || key === "type") {
                     if (element.is('input') || element.is('textarea')) {
                         attrs.$set(key, newVal);
@@ -2821,7 +2260,7 @@ WM.module('wm.widgets.base', [])
 
                 onScopeValueChangeProxy: onScopeValueChangeProxy,
 
-                updatePropertyPanelOptions:updatePropertyPanelOptions,
+                updatePropertyPanelOptions: updatePropertyPanelOptions,
 
                 extractDataSetFields: extractDataSetFields,
 
@@ -2873,6 +2312,129 @@ WM.module('wm.widgets.base', [])
                 getEvaluatedData: getEvaluatedData
             };
         }])
+    .directive('applyStyles', [
+        'WidgetUtilService',
+
+        function (WidgetUtilService) {
+            'use strict';
+
+            var notifyFor = {},
+
+                propNameCSSKeyMap = {
+                    'backgroundattachment'  : 'backgroundAttachment',
+                    'backgroundcolor'       : 'backgroundColor',
+                    'backgroundgradient'    : 'backgroundGradient',
+                    'backgroundposition'    : 'backgroundPosition',
+                    'backgroundrepeat'      : 'backgroundRepeat',
+                    'backgroundsize'        : 'backgroundSize',
+                    'bordercolor'           : 'borderColor',
+                    'borderradius'          : 'borderRadius',
+                    'borderstyle'           : 'borderStyle',
+                    'color'                 : 'color',
+                    'cursor'                : 'cursor',
+                    'display'               : 'display',
+                    'fontfamily'            : 'fontFamily',
+                    'fontstyle'             : 'fontStyle',
+                    'fontvariant'           : 'fontVariant',
+                    'fontweight'            : 'fontWeight',
+                    'height'                : 'height',
+                    'horizontalalign'       : 'textAlign',
+                    'lineheight'            : 'lineHeight',
+                    'maxheight'             : 'maxHeight',
+                    'maxwidth'              : 'maxWidth',
+                    'minheight'             : 'minHeight',
+                    'minwidth'              : 'minWidth',
+                    'opacity'               : 'opacity',
+                    'overflow'              : 'overflow',
+                    'paddingbottom'         : 'paddingBottom',
+                    'paddingleft'           : 'paddingLeft',
+                    'paddingright'          : 'paddingRight',
+                    'paddingtop'            : 'paddingTop',
+                    'picturesource'         : 'backgroundImage',
+                    'textalign'             : 'textAlign',
+                    'textdecoration'        : 'textDecoration',
+                    'verticalalign'         : 'verticalAlign',
+                    'visibility'            : 'visibility',
+                    'whitespace'            : 'whiteSpace',
+                    'width'                 : 'width',
+                    'wordbreak'             : 'wordbreak',
+                    'zindex'                : 'zIndex'
+                },
+                SHELL_TYPE_IGNORE_LIST = 'height minheight maxheight overflow paddingunit paddingtop paddingright paddingbottom paddingleft',
+                CONTAINER_TYPE_IGNORE_LIST = 'horizontalalign textalign';
+
+            _.keys(propNameCSSKeyMap)
+                .concat(SHELL_TYPE_IGNORE_LIST.split(' '))
+                .concat(CONTAINER_TYPE_IGNORE_LIST.split(' '))
+                .forEach(function (propName) {
+                    notifyFor[propName] = true;
+                });
+
+            notifyFor.fontsize = true;
+            notifyFor.fontunit = true;
+            notifyFor.backgroundimage = true;
+
+            function setDimensionProp($is, cssObj, key) {
+                var prefix,
+                    suffix,
+                    unit;
+
+                prefix = prefix || (_.startsWith(key, 'border') && 'border');
+                suffix = prefix ? 'Width' : '';
+                prefix = prefix || (_.startsWith(key, 'margin') && 'margin');
+                prefix = prefix || (_.startsWith(key, 'padding') && 'padding');
+
+                if (!prefix) {
+                    return;
+                }
+
+                unit = $is[prefix + 'unit'];
+
+                cssObj[prefix + 'Top' + suffix]    = $is[prefix + 'top']    + unit;
+                cssObj[prefix + 'Right' + suffix]  = $is[prefix + 'right']  + unit;
+                cssObj[prefix + 'Bottom' + suffix] = $is[prefix + 'bottom'] + unit;
+                cssObj[prefix + 'Left' + suffix]   = $is[prefix + 'left']   + unit;
+            }
+
+            function applyCSS($is, $el, applyType, key, nv) {
+
+                var obj = {},
+                    cssName = propNameCSSKeyMap[key];
+
+                if (applyType === 'shell' && _.includes(SHELL_TYPE_IGNORE_LIST, key)) {
+                    return;
+                }
+
+                if (applyType === 'container' && _.includes(CONTAINER_TYPE_IGNORE_LIST, key)) {
+                    return;
+                }
+
+                if (cssName) {
+                    obj[cssName] = nv;
+                } else if (key === 'fontsize' || key === 'fontunit') {
+                    obj.fontSize = $is.fontsize === '' ? '' : $is.fontsize + $is.fontunit;
+                } else if (key === 'backgroundimage') {
+                    obj.backgroundImage = $is.picturesource;
+                } else {
+                    setDimensionProp($is, obj, key);
+                }
+
+                if (_.keys(obj).length) {
+                    $el.css(obj);
+                }
+            }
+
+            function onCSSPropertyChange($is, $el, attrs, key, nv) {
+                applyCSS($is, $el, attrs.applyStyles, key, nv);
+            }
+
+            return {
+                'link': function ($is, $el, attrs) {
+                    WidgetUtilService.registerPropertyChangeListener(onCSSPropertyChange.bind(undefined, $is, $el, attrs), $is, notifyFor);
+                }
+            };
+        }
+    ])
 
     /**
      * @ngdoc service
@@ -3109,104 +2671,4 @@ WM.module('wm.widgets.base', [])
             });
 
             return returnObj;
-        }])
-
-    .service('BindingManager', [
-        'Utils',
-        'CONSTANTS',
-
-        function (Utils, CONSTANTS) {
-            'use strict';
-
-            var regex = /\[\$i\]/g,
-                $I = '[$i]',
-                $0 = '[0]';
-
-            function isArrayTypeExpr(expr) {
-                var matchers = expr.match(regex); // check for `[$i]` in the expression
-                return matchers && matchers.length;
-            }
-
-            function arrayConsumer(listenerFn, allowPageable, restExpr, newVal, oldVal) {
-                var data = newVal,
-                    formattedData;
-                /*Check if "newVal" is a Pageable object.*/
-                if (WM.isObject(data) && Utils.isPageable(data) && !allowPageable) {
-                    /*Check if the scope is configured to accept Pageable objects.
-                     * If configured, set the newVal.
-                     * Else, set only the content.*/
-                    data = data.content;
-                }
-
-                if (WM.isArray(data)) {
-                    formattedData = data.map(function (datum) {
-                        return Utils.findValueOf(datum, restExpr);
-                    });
-
-                    listenerFn(formattedData, oldVal);
-                }
-            }
-
-            function getUpdatedWatchExpr(expr, acceptsArray, allowPageable, listener) {
-                // listener doesn't accept array
-                // replace all `[$i]` with `[0]` and return the expression
-                if (!acceptsArray) {
-                    return {
-                        'expr': expr.replace(regex, $0),
-                        'listener': listener
-                    };
-                }
-
-                // listener accepts array
-                // replace all except the last `[$i]` with `[0]` and return the expression.
-                var index = expr.lastIndexOf($I),
-                    _expr = expr.substr(0, index).replace($I, $0),
-                    restExpr = expr.substr(index + 5),
-                    arrayConsumerFn = listener;
-
-                if (restExpr) {
-                    arrayConsumerFn = arrayConsumer.bind(undefined, listener, allowPageable, restExpr);
-                }
-
-                return {
-                    'expr': _expr,
-                    'listener': arrayConsumerFn
-                };
-            }
-
-            /*
-             * scope: scope on which watch needs to be registered.
-             * watchExpr: watch expression
-             * listenerFn: callback function to be triggered when the watch expression value changes
-             * config: Object containing deepWatch, allowPageable, acceptsArray keys
-             * deepWatch: if this flag is true a deep watch will be registered in the scope
-             * allowPageable: is the data pageable
-             * acceptsArray: bound entity accepts array like values
-             */
-            function register(scope, watchExpr, listenerFn, config) {
-                var watchInfo, _config = config || {},
-                    deepWatch = _config.deepWatch,
-                    allowPageable = _config.allowPageable,
-                    acceptsArray = _config.acceptsArray;
-
-                if (isArrayTypeExpr(watchExpr)) {
-                    if (CONSTANTS.isStudioMode) {
-                        listenerFn();
-                        return;
-                    }
-
-                    watchExpr = watchExpr.replace('.dataSet[$i]', '.dataSet.content[$i]');
-                    watchInfo = getUpdatedWatchExpr(watchExpr, acceptsArray, allowPageable, listenerFn);
-                } else {
-                    watchInfo = {
-                        'expr': watchExpr,
-                        'listener': listenerFn
-                    };
-                }
-
-                return scope.$watch(watchInfo.expr, watchInfo.listener, deepWatch);
-            }
-
-            this.register = register;
-        }
-    ]);
+        }]);

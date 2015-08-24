@@ -1,11 +1,11 @@
-/*global WM */
+/*global WM, moment */
 /*Directive for datetime */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/datetime.html',
-            '<div class="app-datetime input-group" init-widget has-model ' + $rootScope.getWidgetStyles() +
+            '<div class="app-datetime input-group" init-widget has-model apply-styles ' +
             ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox display-input" data-ng-model="_displayModel">' +
                 '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" data-ng-model="_dateModel" datepicker-popup={{datepattern}} min-date=mindate max-date=maxdate is-open="isDateOpen">' +

@@ -1,10 +1,10 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/content.html',
-                '<main  data-role="page-content" init-widget class="app-content clearfix" ' + $rootScope.getWidgetStyles() + ' >' +
+                '<main  data-role="page-content" init-widget class="app-content clearfix" apply-styles>' +
                     '<div class="row app-content-row clearfix" wmtransclude>' + '</div>' +
                 '</main>'
             );

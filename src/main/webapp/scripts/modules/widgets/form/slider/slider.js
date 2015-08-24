@@ -2,19 +2,18 @@
 /*Directive for slider */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/slider.html',
-                   '<div class="app-slider slider" init-widget has-model data-ng-show="show" title="{{hint}}"'
-                   + $rootScope.getWidgetStyles() +
-                   '><span class="app-slider-value">{{minvalue}}</span>' +
-                   '<span class="app-slider-value pull-right">{{maxvalue}}</span>' +
-                   '<input class="range-input" type="range" title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
+                '<div class="app-slider slider" init-widget has-model data-ng-show="show" title="{{hint}}" apply-styles>' +
+                    '<span class="app-slider-value">{{minvalue}}</span>' +
+                    '<span class="app-slider-value pull-right">{{maxvalue}}</span>' +
+                    '<input class="range-input" type="range" title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
                        ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                        ' data-ng-disabled="disabled"' +
                        ' data-ng-change="_onChange({$event: $event, $scope: this})" />' + /* private method defined in this scope */
                     '<div data-ng-show="readonly || disabled" class="readonly-wrapper"></div>' +
-                   '</div>'
+                '</div>'
             );
     }])
     .directive('wmSlider', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {

@@ -2,18 +2,16 @@
 /*Directive for Textarea */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/textarea.html',
-                '<textarea init-widget has-model class="form-control app-textarea" ' +
+                '<textarea init-widget has-model class="form-control app-textarea" apply-styles' +
                     ' data-ng-model="_model_" title="{{hint}}"' +
                     ' data-ng-show = "show" ' +
                     ' data-ng-disabled="disabled" ' +
                     ' data-ng-readonly="readonly"' +
                     ' data-ng-required="required" ' +
-                    ' data-ng-change="_onChange({$event: $event, $scope: this})" ' +
-                    $rootScope.getWidgetStyles() +
-                    ' >' +
+                    ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</textarea>'
             );
     }])

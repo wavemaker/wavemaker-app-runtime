@@ -4,13 +4,12 @@
 WM.module('wm.widgets.advanced')
     .run([
         '$templateCache',
-        '$rootScope',
 
-        function ($tc, $rs) {
+        function ($tc) {
             'use strict';
 
             $tc.put('template/widget/advanced/camera.html',
-                    '<button data-ng-model="_model_" data-ng-show="show" init-widget has-model' + $rs.getWidgetStyles() + ' title="{{hint}}" data-ng-click="openCamera()" >' +
+                    '<button data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openCamera()" >' +
                         '<i class="{{iconclass}}" data-ng-style="{\'font-size\':iconsize}"></i> ' +
                         '<span class="btn-caption"></span>' +
                     '</button>'

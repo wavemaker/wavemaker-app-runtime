@@ -2,12 +2,11 @@
 /*Directive for menu */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
                 '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown >' +
-                    '<button class="btn app-button dropdown-toggle {{menuclass}}" dropdown-toggle' +
-                        $rootScope.getWidgetStyles() +
+                    '<button class="btn app-button dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles' +
                         '><i class="{{iconclass}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
@@ -18,7 +17,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/anchormenu.html',
                 '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown>' +
-                    '<a class="app-anchor dropdown-toggle {{menuclass}}" dropdown-toggle' + $rootScope.getWidgetStyles() + '><i class="{{iconclass}}"></i>' +
+                    '<a class="app-anchor dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles><i class="{{iconclass}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
@@ -27,8 +26,8 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',
-            '<ul class="dropdown-menu {{menualign}}">' +
-            '<wm-menu-dropdown-item data-ng-repeat="item in items" linktarget="linktarget" item="item" menualign="menualign"/>' +
+                '<ul class="dropdown-menu {{menualign}}">' +
+                    '<wm-menu-dropdown-item data-ng-repeat="item in items" linktarget="linktarget" item="item" menualign="menualign"/>' +
                 '</ul>'
             );
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
@@ -159,7 +158,7 @@ WM.module('wm.widgets.form')
             'transclude': true,
             'compile': function (tElement) {
                 return {
-                    'pre': function (scope, element, attrs) {
+                    'pre': function (iScope, element, attrs) {
                         //@Deprecated iconname; use iconclass instead
                         if (!attrs.iconclass && attrs.iconname) {
                             WM.element(tElement.context).attr('iconclass', 'glyphicon glyphicon-' + attrs.iconname);
@@ -179,7 +178,11 @@ WM.module('wm.widgets.form')
                                 attrs.menuposition = POSITION.DOWN_LEFT;
                             }
                         }
-                        scope.widgetProps = WM.copy(widgetProps);
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     'post': function (scope, element, attrs) {
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);

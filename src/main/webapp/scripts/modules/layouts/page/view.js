@@ -1,10 +1,10 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/view.html',
-                '<div init-widget class="app-view" data-ng-show="show" ' + $rootScope.getWidgetStyles('container') + ' wmtransclude wm-navigable-element="true"> </div>'
+                '<div init-widget class="app-view" data-ng-show="show" apply-styles="container" wmtransclude wm-navigable-element="true"> </div>'
             );
     }])
     .directive('wmView', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'ViewService', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, ViewService, Utils) {

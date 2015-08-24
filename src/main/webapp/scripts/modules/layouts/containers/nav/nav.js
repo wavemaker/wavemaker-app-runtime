@@ -141,15 +141,13 @@ WM.module('wm.layouts.containers')
                 'scopedataset': '=?'
             },
             'transclude': true,
-            'template': '<ul class="nav app-nav" ' +
-                        ' data-ng-class="{\'nav-pills\': type == \'pills\',' +
+            'template': '<ul class="nav app-nav" data-ng-show="show" apply-styles="container" data-element-type="wmNav" wmtransclude init-widget ' +
+                            'data-ng-class="{\'nav-pills\': type == \'pills\',' +
                                          '\'nav-tabs\': type == \'tabs\',' +
                                          '\'navbar-nav\': type == \'navbar\',' +
                                          '\'nav-stacked\': layout == \'stacked\',' +
                                          '\'nav-justified\': layout == \'justified\'' +
-                        '}" ' +
-                        'data-ng-show="show"' + $rootScope.getWidgetStyles('container') +
-                        'data-element-type="wmNav" wmtransclude init-widget></ul>',
+                            '}"></ul>',
             'compile': function () {
                 return {
                     'pre': function (scope) {
@@ -176,7 +174,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmNavItem', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', '$routeParams', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $rootScope, $routeParams, CONSTANTS) {
+    .directive('wmNavItem', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navitem', ['wm.layouts']);
 
@@ -185,7 +183,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<li init-widget class="app-nav-item"' + $rootScope.getWidgetStyles('container') + ' wmtransclude></li>',
+            'template': '<li init-widget class="app-nav-item" apply-styles="container" wmtransclude></li>',
             'compile': function () {
                 return {
                     'pre': function (scope) {

@@ -2,10 +2,10 @@
 /*Directive for Text */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/text.html',
-            '<input class="form-control app-textbox" init-widget has-model' +
+            '<input class="form-control app-textbox" init-widget has-model apply-styles' +
                 ' title="{{hint}}" ' +
                 ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' data-ng-readonly="readonly" ' +
@@ -13,13 +13,11 @@ WM.module('wm.widgets.form')
                 ' data-ng-disabled="disabled" ' +
                 ' data-ng-show="show" ' +
                 ' pattern="{{regexp}}"' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + /* private method defined in this scope */
-                $rootScope.getWidgetStyles() +
-                ' >' +
+                ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</input>'
             );
     }])
-    .directive('wmText', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmText', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.text', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
             notifyFor = {
@@ -69,8 +67,12 @@ WM.module('wm.widgets.form')
             },
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        scope.widgetProps = WM.copy(widgetProps);
+                    'pre': function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     'post': function (scope, element, attrs) {
 

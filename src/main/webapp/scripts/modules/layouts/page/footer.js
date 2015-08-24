@@ -1,10 +1,10 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/footer.html',
-                '<footer data-role="page-footer" page-container page-container-target init-widget class="app-footer clearfix"' + $rootScope.getWidgetStyles('container') + ' wmtransclude></footer>'
+                '<footer data-role="page-footer" page-container page-container-target init-widget class="app-footer clearfix" apply-styles="container" wmtransclude></footer>'
             );
     }])
     .directive('wmFooter', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
@@ -19,10 +19,11 @@ WM.module('wm.layouts.page')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/footer.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope, element) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
-                        if (CONSTANTS.isRunMode) {
+                    'pre': function (iScope, element) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
                             // this flag is used to change the layout of the mobile view accordingly
                             element.scope().layout.footer = true;
                         }

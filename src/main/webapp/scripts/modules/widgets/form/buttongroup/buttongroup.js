@@ -2,12 +2,10 @@
 /*Directive for button group */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/button-group.html',
-                '<div class="btn-group app-button-group" wmtransclude init-widget data-ng-class=\'{"btn-group-vertical": vertical}\'' +
-                $rootScope.getWidgetStyles('container') +
-                ' title="{{hint}}" data-ng-show="show"></div>'
+                '<div class="btn-group app-button-group" wmtransclude init-widget data-ng-class=\'{"btn-group-vertical": vertical}\' apply-styles="container" title="{{hint}}" data-ng-show="show"></div>'
             );
     }])
     .directive('wmButtongroup', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($templateCache, PropertiesFactory, WidgetUtilService) {

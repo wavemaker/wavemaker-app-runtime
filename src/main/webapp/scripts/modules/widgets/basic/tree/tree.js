@@ -8,8 +8,9 @@ WM.module('wm.widgets.basic')
         'WidgetUtilService',
         '$timeout',
         'Utils',
+        'CONSTANTS',
 
-        function (PropertiesFactory, $rootScope, WidgetUtilService, $timeout, Utils) {
+        function (PropertiesFactory, $rootScope, WidgetUtilService, $timeout, Utils, CONSTANTS) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.tree', ['wm.base', 'wm.base.editors']),
@@ -204,12 +205,16 @@ WM.module('wm.widgets.basic')
                     'scopedataset': '=?',
                     'onSelect': '&'
                 },
-                'template': '<div class="app-tree" init-widget ' + $rootScope.getWidgetStyles('container') + ' data-ng-show="show"></div>',
+                'template': '<div class="app-tree" init-widget apply-styles="container" data-ng-show="show"></div>',
                 'replace': true,
                 'compile': function () {
                     return {
-                        'pre': function (scope) {
-                            scope.widgetProps = WM.copy(widgetProps);
+                        'pre': function (iScope) {
+                            if (CONSTANTS.isStudioMode) {
+                                iScope.widgetProps = WM.copy(widgetProps);
+                            } else {
+                                iScope.widgetProps = widgetProps;
+                            }
                         },
                         'post': function (scope, element, attrs) {
 

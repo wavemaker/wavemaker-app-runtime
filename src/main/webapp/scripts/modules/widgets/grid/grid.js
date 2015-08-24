@@ -172,8 +172,7 @@ WM.module('wm.widgets.grid')
             "template": function (element) {
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
-                return '<div data-identifier="grid" init-widget data-ng-show="show" title="{{hint}}" class="app-grid"' +
-                    $rootScope.getWidgetStyles('shell') + '>' +
+                return '<div data-identifier="grid" init-widget data-ng-show="show" title="{{hint}}" class="app-grid" apply-styles="shell">' +
                     '<div class="app-datagrid"></div>' +
                     '<div class="table-footer well well-sm clearfix" ng-show="shownavigation || actions.length">' +
                         '<div class="app-datagrid-paginator pull-left">' +
@@ -215,20 +214,24 @@ WM.module('wm.widgets.grid')
                     window[tAttr.name + 'Controller'] = WM.noop;
                 }
                 return {
-                    'pre': function (scope, element) {
-                        scope.widgetProps = WM.copy(widgetProps);
+                    'pre': function (iScope, element) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                         /*Set the "allowPageable" flag in the scope to indicate that the grid accepts Pageable objects.*/
-                        scope.allowPageable = true;
+                        iScope.allowPageable = true;
 
                         /*This is to make the "Variables" & "Widgets" available in the Grid scope.
                          * and "Variables", "Widgets" will not be available in that scope.
                          * element.scope() might refer to the controller scope/parent scope.*/
                         var elScope = element.scope();
-                        scope.Variables = elScope.Variables;
-                        scope.Widgets = elScope.Widgets;
+                        iScope.Variables = elScope.Variables;
+                        iScope.Widgets = elScope.Widgets;
 
 
-                        Object.defineProperty(scope, 'selecteditem', {
+                        Object.defineProperty(iScope, 'selecteditem', {
                             configurable: true
                         });
                     },

@@ -2,15 +2,14 @@
 /*Directive for checkboxset */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/checkboxset.html',
-            '<ul class="app-checkboxset list-group {{layout}}" init-widget has-model' +
+            '<ul class="app-checkboxset list-group {{layout}}" init-widget has-model apply-styles' +
                 ' title="{{hint}}" ' +
                 ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' data-ng-show="show" ' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})"' + /* private method defined in this scope */
-                $rootScope.getWidgetStyles() + ' >' +
+                ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</ul>'
             );
     }])
@@ -18,12 +17,12 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkboxset', ['wm.base', 'wm.booleaneditors']),
             notifyFor = {
-                'dataset': true,
-                'displayfield': true,
-                'datafield': true,
-                'usekeys': true,
+                'dataset'       : true,
+                'displayfield'  : true,
+                'datafield'     : true,
+                'usekeys'       : true,
                 'selectedvalues': true,
-                'disabled': true
+                'disabled'      : true
             };
 
 
@@ -58,7 +57,6 @@ WM.module('wm.widgets.form')
             var data = dataSet,
                 parsedData,
                 dataField = changedDataField,
-                nullKey = '',
                 objectKeys = [],
                 displayField = getDisplayField(dataSet, changedDisplayField),
                 showAllKeys = CONSTANTS.isStudioMode && element.attr('data-identifier') === 'chart-columns';
@@ -234,7 +232,7 @@ WM.module('wm.widgets.form')
                     '<li class="checkbox app-checkbox">' +
                     '<label class="app-checkboxset-label" data-ng-class="{\'disabled\':disabled, \'unchecked\': !valueInModel(_model_, dataObject[' + "'" + dataKey + "'" + '])}" title="' + dataKey + '">' +
                             '<input type="checkbox" ' + (scope.disabled ? ' disabled="disabled" ' : '') +  ' value="' + dataKey + '" data-ng-checked="_model_.indexOf(' + "'" + dataKey + "'" + ') !== -1 || _model_ === ' + "'" + dataKey + "'" + ' || valueInModel(_model_, dataObject[' + "'" + dataKey + "'" + '])"/>' +
-                         '<span class="caption">'+ dataKey + '</span><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/></label>' +
+                         '<span class="caption">' + dataKey + '</span><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/></label>' +
                     '</li>';
             });
             /*Holder for the model for submitting values in a form and a wrapper to for readonly mode*/
@@ -346,9 +344,12 @@ WM.module('wm.widgets.form')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/checkboxset.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
+                    'pre': function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     'post': function (scope, element, attrs) {
 
@@ -368,7 +369,7 @@ WM.module('wm.widgets.form')
                                     /*generating the radioset based on the values provided*/
                                     constructCheckboxSet(scope, element, scope.scopedataset);
                                 }
-                            });
+                            }, true);
                         }
 
                         /* checks if the given value object is in the given model */

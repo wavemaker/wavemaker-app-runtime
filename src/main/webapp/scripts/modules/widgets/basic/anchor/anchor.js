@@ -2,16 +2,16 @@
 /*Directive for anchor */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/anchor.html',
-            '<a data-identifier="anchor" class="app-anchor" init-widget data-ng-show="show" title="{{hint}}" ' +
-                $rootScope.getWidgetStyles() + '>' +
-                '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}"  data-ng-show="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
-                '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
-                '<span class="anchor-caption"></span>' +
-                '<span data-ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
-                '</a>');
+                '<a data-identifier="anchor" class="app-anchor" init-widget data-ng-show="show" title="{{hint}}" apply-styles>' +
+                    '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}"  data-ng-show="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                    '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
+                    '<span class="anchor-caption"></span>' +
+                    '<span data-ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
+                '</a>'
+            );
 
     }]).directive('wmAnchor', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $sce, Utils, CONSTANTS) {
         'use strict';

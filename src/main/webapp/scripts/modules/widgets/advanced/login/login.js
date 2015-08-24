@@ -3,10 +3,10 @@
 /*Directive for login-from */
 
 WM.module("wm.widgets.advanced")
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/advanced/login.html",
-            '<div init-widget class="app-login" data-ng-show="show"' + $rootScope.getWidgetStyles("container") + ' >' +
+            '<div init-widget class="app-login" data-ng-show="show" apply-styles="container">' +
                 '<wm-message scopedataset="loginMessage" class="app-login-message"></wm-message>' +
                 '<form autocomplete="off" class="app-form app-login-form" method="post" wmtransclude>' +
                 '</form>' +

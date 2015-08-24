@@ -5,11 +5,18 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/confirmdialog.html",
-            '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget data-ng-show="show"  data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
-                '<wm-dialogheader caption={{title}} iconclass="{{iconclass}}" iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
-                '<div class="app-dialog-body modal-body"  data-ng-style="{height:bodyHeight}"><p class="app-dialog-message {{messageclass}}"> {{message}}</p></div>' +
-                '<div class="app-dialog-footer modal-footer"><wm-button class="btn-secondary" caption={{canceltext}} on-click="cancelButtonHandler()"></wm-button><wm-button  class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button></div>' +
-                ' </div></div>'
+                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}">' +
+                    '<div class="modal-content">' +
+                        '<wm-dialogheader caption={{title}} iconclass="{{iconclass}}" iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
+                        '<div class="app-dialog-body modal-body" data-ng-style="{height:bodyHeight}">' +
+                            '<p class="app-dialog-message {{messageclass}}"> {{message}}</p>' +
+                        '</div>' +
+                        '<div class="app-dialog-footer modal-footer">' +
+                            '<wm-button class="btn-secondary" caption={{canceltext}} on-click="cancelButtonHandler()"></wm-button>' +
+                            '<wm-button class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
             );
     }]).directive('wmConfirmdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window) {
         'use strict';
@@ -94,14 +101,19 @@ WM.module('wm.widgets.dialog')
             },
             "compile": function () {
                 return {
-                    "pre": function (scope, element, attrs) {
-                        scope.widgetProps = WM.copy(widgetProps);
+                    "pre": function (iScope, element, attrs) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
 
-                        /* for the notification-confirm dialogs do not allow the user to edit the properties other than class */
+                        /* for the notification-alert dialogs do not allow the user to edit the properties other than class */
                         if (attrs.widgetid && attrs.notificationdialog) { //widget is in canvas
-                            _.forEach(Object.keys(scope.widgetProps), function (propName) {
-                                if (propName !== "class") {
-                                    scope.widgetProps[propName].disabled = true;
+                            var wp = iScope.widgetProps;
+                            _.keys(wp).forEach(function (propName) {
+                                if (propName !== 'class') {
+                                    wp[propName].disabled = true;
                                 }
                             });
                         }

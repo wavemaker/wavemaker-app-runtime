@@ -3,7 +3,7 @@
 /*Directive for Layout Grid */
 
 WM.module('wm.layouts.containers')
-    .directive('wmLayoutgrid', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
+    .directive('wmLayoutgrid', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         function refactorClassName(element, newClass) {
             var classArray = element.attr('class').split(' ');
@@ -86,7 +86,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<div init-widget class="app-grid-layout clearfix" ' + $rootScope.getWidgetStyles("container") + ' wmtransclude></div>',
+            'template': '<div init-widget class="app-grid-layout clearfix" apply-styles="container" wmtransclude></div>',
             'compile': function () {
                 return {
                     'pre': function (scope) {
@@ -112,7 +112,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmGridrow', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
+    .directive('wmGridrow', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.gridrow', ['wm.layouts']),
@@ -132,7 +132,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<div init-widget data-ng-class="show"  class="app-grid-row clearfix"' + $rootScope.getWidgetStyles("container") + ' wmtransclude></div>',
+            'template': '<div init-widget data-ng-class="show" class="app-grid-row clearfix" apply-styles="container" wmtransclude></div>',
             'compile': function () {
                 return {
                     'pre': function (scope) {
@@ -148,7 +148,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmGridcolumn', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
+    .directive('wmGridcolumn', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.gridcolumn', ['wm.layouts']),
@@ -181,7 +181,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<div init-widget data-ng-class="show" class="app-grid-column"' + $rootScope.getWidgetStyles("container") + '><div class="app-ng-transclude" wmtransclude></div></div>',
+            'template': '<div init-widget data-ng-class="show" class="app-grid-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>',
             'compile': function () {
                 return {
                     'pre': function (scope, element, attrs) {

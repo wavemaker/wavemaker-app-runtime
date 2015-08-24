@@ -1,10 +1,10 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/column.html',
-                '<div init-widget class="app-column" ' + $rootScope.getWidgetStyles('container') + ' ><div class="app-ng-transclude" wmtransclude></div></div>'
+                '<div init-widget class="app-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
             );
     }])
     .directive('wmColumn', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {

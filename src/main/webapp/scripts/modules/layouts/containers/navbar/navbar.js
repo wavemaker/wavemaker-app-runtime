@@ -2,7 +2,7 @@
 /*Directive for Navbar*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmNavbar', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', 'Utils', function (PropertiesFactory, WidgetUtilService, $rootScope, Utils) {
+    .directive('wmNavbar', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navbar', ['wm.layouts']),
             notifyFor = {
@@ -23,7 +23,7 @@ WM.module('wm.layouts.containers')
             'scope': {},
             'transclude': true,
             'template':
-                '<nav class="navbar navbar-default app-navbar" data-ng-show="show" ' + $rootScope.getWidgetStyles('container') + 'data-element-type="wmNavbar"  init-widget has-model >' +
+                '<nav class="navbar navbar-default app-navbar" data-ng-show="show" apply-styles="container" data-element-type="wmNavbar"  init-widget has-model >' +
                     '<div class="container-fluid">' +
                     /* Brand and toggle get grouped for better mobile display */
                         '<div class="navbar-header"> ' +

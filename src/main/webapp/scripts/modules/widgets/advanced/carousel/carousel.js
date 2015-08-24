@@ -2,41 +2,42 @@
 /*jslint todo: true */
 /*Directive for carousel */
 WM.module('wm.widgets.advanced')
-    .run(['$rootScope', '$templateCache', function ($rootScope, $templateCache) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/advanced/carousel/carousel.html',
-                            '<div init-widget class="app-carousel carousel slide" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' >' +
-                                '<ol class="carousel-indicators">' +
-                                    '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': activeIndex === $index}" data-ng-click="goTo($index)"></li>' +
-                                '</ol>' +
-                                '<div class="carousel-inner" wmtransclude>' +
-                                '</div>' +
-                                '<a class="left carousel-control" data-ng-click="previous()">' +
-                                    '<i class="glyphicon glyphicon-chevron-left"></i>' +
-                                '</a>' +
-                                '<a class="right carousel-control" data-ng-click="next()">' +
-                                    '<i class="glyphicon glyphicon-chevron-right"></i>' +
-                                '</a>' +
-                            '</div>');
+                '<div init-widget class="app-carousel carousel slide" data-ng-show="show" apply-styles>' +
+                    '<ol class="carousel-indicators">' +
+                        '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': activeIndex === $index}" data-ng-click="goTo($index)"></li>' +
+                    '</ol>' +
+                    '<div class="carousel-inner" wmtransclude>' +
+                    '</div>' +
+                    '<a class="left carousel-control" data-ng-click="previous()">' +
+                        '<i class="glyphicon glyphicon-chevron-left"></i>' +
+                    '</a>' +
+                    '<a class="right carousel-control" data-ng-click="next()">' +
+                        '<i class="glyphicon glyphicon-chevron-right"></i>' +
+                    '</a>' +
+                '</div>'
+            );
         $templateCache.put('template/widget/advanced/carousel/design/carousel.html',
-                             '<div init-widget class="app-carousel carousel slide" data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' >' +
-                                 '<div class="carousel-inner" wmtransclude></div>' +
-                                 '<div class="carousel-actions">' +
-                                    '<ul class="pagination" >' +
-                                        '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': activeIndex === $index}"">' +
-                                            '<a href="javascript:void(0);" data-ng-click="goTo($index)">{{$index + 1}}</a>' +
-                                        '</li>' +
-                                        '<li>' +
-                                            '<a  href="javascript:void(0);" data-ng-click="add()">' +
-                                                '<i class="glyphicon glyphicon-plus"></i>' +
-                                            '</a>' +
-                                        '</li>' +
-                                    '</ul>' +
-                                 '</div>' +
-                             '</div>');
+                 '<div init-widget class="app-carousel carousel slide" data-ng-show="show" apply-styles>' +
+                     '<div class="carousel-inner" wmtransclude></div>' +
+                     '<div class="carousel-actions">' +
+                        '<ul class="pagination" >' +
+                            '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': activeIndex === $index}"">' +
+                                '<a href="javascript:void(0);" data-ng-click="goTo($index)">{{$index + 1}}</a>' +
+                            '</li>' +
+                            '<li>' +
+                                '<a  href="javascript:void(0);" data-ng-click="add()">' +
+                                    '<i class="glyphicon glyphicon-plus"></i>' +
+                                '</a>' +
+                            '</li>' +
+                        '</ul>' +
+                     '</div>' +
+                 '</div>'
+            );
         $templateCache.put('template/widget/advanced/carousel/carousel-content.html',
-                             '<div class="app-carousel-item item" ' + $rootScope.getWidgetStyles() +' init-widget wmtransclude>' +
-                             '</div>');
+                             '<div class="app-carousel-item item" apply-styles init-widget wmtransclude></div>');
     }]).directive('wmCarousel', ['$interval', 'PropertiesFactory', '$templateCache', 'CONSTANTS', '$timeout', function ($interval, PropertiesFactory, $templateCache, CONSTANTS, $timeout) {
         'use strict';
         /* get the properties related to the carousel */
@@ -50,7 +51,7 @@ WM.module('wm.widgets.advanced')
             'controller': function ($scope) {
                 this.register = function (contentScope) {
                     /**check for the first index of the slide deck and class active**/
-                    if ($scope.contents.length == 0) {
+                    if (!$scope.contents.length) {
                         contentScope.getElement().addClass('active');
                     }
 
@@ -79,8 +80,8 @@ WM.module('wm.widgets.advanced')
                         scope.contents = [];
                         scope.activeIndex = 0;
                         /**Animation function to move the slides**/
-                        function animateSlide ($active, $next, type) {
-                            var direction = type == 'next'? 'left': 'right';
+                        function animateSlide($active, $next, type) {
+                            var direction = type === 'next' ? 'left' : 'right';
                             $next.addClass(type);
                             $next[0].offsetWidth; // force reflow
                             $active.addClass(direction);
@@ -92,7 +93,7 @@ WM.module('wm.widgets.advanced')
                         }
                         /** function for slide  to move to a specific slide index**/
                         scope.goTo = function (index) {
-                            if(!scope.contents[scope.activeIndex]){
+                            if (!scope.contents[scope.activeIndex]) {
                                 return;
                             }
                             var oldElement = scope.contents[scope.activeIndex].getElement(),
@@ -103,13 +104,13 @@ WM.module('wm.widgets.advanced')
                                 newElement.addClass('active');
                                 scope.activeIndex  = index;
                             } else {
-                            scope.stop();
-                            if(scope.activeIndex > index){
-                                type = 'prev';
-                            }
-                            animateSlide(oldElement, newElement, type);
-                            scope.activeIndex  = index;
-                            scope.play();
+                                scope.stop();
+                                if (scope.activeIndex > index) {
+                                    type = 'prev';
+                                }
+                                animateSlide(oldElement, newElement, type);
+                                scope.activeIndex  = index;
+                                scope.play();
                             }
                         };
                         /**function to move to next slide**/
@@ -171,7 +172,7 @@ WM.module('wm.widgets.advanced')
                 };
             }
         };
-    }]).directive('wmCarouselContent', ['PropertiesFactory', '$templateCache',function (PropertiesFactory, $templateCache) {
+    }]).directive('wmCarouselContent', ['PropertiesFactory', '$templateCache', function (PropertiesFactory, $templateCache) {
         'use strict';
         /* Get the properties related to the carousel-content */
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']);
@@ -189,7 +190,7 @@ WM.module('wm.widgets.advanced')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs, controller) {
-                        scope.getElement =function() {
+                        scope.getElement = function () {
                             return element;
                         };
                         scope.$on('$destroy', function () {

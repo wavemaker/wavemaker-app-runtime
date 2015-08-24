@@ -2,11 +2,10 @@
 /*Directive for message */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/message.html',
-            '<p class="alert app-message" data-ng-show="show" init-widget ' +
-                $rootScope.getWidgetStyles() +
+            '<p class="alert app-message" data-ng-show="show" init-widget apply-styles ' +
                 'data-ng-class=\'{' +
                 '"alert-success":messageType.isSuccess, ' +
                 '"alert-danger":messageType.isError, ' +

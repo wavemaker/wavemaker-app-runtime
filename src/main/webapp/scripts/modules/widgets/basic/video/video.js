@@ -2,10 +2,10 @@
 /*Directive for video */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/video.html',
-            '<video init-widget alt="{{hint}}" title="{{hint}}" class="app-video" preload="{{videopreload}}" data-ng-attr-poster="{{postersource}}" data-ng-src="{{mp4videoUrl}}" ' +  $rootScope.getWidgetStyles() + ' data-ng-show="show" >' +
+            '<video init-widget alt="{{hint}}" title="{{hint}}" class="app-video" preload="{{videopreload}}" data-ng-attr-poster="{{postersource}}" data-ng-src="{{mp4videoUrl}}" apply-styles data-ng-show="show" >' +
                 '<source type="video/mp4" data-ng-src="{{mp4videoUrl}}" data-ng-if="mp4videoUrl">' +
                 '<source type="video/webm" data-ng-src="{{webmvideoUrl}}" data-ng-if="webmvideoUrl">' +
                 '<source type="video/ogg" data-ng-src="{{oggvideoUrl}}" data-ng-if="oggvideoUrl">' +

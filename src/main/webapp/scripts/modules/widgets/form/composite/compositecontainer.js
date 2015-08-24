@@ -2,16 +2,15 @@
 /*Directive for composite container */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
 
         $templateCache.put('template/widget/form/composite.html',
-                '<div class="form-group app-composite-widget clearfix" init-widget' +
+                '<div class="form-group app-composite-widget clearfix" init-widget apply-styles="container" ' +
                 ' data-ng-class="{\'caption-left\': captionposition == \'left\',\'caption-right\': captionposition == \'right\',\'caption-top\': captionposition == \'top\'}"' +
                 ' title="{{hint}}"' +
                 ' data-ng-disabled="disabled"' +
                 ' data-ng-show="show"' +
-                $rootScope.getWidgetStyles('container') +
                 ' wmtransclude></div>'
             );
     }])

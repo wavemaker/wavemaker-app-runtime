@@ -8,9 +8,9 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabs directive */
         $templateCache.put('template/layout/container/tabs.html',
-                '<div class="app-tabs clearfix" init-widget data-ng-show="show"' + $rootScope.getWidgetStyles('shell') + '>' +
+                '<div class="app-tabs clearfix" init-widget data-ng-show="show" apply-styles="shell">' +
                     '<ul class="nav nav-tabs" data-ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
-                    '<div class="tab-content"' + $rootScope.getWidgetStyles('container') + '  data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude></div>' +
+                    '<div class="tab-content" apply-styles="container" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude></div>' +
                 '</div>'
             );
 
@@ -21,15 +21,15 @@ WM.module('wm.layouts.containers')
         /* define the template for the tabheader directive */
         $templateCache.put('template/layout/container/tab-header.html',
             '<li class="tab-header" data-ng-class="{active: tab.isActive, disabled: tab.disabled}" data-ng-show="tab.show" data-tab-id="{{tab.widgetid}}" data-ng-click="tab.select()" init-widget>' +
-                '<a wmtransclude'  + $rootScope.getWidgetStyles('container') + '></a>' +
+                '<a wmtransclude apply-styles="container"></a>' +
             '</li>');
 
         /* define the template for the tabcontent directive */
         $templateCache.put('template/layout/container/tab-content.html',
-            '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget'  + $rootScope.getWidgetStyles() + '></div>');
+            '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget apply-styles></div>');
 
     }])
-    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$compile', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $compile) {
+    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
         'use strict';
 
         /* get the properties related to the tabs */
@@ -391,7 +391,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmTabcontent', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', function (PropertiesFactory, WidgetUtilService, $templateCache) {
+    .directive('wmTabcontent', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabcontent', ['wm.base', 'wm.layouts']);
 
@@ -406,9 +406,11 @@ WM.module('wm.layouts.containers')
 
                 return {
                     'pre': function (iScope) {
-                        iScope.widgetProps = WM.copy(widgetProps);
-                        if (iScope.widgetProps.show) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
                             delete iScope.widgetProps.show;// show property should be handled from pane.
+                        } else {
+                            iScope.widgetProps = widgetProps;
                         }
 
                         // define $lazyLoad method on iScope.

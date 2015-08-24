@@ -2,10 +2,10 @@
 /*Directive for Panel*/
 
 WM.module('wm.layouts.containers')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/panel.html',
-                '<div page-container init-widget class="app-panel panel" ng-class="[helpClass]" data-ng-show="show" ' + $rootScope.getWidgetStyles('shell') + ' wm-navigable-element="true">' +
+                '<div page-container init-widget class="app-panel panel" ng-class="[helpClass]" data-ng-show="show" apply-styles="shell" wm-navigable-element="true">' +
                     '<div class="panel-heading" data-ng-show="showheader">' +
                         '<h3 class="panel-title">' +
                             '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="togglePanel()">' +
@@ -76,9 +76,12 @@ WM.module('wm.layouts.containers')
             },
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
+                    'pre': function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     'post': function (scope, element, attrs, panelCtrl) {
                         if (scope.expanded === undefined) {

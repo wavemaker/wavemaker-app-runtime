@@ -2,11 +2,10 @@
 /*Directive for html */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/htmlTemplate.html',
-            '<div class="app-html-container" init-widget title="{{hint}}"' +
-                ' data-ng-show="show" ' + $rootScope.getWidgetStyles() + ' >' +
+            '<div class="app-html-container" init-widget title="{{hint}}" data-ng-show="show" apply-styles>' +
                 '<div class="html-content"></div>' +
             ' </div>'
             );

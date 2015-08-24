@@ -1,10 +1,10 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/row.html',
-                '<div init-widget class="row app-row clearfix" data-ng-show="show"  ' + $rootScope.getWidgetStyles() + ' wmtransclude></div>'
+                '<div init-widget class="row app-row clearfix" data-ng-show="show" apply-styles wmtransclude></div>'
             );
     }])
     .directive('wmRow', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {

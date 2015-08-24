@@ -2,11 +2,11 @@
 /*Directive for Radio */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/radio.html',
             '<div class="radio app-radio" init-widget has-model data-ng-show="show" title="{{hint}}">' +
-                '<label ' + $rootScope.getWidgetStyles() + '>' +
+                '<label apply-styles>' +
                     '<input type="radio" class="app-radiobutton"' +
                         ' value="{{checkedvalue}}"' +
                         ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */

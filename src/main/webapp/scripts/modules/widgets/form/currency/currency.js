@@ -2,18 +2,16 @@
 /*Directive for currency */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/currency.html',
             '<div init-widget has-model class="input-group app-currency" data-ng-show="show"><span class="input-group-addon">{{currencysymbol}}</span>' +
-                '<input type="number" class="form-control app-textbox app-currency-input" title="{{hint}}" ' +
+                '<input type="number" class="form-control app-textbox app-currency-input" title="{{hint}}" apply-styles' +
                 ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' data-ng-readonly="readonly" ' +
                 ' data-ng-required="required" ' +
                 ' data-ng-disabled="disabled" ' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})" ' +
-                $rootScope.getWidgetStyles() +
-                '>' +
+                ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</div>'
             );
     }])

@@ -2,10 +2,10 @@
 /*Directive for Progressbar */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/progress.html',
-                '<div class="progress app-progress" data-ng-show="show" title="{{hint}}" init-widget ' + $rootScope.getWidgetStyles() + ' >' +
+                '<div class="progress app-progress" data-ng-show="show" title="{{hint}}" init-widget apply-styles>' +
                     '<div class="progress-bar" role="progressbar" aria-valuenow={{datavalue}} aria-valuemin={{minvalue}} aria-valuemax={{maxvalue}} data-ng-hide="isMultipleBar"></div>' +
                 '</div>'
             );

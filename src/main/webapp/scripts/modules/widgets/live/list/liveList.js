@@ -3,14 +3,13 @@
 /*Directive for liveList */
 
 WM.module('wm.widgets.live')
-    .run(['$templateCache', '$rootScope', function ($tc, $rs) {
+    .run(['$templateCache', function ($tc) {
         'use strict';
 
         $tc.put('template/widget/list.html',
-                    '<div class="app-livelist" init-widget ' + $rs.getWidgetStyles('shell') + ' data-ng-show="show">' +
+                    '<div class="app-livelist" init-widget apply-styles="shell" data-ng-show="show">' +
                         '<ul data-identifier="list" class="clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
-                            '<li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>' +
                         '</ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
                         '<wm-datanavigator class="well well-sm clearfix" data-ng-if="hasNavigation" show="{{shownavigation}}" showrecordcount="{{showrecordcount}}"></wm-datanavigator>' +
@@ -49,7 +48,7 @@ WM.module('wm.widgets.live')
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base.editors', 'wm.base.events']),
                 liTemplateWrapper_start = '<li data-ng-repeat="item in fieldDefs track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ',
-                liTemplateWrapper_end = '></li>',
+                liTemplateWrapper_end = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>',
                 notifyFor = {
                     'dataset'        : true,
                     'shownavigation' : true,
@@ -193,6 +192,10 @@ WM.module('wm.widgets.live')
                 }
             }
 
+            function setFetchInProgress($is, inProgress) {
+                $is.$liScope.fetchInProgress = inProgress;
+            }
+
             function bindScrollEvt($is, $el) {
                 var $dataNavigator = $el.find('> [data-identifier=datanavigator]'),
                     navigator = $dataNavigator.isolateScope();
@@ -214,12 +217,12 @@ WM.module('wm.widgets.live')
                         totalHeight  = target.scrollHeight;
                         scrollTop    = target.scrollTop;
 
-                        if (totalHeight * 0.75 < scrollTop + clientHeight) {
+                        if (totalHeight * 0.9 < scrollTop + clientHeight) {
                             $rs.$safeApply($is, function () {
-                                $is.fetchInProgress = true;
+                                setFetchInProgress($is, true);
                                 navigator.navigatePage('next');
                                 if (navigator.isLastPage()) {
-                                    $is.fetchInProgress = false;
+                                    setFetchInProgress($is, false);
                                 }
                             });
                         }
@@ -241,7 +244,7 @@ WM.module('wm.widgets.live')
                     });
 
                     $timeout(function () {
-                        $is.fetchInProgress = false;
+                        setFetchInProgress($is, false);
                         if (fieldDefs.length) {
                             bindScrollEvt($is, $el);
                         }
@@ -477,7 +480,8 @@ WM.module('wm.widgets.live')
                 }
 
                 tmpl += liTemplateWrapper_end;
-                tmpl = WM.element(tmpl).append($tmplContent);
+                tmpl = WM.element(tmpl);
+                tmpl.first().append($tmplContent);
                 return tmpl;
             }
 
@@ -509,7 +513,11 @@ WM.module('wm.widgets.live')
             }
 
             function preLinkFn($is, $el, attrs) {
-                $is.widgetProps = WM.copy(widgetProps);
+                if (CONSTANTS.isStudioMode) {
+                    $is.widgetProps = WM.copy(widgetProps);
+                } else {
+                    $is.widgetProps = widgetProps;
+                }
 
                 // initialising oldDataSet to -1, so as to handle live-list with variable binding with live variables, during page 'switches' or 'refreshes'
                 $is.oldbinddataset = CONSTANTS.isStudioMode ? attrs.dataset : undefined;

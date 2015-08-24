@@ -3,10 +3,10 @@
 /*Directive for Select */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/select.html',
-            '<select init-widget has-model class="form-control app-select"' +
+            '<select init-widget has-model class="form-control app-select" apply-styles ' +
                 ' data-ng-model="modelProxy"' + /* proxy-object is updated in the onChangeProxy function*/
                 ' title="{{hint}}"' +
                 ' data-ng-show="show"' +
@@ -14,13 +14,12 @@ WM.module('wm.widgets.form')
                 ' data-ng-disabled="disabled"' +
                 ' data-ng-required="required"' +
                 ' data-ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
-                $rootScope.getWidgetStyles() +
                 ' data-ng-options="option.key as $root.locale[option.value] || option.value for option in selectOptions">' +
-                '<option selected disabled value="">{{placeholder}}</option>'+
+                '<option selected disabled value="">{{placeholder}}</option>' +
             '</select>'
                 );
     }])
-    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
         'use strict';
 
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
@@ -282,9 +281,11 @@ WM.module('wm.widgets.form')
             'compile': function () {
                 return {
                     'pre': function (iScope) {
-                        /*Binding widget properties obtained from PropertiesFactory to iScope*/
-                        /*used deep.copy, as widgetProps are being modified for property panel changes */
-                        iScope.widgetProps = WM.copy(widgetProps);
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     'post': function (iScope, element, attrs) {
 

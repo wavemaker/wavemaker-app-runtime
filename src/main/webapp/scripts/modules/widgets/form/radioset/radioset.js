@@ -2,15 +2,12 @@
 /*Directive for radioset */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/radioset.html',
-            '<ul class="app-radioset list-group {{layout}}" init-widget has-model' +
-                ' title="{{hint}}" ' +
-                ' data-ng-model="_model_"' +
-                ' data-ng-show="show"' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})"' + /* private method defined in this scope */
-                $rootScope.getWidgetStyles() + ' >' +
+            '<ul class="app-radioset list-group {{layout}}" init-widget has-model apply-styles ' +
+                ' title="{{hint}}" data-ng-model="_model_" data-ng-show="show"' +
+                ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</ul>'
             );
     }])
@@ -193,7 +190,7 @@ WM.module('wm.widgets.form')
                     '<li class="radio app-radio"><label class="app-radioset-label">' +
                             '<input type="radio" ' + (scope.disabled ? ' disabled="disabled" ' : '') +
                                 'data-attr-index=' + index + ' ng-checked="checkModel(' + index + ')"/>' +
-                    '<span class="caption">'+ dataKey + '</span></label>' +
+                    '<span class="caption">' + dataKey + '</span></label>' +
                     '</li>';
             });
             /*Holder for the model for submitting values in a form and a wrapper to for readonly mode*/
@@ -290,9 +287,12 @@ WM.module('wm.widgets.form')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/radioset.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
+                    'pre': function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     'post': function (scope, element, attrs) {
                         /* register the property change handler */

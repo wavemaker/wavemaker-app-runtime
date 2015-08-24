@@ -2,11 +2,11 @@
 /*Directive for rating widget */
 
 WM.module('wm.widgets.advanced')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
 
         $templateCache.put('template/widget/advanced/rating.html',
-            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model' + $rootScope.getWidgetStyles() + '>' +
+            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model apply-styles>' +
                 '<div data-ng-if="!readonly" class="rating-style">' +
                 '<label data-ng-class="{active : rate.value <= datavalue}" for="{{$id}}+{{rate.value}}" data-ng-style="{\'font-size\':iconsize}" data-ng-repeat="rate in range track by $index" title="{{rate.value}}">' +
                     '<input type="radio" id="{{$id}}+{{rate.value}}" data-ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
@@ -36,7 +36,7 @@ WM.module('wm.widgets.advanced')
                     MAX_RATING = 5,
                     maxValue = parseInt(newVal, 10);
                 for (i = maxValue || MAX_RATING; i > 0; i--) {
-                    range.push({"value": i});
+                    range.push({'value': i});
                 }
                 if (maxValue === 10) {
                     scope.widgetProps.datavalue.pattern = '^(?:10|[0-9]([.][0-9]+)?)$|^$|^bind.*$';
@@ -44,7 +44,7 @@ WM.module('wm.widgets.advanced')
                     scope.widgetProps.datavalue.pattern = '^(?:5|[0-4]([.][0-9]+)?)$|^$|^bind.*$';
                 }
                 scope.range = range;
-                scope.ratingname = "ratings-" + scope.$id;
+                scope.ratingname = 'ratings-' + scope.$id;
                 break;
             }
         }
@@ -66,14 +66,14 @@ WM.module('wm.widgets.advanced')
                             iScope._onChange($event);
                         };
                         iScope.ratingsWidth = function () {
-                            if (iScope.datavalue === undefined || iScope.datavalue === "") {
+                            if (iScope.datavalue === undefined || iScope.datavalue === '') {
                                 return 0;
                             }
-                            var dataValue = parseInt(iScope.datavalue,10);
-                            var maxValue = parseInt(iScope.maxvalue,10);
+                            var dataValue = parseInt(iScope.datavalue, 10),
+                                maxValue = parseInt(iScope.maxvalue, 10);
+
                             if (dataValue <= maxValue && dataValue >= 0) {
                                 return 100 * (dataValue / maxValue) + '%';
-
                             }
                         };
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope), iScope, notifyFor);

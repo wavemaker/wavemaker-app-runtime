@@ -2,12 +2,12 @@
 /*Directive for Calendar */
 
 WM.module('wm.widgets.advanced')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/calendar.html',
                 '<div class="app-calendar" init-widget has-model ' +
                     ' data-ng-model ="_model_" data-ng-show = "show"' +
-                    ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + $rootScope.getWidgetStyles("shell") +  '>' +
+                    ' data-ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
                     '<div ui-calendar="calendarOptions.calendar" calendar="{{name}}" ng-model="eventSources"></div>' +
                 '</div>');
     }])

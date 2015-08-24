@@ -2,10 +2,10 @@
 /*Directive for spinner*/
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/spinner.html',
-            '<div class="app-spinner {{size}}" data-ng-show="show" init-widget title="{{hint}}" ' + $rootScope.getWidgetStyles() + ' >' +
+            '<div class="app-spinner {{size}}" data-ng-show="show" init-widget title="{{hint}}" apply-styles>' +
                 '<div class="spinner-message">' +
                     '<span class="spinner-image" data-ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}"></span>' +
                     '<span class="spinner-text" data-ng-bind="caption"></span>' +

@@ -2,13 +2,10 @@
 /*Directive for Label */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/label.html',
-            '<label class="control-label app-label" data-ng-show="show" title="{{hint}}" init-widget ' +
-                ' data-ng-class="{required:required}" ' +
-                $rootScope.getWidgetStyles() +
-                '></label>'
+            '<label class="control-label app-label" data-ng-show="show" title="{{hint}}" init-widget apply-styles data-ng-class="{required:required}"></label>'
             );
     }])
     .directive('wmLabel', ['PropertiesFactory', 'WidgetUtilService', '$sce', function (PropertiesFactory, WidgetUtilService, $sce) {

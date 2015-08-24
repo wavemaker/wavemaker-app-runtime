@@ -2,11 +2,10 @@
 /*Directive for audio */
 
 WM.module('wm.widgets.basic')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/audio.html',
-            '<audio init-widget alt="{{hint}}" title="{{hint}}" class="app-audio"  preload="{{audiopreload}}" data-ng-src="{{mp3audioUrl}}" ' + $rootScope.getWidgetStyles() +
-                ' data-ng-show="show" >' +
+            '<audio init-widget alt="{{hint}}" title="{{hint}}" class="app-audio"  preload="{{audiopreload}}" data-ng-src="{{mp3audioUrl}}" apply-styles data-ng-show="show" >' +
                 '<source type="audio/mp3" src="{{mp3audioUrl}}">' +
                 '{{audiosupportmessage}}' +
                 '</audio>');

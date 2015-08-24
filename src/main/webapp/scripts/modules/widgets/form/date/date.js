@@ -2,19 +2,18 @@
 /*Directive for date */
 
 WM.module('wm.widgets.form')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/date.html',
             '<div class="app-date input-group" init-widget has-model data-ng-show="show">' +
-                '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} ' +
+                '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} apply-styles ' +
                     ' title="{{hint}}" ' +
                     ' min-date=mindate max-date=maxdate is-open=isOpen' +
                     ' data-ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
                     ' data-ng-readonly="readonly" ' +
                     ' data-ng-required="required" ' +
                     ' data-ng-disabled="disabled" ' +
-                    ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + /* private method defined in this scope */
-                     $rootScope.getWidgetStyles() + ' >' +
+                    ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</input>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +

@@ -1,15 +1,15 @@
 /*global WM*/
 
 WM.module('wm.layouts.page')
-    .run(['$templateCache', '$rootScope', function ($templateCache, $rootScope) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/rightpanel.html',
-                '<aside  data-role="page-right-panel" page-container init-widget class="app-right-panel"' + $rootScope.getWidgetStyles('container') + ' >' +
+                '<aside  data-role="page-right-panel" page-container init-widget class="app-right-panel" apply-styles="container">' +
                     '<div class="app-ng-transclude" wmtransclude page-container-target></div>' +
                 '</aside>'
             );
     }])
-    .directive('wmRightPanel', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmRightPanel', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.rightpanel', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
@@ -25,7 +25,6 @@ WM.module('wm.layouts.page')
                 break;
             }
         }
-
 
         return {
             'restrict': 'E',
@@ -46,9 +45,12 @@ WM.module('wm.layouts.page')
             },
             'compile': function () {
                 return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = WM.copy(widgetProps);
+                    'pre': function (iScope) {
+                        if (CONSTANTS.isStudioMode) {
+                            iScope.widgetProps = WM.copy(widgetProps);
+                        } else {
+                            iScope.widgetProps = widgetProps;
+                        }
                     },
                     'post': function (scope, element, attrs) {
                         /*If columnwidth is passed set the appropriate class*/
