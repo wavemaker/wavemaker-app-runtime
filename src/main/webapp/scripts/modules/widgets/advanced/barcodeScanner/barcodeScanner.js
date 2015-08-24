@@ -9,8 +9,9 @@ WM.module('wm.widgets.advanced')
             'use strict';
 
             $tc.put('template/widget/advanced/barcodeScanner.html',
-                '<button class="app-barcode" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openBarcodeScanner()" >' +
+                '<button class="btn app-barcode" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openBarcodeScanner()" >' +
                 '<i class="{{iconclass}}" data-ng-style="{\'font-size\':iconsize}"></i> ' +
+                '<span class="btn-caption">{{caption}}</span> '+
                 '</button>'
             );
         }
@@ -26,7 +27,7 @@ WM.module('wm.widgets.advanced')
         function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaBarcodeScanner) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.barcodescanner', ['wm.base']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.barcodescanner', ['wm.base', 'wm.base.editors']);
 
             function openBarcodeScanner($is) {
                 if (CONSTANTS.isStudioMode) {

@@ -114,11 +114,12 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.NavigationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
-                    "operation": {"type": "list", "options": {"gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage"},
+                    "operation": {"type": "list", "options": {"gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion", "gotoSegment": "gotoSegment"}, "value": "gotoPage"},
                     "pageName": {"type": "string", "required": true, "options": {}, "widgettype": "list"},
                     "viewName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
                     "tabName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
                     "accordionName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
+                    "segmentName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
                     "dataBinding": {"type": "string", "value": {}, "hide": true}
                 },
                 "wm.NotificationVariable": {
@@ -149,6 +150,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
+                    "dataBinding": {"type": "object", "value": {}, "hide": true},
                     "service": {"type": "list", "options": []},
                     "operation": {"type": "list", "hide": true, "options": []},
                     "startUpdate": {"type": "boolean", "value": false, "hide": true},
@@ -172,6 +174,9 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "geolocationTimeout": {"type": "number", "value": 5, "hide" : true},
                     /* listContacts options */
                     "contactFilter": {"type": "string", "dataBinding": true,  "value": "", "hide" : true},
+                    /* File Upload */
+                    "localFile": {"type": "string", "dataBinding": true,  "value": "", "hide" : true},
+                    "remoteFolder": {"type": "string", "dataBinding": true,  "value": "", "hide" : true},
                     /*events*/
                     "onSuccess": {"type": "list", "options": variableEventOptions},
                     "onError": {"type": "list", "options": variableEventOptions},
@@ -187,18 +192,18 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "events", "parent": ""},
 
                 /* properties under behavior tab */
+
                 {"properties": ["liveSource", "type", "isList"], "parent": "properties"},
                 {"name": "service", "properties": ["service", "operation"], "parent": "properties"},
                 {"name": "serveroptions", "properties": ["downloadFile", "matchMode", "firstRow", "maxResults", "designMaxResults", "orderBy", "ignoreCase"], "parent": "properties"},
                 {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
-                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "dataBinding",
+                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding",
                             "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
                             "allowImageEdit", "imageEncodingType", "imageQuality", "correctOrientation", "saveToPhotoAlbum",
                             "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",
-                            "contactFilter", "vibrationtime"], "parent": "properties"},
-
+                            "contactFilter", "localFile", "remoteFolder", "vibrationtime"], "parent": "properties"},
                 /* properties under data tab */
                 {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding"], "parent": "data"},
                 {"name": "inputfields", "properties": ["dataSet", "dataBinding"], "parent": "data"},

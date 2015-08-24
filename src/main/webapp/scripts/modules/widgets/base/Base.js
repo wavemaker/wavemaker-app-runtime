@@ -298,7 +298,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.barcodescanner": {
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
-                        "title": {"type": "string", "bindable": "in-out-bound"},
+                        "caption": {"type": "string", "value": "", "bindable": "in-bound", "maxlength": 256 },
                         "iconclass": {"type": "string", "value": "glyphicon glyphicon-barcode", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "3em"},
                         /* Events */

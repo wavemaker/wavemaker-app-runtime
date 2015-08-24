@@ -171,6 +171,8 @@ wm.variables.services.Variables = [
                             if (variable.autoUpdate && !WM.isUndefined(newVal)) {
                                 variable.login();
                             }
+                        } else if(variable.category === "wm.MobileVariable") {
+                            variable[param] = newVal;
                         }
                     }));
                 } else if (variable.category === "wm.LiveVariable") {
@@ -187,6 +189,8 @@ wm.variables.services.Variables = [
                     if (variable.dataBinding[param]) {
                         variable.dataSet[param] = variable.dataSet[param] || variable.dataBinding[param];
                     }
+                } else if(variable.category === "wm.MobileVariable") {
+                    variable[param] = bindingVal;
                 }
             },
 

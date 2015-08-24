@@ -1,7 +1,7 @@
 /********************************************************************************
 *********************** Segmented Control classes ******************************
 *********************************************************************************/
-.app-segmented-control{
+.app-segmented-control {
   position: relative;
   .width-height();
   > .btn-group.btn-group-justified {
@@ -40,6 +40,64 @@
         overflow-y: auto;
         overflow-x: hidden;
         box-sizing: content-box;
+      }
+    }
+  }
+}
+/********************************************************************************
+*********************** Mobile File Selector classes ******************************
+*********************************************************************************/
+.app-file-browser {
+  .modal-backdrop{
+    z-index: 10000;
+  }
+  .modal-dialog {
+    height: 100%;
+
+    .modal-content {
+      height: 95%;
+
+      .modal-header {
+        height : 4em;
+      }
+      .modal-body {
+        .calc('height', ~"calc(100% - 9em)");
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      .modal-footer {
+        height : 5em;
+      }
+    }
+  }
+
+  .selected-file-button{
+    font-size: 2em;
+  }
+
+  .file-info-box {
+    width: 25%;
+    display: inline-block;
+    padding: 5px;
+    height: 7em;
+    overflow: hidden;
+
+    .file-info {
+      overflow: hidden;
+      padding: 5px;
+      text-align: center;
+
+      .file-icon {
+        display: block;
+        text-align: center;
+        font-size: 4em;
+      }
+      .file-name {
+        padding-left: 10px;
+        font-size: 0.9em;
+        height: 3.2em;
+        overflow: hidden;
+        display: block;
       }
     }
   }

@@ -32,6 +32,9 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
             case 'wm-tabpane':
                 elemScope.select();
                 break;
+            case 'wm-segment-content':
+                elemScope.navigate();
+                break;
             case 'wm-panel':
                 /* flip the active flag */
                 elemScope.expanded = true;
@@ -80,6 +83,10 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
             case 'wm-tabpane':
                 showAncestors(viewElement);
                 elemScope.select();
+                break;
+            case 'wm-segment-content':
+                showAncestors(viewElement);
+                elemScope.navigate();
                 break;
             case 'wm-panel':
                 /* flip the active flag */
@@ -151,6 +158,9 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                         break;
                     case 'gotoAccordion':
                         viewName = (variable.dataBinding && variable.dataBinding.accordionName) || variable.accordionName;
+                        break;
+                    case 'gotoSegment':
+                        viewName = (variable.dataBinding && variable.dataBinding.segmentName) || variable.segmentName;
                         break;
                     }
 
