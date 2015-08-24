@@ -671,7 +671,8 @@ WM.module('wm.widgets.grid')
                 },
                 searchGrid = function (searchObj) {
 
-                    var filterFields;
+                    var filterFields,
+                        variable = $scope.gridElement.scope().Variables[$scope.variableName];
 
                     /*Set the filter fields based on the search options entered.*/
                     filterFields = {};
@@ -683,7 +684,7 @@ WM.module('wm.widgets.grid')
                         };
                     }
 
-                    Variables.call('getData', $scope.variableName, {
+                    variable.update({
                         "type": "wm.LiveVariable",
                         "isNotTriggerForRelated": true,
                         "page": 1,
@@ -718,7 +719,8 @@ WM.module('wm.widgets.grid')
                 },
                 sortHandler = function (sortObj, e) {
                     var filterFields,
-                        fieldName = Variables.call('getModifiedFieldName', $scope.variableName, sortObj.field),
+                        variable = $scope.gridElement.scope().Variables[$scope.variableName],
+                        fieldName = variable.getModifiedFieldName(sortObj.field),
                         sortOptions = fieldName + ',' + sortObj.direction;
                     /* Update the sort info for passing to datagrid */
                     $scope.gridOptions.sortInfo.field = sortObj.field;
@@ -743,7 +745,7 @@ WM.module('wm.widgets.grid')
                             $scope.Widgets[$scope.widgetName].applyFilter({"orderBy": sortOptions});
                         } else {
                             /* else get sorted data through variable */
-                            Variables.call('getData', $scope.variableName, {
+                            variable.update({
                                 'type': 'wm.LiveVariable',
                                 'isNotTriggerForRelated': true,
                                 'page': 1,
@@ -852,8 +854,11 @@ WM.module('wm.widgets.grid')
                     }
                     /* delete if user confirm to delete*/
                     if (confirm($scope.confirmdelete)) {
-
-                        Variables.call("deleteRecord", $scope.variableName, {
+                        var variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                        if (!variable) {
+                            return;
+                        }
+                        variable.deleteRecord({
                             "row": row,
                             "transform": true,
                             "scope": $scope.gridElement.scope()
@@ -890,8 +895,11 @@ WM.module('wm.widgets.grid')
                     }*/
 
                     var variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                    if (!variable) {
+                        return;
+                    }
 
-                    Variables.call("insertRecord", $scope.variableName, {
+                    variable.insertRecord({
                         "row": rowData,
                         "transform": true,
                         "scope": $scope.gridElement.scope()
@@ -916,8 +924,11 @@ WM.module('wm.widgets.grid')
                         return;
                     }*/
                     var variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                    if (!variable) {
+                        return;
+                    }
 
-                    Variables.call("updateRecord", $scope.variableName, {
+                    variable.updateRecord({
                         "row": rowData,
                         "transform": true,
                         "prevData": prevData,
@@ -1726,7 +1737,12 @@ WM.module('wm.widgets.grid')
                         $scope.dataNavigator.navigatePage();
                     }
                 } else {
-                    Variables.call('getData', $scope.variableName, {
+                    var variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                    if (!variable) {
+                        return;
+                    }
+
+                    variable.update({
                         'type': 'wm.LiveVariable',
                         'isNotTriggerForRelated': true,
                         'page': $scope.dataNavigator ? $scope.dataNavigator.currentPage : 1,

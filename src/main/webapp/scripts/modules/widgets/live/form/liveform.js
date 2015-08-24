@@ -193,7 +193,7 @@ WM.module('wm.widgets.live')
                     case "update":
                         requestData.rowData = $scope.rowdata;
                         requestData.prevData = prevData;
-                        Variables.call("updateRecord", $scope.variableName, requestData, function (response) {
+                        variable.updateRecord(requestData, function (response) {
                             /*Display appropriate error message in case of error.*/
                             if (response.error) {
                                 /*disable readonly and show the appropriate error*/
@@ -219,7 +219,7 @@ WM.module('wm.widgets.live')
                         });
                         break;
                     case "insert":
-                        Variables.call("insertRecord", $scope.variableName, requestData, function (response) {
+                        variable.insertRecord(requestData, function (response) {
                             /*Display appropriate error message in case of error.*/
                             if (response.error) {
                                 wmToaster.show('error', 'ERROR', response.error);
@@ -251,7 +251,7 @@ WM.module('wm.widgets.live')
                                 return;
                             }
                         }
-                        Variables.call("deleteRecord", $scope.variableName, requestData, function (success) {
+                        variable.deleteRecord(requestData, function (success) {
                             /* check the response whether the data successfully deleted or not , if any error occurred show the
                              * corresponding error , other wise remove the row from grid */
                             if (success && success.error) {
