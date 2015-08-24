@@ -15,7 +15,8 @@ var Application = WM.module('Application',
             "oc.lazyLoad",
             'wm.prefabs',
             "i18n",
-            "angular-gestures"
+            "angular-gestures",
+            "ngCordova"
         ]).constant('CONSTANTS', {
         "isRunMode": true,
         "hasCordova": (window.location.origin === 'file://')

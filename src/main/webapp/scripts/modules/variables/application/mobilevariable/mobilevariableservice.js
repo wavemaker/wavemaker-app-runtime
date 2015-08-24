@@ -1,4 +1,4 @@
-/*global wm, WM, _, window, navigator*/
+/*global wm, WM, _, window, Connection*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -13,7 +13,7 @@
  * The 'MobileService' is a wrapper over cardova. This acts as a integration point of Cardova API
  * and Wavemaker variables.
  */
-wm.variables.services.MobileService = [function () {
+wm.variables.services.MobileService = ['$cordovaContacts', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', function ($cordovaContacts, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera) {
     "use strict";
     var event = {
             title: '',
@@ -79,30 +79,28 @@ wm.variables.services.MobileService = [function () {
                 }],
                 properties : ['startUpdate', 'contactFilter'],
                 invoke : function (variable, options, success, error) {
-                    var fields       = [navigator.contacts.fieldType.id,
-                                        navigator.contacts.fieldType.displayName,
-                                        navigator.contacts.fieldType.phoneNumbers];
                     var findOptions = {
                             filter : variable.contactFilter,
-                            multiple : true
+                            multiple : true,
+                            fields:  ['displayName']
                         };
-                    navigator.contacts.find(fields, function(data) {
+                    $cordovaContacts.find(findOptions).then(function(data) {
                         data = _.filter(data, function (c) {
                             return c.phoneNumbers && c.phoneNumbers.length > 0;
                         });
                         success(data);
-                    }, error, findOptions);
+                    });
                 }
             }
         },
         device: {
             getConnectionType: {
                 model: {
-                    data : 'No Connection'
+                    data : 'NONE'
                 },
                 properties : ['startUpdate'],
                 invoke : function (variable, options, success, error) {
-                    success({ data: navigator.connection.type});
+                    success({ data: $cordovaNetwork.getNetwork()});
                 }
             },
             capturePicture: {
@@ -113,16 +111,16 @@ wm.variables.services.MobileService = [function () {
                 invoke : function (variable, options, success, error) {
                     var cameraOptions = {
                         quality : variable.imageQuality,
-                        destinationType : 0, //only data url
+                        destinationType : 1, //only file url
                         sourceType : 1, //camera
                         allowEdit : variable.allowImageEdit,
                         encodingType : parseInt(variable.imageEncodingType, 10),
                         mediaType : 0, //always picture
                         correctOrientation : variable.correctOrientation
                     };
-                    navigator.camera.getPicture(function (data) {
-                        success({ data : 'data:image/'+variable.imageEncodingType.toLowerCase()+';base64, ' +data});
-                    }, error, cameraOptions);
+                    $cordovaCamera.getPicture(cameraOptions).then(function (data) {
+                        success({ data : data});
+                    }, error);
                 }
             },
             getGeoLocation : {
@@ -145,7 +143,7 @@ wm.variables.services.MobileService = [function () {
                         timeout: variable.geolocationTimeout * 1000,
                         enableHighAccuracy: variable.geolocationHighAccuracy
                     };
-                    navigator.geolocation.getCurrentPosition(success, error, geoLocationOptions);
+                    $cordovaGeolocation.getCurrentPosition(geoLocationOptions).then(success, error);
                 }
             }
         }

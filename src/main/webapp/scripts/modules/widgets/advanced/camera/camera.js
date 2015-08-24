@@ -22,8 +22,9 @@ WM.module('wm.widgets.advanced')
         'WidgetUtilService',
         'CONSTANTS',
         '$rootScope',
-
-        function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs) {
+        '$cordovaCamera',
+        '$cordovaCapture',
+        function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaCamera, $cordovaCapture) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.camera', ['wm.base']),
@@ -84,10 +85,10 @@ WM.module('wm.widgets.advanced')
                 if (CONSTANTS.hasCordova) {
                     if ($is.capturetype === CAPTURE_TYPE.IMAGE) {
                         // start camera
-                        navigator.camera.getPicture(updateModel.bind(undefined, $is), WM.noop, cameraOptions);
+                        $cordovaCamera.getPicture(cameraOptions).then(updateModel.bind(undefined, $is));
                     } else {
                         // start video capture
-                        navigator.device.capture.captureVideo(captureVideoSuccess.bind(undefined, $is), WM.noop, cameraOptions);
+                        $cordovaCapture.captureVideo(cameraOptions).then(captureVideoSuccess.bind(undefined, $is));
                     }
                 } else {
                     $is.onSuccess({$scope: $is});
