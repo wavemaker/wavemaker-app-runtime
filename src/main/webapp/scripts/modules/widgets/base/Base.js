@@ -296,7 +296,14 @@ WM.module('wm.widgets.base', [])
                         /* Events */
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
-
+                    "wm.barcodescanner": {
+                        "datavalue": {"type": "string", "bindable": "in-out-bound"},
+                        "title": {"type": "string", "bindable": "in-out-bound"},
+                        "iconclass": {"type": "string", "value": "glyphicon glyphicon-barcode", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "3em"},
+                        /* Events */
+                        "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    },
                     "wm.buttongroup": {
                         "hint": {"type": "string", "bindable": "in-out-bound"},
                         "vertical": {"type": "boolean"}
@@ -2508,7 +2515,8 @@ WM.module('wm.widgets.base', [])
                             "wm-tree",
                             "wm-liveform",
                             "wm-rating",
-                            "wm-camera"
+                            "wm-camera",
+                            "wm-barcodescanner"
                             ];
                     } else if (types === 'page-container-widgets') {
                         types = [
