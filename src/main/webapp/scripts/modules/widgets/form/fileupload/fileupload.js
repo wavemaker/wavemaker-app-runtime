@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/fileupload.html',
-                '<div data-ng-show="show" class="app-fileupload" init-widget apply-styles="shell"' +
+                '<div data-ng-show="show" class="app-fileupload" init-widget apply-styles="shell">' +
                     '<div data-ng-show="multiple" class="app-multi-file-upload">' +
                         '<div class="drop-box" drag-files="onFileSelect($event,$files)">' +
                             '<i class="{{iconclass}}"/>' +
