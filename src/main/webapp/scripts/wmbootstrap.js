@@ -57,15 +57,16 @@ var Application = WM.module('Application',
                 updateLoggedInUserEvent,
                 NG_LOCALE_PATH = "resources/ngLocale/",
                 APP_LOCALE_PATH = "resources/i18n/",
-                appProperties = WM.copy(_WM_APP_PROPERTIES),
-                projectType = appProperties.type;
+                appProperties = WM.copy(_WM_APP_PROPERTIES);
 
             _WM_APP_PROPERTIES = undefined; // delete the global variable.
 
-            $rootScope.isPrefabType = projectType === 'PREFAB';
-            $rootScope.isMobileType = projectType === 'MOBILE';
-            $rootScope.isApplicationType = projectType === 'APPLICATION';
-            $rootScope.isTemplateBundleType = projectType === 'TEMPLATEBUNDLE';
+            $rootScope.isPrefabType = appProperties.type === 'PREFAB';
+            $rootScope.isMobileType = (appProperties.type === 'APPLICATION' && appProperties.platformType === 'MOBILE');
+            $rootScope.isApplicationType = (appProperties.type === 'APPLICATION' && appProperties.platformType === 'WEB');
+            $rootScope.isTemplateBundleType = (appProperties.type === 'TEMPLATEBUNDLE' && appProperties.platformType === 'WEB');
+            $rootScope.isMobileTemplateBundleType = (appProperties.type === 'TEMPLATEBUNDLE' && appProperties.platformType === 'MOBILE');
+
             /*create the project object*/
             $rootScope.project = {
                 id: projectID,
