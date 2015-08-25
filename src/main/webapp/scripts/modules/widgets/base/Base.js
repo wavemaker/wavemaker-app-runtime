@@ -1283,7 +1283,7 @@ WM.module('wm.widgets.base', [])
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "itemclass": {"type": "string", "pattern": classRegex},
                         "listclass": {"type": "string", "pattern": classRegex},
-                        "navigation": {"type": "list", "options": ["None", "Basic", "Advanced", "Scroll"]},
+                        "navigation": {"type": "list", "options": ["None", "Basic", "Advanced", "Scroll"], "value": "None"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"}
                     },
                     "wm.livefilter": {
@@ -2359,7 +2359,7 @@ WM.module('wm.widgets.base', [])
                     'zindex'                : 'zIndex'
                 },
                 SHELL_TYPE_IGNORE_LIST = 'height minheight maxheight overflow paddingunit paddingtop paddingright paddingbottom paddingleft',
-                CONTAINER_TYPE_IGNORE_LIST = 'horizontalalign textalign';
+                CONTAINER_TYPE_IGNORE_LIST = 'textalign';
 
             _.keys(propNameCSSKeyMap)
                 .concat(SHELL_TYPE_IGNORE_LIST.split(' '))

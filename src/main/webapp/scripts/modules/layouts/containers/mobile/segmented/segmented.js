@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM, _ */
 /*jslint todo: true */
 /*Directive for segmented control */
 WM.module('wm.layouts.containers')
@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                 '</div>' +
             '</div>');
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
-            '<li init-widget wmtransclude class="app-segment-content clearfix" ' + $rootScope.getWidgetStyles('container') +'></li>');
+            '<li init-widget wmtransclude class="app-segment-content clearfix" apply-styles="container"></li>');
     }])
     .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
         'use strict';
@@ -50,15 +50,16 @@ WM.module('wm.layouts.containers')
                  * Removes the content.
                  */
                 this.removeContent = function (content) {
-                    var i, len = $scope.contents.length;
-                    for (i = 0; i < len; i++) {
-                        if ($scope.contents[i].$id === content.$id) {
-                            break;
-                        }
-                    }
-                    $scope.contents.splice(i, 1);
-                    if (i < $scope.contents.length) {
-                        $scope.showContent(i);
+                    var index;
+
+                    index = _.findIndex($scope.contents, function (_content) {
+                        return _content.$id === content.$id;
+                    });
+
+                    _.pullAt($scope.contents, index);
+
+                    if (index < $scope.contents.length) {
+                        $scope.showContent(index);
                     } else if ($scope.contents.length > 0) {
                         $scope.showContent(0);
                     }
@@ -72,7 +73,7 @@ WM.module('wm.layouts.containers')
                         $scope.animate = true;
                         $scope.currentSelectedIndex = 0;
                     },
-                    'post' : function ($scope, $element, attrs, ctrl) {
+                    'post' : function ($scope, $element) {
                         /**
                          * Displays content at the given index.
                          */
@@ -81,14 +82,15 @@ WM.module('wm.layouts.containers')
                                 return;
                             }
 
-                            var i = $scope.lastShownContentIndex,
-                                contents = $scope.contents,
+                            var contents = $scope.contents,
                                 currentContent = contents[index],
-                                eventData = {$scope: this,
-                                            $old: $scope.lastShownContentIndex,
-                                            $new: index},
+                                eventData = {
+                                    $scope: this,
+                                    $old  : $scope.lastShownContentIndex,
+                                    $new  : index
+                                },
                                 $segmentsCtr = $element.find(".app-segments-container"),
-                                $segment = $element.find(".app-segments-container > ul > li:nth-child(" + (index + 1) + ")") ,
+                                $segment = $element.find(".app-segments-container > ul > li:nth-child(" + (index + 1) + ")"),
                                 scrollPos = $segmentsCtr.scrollLeft(),
                                 left = $segment.position().left;
                             $scope.currentSelectedIndex = index;
@@ -100,7 +102,8 @@ WM.module('wm.layouts.containers')
 
                             $segmentsCtr.animate(
                                 { scrollLeft: (scrollPos + left)},
-                                { duration: "slow" });
+                                { duration: "slow" }
+                            );
 
                             $scope.lastShownContentIndex = index;
                             $scope.onSegmentchange(eventData);
