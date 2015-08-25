@@ -174,7 +174,9 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "contactFilter": {"type": "string", "dataBinding": true,  "value": "", "hide" : true},
                     /*events*/
                     "onSuccess": {"type": "list", "options": variableEventOptions},
-                    "onError": {"type": "list", "options": variableEventOptions}
+                    "onError": {"type": "list", "options": variableEventOptions},
+                    /*vibrate options*/
+                    "vibrationtime": {"type": "number", "value": 2, "hide" : true}
                 }
             },
 
@@ -195,7 +197,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                             "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
                             "allowImageEdit", "imageEncodingType", "imageQuality", "correctOrientation", "saveToPhotoAlbum",
                             "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",
-                            "contactFilter"], "parent": "properties"},
+                            "contactFilter", "vibrationtime"], "parent": "properties"},
 
                 /* properties under data tab */
                 {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding"], "parent": "data"},
