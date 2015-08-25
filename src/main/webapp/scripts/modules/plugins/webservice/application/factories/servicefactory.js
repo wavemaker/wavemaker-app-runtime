@@ -192,7 +192,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
             },
 
             processOperations = function (serviceObj, operations, swagger) {
-                var paramsKey = "parameters",
+                var paramsKey,
                     isRestSupportedService = isRESTSupported(serviceObj.type),
                     definitions,
                     securityDefinitions;
@@ -230,8 +230,13 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     /* special case for pageable return type */
                     if (isRestSupportedService) {
                         returnObj = {typeRef: returnType};
+                        paramsKey = "parameters";
+
                     } else {
                         returnObj = returnType;
+                        paramsKey = "parameter";
+                        IS_LIST_KEY = 'isList';
+                        parameterTypeKey = 'parameterType';
                     }
 
                     /*push the operation only if does not exist previously*/
