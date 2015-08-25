@@ -1277,16 +1277,14 @@ WM.module('wm.widgets.base', [])
                         "pagesize": {"type": "number"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
-                        "showrecordcount": {"type": "boolean", "value": false, "show": false},
-                        "shownavigation": {"type": "boolean", "value": false},
                         "itemsperrow": {"type": "list", "options": ["1", "2", "3", "4", "6", "12"], "value": "1"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "itemclass": {"type": "string", "pattern": classRegex},
                         "listclass": {"type": "string", "pattern": classRegex},
-                        "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
-                        "infscroll": {"type": "boolean", "value": false}
+                        "navigation": {"type": "list", "options": ["None", "Basic", "Advanced", "Scroll"]},
+                        "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"}
                     },
                     "wm.livefilter": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1516,7 +1514,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "help", "properties": ["helptext"], "parent": "properties"},
-                {"name": "behavior", "properties": ["pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "deletemessage", "ignoreparentreadonly", "readonlygrid",
+                {"name": "behavior", "properties": ["navigation", "pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "deletemessage", "ignoreparentreadonly", "readonlygrid",
                     "multiple", "show", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "captions", "showxaxis", "showyaxis", "showvalues",
@@ -2370,9 +2368,15 @@ WM.module('wm.widgets.base', [])
                     notifyFor[propName] = true;
                 });
 
-            notifyFor.fontsize = true;
-            notifyFor.fontunit = true;
+            // few extra properties which need some calculation before applying as CSS.
+            notifyFor.fontsize        = true;
+            notifyFor.fontunit        = true;
             notifyFor.backgroundimage = true;
+            notifyFor.marginbottom    = true;
+            notifyFor.marginleft      = true;
+            notifyFor.marginright     = true;
+            notifyFor.margintop       = true;
+
 
             function setDimensionProp($is, cssObj, key) {
                 var prefix,

@@ -12,7 +12,7 @@ WM.module('wm.widgets.live')
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                        '<wm-datanavigator class="well well-sm clearfix" data-ng-if="hasNavigation" show="{{shownavigation}}" showrecordcount="{{showrecordcount}}"></wm-datanavigator>' +
+                        '<wm-datanavigator class="well well-sm clearfix" data-ng-if="hasAdvancedNavigation" show="{{showAdvancedNavigation}}" showrecordcount="true"></wm-datanavigator>' +
                     '</div>'
                 );
 
@@ -51,11 +51,15 @@ WM.module('wm.widgets.live')
                 liTemplateWrapper_end = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>',
                 notifyFor = {
                     'dataset'        : true,
-                    'shownavigation' : true,
-                    'showrecordcount': true,
-                    'itemsperrow'    : true
+                    'navigation'     : CONSTANTS.isStudioMode,
+                    'itemsperrow'    : CONSTANTS.isStudioMode
                 },
-                directiveDefn;
+                directiveDefn,
+                NAVIGATION = {
+                    'BASIC'    : 'Basic',
+                    'ADVANCED' : 'Advanced',
+                    'SCROLL'   : 'Scroll'
+                };
 
             /* to return the bootstrap classes for the <li> w.r.t no. of items per row */
             function getRowClass(itemsperrow) {
@@ -235,7 +239,7 @@ WM.module('wm.widgets.live')
                     _s = $is.$liScope,
                     fieldDefs = _s.fieldDefs;
 
-                if ($is.infscroll) {
+                if ($is.infScroll) {
                     if (WM.isUndefined(fieldDefs)) {
                         _s.fieldDefs = fieldDefs = [];
                     }
@@ -317,7 +321,7 @@ WM.module('wm.widgets.live')
                 var $dataNavigator, // dataNavigator element
                     dataNavigator,  // dataNavigator scope
                     binddataset;
-                if ($is.hasNavigation) {
+                if ($is.hasAdvancedNavigation) {
 
                     binddataset = $is.binddataset;
                     Utils.triggerFn($is._watchers.dataset);
@@ -380,33 +384,60 @@ WM.module('wm.widgets.live')
                 $is.oldbinddataset = $is.binddataset;
             }
 
+            function resetNavigation($is) {
+                $is.hasAdvancedNavigation  = false;
+                $is.showAdvancedNavigation = false;
+                $is.infScroll              = false;
+            }
+
+            function enableBasicNavigation() {
+                return; // implement when basic navigation is available.
+            }
+
+            function enableAdvancedNavigation($is) {
+                $is.hasAdvancedNavigation  = true;
+                $is.showAdvancedNavigation = true;
+            }
+
+            function enableInfiniteScroll($is) {
+                $is.hasAdvancedNavigation = true;
+                $is.infScroll             = true;
+            }
+
+            function onNavigationTypeChange($is, type) {
+                resetNavigation($is);
+                switch (type) {
+                case NAVIGATION.BASIC:
+                    enableBasicNavigation($is);
+                    break;
+                case NAVIGATION.ADVANCED:
+                    enableAdvancedNavigation($is);
+                    break;
+                case NAVIGATION.SCROLL:
+                    enableInfiniteScroll($is);
+                    break;
+                }
+            }
+
             /** In case of run mode, the field-definitions will be generated from the markup*/
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler($is, $el, attrs, key, newVal, oldVal) {
+            function propertyChangeHandler($is, $el, attrs, key, nv, ov) {
                 var doNotRemoveTemplate,
                     oldClass,
-                    newClass,
-                    wp;
+                    newClass;
 
                 if (key === 'dataset') {
                     doNotRemoveTemplate = attrs.template === 'true';
-                    onDataSetChange($is, $el, doNotRemoveTemplate, newVal);
+                    onDataSetChange($is, $el, doNotRemoveTemplate, nv);
                 }
 
                 if (CONSTANTS.isStudioMode) {
-                    wp = $is.widgetProps;
-                    switch (key) {
-                    case 'infscroll':
-                        wp.shownavigation.disabled = true;
-                        break;
-                    case 'shownavigation':
-                        wp.showrecordcount.show = newVal;
-                        break;
-                    case 'itemsperrow':
-                        oldClass = oldVal && 'col-md-' + 12 / (+oldVal);
-                        newClass = newVal && 'col-md-' + 12 / (+newVal);
+                    if (key === 'itemsperrow') {
+                        oldClass = ov && 'col-md-' + 12 / (+ov);
+                        newClass = nv && 'col-md-' + 12 / (+nv);
                         $el.find('.app-listtemplate').removeClass(oldClass).addClass(newClass);
-                        break;
+                    } else {
+                        onNavigationTypeChange($is, nv);
                     }
                 }
             }
@@ -534,10 +565,6 @@ WM.module('wm.widgets.live')
 
                 $liScope = createChildScope($is, $el, attrs);
                 $is.$liScope = $liScope;
-                $is.hasNavigation = $is.shownavigation || $is.infscroll;
-                if ($is.infscroll) {
-                    $is.shownavigation = false;
-                }
 
                 if (CONSTANTS.isRunMode) {
 
@@ -557,6 +584,15 @@ WM.module('wm.widgets.live')
                 }
                 /* register the property change handler */
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);
+
+                // in the run mode navigation can not be changed dynamically
+                // process the navigation type before the dataset is set.
+                if (attrs.hasOwnProperty('shownavigation')) {
+                    // for legacy applications
+                    $is.navigation = NAVIGATION.ADVANCED;
+                }
+                onNavigationTypeChange($is, $is.navigation);
+
                 WidgetUtilService.postWidgetCreate($is, $el, attrs);
             }
 
