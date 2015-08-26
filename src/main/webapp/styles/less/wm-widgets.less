@@ -1600,134 +1600,83 @@ If the height and width are not specified the video takes the height of the post
 /********************************************************************************
 ******************************** Tabs classes ******************************
 *********************************************************************************/
-@app-tabs-link-color: #333333;
-@app-tabs-link-bg-color: #333333;
-@app-tabs-bg-gradient-start-color: #eaeaea;
-@app-tabs-bg-gradient-end-color: #cccccc;
-@app-tabs-active-link-border-color: #CCCCCC;
-@app-tabs-active-link-bg-color: #FFFFFF;
-@app-tabs-active-link-color: #333333;
-@app-tabs-tab-body-border-color: #CCCCCC;
-@app-tabs-tab-body-bg-color: #FFFFFF;
+@app-tabs-border-color: rgba(0,0,0,0.1);
+@app-tabs-bg-color: #FFFFFF;
 
 .app-tabs {
   position: relative;
-  min-height: 10em;
-  .nav-tabs {
-    li {
-      cursor: pointer;
+  width: 99.99%;
+  max-width: 100%;
+  .nav > li {
+    cursor: pointer;
+  }
+
+  &.inverted {
+    > ul.nav:not(.nav-stacked) {
+      border-bottom: none;
+      > li {
+        margin-top: -1px;
+        margin-bottom: 0;
+        > a {
+          border-radius: 0 0 3px 3px;
+          border-top-color: transparent;
+          border-bottom-color: @app-tabs-border-color;
+        }
+      }
+    }
+    > ul.nav-stacked {
+      > li.active {
+        margin-left: -1px;
+        > a {
+          border-left-color: transparent;
+        }
+      }
     }
   }
   .tab-content {
-    margin: 0;
-    padding: 0;
+    height: 90%;
+    max-width: 100%;
+    .calc('height', ~"calc(100% - 3.5em)");
+    background-color: @app-tabs-bg-color;
+    position: relative;
     .tab-pane {
-      position: relative;
       height: 100%;
-    }
-    .tab-body {
-      height: 100%;
-      background-color: @app-tabs-tab-body-bg-color;
-      border: 1px solid @app-tabs-tab-body-border-color;
-      border-top: 0;
-      display: none;
-      overflow: auto;
-      position: relative;
+      .tab-body {
+        position: relative;
+        border-width: 1px;
+        border-style: solid;
+        border-top-width: 0;
+        height: 100%;
+        overflow: auto;
+        width: 100%;
+        max-width: 100%;
+      }
     }
   }
 
-  .tab-pane.active {
-    .tab-body {
-      display: block;
-    }
-  }
-  /*Vertical tabs*/
-  .nav.nav-stacked {
+  .nav-tabs.nav-stacked {
     width: 20%;
-    float: left;
-    border: none;
-    > li > a {
-      border-color: #ccc;
-      border-right-color: transparent;
+    display: inline-block;
+    vertical-align: top;
+    > li {
       margin: 0;
-      .border-radius(0);
-    }
-    > li.active > a {
-      border-radius: 4px 0 0 4px;
-      border-right-color: transparent;
-      border-bottom-color: @app-tabs-tab-body-border-color;
-      z-index: 1;
-      margin-right: -1px;
-    }
-    > li.active > a:hover {
-      border-color: #ccc;
-      border-right-color: transparent;
-    }
-    > li + li {
-      margin-top: 0;
-    }
-
-    ~ .tab-content {
-      float: right;
-      width: 80%;
-
-      .tab-body {
-        border-top: 1px solid @app-tabs-tab-body-border-color;
+      > a {
+        margin: 0;
+        border-radius: 0;
+      }
+      &.active {
+        > a {
+          border-right-color: transparent;
+        }
       }
     }
   }
-  &.inverted{
-    ul.nav-tabs{
-      border: 0px;
-      > li {
-        margin-bottom: 0px;
-
-        >a{
-          border-radius:0px 0px 3px 3px;
-          border-top-color: transparent;
-        }
-      }
-      > li.active {
-        margin-top: -1px;
-
-        >a, >a:hover{
-          border: 1px solid #ccc;
-          border-top-color: transparent;
-        }
-      }
-    }
-    .tab-content{
-      .tab-body {
-        border: 1px solid @app-tabs-tab-body-border-color;
-      }
-    }
-    ul.nav-tabs.nav-stacked{
-      float: right;
-      border: 0px;
-      > li {
-        margin: 0px 0px 0px -1px;
-
-        >a{
-          border-radius:0px 3px 3px 0px;
-          border: 1px solid #ccc;
-          border-left-color: transparent;
-        }
-      }
-      > li.active {
-
-        >a, >a:hover{
-          border: 1px solid #ccc;
-          border-left-color: transparent;
-        }
-      }
-      &::after{
-        content: " ";
-        clear: both;
-      }
-    }
-    .tab-content.tab-stacked {
-      float: left;
-      width: 80%;
+  .tab-stacked {
+    display: inline-block;
+    width: 80%;
+    height: 100%;
+    > .tab-pane > .tab-body{
+      border-top-width: 1px;
     }
   }
 }

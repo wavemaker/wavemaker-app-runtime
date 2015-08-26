@@ -8,9 +8,9 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabs directive */
         $templateCache.put('template/layout/container/tabs.html',
-                '<div class="app-tabs clearfix" init-widget data-ng-show="show" apply-styles="shell">' +
+                '<div class="app-tabs clearfix" init-widget data-ng-show="show" apply-styles="container">' +
                     '<ul class="nav nav-tabs" data-ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
-                    '<div class="tab-content" apply-styles="container" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude></div>' +
+                    '<div class="tab-content" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude></div>' +
                 '</div>'
             );
 
