@@ -200,7 +200,7 @@ WM.module('wm.widgets.base')
             }
 
             function isInterpolated(val) {
-                return val.charAt(0) === '{' && val.charAt(1) === '{';
+                return _.includes(val, '{{') && _.includes(val, '}}');
             }
 
             function watchProperty($is, attrs, attrName) {
