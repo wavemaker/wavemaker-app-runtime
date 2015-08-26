@@ -199,7 +199,7 @@ wm.plugins.database.services.DatabaseService = [
                         "username": params.username,
                         "password": params.password,
                         "url": params.url,
-                        "driver_class": params.driver_class,
+                        "driverClass": params.driverClass,
                         "dialect": params.dialect
                     },
                     urlParams: {
@@ -238,7 +238,7 @@ wm.plugins.database.services.DatabaseService = [
                         "url": params.url,
                         "tableFilter": params.tableFilter,
                         "schemaFilter": params.schemaFilter,
-                        "driver_class": params.driver_class,
+                        "driverClass": params.driverClass,
                         "dialect": params.dialect,
                         "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
                         "impersonateUser": false,
@@ -308,7 +308,7 @@ wm.plugins.database.services.DatabaseService = [
                         "url": params.url,
                         "schemaName": params.schemaName,
                         "schemaFilter": params.schemaFilter,
-                        "driver_class": params.driver_class,
+                        "driverClass": params.driverClass,
                         "dialect": params.dialect,
                         "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
                         "impersonateUser": false,
@@ -349,7 +349,7 @@ wm.plugins.database.services.DatabaseService = [
                         "url": params.url,
                         "schemaFilter": params.schemaFilter,
                         "tableFilter": params.tableFilter,
-                        "driver_class": params.driver_class,
+                        "driverClass": params.driverClass,
                         "dialect": params.dialect,
                         "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
                         "impersonateUser": false
