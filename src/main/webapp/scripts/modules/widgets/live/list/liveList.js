@@ -67,7 +67,8 @@ WM.module('wm.widgets.live')
                     return undefined;
                 }
                 var col = itemsperrow && 12 / (+itemsperrow);
-                return ' col-sm-' + col + ' col-md-' + col;
+
+                return ' col-xs-' + col + ' col-sm-' + col + ' col-md-' + col;
             }
 
             function getVariable($is, variableName) {
@@ -518,8 +519,11 @@ WM.module('wm.widgets.live')
 
             function prepareLITemplate(tmpl, attrs) {
                 var $tmpl = WM.element(tmpl),
-                    $div = WM.element('<div></div>').append($tmpl);
-                $div.find('*').each(updateTmplAttrs.bind(undefined, attrs.dataset || attrs.scopedataset));
+                    $div  = WM.element('<div></div>').append($tmpl),
+                    parentDataSet = attrs.dataset || attrs.scopedataset;
+                if (parentDataSet) {
+                    $div.find('*').each(updateTmplAttrs.bind(undefined, parentDataSet));
+                }
                 $tmpl = applyWrapper($tmpl, attrs);
                 return $tmpl;
             }
