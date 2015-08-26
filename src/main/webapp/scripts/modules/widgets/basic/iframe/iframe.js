@@ -11,10 +11,10 @@ WM.module('wm.widgets.basic')
                         'hint="{{title}}" seamless="seamless">' +
                     '</iframe>' +
                     '<div class="wm-content-info {{class}} readonly-wrapper" data-ng-show="showContentLoadError"><p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p></div>' +
-                '</div'
+                '</div>'
             );
     }])
-    .directive('wmIframe', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', '$sce', 'CONSTANTS', 'Utils', '$location', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $sce, CONSTANTS, Utils, $location) {
+    .directive('wmIframe', ['PropertiesFactory', '$rootScope', 'WidgetUtilService', '$sce', 'CONSTANTS', 'Utils', '$location', function (PropertiesFactory, $rootScope, WidgetUtilService, $sce, CONSTANTS, Utils, $location) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.iframe', ['wm.base']),
@@ -30,7 +30,7 @@ WM.module('wm.widgets.basic')
                 /*monitoring the iframe src property*/
                 if (newVal && WM.isString(newVal) && newVal.indexOf('Variables') === -1) {
                     /*applying the property value as src attribute value only if newVal is string */
-                    scope.iframesrc = $sce.trustAsResourceUrl(newVal);
+                    scope._iframesrc = $sce.trustAsResourceUrl(newVal);
 
                     /* check for 'http' urls in studio mode of SAAS studio version */
                     if (CONSTANTS.isStudioMode && Utils.findValueOf($rootScope.preferences, 'workspace.nonSecureContent.allow') && Utils.stringStartsWith(newVal, 'http://') && Utils.stringStartsWith($location.$$absUrl, 'https://')) {
@@ -41,7 +41,7 @@ WM.module('wm.widgets.basic')
                         scope.showContentLoadError = false;
                     }
 
-                    element.children('iframe').attr('src', scope.iframesrc);
+                    element.children('iframe').attr('src', scope._iframesrc);
                 }
                 break;
             }
