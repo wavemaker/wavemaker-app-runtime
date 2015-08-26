@@ -132,6 +132,28 @@ WM.module('wm.widgets.live')
 
             /**
              * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getFormActions
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * return an object consisting form actions in edit and view mode.
+             *
+             * @param {boolean} getFlat returns a flat array of all actions
+             */
+            function getFormActions(getFlat) {
+                var actions = {
+                    'edit': ['cancel()', 'reset()', 'save()', 'saveAndNew()'],
+                    'view': ['delete()', 'new()', 'edit()']
+                };
+                if (getFlat) {
+                    return actions.view.concat(['formSave()', 'formCancel()']).concat(actions.edit);
+                }
+                return actions;
+            }
+
+            /**
+             * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getColumnDef
              * @methodOf wm.widgets.live.LiveWidgetUtils
              * @function
@@ -481,7 +503,7 @@ WM.module('wm.widgets.live')
                 return template;
             }
 
-            /*
+            /**
             * @ngdoc function
             * @name wm.widgets.live.LiveWidgetUtils#getCustomActions
             * @methodOf wm.widgets.live.LiveWidgetUtils
@@ -507,10 +529,68 @@ WM.module('wm.widgets.live')
                 return customActions;
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#translateVariableObject
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * consumes the raw object received from LiveVariable and returns consumable field objects agains each column.
+             *
+             * @param {object} rawObject data object received from the LiveVariable
+             * @param {object} widget scope Caller Widget scope (optional)
+             */
+            function translateVariableObject(rawObject, scope) {
+                var translatedObj = [],
+                    columnArray = rawObject.propertiesMap.columns;
+
+                if (scope) {
+                    scope.propertiesMap = rawObject.propertiesMap;
+                    scope.columnArray = scope.propertiesMap.columns;
+                    scope.primaryKey = scope.primaryKey || [];
+                }
+                columnArray.forEach(function (fieldObj, index) {
+                    translatedObj[index] = {
+                        "displayName": Utils.prettifyLabel(fieldObj.fieldName),
+                        "show": true,
+                        "primaryKey": fieldObj.isPrimaryKey,
+                        "generator": fieldObj.generator,
+                        "key": fieldObj.fieldName,
+                        "value": "",
+                        "type": fieldObj.isRelated ? "list" : fieldObj.fullyQualifiedType,
+                        "maxvalue": '',
+                        "isRelated": fieldObj.isRelated,
+                        "readonly": fieldObj.isPrimaryKey,
+                        "required": fieldObj.notNull === "true" || fieldObj.notNull === true,
+                        "relatedFieldName": fieldObj.columns && fieldObj.columns[index] && fieldObj.columns[index].fieldName
+                    };
+                    if (fieldObj.defaultValue) {
+                        translatedObj[index].defaultValue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
+                    }
+                    if (fieldObj.type === "string" || fieldObj.type === "character" || fieldObj.type === "text" || fieldObj.type === "blob" || fieldObj.type === "clob") {
+                        translatedObj[index].maxvalue = fieldObj.length;
+                    }
+                    if (fieldObj.isPrimaryKey) {
+                        /*Store the primary key of data*/
+                        if (scope) {
+                            scope.setPrimaryKey(fieldObj.fieldName);
+                        }
+                        /*Hiding primary if it is generated automatically(User can un-hide it from edit feilds dialog)*/
+                        if (fieldObj.generator !== "assigned") {
+                            translatedObj[index].show = false;
+                        }
+                    }
+                });
+                return translatedObj;
+            }
+
             this.getDefaultValue = getDefaultValue;
             this.getFormButtons = getFormButtons;
             this.getCustomActions = getCustomActions;
             this.getColumnDef = getColumnDef;
             this.getTemplate = getTemplate;
+            this.getFormActions = getFormActions;
+            this.translateVariableObject = translateVariableObject;
         }
     ]);

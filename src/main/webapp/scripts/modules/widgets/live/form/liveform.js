@@ -495,41 +495,7 @@ WM.module('wm.widgets.live')
 
                 /*Translate the variable rawObject into the formFields for form construction*/
                 $scope.translateVariableObject = function (rawObject) {
-                    $scope.propertiesMap = rawObject.propertiesMap;
-                    $scope.columnArray = $scope.propertiesMap.columns;
-                    $scope.primaryKey = $scope.primaryKey || [];
-                    var translatedObj = [];
-                    $scope.columnArray.forEach(function (fieldObj, index) {
-                        translatedObj[index] = {
-                            "displayName": Utils.prettifyLabel(fieldObj.fieldName),
-                            "show": true,
-                            "primaryKey": fieldObj.isPrimaryKey,
-                            "generator": fieldObj.generator,
-                            "key": fieldObj.fieldName,
-                            "value": "",
-                            "type": fieldObj.isRelated ? "list" : fieldObj.fullyQualifiedType,
-                            "maxvalue": '',
-                            "isRelated": fieldObj.isRelated,
-                            "readonly": fieldObj.isPrimaryKey,
-                            "required": fieldObj.notNull === "true" || fieldObj.notNull === true,
-                            "relatedFieldName": fieldObj.columns && fieldObj.columns[index] && fieldObj.columns[index].fieldName
-                        };
-                        if (fieldObj.defaultValue) {
-                            translatedObj[index].defaultValue = LiveWidgetUtils.getDefaultValue(fieldObj.defaultValue, fieldObj.type);
-                        }
-                        if (fieldObj.type === "string" || fieldObj.type === "character" || fieldObj.type === "text" || fieldObj.type === "blob" || fieldObj.type === "clob") {
-                            translatedObj[index].maxvalue = fieldObj.length;
-                        }
-                        /*Store the primary key of data*/
-                        if (fieldObj.isPrimaryKey) {
-                            $scope.setPrimaryKey(fieldObj.fieldName);
-                            /*Hiding primary if it is generated automatically(User can un-hide it from edit feilds dialog)*/
-                            if (fieldObj.generator !== "assigned") {
-                                translatedObj[index].show = false;
-                            }
-                        }
-                    });
-                    return translatedObj;
+                    return LiveWidgetUtils.translateVariableObject(rawObject, $scope);
                 };
                 $scope.changeDataObject = function (dataObj) {
                     var primaryKey,
