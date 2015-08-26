@@ -64,7 +64,7 @@ WM.module('wm.widgets.live')
             /* to return the bootstrap classes for the <li> w.r.t no. of items per row */
             function getRowClass(itemsperrow) {
                 if (!itemsperrow) {
-                    return '';
+                    return undefined;
                 }
                 var col = itemsperrow && 12 / (+itemsperrow);
                 return ' col-sm-' + col + ' col-md-' + col;
