@@ -62,10 +62,9 @@ var Application = WM.module('Application',
             _WM_APP_PROPERTIES = undefined; // delete the global variable.
 
             $rootScope.isPrefabType = appProperties.type === 'PREFAB';
-            $rootScope.isMobileType = (appProperties.type === 'APPLICATION' && appProperties.platformType === 'MOBILE');
+            $rootScope.isMobileType = appProperties.platformType === 'MOBILE';
             $rootScope.isApplicationType = (appProperties.type === 'APPLICATION' && appProperties.platformType === 'WEB');
-            $rootScope.isTemplateBundleType = (appProperties.type === 'TEMPLATEBUNDLE' && appProperties.platformType === 'WEB');
-            $rootScope.isMobileTemplateBundleType = (appProperties.type === 'TEMPLATEBUNDLE' && appProperties.platformType === 'MOBILE');
+            $rootScope.isTemplateBundleType = appProperties.type === 'TEMPLATEBUNDLE';
 
             /*create the project object*/
             $rootScope.project = {
