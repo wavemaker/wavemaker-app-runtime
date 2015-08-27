@@ -123,6 +123,9 @@
   z-index: 1000;
   overflow: inherit;
   font-size: @app-mobile-nav-font-size;
+  .btn {
+    outline-color: transparent;
+  }
   .navbar {
     background-color: inherit;
     height: @app-mobile-nav-height;
@@ -160,11 +163,6 @@
       }
       &.navbar-right {
        text-align: right;
-        > li {
-          > button {
-             margin: 1em 0;
-          }
-        }
         .dropdown {
           background-color: inherit;
         }

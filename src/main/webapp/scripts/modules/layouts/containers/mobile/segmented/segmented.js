@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                 '</div>' +
             '</div>');
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
-            '<li init-widget wmtransclude class="app-segment-content clearfix" apply-styles="container"></li>');
+            '<li init-widget wmtransclude class="app-segment-content clearfix" apply-styles="container" wm-navigable-element="true"></li>');
     }])
     .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
         'use strict';
@@ -33,6 +33,13 @@ WM.module('wm.layouts.containers')
             'controller' : function ($scope) {
                 this.addContent = function ($contentScope) {
                     $scope.contents.push($contentScope);
+                };
+
+                this.showContent = function (content) {
+                    var contentIndex = _.findIndex($scope.contents, function (_content) {
+                        return _content.$id === content.$id;
+                    });
+                    $scope.showContent(contentIndex);
                 };
                 /**
                  * Hides the current content and displays the next in position.
@@ -140,6 +147,9 @@ WM.module('wm.layouts.containers')
                     },
                     'post' : function ($scope, element, attrs, controller) {
                         controller.addContent($scope);
+                        $scope.navigate = function () {
+                            controller.showContent($scope);
+                        };
                         //remove the segment links
                         if (CONSTANTS.isStudioMode) {
                             $scope.$on('$destroy', function () {

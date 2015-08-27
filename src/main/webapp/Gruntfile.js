@@ -483,7 +483,11 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/variables/application/timervariable/timervariableservice.js',
                         '<%= config.scripts %>/modules/variables/application/mobilevariable/mobilevariableservice.js',
                         '<%= config.scripts %>/modules/i18n/config.js',
-                        '<%= config.scripts %>/modules/i18n/services/i18nService.js'
+                        '<%= config.scripts %>/modules/i18n/services/i18nService.js',
+                        '<%= config.scripts %>/modules/mobile/widgets/advanced/fileBrowser/fileBrowser.js',
+                        '<%= config.scripts %>/modules/mobile/common/services/fileSelectorService.js',
+                        '<%= config.scripts %>/modules/mobile/common/services/fileUploadService.js',
+                        '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js'
                     ],
                     '<%= config.mobile %>/scripts/mobileruntimeloader.min.js': [
                         '<%= config.mobile %>/scripts/mobileruntimeloader.js'

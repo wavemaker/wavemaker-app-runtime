@@ -13,7 +13,7 @@
  * The 'MobileService' is a wrapper over cardova. This acts as a integration point of Cardova API
  * and Wavemaker variables.
  */
-wm.variables.services.MobileService = ['$cordovaContacts', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', '$cordovaBarcodeScanner', '$cordovaVibration', function ($cordovaContacts, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera, $cordovaBarcodeScanner, $cordovaVibration) {
+wm.variables.services.MobileService = ['$rootScope', '$cordovaContacts', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', '$cordovaBarcodeScanner', '$cordovaVibration', '$cordovaFileTransfer', function ($rootScope, $cordovaContacts, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera, $cordovaBarcodeScanner, $cordovaVibration, $cordovaFileTransfer) {
     "use strict";
     var event = {
             title: '',
@@ -145,7 +145,7 @@ wm.variables.services.MobileService = ['$cordovaContacts', '$cordovaNetwork', '$
                     };
                     $cordovaGeolocation.getCurrentPosition(geoLocationOptions).then(success, error);
                 }
-            },
+            },            
             vibrate :   {
                 model: {
                     data: {}
@@ -156,6 +156,29 @@ wm.variables.services.MobileService = ['$cordovaContacts', '$cordovaNetwork', '$
                         time: variable.vibrationtime * 1000
                     };
                     $cordovaVibration.vibrate(vibrationTimeOptions.time);
+                }
+            }
+        },
+        file : {
+            upload : {
+                model: {
+                    name: '',
+                    path: '',
+                    size: 0,
+                    type: ''
+                },
+                properties : ['localFile', 'remoteFolder'],
+                invoke: function (variable, options, success, error) {
+                    var serverUrl = $rootScope.project.deployedUrl + '/services/file/uploadFile?relativePath='+variable.remoteFolder,
+                        fileName = variable.localFile,
+                        fileNameStartIndex = fileName.lastIndexOf('/');
+                        if (fileNameStartIndex >= 0) {
+                            fileName  = fileName.substring(fileNameStartIndex + 1);
+                        }
+                    $cordovaFileTransfer.upload(serverUrl, variable.localFile, {fileKey : 'files', fileName: fileName})
+                                        .then(function (data) {
+                                            success(JSON.parse(data.response)[0]);
+                                        }, error);
                 }
             }
         },
