@@ -35,6 +35,10 @@ WM.module('wm.widgets.live')
                 return value;
             }
 
+            function getEventTypes() {
+                return ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'];
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getDefaultValue
@@ -173,7 +177,13 @@ WM.module('wm.widgets.live')
                     'datepattern': attrs.datepattern,
                     'class': attrs.class || '',
                     'required': attrs.required === 'true' || attrs.required === true,
-                    'placeholder': attrs.placeholder
+                    'placeholder': attrs.placeholder,
+                    'onChange': attrs.onChange,
+                    'onBlur': attrs.onBlur ,
+                    'onFocus': attrs.onFocus,
+                    'onMouseleave': attrs.onMouseleave,
+                    'onMouseenter': attrs.onMouseenter,
+                    'onClick': attrs.onClick
                 };
             }
 
@@ -214,7 +224,8 @@ WM.module('wm.widgets.live')
             function getFormFields(fieldDef, index, type) {
                 var fields = '',
                     dateTypes = ['date', 'datetime'],
-                    textTypes = ['text', 'password', 'textarea'];
+                    textTypes = ['text', 'password', 'textarea'],
+                    eventTypes = getEventTypes();
                 Object.keys(fieldDef).forEach(function (field) {
                     if (fieldDef[field]) {
                         if (field === 'key' || field === 'field') {
@@ -234,6 +245,8 @@ WM.module('wm.widgets.live')
                             }
                         } else if (_.includes(textTypes, type) && field === 'maxvalue') {
                             fields += ' maxchars="{{formFields[' + index + '].' + field + '}}"';
+                        } else if (_.includes(eventTypes, field)) {
+                            fields += ' ' + Utils.hyphenate(field) +'="{{formFields[' + index + '].' + field + '}}"';
                         } else {
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
                         }
@@ -505,28 +518,28 @@ WM.module('wm.widgets.live')
 
             /**
             * @ngdoc function
-            * @name wm.widgets.live.LiveWidgetUtils#getCustomActions
+            * @name wm.widgets.live.LiveWidgetUtils#getCustomItems
             * @methodOf wm.widgets.live.LiveWidgetUtils
             * @function
             *
             * @description
-            * return the array of custom actions defined by the user.
+            * return the array of custom actions/events defined by the user.
             *
-            * @param {string} actions actions of a button
+            * @param {string} actions actions/events of a button
             * @param {array} definedActions Predefined actions for the widget
             */
-            function getCustomActions(actions, definedActions) {
-                var customActions = [];
+            function getCustomItems(actions, definedActions) {
+                var customItems = [];
                 actions = actions && actions.split(';');
                 if (WM.isArray(actions)) {
                     actions.forEach(function (action) {
-                        if (definedActions.indexOf(action) === -1) {
+                        if (!_.includes(definedActions, action)) {
                             action = action.substring(0, action.indexOf('('));
-                            customActions.push(action);
+                            customItems.push(action);
                         }
                     });
                 }
-                return customActions;
+                return customItems;
             }
 
             /**
@@ -585,9 +598,10 @@ WM.module('wm.widgets.live')
                 return translatedObj;
             }
 
+            this.getEventTypes = getEventTypes;
             this.getDefaultValue = getDefaultValue;
             this.getFormButtons = getFormButtons;
-            this.getCustomActions = getCustomActions;
+            this.getCustomItems = getCustomItems;
             this.getColumnDef = getColumnDef;
             this.getTemplate = getTemplate;
             this.getFormActions = getFormActions;

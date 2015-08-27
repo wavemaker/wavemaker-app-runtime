@@ -19,7 +19,8 @@ WM.module('wm.widgets.live')
         'QueryBuilder',
         '$filter',
         'Utils',
-        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils) {
+        '$controller',
+        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils, $controller) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf("wm.livefilter", ["wm.layouts", "wm.containers"]),
                 filterMarkup = '',
@@ -322,6 +323,18 @@ WM.module('wm.widgets.live')
                             iScope.Widgets = elScope.Widgets;
                         },
                         post: function (scope, element, attrs) {
+                            /*
+                             * Extend the properties from the form controller exposed to end user in page script
+                             * Kept in try/catch as the controller may not be available sometimes
+                             */
+                            if (CONSTANTS.isRunMode) {
+                                try {
+                                    var filterController = scope.name + "Controller";
+                                    $controller(filterController, {$scope: scope});
+                                } catch (ignore) {
+                                }
+                            }
+
                             var variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
                                 handlers = [],
                                 layoutObj = {
