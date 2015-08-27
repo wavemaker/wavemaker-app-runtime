@@ -51,43 +51,6 @@ WM.module('wm.layouts.page')
                     '<footer data-role="page-footer" class="app-footer clearfix" wm-template-container="{{footer}}"></footer>' +
                 '</div>'
             );
-        $templateCache.put('template/layouts/templateshowcase.html',
-                '<div class="app-template showcase" data-ng-hide="hideShowCase">' +
-                    '<div class="showcase-header row">' +
-                        '<div class="col-sm-5 template-title">{{templates[activeTemplateIndex].id}}</div>' +
-                        '<div class="col-sm-2 nav-actions">' +
-                            '<span class="glypicon glyphicon glyphicon-menu-left nav-action" data-ng-click="prev()"></span>' +
-                            '<span class="template-index">{{activeTemplateIndex + 1}}</span> of ' +
-                            '<span class="template-count">{{templates.length}}</span>' +
-                            '<span class="glypicon glyphicon glyphicon-menu-right nav-action" data-ng-click="next()"></span>' +
-                        '</div>' +
-                        '<div class="col-sm-5">' +
-                            '<button class="btn btn-primary hide-show-case-btn" data-ng-click="hideShowCase = true">' +
-                                '<span><i class="fa fa-close"/></span> ' +
-                            '</button>' +
-                            '<button class="btn btn-primary view-all-template-btn" data-ng-click="showAll = !showAll">' +
-                                '<span class="glyphicon glyphicon-menu-up" data-ng-hide="showAll"></span>' +
-                                '<span class="glyphicon glyphicon-menu-down" data-ng-show="showAll"></span>' +
-                                '<span> Templates </span> ' +
-                            '</button>' +
-
-                        '</div>' +
-                    '</div>' +
-                    '<div class="showcase-body" data-ng-show="showAll">' +
-                        '<ul class="list-inline">' +
-                            '<li data-ng-repeat="template in templates track by $index">' +
-                                '<div data-ng-class="{\'template-tile\': true, \'active\': $index === activeTemplateIndex}" data-ng-click="showTemplate($index)">' +
-                                    '<div  class="image-wrapper">' +
-                                        '<img src="resources/images/imagelists/default-image.png" data-ng-if="!template.thumbnail">' +
-                                        '<img data-ng-src="{{\'resources/\' + template.id + \'/\'+ template.thumbnail}}" data-ng-if="template.thumbnail">' +
-                                    '</div>' +
-                                    '<div class="template-title">{{template.id}}</div>' +
-                                '</div>' +
-                            '</li>' +
-                        '</ul>' +
-                    '</div>' +
-                '</div>'
-            );
     }])
     .directive('wmTemplate', [
         '$templateCache',
@@ -127,22 +90,21 @@ WM.module('wm.layouts.page')
         }
     ])
     .directive('wmTemplateShowcase', [
-        '$templateCache',
         '$location',
         'Utils',
         '$routeParams',
         '$timeout',
 
-        function ($templateCache, $location, Utils, $routeParams, $timeout) {
+        function ($location, Utils, $routeParams, $timeout) {
             'use strict';
 
             var MSGS = {
                 'HIDE_TEMPLATES_SHOW_CASE': 'hide-templates-show-case',
                 'SHOW_TEMPLATES_SHOW_CASE': 'show-templates-show-case',
-                'UPDATE_LOCATION': 'update-location-path',
-                'SELECT_TEMPLATE': 'select-template',
-                'TEMPLATEBUNDLE_CONFIG': 'template-bundle-config',
-                'ON_LOAD': 'on-load'
+                'UPDATE_LOCATION'         : 'update-location-path',
+                'SELECT_TEMPLATE'         : 'select-template',
+                'TEMPLATEBUNDLE_CONFIG'   : 'template-bundle-config',
+                'ON_LOAD'                 : 'on-load'
             };
 
             function postMessage(content) {
@@ -151,8 +113,6 @@ WM.module('wm.layouts.page')
 
             return {
                 'restrict': 'E',
-                'replace': true,
-                'template': $templateCache.get('template/layouts/templateshowcase.html'),
                 'scope': {},
                 'link': function (scope, element) {
 
@@ -241,11 +201,11 @@ WM.module('wm.layouts.page')
 
         var ERROR_CONTENT = '<div class="app-partial-info"><div class="partial-message">Content for the container is unavailable.</div></div>',
             ROLE_DEFAULTCONTENTURL_MAP = {
-                'page-header': 'template/defaults/header.html',
-                'page-topnav': 'template/defaults/topnav.html',
-                'page-left-panel': 'template/defaults/leftnav.html',
+                'page-header'     : 'template/defaults/header.html',
+                'page-topnav'     : 'template/defaults/topnav.html',
+                'page-left-panel' : 'template/defaults/leftnav.html',
                 'page-right-panel': 'template/defaults/rightnav.html',
-                'page-footer': 'template/defaults/footer.html'
+                'page-footer'     : 'template/defaults/footer.html'
             };
 
         function hideContent($el) {
