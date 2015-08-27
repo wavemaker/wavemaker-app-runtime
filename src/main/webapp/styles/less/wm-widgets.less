@@ -478,7 +478,9 @@ html, body {
   margin-right: 30px;
   margin-top: 10px !important;
   input[type="checkbox"], input[type="radio"] {
-    margin: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 0;
   }
   label {
     vertical-align: middle;
@@ -1605,17 +1607,24 @@ If the height and width are not specified the video takes the height of the post
 
 .app-tabs {
   position: relative;
-  width: 99.99%;
-  max-width: 100%;
-  .nav > li {
-    cursor: pointer;
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+  overflow: hidden;
+  .nav.nav-tabs {
+    white-space: nowrap;
+    > li {
+      float: none;
+      cursor: pointer;
+      display: inline-block;
+    }
   }
 
   &.inverted {
     > ul.nav:not(.nav-stacked) {
       border-bottom: none;
+      margin-top: -1px;
       > li {
-        margin-top: -1px;
         margin-bottom: 0;
         > a {
           border-radius: 0 0 3px 3px;
@@ -1636,30 +1645,32 @@ If the height and width are not specified the video takes the height of the post
   .tab-content {
     height: 90%;
     max-width: 100%;
-    .calc('height', ~"calc(100% - 3.5em)");
+    .calc('height', ~"calc(100% - 1.4em - 22px)");/***dont remove for changed font sizes**/
     background-color: @app-tabs-bg-color;
     position: relative;
+    overflow: auto;
     .tab-pane {
       height: 100%;
+      overflow: inherit;
       .tab-body {
         position: relative;
         border-width: 1px;
         border-style: solid;
         border-top-width: 0;
         height: 100%;
-        overflow: auto;
         width: 100%;
-        max-width: 100%;
+        overflow: inherit;
       }
     }
   }
 
   .nav-tabs.nav-stacked {
     width: 20%;
-    display: inline-block;
+    float: left;
     vertical-align: top;
     > li {
       margin: 0;
+      display: block;
       > a {
         margin: 0;
         border-radius: 0;
@@ -1672,7 +1683,7 @@ If the height and width are not specified the video takes the height of the post
     }
   }
   .tab-stacked {
-    display: inline-block;
+    float: left;
     width: 80%;
     height: 100%;
     > .tab-pane > .tab-body{
