@@ -91,7 +91,7 @@ WM.module('wm.layouts.page')
                                     scope.layout.rightSection = element.find('[data-role="page-right-panel"]').length > 0;
                                     // update the device after some delay
                                     $timeout(function () {
-                                        if (!$rootScope.isMobileType) {
+                                        if (!$rootScope.isMobileApplicationType) {
                                             //This is not required for mobile appications.
                                             DeviceViewService.update(element, scope.layout.leftSection, scope.layout.rightSection, scope.layout.search);
                                         }

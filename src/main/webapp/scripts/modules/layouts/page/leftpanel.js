@@ -69,7 +69,7 @@ WM.module('wm.layouts.page')
                         }
                         var eventName = 'click.leftNavToggle';
                         //If mobile project, then add mobile specific styles.
-                        if ($rootScope.isMobileType) {
+                        if ($rootScope.isMobileApplicationType) {
                             element.addClass('wm-mobile-app-left-panel');
                         }
                         scope.toggle = function () {
