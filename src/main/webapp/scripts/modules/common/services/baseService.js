@@ -142,14 +142,14 @@ wm.modules.wmCommon.services.BaseService = [
                 var errMsg;
                 localeObject = localeObject || getLocaleObject();
                 /*Check for local resources and code in the resource */
-                if (!localeObject || !localeObject[errorDetails.code]) {
+                if (!localeObject || !localeObject[errorDetails.messageKey]) {
                     return;
                 }
 
                 /*Assigning the error message*/
-                errMsg = WM.copy(localeObject[errorDetails.code]);
+                errMsg = WM.copy(localeObject[errorDetails.messageKey]);
                 /*Replace the parameters in the error code with the actual strings.*/
-                errMsg = Utils.replace(errMsg, errorDetails.data);
+                errMsg = Utils.replace(errMsg, errorDetails.parameters);
                 return errMsg;
             },
 
@@ -199,24 +199,22 @@ wm.modules.wmCommon.services.BaseService = [
                     errMsg = localeObject["MESSAGE_ERROR_HTTP_STATUS_ERROR_DESC"];
                 } else {
                     /*assigning default error messages */
-                    
+
                     errTitle = "Error!";
                     errMsg = "Service call failed";
                 }
 
                 /* check for error code in the response */
                 if (error.data) {
-                    if (error.data.errorDetails) {
-                        errorDetails = error.data.errorDetails;
-                        errMsg = parseError(errorDetails) || errorDetails || errMsg;
-
-                    } else if (error.data.errors) {
+                    if (error.data.errors) {
                         errMsg = "";
-                        error.data.errors.forEach(function (errorDetails) {
-                            errMsg += parseError(errorDetails) + "\n";
-                        });
-                    } else if (error.data.error) {
-                        errMsg = parseError(error.data.error.message) || error.data.error.message || errMsg;
+                        errorDetails = error.data.errors;
+                        /* If errors is not an array and contains error */
+                        if (errorDetails.error) {
+                            errorDetails.error.forEach(function (errorDetails) {
+                                errMsg += parseError(errorDetails) + "\n";
+                            });
+                        }
                     }
                 }
 
