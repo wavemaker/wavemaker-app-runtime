@@ -230,6 +230,12 @@ WM.module('wm.utils')
                 var isEpoch = !isNaN(+data),
                     isDate,
                     timestamp;
+
+                /* 'null' is to be treated as a special case, If user wants to enter null value, empty string will be passed to the backend */
+                if (data === 'null') {
+                    return '';
+                }
+
                 if (isEpoch) {
                     return epoch2dateStr(data, format);
                 }
