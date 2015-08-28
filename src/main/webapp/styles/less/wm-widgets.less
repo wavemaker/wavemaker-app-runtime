@@ -1509,6 +1509,97 @@ If the height and width are not specified the video takes the height of the post
   }
 }
 /********************************************************************************
+******************************** Media List classes ******************************
+*********************************************************************************/
+@app-media-full-screen-info-panel-bg-color: rgba(74, 75, 76, 0.38);
+@app-media-full-screen-nav-control-bg-color: rgba(74, 75, 76, 0.38);
+@app-media-full-screen-nav-control-bg-color-on-hover: rgba(74, 75, 76, 1);
+@app-media-full-screen-modal-bg-color: #000;
+.app-medialist {
+  overflow: auto;
+  .thumbnail {
+    .width-height();
+    position: relative;
+
+    .thumbnail-image {
+      max-width: 100%;
+      width: auto;
+      height: 100%;
+    }
+
+    .thumbnail-image-template {
+      max-width: 100%;
+      width: 100%;
+      height: 100%;
+    }
+
+    .thumbnail-details {
+      position: absolute;
+      .width-height();
+      top: 0;
+    }
+  }
+
+  .app-media-item {
+    position: relative;
+  }
+
+  &.singlerow {
+    white-space: nowrap;
+  }
+
+  .app-media-fullscreen {
+    &.modal{
+      background: @app-media-full-screen-modal-bg-color;
+    }
+    .image-container {
+      display: table;
+      width: 100%;
+      height: 100%;
+      .image-container-cell{
+        display: table-cell;
+        vertical-align: middle;
+      }
+    }
+    .app-media-fullscreen-info-panel {
+      position: absolute;
+      top: 0;
+      font-size: 1.5em;
+      color: #fff;
+      text-align: center;
+      width: 100%;
+      padding: 10px;
+      background-color: @app-media-full-screen-info-panel-bg-color;
+
+      .back-btn{
+        font-size: 2em;
+      }
+    }
+    .app-media-fullscreen-nav-control{
+      position: absolute;
+      top: 50%;
+      background-color: @app-media-full-screen-nav-control-bg-color;
+      padding: 0.5em 0.6em;
+      border-radius: 2em;
+      margin: 0 10px;
+      color: #fff;
+      font-size: 2em;
+      font-weight: bold;
+
+      &:hover{
+        background-color: @app-media-full-screen-nav-control-bg-color-on-hover;
+      }
+
+      &.left{
+        left: 0;
+      }
+      &.right{
+        right: 0;
+      }
+    }
+  }
+}
+/********************************************************************************
 ******************************** Tile classes ******************************
 *********************************************************************************/
 
@@ -1885,7 +1976,6 @@ If the height and width are not specified the video takes the height of the post
       float: right;
       margin-top: 10px;
       display: inline-block;
-
     }
   }
 }

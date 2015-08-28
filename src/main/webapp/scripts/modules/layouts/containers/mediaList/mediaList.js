@@ -1,0 +1,443 @@
+/*global WM,_*/
+
+/*Directive for Media List*/
+
+WM.module('wm.layouts.containers')
+    .run(['$templateCache', function ($tc) {
+        'use strict';
+        $tc.put('template/widget/medialist-design.html',
+                '<div class="app-medialist" init-widget apply-styles="shell">' +
+                    '<div wmtransclude></div>' +
+                '</div>'
+            );
+        $tc.put('template/widget/medialist.html',
+                '<div class="app-medialist" data-ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget>' +
+                    '<ul class="list-unstyled list-inline" wmtransclude></ul>' +
+                    '<div class="app-media-fullscreen modal fade in" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
+                        '<div class="image-container">' +
+                            '<div class="image-container-cell">' +
+                                '<img class="center-block" data-ng-src="{{fieldDefs[selectedMediaIndex].mediaurl}}">' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="app-media-fullscreen-info-panel">' +
+                            '<span class="pagination-info">{{selectedMediaIndex+1 + "/" + fieldDefs.length}}</span>' +
+                            '<i class="back-btn fa fa-long-arrow-left pull-left" data-ng-click="exitFullScreen()"></i>' +
+                        '</div>' +
+                        '<a class="app-media-fullscreen-nav-control left" data-ng-show="selectedMediaIndex < fieldDefs.length-1" data-ng-click="showNext()">' +
+                            '<i class="glyphicon glyphicon-menu-left"></i>' +
+                        '</a>' +
+                        '<a class="app-media-fullscreen-nav-control right" data-ng-show="selectedMediaIndex >= 1" data-ng-click="showPrev()">' +
+                            '<i class="glyphicon glyphicon-menu-right"></i>' +
+                        '</a>' +
+                    '</div>' +
+                '</div>'
+            );
+        $tc.put('template/widget/medialist-template.html',
+                '<div init-widget data-ng-style="{\'width\': width, \'height\': height}" class="app-medialist-template thumbnail">' +
+                    '<img class="thumbnail-image-template" data-ng-src="{{imagesource}}">' +
+                    '<div class="thumbnail-details" wmtransclude></div>' +
+                '</div>'
+            );
+
+    }])
+    .directive('wmMediaList', [
+        '$templateCache',
+        '$compile',
+        'PropertiesFactory',
+        'WidgetUtilService',
+        'CONSTANTS',
+        'Utils',
+        function ($templateCache, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
+            'use strict';
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.medialist', ['wm.base', 'wm.base.editors']),
+                notifyFor = {
+                    'dataset': true
+                },
+                directiveDefn,
+                elementsMarkup =
+                    '<li data-ng-repeat="item in fieldDefs" class="app-media-item" data-ng-click="showFullScreen($index)">' +
+                        '<div data-ng-style="{\'width\': thumbnailWidth, \'height\': thumbnailHeight}" class="thumbnail">' +
+                            '<img class="thumbnail-image" data-ng-src="{{item[thumbnailURL]}}">' +
+                            '<div class="thumbnail-details"></div>' +
+                        '</div>' +
+                    '</li>';
+
+            function controllerFn() {
+                var _map = {};
+
+                this.$set = function (key, value) {
+                    _map[key] = value;
+                };
+
+                this.$get = function (key) {
+                    return _map[key];
+                };
+            }
+
+            // Template function for MediaList
+            function templateFn() {
+                if (CONSTANTS.isStudioMode) {
+                    return $templateCache.get('template/widget/medialist-design.html');
+                }
+                return $templateCache.get('template/widget/medialist.html');
+            }
+
+            function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
+                var variableKeys = [],
+                    wp = scope.widgetProps;
+                if (WM.isObject(dataset)) {
+                    variableKeys = WidgetUtilService.extractDataSetFields(dataset, propertiesMap);
+                    /*removing keys of null and object type*/
+                    variableKeys = variableKeys.filter(function (variableKey) {
+                        return (dataset[variableKey] !== null) && !WM.isObject(dataset[variableKey]);
+                    });
+                }
+                wp.thumbnailurl.options = wp.mediaurl.options = [''].concat(variableKeys);
+            }
+
+            /** With given data, creates media list items*/
+            function updateFieldDefs($is, $el, data) {
+                $is.fieldDefs = data;
+                $is.$mediaScope.fieldDefs = data;
+            }
+
+            function getVariable($is, variableName) {
+
+                if (!variableName) {
+                    return undefined;
+                }
+
+                var variables = $is.Variables || {};
+                return variables[variableName];
+            }
+
+            function onDataChange($is, $el, nv) {
+                if (nv) {
+                    if (nv.data) {
+                        nv = nv.data;
+                    } else {
+                        if (!_.includes($is.binddataset, 'bind:Widgets.')) {
+                            var boundVariableName = Utils.getVariableName($is),
+                                variable = getVariable($is, boundVariableName);
+                            // data from the live list must have .data filed
+                            if (variable && variable.category === 'wm.LiveVariable') {
+                                return;
+                            }
+                        }
+                    }
+
+                    /*If the data is a pageable object, then display the content.*/
+                    if (WM.isObject(nv) && Utils.isPageable(nv)) {
+                        nv = nv.content;
+                    }
+
+                    if (WM.isObject(nv) && !WM.isArray(nv)) {
+                        nv = [nv];
+                    }
+                    if (!$is.binddataset) {
+                        if (WM.isString(nv)) {
+                            nv = nv.split(',');
+                        }
+                    }
+                    if (WM.isArray(nv)) {
+                        updateFieldDefs($is, $el, nv);
+                    }
+                } else {
+                    if (CONSTANTS.isRunMode) {
+                        updateFieldDefs($is, $el, []);
+                    }
+                }
+            }
+
+            /** In case of run mode, the field-definitions will be generated from the markup*/
+            /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+            function propertyChangeHandler($is, $el, attrs, key, nv, ov) {
+                if (key === 'dataset') {
+                    onDataChange($is, $el, nv);
+                    if (CONSTANTS.isStudioMode) {
+                        updatePropertyPanelOptions(nv, nv.propertiesMap, $is);
+                    }
+                }
+            }
+
+            // Function to evaluate the binding for the attributes
+            // The bound value is replaced with {{item.fieldname}} here. This is needed by the liveList when compiling inner elements
+            function updateTmplAttrs(parentDataSet, idx, node) {
+                var _parentDataSet = parentDataSet.replace('bind:', ''),
+                    regex = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g');
+                _.forEach(node.attributes, function (attr) {
+                    var value = attr.value;
+
+                    if (_.startsWith(value, 'bind:')) {
+                        /*if the attribute value is "bind:xxxxx.xxxx", either the dataSet/scopeDataSet has to contain "xxxx.xxxx" */
+                        if (_.includes(value, _parentDataSet)) {
+                            value = value.replace('bind:', '');
+                            value = value.replace(regex, 'item');
+                            attr.value = '{{' + value + '}}';
+                        }
+                    }
+                });
+            }
+
+            // append the template content to the list item wrapper.
+            function applyWrapper($tmplContent) {
+                var tmpl = WM.element(elementsMarkup);
+                tmpl.find('> div > .thumbnail-details').append($tmplContent);
+                return tmpl;
+            }
+
+            // replace all the bind values and append to the listitem template.
+            function prepareMediaListTemplate(tmpl, attrs) {
+                var $tmpl = WM.element(tmpl),
+                    $div = WM.element('<div></div>').append($tmpl);
+                $div.find('*').each(updateTmplAttrs.bind(undefined, attrs.dataset));
+                $tmpl = applyWrapper($tmpl);
+                return $tmpl;
+            }
+
+            // pre link function of studio directive
+            function preLinkFn($is) {
+                $is.widgetProps = CONSTANTS.isStudioMode ? WM.copy(widgetProps) : widgetProps;
+            }
+
+            // Create child scope out of the isolateScope
+            function createChildScope($is, $el, listCtrl) {
+                var _scope = $el.scope(), // scop which inherits controller's scope
+                    $liScope = _scope.$new(),  // create a new child scope. List Items will be compiled with this scope.
+                    thumbnailDim = listCtrl.$get('thumbnailDimensions');
+
+                WM.extend($liScope, {
+                    'thumbnailURL'      : $is.thumbnailurl,
+                    'thumbnailWidth'    : thumbnailDim.width,
+                    'thumbnailHeight'   : thumbnailDim.height
+                });
+
+                return $liScope;
+            }
+
+            function runMode_postLinkFn($is, $el, attrs, listCtrl) {
+                var $mediaTemplate,
+                    $mediaScope = createChildScope($is, $el, listCtrl);
+                $is.$mediaScope = $mediaScope;
+                $mediaTemplate = prepareMediaListTemplate(listCtrl.$get('mediaListTemplate'), attrs);
+                $el.find('> ul').append($mediaTemplate);
+                $compile($mediaTemplate)($mediaScope);
+                $mediaScope.showFullScreen = function (index) {
+                    if (index < $mediaScope.fieldDefs.length) {
+                        $is.selectedMediaIndex = index;
+                        $el.find('.app-media-fullscreen').show();
+                    }
+                };
+                $is.exitFullScreen = function () {
+                    $el.find('.app-media-fullscreen').hide();
+                };
+                $is.showPrev = function () {
+                    $mediaScope.showFullScreen($is.selectedMediaIndex - 1);
+                };
+                $is.showNext = function () {
+                    $mediaScope.showFullScreen($is.selectedMediaIndex + 1);
+                };
+                /* register the property change handler */
+                WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);
+                WidgetUtilService.postWidgetCreate($is, $el, attrs);
+            }
+
+            // post link function of studio directive
+            function studioMode_postLinkFn($is, $el, attrs) {
+                WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);
+                WidgetUtilService.postWidgetCreate($is, $el, attrs);
+            }
+
+            directiveDefn = {
+                'restrict'   : 'E',
+                'replace'    : true,
+                'scope'      : {},
+                'template'   : templateFn,
+                'transclude' : true,
+                'link': {
+                    'pre': preLinkFn
+                }
+            };
+
+            if (CONSTANTS.isRunMode) {
+                directiveDefn.link.post  = runMode_postLinkFn;
+                directiveDefn.controller = controllerFn;
+            } else {
+                directiveDefn.link.post = studioMode_postLinkFn;
+            }
+            return directiveDefn;
+        }
+    ])
+    .directive('wmMediaTemplate', [
+        'PropertiesFactory',
+        'WidgetUtilService',
+        'CONSTANTS',
+        '$templateCache',
+        'Utils',
+
+        function (PropertiesFactory, WidgetUtilService, CONSTANTS, $tc, Utils) {
+            'use strict';
+
+            var widgetProps,
+                directiveDefn = {
+                    'restrict'  : 'E',
+                    'replace'   : true
+                };
+
+            if (CONSTANTS.isStudioMode) {
+                widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mediatemplate');
+            }
+
+            // pre link function of studio directive
+            function preLinkFn($is) {
+                $is.widgetProps = widgetProps;
+            }
+
+            // post link function of studio directive
+            function studioMode_postLinkFn($is, $el, attrs) {
+                $is.imagesource = Utils.getImageUrl('resources/images/imagelists/default-image.png');
+                WidgetUtilService.postWidgetCreate($is, $el, attrs);
+            }
+
+            function runMode_preLinkFn($is, $el, attrs, listCtrl) {
+                listCtrl.$set('mediaListTemplate', $el.children());
+                listCtrl.$set('thumbnailDimensions', {'width': attrs.width, 'height': attrs.height});
+                $el.remove();
+            }
+
+            if (CONSTANTS.isStudioMode) {
+                WM.extend(directiveDefn, {
+                    'transclude': true,
+                    'scope'     : {},
+                    'template'  : $tc.get('template/widget/medialist-template.html'),
+                    'link'      : {
+                        'pre' : preLinkFn,
+                        'post': studioMode_postLinkFn
+                    }
+                });
+            } else {
+                WM.extend(directiveDefn, {
+                    'terminal': true,
+                    'require' : '^wmMediaList',
+                    'link'    : {
+                        'pre' : runMode_preLinkFn
+                    }
+                });
+            }
+
+            return directiveDefn;
+        }
+    ]);
+
+
+/**
+ * @ngdoc directive
+ * @name wm.layouts.container:wmMediaList
+ * @restrict E
+ *
+ * @description
+ * The `wmMedialist` directive defines a Media list widget. <br>
+ *
+ * @requires PropertiesFactory
+ * @requires $templateCache
+ * @requires WidgetUtilService
+ * @requires $compile
+ * @requires CONSTANTS
+ * @requires Utils
+ *
+ * @param {string=} name
+ *                  Name of the media list container.
+ * @param {string=} width
+ *                  Width of the media list container.
+ * @param {string=} height
+ *                  Height of the media list container.
+ * @param {string=} layout
+ *                  Sets the layout - single row/ multi row view for the media list.
+ * @param {string=} dataset
+ *                  Sets the data for the list.<br>
+ *                  This is a bindable property.<br>
+ *                  When bound to a variable, the data associated with the variable is displayed in the media list.
+ * @param {string=} thumbnailurl
+ *                  Sets the url to be used for each of the thumbnails shown in the media list. This is a bindable property.
+ * @param {string=} mediaurl
+ *                  Sets the url to be used for each of the mediaurls shown in the media list. This is a bindable property.
+ * @param {boolean=} show
+ *                  This is a bindable property. <br>
+ *                  This property will be used to show/hide the media list on the web page. <br>
+ *                  default value: `true`...
+ * @example
+ *   <example module="wmCore">
+ *       <file name="index.html">
+ *           <div data-ng-controller="Ctrl" class="wm-app">
+ *                  <wm-media-list name="{{caption}}" layout="{{layout}}" dataset="{{dataset}}" thumbnailurl="{{thumbnailurl}}" mediaurl="{{mediaurl}}">
+ *                      <wm-media-template name="{{caption_template}}" width="{{templatewidth}}" height="{{templateheight}}">
+ *                           <wm-label name="{{name_label}}" caption="{{caption_label}}"></wm-label>
+ *                      </wm-media-template>
+ *                  </wm-media-list>
+ *               </div>
+ *       </file>
+ *        <file name="script.js">
+ *          function Ctrl($scope) {
+ *              $scope.width = "400px";
+ *              $scope.height= "200px";
+ *              $scope.caption = "Users";
+ *              $scope.caption_template = "Admin";
+ *              $scope.layout = "Multi-row";
+ *              $scope.dataset = "[{"John", "http://angularjs.org/img/AngularJS-large.png": "angularJS"},
+ *                                 {"George", "http://c0179631.cdn.cloudfiles.rackspacecloud.com/wavemaker_logo1.jpg": "wavemaker"}
+ *                                ]";
+ *              $scope.dataStr = ["user", "admin", "superuser"];
+ *              $scope.thumbnailurl = {
+ *                  "http://angularjs.org/img/AngularJS-large.png": "angularJS",
+ *                  "http://c0179631.cdn.cloudfiles.rackspacecloud.com/wavemaker_logo1.jpg": "wavemaker"
+ *              };
+ *              $scope.mediaurl = {
+ *                  "http://angularjs.org/img/AngularJS-large.png": "angularJS",
+ *                  "http://c0179631.cdn.cloudfiles.rackspacecloud.com/wavemaker_logo1.jpg": "wavemaker"
+ *              };
+ *              $scope.templatewidth = "100px";
+ *              $scope.templateheight = "100px";
+ *              $scope.name_label = "label";
+ *              $scope.caption_label = "bind:Variables.HrdbEmployeeData.dataSet.data[$i].firstname";
+ *           }
+ *       </file>
+ *   </example>
+ */
+
+/**
+ * @ngdoc directive
+ * @name wm.layouts.container:wmMediaTemplate
+ * @restrict E
+ *
+ * @description
+ * The `wmMediaTemplate` directive defines the template for Media list widget. <br>
+ *
+ * @requires PropertiesFactory
+ * @requires $templateCache
+ * @requires WidgetUtilService
+ * @requires CONSTANTS
+ * @requires Utils
+ *
+ * @param {string=} width
+ *                  Sets the width of the thumbnail in both design mode and run-mode for the media list.
+ * @param {string=} height
+ *                  Sets the height of the thumbnail in both design mode and run-mode for the media list.
+ * @example
+ *   <example module="wmCore">
+ *       <file name="index.html">
+ *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <wm-media-template name="{{caption_template}}" width="{{templatewidth}}" height="{{templateheight}}">
+ *                           <wm-label name="{{name_label}}" caption="{{caption_label}}"></wm-label>
+ *           </wm-media-template>
+ *       </file>
+ *        <file name="script.js">
+ *          function Ctrl($scope) {
+ *              $scope.templatewidth = "100px";
+ *              $scope.templateheight = "100px";
+ *              $scope.name_label = "label";
+ *              $scope.caption_label = "bind:Variables.HrdbEmployeeData.dataSet.data[$i].firstname";
+ *              $scope.caption_template = "label";
+ *           }
+ *       </file>
+ *   </example>
+ */
