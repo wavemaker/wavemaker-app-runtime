@@ -21,6 +21,8 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.wavemaker.commons.core.web.rest.ErrorResponse;
+import com.wavemaker.commons.core.web.rest.ErrorResponses;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 import com.wavemaker.studio.common.MessageResource;
@@ -69,15 +71,15 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
 
     private ModelAndView handleRuntimeException(RuntimeException ex) {
         String msg = ExceptionUtils.getRootCauseMessage(ex);
-        ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
-        return prepareModelViewObj(errorDetails);
+        ErrorResponse errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
+        return getModelAndView(errorResponse);
     }
 
     private ModelAndView handleException(Exception ex, HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
-        ErrorDetails errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
-        return prepareModelViewObj(errorDetails);
+        ErrorResponse errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
+        return getModelAndView(errorResponse);
     }
 
     private ModelAndView handleWMExceptions(WMRuntimeException ex) {
@@ -86,15 +88,14 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
             modelAndView = new ModelAndView(ex.getCause().getMessage());
         } else {
             MessageResource messageResource = ex.getMessageResource();
-            ErrorDetails errorDetails = null;
+            ErrorResponse errorResponse = null;
             if (messageResource != null) {
-                errorDetails = getErrorDetails(ex.getMessageResource(), ex.getArgs());
+                errorResponse = getErrorResponse(ex.getMessageResource(), ex.getArgs());
             } else {
                 String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
-                errorDetails = getErrorDetails(MessageResource.UNEXPECTED_ERROR, msg);
+                errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
             }
-            modelAndView = new ModelAndView(new MappingJackson2JsonView());
-            modelAndView.addObject(errorDetails);
+            modelAndView = getModelAndView(errorResponse);
         }
         return modelAndView;
     }
@@ -103,69 +104,51 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
                                                                HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         Throwable exCause = ex.getCause();
-        ErrorDetails msg = null;
+        ErrorResponse errorResponse = null;
         if (exCause != null) {
             if (exCause instanceof UnrecognizedPropertyException) {
-                msg = getErrorDetails(MessageResource.UNRECOGNIZED_FIELD,
-                        ((UnrecognizedPropertyException) exCause).getPropertyName());
+                errorResponse = getErrorResponse(MessageResource.UNRECOGNIZED_FIELD,
+                                                        ((UnrecognizedPropertyException) exCause).getPropertyName());
             } else if (exCause instanceof JsonMappingException) {
-                msg = getErrorDetails(MessageResource.INVALID_JSON, exCause.getMessage());
+                errorResponse = getErrorResponse(MessageResource.INVALID_JSON, exCause.getMessage());
             }
         }
-        if (msg == null) {
-            msg = getErrorDetails(MessageResource.MESSAGE_NOT_READABLE);
+        if (errorResponse == null) {
+            errorResponse = getErrorResponse(MessageResource.MESSAGE_NOT_READABLE);
         }
-        List<ErrorDetails> errors = new ArrayList<>(1);
-        errors.add(msg);
-        ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
-        modelAndView.addObject("errors", errors);
-        return modelAndView;
+        return getModelAndView(errorResponse);
     }
 
-    private ErrorDetails getErrorDetails(MessageResource messageResource, Object... args) {
-        ErrorDetails errorDetails = new ErrorDetails();
-        List<String> data = new ArrayList<>();
-        errorDetails.setCode(messageResource.getMessageKey());
+    private ErrorResponse getErrorResponse(MessageResource messageResource, Object... args) {
+        List<String> parameters = new ArrayList<>();
         if (args != null) {
             for (Object arg : args) {
                 if (arg != null) {
-                    data.add(arg.toString());
+                    parameters.add(arg.toString());
                     continue;
                 }
-                data.add(null);
+                parameters.add(null);
             }
         }
-        errorDetails.setData(data);
-        return errorDetails;
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessageKey(messageResource.getMessageKey());
+        errorResponse.setParameters(parameters);
+        return errorResponse;
     }
 
-    private ModelAndView prepareModelViewObj(ErrorDetails errorDetails)
-    {
+    private ModelAndView getModelAndView(ErrorResponse errorResponse) {
+        List<ErrorResponse> errorResponseList = new ArrayList(1);
+        errorResponseList.add(errorResponse);
+        return getModelAndView(errorResponseList);
+    }
+
+    private ModelAndView getModelAndView(List<ErrorResponse> errorResponseList) {
+        return getModelAndView(new ErrorResponses(errorResponseList));
+    }
+
+    private ModelAndView getModelAndView(ErrorResponses errorResponses) {
         ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
-        modelAndView.addObject(errorDetails);
+        modelAndView.addObject("errors", errorResponses);
         return modelAndView;
     }
-
-
-    public class ErrorDetails {
-        private String code;
-        private List<String> data;
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        public List<String> getData() {
-            return data;
-        }
-
-        public void setData(List<String> data) {
-            this.data = data;
-        }
-    }
-
 }
