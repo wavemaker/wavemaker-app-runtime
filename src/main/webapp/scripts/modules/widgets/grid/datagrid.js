@@ -395,7 +395,7 @@ $.widget('wm.datagrid', {
             isCellCompiled = true;
         }
         /*constructing the expression based on the choosen format options*/
-        if (colDef.formatpattern && !colExpression) {
+        if (colDef.formatpattern && colDef.formatpattern !== "None" && !colExpression) {
             switch (colDef.formatpattern) {
             case 'toDate':
                 if (colDef.datepattern) {
