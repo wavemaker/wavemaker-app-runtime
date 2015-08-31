@@ -1,10 +1,10 @@
 package com.wavemaker.runtime.spring.converters;
 
 import java.util.Date;
-import java.util.Set;
 
 import org.joda.time.LocalDateTime;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 
 import com.wavemaker.studio.common.ser.WMDateDeSerializer;
@@ -18,11 +18,11 @@ import com.wavemaker.studio.common.util.StringUtils;
 public class ApplicationConversionServiceFactoryBean extends FormattingConversionServiceFactoryBean {
 
     @Override
-    public void setConverters(Set converters) {
-        converters.add(new WMStringToDateConverter());
-        converters.add(new WMStringToSqlDateConverter());
-        converters.add(new WMStringToLocalDateTimeConverter());
-        super.setConverters(converters);
+    protected void installFormatters(FormatterRegistry registry) {
+        super.installFormatters(registry);
+        registry.addConverter(new WMStringToDateConverter());
+        registry.addConverter(new WMStringToSqlDateConverter());
+        registry.addConverter(new WMStringToLocalDateTimeConverter());
     }
 
     static class WMStringToDateConverter implements Converter<String, Date> {
