@@ -1563,7 +1563,7 @@ WM.module('wm.widgets.base', [])
         properties = result.properties;
         propertyGroups = result.propertyGroups;
 
-        if ($rootScope.isMobileType) {
+        if ($rootScope.isMobileApplicationType) {
             widgetEventOptions.push("New MobileVariable");
         }
         /**

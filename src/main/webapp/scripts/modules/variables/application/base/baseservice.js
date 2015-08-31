@@ -1162,7 +1162,7 @@ wm.variables.services.Variables = [
             };
         }
         // Add mobile varibles only mobile application projects.
-        if ($rootScope.isMobileType) {
+        if ($rootScope.isMobileApplicationType) {
             variableConfig.push({
                 "collectionType": "data",
                 "category": "wm.MobileVariable",

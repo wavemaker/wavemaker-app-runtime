@@ -240,7 +240,7 @@ wm.modules.wmCommon.services.BaseService = [
                 logAction("debug", "SEND_REQUEST_TO_SERVER", config.url);
 
                 var pattern = new RegExp("^services");
-                if (CONSTANTS.isRunMode && $rootScope.isMobileType && pattern.test(config.url)) {
+                if (CONSTANTS.isRunMode && $rootScope.isMobileApplicationType && pattern.test(config.url)) {
                     config.url = $rootScope.project.deployedUrl + "/" + config.url;
                 }
 
