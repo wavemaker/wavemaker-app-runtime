@@ -9,9 +9,10 @@
  * The `BaseVariablePropertyFactory` service provides the all the properties for variables.
  */
 wm.variables.factories.BaseVariablePropertyFactory = [
+    '$rootScope',
     'WIDGET_CONSTANTS',
     'Utils',
-    function (WIDGET_CONSTANTS, Utils) {
+    function ($rootScope, WIDGET_CONSTANTS, Utils) {
 
         "use strict";
         var variableEventOptions = {}, /*A copy of the variable to preserve the actual value.*/
@@ -114,7 +115,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.NavigationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
-                    "operation": {"type": "list", "options": {"gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion", "gotoSegment": "gotoSegment"}, "value": "gotoPage"},
+                    "operation": {"type": "list", "options": {"gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage"},
                     "pageName": {"type": "string", "required": true, "options": {}, "widgettype": "list"},
                     "viewName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
                     "tabName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
@@ -218,6 +219,10 @@ wm.variables.factories.BaseVariablePropertyFactory = [
         properties = result.properties;
         propertyGroups = result.propertyGroups;
         variableMap = {};
+
+        function addNavigationOption(name, label) {
+            properties['wm.NavigationVariable'].operation.options[name] = label;
+        }
         /*
          If parents array is provided, inject the properties from the parents into variable and return,
          else return only the properties of the widget.
@@ -315,6 +320,16 @@ wm.variables.factories.BaseVariablePropertyFactory = [
         }
 
         return {
+            /**
+             * @ngdoc method
+             * @name  wm.variables.$BaseVariablePropertyFactory#addNavigationOption
+             * @methodOf  wm.variables.$BaseVariablePropertyFactory
+             * @description
+             * This is a provision to add additional navigational options.
+             * @param {string} name of the option or view
+             * @param {string} label to display
+             */
+            addNavigationOption : addNavigationOption,
             /**
              * @ngdoc method
              * @name  wm.variables.$BaseVariablePropertyFactory#getPropertiesOf

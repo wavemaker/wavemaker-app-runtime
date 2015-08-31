@@ -11,15 +11,14 @@ var Application = WM.module('Application',
             'wm.plugins.security',
             'wm.widgets',
             'wm.layouts',
+            'wm.mobile',
             'wm.utils',
             "oc.lazyLoad",
             'wm.prefabs',
             "i18n",
-            "angular-gestures",
-            "ngCordova"
+            "angular-gestures"
         ]).constant('CONSTANTS', {
-        "isRunMode": true,
-        "hasCordova": (window.location.origin === 'file://')
+        "isRunMode": true
     }).controller('AppController', [
         '$rootScope',
         '$scope',
@@ -62,8 +61,7 @@ var Application = WM.module('Application',
             _WM_APP_PROPERTIES = undefined; // delete the global variable.
 
             $rootScope.isPrefabType = appProperties.type === 'PREFAB';
-            $rootScope.isMobileApplicationType = (appProperties.type === 'APPLICATION' && appProperties.platformType === 'MOBILE');
-            $rootScope.isApplicationType = (appProperties.type === 'APPLICATION' && appProperties.platformType === 'WEB');
+            $rootScope.isApplicationType = appProperties.type === 'APPLICATION';
             $rootScope.isTemplateBundleType = appProperties.type === 'TEMPLATEBUNDLE';
 
             /*create the project object*/
@@ -74,17 +72,13 @@ var Application = WM.module('Application',
             $rootScope.changeLocale = function ($isolateScope) {
                 i18nService.setSelectedLocale($isolateScope.datavalue);
             };
-            if (($rootScope.isMobileApplicationType && CONSTANTS.hasCordova) || $rootScope.isPrefabType) {
+            if ($rootScope.isPrefabType) {
                 Utils.fetchContent(
                     'json',
                     Utils.preventCachingOf('./config.json'),
                     function (response) {
                         if (!response.error) {
-                            if ($rootScope.isPrefabType) {
-                                $rootScope.prefabConfig = response;
-                            } else if ($rootScope.isMobileApplicationType) {
-                                $rootScope.project.deployedUrl = response.baseUrl;
-                            }
+                            $rootScope.prefabConfig = response;
                         }
                     },
                     WM.noop,
@@ -271,7 +265,7 @@ var Application = WM.module('Application',
             };
 
             /* load the common contents */
-            if (($rootScope.isApplicationType || $rootScope.isMobileApplicationType) && Utils.getCurrentPage() !== "login.html") {
+            if ($rootScope.isApplicationType && Utils.getCurrentPage() !== "login.html") {
                 var commonPage = "Common";
                 Application.loadResources(commonPage, function () {
                     /* set the common-page variables, registration will be handled by page directive */
@@ -354,6 +348,7 @@ var Application = WM.module('Application',
                         pageReadyDeregister();
                 });
             }
+            $rootScope.$emit('application-ready');
         }]);
 Application.config(['$routeProvider', '$controllerProvider', '$filterProvider', '$compileProvider',
     function ($routeProvider, $controllerProvider, $filterProvider, $compileProvider) {

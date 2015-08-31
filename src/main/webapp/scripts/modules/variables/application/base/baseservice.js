@@ -1161,15 +1161,6 @@ wm.variables.services.Variables = [
                 id: ProjectService.getId()
             };
         }
-        // Add mobile varibles only mobile application projects.
-        if ($rootScope.isMobileApplicationType) {
-            variableConfig.push({
-                "collectionType": "data",
-                "category": "wm.MobileVariable",
-                "labelKey": "LABEL_VARIABLE_MOBILE",
-                "defaultName": "mobileVariable"
-            });
-        }
         /*
          * This object stores the variables (name, value) pairs
          * so that widgets can access those
@@ -1826,7 +1817,24 @@ wm.variables.services.Variables = [
              * @params {type} the type for which the the map is to be prepared
              * @params {parentReference} reference for the target bind map to be prepared at
              */
-            getBindMap: getBindMap
+            getBindMap: getBindMap,
+            /**
+             * @ngdoc method
+             * @name $Variables#addVariableConfig
+             * @methodOf wm.variables.$Variables
+             * @description
+             * adds the variable config to the list.
+             * @params config data
+             * ex : {
+             *          "collectionType": "call", //accepted values are 'call' or 'data'
+             *          "category": "wm.NotificationVariable", // category name
+             *          "labelKey": "LABEL_VARIABLE_NOTIFICATION", // key to find localed specific display name
+             *          "defaultName": "notificationVariable" // default category name
+             *      }
+             */
+            addVariableConfig : function (config) {
+                variableConfig.push(config);
+            }
         };
 
         return returnObject;

@@ -68,10 +68,6 @@ WM.module('wm.layouts.page')
                             WM.element(element).addClass('col-md-' + scope.columnwidth + ' col-sm-' + scope.columnwidth);
                         }
                         var eventName = 'click.leftNavToggle';
-                        //If mobile project, then add mobile specific styles.
-                        if ($rootScope.isMobileApplicationType) {
-                            element.addClass('wm-mobile-app-left-panel');
-                        }
                         scope.toggle = function () {
                             if (element.hasClass('visible')) {
                                 scope.collapse();

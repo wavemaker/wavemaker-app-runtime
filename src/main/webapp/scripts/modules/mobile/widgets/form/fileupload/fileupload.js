@@ -10,44 +10,34 @@ WM.module('wm.widgets.form')
                 '<i class="{{iconclass}}"></i> ' +
                 '<span>{{caption}}</span>' +
             '</button>'
-        );
-    }]).directive('wmFileupload', ['$compile', '$templateCache', 'FileUploadService','FileSelectorService', 'CONSTANTS', function ($compile, $templateCache, FileUploadService, FileSelectorService,  CONSTANTS) {
+            );
+    }]).directive('wmFileupload', ['$compile', '$templateCache', 'FileUploadService', 'FileSelectorService', 'CONSTANTS', function ($compile, $templateCache, FileUploadService, FileSelectorService,  CONSTANTS) {
         'use strict';
 
         return {
             restrict: 'E',
             priority: 1,
-            compile : function () {
-                return {
-                    pre: function (scope) {
-                      /*Applying widget properties to directive scope*/
-                      scope.widgetProps = widgetProps;
-
-                    },
-
-                    post: function (scope, element, attrs) {
-                        //Need this only in mobile
-                        if (CONSTANTS.hasCordova) {
-                            var overrideContent = $compile($templateCache.get('template/widget/form/mobileFileupload.html'))(scope),
-                                overrideAbort = true;
-                            element.prepend(overrideContent).find('>.app-multi-file-upload, >.app-single-file-upload').remove();
-                            scope.openFileSelector = function () {
-                                var ft = { abort : WM.noop };
-                                FileSelectorService.open({multiple : scope.multiple}, function (files) {
-                                    ft.abort = FileUploadService.upload(scope.destination,
-                                                                files,
-                                                                scope.fileUploadHandlers['onSuccess'],
-                                                                scope.fileUploadHandlers['onError'],
-                                                                scope.fileUploadHandlers['onProgress'],
-                                                                scope.fileUploadHandlers['onAbort']).abort;
-                                });
-                                scope.abortUpload = function () {
-                                    ft.abort();
-                                };
-                            };
-                        }
-                    }
-                };
+            link : function (scope, element) {
+                scope = element.isolateScope();
+                //Need this only in mobile
+                if (CONSTANTS.hasCordova) {
+                    var overrideContent = $compile($templateCache.get('template/widget/form/mobileFileupload.html'))(scope);
+                    element.prepend(overrideContent).find('>.app-multi-file-upload, >.app-single-file-upload').remove();
+                    scope.openFileSelector = function () {
+                        var ft = { abort : WM.noop };
+                        FileSelectorService.open({multiple : scope.multiple}, function (files) {
+                            ft.abort = FileUploadService.upload(files,
+                                                        scope.destination,
+                                                        scope.fileUploadHandlers['onSuccess'],
+                                                        scope.fileUploadHandlers['onError'],
+                                                        scope.fileUploadHandlers['onProgress'],
+                                                        scope.fileUploadHandlers['onAbort']).abort;
+                        });
+                        scope.abortUpload = function () {
+                            ft.abort();
+                        };
+                    };
+                }
             }
         };
     }]);
