@@ -591,7 +591,7 @@ WM.module('wm.widgets.live')
 
                 // in the run mode navigation can not be changed dynamically
                 // process the navigation type before the dataset is set.
-                if (attrs.hasOwnProperty('shownavigation')) {
+                if (attrs.hasOwnProperty('shownavigation') && (attrs.shownavigation === "true")) {
                     // for legacy applications
                     $is.navigation = NAVIGATION.ADVANCED;
                 }
