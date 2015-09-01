@@ -9,10 +9,9 @@
  * The `BaseVariablePropertyFactory` service provides the all the properties for variables.
  */
 wm.variables.factories.BaseVariablePropertyFactory = [
-    '$rootScope',
     'WIDGET_CONSTANTS',
     'Utils',
-    function ($rootScope, WIDGET_CONSTANTS, Utils) {
+    function (WIDGET_CONSTANTS, Utils) {
 
         "use strict";
         var variableEventOptions = {}, /*A copy of the variable to preserve the actual value.*/

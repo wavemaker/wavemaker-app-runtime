@@ -1565,19 +1565,6 @@ WM.module('wm.widgets.base', [])
 
         /**
          * @ngdoc function
-         * @name wm.widgets.$PropertiesFactory#
-         * @methodOf wm.widgets.$PropertiesFactory
-         * @function
-         *
-         * @description
-         * This method adds the given option to the widget option list.
-         * @param {String} event name
-         */
-        function addToWidgetEventOptions (eventName) {
-            widgetEventOptions.push(eventName);
-        }
-        /**
-         * @ngdoc function
          * @name wm.widgets.$PropertiesFactory#getPropertiesOf
          * @methodOf wm.widgets.$PropertiesFactory
          * @function
@@ -1694,7 +1681,6 @@ WM.module('wm.widgets.base', [])
         }
 
         return {
-            addToWidgetEventOptions  : addToWidgetEventOptions,
             getPropertiesOf          : getPropertiesOf,
             getPropertyGroups        : getPropertyGroups,
             getPrimaryPropertyGroups : getPrimaryPropertyGroups,
