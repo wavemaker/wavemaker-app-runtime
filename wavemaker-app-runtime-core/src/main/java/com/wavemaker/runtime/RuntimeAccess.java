@@ -19,14 +19,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.wavemaker.runtime.service.ServiceManager;
+import com.wavemaker.studio.common.WMRuntimeInitException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.wavemaker.runtime.service.ServiceManager;
-import com.wavemaker.runtime.service.ServiceWire;
-import com.wavemaker.runtime.service.reflect.ReflectServiceWire;
-import com.wavemaker.studio.common.WMRuntimeInitException;
 
 /**
  * Runtime bean. Provides an interface to the session, request and response objects, and other WaveMaker interfaces.
@@ -131,33 +128,6 @@ public class RuntimeAccess {
     @Deprecated
     public Object getService(Class<?> serviceType) {
         return this.serviceManager.getService(serviceType);
-    }
-
-    public ServiceWire getServiceWire(String serviceId) {
-        return this.serviceManager.getServiceWire(serviceId);
-    }
-
-    /**
-     * Get the service of the corresponding service id. An WMRuntimeException will be thrown if more than one bean
-     * matches the serviceType class.
-     *
-     * @param serviceId
-     *            The id of the service to search for.
-     * @return The service bean.
-     * @throws com.wavemaker.studio.common.WMRuntimeException
-     *             If a bean with the specified class is not found, more than one bean with the specified class is
-     *             found, or if Spring has not yet initialized this bean.
-     */
-    public Object getServiceBean(String serviceId) {
-        return ((ReflectServiceWire) this.getServiceWire(serviceId)).getServiceBean();
-    }
-
-    public static void setRuntimeBean(RuntimeAccess bean) {
-        if (bean == null) {
-            runtimeThreadLocal.remove();
-        } else {
-            runtimeThreadLocal.set(bean);
-        }
     }
 
     public void setRequest(HttpServletRequest request) {

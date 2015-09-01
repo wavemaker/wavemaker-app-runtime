@@ -65,12 +65,4 @@ public interface ServiceDefinition {
      */
     public String getRuntimeConfiguration();
 
-    /**
-     * Indicates if this service supports LiveDataService access, by implementing
-     * com.wavemaker.runtime.service.LiveDataService.
-     * 
-     * @return
-     */
-    public boolean isLiveDataService();
-
 }

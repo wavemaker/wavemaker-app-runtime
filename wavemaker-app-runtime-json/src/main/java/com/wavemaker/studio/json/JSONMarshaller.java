@@ -115,25 +115,6 @@ public final class JSONMarshaller {
     /**
      * Marshal the given Object into a JSON-formatted character stream (written out onto the writer parameter).
      * 
-     * @param obj The Object to marshal; this must be an JavaBean-style Object, a Collection, or an array.
-     * @param jsonState Any configuration.
-     * @param sort True if the output should be sorted (only bean properties will be sorted, currently).
-     * @return The JSON-formatted String representation of obj.
-     */
-    public static String marshal(Object obj, JSONState jsonState, FieldDefinition fieldDefinition, boolean sort) throws IOException {
-
-        StringWriter sw = new StringWriter();
-        marshal(sw, obj, jsonState, fieldDefinition, sort, DEFAULT_PRETTY_PRINT);
-
-        String ret = sw.toString();
-        sw.close();
-
-        return ret;
-    }
-
-    /**
-     * Marshal the given Object into a JSON-formatted character stream (written out onto the writer parameter).
-     * 
      * @param writer The Writer to write the JSON-formatted representation of obj to.
      * @param obj The Object to marshal; this must be an JavaBean-style Object, a Collection, or an array.
      */

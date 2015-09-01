@@ -30,61 +30,6 @@ public class TypeManager {
 
     private ServiceManager serviceManager;
 
-    /**
-     * Return a list of all types (as java class names) associated with a given service object.
-     * 
-     * @param serviceId
-     * @return
-     */
-    public List<String> getTypes(String serviceId) {
-        return getTypes().get(serviceId);
-    }
-
-    /**
-     * Return the service id that corresponds to the given type, or null if no corresponding type was found.
-     * 
-     * @param type
-     * @return
-     * @throws TypeNotFoundException
-     */
-    public String getServiceIdForType(String type) throws TypeNotFoundException {
-
-        for (Entry<String, List<String>> entry : this.types.entrySet()) {
-            for (String serviceType : entry.getValue()) {
-                if (serviceType.equals(type)) {
-                    return entry.getKey();
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Return the service object that corresponds to the give type, or null if no corresponding type was found.
-     * 
-     * @param type
-     * @return
-     * @throws TypeNotFoundException
-     * @deprecated use {@link #getServiceWireForType(String)} instead. This will be removed in a few versions.
-     */
-    @Deprecated
-    public Object getServiceForType(String type) throws TypeNotFoundException {
-        String serviceId = getServiceIdForType(type);
-        return getServiceManager().getService(serviceId);
-    }
-
-    /**
-     * Return the service object that corresponds to the give type, or null if no corresponding type was found.
-     * 
-     * @param type
-     * @return
-     * @throws TypeNotFoundException
-     */
-    public ServiceWire getServiceWireForType(String type) throws TypeNotFoundException {
-        String serviceId = getServiceIdForType(type);
-        return getServiceManager().getServiceWire(serviceId);
-    }
-
     public Map<String, List<String>> getTypes() {
         return this.types;
     }

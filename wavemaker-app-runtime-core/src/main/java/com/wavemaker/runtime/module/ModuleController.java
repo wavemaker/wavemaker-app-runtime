@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * This class is to be deleted on writing the upgrade task to remove the references in spring xml for this class
  * @author Uday Shankar
  */
+@Deprecated
 public class ModuleController extends AbstractController {
 
     @Override

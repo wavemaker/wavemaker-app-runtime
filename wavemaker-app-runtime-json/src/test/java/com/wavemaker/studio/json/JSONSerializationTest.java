@@ -435,34 +435,6 @@ public class JSONSerializationTest extends WMTestCase {
         assertFalse(resjo.containsKey("loopedList"));
     }
 
-    // MAV-1792
-    public void testListOfDates() throws Exception {
-
-        long now = System.currentTimeMillis();
-        long now2 = now + 1;
-
-        List<java.sql.Date> dates = new ArrayList<java.sql.Date>();
-        dates.add(new java.sql.Date(now));
-        dates.add(new java.sql.Date(now2));
-
-        JSONState jc = new JSONState();
-
-        try {
-            JSONMarshaller.marshal(dates, jc);
-            fail("expected exception");
-        } catch (RuntimeException e) {
-            // good
-        }
-
-        jc.getTypeState().addType(new DateTypeDefinition(java.sql.Date.class));
-
-        Method m = this.getClass().getMethod("getJavaSqlDateList");
-        assertNotNull(m);
-        FieldDefinition fd = ReflectTypeUtils.getFieldDefinition(m, jc.getTypeState(), false, null);
-        String s = JSONMarshaller.marshal(dates, jc, fd, false);
-        assertEquals("[" + now + "," + now2 + "]", s);
-    }
-
     private static CycleA getCycle() {
 
         CycleA ret = new CycleA();

@@ -15,46 +15,25 @@
  */
 package com.wavemaker.runtime.server;
 
-import java.beans.PropertyEditor;
-import java.beans.PropertyEditorManager;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.NDC;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.thoughtworks.paranamer.AdaptiveParanamer;
 import com.thoughtworks.paranamer.ParameterNamesNotFoundException;
-import com.wavemaker.runtime.service.ParsedServiceArguments;
-import com.wavemaker.runtime.service.ServiceWire;
-import com.wavemaker.runtime.service.TypedServiceReturn;
 import com.wavemaker.runtime.service.annotations.ExposeToClient;
 import com.wavemaker.runtime.service.annotations.HideFromClient;
-import com.wavemaker.studio.common.MessageResource;
-import com.wavemaker.studio.common.WMException;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
 import com.wavemaker.studio.common.util.ClassUtils;
-import com.wavemaker.studio.common.util.StringUtils;
-import com.wavemaker.studio.json.JSONState;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for the server components.
@@ -66,53 +45,7 @@ public class ServerUtils {
     /** Logger for this class and subclasses */
     protected final static Logger logger = LoggerFactory.getLogger(ServerUtils.class);
 
-    static final Pattern extensionPattern;
-    static {
-        extensionPattern = Pattern.compile("^(.*)\\.(" + ServerConstants.DOWNLOAD_EXTENSION + "|" + ServerConstants.UPLOAD_EXTENSION + "|"
-            + ServerConstants.FLASH_UPLOAD_EXTENSION + "|" + ServerConstants.JSON_EXTENSION + ")$");
-    }
-
     private ServerUtils() {
-    }
-
-    public static String getFileName(HttpServletRequest request) {
-
-        String uri = request.getRequestURI();
-
-        if (-1 != uri.lastIndexOf('/')) {
-            uri = uri.substring(uri.lastIndexOf('/') + 1);
-        }
-
-        return uri;
-    }
-
-    /**
-     * Returns the service name, if the URL points to a valid service, or null if not.
-     */
-    public static String getServiceName(HttpServletRequest request) {
-
-        String fileName = getFileName(request);
-        Matcher matcher = extensionPattern.matcher(fileName);
-
-        if (matcher.matches()) {
-            return matcher.group(1);
-        } else {
-            return null;
-        }
-    }
-
-    public static String getDirectory(HttpServletRequest request) {
-
-        String uri = request.getRequestURI();
-
-        if (-1 != uri.lastIndexOf('/')) {
-            uri = uri.substring(0, uri.lastIndexOf('/'));
-        }
-        if (0 == "".compareTo(uri)) {
-            uri = "/";
-        }
-
-        return uri;
     }
 
     public static String readInput(HttpServletRequest request) throws IOException {
@@ -196,171 +129,6 @@ public class ServerUtils {
     }
 
     /**
-     * Get the method parameter from the parameters map; as a side effect, remove that entry.
-     * 
-     * @param params The map - this is side-effected, and the method entry is removed.
-     * @return The method to invoke.
-     */
-    public static String getMethod(Map<String, Object[]> params) {
-
-        String method = null;
-        if (params.containsKey(ServerConstants.METHOD)) {
-            Object methodO = params.get(ServerConstants.METHOD);
-            if (methodO instanceof String[]) {
-                if (1 == ((String[]) methodO).length) {
-                    method = ((String[]) methodO)[0];
-                }
-            }
-        }
-        if (method == null) {
-            throw new WMRuntimeException(MessageResource.SERVER_NOMETHODORID, params);
-        }
-        params.remove(ServerConstants.METHOD);
-
-        return method;
-    }
-
-    /**
-     * Merge parameters from fileMap (if it exists) and parametersMap. All parameters are returned in Object[], even
-     * those from fileMap.
-     * 
-     * @param request The original request.
-     * @return A merged map of all parameters.
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<String, Object[]> mergeParams(HttpServletRequest request) {
-
-        Map<String, Object[]> params = new HashMap<String, Object[]>();
-        // Set<Map.Entry<?, ?>> entries;
-        Set<Map.Entry<String, MultipartFile>> entries;
-
-        if (request instanceof MultipartHttpServletRequest) {
-            MultipartHttpServletRequest mrequest = (MultipartHttpServletRequest) request;
-            entries = mrequest.getFileMap().entrySet();
-            for (Map.Entry<?, ?> e : entries) {
-                params.put((String) e.getKey(), new Object[] { e.getValue() });
-            }
-        }
-
-        entries = request.getParameterMap().entrySet();
-        for (Map.Entry<?, ?> e : entries) {
-            String key = (String) e.getKey();
-            Object[] value = (Object[]) e.getValue();
-            if (params.get(key) == null) {
-                params.put(key, (Object[]) e.getValue());
-            } else {
-                Object[] newArray = new Object[value.length + params.get(key).length];
-                System.arraycopy(params.get(key), 0, newArray, 0, params.get(key).length);
-                System.arraycopy(value, 0, newArray, params.get(key).length, value.length);
-                params.put(key, newArray);
-            }
-        }
-
-        return params;
-    }
-
-    public static TypedServiceReturn invokeMethodWithEvents(ServiceWire sw, String method,
-                                                            ParsedServiceArguments args, JSONState jsonState, ServiceResponse serviceResponse) throws WMException {
-
-        TypedServiceReturn ret = null;
-
-        try {
-            NDC.push("invoke " + sw.getServiceId() + "." + method);
-
-            Throwable exception = null;
-
-            // log the method arguments after conversion
-            if (logger.isDebugEnabled()) {
-                StringBuilder logMessage = new StringBuilder();
-                logMessage.append("Invoking method \"" + method + "\" with translated parameters: [");
-
-                for (Object arg : args.getArguments()) {
-                    logMessage.append(arg);
-                    if (arg != null) {
-                        logMessage.append(" (" + arg.getClass() + ")");
-                    }
-                    logMessage.append(", ");
-                }
-                logMessage.append("]");
-                logger.debug(logMessage.toString());
-            }
-            try {
-                ret = sw.getServiceType().invokeMethod(sw, method, args, jsonState, serviceResponse);
-            } catch (Throwable t) {
-                if (t instanceof WMException) {
-                    throw (WMException) t;
-                } else if (t instanceof RuntimeException) {
-                    throw (RuntimeException) t;
-                } else {
-                    // some exception messages are not useful when taken outside
-                    // of the context of the exception type (ClassCastException,
-                    // ClassNotFoundException, etc) so include the type in the
-                    // msg
-                    String msg = StringUtils.fromLastOccurrence(t.getClass().getName(), ".");
-                    if (t.getMessage() != null) {
-                        msg += ": " + t.getMessage();
-                    }
-                    throw new WMRuntimeException(msg, t);
-                }
-            }
-        } finally {
-            NDC.pop();
-        }
-
-        return ret;
-    }
-    
-    public static Object invokeMethod(Object serviceObject,Method method,Object[] args) throws IllegalArgumentException,
-    					IllegalAccessException, InvocationTargetException{
-    	Class<?>[] paramTypes = method.getParameterTypes();
-    	Object[] argsToSend = null;
-    	if(args != null && paramTypes != null && args.length > 0){
-    		argsToSend = new Object[args.length];
-    		int i = 0;
-    		for(Class<?> p:paramTypes){
-    			Object arg = args[i];
-    			if(arg != null && !p.isAssignableFrom(arg.getClass()) && String.class.isAssignableFrom(arg.getClass())){
-    				arg = convert(arg.toString(),p);
-    			}
-    			argsToSend[i] = arg;
-    			i++;
-    		}
-    		
-    	}
-    	return method.invoke(serviceObject,argsToSend);
-    }
-
-    private static Object convert(String value,Class clazz) {
-    	PropertyEditor editor = PropertyEditorManager.findEditor(clazz);
-        editor.setAsText(value);
-        return editor.getValue();
-	}
-    
-    public static void main(String[] args) {
-		System.out.println(convert("223342.3",Double.class));
-	}
-
-	/**
-     * Detect proxy class, and find underlying class. <br>
-     * An inglorious hack: This simple version works for CGLIB proxy; as used by Springframework.security. No guarantee
-     * (or even expectation) that other AOP proxies will be detected. Java (or CGLIB) may have more deterministic ways
-     * to find the underlying class.
-     * <p>
-     * @param sClass the class of an object that may be wrapped by a proxy object.
-     * @return the underlying Class of the object that was wrapped
-     */
-    public static Class<?> getRealClass(Object o) {
-
-        Class<?> ret;
-        if (AopUtils.isAopProxy(o)) {
-            ret = AopUtils.getTargetClass(o);
-        } else {
-            ret = o.getClass();
-        }
-        return ret;
-    }
-
-    /**
      * Get a list of methods to be exposed to the client. This will obey restrictions from {@link ExposeToClient} and
      * {@link HideFromClient}.
      * 
@@ -394,13 +162,4 @@ public class ServerUtils {
         return ret;
     }
 
-    /**
-     * Calculate the server time offset against UTC
-     * 
-     * @return the server time offset in mili-seconds
-     */
-    public static int getServerTimeOffset() {
-        Calendar now = Calendar.getInstance();
-        return now.get(Calendar.ZONE_OFFSET) + now.get(Calendar.DST_OFFSET);
-    }
 }
