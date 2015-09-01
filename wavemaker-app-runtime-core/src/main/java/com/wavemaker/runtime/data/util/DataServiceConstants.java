@@ -15,38 +15,16 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import com.wavemaker.studio.json.AlternateJSONTransformer;
-
 /**
  * @author Simon Toens
  */
 public class DataServiceConstants {
 
-    public static final String SPRING_CFG_LOCATIONS_ATTR = "locations";
-
     public static final String SPRING_CFG_EXT = ".spring.xml";
-
-    public static final String ANNO_CHAR = "@";
-
-    public static final String DESIGN_ANNO_CHAR = ANNO_CHAR + "design.";
-
-    public static final String GENERATED_QUERY = DESIGN_ANNO_CHAR + "generated";
-
-    public static final String DB_USERNAME = ".username";
-
-    public static final String DB_PASS = ".password";
-
-    public static final String DB_URL = ".url";
 
     public static final String CONNECTION_URL = ".url";
 
-    public static final String DB_DRIVER_CLASS_NAME = ".driver_class";
-
-    public static final String DB_DIALECT = ".dialect";
-
     public static final String DATA_PACKAGE_NAME = "data";
-
-    public static final String PROP_SEP = "" + AlternateJSONTransformer.PROP_SEP;
 
     public static final String WEB_ROOT_TOKEN = "{WebAppRoot}";
 
