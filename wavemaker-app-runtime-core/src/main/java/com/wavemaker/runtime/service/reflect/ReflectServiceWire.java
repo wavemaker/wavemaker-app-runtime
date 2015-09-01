@@ -15,13 +15,11 @@
  */
 package com.wavemaker.runtime.service.reflect;
 
+import com.wavemaker.runtime.service.ServiceType;
+import com.wavemaker.runtime.service.ServiceWire;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import com.wavemaker.runtime.service.LiveDataService;
-import com.wavemaker.runtime.service.ServiceType;
-import com.wavemaker.runtime.service.ServiceWire;
 
 /**
  * ServiceWire for ServiceTypes supporting default reflection. This ServiceWire type adds a property to hold the service
@@ -95,12 +93,6 @@ public class ReflectServiceWire implements ServiceWire, ApplicationContextAware 
     @Override
     public String getServiceId() {
         return this.serviceId;
-    }
-
-    @Override
-    public boolean isLiveDataService() {
-
-        return this.getServiceBean() instanceof LiveDataService;
     }
 
     @Override

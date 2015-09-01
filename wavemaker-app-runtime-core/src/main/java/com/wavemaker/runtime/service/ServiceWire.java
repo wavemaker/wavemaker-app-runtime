@@ -51,10 +51,4 @@ public interface ServiceWire {
      */
     public String getServiceId();
 
-    /**
-     * Returns true iff this service is a LiveDataService.
-     * 
-     * @return True iff this is a LiveDataService.
-     */
-    public boolean isLiveDataService();
 }

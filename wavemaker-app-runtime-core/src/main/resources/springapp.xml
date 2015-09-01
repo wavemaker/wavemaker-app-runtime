@@ -16,15 +16,6 @@
     <import resource="managers.xml"/>
     <import resource="servicetypes.xml"/>
 
-    <bean id="requestInitInterceptor" class="com.wavemaker.runtime.interceptor.RequestInitInterceptor">
-        <property name="runtimeAccess">
-            <ref bean="runtimeAccess"/>
-        </property>
-        <property name="internalRuntime">
-            <ref bean="internalRuntime"/>
-        </property>
-    </bean>
-
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="300000000"/>
@@ -33,30 +24,11 @@
 
     <bean id="agJSONController"
           class="com.wavemaker.runtime.server.JSONRPCController">
-        <property name="serviceManager">
-            <ref bean="serviceManager"/>
-        </property>
-        <property name="runtimeAccess">
-            <ref bean="runtimeAccess"/>
-        </property>
-        <property name="internalRuntime">
-            <ref bean="internalRuntime"/>
-        </property>
-        <property name="serviceResponse">
-            <ref bean="serviceResponse"/>
-        </property>
-
         <!-- controller configuration -->
         <property name="supportedMethods" value="GET,POST"/>
     </bean>
 
     <bean id="metadatacontroller" class="com.wavemaker.runtime.controller.AppRuntimeController" > </bean>
-
-    <bean id="wmModuleController"
-          class="com.wavemaker.runtime.module.ModuleController">
-        <!-- controller configuration -->
-        <property name="supportedMethods" value="GET"/>
-    </bean>
 
     <bean id="runtimeAccess"
           class="com.wavemaker.runtime.RuntimeAccess" scope="request">
@@ -67,12 +39,6 @@
         <aop:scoped-proxy/>
     </bean>
 
-    <bean id="internalRuntime"
-          class="com.wavemaker.runtime.server.InternalRuntime"
-          scope="request">
-        <aop:scoped-proxy/>
-    </bean>
-
     <bean id="viewResolver"
           class="org.springframework.web.servlet.view.ResourceBundleViewResolver">
         <property name="basename" value="views"/>
@@ -80,15 +46,4 @@
 
     <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
 
-
-    <beans profile="default">
-        <bean id="serviceResponse" class="com.wavemaker.runtime.server.ServiceResponse" scope="singleton"
-              lazy-init="true">
-            <property name="runtimeAccess">
-                <ref bean="runtimeAccess"/>
-            </property>
-            <!-- Set this value to your environment's connection timeout. Setting this value to zero means "no timeout" -->
-            <property name="connectionTimeout" value="0"/>
-        </bean>
-    </beans>
 </beans>
