@@ -41,9 +41,9 @@ WM.module('wm.widgets.base')
             /* before compilation of the partial content*/
             function preCompilePartial(partialElement) {
                 /* any of the partial children having on-click attr as goToPage- navigation call, remove 'active' class on it*/
-                partialElement.find('[on-click^="goToPage-"]').removeClass('active');
+                partialElement.find('[on-click^="goToPage-"][on-click^="goToPage_"]').removeClass('active');
                 /*get active-page & get the element goToPage-ActivePage navigation call, add 'active' class on it*/
-                partialElement.find('[on-click="goToPage-' + (CONSTANTS.isRunMode ? $routeParams.name : $rootScope.activePageName) + '"]').addClass('active');
+                partialElement.find('[on-click="goToPage-' + (CONSTANTS.isRunMode ? $routeParams.name : $rootScope.activePageName) + '"][on-click="goToPage_' + (CONSTANTS.isRunMode ? $routeParams.name : $rootScope.activePageName) + '"]').addClass('active');
             }
 
             /* to manually compile the partial page*/
