@@ -5,12 +5,11 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 
-import com.wavemaker.runtime.WMAppContext;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -24,8 +23,6 @@ import org.springframework.util.ClassUtils;
 
 import com.wavemaker.studio.common.CommonConstants;
 import com.wavemaker.studio.common.WMRuntimeException;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * @author Uday Shankar
@@ -59,6 +56,7 @@ public class WMRuntimeUtils {
         messageConverters.add(new ResourceHttpMessageConverter());
         messageConverters.add(new SourceHttpMessageConverter<Source>());
         messageConverters.add(new AllEncompassingFormHttpMessageConverter());
+        messageConverters.add(new FormHttpMessageConverter());
         if (romePresent) {
             messageConverters.add(new AtomFeedHttpMessageConverter());
             messageConverters.add(new RssChannelHttpMessageConverter());
