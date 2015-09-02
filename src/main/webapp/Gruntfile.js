@@ -496,7 +496,11 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/widgets/advanced/camera/camera.js',
                         '<%= config.scripts %>/modules/mobile/widgets/advanced/barcodeScanner/barcodeScanner.js',
                         '<%= config.scripts %>/modules/mobile/widgets/advanced/fileBrowser/fileBrowser.js',
-                        '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js'
+                        '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js',
+                        '<%= config.scripts %>/modules/mobile/widgets/form/date/date.js',
+                        '<%= config.scripts %>/modules/mobile/widgets/form/time/time.js',
+                        '<%= config.scripts %>/modules/mobile/widgets/form/datetime/datetime.js',
+                        '<%= config.scripts %>/modules/mobile/widgets/live/form/liveform.js'
                     ],
                     '<%= config.mobile %>/scripts/mobileruntimeloader.min.js': [
                         '<%= config.mobile %>/scripts/mobileruntimeloader.js'
