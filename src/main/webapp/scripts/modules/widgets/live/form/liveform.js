@@ -70,7 +70,7 @@ WM.module('wm.widgets.live')
                             '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
                                 template.context.innerHTML +
                             '</div>' +
-                            '<div class="basic-btn-grp btn-group form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
+                            '<div class="basic-btn-grp form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
                         '</form>';
             },
             controller: function ($scope, Variables) {
