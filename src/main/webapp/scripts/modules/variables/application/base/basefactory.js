@@ -155,7 +155,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operation": {"type": "list", "hide": true, "options": []},
                     "startUpdate": {"type": "boolean", "value": false, "hide": true},
                     /*calendar event options*/
-                    "eventTitle": {"type": "number", "dataBinding": true, "hide" : true},
+                    "eventTitle": {"type": "string", "dataBinding": true, "hide" : true},
                     "eventNotes": {"type": "string", "dataBinding": true, "hide" : true},
                     "eventLocation": {"type": "string", "dataBinding": true, "hide" : true},
                     "eventStart": {"type": "string", "dataBinding": true, "hide" : true},
