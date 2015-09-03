@@ -478,7 +478,7 @@ html, body {
   margin-right: 30px;
   margin-top: 10px !important;
   input[type="checkbox"], input[type="radio"] {
-    margin-top: 0;
+    margin-top: 2px;
     margin-bottom: 0;
     margin-right: 0;
   }
@@ -1673,7 +1673,7 @@ If the height and width are not specified the video takes the height of the post
       .panel-actions {
         float: right;
         right: 0.25em;
-        top: 0.5em;
+        top: 0.9em;
         position: absolute;
         margin-right: 0.2em;
         .panel-action {
@@ -2057,6 +2057,17 @@ If the height and width are not specified the video takes the height of the post
     }
   }
  }
+
+// Fix for height of input box in pagination.
+.app-datagrid-paginator  {
+  .pagination-sm {
+    li {
+      a {
+        padding-top: 6px !important;
+      }
+    }
+  }
+}
 
 /*====================================================================================================================
   END - Widgets
