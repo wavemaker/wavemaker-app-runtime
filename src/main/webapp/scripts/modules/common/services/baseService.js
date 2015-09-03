@@ -143,7 +143,8 @@ wm.modules.wmCommon.services.BaseService = [
                 localeObject = localeObject || getLocaleObject();
                 /*Check for local resources and code in the resource */
                 if (!localeObject || !localeObject[errorDetails.messageKey]) {
-                    return;
+                    errMsg = errorDetails.message || "";
+                    return errMsg;
                 }
 
                 /*Assigning the error message*/
