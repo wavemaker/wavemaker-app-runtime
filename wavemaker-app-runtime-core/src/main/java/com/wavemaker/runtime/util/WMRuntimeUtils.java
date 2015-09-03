@@ -15,9 +15,11 @@ import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.feed.AtomFeedHttpMessageConverter;
 import org.springframework.http.converter.feed.RssChannelHttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
+import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 
@@ -30,7 +32,7 @@ import com.wavemaker.studio.common.WMRuntimeException;
 public class WMRuntimeUtils {
 
     private static boolean romePresent =
-            ClassUtils.isPresent("com.sun.syndication.feed.WireFeed", WMRuntimeUtils.class.getClassLoader());
+            ClassUtils.isPresent("com.rometools.rome.feed.WireFeed", WMRuntimeUtils.class.getClassLoader());
 
     private static final boolean jaxb2Present =
             ClassUtils.isPresent("javax.xml.bind.Binder", WMRuntimeUtils.class.getClassLoader());
@@ -39,9 +41,11 @@ public class WMRuntimeUtils {
             ClassUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper", WMRuntimeUtils.class.getClassLoader()) &&
                     ClassUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator", WMRuntimeUtils.class.getClassLoader());
 
-    private static final boolean jacksonPresent =
-            ClassUtils.isPresent("org.codehaus.jackson.map.ObjectMapper", WMRuntimeUtils.class.getClassLoader()) &&
-                    ClassUtils.isPresent("org.codehaus.jackson.JsonGenerator", WMRuntimeUtils.class.getClassLoader());
+    private static final boolean jackson2XmlPresent =
+            ClassUtils.isPresent("com.fasterxml.jackson.dataformat.xml.XmlMapper", WMRuntimeUtils.class.getClassLoader());
+
+    private static final boolean gsonPresent =
+            ClassUtils.isPresent("com.google.gson.Gson", WMRuntimeUtils.class.getClassLoader());
 
     private static final List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
 
@@ -61,13 +65,16 @@ public class WMRuntimeUtils {
             messageConverters.add(new AtomFeedHttpMessageConverter());
             messageConverters.add(new RssChannelHttpMessageConverter());
         }
+        if (jackson2XmlPresent) {
+            messageConverters.add(new MappingJackson2XmlHttpMessageConverter());
+        }
         if (jaxb2Present) {
             messageConverters.add(new Jaxb2RootElementHttpMessageConverter());
         }
         if (jackson2Present) {
             messageConverters.add(new MappingJackson2HttpMessageConverter());
-        } else if (jacksonPresent) {
-            messageConverters.add(new org.springframework.http.converter.json.MappingJacksonHttpMessageConverter());
+        } else if (gsonPresent) {
+            messageConverters.add(new GsonHttpMessageConverter());
         }
     }
 
