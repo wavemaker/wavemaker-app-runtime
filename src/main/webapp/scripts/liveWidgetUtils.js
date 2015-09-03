@@ -365,9 +365,10 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns checkbox template */
-            function checkboxTemplate(fieldDef, index) {
-                var template = '';
-                template = template + '<wm-checkbox ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" ></wm-checkbox>';
+            function checkboxTemplate(fieldDef, index, widgetType) {
+                var template = '',
+                    addToggle = widgetType === 'toggle' ? 'type="toggle"' : '';
+                template = template + '<wm-checkbox ' + getFormFields(fieldDef, index) + addToggle+ ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" ></wm-checkbox>';
                 return template;
             }
 
@@ -458,9 +459,9 @@ WM.module('wm.widgets.live')
                     widgetType = fieldDef.widget.toLowerCase();
                 }
                 template = template +
-                    '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="form-timestamp {{formFields[' + index + '].class}}">' +
-                    '<wm-label class="col-md-3 col-sm-3" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-md-9 col-sm-9">' +
+                    '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="form-timestamp">' +
+                    '<wm-label class="col-sm-3 col-xs-12" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
+                    '<div class="col-sm-9 col-xs-12 {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="{{' + getCaptionByWidget(widgetType, index) + '}}" show="{{!isUpdateMode}}"></wm-label>';
 
                 switch (widgetType) {
@@ -472,7 +473,8 @@ WM.module('wm.widgets.live')
                     template += selectTemplate(fieldDef, index);
                     break;
                 case 'checkbox':
-                    template += checkboxTemplate(fieldDef, index);
+                case 'toggle':
+                    template += checkboxTemplate(fieldDef, index, widgetType);
                     break;
                 case 'checkboxset':
                     template += checkboxsetTemplate(fieldDef, index);
