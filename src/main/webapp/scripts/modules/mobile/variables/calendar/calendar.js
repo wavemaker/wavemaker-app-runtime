@@ -48,7 +48,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaCalendar', func
             },
             listEvents: {
                 model : [event],
-                properties : ['eventTitle', 'eventLocation', 'eventNotes', 'eventStart', 'eventEnd', 'startUpdate', 'dateFormat'],
+                properties : ['eventTitle', 'eventLocation', 'eventNotes', 'eventStart', 'eventEnd', 'startUpdate'],
                 invoke : function (variable, options, success, error) {
                     var listEventOptions ={
                         title: variable.eventTitle,
