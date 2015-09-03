@@ -539,12 +539,12 @@ WM.module('wm.widgets.base')
                                 }
                             }
 
-                            /* initialize setters and getters */
-                            defineGetterSettersForProps($is, $s, $el, attrs);
-
                             if (CONSTANTS.isStudioMode) {
                                 WM.extend($is.widgetProps, {'active': {}});
                             }
+
+                            /* initialize setters and getters */
+                            defineGetterSettersForProps($is, $s, $el, attrs);
 
                             processAttrs($is, $s, $tEl, attrs);
 
