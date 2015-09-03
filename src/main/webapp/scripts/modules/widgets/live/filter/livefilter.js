@@ -20,7 +20,8 @@ WM.module('wm.widgets.live')
         '$filter',
         'Utils',
         '$controller',
-        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils, $controller) {
+        'LiveWidgetUtils',
+        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils, $controller, LiveWidgetUtils) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf("wm.livefilter", ["wm.layouts", "wm.containers"]),
                 filterMarkup = '',
@@ -338,12 +339,6 @@ WM.module('wm.widgets.live')
 
                             var variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
                                 handlers = [],
-                                layoutObj = {
-                                    'One Column': 1,
-                                    'Two Column': 2,
-                                    'Three Column': 3,
-                                    'Four Column': 4
-                                },
                                 defaultButtonsArray = [
                                     {
                                         key : 'filter',
@@ -367,7 +362,7 @@ WM.module('wm.widgets.live')
                             scope.primaryKey = null;
 
                             scope.getActiveLayout = function () {
-                                return layoutObj[scope.layout] || 1;
+                                return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout);
                             };
 
                             function updateAllowedValues() {

@@ -600,6 +600,27 @@ WM.module('wm.widgets.live')
                 return translatedObj;
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getColumnCountByLayoutType
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * returns the number of columns based on the provided layout type. E.g. 1 for "One Column", 2 for "Two Column", etc.
+             *
+             * @param {object} layout layout type
+             */
+            function getColumnCountByLayoutType(layout) {
+                var layoutObj = {
+                    'One Column': 1,
+                    'Two Column': 2,
+                    'Three Column': 3,
+                    'Four Column': 4
+                };
+                return layoutObj[layout] || 1;
+            }
+
             this.getEventTypes = getEventTypes;
             this.getDefaultValue = getDefaultValue;
             this.getFormButtons = getFormButtons;
@@ -608,5 +629,6 @@ WM.module('wm.widgets.live')
             this.getTemplate = getTemplate;
             this.getFormActions = getFormActions;
             this.translateVariableObject = translateVariableObject;
+            this.getColumnCountByLayoutType = getColumnCountByLayoutType;
         }
     ]);

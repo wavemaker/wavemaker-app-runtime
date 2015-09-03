@@ -591,16 +591,10 @@ WM.module('wm.widgets.live')
                         }
                         scope.element = element;
                         var formController,
-                            handlers = [],
-                            layoutObj = {
-                                'One Column': 1,
-                                'Two Column': 2,
-                                'Three Column': 3,
-                                'Four Column': 4
-                            };
+                            handlers = [];
 
                         scope.getActiveLayout = function () {
-                            return layoutObj[scope.layout] || 1;
+                            return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout);
                         };
                         /*
                          * Extend the properties from the form controller exposed to end user in page script
