@@ -112,7 +112,7 @@ WM.module('wm.utils', [])
                 'short'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
                 'byte'       : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
                 'date'       : ['Date', 'Text', 'Select', 'Radioset'],
-                'boolean'    : ['Checkbox', 'Text', 'Select', 'Radioset'],
+                'boolean'    : ['Checkbox', 'Text', 'Select', 'Radioset', 'Toggle'],
                 'list'       : ['Select', 'Radioset', 'Text', 'Datalist'],
                 'float'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
                 'big_decimal': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],

@@ -184,6 +184,7 @@ WM.module('wm.widgets.live')
                                     fieldValue = getFormattedDateTime(filterField.value, filterField.widget);
                                     break;
                                 case 'checkbox':
+                                case 'toggle':
                                     if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
                                         fieldValue = filterField.value;
                                     }
