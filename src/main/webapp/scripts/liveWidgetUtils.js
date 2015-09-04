@@ -206,7 +206,7 @@ WM.module('wm.widgets.live')
             function getCaptionByWidget(type, index) {
                 var caption = 'formFields[' + index + '].value';
                 if (type === 'datetime' || type === 'timestamp') {
-                    caption += ' | date:formFields[' + index + '].datepattern';
+                    caption += ' | date:formFields[' + index + '].datepattern || \'yyyy-MM-dd HH:mm:ss\'';
                 } else if (type === 'time') {
                     caption += ' | date:\'HH:mm:ss\'';
                 } else if (type === 'date') {
