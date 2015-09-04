@@ -1,5 +1,5 @@
 /*global wm, WM*/
-WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', '$cordovaVibration', function (MobileVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera, $cordovaVibration) {
+WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', '$cordovaVibration', '$cordovaDevice', function (MobileVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera, $cordovaVibration, $cordovaDevice) {
     "use strict";
 
     var operations = {
@@ -66,7 +66,35 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
                     };
                     $cordovaVibration.vibrate(vibrationTimeOptions.time);
                 }
+            },
+            getModel :   {
+                model: {
+                    model: ''
+                },
+                properties : ['startUpdate'],
+                invoke : function (variable, options, success) {
+                    success({ model: $cordovaDevice.getModel()});
+                }
+            },
+            getOS :   {
+                model: {
+                    os: ''
+                },
+                properties : ['startUpdate'],
+                invoke : function (variable, options, success) {
+                    success({ os: $cordovaDevice.getPlatform()});
+                }
+            },
+            getOSVersion :   {
+                model: {
+                    osversion: ''
+                },
+                properties : ['startUpdate'],
+                invoke : function (variable, options, success) {
+                    success({ osversion: $cordovaDevice.getVersion()});
+                }
             }
+
         };
     WM.forEach(operations, function (value, key) {
         MobileVariableService.addOperation('device', key, value);

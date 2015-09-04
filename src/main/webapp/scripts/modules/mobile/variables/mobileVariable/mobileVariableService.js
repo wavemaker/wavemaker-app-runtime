@@ -27,7 +27,7 @@ wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils
             if (variable.prefabName) {
                 return options.scope || {};
             }
-            return (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
+            return (options && options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
         }
 
         function invoke(options, success, error) {
