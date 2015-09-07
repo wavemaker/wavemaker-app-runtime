@@ -5,10 +5,14 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/form/chart.html",
-            '<div init-widget class="app-chart" title="{{hint}}" data-ng-show="show" apply-styles ><div class="app-chart-inner">' +
-                '<svg></svg>' +
-                '<div class="wm-content-info readonly-wrapper {{class}}" data-ng-show="showContentLoadError"><p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p></div>' +
-            '</div></div>'
+            '<div init-widget class="app-chart" title="{{hint}}" data-ng-show="show" apply-styles>' +
+                '<div class="app-chart-inner">' +
+                    '<svg></svg>' +
+                    '<div class="wm-content-info readonly-wrapper {{class}}" data-ng-show="showContentLoadError">' +
+                        '<p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p>' +
+                    '</div>' +
+                '</div>' +
+            '</div>'
             );
     }]).directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, $timeout) {
         "use strict";
@@ -500,10 +504,12 @@ WM.module('wm.widgets.basic')
                 scope.widgetProps.aggregationcolumn.disabled = true;
                 scope.widgetProps.aggregation.disabled = true;
                 /*Setting the values to the default*/
-                $rootScope.$emit('update-widget-property', 'aggregation', "");
-                $rootScope.$emit('update-widget-property', 'aggregationcolumn', "");
-                $rootScope.$emit('update-widget-property', 'groupby', "");
-                $rootScope.$emit('update-widget-property', 'orderby', "");
+                if (scope.active) {
+                    $rootScope.$emit('update-widget-property', 'aggregation', "");
+                    $rootScope.$emit('update-widget-property', 'aggregationcolumn', "");
+                    $rootScope.$emit('update-widget-property', 'groupby', "");
+                    $rootScope.$emit('update-widget-property', 'orderby', "");
+                }
             }
             scope.$root.$emit("set-markup-attr", scope.widgetid, {'xaxisdatakey': scope.xaxisdatakey, 'yaxisdatakey': scope.yaxisdatakey});
         }

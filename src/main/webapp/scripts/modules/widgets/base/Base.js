@@ -1868,7 +1868,7 @@ WM.module('wm.widgets.base', [])
                         ' data-ng-show data-ng-hide data-ng-readonly data-ng-disabled data-ng-required data-ng-attr-placeholder ng-attr-name' +
                         ' on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect ';
 
-                    attrsToBeRemoved += ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius borderstyle color cursor display fontfamily fontstyle fontvariant fontweight height horizontalalign lineheight maxheight maxwidth minheight minwidth opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility whitespace width wordbreak zindex ';
+                    attrsToBeRemoved += ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight maxheight maxwidth minheight minwidth opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility whitespace wordbreak zindex ';
                     attrsToBeRemoved += ' bordertop borderright borderbottom borderleft borderunit ' +
                         'paddingtop paddingright paddingbottom paddingleft paddingunit ' +
                         'margintop marginright marginbottom marginleft marginunit fontsize fontunit' +
