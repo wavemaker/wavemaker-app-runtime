@@ -429,7 +429,7 @@ WM.module('wm.widgets.grid')
                                     scope.insertrow = WM.isDefined(scope.insertrow) ? scope.insertrow : false;
                                     scope.updaterow = WM.isDefined(scope.updaterow) ? scope.updaterow : false;
                                     scope.deleterow = WM.isDefined(scope.deleterow) ? scope.deleterow : false;
-                                    if (CONSTANTS.isStudioMode) {
+                                    if (scope.widgetid) { // when the widget is in canvas
                                         $rootScope.$emit('set-markup-attr', scope.widgetid, {
                                             'readonlygrid': false,
                                             'insertrow': scope.insertrow,
@@ -440,7 +440,7 @@ WM.module('wm.widgets.grid')
                                     }
                                     readOnlyGridAttrUpdated = undefined;
                                 }
-                                if (CONSTANTS.isStudioMode) {
+                                if (scope.widgetid) { // when the widget is in canvas
                                     scope.widgetProps.deleterow.show = !newVal;
                                     scope.widgetProps.updaterow.show = !newVal;
                                     scope.widgetProps.insertrow.show = !newVal;
