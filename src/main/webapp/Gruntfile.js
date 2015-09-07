@@ -9,7 +9,7 @@ module.exports = function (grunt) {
     var wmBuildConfig = {
         scripts: 'scripts',
         application: 'application',
-        studio: 'studio',
+        editor: 'editor',
         mobile: 'mobile',
         styles: 'styles',
         components: 'components'
@@ -25,7 +25,7 @@ module.exports = function (grunt) {
                         src: [
                             '<%= config.application %>/*',
                             '<%= config.mobile %>/*',
-                            '<%= config.studio %>/*'
+                            '<%= config.editor %>/*'
                         ]
                     }
                 ]
@@ -104,10 +104,6 @@ module.exports = function (grunt) {
                         dest: '<%= config.mobile %>/styles/css/images'
                     },
                     {
-                        src : '<%= config.application %>/scripts/wm-libs.js',
-                        dest : '<%= config.mobile %>/scripts/wm-libs.js'
-                    },
-                    {
                         src : '<%= config.application %>/scripts/wm-libs.min.js',
                         dest : '<%= config.mobile %>/scripts/wm-libs.min.js'
                     }
@@ -155,8 +151,8 @@ module.exports = function (grunt) {
                     sourceMap: true
                 },
                 files: {
-                    '<%= config.studio %>/scripts/runtimeloader.min.js' : ['<%= config.studio %>/scripts/runtimeloader.js'],
-                    '<%= config.studio %>/scripts/mobileruntimeloader.min.js' : ['<%= config.studio %>/scripts/mobileruntimeloader.js']
+                    '<%= config.editor %>/application/scripts/runtimeloader.min.js' : ['<%= config.editor %>/application/scripts/runtimeloader.js'],
+                    '<%= config.editor %>/mobile/scripts/mobileruntimeloader.min.js' : ['<%= config.editor %>/mobile/scripts/mobileruntimeloader.js']
                 }
             },
             'min-mangle-false-application' : {
@@ -192,14 +188,14 @@ module.exports = function (grunt) {
                         '<%= config.components %>/placeholders/js/placeholders.js'
                     ],
                     '<%= config.application %>/scripts/wm-loader.min.js': [
-                        '<%= config.studio %>/scripts/runtimeloader.js',
+                        '<%= config.editor %>/application/scripts/runtimeloader.js',
                         '<%= config.scripts %>/wmbootstrap.js'
                     ],
                     '<%= config.mobile %>/scripts/wm-mobileloader.min.js': [
-                        '<%= config.studio %>/scripts/mobileruntimeloader.js',
+                        '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js',
                         '<%= config.scripts %>/wmbootstrap.js'
                     ],
-                    '<%= config.application %>/scripts/wm-libs.js': [
+                    '<%= config.application %>/scripts/wm-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
                         '<%= config.components %>/jquery-ui/js/jquery-ui.js',
@@ -225,14 +221,13 @@ module.exports = function (grunt) {
                         '<%= config.components %>/ngCordova/ng-cordova.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
                         '<%= config.scripts %>/modules/base64/base64.js'
-                    ],
-                    '<%= config.application %>/scripts/wm-libs.min.js': ['<%= config.application %>/scripts/wm-libs.js']
+                    ]
                 }
             },
             'runtime-files': {
                 nonull: true,
                 files: {
-                    '<%= config.studio %>/scripts/runtimeloader.js': [
+                    '<%= config.editor %>/application/scripts/runtimeloader.js': [
                         '<%= config.scripts %>/config.js',
                         '<%= config.scripts %>/utils.js',
                         '<%= config.scripts %>/formatUtils.js',
@@ -355,8 +350,8 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/i18n/services/i18nService.js',
                         '<%= config.scripts %>/modules/wmMobile.js'
                     ],
-                    '<%= config.studio %>/scripts/runtimeloader.min.js': [
-                        '<%= config.studio %>/scripts/runtimeloader.js'
+                    '<%= config.editor %>/application/scripts/runtimeloader.min.js': [
+                        '<%= config.editor %>/application/scripts/runtimeloader.js'
                     ]
 
                 }
@@ -364,7 +359,7 @@ module.exports = function (grunt) {
             'mobile-runtime-files': { // mobile changes
                 nonull: true,
                 files: {
-                    '<%= config.studio %>/scripts/mobileruntimeloader.js': [
+                    '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js': [
                         '<%= config.scripts %>/config.js',
                         '<%= config.scripts %>/utils.js',
                         '<%= config.scripts %>/formatUtils.js',
@@ -503,8 +498,8 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/widgets/form/datetime/datetime.js',
                         '<%= config.scripts %>/modules/mobile/widgets/live/form/liveform.js'
                     ],
-                    '<%= config.studio %>/scripts/mobileruntimeloader.min.js': [
-                        '<%= config.studio %>/scripts/mobileruntimeloader.js'
+                    '<%= config.editor %>/mobile/scripts/mobileruntimeloader.min.js': [
+                        '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js'
                     ]
                 }
             }
