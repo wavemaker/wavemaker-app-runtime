@@ -13,5 +13,6 @@ target/
 src/main/webapp/node_modules
 src/main/webapp/components
 src/main/webapp/application
+src/main/webapp/studio
 src/main/webapp/mobile
 src/main/webapp/tp
