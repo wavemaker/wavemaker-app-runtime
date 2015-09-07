@@ -34,12 +34,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -111,6 +106,10 @@ public class WMObjectMapper extends ObjectMapper {
         writeMapper.writeValue(jgen, rootNode);
     }
 
+    @Override
+    public ObjectWriter writer() {
+        return writeMapper.writer();
+    }
 
     public <T> T readValue(File src, Class<T> valueType)
             throws IOException, JsonParseException, JsonMappingException {
@@ -223,6 +222,11 @@ public class WMObjectMapper extends ObjectMapper {
             return (T) stringWriter.toString();
         }
         return readMapper.readValue(src, valueType);
+    }
+
+    @Override
+    public ObjectReader reader() {
+       return readMapper.reader();
     }
 
     private static class WMObjectReadMapper extends ObjectMapper {
