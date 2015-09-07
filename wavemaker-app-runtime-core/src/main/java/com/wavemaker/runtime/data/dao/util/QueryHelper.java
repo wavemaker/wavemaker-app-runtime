@@ -32,9 +32,7 @@ public class QueryHelper {
 
             for (String namedParameter : namedParameters) {
                 Object val = params.get(namedParameter);
-                if(val == null)
-                    throw new RuntimeException("No value provided for parameter name: " + namedParameter);
-                if(val instanceof List)
+                if(val != null && val instanceof List)
                     query.setParameterList(namedParameter, (List)val);
                 else
                     query.setParameter(namedParameter, val);
