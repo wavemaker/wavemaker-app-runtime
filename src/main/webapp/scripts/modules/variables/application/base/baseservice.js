@@ -359,10 +359,15 @@ wm.variables.services.Variables = [
                                     variable.update();
                                 }, null, false);
                             }
-                        } else if (variable.operation !== 'read') {
-                            /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
+                        } else if (!runMode) {
+                            /*
+                             * In studio mode, DB and table related data is to be fetched and saved in the variable
+                             * So, getData is called in STUDIO mode for liva variables with all types of operations
+                             * since startUpdate is unset, table data is not required, hence skipFetchData flag is set
+                             */
                             $timeout(function () {
-                                variable.update();
+                                /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
+                                variable.update({skipFetchData: true});
                             }, null, false);
                         }
                     } else if (variable.category === "wm.LoginVariable") {
