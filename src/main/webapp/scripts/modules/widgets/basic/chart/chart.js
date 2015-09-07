@@ -549,9 +549,7 @@ WM.module('wm.widgets.basic')
             /*If x axis is other than number type then add indexes*/
             if (isLineTypeChart(scope.type) && !isNumberType(scope.xAxisDataType)) {
                 /*Verification to get the unique data keys */
-                if (scope.xDataKeyArr.indexOf(value) === -1) {
-                    scope.xDataKeyArr.push(value);
-                }
+                scope.xDataKeyArr.push(value);
                 return index;
             }
             return value;
@@ -584,6 +582,8 @@ WM.module('wm.widgets.basic')
         function getChartData(scope) {
             var shapes = [];
             scope.sampleData = getSampleData(scope);
+            /* scope variables used to keep the actual key values for x-axis */
+            scope.xDataKeyArr = [];
             /*Plotting the chart with sample data when the chart dataset is not bound*/
             if (!scope.binddataset) {
                 return scope.sampleData;
@@ -1557,8 +1557,6 @@ WM.module('wm.widgets.basic')
                     scope.chartData = [scope.chartData];
                 }
 
-                /* scope variables used to keep the actual key values for x-axis */
-                scope.xDataKeyArr = [];
                 /* perform studio mode actions */
                 if (CONSTANTS.isStudioMode) {
                     /* if dataset changed from workspace controller, set default columns */
