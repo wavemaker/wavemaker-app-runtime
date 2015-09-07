@@ -199,7 +199,7 @@ module.exports = function (grunt) {
                         '<%= config.studio %>/scripts/mobileruntimeloader.js',
                         '<%= config.scripts %>/wmbootstrap.js'
                     ],
-                    '<%= config.application %>/scripts/wm-libs.min.js': [
+                    '<%= config.application %>/scripts/wm-libs.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
                         '<%= config.components %>/jquery-ui/js/jquery-ui.js',
@@ -225,7 +225,8 @@ module.exports = function (grunt) {
                         '<%= config.components %>/ngCordova/ng-cordova.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
                         '<%= config.scripts %>/modules/base64/base64.js'
-                    ]
+                    ],
+                    '<%= config.application %>/scripts/wm-libs.min.js': ['<%= config.application %>/scripts/wm-libs.js']
                 }
             },
             'runtime-files': {
