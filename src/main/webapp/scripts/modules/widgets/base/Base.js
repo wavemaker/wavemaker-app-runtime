@@ -42,6 +42,7 @@ WM.module('wm.widgets.base', [])
             classRegex     = '(^$|^-?[_a-zA-Z ]+[_a-zA-Z0-9- ]*)$',
             dimensionRegex = '(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)',
             zindexRegex    = '(^$|auto|initial|inherit|^[0-9]+$)',
+            maxRatingRegex = '^(?:10|[1-9])$|^bind.*$',
             roles = ["Everyone"],
             dateOptions = [
                 {
@@ -271,10 +272,10 @@ WM.module('wm.widgets.base', [])
                         "animation": {"type": "list", "options": animationOptions}
                     },
                     "wm.rating": {
-                        "maxvalue": {"type": "list", "options": [5, 10],  "value": 5},
+                        "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "value": false},
                         "scopedatavalue": {"type": "string"},
-                        "datavalue": {"type": "number", "bindable": "in-out-bound"},
+                        "datavalue": {"type": "number", "value": "", "bindable": "in-out-bound"},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},

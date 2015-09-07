@@ -1988,6 +1988,7 @@ If the height and width are not specified the video takes the height of the post
 
 .app-ratings {
   display: inline-block;
+  vertical-align: middle;
   position: relative;
   font-size: 1em;
   .active {
@@ -1997,13 +1998,11 @@ If the height and width are not specified the video takes the height of the post
     color:#D3D3D3;
   }
   > label.caption {
-    position: absolute;
-    left: 100%;
-    top: 0;
     margin-left: 4px;
-    padding: 2px;
   }
-  .rating-style > label {
+  .rating-style {
+    display: inline-block;
+    > label {
       position: relative;
       float: right;
       margin: 0;
@@ -2025,13 +2024,10 @@ If the height and width are not specified the video takes the height of the post
         color: @app-rating-star-hover-color;
     }
   }
+}
 
   .ratings-container {
     display: inline-block;
-    width: 4.67em;
-    &.count-10 {
-      width: 9.25em;
-    }
     &:before{
       content: "\f005\f005\f005\f005\f005\f005\f005\f005\f005\f005";
       font-family: FontAwesome;

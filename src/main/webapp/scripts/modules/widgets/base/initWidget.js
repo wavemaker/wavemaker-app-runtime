@@ -339,7 +339,7 @@ WM.module('wm.widgets.base')
                     _watchers           = $is._watchers,
                     UPDATE_FROM_WATCHER = key + '__updateFromWatcher',
                     isSelect     = flg  = $el.is('select'),
-                    isNumberType = flg  = flg || $el.is('input[type=number], .app-currency, .app-slider, .app-rating'),
+                    isNumberType = flg  = flg || $el.is('input[type=number], .app-currency, .app-slider, .app-ratings'),
                     isCheckbox          = flg || $el.is('input[type=checkbox]');
 
                 function parseDataValue(val) {

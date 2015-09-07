@@ -12,7 +12,7 @@ WM.module('wm.widgets.advanced')
                     '<input type="radio" id="{{$id}}+{{rate.value}}" data-ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
                 '</label>' +
                 '</div>' +
-                '<div data-ng-if="readonly" data-ng-style="{\'font-size\':iconsize}" class="ratings-container disabled count-{{maxvalue}}" >' +
+                '<div data-ng-if="readonly" data-ng-style="{\'font-size\':iconsize}" class="ratings-container disabled" >' +
                     '<div class="ratings active" data-ng-style="{width: ratingsWidth()}"></div>' +
                 '</div>' +
                 '<label class="caption">{{caption}}</label>' +
@@ -38,11 +38,6 @@ WM.module('wm.widgets.advanced')
                 for (i = maxValue || MAX_RATING; i > 0; i--) {
                     range.push({'value': i});
                 }
-                if (maxValue === 10) {
-                    scope.widgetProps.datavalue.pattern = '^(?:10|[0-9]([.][0-9]+)?)$|^$|^bind.*$';
-                } else if (maxValue === 5) {
-                    scope.widgetProps.datavalue.pattern = '^(?:5|[0-4]([.][0-9]+)?)$|^$|^bind.*$';
-                }
                 scope.range = range;
                 scope.ratingname = 'ratings-' + scope.$id;
                 break;
@@ -61,19 +56,26 @@ WM.module('wm.widgets.advanced')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (iScope, $el, attrs) {
+                        if (WM.isString(iScope.datavalue)) {
+                            iScope.datavalue = parseInt(iScope.datavalue, 10);
+                        }
                         iScope.getActiveElements = function ($event) {
                             iScope._model_ = $el.find(':checked').val();
                             iScope._onChange($event);
                         };
                         iScope.ratingsWidth = function () {
-                            if (iScope.datavalue === undefined || iScope.datavalue === '') {
+                            var dataValue = parseFloat(iScope.datavalue),
+                                starWidth = 0.925,
+                                maxValue = parseInt(iScope.maxvalue, 10);
+                            $el.find('.ratings-container').css("width", (starWidth * maxValue) + 'em');
+                            if (iScope.datavalue === undefined || iScope.datavalue === '' || iScope.datavalue === null) {
                                 return 0;
                             }
-                            var dataValue = parseInt(iScope.datavalue, 10),
-                                maxValue = parseInt(iScope.maxvalue, 10);
-
                             if (dataValue <= maxValue && dataValue >= 0) {
-                                return 100 * (dataValue / maxValue) + '%';
+                                return dataValue * starWidth + 'em';
+                            }
+                            if (dataValue > maxValue) {
+                                return maxValue * starWidth + 'em';
                             }
                         };
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope), iScope, notifyFor);

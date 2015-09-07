@@ -178,8 +178,11 @@ WM.module('wm.widgets.live')
                     'class': attrs.class || '',
                     'required': attrs.required === 'true' || attrs.required === true,
                     'placeholder': attrs.placeholder,
+                    'maxValue' : attrs.maxValue,
+                    'minValue' : attrs.minValue,
+                    'maxvalue' : attrs.maxvalue,
                     'onChange': attrs.onChange,
-                    'onBlur': attrs.onBlur ,
+                    'onBlur': attrs.onBlur,
                     'onFocus': attrs.onFocus,
                     'onMouseleave': attrs.onMouseleave,
                     'onMouseenter': attrs.onMouseenter,
@@ -225,6 +228,7 @@ WM.module('wm.widgets.live')
                 var fields = '',
                     dateTypes = ['date', 'datetime'],
                     textTypes = ['text', 'password', 'textarea'],
+                    excludeMaxValTypes = ['rating'],
                     eventTypes = getEventTypes();
                 Object.keys(fieldDef).forEach(function (field) {
                     if (fieldDef[field]) {
@@ -246,8 +250,8 @@ WM.module('wm.widgets.live')
                         } else if (_.includes(textTypes, type) && field === 'maxvalue') {
                             fields += ' maxchars="{{formFields[' + index + '].' + field + '}}"';
                         } else if (_.includes(eventTypes, field)) {
-                            fields += ' ' + Utils.hyphenate(field) +'="{{formFields[' + index + '].' + field + '}}"';
-                        } else {
+                            fields += ' ' + Utils.hyphenate(field) + '="{{formFields[' + index + '].' + field + '}}"';
+                        } else if (!(_.includes(excludeMaxValTypes, type))) {
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
                         }
                     }
@@ -410,14 +414,16 @@ WM.module('wm.widgets.live')
                 return template;
             }
 
-            function ratingTemplate(fieldDef, index) {
+            function ratingTemplate(fieldDef, index, liveType) {
                 var template = '';
                 if (fieldDef.isRange) {
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-rating ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].minValue"></wm-rating></div>' +
+                    template = template + '<div class="col-md-4 col-sm-4"><wm-rating ' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].minValue" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="{{formFields[' + index + '].readonly}}"></wm-rating></div>' +
                         '<div class="col-md-4 col-sm-4"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-rating' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].maxValue"></wm-rating></div>';
+                        '<div class="col-md-4 col-sm-4"><wm-rating' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].maxValue" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="{{formFields[' + index + '].readonly}}"></wm-rating></div>';
                 } else {
-                    template = template + '<wm-rating ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" readonly="{{!isUpdateMode}}"></wm-rating>';
+                    var readonly = liveType === 'form' ? '{{!isUpdateMode}}' : '{{formFields[' + index + '].readonly}}';
+                    template = template + '<wm-rating ' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].value" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="' + readonly + '"></wm-rating>';
+
                 }
                 return template;
             }
@@ -508,7 +514,7 @@ WM.module('wm.widgets.live')
                     template += dateTimeTemplate(fieldDef, index);
                     break;
                 case 'rating':
-                    template += ratingTemplate(fieldDef, index);
+                    template += ratingTemplate(fieldDef, index, liveType);
                     break;
                 default:
                     template += defaultTemplate(fieldDef, index);
