@@ -21,10 +21,11 @@ wm.variables.services.$servicevariable = ['Variables',
     'Utils',
     'ProjectService',
     'VARIABLE_CONSTANTS',
+    'WS_CONSTANTS',
     'DatabaseService',
     '$base64',
 
-    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, DatabaseService, $base64) {
+    function (Variables, BaseVariablePropertyFactory, WebService, ServiceFactory, $rootScope, CONSTANTS, Utils, ProjectService, VARIABLE_CONSTANTS, WS_CONSTANTS, DatabaseService, $base64) {
         "use strict";
 
         var serviceModel = {},
@@ -41,7 +42,7 @@ wm.variables.services.$servicevariable = ['Variables',
             AUTH_TYPE_BASIC = "BASIC",
             AUTH_TYPE_NONE = "NONE",
             AUTH_TYPE_OAUTH = "OAUTH",
-            supportedOperations = ['get','put','post','delete'],
+            supportedOperations = WS_CONSTANTS.HTTP_METHODS.map(function(method){return method.toLowerCase();}),
             BASE_PATH_KEY = 'x-WM-BASE_PATH',
             RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
             parameterTypeKey = 'in',

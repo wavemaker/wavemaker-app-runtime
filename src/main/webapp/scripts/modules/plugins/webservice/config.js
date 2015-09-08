@@ -122,7 +122,9 @@ wm.plugins.webServices.constant('WS_SERVICE_URLS', {
 
 /*Defining the constants for the web services module*/
 wm.plugins.webServices.constant('WS_CONSTANTS', {
-    WEBSERVICE_WORKSPACE_TYPE: "ws"
+    WEBSERVICE_WORKSPACE_TYPE: "ws",
+    HTTP_METHODS: ["GET", "POST", "PUT", "HEAD", "PATCH", "DELETE", "TRACE", "OPTIONS"],
+    NON_BODY_HTTP_METHODS: ["GET", "HEAD"]
 });
 
 /*Defining the config for the web service plugins*/

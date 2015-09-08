@@ -13,8 +13,9 @@ wm.plugins.webServices.factories.ServiceFactory = [
     "$rootScope",
     "Utils",
     "VARIABLE_CONSTANTS",
+    "WS_CONSTANTS",
 
-    function (WebService, wmToaster, $rootScope, Utils, VARIABLE_CONSTANTS) {
+    function (WebService, wmToaster, $rootScope, Utils, VARIABLE_CONSTANTS, WS_CONSTANTS) {
         "use strict";
 
         /*Array to hold service objects*/
@@ -26,7 +27,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 'serviceDef': {}
             },
             serviceDefMap = {},
-            supportedOperations = ['get', 'put', 'post', 'delete'],
+            supportedOperations = WS_CONSTANTS.HTTP_METHODS.map(function(method){return method.toLowerCase();}),
             primitiveDataTypes = ['integer', 'boolean', 'string'],
             IS_LIST_KEY = 'x-WM-IS_LIST',
             UNIQUE_ITEMS_KEY = 'uniqueItems',
