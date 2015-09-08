@@ -3,6 +3,7 @@
 @app-mobile-nav-icon-size: 22pt;
 @app-mobile-nav-height: 44pt;
 @app-mobile-tabbar-height: 49pt;
+@app-mobile-nav-searchinput-border: #fff;
 @app-mobile-nav-button-padding: (@app-mobile-nav-height - @app-mobile-nav-font-size)/2;
 /********************************************************************************
 *************************************** Mobile Left Panel ***********************
@@ -188,6 +189,26 @@
             background-color: transparent;
           }
         }
+      }
+    }
+    /* navbar with searchbar */
+    &.searchbar{
+      > .searchInput {
+        width : 100%;
+        position: absolute;
+        top:0;
+        bottom: 5pt;
+        background-color: transparent;
+        border-color: transparent;
+        border-bottom: 1px solid @app-mobile-nav-searchinput-border;
+        box-sizing: border-box;
+        padding: 0 14pt 0 5pt;
+        text-overflow: ellipsis;
+      }
+      > .btn-close{
+        position: absolute;
+        right:0;
+        padding: 12pt 3pt;
       }
     }
   }
