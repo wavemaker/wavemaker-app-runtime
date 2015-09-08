@@ -67,6 +67,7 @@ var Application = WM.module('Application',
             /*create the project object*/
             $rootScope.project = {
                 id: projectID,
+                activeTheme : appProperties.activeTheme,
                 deployedUrl: ProjectService.getDeployedUrl()
             };
             $rootScope.changeLocale = function ($isolateScope) {
