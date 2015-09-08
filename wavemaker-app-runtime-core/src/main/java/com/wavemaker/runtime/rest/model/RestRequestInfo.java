@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ package com.wavemaker.runtime.rest.model;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -38,10 +37,19 @@ public class RestRequestInfo {
     private String endpointAddress;
     private String method;
     private String contentType;
-    private String requestBody;
+    private Object requestBody;
     private AuthType authType;
     private Map<String, Object> headers;
     private RestResponse sampleRestResponse;
+    private boolean redirectEnabled = true;
+
+    public boolean isRedirectEnabled() {
+        return redirectEnabled;
+    }
+
+    public void setRedirectEnabled(final boolean redirectEnabled) {
+        this.redirectEnabled = redirectEnabled;
+    }
 
     public String getContentType() {
         return contentType;
@@ -75,11 +83,11 @@ public class RestRequestInfo {
         this.method = method;
     }
 
-    public String getRequestBody() {
+    public Object getRequestBody() {
         return requestBody;
     }
 
-    public void setRequestBody(String requestBody) {
+    public void setRequestBody(Object requestBody) {
         this.requestBody = requestBody;
     }
 
@@ -127,11 +135,13 @@ public class RestRequestInfo {
     public String toString() {
         return "RestRequestInfo{" +
                 "endpointAddress='" + endpointAddress + '\'' +
+                ", authtype=" + authType + '\'' +
                 ", method='" + method + '\'' +
                 ", contentType='" + contentType + '\'' +
                 ", requestBody='" + requestBody + '\'' +
                 ", headers=" + headers +
                 ", sampleRestResponse=" + sampleRestResponse +
+                ", redirectEnabled=" + isRedirectEnabled() +
                 '}';
     }
 }
