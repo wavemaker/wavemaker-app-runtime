@@ -704,16 +704,40 @@ wm.variables.services.$liveVariable = [
                     callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
                 }
 
-                /*Check if "row" is defined. This handles cases where widgets such as grid, form etc. directly invoke methods of the live-variable.*/
                 if (options.row && options.transform) {
-                    switch (action) {
+                    rowObject = options.row;
+                } else {
+                    WM.forEach(variableDetails.inputFields, function (fieldValue, fieldName) {
+                        var fieldType;
+                        if (WM.isDefined(fieldValue) && fieldValue !== "") {
+                            /*For delete action, the inputFields need to be set in the request URL. Hence compositeId is set.
+                             * For insert action inputFields need to be set in the request data. Hence rowObject is set.
+                             * For update action, both need to be set.*/
+                            if (action === "deleteTableData") {
+                                compositeId = fieldValue;
+                            }
+                            if (action === "updateTableData") {
+                                variableDetails.propertiesMap.primaryKeys.forEach(function (key) {
+                                    if (fieldName === key) {
+                                        compositeId = fieldValue;
+                                    }
+                                });
+                            }
+                            if (action !== "deleteTableData") {
+                                fieldType = getFieldType(fieldName, variableDetails);
+                                if (isDateTime[fieldType] && fieldType !== 'timestamp') {
+                                    fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
+                                }
+                                rowObject[fieldName] = fieldValue;
+                            }
+                        }
+                    });
+                }
+
+                switch (action) {
                     case 'insertTableData':
                     case 'insertMultiPartTableData':
-
-                        rowObject = options.row;
-                        delete options.row;
                         primaryKey = variableDetails.getPrimaryKey();
-
                         /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
                         if (variableDetails.isCompositeKey(primaryKey)) {
                             if (variableDetails.isNoPrimaryKey(primaryKey)) {
@@ -728,14 +752,10 @@ wm.variables.services.$liveVariable = [
                             }
                             rowObject.id = formattedData.id;
                         }
-                        options.row = rowObject;
                         break;
                     case 'updateTableData':
                     case 'updateMultiPartTableData':
-
-                        rowObject = options.row;
-                        prevData = options.prevData;
-                        delete options.row;
+                        prevData = options.prevData || {};
                         primaryKey = variableDetails.getPrimaryKey();
 
                         /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
@@ -769,8 +789,6 @@ wm.variables.services.$liveVariable = [
 
                         break;
                     case 'deleteTableData':
-                        rowObject = options.row;
-                        delete options.row;
                         primaryKey = variableDetails.getPrimaryKey();
                         /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
                         if (variableDetails.isCompositeKey(primaryKey)) {
@@ -796,38 +814,6 @@ wm.variables.services.$liveVariable = [
                         break;
                     default:
                         break;
-                    }
-                }
-
-                /*Check for sanity*/
-                if (options.row) {
-                    rowObject = options.row;
-                } else {
-                    WM.forEach(variableDetails.inputFields, function (fieldValue, fieldName) {
-                        var fieldType;
-                        if (WM.isDefined(fieldValue) && fieldValue !== "") {
-                            /*For delete action, the inputFields need to be set in the request URL. Hence compositeId is set.
-                            * For insert action inputFields need to be set in the request data. Hence rowObject is set.
-                            * For update action, both need to be set.*/
-                            if (action === "deleteTableData") {
-                                compositeId = fieldValue;
-                            }
-                            if (action === "updateTableData") {
-                                variableDetails.propertiesMap.primaryKeys.forEach(function (key) {
-                                    if (fieldName === key) {
-                                        compositeId = fieldValue;
-                                    }
-                                });
-                            }
-                            if (action !== "deleteTableData") {
-                                fieldType = getFieldType(fieldName, variableDetails);
-                                if (isDateTime[fieldType] && fieldType !== 'timestamp') {
-                                    fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
-                                }
-                                rowObject[fieldName] = fieldValue;
-                            }
-                        }
-                    });
                 }
 
                 /*Check if "options" have the "compositeKeysData" property.*/
