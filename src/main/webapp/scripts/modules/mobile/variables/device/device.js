@@ -1,5 +1,5 @@
 /*global wm, WM*/
-WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', '$cordovaVibration', '$cordovaDevice', function (MobileVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera, $cordovaVibration, $cordovaDevice) {
+WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', '$cordovaVibration', '$cordovaDevice', '$cordovaAppVersion', function (MobileVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera, $cordovaVibration, $cordovaDevice, $cordovaAppVersion) {
     "use strict";
 
     var operations = {
@@ -93,8 +93,18 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
                 invoke : function (variable, options, success) {
                     success({ osversion: $cordovaDevice.getVersion()});
                 }
+            },
+            getAppVersionNumber :   {
+                model: {
+                    appversion: ''
+                },
+                properties : ['startUpdate'],
+                invoke : function (variable, options, success) {
+                    $cordovaAppVersion.getVersionNumber().then(function(appversion) {
+                        success({appversion: appversion});
+                    });
+                }
             }
-
         };
     WM.forEach(operations, function (value, key) {
         MobileVariableService.addOperation('device', key, value);
