@@ -1107,7 +1107,7 @@ WM.module('wm.widgets.basic')
 
         /* intializes the chart obejct */
         function initChart(scope) {
-            var chart;
+            var chart, theme;
             switch (scope.type) {
             case 'Column':
                 chart = nv.models.multiBarChart()
@@ -1207,12 +1207,14 @@ WM.module('wm.widgets.basic')
                     });
             }
 
+            theme = scope.theme || (isPieType(scope.type) ? 'Azure' : 'Terrestrial');
+
             /*Default theme for pie/donut is Azure and for other it is Terrestrial*/
             if(CONSTANTS.isStudioMode) {
                 if (isPieType(scope.type)) {
-                    scope.theme = scope.theme || 'Azure';
+                    scope.theme = theme;
                 } else {
-                    scope.theme = scope.theme || 'Terrestrial';
+                    scope.theme = theme;
                     chart.showXAxis(scope.showxaxis)
                         .showYAxis(scope.showyaxis);
                 }
@@ -1221,9 +1223,8 @@ WM.module('wm.widgets.basic')
             }
 
             chart.showLegend(scope.showlegend)
-                .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft});
-
-            chart.color(scope.customcolors || (scope.theme && themes[scope.theme].colors) || (isPieType(scope.type) ? themes['Azure'].colors : themes['Terrestrial'].colors));
+                .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft})
+                .color(scope.customcolors || themes[theme].colors);
 
             chart.tooltip.enabled(scope.tooltips);
             /*setting the no data message*/
