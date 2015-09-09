@@ -1287,6 +1287,11 @@ WM.module('wm.widgets.base', [])
                         "morebuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-option-horizontal"},
                         "morebuttonlabel":  {"type": "string", "value": "more"}
                     },
+                    "wm.tabbar.dataProps": {
+                        "itemlabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
+                        "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
+                        "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"}
+                    },
                     "wm.livelist": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -1886,7 +1891,10 @@ WM.module('wm.widgets.base', [])
                 var variableKeys = [],
                     wp = scope.widgetProps;
 
-                wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = wp.itemchildren.options = [];
+                wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = [];
+                if (wp.itemchildren) {
+                    wp.itemchildren.options = [];
+                }
 
                 /* re-initialize the property values */
                 if (scope.newcolumns) {
@@ -1908,7 +1916,10 @@ WM.module('wm.widgets.base', [])
                 variableKeys = variableKeys.filter(function (variableKey) {
                     return (dataset[variableKey] !== null) && !WM.isObject(dataset[variableKey]);
                 });
-                wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = wp.itemchildren.options = [''].concat(variableKeys);
+                wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = [''].concat(variableKeys);
+                if (wp.itemchildren) {
+                    wp.itemchildren.options = [''].concat(variableKeys);
+                }
             }
 
             function onScopeValueChangeProxy(scope, element, attrs, key, newVal, oldVal) {
