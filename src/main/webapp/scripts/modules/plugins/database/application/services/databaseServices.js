@@ -10,7 +10,6 @@
  * # Shortcut Methods
  * Complete list of the methods:
  *
- * - {@link wm.database.$DatabaseService#methods_importSample importSample}
  * - {@link wm.database.$DatabaseService#methods_importDB importDB}
  * - {@link wm.database.$DatabaseService#methods_exportDB exportDB}
  * - {@link wm.database.$DatabaseService#methods_getAllDataModels getAllDataModels}
@@ -147,32 +146,6 @@ wm.plugins.database.services.DatabaseService = [
         /* APIs returned by the DatabaseService.*/
         return {
 
-            /**
-             * @ngdoc property
-             * @name wm.database.$DatabaseService#importSample
-             * @methodOf wm.database.$DatabaseService
-             *
-             * @description
-             * Method to import the WaveMaker sample database.
-             *
-             * @param {string} projectID
-             *                 ID of the Project.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-
-            importSample: function (projectID, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "importSample",
-                    urlParams: {
-                        "projectID": projectID
-                    }
-                }, successCallback, failureCallback);
-            },
             /**
              * Internal function
              * @name wm.database.$DatabaseService#testConnection
@@ -1366,6 +1339,33 @@ wm.plugins.database.services.DatabaseService = [
                         dataModelName: params.dataModelName
                     },
                     data: params.data
+                }, successCallback, failureCallback);
+            },
+            /**
+             * Internal function
+             * @name wm.database.$DatabaseService#getSampleDbConnectionProperties
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to retrieve the connection properties for sample database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            getSampleDbConnectionProperties: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "getSampleDbConnectionProperties",
+                    urlParams: {
+                        projectID: params.projectID
+                    }
                 }, successCallback, failureCallback);
             },
             /**
