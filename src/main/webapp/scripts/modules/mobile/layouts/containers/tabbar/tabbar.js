@@ -9,7 +9,7 @@ WM.module('wm.layouts.containers')
                 '<nav class="navbar navbar-default">' +
                     '<ul class="tab-items nav navbar-nav">' +
                         '<li class="tab-item" data-ng-repeat="item in tabItems" data-ng-show="(tabItems.length == layout.max) || $index+1 < layout.max" >' +
-                            '<a data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label })">' +
+                            '<a data-ng-href="{{item.link}}" data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label })">' +
                                 '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +
                             '</a>' +
                         '</li>' +
@@ -30,25 +30,8 @@ WM.module('wm.layouts.containers')
             '</div>');
     }]).directive('wmMobileTabbar', ['$window', '$templateCache', 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function ($window, $templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabbar', ['wm.base']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabbar', ['wm.base', 'wm.tabbar.dataProps']),
             notifyFor = { 'dataset': true},
-            propertyChangeHandler = function(scope, element, key, newVal) {
-                switch (key) {
-                case 'dataset':
-                    if (WM.isArray(newVal)) {
-                        scope.tabItems = newVal;
-                    } else if (WM.isString(newVal)) {
-                        scope.tabItems  = [];
-                        WM.forEach(newVal.split(","), function (value) {
-                            scope.tabItems.push({
-                                "label" : value,
-                                "icon" : 'glyphicon glyphicon-'+ value
-                            });
-                        });
-                    }
-                    break;
-                }
-            },
             layouts = [{'minwidth' : 2048, 'max': 12},
                        {'minwidth' : 1024, 'max': 10},
                        {'minwidth' : 768, 'max': 7},
@@ -56,9 +39,49 @@ WM.module('wm.layouts.containers')
                        {'minwidth' : 0, 'max': 4}],
             getSuitableLayout = function (avaiableWidth) {
                 return _.find(layouts, function (l) {
-                    return avaiableWidth >= l.minwidth
+                    return avaiableWidth >= l.minwidth;
                 });
             };
+        function getItems(newVal) {
+            return newVal.map(function (item) {
+                return {
+                    'label': item,
+                    'icon': 'glyphicon glyphicon-' + item
+                };
+            });
+        }
+        function getTabItems(newVal, scope) {
+            if (WM.isArray(newVal)) {
+                var transformFn;
+                if (WM.isObject(newVal[0])) {
+                    transformFn = function (item) {
+                        return {
+                            'label': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label,
+                            'icon': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'}) || item.icon,
+                            'link': WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item.link
+                        };
+                    };
+                    scope.tabItems = newVal.map(transformFn);
+                } else {
+                    scope.tabItems = getItems(newVal);
+                }
+            } else if (WM.isString(newVal)) {
+                scope.tabItems = getItems(newVal.split(","));
+            }
+        }
+        function propertyChangeHandler(scope, element, key, newVal) {
+            switch (key) {
+            case 'dataset':
+                /*if studio-mode, then update the itemlabel, itemicon, itemlink & itemchildren in property panel*/
+                if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
+                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
+                }
+                if (newVal) {
+                    getTabItems(newVal.data || newVal, scope);
+                }
+                break;
+            }
+        }
         return {
             'scope' : {
                 'onSelect': '&',
