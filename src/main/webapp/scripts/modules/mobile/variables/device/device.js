@@ -1,5 +1,5 @@
 /*global wm, WM*/
-WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaCamera', '$cordovaVibration', '$cordovaDevice', '$cordovaAppVersion', function (MobileVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaCamera, $cordovaVibration, $cordovaDevice, $cordovaAppVersion) {
+WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaVibration', '$cordovaDevice', '$cordovaAppVersion', function (MobileVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaVibration, $cordovaDevice, $cordovaAppVersion) {
     "use strict";
 
     var operations = {
@@ -10,26 +10,6 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
                 properties : ['startUpdate'],
                 invoke : function (variable, options, success) {
                     success({ data: $cordovaNetwork.getNetwork()});
-                }
-            },
-            capturePicture: {
-                model : {
-                    data: 'resources/images/imagelists/default-image.png'
-                },
-                properties : ['allowImageEdit', 'imageQuality', 'imageEncodingType', 'correctOrientation'],
-                invoke : function (variable, options, success, error) {
-                    var cameraOptions = {
-                        quality : variable.imageQuality,
-                        destinationType : 1, //only file url
-                        sourceType : 1, //camera
-                        allowEdit : variable.allowImageEdit,
-                        encodingType : parseInt(variable.imageEncodingType, 10),
-                        mediaType : 0, //always picture
-                        correctOrientation : variable.correctOrientation
-                    };
-                    $cordovaCamera.getPicture(cameraOptions).then(function (data) {
-                        success({ data : data});
-                    }, error);
                 }
             },
             getGeoLocation : {
