@@ -302,7 +302,8 @@ WM.module('wm.widgets.basic')
  *          $scope.nodes = [
  *              {
  *                  "label": "item1",
- *                  "icon": "glyphicon glyphicon-euro"
+ *                  "icon": "glyphicon glyphicon-euro",
+ *                  "children": []
  *              }, {
  *                  "label": "item2",
  *                  "icon": "glyphicon glyphicon-euro",
