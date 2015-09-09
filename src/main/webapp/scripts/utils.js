@@ -1216,9 +1216,7 @@ WM.module('wm.utils', [])
             var pageable = {
                 'content'         : [],
                 'first'           : true,
-                'firstPage'       : true,
                 'last'            : true,
-                'lastPage'        : true,
                 'number'          : 0,
                 'numberOfElements': 10,
                 'size'            : 20,
