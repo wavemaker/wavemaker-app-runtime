@@ -18,10 +18,6 @@ wm.plugins.database.factory(wm.plugins.database.factories);
 /*defining urls as constants in the database services module*/
 wm.plugins.database.constant('DB_SERVICE_URLS', {
     Database: {
-        importSample: {
-            url: "services/projects/:projectID/database/importSample",
-            method: "POST"
-        },
         testConnection: {
             url: "services/projects/:projectID/database/testConnection",
             method: "POST"
@@ -273,7 +269,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         },
 
         /*Database connection properties*/
-
+        getSampleDbConnectionProperties: {
+            url: "services/projects/:projectID/database/sample/connectionProps",
+            method: "GET"
+        },
         getConnectionProperties: {
             url: "services/projects/:projectID/datamodels/:dataModelName/connectionproperties",
             method: "GET"
