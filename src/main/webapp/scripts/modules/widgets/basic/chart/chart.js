@@ -85,16 +85,16 @@ WM.module('wm.widgets.basic')
            /* properties of the respective chart type */
             options = {
                 'Column'         : ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Line'           : ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Area'           : ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Cumulative Line': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
-                'Bar'            : ['showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
+                'Line'           : ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints', 'linethickness'],
+                'Area'           : ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints'],
+                'Cumulative Line': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints', 'linethickness'],
+                'Bar'            : ['barspacing', 'showvalues', 'showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'captions', 'showxaxis', 'showyaxis'],
                 'Pie'            : ['showlabels', 'labeltype', 'showlabelsoutside'],
                 'Donut'          : ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside', 'title'],
                 'Bubble'         : ['showxdistance', 'showydistance', 'bubblesize', 'shape']
             },
             /*all properties of the chart*/
-            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'shape', 'captions', 'showxaxis', 'showyaxis', 'title'],
+            allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'shape', 'captions', 'showxaxis', 'showyaxis', 'title', 'highlightpoints', 'linethickness'],
             advanceDataProps = ['aggregation', 'aggregationcolumn', 'groupby', 'orderby'],
             chartTypes = ["Column", "Line", "Area", "Cumulative Line", "Bar", "Pie", "Donut", "Bubble"],
             styleProps = {
@@ -178,7 +178,10 @@ WM.module('wm.widgets.basic')
                 'showxaxis'         : true,
                 'showyaxis'         : true,
                 'title'             : true,
-                'customcolors'      : true
+                'customcolors'      : true,
+                'legendtype'        : true,
+                'highlightpoints'   : true,
+                'linethickness'     : true
             };
 
         /* returns true if chart type is pie */
@@ -1156,7 +1159,8 @@ WM.module('wm.widgets.basic')
                         return d.y;
                     })
                     .showControls(scope.showcontrols)
-                    .showValues(scope.showvalues);
+                    .showValues(scope.showvalues)
+                    .groupSpacing(scope.barspacing);
                 break;
             case 'Pie':
             case 'Donut':
@@ -1190,6 +1194,8 @@ WM.module('wm.widgets.basic')
                     .showDistY(scope.showydistance);
                 break;
             }
+            /*Setting the legend type choosen by user or default it will be furious*/
+           chart.legend.vers(scope.legendtype && scope.legendtype.toLowerCase() || 'furious');
 
             if (chartTypes.indexOf(scope.type) === -1) {
                 chart = nv.models.multiBarChart()
@@ -1201,18 +1207,46 @@ WM.module('wm.widgets.basic')
                     });
             }
 
-            chart.showLegend(scope.showlegend)
-                .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft})
-                .color(scope.customcolors || themes[scope.theme].colors);
-
-            if (!isPieType(scope.type)) {
-                chart.showXAxis(scope.showxaxis)
-                    .showYAxis(scope.showyaxis);
+            /*Default theme for pie/donut is Azure and for other it is Terrestrial*/
+            if(CONSTANTS.isStudioMode) {
+                if (isPieType(scope.type)) {
+                    scope.theme = scope.theme || 'Azure';
+                } else {
+                    scope.theme = scope.theme || 'Terrestrial';
+                    chart.showXAxis(scope.showxaxis)
+                        .showYAxis(scope.showyaxis);
+                }
+                /*Updating the markup with the theme*/
+                scope.$root.$emit("set-markup-attr", scope.widgetid, {'theme': scope.theme});
             }
+
+            chart.showLegend(scope.showlegend)
+                .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft});
+
+            chart.color(scope.customcolors || (scope.theme && themes[scope.theme].colors) || (isPieType(scope.type) ? themes['Azure'].colors : themes['Terrestrial'].colors));
+
             chart.tooltip.enabled(scope.tooltips);
             /*setting the no data message*/
             chart.noData(scope.message);
             return chart;
+        }
+
+        /*Chooses the data points of line/cumulative line/area chart and highlights them*/
+        function highlightPoints(id, highlightpoints) {
+            var chartSvg = d3.select('#wmChart' + id + ' svg');
+            if (highlightpoints) {
+                chartSvg.selectAll('.nv-point').style({"stroke-width": '6px', "fill-opacity": '.95', "stroke-opacity": '.95'});
+            } else {
+                chartSvg.selectAll('.nv-point').style({"stroke-width": '0px', "fill-opacity": '0'});
+            }
+        }
+
+        /*Chooses the line of line/cumulative line and increases the thickness of it*/
+        function setLineThickness(id, thickness) {
+            var chartSvg = d3.select('#wmChart' + id + ' svg');
+            if (thickness) {
+                chartSvg.selectAll('.nv-line').style({"stroke-width": thickness});
+            }
         }
 
         function postPlotProcess(scope, element, chart) {
@@ -1221,6 +1255,12 @@ WM.module('wm.widgets.basic')
                 pieGroups,
                 angleArray,
                 styleObj = {};
+
+            /*If user sets to highlight the data points and increase the thickness of the line*/
+            if (isLineTypeChart(scope.type)) {
+                setLineThickness(scope.$id, scope.linethickness);
+                highlightPoints(scope.$id, scope.highlightpoints);
+            }
 
             if (!isPieType(scope.type)) {
                 setLabelsMaxWidth(scope);
@@ -1628,7 +1668,9 @@ WM.module('wm.widgets.basic')
                 }
                 break;
             case "showlegend":
+                /*Disabling and enabling the legend position and legend type when show legend is changed*/
                 scope.widgetProps.legendposition.disabled = !newVal;
+                scope.widgetProps.legendtype.disabled = !newVal;
                 if (scope.chartReady) {
                     plotChartProxy(scope, element);
                 }
@@ -1673,6 +1715,7 @@ WM.module('wm.widgets.basic')
             case "showyaxis":
             case "title":
             case "customcolors":
+            case "legendtype":
                     /**In RunMode, the plotchart method will not be called for all property change */
                 if (scope.chartReady) {
                     plotChartProxy(scope, element);
@@ -1736,6 +1779,16 @@ WM.module('wm.widgets.basic')
                 /*Modifying the legend position only when legend is shown*/
                 if (scope.chartReady && scope.showlegend) {
                     modifyLegendPosition(scope);
+                }
+                break;
+            case "linethickness":
+                if (scope.chartReady) {
+                    setLineThickness(scope.$id, scope.linethickness);
+                }
+                break;
+            case "highlightpoints":
+                if (scope.chartReady) {
+                    highlightPoints(scope.$id, scope.highlightpoints);
                 }
                 break;
             }
