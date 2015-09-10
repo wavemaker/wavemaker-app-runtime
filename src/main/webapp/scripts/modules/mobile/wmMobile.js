@@ -60,32 +60,31 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
             }
             WM.element('link[theme="wmtheme-os"]').remove();
             Utils.loadStyleSheet(themeUrl, {name: "theme", value: "wmtheme-os"});
-        };
-        function getPreviewOS () {
-            var urlParams = $location.absUrl().split("?"),
-                paramMap = {};
-            if (urlParams.length > 1) {
-                _.forEach(urlParams[1].split("&"), function (paramStr) {
-                    var param = paramStr.split("=");
-                    paramMap[param[0]] = param[1];
-                });
-            }
-            return paramMap.previewOS;
         }
-        $rootScope.$on('application-ready', function () {
-            var previewOS = getPreviewOS();
-            if (previewOS) {
-                applyOSTheme(previewOS);
-            } else if (Utils.isAndroid()) {
-                applyOSTheme('android');
-            } else if (Utils.isIphone()) {
-                applyOSTheme('ios');
-            }
-        });
-        $rootScope.$on('switch-theme', function () {
-            applyOSTheme();
-        });
-        $rootScope.$on('switch-device', function (event, device) {
-            applyOSTheme(device.os);
-        });
+        if (CONSTANTS.isStudioMode) {
+            $rootScope.$on('switch-theme', function () {
+                applyOSTheme();
+            });
+            $rootScope.$on('switch-device', function (event, device) {
+                applyOSTheme(device.os);
+            });
+        } else if (CONSTANTS.isRunMode) {
+            //This is for preview page
+            window.onmessage = function (msg) {
+                if (WM.isObject(msg.data) && msg.data.key === 'switch-device') {
+                    applyOSTheme(msg.data.device.os);
+                }
+            };
+            //On Application start
+            $rootScope.$on('application-ready', function () {
+                //Notify preview window that application is ready. Otherwise, identify the OS.
+                if (window.top !== window) {
+                    window.top.postMessage({ key : 'on-load'}, '*');
+                } else if (Utils.isAndroid()) {
+                    applyOSTheme('android');
+                } else if (Utils.isIphone()) {
+                    applyOSTheme('ios');
+                }
+            });
+        }
     }]);
