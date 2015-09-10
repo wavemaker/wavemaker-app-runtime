@@ -2119,7 +2119,7 @@ WM.module('wm.widgets.base', [])
                 isolateScope._onChange = function ($event) {
                     updateModel();
                     /* update the view value in the controller */
-                    if (isolateScope.onChange && isolateScope._isInitialized) {
+                    if ($event && isolateScope.onChange) {
                         isolateScope.onChange({$event: $event, $scope: isolateScope});
                         /* trigger the onChange fn */
                     }

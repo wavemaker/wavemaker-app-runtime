@@ -232,7 +232,7 @@ WM.module('wm.widgets.form')
             element.empty().append(compiledTemplate);
 
             /*register a click event handler for the radio*/
-            element.find('.app-radioset-label').on('click', function () {
+            element.find('.app-radioset-label').on('click', function (evt) {
                 if (scope.disabled || scope.readonly) {
                     return;
                 }
@@ -246,7 +246,7 @@ WM.module('wm.widgets.form')
                 /*if usekeys is true, apply model value as selectedvalue*/
                 scope.selectedvalue = scope._model_;
 
-                Utils.triggerFn(scope._onChange);
+                Utils.triggerFn(scope._onChange, evt);
                 scope.$root.$safeApply(scope);
             });
         }

@@ -271,7 +271,7 @@ WM.module('wm.widgets.form')
             element.empty().append(compiledTemplate);
 
             /*register a click event handler for the radio*/
-            element.find('.app-checkboxset-label').on('click', function () {
+            element.find('.app-checkboxset-label').on('click', function (evt) {
                 var checkedOption, inputElements = element.find('input:checked');
                 scope._model_ = [];
 
@@ -287,7 +287,7 @@ WM.module('wm.widgets.form')
                 }
 
                 /*triggering the change event of the input*/
-                Utils.triggerFn(scope._onChange);
+                Utils.triggerFn(scope._onChange, evt);
                 scope.$root.$safeApply(scope);
             });
         }

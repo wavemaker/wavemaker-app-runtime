@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM, Event*/
 /*Directive for richtexteditor */
 
 WM.module('wm.widgets.form').requires = WM.module('wm.widgets.form').requires.concat(['textAngular']);
@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/richtexteditor.html',
             '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles data-ng-show="show">' +
                 '<div text-angular data-ng-model="_model_"></div>' +
-                '<div data-ng-bind-html="_model_" class="ta-preview" data-ng-show="showpreview"></div>' +
+                '<div data-ng-bind-html="_model_" class="ta-preview" data-ng-if="showpreview"></div>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled">' +
             '</div>'
@@ -72,14 +72,19 @@ WM.module('wm.widgets.form')
                             notifyFor
                         );
 
-                        var hiddenInputEl = element.children('input');
+                        var hiddenInputEl = element.children('input'),
+                            ngModelCtrl;
 
                         if (!attrs.widgetid && attrs.scopedatavalue) {
                             scope.$on('$destroy', scope.$watch('_model_', function (newVal) {
                                 hiddenInputEl.val(newVal);
-                                scope._onChange();
                             }));
                         }
+
+                        ngModelCtrl = element.children('[text-angular]').controller('ngModel');
+                        ngModelCtrl.$viewChangeListeners.push(function () {
+                            scope._onChange(new Event('change'));
+                        });
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
