@@ -119,7 +119,7 @@ public class WMMultipartUtils {
     private static <T> T invokeMethod(T instance, InputStream inputStream, Method method, Field field, String serviceId) throws IOException, IllegalAccessException, InvocationTargetException, SQLException {
         byte[] byteArray = IOUtils.toByteArray(inputStream);
         if (field.getType().isInstance("")) {
-            String content = IOUtils.toString(inputStream);
+            String content = com.wavemaker.studio.common.util.IOUtils.toString(inputStream);
             method.invoke(instance, content);
         } else if (BYTE_ARRAY.equals(field.getType().getSimpleName())) {
             method.invoke(instance, byteArray);
