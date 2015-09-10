@@ -34,12 +34,20 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.wavemaker.runtime.data.json.WMHibernate4Module;
+import com.wavemaker.runtime.rest.model.RestResponseModule;
 import com.wavemaker.studio.common.ser.WMDateDeSerializer;
 import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
 import com.wavemaker.studio.common.ser.WMLocalDateTimeSerializer;
@@ -240,6 +248,7 @@ public class WMObjectMapper extends ObjectMapper {
             module.addDeserializer(LocalDateTime.class, new WMLocalDateTimeDeSerializer());
 
             registerModule(module);
+            registerModule(new RestResponseModule());
 
             setPropertyNamingStrategy(PROPERTY_NAMING_STRATEGY);
         }

@@ -3,6 +3,8 @@ package com.wavemaker.runtime.rest.model;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.impl.cookie.BasicClientCookie;
+
 
 /**
  * @author Uday Shankar
@@ -19,13 +21,13 @@ public class RestResponse {
 
     private String contentType;
 
-    private Map<String, String> cookies;
+    private List<BasicClientCookie> cookies;
 
-    public Map<String, String> getCookies() {
+    public List<BasicClientCookie> getCookies() {
         return cookies;
     }
 
-    public void setCookies(final Map<String, String> cookies) {
+    public void setCookies(final List<BasicClientCookie> cookies) {
         this.cookies = cookies;
     }
 
