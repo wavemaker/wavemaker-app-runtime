@@ -3,7 +3,6 @@ package com.wavemaker.runtime.rest.model;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.CookieStore;
 
 /**
  * @author Uday Shankar
@@ -20,14 +19,14 @@ public class RestResponse {
 
     private String contentType;
 
-    private CookieStore cookieStore;
+    private Map<String, String> cookies;
 
-    public CookieStore getCookieStore() {
-        return cookieStore;
+    public Map<String, String> getCookies() {
+        return cookies;
     }
 
-    public void setCookieStore(final CookieStore cookieStore) {
-        this.cookieStore = cookieStore;
+    public void setCookies(final Map<String, String> cookies) {
+        this.cookies = cookies;
     }
 
     public String getResponseBody() {
@@ -58,7 +57,7 @@ public class RestResponse {
         return responseHeaders;
     }
 
-    public void setResponseHeaders(Map<String,List<String>> responseHeaders) {
+    public void setResponseHeaders(Map<String, List<String>> responseHeaders) {
         this.responseHeaders = responseHeaders;
     }
 

@@ -12,6 +12,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -23,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -52,7 +52,13 @@ public class RestConnector {
         RestResponse restResponse = new RestResponse();
         restResponse.setResponseBody(responseEntity.getBody());
         restResponse.setStatusCode(responseEntity.getStatusCode().value());
-        restResponse.setCookieStore(httpClientContext.getCookieStore());
+        final List<Cookie> cookies = httpClientContext.getCookieStore().getCookies();
+        // Converting form Cookie to name-value map.
+        final Map<String, String> cookieNameValuePair = new HashMap<>();
+        for (Cookie cookie : cookies) {
+            cookieNameValuePair.put(cookie.getName(), cookie.getValue());
+        }
+        restResponse.setCookies(cookieNameValuePair);
         Map<String, List<String>> responseHeaders = new HashMap<>();
         HttpHeaders httpHeaders = responseEntity.getHeaders();
         for (String responseHeaderKey : httpHeaders.keySet()) {
