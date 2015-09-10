@@ -168,9 +168,12 @@ WM.module('wm.widgets.form')
                     },
 
                     post: function (scope, element, attrs) {
-                        var handlers = [], services = [],
+                        var handlers = [], services = [], isPrefabInsideProject = false,
                             fetchServices = function (serviceId) {
                                 services = [];
+                                if (CONSTANTS.isStudioMode && isPrefabInsideProject) {
+                                    return;
+                                }
                                 /*fetching all the services*/
                                 ServiceFactory.getServicesWithType(function (response) {
                                     WM.forEach(response, function (service) {
@@ -216,6 +219,10 @@ WM.module('wm.widgets.form')
                             var parentPrefab = element.closest('.app-prefab'),
                                 prefabScope,
                                 prefabName;
+                            /*Flag to decide whether the widget is wrapped in prefab and is in project*/
+                            if (CONSTANTS.isStudioMode && !scope.widgetid) {
+                                isPrefabInsideProject = true;
+                            }
                             /*if the file upload is in a prefab, then get the prefab-name from the prefab's scope*/
                             if (parentPrefab) {
                                 prefabScope = parentPrefab.isolateScope();
@@ -557,7 +564,8 @@ WM.module('wm.widgets.form')
                                 changeFilter(newVal);
                                 break;
                             case 'service':
-                                if (CONSTANTS.isStudioMode) {
+                                /*Fetching the services only if the widget is not inside a prefab and in project*/
+                                if (CONSTANTS.isStudioMode && !isPrefabInsideProject) {
                                     operations = [];
                                     ServiceFactory.getServiceOperations(scope.service, function (response) {
                                         WM.forEach(response, function (operation) {
@@ -574,7 +582,8 @@ WM.module('wm.widgets.form')
                                 }
                                 break;
                             case 'operation':
-                                if (CONSTANTS.isStudioMode) {
+                                /*Fetching the services only if the widget is not inside a prefab and in project*/
+                                if (CONSTANTS.isStudioMode && !isPrefabInsideProject) {
                                     if (scope.service && scope.operation) {
                                         createVariable(scope.service, scope.operation);
                                     }
