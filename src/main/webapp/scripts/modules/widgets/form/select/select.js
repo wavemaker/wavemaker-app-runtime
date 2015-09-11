@@ -191,9 +191,6 @@ WM.module('wm.widgets.form')
                         scope.selectOptions.push({"key": dataset, "value": dataset});
                     }
                 }
-                if (scope.required && scope.selectOptions && !scope.datavalue) {
-                    scope._model_ = _.first(scope.selectOptions).key;
-                }
                 updateModelProxy(scope, scope._model_);
             }
         }

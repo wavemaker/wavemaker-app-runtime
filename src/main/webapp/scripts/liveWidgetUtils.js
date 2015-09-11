@@ -597,8 +597,11 @@ WM.module('wm.widgets.live')
                         if (scope) {
                             scope.setPrimaryKey(fieldObj.fieldName);
                         }
-                        /*Hiding primary if it is generated automatically(User can un-hide it from edit feilds dialog)*/
-                        if (fieldObj.generator !== "assigned") {
+                        /*If the field has assigned generator, make read only false*/
+                        if (fieldObj.generator === "assigned") {
+                            translatedObj[index].readonly = false;
+                        } else {
+                            /*Hiding primary if it is generated automatically(User can un-hide it from edit feilds dialog)*/
                             translatedObj[index].show = false;
                         }
                     }
