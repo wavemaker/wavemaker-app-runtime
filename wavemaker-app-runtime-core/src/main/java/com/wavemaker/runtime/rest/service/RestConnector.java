@@ -2,6 +2,7 @@ package com.wavemaker.runtime.rest.service;
 
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,13 +54,13 @@ public class RestConnector {
         RestResponse restResponse = new RestResponse();
         restResponse.setResponseBody(responseEntity.getBody());
         restResponse.setStatusCode(responseEntity.getStatusCode().value());
+        // Converting form Cookie to BasicClientCookie.
         final List<Cookie> cookies = httpClientContext.getCookieStore().getCookies();
-        // Converting form Cookie to name-value map.
-        final Map<String, String> cookieNameValuePair = new HashMap<>();
+        List<BasicClientCookie> clientCookies = new ArrayList<>();
         for (Cookie cookie : cookies) {
-            cookieNameValuePair.put(cookie.getName(), cookie.getValue());
+            clientCookies.add((BasicClientCookie) cookie);
         }
-        restResponse.setCookies(cookieNameValuePair);
+        restResponse.setCookies(clientCookies);
         Map<String, List<String>> responseHeaders = new HashMap<>();
         HttpHeaders httpHeaders = responseEntity.getHeaders();
         for (String responseHeaderKey : httpHeaders.keySet()) {
@@ -142,6 +144,7 @@ public class RestConnector {
         return wmRestTemplate
                 .exchange(endpointAddress, httpMethod, requestEntity, t);
     }
+
 
     class WMRestServicesErrorHandler extends DefaultResponseErrorHandler {
 
