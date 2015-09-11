@@ -81,6 +81,10 @@ public class Utils {
         return directory != null && directory.isDirectory() && directory.canRead();
     }
 
+    public static boolean isNotReadableDirectory(File directory) {
+        return !isReadableDirectory(directory);
+    }
+
     public static boolean isGivenDirectoryAvaliable(File homeDir, String requiredDirName) {
         File[] files = homeDir.listFiles();
         for (File file : files) {

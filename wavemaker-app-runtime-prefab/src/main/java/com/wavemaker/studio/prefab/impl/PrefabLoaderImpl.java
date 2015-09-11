@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 package com.wavemaker.studio.prefab.impl;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +51,11 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PrefabLoaderImpl.class);
 
-    private File prefabDirectory;
+    @Autowired
     private PrefabUtils prefabUtils;
+
+    @Autowired
+    private PrefabsConfig prefabsConfig;
 
     @Autowired
     private ApplicationContext context;
@@ -61,12 +65,6 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
 
     @Autowired
     private PrefabFactory prefabFactory;
-
-    @Autowired
-    public PrefabLoaderImpl(PrefabsConfig prefabsConfig, PrefabUtils prefabUtils) {
-        this.prefabUtils = prefabUtils;
-        this.prefabDirectory = prefabUtils.getDirectory(prefabsConfig.getPrefabsHomeDir());
-    }
 
     /**
      * @return the prefabManager
@@ -91,7 +89,7 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
             try {
                 loadPrefab(prefabDir);
             } catch (Exception e) {
-                LOGGER.warn(String.format("Prefab %s could not be loaded: %s (%s)", prefabDir.getName(), e, e.getCause()));
+                LOGGER.warn("Prefab: [{}] could not be loaded", prefabDir.getName(), e);
             }
         }
 
@@ -99,24 +97,12 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
     }
 
     @Override
-    public synchronized void loadPrefab(final File prefabDir)
-            throws Exception {
-        if (prefabManager == null) {
-            LOGGER.info(String.format("PrefabManager not available, %s cannot load prefab %s", this.getClass().getSimpleName(),
-                    prefabDir.getName()));
-            return;
-        }
-
-        if (prefabFactory == null) {
-            LOGGER.info(String.format("PrefabFactory not available, %s cannot load prefab %s",
-                    this.getClass().getSimpleName(), prefabDir.getName()));
-            return;
-        }
-
+    public synchronized void loadPrefab(final File prefabDir) throws Exception {
         if (Utils.isReadableDirectory(prefabDir)) {
             prefabManager.addPrefab(prefabFactory.newPrefab(prefabDir));
-
-            LOGGER.info(String.format("Loaded prefab %s", prefabDir.getName()));
+            LOGGER.info("Loaded prefab [{}]", prefabDir.getName());
+        } else {
+            LOGGER.warn("Cannot load prefab [{}], Reason: Access Denied!", prefabDir.getName());
         }
     }
 
@@ -134,11 +120,15 @@ public class PrefabLoaderImpl implements PrefabLoader, ApplicationListener<Appli
     }
 
     protected File[] readPrefabDirs() {
-        if (prefabDirectory == null) {
-            LOGGER.info("No Prefabs found in the context");
-            return PrefabConstants.ZERO_FILES;
+        File[] prefabs;
+        try {
+            File prefabDirectory = prefabUtils.getDirectory(prefabsConfig.getPrefabsHomeDir());
+            prefabs = prefabUtils.listPrefabDirectories(prefabDirectory);
+        } catch (IOException e) {
+            LOGGER.warn("Prefabs feature disabled. Reason: {}", e.getMessage());
+            prefabs = PrefabConstants.ZERO_FILES;
         }
-        return prefabUtils.listPrefabDirectories(prefabDirectory);
+        return prefabs;
     }
 
     /**

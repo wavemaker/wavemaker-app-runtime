@@ -17,7 +17,6 @@ package com.wavemaker.runtime;
 
 import java.io.IOException;
 import java.util.Properties;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.http.HttpServletRequest;
@@ -163,7 +162,7 @@ public class WMAppContext {
     }
 
     public String getAppContextRoot() {
-        return this.context.getRealPath("");
+        return this.context.getRealPath("/");
     }
 
     public <T> T getSpringBean(String beanId) {

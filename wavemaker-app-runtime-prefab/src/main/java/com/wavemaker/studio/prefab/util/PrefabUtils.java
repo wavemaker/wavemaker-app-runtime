@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,14 +17,16 @@ package com.wavemaker.studio.prefab.util;
 
 import java.io.File;
 import java.io.FileFilter;
-
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Objects;
 import javax.servlet.ServletContext;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
 import com.wavemaker.studio.prefab.config.PrefabsConfig;
 
@@ -40,43 +42,27 @@ public class PrefabUtils {
     @Autowired
     private PrefabsConfig prefabsConfig;
 
-    /**
-     * Returns the file path in servlet context.
-     *
-     * @param filePath
-     * @return
-     */
-    public String getPathInContext(final String filePath) {
-        /* To check any path in context we need prefix with {@link File.separator} */
-        String pathInContext = (!filePath.startsWith(File.separator) ? (File.separator + filePath) :
-                filePath);
-        pathInContext = servletContext.getRealPath(pathInContext);
-        LOGGER.info("File path for:" + filePath + ", in context is:" + pathInContext);
-        return pathInContext;
-    }
 
     /**
      * Returns {@link java.io.File} equivalent of the given directory path.
      *
-     * @param directoryPath directory path
+     * @param path directory path
      * @return {@link java.io.File} representing the given directory path, null, if incorrect
      */
-    public File getDirectory(String directoryPath) {
-        if (!StringUtils.isEmpty(directoryPath)) {
-            directoryPath = directoryPath.trim();
-
-            // checking if it is a relative path (or) absolute path.
-            if (!directoryPath.startsWith(File.separator)) {
-                // if it is a relative path, looking the path in context.
-                directoryPath = getPathInContext(directoryPath);
-            }
-
-            File directory = new File(directoryPath);
-            if (directory.exists() && directory.isDirectory() && directory.canRead()) {
-                return directory;
-            }
+    public File getDirectory(String path) throws IOException {
+        Objects.requireNonNull(path, "Path cannot be null");
+        String realPath = path.trim();
+        //looking the path in context.
+        realPath = WebUtils.getRealPath(servletContext, realPath);
+        File directory = new File(realPath);
+        if (!directory.exists()) {
+            throw new FileNotFoundException(
+                    "File not exist in ServletContext resource with given path: [" + path + "]");
+        } else if (Utils.isNotReadableDirectory(directory)) {
+            throw new IOException("Given path [" + path + "] is not a directory (or) doesn't have read permissions.");
+        } else {
+            return directory;
         }
-        return null;
     }
 
 
