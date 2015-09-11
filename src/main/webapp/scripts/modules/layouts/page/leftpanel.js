@@ -4,7 +4,7 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/leftpanel.html',
-                '<aside data-role="page-left-panel" page-container init-widget class="app-left-panel" data-ng-class="animation" apply-styles="container">' +
+                '<aside data-role="page-left-panel" page-container init-widget class="app-left-panel" hm-swipe-left="collapse();" data-ng-class="animation" apply-styles="container">' +
                     '<div class="app-ng-transclude" wmtransclude page-container-target></div>' +
                 '</aside>'
             );
