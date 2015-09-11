@@ -310,15 +310,19 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "DATABASE_DATA_TYPES": {
         "big_decimal": {
             "sql_type": "big_decimal",
-            "default_value": "0"
+            "default_value": "0",
+            "length": true,
+            "precision": true
         },
         "big_integer": {
             "sql_type": "big_integer",
-            "default_value": "0"
+            "default_value": "0",
+            "length": true
         },
         "blob": {
             "sql_type": "blob",
-            "default_value": "null"
+            "default_value": "null",
+            "length": true
         },
         "boolean": {
             "sql_type": "boolean",
@@ -326,15 +330,18 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         },
         "byte": {
             "sql_type": "byte",
-            "default_value": "null"
+            "default_value": "null",
+            "length": true
         },
         "character": {
             "sql_type": "character",
-            "default_value": "null"
+            "default_value": "null",
+            "length": true
         },
         "clob": {
             "sql_type": "clob",
-            "default_value": "null"
+            "default_value": "null",
+            "length": true
         },
         "date": {
             "sql_type": "date",
@@ -346,27 +353,35 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         },
         "double": {
             "sql_type": "double",
-            "default_value": "0"
+            "default_value": "0",
+            "length": true,
+            "precision": true
         },
         "float": {
             "sql_type": "float",
-            "default_value": "0"
+            "default_value": "0",
+            "length": true,
+            "precision": true
         },
         "integer": {
             "sql_type": "integer",
-            "default_value": "0"
+            "default_value": "0",
+            "length": true
         },
         "string": {
             "sql_type": "string",
-            "default_value": "null"
+            "default_value": "null",
+            "length": true
         },
         "short": {
             "sql_type": "short",
-            "default_value": "0"
+            "default_value": "0",
+            "length": true
         },
         "text": {
             "sql_type": "text",
-            "default_value": "null"
+            "default_value": "null",
+            "length": true
         },
         "time": {
             "sql_type": "time",
