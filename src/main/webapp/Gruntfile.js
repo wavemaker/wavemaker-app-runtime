@@ -490,6 +490,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/layouts/containers/segmented/segmented.js',
                         '<%= config.scripts %>/modules/mobile/layouts/containers/tabbar/tabbar.js',
                         '<%= config.scripts %>/modules/mobile/layouts/page/leftpanel.js',
+                        '<%= config.scripts %>/modules/mobile/layouts/page/page.js',
                         '<%= config.scripts %>/modules/mobile/widgets/device/camera/camera.js',
                         '<%= config.scripts %>/modules/mobile/widgets/device/barcodeScanner/barcodeScanner.js',
                         '<%= config.scripts %>/modules/mobile/widgets/device/fileBrowser/fileBrowser.js',
