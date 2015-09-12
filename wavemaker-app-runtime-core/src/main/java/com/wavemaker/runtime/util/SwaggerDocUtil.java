@@ -16,6 +16,9 @@ import com.wavemaker.tools.apidocs.tools.core.model.properties.PropertyBuilder;
  */
 public class SwaggerDocUtil {
 
+    enum OperationType {
+         get,post,delete,put,patch,options
+    }
 
     /**
      * Return Path from the Swagger object based on endPoint
@@ -95,23 +98,30 @@ public class SwaggerDocUtil {
      * @return method type
      */
     public static String getOperationType(Path path, String operationUid) {
-        if (path.getGet().getOperationUid().equals(operationUid)) {
-            return "get";
+        Operation operationGet = path.getGet();
+        Operation operationPost = path.getPost();
+        Operation operationDelete = path.getDelete();
+        Operation operationPatch = path.getPatch();
+        Operation operationPut = path.getPut();
+        Operation operationOptions = path.getOptions();
+
+        if (operationGet != null && operationGet.getOperationUid().equals(operationUid)) {
+            return OperationType.get.name();
         }
-        if (path.getPost().getOperationUid().equals(operationUid)) {
-            return "post";
+        if (operationPost != null && operationPost.getOperationUid().equals(operationUid)) {
+            return OperationType.post.name();
         }
-        if (path.getDelete().getOperationUid().equals(operationUid)) {
-            return "delete";
+        if (operationDelete != null && operationDelete.getOperationUid().equals(operationUid)) {
+            return OperationType.delete.name();
         }
-        if (path.getPatch().getOperationUid().equals(operationUid)) {
-            return "patch";
+        if (operationPatch != null && operationPatch.getOperationUid().equals(operationUid)) {
+            return OperationType.patch.name();
         }
-        if (path.getPut().getOperationUid().equals(operationUid)) {
-            return "put";
+        if (operationPut != null && operationPut.getOperationUid().equals(operationUid)) {
+            return OperationType.put.name();
         }
-        if (path.getOptions().getOperationUid().equals(operationUid)) {
-            return "options";
+        if (operationOptions != null && operationOptions.getOperationUid().equals(operationUid)) {
+            return OperationType.options.name();
         }
         throw new SwaggerException("Operation does not exist with id " + operationUid);
     }
