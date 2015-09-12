@@ -23,6 +23,14 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
                 );
             });
         }
+        if (CONSTANTS.isRunMode) {
+            $rootScope.$on("$routeChangeStart", function () {
+                WM.element('body >.app-spinner:first').removeClass('ng-hide');
+            });
+            $rootScope.$on('page-ready', function () {
+                WM.element('body >.app-spinner:first').addClass('ng-hide');
+            });
+        }
     }])
     //Initialize variables
     .run(['Variables', 'WIDGET_CONSTANTS', 'BaseVariablePropertyFactory', 'MobileVariableService',
