@@ -45,13 +45,13 @@ WM.module('wm.layouts.containers')
                  * Hides the current content and displays the next in position.
                  */
                 $scope.goToNext = function () {
-                    $scope.showContent($scope.lastShownContentIndex + 1);
+                    $scope.showContent($scope.currentSelectedIndex + 1);
                 };
                 /**
                  * Hides the current content and displays the previous in position.
                  */
                 $scope.goToPrev = function () {
-                    $scope.showContent($scope.lastShownContentIndex - 1);
+                    $scope.showContent($scope.currentSelectedIndex - 1);
                 };
                 /**
                  * Removes the content.
@@ -93,7 +93,7 @@ WM.module('wm.layouts.containers')
                                 currentContent = contents[index],
                                 eventData = {
                                     $scope: this,
-                                    $old  : $scope.lastShownContentIndex,
+                                    $old  : $scope.currentSelectedIndex,
                                     $new  : index
                                 },
                                 $segmentsCtr = $element.find(".app-segments-container"),
@@ -111,8 +111,6 @@ WM.module('wm.layouts.containers')
                                 { scrollLeft: (scrollPos + left)},
                                 { duration: "slow" }
                             );
-
-                            $scope.lastShownContentIndex = index;
                             $scope.onSegmentchange(eventData);
                         };
                         /**add studio mode changes**/
