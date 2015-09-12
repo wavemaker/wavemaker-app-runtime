@@ -1207,19 +1207,19 @@ WM.module('wm.widgets.basic')
                     });
             }
 
-            theme = scope.theme || (isPieType(scope.type) ? 'Azure' : 'Terrestrial');
-
             /*Default theme for pie/donut is Azure and for other it is Terrestrial*/
+            if (isPieType(scope.type)) {
+                theme = scope.theme || 'Azure';
+            } else {
+                theme = scope.theme || 'Terrestrial';
+                chart.showXAxis(scope.showxaxis)
+                    .showYAxis(scope.showyaxis);
+            }
+
             if(CONSTANTS.isStudioMode) {
-                if (isPieType(scope.type)) {
-                    scope.theme = theme;
-                } else {
-                    scope.theme = theme;
-                    chart.showXAxis(scope.showxaxis)
-                        .showYAxis(scope.showyaxis);
-                }
                 /*Updating the markup with the theme*/
-                scope.$root.$emit("set-markup-attr", scope.widgetid, {'theme': scope.theme});
+                scope.theme = theme;
+                scope.$root.$emit("set-markup-attr", scope.widgetid, {'theme': theme});
             }
 
             chart.showLegend(scope.showlegend)
