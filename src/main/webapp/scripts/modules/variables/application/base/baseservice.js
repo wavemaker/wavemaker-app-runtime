@@ -1839,6 +1839,8 @@ wm.variables.services.Variables = [
              */
             addVariableConfig : function (config) {
                 variableConfig.push(config);
+                variableCategoryToNameMap[config.category] = config.defaultName;
+                self.variableNameIterator[config.category] = 1;
             }
         };
 
