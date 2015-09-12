@@ -37,8 +37,18 @@
         position: fixed;
         overflow: visible;
         transition: left 0.5s  ease-in-out;
+        /* Move all fixed position elements as well */
+        .app-header:not(.app-mobile-navbar),
+        .app-search {
+          transition: left 0.5s  ease-in-out;
+        }
         &.slide-left {
           left: @left-panel-width;
+
+          .app-header:not(.app-mobile-navbar),
+          .app-search{
+            left: @left-panel-width;
+          }
         }
       }
     }
