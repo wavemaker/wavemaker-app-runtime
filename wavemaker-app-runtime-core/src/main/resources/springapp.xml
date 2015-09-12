@@ -13,7 +13,6 @@
                 http://www.springframework.org/schema/aop
                 http://www.springframework.org/schema/aop/spring-aop.xsd">
     <import resource="config.xml"/>
-    <import resource="managers.xml"/>
     <import resource="servicetypes.xml"/>
 
     <bean id="multipartResolver"
@@ -32,10 +31,6 @@
 
     <bean id="runtimeAccess"
           class="com.wavemaker.runtime.RuntimeAccess" scope="request">
-        <property name="serviceManager">
-            <ref bean="serviceManager"/>
-        </property>
-
         <aop:scoped-proxy/>
     </bean>
 

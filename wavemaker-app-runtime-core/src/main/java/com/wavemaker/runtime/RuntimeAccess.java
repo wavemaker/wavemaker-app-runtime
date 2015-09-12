@@ -19,11 +19,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.wavemaker.runtime.service.ServiceManager;
-import com.wavemaker.studio.common.WMRuntimeInitException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.wavemaker.studio.common.WMRuntimeInitException;
 
 /**
  * Runtime bean. Provides an interface to the session, request and response objects, and other WaveMaker interfaces.
@@ -58,8 +58,6 @@ public class RuntimeAccess {
     private HttpServletRequest request = null;
 
     private HttpServletResponse response = null;
-
-    private ServiceManager serviceManager = null;
 
     private long startTime;
 
@@ -99,43 +97,8 @@ public class RuntimeAccess {
         return this.request;
     }
 
-    /**
-     * Get the service with the specified service id.
-     *
-     * @param serviceId
-     *            The service ID to look for.
-     * @return The service bean (if a bean with the id exists).
-     * @throws com.wavemaker.studio.common.WMRuntimeException
-     *             If a bean with the specified id is not found, or if Spring has not yet initialized this bean.
-     */
-    @SuppressWarnings("deprecation")
-    public Object getService(String serviceId) {
-        return this.serviceManager.getService(serviceId);
-    }
-
-    /**
-     * Deprecated. Use {@link #getService(String)} Get the service (of the corresponding serviceType). An
-     * WMRuntimeException will be thrown if more than one bean matches the serviceType class. It may be better to use
-     * {@link #getService(String)}, since the serviceId is guaranteed unique (whereas the service class is not).
-     *
-     * @param serviceType
-     *            The class of the service to search for.
-     * @return The service bean.
-     * @throws com.wavemaker.studio.common.WMRuntimeException
-     *             If a bean with the specified class is not found, more than one bean with the specified class is
-     *             found, or if Spring has not yet initialized this bean.
-     */
-    @Deprecated
-    public Object getService(Class<?> serviceType) {
-        return this.serviceManager.getService(serviceType);
-    }
-
     public void setRequest(HttpServletRequest request) {
         this.request = request;
-    }
-
-    public void setServiceManager(ServiceManager serviceManager) {
-        this.serviceManager = serviceManager;
     }
 
     /*
