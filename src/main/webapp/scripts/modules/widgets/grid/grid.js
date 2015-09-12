@@ -1463,11 +1463,12 @@ WM.module('wm.widgets.grid')
                         $scope.widgetProps.readonlygrid.disabled = false;
                     } else {
                         if ($scope.isPartOfLiveGrid) {
+                            $scope.readonlygrid = true;
                             $scope.insertrow = false;
                             $scope.updaterow = false;
                             $scope.deleterow = false;
                             $rootScope.$emit('set-markup-attr', $scope.widgetid, {
-                                'readonlygrid': true,
+                                'readonlygrid': $scope.readonlygrid,
                                 'insertrow': $scope.insertrow,
                                 'updaterow': $scope.updaterow,
                                 'deleterow': $scope.deleterow
