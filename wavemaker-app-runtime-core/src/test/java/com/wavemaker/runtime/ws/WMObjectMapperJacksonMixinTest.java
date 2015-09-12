@@ -27,7 +27,6 @@ public class WMObjectMapperJacksonMixinTest {
         final BasicClientCookie origCookie = new BasicClientCookie(NAME,
                 VALUE);
         ObjectMapper objectMapper = WMObjectMapper.getInstance();
-        objectMapper.registerModule(new RestResponseModule());
 
         final ObjectWriter writer = objectMapper.writer();
         final ObjectReader reader = objectMapper.reader();

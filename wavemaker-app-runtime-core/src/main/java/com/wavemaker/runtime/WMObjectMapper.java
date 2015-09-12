@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -235,6 +236,10 @@ public class WMObjectMapper extends ObjectMapper {
     @Override
     public ObjectReader reader() {
        return readMapper.reader();
+    }
+
+    public void registerReaderModule(final Module mapperModule) {
+        readMapper.registerModule(mapperModule);
     }
 
     private static class WMObjectReadMapper extends ObjectMapper {
