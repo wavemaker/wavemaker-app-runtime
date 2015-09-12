@@ -14,13 +14,27 @@
 /********************************************************************************
 *************************************** Mobile layouts *********************************
 *********************************************************************************/
-.app-page {
+.app-page.mobile-app-page{
+  .app-content {
+    display: block;
+    overflow: hidden;
+    min-height: 0!important;
+
+    .app-content-row {
+      display: block;
+      overflow: hidden;
+
+      .app-content-column {
+        display: block;
+        overflow: auto;
+      }
+    }
+  }
   .app-mobile-navbar {
     &+.app-content {
       .calc('height', ~"calc( 100% - @{app-mobile-nav-height} )") !important;
       margin: 0;
       min-height: 0!important;
-      overflow: auto;
       display: block;
       .app-content-row {
         min-height: 0 !important;
