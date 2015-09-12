@@ -105,6 +105,19 @@ WM.module('wm.widgets.basic')
              */
             show: function (type, title, desc, timeout) {
                 _showToaster(type, title, desc, timeout);
+            },
+
+            /**
+             * @ngdoc function
+             * @name $wmToaster#hide
+             * @methodOf wm.widgets.basic.$wmToaster
+             * @function
+             *
+             * @description
+             * hides a toaster.
+             */
+            hide: function () {
+                WM.element('.toast').hide();
             }
         };
     }]);
