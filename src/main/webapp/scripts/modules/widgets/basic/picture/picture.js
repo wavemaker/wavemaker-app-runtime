@@ -132,34 +132,35 @@ WM.module('wm.widgets.basic')
  * @param {string=} on-mouseleave
  *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>single click count: {{clickCount}}</div>
- *               <div>mouse enter count: {{mouseenterCount}}</div>
- *               <div>mouse leave count: {{mouseleaveCount}}</div>
- *               <wm-picture picturesource="{{image}}" on-click="f('click')" on-mouseenter="f('mouseenter')"  on-mouseleave="f('mouseleave')"></wm-picture>
- *               <wm-composite>
- *                   <wm-label caption="Select an image:"></wm-label>
- *                   <wm-select scopedatavalue="image" scopedataset="images"></wm-select>
- *               </wm-composite>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.clickCount =
- *              $scope.mouseenterCount =
- *              $scope.mouseleaveCount = 0;
- *
- *              $scope.images = {
- *                  "http://angularjs.org/img/AngularJS-large.png": "angularJS",
- *                  "http://c0179631.cdn.cloudfiles.rackspacecloud.com/wavemaker_logo1.jpg": "wavemaker"
- *              };
- *
- *              $scope.f = function (eventtype) {
- *                  $scope[eventtype + 'Count']++;
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-composite>
+                    <wm-label caption="Select an image:"></wm-label>
+                    <wm-select scopedatavalue="image" scopedataset="images"></wm-select>
+                </wm-composite>
+                <div>single click count: {{clickCount}}</div>
+                <div>mouse enter count: {{mouseenterCount}}</div>
+                <div>mouse leave count: {{mouseleaveCount}}</div>
+                <div style="margin: 20px;"></div>
+                <wm-picture picturesource="{{image}}" on-click="f('click')" on-mouseenter="f('mouseenter')"  on-mouseleave="f('mouseleave')"></wm-picture>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+               $scope.clickCount = $scope.mouseenterCount = $scope.mouseleaveCount = 0;
+
+               $scope.images = {
+                   "http://angularjs.org/img/AngularJS-large.png": "angularJS",
+                   "http://c0179631.cdn.cloudfiles.rackspacecloud.com/wavemaker_logo1.jpg": "wavemaker"
+               };
+
+               $scope.image = "http://angularjs.org/img/AngularJS-large.png";
+
+               $scope.f = function (eventtype) {
+                   $scope[eventtype + 'Count']++;
+               }
+            }
+        </file>
+    </example>
  */

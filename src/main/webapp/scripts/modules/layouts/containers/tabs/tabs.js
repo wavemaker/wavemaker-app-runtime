@@ -477,77 +477,73 @@ WM.module('wm.layouts.containers')
  *                  Set the order of the tabs. <br>
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>
- *                   <wm-composite>
- *                       <wm-label caption="width:"></wm-label>
- *                       <wm-text scopedatavalue="width"></wm-text>
- *                   </wm-composite>
- *                   <wm-composite>
- *                       <wm-label caption="height:"></wm-label>
- *                       <wm-text scopedatavalue="height"></wm-text>
- *                   </wm-composite>
- *               </div>
- *               <div>
- *                   Address1: {{address1}}
- *               </div>
- *               <div>
- *                   Address2: {{address2}}
- *               </div>
- *               <br>
- *               <wm-tabs width="{{width}}" height="{{height}}">
- *                   <wm-tabpane>
- *                       <wm-tabheader heading="tab1"></wm-tabheader>
- *                       <wm-tabcontent>
- *                           Content of tab1:<br>
- *                           Address1:<br>
- *                           <wm-composite>
- *                               <wm-label caption="city:"></wm-label>
- *                               <wm-text scopedatavalue="address1.city"></wm-text>
- *                           </wm-composite>
- *                           <wm-composite>
- *                               <wm-label caption="state:"></wm-label>
- *                               <wm-text scopedatavalue="address1.state"></wm-text>
- *                           </wm-composite>
- *                           <wm-composite>
- *                               <wm-label caption="zip:"></wm-label>
- *                               <wm-text scopedatavalue="address1.zip"></wm-text>
- *                           </wm-composite>
- *                       </wm-tabcontent>
- *                   </wm-tabpane>
- *                   <wm-tabpane>
- *                       <wm-tabheader heading="tab2"></wm-tabheader>
- *                       <wm-tabcontent>
- *                           Content of tab2:<br>
- *                           Address2:<br>
- *                           <wm-composite>
- *                               <wm-label caption="city:"></wm-label>
- *                               <wm-text scopedatavalue="address2.city"></wm-text>
- *                           </wm-composite>
- *                           <wm-composite>
- *                               <wm-label caption="state:"></wm-label>
- *                               <wm-text scopedatavalue="address2.state"></wm-text>
- *                           </wm-composite>
- *                           <wm-composite>
- *                               <wm-label caption="zip:"></wm-label>
- *                               <wm-text scopedatavalue="address2.zip"></wm-text>
- *                           </wm-composite>
- *                       </wm-tabcontent>
- *                   </wm-tabpane>
- *               </wm-tabs>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {
- *               // set the default values
- *               $scope.tabsposition = "top";
- *               $scope.width = 300;
- *               $scope.height = 300;
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <div>
+                    <wm-composite>
+                        <wm-label caption="width:"></wm-label>
+                        <wm-text scopedatavalue="width"></wm-text>
+                    </wm-composite>
+                    <wm-composite>
+                        <wm-label caption="height:"></wm-label>
+                        <wm-text scopedatavalue="height"></wm-text>
+                    </wm-composite>
+                </div>
+                <div>Address1: {{address1}}</div>
+                <div>Address2: {{address2}}</div>
+                <br>
+                <wm-tabs width="{{width}}" height="{{height}}">
+                    <wm-tabpane>
+                        <wm-tabheader heading="tab1"></wm-tabheader>
+                        <wm-tabcontent>
+                            Content of tab1:<br>
+                            Address1:<br>
+                            <wm-composite>
+                                <wm-label caption="city:"></wm-label>
+                                <wm-text scopedatavalue="address1.city"></wm-text>
+                            </wm-composite>
+                            <wm-composite>
+                                <wm-label caption="state:"></wm-label>
+                                <wm-text scopedatavalue="address1.state"></wm-text>
+                            </wm-composite>
+                            <wm-composite>
+                                <wm-label caption="zip:"></wm-label>
+                                <wm-text scopedatavalue="address1.zip"></wm-text>
+                            </wm-composite>
+                        </wm-tabcontent>
+                    </wm-tabpane>
+                    <wm-tabpane>
+                        <wm-tabheader heading="tab2"></wm-tabheader>
+                        <wm-tabcontent>
+                            Content of tab2:<br>
+                            Address2:<br>
+                            <wm-composite>
+                                <wm-label caption="city:"></wm-label>
+                                <wm-text scopedatavalue="address2.city"></wm-text>
+                            </wm-composite>
+                            <wm-composite>
+                                <wm-label caption="state:"></wm-label>
+                                <wm-text scopedatavalue="address2.state"></wm-text>
+                            </wm-composite>
+                            <wm-composite>
+                                <wm-label caption="zip:"></wm-label>
+                                <wm-text scopedatavalue="address2.zip"></wm-text>
+                            </wm-composite>
+                        </wm-tabcontent>
+                    </wm-tabpane>
+                </wm-tabs>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+                // set the default values
+                $scope.tabsposition = "top";
+                $scope.width = 300;
+                $scope.height = 300;
+            }
+        </file>
+    </example>
  */
 
 /**
@@ -579,50 +575,50 @@ WM.module('wm.layouts.containers')
  *                  Callback function which will be triggered when the tab is deselected.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>
- *                   tab1 selected {{tab1count}} times.
- *               </div>
- *               <div>
- *                   tab2 selected {{tab2count}} times.
- *               </div>
- *               <br>
- *               <wm-tabs>
- *                   <wm-tabpane on-select="onTab1Select()" on-deselect="onTab1Deselect()">
- *                       <wm-tabheader heading="tab1"></wm-tabheader>
- *                       <wm-tabcontent>
- *                           Content of tab1:<br>
- *                       </wm-tabcontent>
- *                   </wm-tabpane>
- *                   <wm-tabpane on-select="onTab2Select()">
- *                       <wm-tabheader heading="tab2"></wm-tabheader>
- *                       <wm-tabcontent>
- *                           Content of tab2:<br>
- *                       </wm-tabcontent>
- *                   </wm-tabpane>
- *               </wm-tabs>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {
- *              $scope.tab1count = 0;
- *              $scope.tab2count = 0;
- *              $scope.onTab1Select = function () {
- *                  console.log("inside tab1select");
- *                  $scope.tab1count++;
- *              }
- *              $scope.onTab1Deselect = function () {
- *                  console.log("inside tab1 Deselect");
- *              }
- *              $scope.onTab2Select = function() {
- *                  console.log("inside tab2select");
- *                  $scope.tab2count++;
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <div>
+                    tab1 selected {{tab1count}} times.
+                </div>
+                <div>
+                    tab2 selected {{tab2count}} times.
+                </div>
+                <br>
+                <wm-tabs>
+                    <wm-tabpane on-select="onTab1Select()" on-deselect="onTab1Deselect()">
+                        <wm-tabheader heading="tab1"></wm-tabheader>
+                        <wm-tabcontent>
+                            Content of tab1:<br>
+                        </wm-tabcontent>
+                    </wm-tabpane>
+                    <wm-tabpane on-select="onTab2Select()">
+                        <wm-tabheader heading="tab2"></wm-tabheader>
+                        <wm-tabcontent>
+                            Content of tab2:<br>
+                        </wm-tabcontent>
+                    </wm-tabpane>
+                </wm-tabs>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+               $scope.tab1count = 0;
+               $scope.tab2count = 0;
+               $scope.onTab1Select = function () {
+                   console.log("inside tab1select");
+                   $scope.tab1count++;
+               }
+               $scope.onTab1Deselect = function () {
+                   console.log("inside tab1 Deselect");
+               }
+               $scope.onTab2Select = function() {
+                   console.log("inside tab2select");
+                   $scope.tab2count++;
+               }
+            }
+        </file>
+    </example>
  */
 
 /**
@@ -672,32 +668,32 @@ WM.module('wm.layouts.containers')
  *                  Align the content of the tab-header to left/right/center. <br>
  *                  Default value: `left`.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <br>
- *               <wm-tabs>
- *                   <wm-tabpane>
- *                       <wm-tabheader heading="{{tab1heading}}"></wm-tabheader>
- *                       <wm-tabcontent>
- *                           Content of tab1:<br>
- *                       </wm-tabcontent>
- *                   </wm-tabpane>
- *                   <wm-tabpane>
- *                       <wm-tabheader isdefaulttab="true"><a><wm-label caption="tab2"><wm-label></a></wm-tabheader>
- *                       <wm-tabcontent>
- *                           Content of tab2:<br>
- *                       </wm-tabcontent>
- *                   </wm-tabpane>
- *               </wm-tabs>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {
- *              $scope.tab1heading = "Tab1";
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <br>
+                <wm-tabs>
+                    <wm-tabpane>
+                        <wm-tabheader heading="{{tab1heading}}"></wm-tabheader>
+                        <wm-tabcontent>
+                            Content of tab1:<br>
+                        </wm-tabcontent>
+                    </wm-tabpane>
+                    <wm-tabpane>
+                        <wm-tabheader isdefaulttab="true"><a><wm-label caption="tab2"><wm-label></a></wm-tabheader>
+                        <wm-tabcontent>
+                            Content of tab2:<br>
+                        </wm-tabcontent>
+                    </wm-tabpane>
+                </wm-tabs>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+               $scope.tab1heading = "Tab1";
+            }
+        </file>
+    </example>
  */
 
 /**
@@ -731,30 +727,30 @@ WM.module('wm.layouts.containers')
  *                  Default value: `left`. <br>
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <br>
- *               <wm-tabs>
- *                   <wm-tabpane>
- *                       <wm-tabheader heading="{{tab1heading}}"></wm-tabheader>
- *                       <wm-tabcontent>
- *                           Content of tab1:<br>
- *                       </wm-tabcontent>
- *                   </wm-tabpane>
- *                   <wm-tabpane>
- *                       <wm-tabheader isdefaulttab="true"><a><wm-label caption="tab2"></wm-label></a></wm-tabheader>
- *                       <wm-tabcontent>
- *                           Content of tab2:<br>
- *                       </wm-tabcontent>
- *                   </wm-tabpane>
- *               </wm-tabs>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {
- *              $scope.tab1heading = "Tab1";
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <br>
+                <wm-tabs>
+                    <wm-tabpane>
+                        <wm-tabheader heading="{{tab1heading}}"></wm-tabheader>
+                        <wm-tabcontent>
+                            Content of tab1:<br>
+                        </wm-tabcontent>
+                    </wm-tabpane>
+                    <wm-tabpane>
+                        <wm-tabheader isdefaulttab="true"><a><wm-label caption="tab2"></wm-label></a></wm-tabheader>
+                        <wm-tabcontent>
+                            Content of tab2:<br>
+                        </wm-tabcontent>
+                    </wm-tabpane>
+                </wm-tabs>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+               $scope.tab1heading = "Tab1";
+            }
+        </file>
+    </example>
  */

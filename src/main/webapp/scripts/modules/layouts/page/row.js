@@ -64,12 +64,17 @@ WM.module('wm.layouts.page')
  * @param {string=} on-pinchdown
  *                  Callback function for `pinchdown` event.
  * @example
- <example module="wmCore">
-     <file name="index.html">
-        <wm-row>
-            <wm-column columnWidth="10"></wm-column>
-            <wm-column columnWidth="2"></wm-column>
-        </wm-row>
-     </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div class="wm-app" data-ng-controller="Ctrl">
+                <wm-row style="height:200px">
+                    <wm-column columnWidth="10" backgroundcolor="teal" style="height:100%"></wm-column>
+                    <wm-column columnWidth="2" backgroundcolor="tomato" style="height:100%"></wm-column>
+                </wm-row>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */

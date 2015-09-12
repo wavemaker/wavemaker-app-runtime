@@ -64,20 +64,19 @@ WM.module('wm.widgets.form')
  *                  Default value: `true`. <br>
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *              <wm-buttongroup name="buttongroup1">
- *                    <wm-button style="background-color:#779cd4" caption="left" name="button1"></wm-button>
- *                    <wm-button style="background-color:#779cd4" caption="center" name="button2"></wm-button>
- *                    <wm-button style="background-color:#779cd4" caption="right" name="button3"></wm-button>
- *              </wm-buttongroup>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                Will you try this widget?? <br>
+                <wm-buttongroup>
+                    <wm-button backgroundcolor="teal" caption="Yes"></wm-button>
+                    <wm-button backgroundcolor="DarkSlateBlue" caption="May be"></wm-button>
+                    <wm-button backgroundcolor="crimson" caption="No"></wm-button>
+                </wm-buttongroup>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {}
+        </file>
+    </example>
  */

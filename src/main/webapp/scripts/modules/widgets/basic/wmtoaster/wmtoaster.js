@@ -137,32 +137,32 @@ WM.module('wm.widgets.basic')
  * These messages stay for a definite time span, or until the user clicks on them.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-composite>
- *                   <wm-label caption="Title:"></wm-label>
- *                   <wm-text scopedatavalue="notificationTitle"></wm-text>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="Description:"></wm-label>
- *                   <wm-text scopedatavalue="notificationDescription"></wm-text>
- *               </wm-composite>
- *               <wm-button on-click='notify("success")' caption='Notify Success'></wm-button>
- *               <wm-button on-click='notify("error")' caption='Notify Error'></wm-button>
- *               <wm-button on-click='notify("info")' caption='Notify Info'></wm-button>
- *               <wm-button on-click='notify("warning")' caption='Notify Warn'></wm-button>
- *               <toaster-container toaster-options="{'limit': 1,'time-out': 2000, 'position-class': 'toast-bottom-right'}"></toaster-container>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope, wmToaster) {
- *              $scope.notificationTitle = "Sample Title";
- *              $scope.notificationDescription = "Sample Description";
- *              $scope.notify = function (type) {
- *                  wmToaster.show(type, $scope.notificationTitle, $scope.notificationDescription);
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-composite>
+                    <wm-label caption="Title:"></wm-label>
+                    <wm-text scopedatavalue="notificationTitle"></wm-text>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="Description:"></wm-label>
+                    <wm-text scopedatavalue="notificationDescription"></wm-text>
+                </wm-composite>
+                <wm-button on-click='notify("success")' caption='Notify Success' class="btn-success"></wm-button>
+                <wm-button on-click='notify("error")' caption='Notify Error' class="btn-danger"></wm-button>
+                <wm-button on-click='notify("info")' caption='Notify Info' class="btn-info"></wm-button>
+                <wm-button on-click='notify("warning")' caption='Notify Warn' class="btn-warning"></wm-button>
+                <toaster-container toaster-options="{'limit': 1,'time-out': 2000, 'position-class': 'toast-bottom-right'}"></toaster-container>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope, wmToaster) {
+               $scope.notificationTitle = "Sample Title";
+               $scope.notificationDescription = "Sample Description";
+               $scope.notify = function (type) {
+                   wmToaster.show(type, $scope.notificationTitle, $scope.notificationDescription);
+               }
+            }
+        </file>
+    </example>
  */

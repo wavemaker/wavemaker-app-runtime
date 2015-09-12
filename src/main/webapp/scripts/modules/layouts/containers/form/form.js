@@ -200,18 +200,52 @@ WM.module('wm.layouts.containers')
  *
  *
  * @example
- <example module="wmCore">
-     <file name="index.html">
-         <wm-form>
-             <wm-composite widget="text">
-                 <wm-label></wm-label>
-                 <wm-text></wm-text>
-             </wm-composite>
-             <wm-composite widget="textarea">
-                 <wm-label></wm-label>
-                 <wm-textarea></wm-textarea>
-             </wm-composite>
-         </wm-form>
-     </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-form title="Form" class="panel-default" height="300">
+                    <wm-layoutgrid>
+                        <wm-gridrow>
+                            <wm-gridcolumn>
+                                <wm-composite>
+                                    <wm-label class="col-md-3" caption="Name"></wm-label>
+                                    <wm-container class="col-md-9">
+                                        <wm-text tabindex="1" placeholder="Enter Name"></wm-text>
+                                    </wm-container>
+                                </wm-composite>
+                            </wm-gridcolumn>
+                        </wm-gridrow>
+                        <wm-gridrow>
+                            <wm-gridcolumn>
+                                <wm-composite>
+                                    <wm-label class="col-md-3" caption="Type"></wm-label>
+                                    <wm-container class="col-md-9">
+                                        <wm-select tabindex="3" dataset="Option 1, Option 2, Option 3" datavalue="Option 3"></wm-select>
+                                    </wm-container>
+                                </wm-composite>
+                            </wm-gridcolumn>
+                        </wm-gridrow>
+                        <wm-gridrow>
+                            <wm-gridcolumn>
+                                <wm-composite horizontalalign="left">
+                                    <wm-label class="col-md-3" caption="Description"></wm-label>
+                                    <wm-container class="col-md-9">
+                                        <wm-textarea tabindex="4" placeholder="Enter Description"></wm-textarea>
+                                    </wm-container>
+                                </wm-composite>
+                            </wm-gridcolumn>
+                        </wm-gridrow>
+                    </wm-layoutgrid>
+                    <wm-buttongroup horizontalalign="right" class="form-action col-md-12">
+                        <wm-button caption="Reset" type="reset" class="btn-secondary"></wm-button>
+                        <wm-button caption="Cancel" type="button" class="btn-warning"></wm-button>
+                        <wm-button caption="Save" type="submit" class="btn-primary"></wm-button>
+                    </wm-buttongroup>
+                </wm-form>
+            </div>
+        </file>
+         <file name="script.js">
+             function Ctrl($scope) {}
+         </file>
+    </example>
  */

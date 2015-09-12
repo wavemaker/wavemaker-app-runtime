@@ -116,18 +116,31 @@ WM.module('wm.layouts.containers')
  *
  *
  * @example
- <example module="wmCore">
- <file name="index.html">
- <wm-container>
- <wm-composite widget="text">
- <wm-label></wm-label>
- <wm-text></wm-text>
- </wm-composite>
- <wm-composite widget="textarea">
- <wm-label></wm-label>
- <wm-textarea></wm-textarea>
- </wm-composite>
- </wm-container>
- </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-container width="400" height="400" backgroundcolor="#979797" paddingtop="50">
+                    <wm-composite>
+                        <wm-label class="col-md-3" caption="First Name"></wm-label>
+                        <wm-container class="col-md-9">
+                            <wm-text></wm-text>
+                        </wm-container>
+                    </wm-composite>
+                    <wm-composite>
+                        <wm-label class="col-md-3" caption="Last Name"></wm-label>
+                        <wm-container class="col-md-9">
+                            <wm-text></wm-text>
+                        </wm-container>
+                    </wm-composite>
+                    <wm-container horizontalalign="right">
+                        <wm-button class="btn-secondary" caption="Cancel" type="button"></wm-button>
+                        <wm-button class="btn-primary" caption="Save" type="button"></wm-button>
+                    </wm-container>
+                </wm-container>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */

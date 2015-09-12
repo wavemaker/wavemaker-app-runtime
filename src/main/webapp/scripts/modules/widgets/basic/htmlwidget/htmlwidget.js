@@ -109,35 +109,35 @@ WM.module('wm.widgets.basic')
  *                  Callback function which will be triggered when the mouse leaves the widget.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               Show Html widget: <wm-checkbox scopedatavalue="show"></wm-checkbox> <br><br>
- *               Width: <wm-text scopedatavalue="width"></wm-text> <br><br>
- *               height: <wm-text scopedatavalue="height"></wm-text> <br><br>
- *               Click Count: {{clickCount}} <br><br>
- *               <div>
- *                  <wm-html width="{{width}}" height="{{height}}" show="{{show}}" on-click="f()" bordertop="2" borderleft="2" borderright="2" borderbottom="2" bordercolor="crimson" borderstyle="solid" paddingtop="10" paddingleft="10" paddingright="10" paddingbottom="10">
- *                      <div>
- *                          <h2 style="text-decoration:underline;">Html-widget content</h2>
- *                          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
- *                      </div>
- *                      <br>
- *                  </wm-html>
- *               </div>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {
- *              $scope.clickCount = 0;
- *              $scope.width = "350px";
- *              $scope.height = "250px";
- *              $scope.show = true;
- *
- *              $scope.f = function () {
- *                  $scope.clickCount++;
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                Show Html widget: <wm-checkbox scopedatavalue="show"></wm-checkbox> <br><br>
+                Width: <wm-text scopedatavalue="width"></wm-text> <br><br>
+                height: <wm-text scopedatavalue="height"></wm-text> <br><br>
+                Click Count: {{clickCount}} <br><br>
+                <div>
+                   <wm-html width="{{width}}" height="{{height}}" show="{{show}}" on-click="f()" bordertop="2" borderleft="2" borderright="2" borderbottom="2" bordercolor="crimson" borderstyle="solid" paddingtop="10" paddingleft="10" paddingright="10" paddingbottom="10">
+                       <div>
+                           <h2 style="text-decoration:underline;">Html-widget content</h2>
+                           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                       </div>
+                       <br>
+                   </wm-html>
+                </div>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+               $scope.clickCount = 0;
+               $scope.width = "350px";
+               $scope.height = "250px";
+               $scope.show = true;
+
+               $scope.f = function () {
+                   $scope.clickCount++;
+               }
+            }
+        </file>
+    </example>
  */

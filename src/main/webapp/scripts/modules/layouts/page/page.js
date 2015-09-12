@@ -1,4 +1,4 @@
-/*global WM*/
+/*global WM, _*/
 
 WM.module('wm.layouts.page')
     .directive('wmPage', ['DeviceViewService', 'CONSTANTS', '$rootScope', '$routeParams', 'Utils', '$timeout', 'Variables', 'NavigationVariableService', function (DeviceViewService, CONSTANTS, $rootScope, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
@@ -280,40 +280,25 @@ WM.module('wm.layouts.page')
  *                  The name of the controller for the page.
  *
  * @example
- *<example module="wmCore">
- *    <file name="index.html">
- *        <div class="wm-app">
- *            <wm-page  columns="3" name="page1" data-ng-controller="MainPageController">
- *                <wm-header name="header1" backgroundcolor="#b4d5e0">
- *                </wm-header>
- *                <wm-top-nav name="top-nav1" backgroundcolor="#879488">
- *                    <wm-list horizontalalign="left" name="list1" backgroundcolor="#d1c9a9">
- *                        <wm-list-item name="list-item1" backgroundcolor="#c9ab87" >
- *                            <wm-anchor caption="Home" name="anchor1"  target="_top"></wm-anchor>
- *                        </wm-list-item>
- *                        <wm-list-item name="list-item2" backgroundcolor="#c9ab87">
- *                            <wm-anchor caption="Services" name="anchor2"  target="_top"></wm-anchor>
- *                        </wm-list-item>
- *                    </wm-list>
- *                </wm-top-nav>
- *                <wm-content name="content1" height="70%">
- *                    <wm-row name="row1">
- *                        <wm-left-panel contentwidth="2" name="left-panel1" backgroundcolor="#d6baba"></wm-left-panel>
- *                        <wm-column class="app-content-column" columnwidth="8" name="column1" backgroundcolor="#b0ced9">
- *                        </wm-column>
- *                        <wm-right-panel contentwidth="2" name="right-panel1" backgroundcolor="#86aab5"></wm-right-panel>
- *                    </wm-row>
- *                </wm-content>
- *                <wm-footer name="footer1">
- *                </wm-footer>
- *            </wm-page>
- *        </div>
- *    </file>
- *     <file name="script.js">
- *           function MainPageController ($scope) {
- *           }
- *     </file>
- *</example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div class="wm-app">
+                <wm-page data-ng-controller="MainPageController">
+                    <wm-header height="50" backgroundcolor="teal">Content of Header</wm-header>
+                     <wm-top-nav height="30" backgroundcolor="tomato">Content of TopNav</wm-top-nav>
+                     <wm-content>
+                         <wm-left-panel columnwidth="2" backgroundcolor="#fd4c70">Content of LeftNav</wm-left-panel>
+                         <wm-page-content columnwidth="8" backgroundcolor="#0097a4">Content of Page</wm-page-content>
+                         <wm-right-panel columnwidth="2" backgroundcolor="#934cfd">Content of RightNav</wm-right-panel>
+                     </wm-content>
+                     <wm-footer backgroundcolor="#f66f8a">Content of Footer</wm-footer>
+                </wm-page>
+            </div>
+        </file>
+        <file name="script.js">
+            function MainPageController($scope) {}
+        </file>
+    </example>
  */
 
 
@@ -331,17 +316,16 @@ WM.module('wm.layouts.page')
  *                  The name of the controller for the page.
  *
  * @example
- *<example module="wmCore">
- *    <file name="index.html">
- *        <div class="wm-app">
- *            <wm-partial name="header" data-ng-controller="HeaderPageController">
- *                <wm-button caption="button1" name="button1" backgroundcolor="cadetblue"></wm-button>
- *            </wm-partial>
- *        </div>
- *    </file>
- *     <file name="script.js">
- *           function HeaderPageController ($scope) {
- *           }
- *     </file>
- *</example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div class="wm-app">
+                <wm-partial data-ng-controller="MainPageController">
+                    <wm-button caption="button1" backgroundcolor="cadetblue"></wm-button>
+                </wm-partial>
+            </div>
+        </file>
+        <file name="script.js">
+            function MainPageController ($scope) {}
+        </file>
+    </example>
  */

@@ -287,6 +287,7 @@ WM.module('wm.widgets.base')
 
             function deregisterWatchersOniScope($is) {
                 _.values($is._watchers).forEach(Utils.triggerFn);
+                $is._watchers = {};
             }
 
             function toBoolean(val, identity) {
@@ -370,6 +371,7 @@ WM.module('wm.widgets.base')
                     'set': function (nv) {
                         if (!$is[UPDATE_FROM_WATCHER]) { // value is not from watch.
                             Utils.triggerFn(_watchers[key]); // remove the binddatavalue watcher
+                            _watchers[key] = undefined;
                         } else {
                             $is[UPDATE_FROM_WATCHER] = false;
                         }
@@ -433,6 +435,7 @@ WM.module('wm.widgets.base')
                         if (isBindableProperty) {
                             if (!$is[UPDATE_FROM_WATCHER]) {
                                 Utils.triggerFn(_watchers[key]);
+                                _watchers[key] = undefined;
                             } else {
                                 $is[UPDATE_FROM_WATCHER] = false;
                             }

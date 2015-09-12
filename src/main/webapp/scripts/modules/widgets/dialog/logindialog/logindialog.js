@@ -181,35 +181,36 @@ WM.module('wm.widgets.dialog')
  *                  Icon class for the icon in dialog header
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <wm-view name="view1" class="dialog-view">
- *               <wm-logindialog modal="false" iconclass="glyphicon glyphicon-log-in" title="Login" name="logindialog1" on-error="logindialog1Error($event, $scope)" on-success="logindialog1Success($event, $scope)">
- *                  <wm-dialogheader name="dialogheader1"></wm-dialogheader>
- *                  <wm-dialogcontent name="dialogcontent1">
- *                      <wm-form name="form1">
- *                          <wm-message type="error" caption="{{errMsg}}" show="{{showErrMsg}}" class="app-logindialog-message" hide-close="true" name="message1"></wm-message>
- *                          <wm-composite name="composite1">
- *                              <wm-label caption="Username" class="col-md-4" name="label5"></wm-label>
- *                              <wm-text placeholder="Enter username" class="app-logindialog-username" name="text1"></wm-text>
- *                          </wm-composite>
- *                          <wm-composite widget="text" name="composite2">
- *                              <wm-label caption="Password" class="col-md-4" name="label6"></wm-label>
- *                              <wm-text type="password" placeholder="Enter password" class="app-logindialog-password" name="text2"></wm-text>
- *                          </wm-composite>
- *                      </wm-form>
- *                  </wm-dialogcontent>
- *                  <wm-dialogactions name="dialogactions1">
- *                      <wm-button class="btn-primary" caption="Sign in" name="button10"></wm-button>
- *                  </wm-dialogactions>
- *              </wm-logindialog>
- *           </wm-view>
- *           <wm-button on-click="logindialog1.show" caption="show dialog"></wm-button>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl">
+                <wm-view class="dialog-view">
+                    <wm-logindialog modal="false" iconclass="glyphicon glyphicon-log-in" title="Login" name="loginDialog" on-error="logindialog1Error($event, $scope)" on-success="logindialog1Success($event, $scope)">
+                        <wm-dialogheader></wm-dialogheader>
+                        <wm-dialogcontent>
+                            <wm-form>
+                                <wm-message type="error" caption="{{errMsg}}" show="{{showErrMsg}}" class="app-logindialog-message" hide-close="true"></wm-message>
+                                <wm-composite>
+                                    <wm-label caption="Username" class="col-md-4"></wm-label>
+                                    <wm-text placeholder="Enter username" class="app-logindialog-username"></wm-text>
+                                </wm-composite>
+                                <wm-composite widget="text">
+                                    <wm-label caption="Password" class="col-md-4"></wm-label>
+                                    <wm-text type="password" placeholder="Enter password" class="app-logindialog-password"></wm-text>
+                                </wm-composite>
+                            </wm-form>
+                        </wm-dialogcontent>
+                        <wm-dialogactions>
+                            <wm-button class="btn-primary" caption="Sign in"></wm-button>
+                        </wm-dialogactions>
+                    </wm-logindialog>
+                </wm-view>
+                <wm-button on-click="loginDialog.show" caption="Show Dialog" class="btn-primary"></wm-button>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+            function loginDialogController() {}
+        </file>
+    </example>
  */

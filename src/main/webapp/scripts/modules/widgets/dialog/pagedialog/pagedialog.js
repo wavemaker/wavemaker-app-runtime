@@ -153,26 +153,32 @@ WM.module('wm.widgets.dialog')
  *                  Callback function which will be triggered after the dialog is opened.
  *
  * @example
- *    <example module="wmCore">
- *        <file name="index.html">
- *            <wm-view name="view1" class="dialog-view">
- *                <wm-pagedialog name="pagedialog1" controller="Ctrl" iconname="globe" oktext="OK Button" on-ok="onOkCallBack()" on-close="onCloseCallBack()">
- *                </wm-pagedialog>
- *            </wm-view>
- *            <wm-button on-click="pagedialog1.show" caption="show dialog"></wm-button>
- *        </file>
- *        <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.onCloseCallBack = function () {
- *                  console.log("inside close callback");
- *              }
- *              $scope.onOkCallBack = function () {
- *                  console.log("inside ok callback");
- *              }
- *              $scope.onOpenedCallBack = function () {
- *                  console.log("inside opened callback");
- *              }
- *          }
- *       </file>
- *    </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl">
+                <wm-view class="dialog-view">
+                    <wm-pagedialog name="pageDialog" controller="Ctrl" iconname="globe"
+                        content="dropdownMenu"
+                        oktext="OK" on-ok="onOkCallBack()" on-close="onCloseCallBack()">
+                    </wm-pagedialog>
+                </wm-view>
+                <wm-button on-click="pageDialog.show" caption="show dialog"></wm-button>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope, DialogService) {
+                $scope.onCloseCallBack = function () {
+                    console.log("inside close callback");
+                    DialogService.close('pageDialog');
+                }
+                $scope.onOkCallBack = function () {
+                    console.log("inside ok callback");
+                    DialogService.close('pageDialog');
+                }
+                $scope.onOpenedCallBack = function () {
+                    console.log("inside opened callback");
+                }
+            }
+        </file>
+    </example>
  */

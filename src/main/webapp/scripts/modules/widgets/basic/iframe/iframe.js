@@ -110,24 +110,23 @@ WM.module('wm.widgets.basic')
  *                  This is a bindable property. <br>
  *                  Default value: `true`. <br>
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               Width: <wm-text scopedatavalue="width"></wm-text> <br><br>
- *               height: <wm-text scopedatavalue="height"></wm-text> <br><br>
- *               <div>
- *                  <wm-iframe width="{{width}}" height="{{height}}" show="{{show}}" iframesrc={{sourceURL}}>
- *                  </wm-iframe>
- *               </div>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {
- *              $scope.width = "350px";
- *              $scope.height = "250px";
- *
- *              $scope.sourceURL = "http://www.wavemaker.com";
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                Width: <wm-text scopedatavalue="width"></wm-text> <br><br>
+                height: <wm-text scopedatavalue="height"></wm-text> <br><br>
+                <div>
+                   <wm-iframe width="{{width}}" height="{{height}}" iframesrc={{sourceURL}}></wm-iframe>
+                </div>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+               $scope.width = "100%";
+               $scope.height = "500px";
+
+               $scope.sourceURL = "//www.wavemaker.com";
+            }
+        </file>
+    </example>
  */

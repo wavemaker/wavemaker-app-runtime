@@ -210,29 +210,35 @@ WM.module('wm.widgets.dialog')
  *                  Callback function which will be triggered after the dialog is opened.
  *
  * @example
- *    <example module="wmCore">
- *        <file name="index.html">
- *            <wm-view name="view1" class="dialog-view">
- *                <wm-confirmdialog name="confirmdialog1" controller="Ctrl" iconclass="glyphicon glyphicon-warning-sign" message="I am a confirm box" oktext="OK Button" canceltext="CANCEL Button" on-ok="onOkCallBack()" on-cancel="onCancelCallBack()" on-close="onCloseCallBack()">
- *                </wm-confirmdialog>
- *            </wm-view>
- *            <wm-button on-click="confirmdialog1.show" caption="show dialog"></wm-button>
- *        </file>
- *        <file name="script.js">
- *            function Ctrl($scope) {
- *               $scope.onCloseCallBack = function () {
- *                   console.log("inside close callback");
- *               }
- *               $scope.onOkCallBack = function () {
- *                   console.log("inside ok callback");
- *               }
- *               $scope.onCancelCallBack = function () {
- *                   console.log("inside cancel callback");
- *               }
- *               $scope.onOpenedCallBack = function () {
- *                   console.log("inside opened callback");
- *               }
- *           }
- *        </file>
- *    </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl">
+                <wm-button on-click="confirmDialog.show" caption="Show Dialog" class="btn-primary"></wm-button>
+                <wm-view class="dialog-view">
+                    <wm-confirmdialog name="confirmDialog" controller="Ctrl"
+                        iconclass="glyphicon glyphicon-warning-sign" message="I am a confirm box"
+                        oktext="Ok!!" canceltext="Close" on-ok="onOkCallBack()"
+                        on-cancel="onCancelCallBack()" on-close="onCloseCallBack()">
+                    </wm-confirmdialog>
+                </wm-view>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope, DialogService) {
+                $scope.onCloseCallBack = function () {
+                    console.log("inside close callback");
+                }
+                $scope.onOkCallBack = function () {
+                    console.log("inside ok callback");
+                }
+                $scope.onCancelCallBack = function () {
+                    console.log("inside cancel callback");
+                    DialogService.close('confirmDialog');
+                }
+                $scope.onOpenedCallBack = function () {
+                    console.log("inside opened callback");
+                }
+            }
+        </file>
+    </example>
  */

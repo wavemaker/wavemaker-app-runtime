@@ -156,26 +156,25 @@ WM.module('wm.widgets.dialog')
  *                  Callback function which will be triggered after the dialog is opened.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <wm-view name="view1" class="dialog-view">
- *               <wm-iframedialog name="iframedialog1" url="http://www.wavemaker.com" controller="Ctrl" iconclass="globe" oktext="OK Button" on-ok="onOkCallBack()" on-close="onCloseCallBack()">
- *               </wm-iframedialog>
- *           </wm-view>
- *           <wm-button on-click="iframedialog1.show" caption="show dialog"></wm-button>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.onCloseCallBack = function () {
- *                  console.log("inside close callback");
- *              }
- *              $scope.onOkCallBack = function () {
- *                  console.log("inside ok callback");
- *              }
- *              $scope.onOpenedCallBack = function () {
- *                  console.log("inside opened callback");
- *              }
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl">
+                <wm-view class="dialog-view">
+                    <wm-iframedialog name="iframeDialog" url="//www.wavemaker.com"
+                        controller="Ctrl" iconclass="globe" oktext="Close"
+                        on-ok="onOkCallBack()">
+                    </wm-iframedialog>
+                </wm-view>
+                <wm-button on-click="iframeDialog.show" caption="show dialog" class="btn-success"></wm-button>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope, DialogService) {
+               $scope.onOkCallBack = function () {
+                   console.log("inside ok callback");
+                   DialogService.close('iframeDialog');
+               }
+           }
+        </file>
+    </example>
  */

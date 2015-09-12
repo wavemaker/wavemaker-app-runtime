@@ -8,11 +8,11 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaCalendar', func
             startDate: '',
             endDate: ''
         },
-        parseDate = function(dateStr, defaultDate) {
+        parseDate = function (dateStr, defaultDate) {
             return (dateStr && dateStr.length > 0) ? new Date(dateStr) : defaultDate;
         },
-        defaultStartDate = new Date(new Date().getTime() - (3*30*24*60*60*1000)), // 3 months previous date
-        defaultEndDate = new Date(new Date().getTime() + (3*30*24*60*60*1000)),   // 3 months later date
+        defaultStartDate = new Date(new Date().getTime() - (3 * 30 * 24 * 60 * 60 * 1000)), // 3 months previous date
+        defaultEndDate = new Date(new Date().getTime() + (3 * 30 * 24 * 60 * 60 * 1000)),   // 3 months later date
         operations = {
             addEvent: {
                 model : {
@@ -50,7 +50,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaCalendar', func
                 model : [event],
                 properties : ['eventTitle', 'eventLocation', 'eventNotes', 'eventStart', 'eventEnd', 'startUpdate'],
                 invoke : function (variable, options, success, error) {
-                    var listEventOptions ={
+                    var listEventOptions = {
                         title: variable.eventTitle,
                         location: variable.eventLocation,
                         notes: variable.eventNotes,

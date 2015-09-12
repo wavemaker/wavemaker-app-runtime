@@ -181,40 +181,40 @@ WM.module('wm.widgets.basic')
  *                  Callback function which will be triggered when message widget is closed.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-message name="demoMessage" scopedataset="messageDataSet">
- *               </wm-message>
- *               <wm-composite>
- *                   <wm-label caption="Message Type:"></wm-label>
- *                   <wm-select scopedataset="content" datafield="All Fields" displayfield="type" scopedatavalue="messageDataSet"></wm-select>
- *               </wm-composite>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.content = [
- *                  {
- *                      type: 'success',
- *                      caption: 'Success Content'
- *                  },
- *                  {
- *                      type: 'error',
- *                      caption: 'Error Content'
- *                  },
- *                  {
- *                      type: 'warn',
- *                      caption: 'Warning Content'
- *                  },
- *                  {
- *                      type: 'info',
- *                      caption: 'Information Content'
- *                  }
- *              ];
- *              $scope.messageDataSet = $scope.content[0];
- *
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-message name="demoMessage" scopedataset="messageDataSet">
+                </wm-message>
+                <wm-composite>
+                    <wm-label caption="Message Type:"></wm-label>
+                    <wm-select scopedataset="content" datafield="All Fields" displayfield="type" scopedatavalue="messageDataSet"></wm-select>
+                </wm-composite>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+               $scope.content = [
+                   {
+                       type: 'success',
+                       caption: 'Success Content'
+                   },
+                   {
+                       type: 'error',
+                       caption: 'Error Content'
+                   },
+                   {
+                       type: 'warn',
+                       caption: 'Warning Content'
+                   },
+                   {
+                       type: 'info',
+                       caption: 'Information Content'
+                   }
+               ];
+               $scope.messageDataSet = $scope.content[0];
+
+            }
+        </file>
+    </example>
  */

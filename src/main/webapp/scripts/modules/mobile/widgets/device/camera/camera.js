@@ -161,26 +161,5 @@ WM.module('wm.widgets.advanced')
  *                  Clicking on the camera button will open the camera for capturing video or image.
  * @param {string=} on-success
  *                  Callback function which will be triggered when the widget saves the captured media successfully.
- * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-camera
- *                   hint="hint/title for camera"
- *                   on-click="f('click');"
- *                   iconclass="{{icon}}" iconsize="{{iconsize}}">
- *               </wm-camera><br>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.clickCount = 0;
- *              $scope.iconsize = 3em;
- *              $scope.f = function (eventtype) {
- *                  $scope[eventtype + 'Count']++;
- *              }
- *           }
- *       </file>
- *   </example>
  */
 

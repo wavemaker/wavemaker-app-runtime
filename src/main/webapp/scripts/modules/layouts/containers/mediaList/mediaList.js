@@ -365,43 +365,6 @@ WM.module('wm.layouts.containers')
  *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the media list on the web page. <br>
  *                  default value: `true`...
- * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *                  <wm-media-list name="{{caption}}" layout="{{layout}}" dataset="{{dataset}}" thumbnailurl="{{thumbnailurl}}" mediaurl="{{mediaurl}}">
- *                      <wm-media-template name="{{caption_template}}" width="{{templatewidth}}" height="{{templateheight}}">
- *                           <wm-label name="{{name_label}}" caption="{{caption_label}}"></wm-label>
- *                      </wm-media-template>
- *                  </wm-media-list>
- *               </div>
- *       </file>
- *        <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.width = "400px";
- *              $scope.height= "200px";
- *              $scope.caption = "Users";
- *              $scope.caption_template = "Admin";
- *              $scope.layout = "Multi-row";
- *              $scope.dataset = "[{"John", "http://angularjs.org/img/AngularJS-large.png": "angularJS"},
- *                                 {"George", "http://c0179631.cdn.cloudfiles.rackspacecloud.com/wavemaker_logo1.jpg": "wavemaker"}
- *                                ]";
- *              $scope.dataStr = ["user", "admin", "superuser"];
- *              $scope.thumbnailurl = {
- *                  "http://angularjs.org/img/AngularJS-large.png": "angularJS",
- *                  "http://c0179631.cdn.cloudfiles.rackspacecloud.com/wavemaker_logo1.jpg": "wavemaker"
- *              };
- *              $scope.mediaurl = {
- *                  "http://angularjs.org/img/AngularJS-large.png": "angularJS",
- *                  "http://c0179631.cdn.cloudfiles.rackspacecloud.com/wavemaker_logo1.jpg": "wavemaker"
- *              };
- *              $scope.templatewidth = "100px";
- *              $scope.templateheight = "100px";
- *              $scope.name_label = "label";
- *              $scope.caption_label = "bind:Variables.HrdbEmployeeData.dataSet.data[$i].firstname";
- *           }
- *       </file>
- *   </example>
  */
 
 /**
@@ -422,22 +385,5 @@ WM.module('wm.layouts.containers')
  *                  Sets the width of the thumbnail in both design mode and run-mode for the media list.
  * @param {string=} height
  *                  Sets the height of the thumbnail in both design mode and run-mode for the media list.
- * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *           <wm-media-template name="{{caption_template}}" width="{{templatewidth}}" height="{{templateheight}}">
- *                           <wm-label name="{{name_label}}" caption="{{caption_label}}"></wm-label>
- *           </wm-media-template>
- *       </file>
- *        <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.templatewidth = "100px";
- *              $scope.templateheight = "100px";
- *              $scope.name_label = "label";
- *              $scope.caption_label = "bind:Variables.HrdbEmployeeData.dataSet.data[$i].firstname";
- *              $scope.caption_template = "label";
- *           }
- *       </file>
- *   </example>
+ *
  */

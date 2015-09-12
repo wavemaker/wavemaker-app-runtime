@@ -144,36 +144,34 @@ WM.module("wm.widgets.advanced")
  *                   Callback function for `submit` event.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div class="wm-app">
- *               <wm-panel width='300px'>
- *                   <wm-login name="login1" data-ng-controller="Ctrl">
- *                      <wm-composite name="composite1">
- *                           <wm-label caption="Username" name="label5"></wm-label>
- *                           <wm-text placeholder="Enter username" name="usernametext" class="app-login-username"></wm-text>
- *                      </wm-composite>
- *                      <wm-composite widget="text" name="composite2">
- *                          <wm-label caption="Password" name="label6"></wm-label>
- *                          <wm-text type="password" name="passwordtext" placeholder="Enter password" class="app-login-password"></wm-text>
- *                      </wm-composite>
- *                      <wm-button type="submit" caption="Sign in" width="100%" class="app-login-button btn-primary" name="button9" on-click='loginVariable'></wm-button>
- *                      <wm-composite widget="checkbox" name="composite3">
- *                          <wm-checkbox name="checkbox1" class="app-login-rememberme" scopedatavalue="user.rememberMe"></wm-checkbox>
- *                          <wm-label caption="Remember Me" class="app-login-remembermetext" name="label7"></wm-label>
- *                          <wm-anchor caption="Forgot Password" class="app-login-forgotlink" name="anchor4"></wm-anchor>
- *                      </wm-composite>
- *                  </wm-login>
- *              </wm-panel>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *
- *              $scope.f = function (eventtype) {
- *
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div class="wm-app" data-ng-controller="Ctrl">
+                <wm-panel>
+                    <wm-login>
+                        <wm-composite>
+                            <wm-label caption="Username"></wm-label>
+                            <wm-text placeholder="Enter username" class="app-login-username"></wm-text>
+                        </wm-composite>
+                        <wm-composite widget="text">
+                            <wm-label caption="Password"></wm-label>
+                            <wm-text type="password" placeholder="Enter password" class="app-login-password"></wm-text>
+                        </wm-composite>
+                        <wm-container>
+                            <wm-container textalign="right">
+                                <wm-button type="submit" caption="Sign in" class="app-login-button btn-primary"></wm-button>
+                            </wm-container>
+                            <wm-composite widget="checkbox">
+                                <wm-checkbox class="app-login-rememberme col-md-7" scopedatavalue="user.rememberMe" caption="Remember Me"></wm-checkbox>
+                                <wm-anchor caption="Forgot Password" class="app-login-forgotlink col-md-5"></wm-anchor>
+                            </wm-composite>
+                        </wm-container>
+                    </wm-login>
+                </wm-panel>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */

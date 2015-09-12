@@ -238,18 +238,33 @@ WM.module('wm.layouts.containers')
  * @param {string=} on-actions-click
  *                  Callback function which will be triggered when the action icon is clicked.
  * @example
- <example module="wmCore">
-    <file name="index.html">
-        <wm-panel>
-            <wm-composite widget="text">
-                <wm-label></wm-label>
-                <wm-text></wm-text>
-            </wm-composite>
-            <wm-composite widget="textarea">
-                <wm-label></wm-label>
-                <wm-textarea></wm-textarea>
-            </wm-composite>
-        </wm-panel>
-    </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-panel class="panel-default" collapsible="true" showheader="true" width="400" height="200" backgroundcolor="#dad8d9" title="Personal Info">
+                    <wm-panel-footer>
+                        <wm-container horizontalalign="right">
+                            <wm-button class="btn-secondary" caption="Cancel" type="button"></wm-button>
+                            <wm-button class="btn-primary" caption="Update" type="button"></wm-button>
+                        </wm-container>
+                    </wm-panel-footer>
+                    <wm-composite>
+                        <wm-label class="col-md-3" caption="First Name:"></wm-label>
+                        <wm-container class="col-md-9">
+                            <wm-text></wm-text>
+                        </wm-container>
+                    </wm-composite>
+                    <wm-composite>
+                        <wm-label class="col-md-3" caption="Last Name:"></wm-label>
+                        <wm-container class="col-md-9">
+                            <wm-text></wm-text>
+                        </wm-container>
+                    </wm-composite>
+                </wm-panel>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */

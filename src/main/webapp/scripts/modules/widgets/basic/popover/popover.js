@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
 
         $templateCache.put('template/widget/basic/popover.html',
             '<div init-widget page-container class="app-popover {{showPopover ? \'open\' : \'\'}}" >' +
-                '<a data-identifier="popover" class="app-popover-link" init-widget data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" apply-styles="shell">' +
+                '<a data-identifier="popover" class="app-popover-link" data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" apply-styles="shell">' +
                     '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}"  data-ng-show="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +
@@ -182,8 +182,7 @@ WM.module('wm.widgets.basic')
                         if (CONSTANTS.isRunMode) {
                             scope.handlePopoverToggle = buildPopoverToggleHandler(scope, element, popoverConfig);
                         } else {
-                            scope.handlePopoverToggle = function () {
-                            };
+                            scope.handlePopoverToggle = WM.noop;
                         }
                     }
                 };
@@ -255,21 +254,21 @@ WM.module('wm.widgets.basic')
  * @param {string=} iconmargin
  *                  Margin of the icon.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *              <br>
- *               <wm-popover caption="Click me to see the popover"
- *                       content="dropdownMenu"
- *                       popoverwidth="500"
- *                       popoverheight="200"
- *                       popoverautoclose="true"
- *                       popoverplacement="top"
- *                       popoverarrow="true"></wm-popover>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {}
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <br>
+                <wm-popover caption="Click here to see the popover"
+                    content="dropdownMenu"
+                    popoverwidth="500"
+                    popoverheight="200"
+                    popoverautoclose="true"
+                    popoverplacement="bottom"
+                    popoverarrow="true"></wm-popover>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */

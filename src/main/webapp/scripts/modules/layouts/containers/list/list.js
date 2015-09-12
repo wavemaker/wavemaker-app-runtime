@@ -80,13 +80,26 @@ WM.module('wm.layouts.containers')
  *                  Default value: `left`. <br>
  *
  * @example
- <example>
- <file name="index.html">
- <wm-top-nav>
-    <wm-list></wm-list>
- </wm-top-nav>
- </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-list>
+                    <wm-list-item>
+                        <wm-button class="btn-default" caption="Users" type="button"></wm-button>
+                    </wm-list-item>
+                    <wm-list-item>
+                        <wm-button class="btn-default" caption="Products" type="button"></wm-button>
+                    </wm-list-item>
+                    <wm-list-item>
+                        <wm-button class="btn-default" caption="Sales" type="button"></wm-button>
+                    </wm-list-item>
+                </wm-list>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */
 
 /**
@@ -98,11 +111,24 @@ WM.module('wm.layouts.containers')
  * The 'wmListItem' directive defines a list item in the layout.
  * wmListItem is internally used by wmList.
  * @example
- <example>
- <file name="index.html">
- <wm-list>
-    <wm-list-item></wm-list-item>
- </wm-list>
- </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-list>
+                    <wm-list-item>
+                        <wm-button class="btn-default" caption="Users" type="button"></wm-button>
+                    </wm-list-item>
+                    <wm-list-item>
+                        <wm-button class="btn-default" caption="Products" type="button"></wm-button>
+                    </wm-list-item>
+                    <wm-list-item>
+                        <wm-button class="btn-default" caption="Sales" type="button"></wm-button>
+                    </wm-list-item>
+                </wm-list>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */

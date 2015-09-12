@@ -87,9 +87,23 @@ WM.module('wm.layouts.page')
  * @param {string=} on-pinchdown
  *                  Callback function for `pinchdown` event.
  * @example
- <example module="wmCore">
- <file name="index.html">
- <wm-page-content columnWidth="x"></wm-page-content> where x varies from 1 to 12
- </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div class="wm-app">
+                <wm-page data-ng-controller="MainPageController">
+                    <wm-header height="50" backgroundcolor="teal">Content of Header</wm-header>
+                    <wm-top-nav height="30" backgroundcolor="tomato">Content of TopNav</wm-top-nav>
+                    <wm-content>
+                        <wm-left-panel columnwidth="2" backgroundcolor="#fd4c70">Content of LeftNav</wm-left-panel>
+                        <wm-page-content columnwidth="8" backgroundcolor="#0097a4">Content of Page</wm-page-content>
+                        <wm-right-panel columnwidth="2" backgroundcolor="#934cfd">Content of RightNav</wm-right-panel>
+                    </wm-content>
+                <wm-footer backgroundcolor="#f66f8a">Content of Footer</wm-footer>
+                </wm-page>
+            </div>
+        </file>
+        <file name="script.js">
+            function MainPageController($scope) {}
+        </file>
+    </example>
  */

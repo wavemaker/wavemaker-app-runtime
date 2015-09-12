@@ -109,10 +109,11 @@ WM.module('wm.layouts.containers')
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal) {
-            var elScope = element.scope();
+            var elScope = element.scope(),
+                variable;
             switch (key) {
             case 'dataset':
-                var variable = elScope.Variables[Utils.getVariableName(scope, elScope)];
+                variable = elScope.Variables[Utils.getVariableName(scope, elScope)];
                 if (variable && variable.category === "wm.LiveVariable") {
                     newVal = newVal.data;
                 }
@@ -239,58 +240,46 @@ WM.module('wm.layouts.containers')
  *                  Default value: `left`.
 
  * @example
-
- *       <example module="wmCore">
- *          <file name="index.html">
- *              <div class="wm-app" data-ng-controller="Ctrl">
- *                  <wm-nav scopedataset="items"></wm-nav>
- *                 <wm-nav type="pills" layout="stacked">
- *                     <wm-nav-item>
- *                         <wm-anchor></wm-anchor>
- *                     </wm-nav-item>
- *                     <wm-nav-item>
- *                         <wm-anchor></wm-anchor>
- *                     </wm-nav-item>
- *                     <wm-nav-item>
- *                         <wm-anchor></wm-anchor>
- *                     </wm-nav-item>
- *                 </wm-nav>
- *              </div>
- *          </file>
- *          <file name="script.js">
- *             function Ctrl($scope) {
- *                  $scope.items = [
- *                       {
- *                           "label": "Home",
- *                           "icon": "glyphicon glyphicon-home",
- *                           "link": "#/home"
- *                       },
- *                       {
- *                           "label": "Dropdown",
- *                           "children": [
- *                               {
- *                                   "label": "Action",
- *                                   "icon": "glyphicon glyphicon-book"
- *                               },
- *                               {
- *                                   "label": "Help",
- *                                   "icon": "glyphicon glyphicon-question-sign"
- *                               }
- *                           ]
- *                       },
- *                       {
- *                           "label": "Others",
- *                           "icon": "glyphicon glyphicon-shopping-cart",
- *                           "link": "http://www.example.com"
- *                       },
- *                       {
- *                           "label": "Inventory",
- *                           "icon": "glyphicon glyphicon-tags"
- *                       }
- *                  ];
- *             };
- *          </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div class="wm-app" data-ng-controller="Ctrl">
+                <wm-nav scopedataset="items"></wm-nav>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+                $scope.items = [
+                        {
+                            "label": "Home",
+                            "icon": "glyphicon glyphicon-home",
+                            "link": "#/home"
+                        },
+                        {
+                            "label": "Dropdown",
+                            "children": [
+                                {
+                                    "label": "Action",
+                                    "icon": "glyphicon glyphicon-book"
+                                },
+                                {
+                                    "label": "Help",
+                                    "icon": "glyphicon glyphicon-question-sign"
+                                }
+                            ]
+                        },
+                        {
+                            "label": "Others",
+                            "icon": "glyphicon glyphicon-shopping-cart",
+                            "link": "http://www.example.com"
+                        },
+                        {
+                            "label": "Inventory",
+                            "icon": "glyphicon glyphicon-tags"
+                        }
+                   ];
+              };
+        </file>
+    </example>
  */
 /**
  * @ngdoc directive
@@ -301,13 +290,18 @@ WM.module('wm.layouts.containers')
  * The 'wmNavItem' directive defines a nav item in the layout.
  * wmNavItem is internally used by wmNav.
  * @example
- <example module="wmCore">
- <file name="index.html">
- <div  class="wm-app">
- <wm-nav>
- <wm-nav-item></wm-nav-item>
- </wm-nav>
- </div>
- </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div class="wm-app" data-ng-controller="Ctrl">
+                <wm-nav>
+                    <wm-nav-item>
+                        <wm-anchor caption="Dashboard" iconclass="glyphicon glyphicon-dashboard" class="active"></wm-anchor>
+                    </wm-nav-item>
+                </wm-nav>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */

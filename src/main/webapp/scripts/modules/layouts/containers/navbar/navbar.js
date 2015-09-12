@@ -85,16 +85,21 @@ WM.module('wm.layouts.containers')
  *                  Default value: `left`. <br>
  *
  * @example
- <example>
- <file name="index.html">
- <wm-top-nav>
- <wm-navbar>
-     <wm-nav></wm-nav>
-     <wm-nav></wm-nav>
- </wm-navbar>
- </wm-top-nav>
- </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-top-nav>
+                    <wm-navbar title="Brand">
+                        <wm-nav type="navbar" class="navbar-left"></wm-nav>
+                        <wm-nav type="navbar" class="navbar-right"></wm-nav>
+                    </wm-navbar>
+                </wm-top-nav>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */
 
 

@@ -233,65 +233,72 @@ WM.module('wm.widgets.advanced')
  *                  Defines the time interval (in seconds) between two slide transitions.  <br>
  *                  Default value: `3`.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-carousel animationinterval="5" height="100%">
- *                    <wm-carousel-content>
- *                        <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
- *                    </wm-carousel-content>
- *                    <wm-carousel-content>
- *                        <wm-picture width="100%" name="picture5" picturesource="https://farm6.staticflickr.com/5002/5237179864_552d6098f5_z_d.jpg"></wm-picture>
- *                    </wm-carousel-content>
- *                    <wm-carousel-content>
- *                        <wm-picture name="picture6" width="100%" picturesource="https://farm4.staticflickr.com/3024/3103220799_16f3b1db98_z_d.jpg"></wm-picture>
- *                    </wm-carousel-content>
- *                </wm-carousel>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {
- *              $scope.demo = true;
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-carousel animationinterval="5" height="100%">
+                    <wm-carousel-content>
+                        <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
+                    </wm-carousel-content>
+                    <wm-carousel-content>
+                        <wm-picture width="100%" name="picture5" picturesource="https://farm6.staticflickr.com/5002/5237179864_552d6098f5_z_d.jpg"></wm-picture>
+                    </wm-carousel-content>
+                    <wm-carousel-content>
+                        <wm-picture name="picture6" width="100%" picturesource="https://farm4.staticflickr.com/3024/3103220799_16f3b1db98_z_d.jpg"></wm-picture>
+                    </wm-carousel-content>
+                </wm-carousel>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+                $scope.demo = true;
+            }
+        </file>
+    </example>
  */
-
- /**
-  * @ngdoc directive
-  * @name wm.widgets.advanced.directive:wmCarouselContent
-  * @restrict E
-  *
-  * @description
-  * The `wmCarouselContent` directive defines wm-carousel-content widget.<br>
-  * This widget has to be used with in wm-carousel.
-  *
-  *
-  * @scope
-  *
-  * @requires PropertiesFactory
-  * @requires $templateCache
-  * @requires CONSTANTS
-  *
-  * @param {string=} name
-  *                  Name of the carousel content.
-  * @param {boolean=} show
-  *                  Show is a bindable property. <br>
-  *                  This property will be used to show/hide the carousel on the web page. <br>
-  *                  Default value: `true`.
-  * @example
-  *   <example module="wmCore">
-  *       <file name="index.html">
-  *           <div data-ng-controller="Ctrl" class="wm-app">
-  *               <wm-carousel animationinterval="5" height="100%">
-  *                    <wm-carousel-content>
-  *                        <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
-  *                    </wm-carousel-content>
-  *                </wm-carousel>
-  *           </div>
-  *       </file>
-  *       <file name="script.js">
-  *           function Ctrl($scope) {}
-  *       </file>
-  *   </example>
-  */
+/**
+ * @ngdoc directive
+ * @name wm.widgets.advanced.directive:wmCarouselContent
+ * @restrict E
+ *
+ * @description
+ * The `wmCarouselContent` directive defines wm-carousel-content widget.<br>
+ * This widget has to be used with in wm-carousel.
+ *
+ *
+ * @scope
+ *
+ * @requires PropertiesFactory
+ * @requires $templateCache
+ * @requires CONSTANTS
+ *
+ * @param {string=} name
+ *                  Name of the carousel content.
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the carousel on the web page. <br>
+ *                  Default value: `true`.
+ * @example
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-carousel animationinterval="5" height="100%">
+                    <wm-carousel-content>
+                        <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
+                    </wm-carousel-content>
+                    <wm-carousel-content>
+                        <wm-picture width="100%" name="picture5" picturesource="https://farm6.staticflickr.com/5002/5237179864_552d6098f5_z_d.jpg"></wm-picture>
+                    </wm-carousel-content>
+                    <wm-carousel-content>
+                        <wm-picture name="picture6" width="100%" picturesource="https://farm4.staticflickr.com/3024/3103220799_16f3b1db98_z_d.jpg"></wm-picture>
+                    </wm-carousel-content>
+                </wm-carousel>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+                $scope.demo = true;
+            }
+        </file>
+    </example>
+ */

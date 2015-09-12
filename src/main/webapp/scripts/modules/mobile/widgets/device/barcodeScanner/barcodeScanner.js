@@ -92,26 +92,5 @@ WM.module('wm.widgets.advanced')
  *                  Clicking on the barcodescanner button opens a camera view and automatically scans a barcode, returning the data back.
  * @param {string=} on-success
  *                  Callback function which will be triggered when the widget barcode is successfully scanned.
- * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-barcodescanner
- *                   hint="hint/title for camera"
- *                   on-click="f('click');"
- *                   iconclass="{{icon}}" iconsize="{{iconsize}}">
- *               </wm-barcodescanner><br>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.clickCount = 0;
- *              $scope.iconsize = 3em;
- *              $scope.f = function (eventtype) {
- *                  $scope[eventtype + 'Count']++;
- *              }
- *           }
- *       </file>
- *   </example>
  */
 

@@ -114,23 +114,23 @@ WM.module('wm.widgets.basic')
  *                  Default value: `false`.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-audio audiopreload="none" muted="true"
- *                  mp3format="{{audio.source.mp3}}"
- *                  controls="controls">
- *               </wm-audio>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.audio = {
- *                  "source": {
- *                      "mp3": "http://www.stephaniequinn.com/Music/Vivaldi%20-%20Spring%20from%20Four%20Seasons.mp3"
- *                  }
- *              }
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-audio audiopreload="none" muted="true"
+                   mp3format="{{audio.source.mp3}}"
+                   controls="controls">
+                </wm-audio>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+               $scope.audio = {
+                   "source": {
+                       "mp3": "http://www.stephaniequinn.com/Music/Vivaldi%20-%20Spring%20from%20Four%20Seasons.mp3"
+                   }
+               }
+           }
+        </file>
+    </example>
  */

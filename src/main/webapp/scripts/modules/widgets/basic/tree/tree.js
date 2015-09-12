@@ -291,61 +291,61 @@ WM.module('wm.widgets.basic')
  *
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *              <wm-tree scopedataset="nodes"></wm-tree>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *          $scope.nodes = [
- *              {
- *                  "label": "item1",
- *                  "icon": "glyphicon glyphicon-euro",
- *                  "children": []
- *              }, {
- *                  "label": "item2",
- *                  "icon": "glyphicon glyphicon-euro",
- *                  "children": [{
- *                      "label": "item2.1",
- *                      "icon": "glyphicon glyphicon-euro",
- *                      "children": [{
- *                          "label": "item2.1",
- *                          "icon": "glyphicon glyphicon-euro",
- *                          "children": [{
- *                              "label": "item2.1",
- *                              "icon": "glyphicon glyphicon-euro"
- *                          }, {
- *                              "label": "item2.2",
- *                              "icon": "glyphicon glyphicon-euro"
- *                          }, {
- *                              "label": "item2.3",
- *                              "icon": "glyphicon glyphicon-euro"
- *                          }, {
- *                              "label": "item2.4",
- *                              "icon": "glyphicon glyphicon-euro"
- *                          }]
- *                      }]
- *                  }, {
- *                      "label": "item2.2",
- *                      "icon": "glyphicon glyphicon-euro"
- *                  }, {
- *                      "label": "item2.3",
- *                      "icon": "glyphicon glyphicon-euro"
- *                  }, {
- *                      "label": "item2.4",
- *                      "icon": "glyphicon glyphicon-euro"
- *                  }]
- *              }, {
- *                  "label": "item3",
- *                  "icon": "glyphicon glyphicon-euro"
- *              }, {
- *                  "label": "item4",
- *                  "icon": "glyphicon glyphicon-euro"
- *              }
- *          ];
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+               <wm-tree scopedataset="nodes"></wm-tree>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+           $scope.nodes = [
+               {
+                   "label": "item1",
+                   "icon": "glyphicon glyphicon-euro",
+                   "children": []
+               }, {
+                   "label": "item2",
+                   "icon": "glyphicon glyphicon-euro",
+                   "children": [{
+                       "label": "item2.1",
+                       "icon": "glyphicon glyphicon-euro",
+                       "children": [{
+                           "label": "item2.1",
+                           "icon": "glyphicon glyphicon-euro",
+                           "children": [{
+                               "label": "item2.1",
+                               "icon": "glyphicon glyphicon-euro"
+                           }, {
+                               "label": "item2.2",
+                               "icon": "glyphicon glyphicon-euro"
+                           }, {
+                               "label": "item2.3",
+                               "icon": "glyphicon glyphicon-euro"
+                           }, {
+                               "label": "item2.4",
+                               "icon": "glyphicon glyphicon-euro"
+                           }]
+                       }]
+                   }, {
+                       "label": "item2.2",
+                       "icon": "glyphicon glyphicon-euro"
+                   }, {
+                       "label": "item2.3",
+                       "icon": "glyphicon glyphicon-euro"
+                   }, {
+                       "label": "item2.4",
+                       "icon": "glyphicon glyphicon-euro"
+                   }]
+               }, {
+                   "label": "item3",
+                   "icon": "glyphicon glyphicon-euro"
+               }, {
+                   "label": "item4",
+                   "icon": "glyphicon glyphicon-euro"
+               }
+           ];
+           }
+        </file>
+    </example>
  */

@@ -62,15 +62,15 @@ WM.module('wm.widgets.basic')
  *
  *
  * @example
- * <example module="wmCore">
- * <file name="index.html">
- *  <div data-ng-controller="Ctrl" class="wm-app">
- *    <br>
- *    <wm-icon iconclass="glyphicon glyphicon-search"></wm-icon>
- *  </div>
- * </file>
- * <file name="script.js">
- *   function Ctrl($scope) {}
- * </file>
- * </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <br>
+                <wm-icon iconclass="glyphicon glyphicon-search" iconsize="3em"></wm-icon>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */

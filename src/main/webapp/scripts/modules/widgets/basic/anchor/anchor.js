@@ -165,36 +165,36 @@ WM.module('wm.widgets.basic')
  * @param {string=} on-blur
  *                  Callback function which will be triggered when the widget loses focus.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-anchor
- *                   caption="google"
- *                   target="{{target}}"
- *                   hyperlink="http://www.google.com"
- *                   hint="go to google.com"
- *                   iconclass="{{icon}}"
- *                   on-mouseenter="f('mouseenter');"
- *                   on-mouseleave="f('mouseleave')">
- *               </wm-anchor><br>
- *               <wm-composite>
- *                  <wm-label caption="target:"></wm-label>
- *                  <wm-select scopedataset="targets" scopedatavalue="target"></wm-select>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="icon:"></wm-label>
- *                   <wm-select scopedatavalue="icon" scopedataset="icons"></wm-select>
- *               </wm-composite>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *           function Ctrl($scope) {
- *               $scope.icons = ["ok", "star", "remove", "user", "random"];
- *               $scope.targets = ["_blank", "_self", "_parent", "_top"];
- *               $scope.f = function (eventtype) {
- *                   console.log("inside function f for event", eventtype);
- *               }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-anchor
+                    caption="google"
+                    target="{{target}}"
+                    hyperlink="http://www.google.com"
+                    hint="go to google.com"
+                    iconclass="{{icon}}"
+                    on-mouseenter="f('mouseenter');"
+                    on-mouseleave="f('mouseleave')">
+                </wm-anchor><br>
+                <wm-composite>
+                   <wm-label caption="target:"></wm-label>
+                   <wm-select scopedataset="targets" scopedatavalue="target"></wm-select>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="icon:"></wm-label>
+                    <wm-select scopedatavalue="icon" scopedataset="icons"></wm-select>
+                </wm-composite>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+                $scope.icons = ["ok", "star", "remove", "user", "random"];
+                $scope.targets = ["_blank", "_self", "_parent", "_top"];
+                $scope.f = function (eventtype) {
+                    console.log("inside function f for event", eventtype);
+                }
+            }
+        </file>
+    </example>
  */

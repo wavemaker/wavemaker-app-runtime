@@ -375,34 +375,39 @@ WM.module('wm.widgets.dialog')
  *                  Callback function which will be triggered when the dialog is collapsed.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <wm-view name="view1" class="dialog-view">
- *               <wm-dialog name="dialog1" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
- *                  <wm-dialogheader name="dialogheader1"></wm-dialogheader>
- *                   <wm-dialogcontent name="dialog-content1">
- *                       <wm-form name="form1">
- *                           <wm-composite widget="text" name="composite1">
- *                               <wm-label caption="Name" name="label5"></wm-label>
- *                               <wm-text name="text2"></wm-text>
- *                           </wm-composite>
- *                       </wm-form>
- *                   </wm-dialogcontent>
- *                   <wm-dialogactions name="dialog-actions1" show="true">
- *                      <wm-button on-click="dialog1.hide" caption="hide dialog"></wm-button>
- *                   </wm-dialogactions>
- *               </wm-dialog>
- *           </wm-view>
- *           <wm-button on-click="dialog1.show" caption="show dialog"></wm-button>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.onCloseCallBack = function () {
- *                  console.log("inside close callback");
- *              }
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl">
+                <wm-view class="dialog-view">
+                    <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
+                        <wm-dialogheader></wm-dialogheader>
+                        <wm-dialogcontent>
+                            <wm-form>
+                                <wm-composite widget="text">
+                                    <wm-label caption="Name"></wm-label>
+                                    <wm-text></wm-text>
+                                </wm-composite>
+                            </wm-form>
+                        </wm-dialogcontent>
+                        <wm-dialogactions show="true">
+                            <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
+                        </wm-dialogactions>
+                    </wm-dialog>
+                </wm-view>
+                <wm-button on-click="sampleDialog.show" caption="Show Dialog" class="btn-success"></wm-button>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope, DialogService) {
+                $scope.onCloseCallBack = function () {
+                    console.log("inside close callback");
+                }
+                $scope.hideDialog = function () {
+                    DialogService.close('sampleDialog');
+                }
+            }
+        </file>
+    </example>
  */
 
 
@@ -448,37 +453,39 @@ WM.module('wm.widgets.dialog')
  *
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <wm-view name="view1" class="dialog-view">
- *               <wm-dialog name="dialog1" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
- *                  <wm-dialogheader name="dialogheader1"></wm-dialogheader>
- *                   <wm-dialogcontent name="dialog-content1">
- *                       <wm-form name="form1">
- *                           <wm-composite widget="text" name="composite1">
- *                               <wm-label caption="Name" name="label5"></wm-label>
- *                               <wm-text name="text2"></wm-text>
- *                           </wm-composite>
- *                       </wm-form>
- *                   </wm-dialogcontent>
- *                   <wm-dialogactions name="dialog-actions1" show="true">
- *                       <wm-button on-click="dialog1.hide" caption="hide dialog"></wm-button>
- *                   </wm-dialogactions>
- *                   </wm-dialog>
- *           </wm-view>
- *           <wm-button on-click="dialog1.show" caption="show dialog"></wm-button>
- *           </file>
- *       <file name="script.js">
- *              function Ctrl($scope) {
- *                  $scope.onCloseCallBack = function () {
- *                      console.log("inside close callback");
- *                  }
- *                  $scope.onOpenedCallBack = function () {
- *                      console.log("inside opened callback");
- *                  }
- *              }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl">
+                <wm-view class="dialog-view">
+                    <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
+                        <wm-dialogheader></wm-dialogheader>
+                        <wm-dialogcontent>
+                            <wm-form>
+                                <wm-composite widget="text">
+                                    <wm-label caption="Name"></wm-label>
+                                    <wm-text></wm-text>
+                                </wm-composite>
+                            </wm-form>
+                        </wm-dialogcontent>
+                        <wm-dialogactions show="true">
+                            <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
+                        </wm-dialogactions>
+                    </wm-dialog>
+                </wm-view>
+                <wm-button on-click="sampleDialog.show" caption="Show Dialog" class="btn-success"></wm-button>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope, DialogService) {
+                $scope.onCloseCallBack = function () {
+                    console.log("inside close callback");
+                }
+                $scope.hideDialog = function () {
+                    DialogService.close('sampleDialog');
+                }
+            }
+        </file>
+    </example>
  */
 
 
@@ -507,34 +514,39 @@ WM.module('wm.widgets.dialog')
  *                  Default value: `true`.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <wm-view name="view1" class="dialog-view">
- *               <wm-dialog name="dialog1" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
- *                  <wm-dialogheader name="dialogheader1"></wm-dialogheader>
- *                   <wm-dialogcontent name="dialog-content1">
- *                       <wm-form name="form1">
- *                           <wm-composite widget="text" name="composite1">
- *                               <wm-label caption="Name" name="label5"></wm-label>
- *                               <wm-text name="text2"></wm-text>
- *                           </wm-composite>
- *                       </wm-form>
- *                   </wm-dialogcontent>
- *                   <wm-dialogactions name="dialog-actions1" show="true">
- *                      <wm-button on-click="dialog1.hide" caption="hide dialog"></wm-button>
- *                   </wm-dialogactions>
- *               </wm-dialog>
- *           </wm-view>
- *           <wm-button on-click="dialog1.show" caption="show dialog"></wm-button>
- *       </file>
- *       <file name="script.js">
- *              function Ctrl($scope) {
- *                  $scope.onCloseCallBack = function () {
- *                     console.log("inside close callback");
- *                  }
- *              }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl">
+                <wm-view class="dialog-view">
+                    <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
+                        <wm-dialogheader></wm-dialogheader>
+                        <wm-dialogcontent>
+                            <wm-form>
+                                <wm-composite widget="text">
+                                    <wm-label caption="Name"></wm-label>
+                                    <wm-text></wm-text>
+                                </wm-composite>
+                            </wm-form>
+                        </wm-dialogcontent>
+                        <wm-dialogactions show="true">
+                            <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
+                        </wm-dialogactions>
+                    </wm-dialog>
+                </wm-view>
+                <wm-button on-click="sampleDialog.show" caption="Show Dialog" class="btn-success"></wm-button>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope, DialogService) {
+                $scope.onCloseCallBack = function () {
+                    console.log("inside close callback");
+                }
+                $scope.hideDialog = function () {
+                    DialogService.close('sampleDialog');
+                }
+            }
+        </file>
+    </example>
  */
 
 
@@ -562,34 +574,39 @@ WM.module('wm.widgets.dialog')
  *                  Default value: `true`.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <wm-view name="view1" class="dialog-view">
- *               <wm-dialog name="dialog1" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
- *                  <wm-dialogheader name="dialogheader1"></wm-dialogheader>
- *                   <wm-dialogcontent name="dialog-content1">
- *                       <wm-form name="form1">
- *                           <wm-composite widget="text" name="composite1">
- *                               <wm-label caption="Name" name="label5"></wm-label>
- *                               <wm-text name="text2"></wm-text>
- *                           </wm-composite>
- *                       </wm-form>
- *                   </wm-dialogcontent>
- *                   <wm-dialogactions name="dialog-actions1" show="true">
- *                       <wm-button on-click="dialog1.hide" caption="hide dialog"></wm-button>
- *                   </wm-dialogactions>
- *               </wm-dialog>
- *           </wm-view>
- *           <wm-button on-click="dialog1.show" caption="show dialog"></wm-button>
- *       </file>*
- *       <file name="script.js">
- *              function Ctrl($scope) {
- *                  $scope.onCloseCallBack = function () {
- *                     console.log("inside close callback");
- *                  }
- *              }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl">
+                <wm-view class="dialog-view">
+                    <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
+                        <wm-dialogheader></wm-dialogheader>
+                        <wm-dialogcontent>
+                            <wm-form>
+                                <wm-composite widget="text">
+                                    <wm-label caption="Name"></wm-label>
+                                    <wm-text></wm-text>
+                                </wm-composite>
+                            </wm-form>
+                        </wm-dialogcontent>
+                        <wm-dialogactions show="true">
+                            <wm-button on-click="hideDialog()" caption="Hide Dialog" class="btn-danger"></wm-button>
+                        </wm-dialogactions>
+                    </wm-dialog>
+                </wm-view>
+                <wm-button on-click="sampleDialog.show" caption="Show Dialog" class="btn-success"></wm-button>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope, DialogService) {
+                $scope.onCloseCallBack = function () {
+                    console.log("inside close callback");
+                }
+                $scope.hideDialog = function () {
+                    DialogService.close('sampleDialog');
+                }
+            }
+        </file>
+    </example>
  */
 
 /**

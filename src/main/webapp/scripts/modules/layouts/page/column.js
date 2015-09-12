@@ -87,9 +87,21 @@ WM.module('wm.layouts.page')
  * @param {string=} on-pinchdown
  *                  Callback function for `pinchdown` event.
  * @example
- <example module="wmCore">
-     <file name="index.html">
-         <wm-column columnWidth="x"></wm-column> where x varies from 1 to 12
-     </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <div style="padding:10px">
+                    <input type="number" min="1" max="12" step="1" data-ng-model="colWidth" style="width: 100px; height: 35px;padding-left:10px;font-size:1.2em">
+                    <div style="margin-top:10px">
+                        <wm-column columnwidth="{{colWidth}}" style="background-color:teal; height: 100px"></wm-column>
+                    </div>
+                </div>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+                $scope.colWidth = 6;
+            }
+        </file>
+    </example>
  */

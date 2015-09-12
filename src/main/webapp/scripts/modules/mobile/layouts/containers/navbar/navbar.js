@@ -118,15 +118,20 @@ WM.module('wm.layouts.containers')
  *                  This property determines whether or not the navbar is visible. This property is a bindable property.
  *
  * @example
- <example>
- <file name="index.html">
- <wm-top-nav>
- <wm-mobile-navbar title="XMobile" fontweight="bold" fontsize="2" fontunit="em" paddingtop="5">
-     <wm-button caption="" type="button" iconclass="fa fa-trash-o"></wm-button>
- </wm-mobile-navbar>
- </wm-top-nav>
- </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-top-nav>
+                    <wm-mobile-navbar title="XMobile" fontweight="bold" fontsize="2" fontunit="em" paddingtop="5">
+                        <wm-button caption="Users" type="button" iconclass="fa fa-trash-o"></wm-button>
+                    </wm-mobile-navbar>
+                </wm-top-nav>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */
 
 

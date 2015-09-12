@@ -60,8 +60,6 @@ WM.module('wm.layouts.containers')
             }
         }
 
-
-
         return {
             'restrict': 'E',
             'replace': true,
@@ -125,17 +123,17 @@ WM.module('wm.layouts.containers')
  *                  Default value: `left`. <br>
  *
  * @example
- * <example module="wmCore">
- * <file name="index.html">
- *  <div data-ng-controller="Ctrl" class="wm-app">
- *    <br>
- *      <wm-breadcrumb dataset="Home, products, product" name="breadcrumb1"></wm-breadcrumb>
- *  </div>
- * </file>
- * <file name="script.js">
- *   function Ctrl($scope) {}
- * </file>
- * </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <br>
+                <wm-breadcrumb dataset="Users, Alan, Profile, PersonalInfo, Address" name="breadcrumb1"></wm-breadcrumb>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */
 
 

@@ -156,29 +156,29 @@ WM.module('wm.widgets.basic')
  *                  Default value: `false`.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-video videopreload="none" muted="true"
- *                  videoposter="{{video.poster}}"
- *                  mp4format="{{video.source.mp4}}"
- *                  oggformat="{{video.source.ogg}}"
- *                  webmformat="{{video.source.webm}}"
- *                  controls="controls">
- *               </wm-video>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.video = {
- *                  "poster": "http://static.splashnology.com/articles/html5-video-players/videojs.jpg",
- *                  "source": {
- *                      "mp4": "http://vjs.zencdn.net/v/oceans.mp4",
- *                      "ogg": "http://www.w3schools.com/html/movie.ogg",
- *                      "webm": "http://www.w3schools.com/html/movie.webm"
- *                  }
- *              }
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-video videopreload="none" muted="true"
+                   videoposter="{{video.poster}}"
+                   mp4format="{{video.source.mp4}}"
+                   oggformat="{{video.source.ogg}}"
+                   webmformat="{{video.source.webm}}"
+                   controls="controls">
+                </wm-video>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+               $scope.video = {
+                   "poster": "http://static.splashnology.com/articles/html5-video-players/videojs.jpg",
+                   "source": {
+                       "mp4": "http://vjs.zencdn.net/v/oceans.mp4",
+                       "ogg": "http://www.w3schools.com/html/movie.ogg",
+                       "webm": "http://www.w3schools.com/html/movie.webm"
+                   }
+               }
+           }
+        </file>
+    </example>
  */

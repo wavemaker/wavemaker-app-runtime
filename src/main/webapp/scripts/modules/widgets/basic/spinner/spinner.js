@@ -95,31 +95,31 @@ WM.module('wm.widgets.basic')
  *                  Default value: `true`.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <wm-content contentwidth="12" name="example-content" backgroundcolor='transparent'>
- *                  <wm-column columnwidth="3" border="0" name="options-column">
- *                      <wm-composite>
- *                          <wm-label caption="Show:"></wm-label>
- *                          <wm-checkbox name="checkbox1" scopedatavalue="show" checked="checked"></wm-checkbox>
- *                      </wm-composite>
- *                      <wm-composite>
- *                          <wm-label caption="Image Path:"></wm-label>
- *                          <wm-text scopedatavalue="imagepath"></wm-text>
- *                      </wm-composite>
- *                  </wm-column>
- *                  <wm-column columnwidth="9" border="0" name="spinner-column">
- *                      <wm-spinner show='{{show}}' name="loader" image="{{imagepath}}"></wm-search>
- *                  </wm-column>
- *               </wm-content>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.show = true;
- *              $scope.imagepath = '../app/build/studio/images/loader.gif';
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-content contentwidth="12" name="example-content" backgroundcolor='transparent'>
+                   <wm-column columnwidth="3" border="0" name="options-column">
+                       <wm-composite>
+                           <wm-label caption="Show:"></wm-label>
+                           <wm-checkbox name="checkbox1" scopedatavalue="show" checked="checked"></wm-checkbox>
+                       </wm-composite>
+                       <wm-composite>
+                           <wm-label caption="Image Path:"></wm-label>
+                           <wm-text scopedatavalue="imagepath"></wm-text>
+                       </wm-composite>
+                   </wm-column>
+                   <wm-column columnwidth="9" border="0" name="spinner-column">
+                       <wm-spinner show='{{show}}' name="loader" image="{{imagepath}}"></wm-search>
+                   </wm-column>
+                </wm-content>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+               $scope.show = true;
+               $scope.imagepath = '../app/build/studio/images/loader.gif';
+           }
+        </file>
+    </example>
  */

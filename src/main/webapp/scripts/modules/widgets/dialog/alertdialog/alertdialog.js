@@ -183,26 +183,22 @@ WM.module('wm.widgets.dialog')
  *                  Callback function which will be triggered after the dialog is opened.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <wm-view name="view1" class="dialog-view">
- *               <wm-alertdialog name="alertdialog1" controller="Ctrl" iconclass="glyphicon glyphicon-warning-sign" alerttype="information" message="I am an alert box" oktext="OK Button" on-ok="onOkCallBack()" on-close="onCloseCallBack()">
- *               </wm-alertdialog>
- *           </wm-view>
- *           <wm-button on-click="alertdialog1.show" caption="show dialog"></wm-button>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.onCloseCallBack = function () {
- *                  console.log("inside close callback");
- *              }
- *              $scope.onOkCallBack = function () {
- *                  console.log("inside ok callback");
- *              }
- *              $scope.onOpenedCallBack = function () {
- *                  console.log("inside opened callback");
- *              }
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-view class="dialog-view">
+                    <wm-alertdialog name="alertDialog"></wm-alertdialog>
+                </wm-view>
+                <button ng-click="showDialog()" class="btn-success">Show Dialog</button>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope, DialogService) {
+                $scope.showDialog = function () {
+                    DialogService.open("alertDialog");
+                };
+            }
+            function alertDialogController() {};
+        </file>
+    </example>
  */

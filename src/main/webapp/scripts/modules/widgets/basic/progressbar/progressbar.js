@@ -307,51 +307,42 @@ WM.module('wm.widgets.basic')
  *                  Callback function which will be triggered before the update of the progress.
  *
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>single click count: {{clickCount}}</div>
- *               <div>dbl click count: {{dblclickCount}}</div>
- *               <div>mouse enter count: {{mouseenterCount}}</div>
- *               <div>mouse leave count: {{mouseleaveCount}}</div>
- *               <br>
- *               <wm-progress type="{{type}}"
- *                          height="24" datavalue="20"
- *                          on-click="f('click')"
- *                          on-dblclick="f('dblclick')"
- *                          on-mouseenter="f('mouse enter')"
- *                          on-mouseleave="f('mouse leave')"
- *                          show="{{show}}"
- *                          >
- *               </wm-progress>
- *               <br>
- *               <wm-composite>
- *                   <wm-label caption="type:"></wm-label>
- *                   <wm-select scopedatavalue="type" scopedataset="types"></wm-select>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="show:"></wm-label>
- *                   <wm-checkbox scopedatavalue="show"></wm-text>
- *               </wm-composite>
- *
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.clickCount =
- *              $scope.dblclickCount =
- *              $scope.mouseenterCount =
- *              $scope.mouseleaveCount = 0;
- *
- *              $scope.show = true;
- *
- *              $scope.types = ['default', 'default-striped', 'success', 'success-striped', 'info', 'info-striped', 'warning', 'warning-striped', 'danger', 'danger-striped'];
- *              $scope.type = ['default'];
- *
- *              $scope.f = function (eventtype) {
- *                  $scope[eventtype + 'Count']++;
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-composite>
+                    <wm-label caption="type:"></wm-label>
+                    <wm-select scopedatavalue="type" scopedataset="types"></wm-select>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="show:"></wm-label>
+                    <wm-checkbox scopedatavalue="show"></wm-text>
+                </wm-composite>
+                <wm-progress type="{{type}}"
+                       height="24" datavalue="20"
+                       on-click="f('click')"
+                       on-dblclick="f('dblclick')"
+                       show="{{show}}">
+                </wm-progress>
+                <br>
+                <div>single click count: {{clickCount}}</div>
+                <div>dbl click count: {{dblclickCount}}</div>
+                <br>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+               $scope.clickCount = $scope.dblclickCount = 0;
+
+               $scope.show = true;
+
+               $scope.types = ['default', 'default-striped', 'success', 'success-striped', 'info', 'info-striped', 'warning', 'warning-striped', 'danger', 'danger-striped'];
+               $scope.type = ['default'];
+
+               $scope.f = function (eventtype) {
+                   $scope[eventtype + 'Count']++;
+               }
+            }
+        </file>
+    </example>
  */

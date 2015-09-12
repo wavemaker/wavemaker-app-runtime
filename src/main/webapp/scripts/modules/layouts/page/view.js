@@ -93,11 +93,19 @@ WM.module('wm.layouts.page')
  *                  Callback function for `pinchdown` event.
  *
  * @example
- <example module="wmCore">
-     <file name="index.html">
-         <wm-view >
-         </wm-view>
-     </file>
- </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div class="wm-app" data-ng-controller="Ctrl">
+                <button data-ng-click="showView = true">Show View</button>
+                <button data-ng-click="showView = false">Hide View</button>
+                <wm-container>
+                    <wm-view show="{{showView}}" backgroundcolor="teal"> Content of View </wm-view>
+                </wm-container>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {}
+        </file>
+    </example>
  */
 

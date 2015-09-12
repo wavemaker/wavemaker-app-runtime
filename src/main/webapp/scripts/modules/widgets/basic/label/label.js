@@ -96,73 +96,73 @@ WM.module('wm.widgets.basic')
  * @param {string=} on-mouseleave
  *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>single click count: {{clickCount}}</div>
- *               <div>dbl click count: {{dblclickCount}}</div>
- *               <div>mouse enter count: {{mouseenterCount}}</div>
- *               <div>mouse leave count: {{mouseleaveCount}}</div>
- *               <wm-label bordertop="1" borderleft="1" borderright="1" borderbottom="1" bordercolor="crimson" borderstyle="solid" paddingtop="4" paddingleft="4" paddingright="4" paddingbottom="4"
- *                   caption="{{caption}}"
- *                   hint="hint/title for label"
- *                   show="{{show}}"
- *                   width="{{width}}"
- *                   height="{{height}}"
- *                   color="{{color}}"
- *                   required="{{required}}"
- *                   on-click="f('click');"
- *                   on-dblclick="f('dblclick');"
- *                   on-mouseenter="f('mouseenter');"
- *                   on-mouseleave="f('mouseleave')">
- *               </wm-label><br>
- *               <wm-composite>
- *                   <wm-label caption="caption:"></wm-label>
- *                   <wm-text scopedatavalue="caption"></wm-text>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="show:"></wm-label>
- *                   <wm-checkbox scopedatavalue="show"></wm-checkbox>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="required:"></wm-label>
- *                   <wm-checkbox scopedatavalue="required"></wm-checkbox>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="width:"></wm-label>
- *                   <wm-text scopedatavalue="width"></wm-text>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="height:"></wm-label>
- *                   <wm-text scopedatavalue="height"></wm-text>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="color:"></wm-label>
- *                   <wm-select scopedatavalue="color" scopedataset="colors"></wm-select>
- *               </wm-composite>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.clickCount =
- *              $scope.dblclickCount =
- *              $scope.mouseenterCount =
- *              $scope.mouseleaveCount = 0;
- *
- *              $scope.required = true;
- *              $scope.show = true;
- *              $scope.width = "100px";
- *              $scope.height= "30px";
- *              $scope.caption = " Wavemaker! ";
- *              $scope.color = "blue";
- *
- *              $scope.icons = ["ok", "star", "remove", "user", "random"];
- *              $scope.colors = ["blue", "crimson", "green", "orange", "red"];
- *
- *              $scope.f = function (eventtype) {
- *                  $scope[eventtype + 'Count']++;
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <div>single click count: {{clickCount}}</div>
+                <div>dbl click count: {{dblclickCount}}</div>
+                <div>mouse enter count: {{mouseenterCount}}</div>
+                <div>mouse leave count: {{mouseleaveCount}}</div>
+                <wm-label bordertop="1" borderleft="1" borderright="1" borderbottom="1" bordercolor="crimson" borderstyle="solid" paddingtop="4" paddingleft="4" paddingright="4" paddingbottom="4"
+                    caption="{{caption}}"
+                    hint="hint/title for label"
+                    show="{{show}}"
+                    width="{{width}}"
+                    height="{{height}}"
+                    color="{{color}}"
+                    required="{{required}}"
+                    on-click="f('click');"
+                    on-dblclick="f('dblclick');"
+                    on-mouseenter="f('mouseenter');"
+                    on-mouseleave="f('mouseleave')">
+                </wm-label><br>
+                <wm-composite>
+                    <wm-label caption="caption:"></wm-label>
+                    <wm-text scopedatavalue="caption"></wm-text>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="show:"></wm-label>
+                    <wm-checkbox scopedatavalue="show"></wm-checkbox>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="required:"></wm-label>
+                    <wm-checkbox scopedatavalue="required"></wm-checkbox>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="width:"></wm-label>
+                    <wm-text scopedatavalue="width"></wm-text>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="height:"></wm-label>
+                    <wm-text scopedatavalue="height"></wm-text>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="color:"></wm-label>
+                    <wm-select scopedatavalue="color" scopedataset="colors"></wm-select>
+                </wm-composite>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+               $scope.clickCount =
+               $scope.dblclickCount =
+               $scope.mouseenterCount =
+               $scope.mouseleaveCount = 0;
+
+               $scope.required = true;
+               $scope.show = true;
+               $scope.width = "100px";
+               $scope.height= "30px";
+               $scope.caption = " Wavemaker! ";
+               $scope.color = "blue";
+
+               $scope.icons = ["ok", "star", "remove", "user", "random"];
+               $scope.colors = ["blue", "crimson", "green", "orange", "red"];
+
+               $scope.f = function (eventtype) {
+                   $scope[eventtype + 'Count']++;
+               }
+            }
+        </file>
+    </example>
  */

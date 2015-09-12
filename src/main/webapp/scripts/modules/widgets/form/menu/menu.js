@@ -306,53 +306,53 @@ WM.module('wm.widgets.form')
  * @param {string=} on-select
  *                  Callback function which is executed when a Menu value is selected.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *              <wm-menu scopedataset="nodes" menuposition="down,left" caption="Menu" iconclass="glyphicon glyphicon-align-justify"></wm-menu>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.nodes = [
- *                  {
- *                      "label": "item1",
- *                      "icon": "glyphicon glyphicon-euro"
- *                  },
- *                  {
- *                      "label": "item2",
- *                      "icon": "glyphicon glyphicon-euro"
- *                  },
- *                  {
- *                      "label": "item3",
- *                      "icon": "glyphicon glyphicon-euro"
- *                  },
- *                  {
- *                      "label": "item4",
- *                      "icon": "glyphicon glyphicon-euro",
- *                      "children" : [
- *                          {
- *                              "label": "sub-menu-item1",
- *                              "icon": "glyphicon glyphicon-euro"
- *                          },
- *                          {
- *                              "label": "sub-menu-item2",
- *                              "icon": "glyphicon glyphicon-euro",
- *                               "children" : [
- *                                   {
- *                                      "label": "sub-menu-child-item1",
- *                                      "icon": "glyphicon glyphicon-euro"
- *                                  },
- *                                  {
- *                                      "label": "sub-menu-child-item2",
- *                                      "icon": "glyphicon glyphicon-euro"
- *                                 }
- *                            ]
- *                          }
- *                      ]
- *                  }
- *              ];
- *          }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+               <wm-menu scopedataset="nodes" menuposition="down,right" caption="Menu" iconclass="glyphicon glyphicon-align-justify"></wm-menu>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+               $scope.nodes = [
+                   {
+                       "label": "item1",
+                       "icon": "glyphicon glyphicon-euro"
+                   },
+                   {
+                       "label": "item2",
+                       "icon": "glyphicon glyphicon-euro"
+                   },
+                   {
+                       "label": "item3",
+                       "icon": "glyphicon glyphicon-euro"
+                   },
+                   {
+                       "label": "item4",
+                       "icon": "glyphicon glyphicon-euro",
+                       "children" : [
+                           {
+                               "label": "sub-menu-item1",
+                               "icon": "glyphicon glyphicon-euro"
+                           },
+                           {
+                               "label": "sub-menu-item2",
+                               "icon": "glyphicon glyphicon-euro",
+                                "children" : [
+                                    {
+                                       "label": "sub-menu-child-item1",
+                                       "icon": "glyphicon glyphicon-euro"
+                                   },
+                                   {
+                                       "label": "sub-menu-child-item2",
+                                       "icon": "glyphicon glyphicon-euro"
+                                  }
+                             ]
+                           }
+                       ]
+                   }
+               ];
+            }
+        </file>
+    </example>
  */
