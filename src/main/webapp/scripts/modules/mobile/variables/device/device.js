@@ -74,6 +74,24 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
                     success({ osversion: $cordovaDevice.getVersion()});
                 }
             },
+            getCordovaVersion :   {
+                model: {
+                    version: ''
+                },
+                properties : ['startUpdate'],
+                invoke : function (variable, options, success) {
+                    success({ version: $cordovaDevice.getCordova()});
+                }
+            },
+            getDeviceUUID :   {
+                model: {
+                    UUID: ''
+                },
+                properties : ['startUpdate'],
+                invoke : function (variable, options, success) {
+                    success({ UUID: $cordovaDevice.getUUID()});
+                }
+            },
             getAppVersionNumber :   {
                 model: {
                     appversion: ''
