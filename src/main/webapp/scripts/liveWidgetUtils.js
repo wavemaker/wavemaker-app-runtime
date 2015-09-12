@@ -1,4 +1,4 @@
-/*global WM, moment*/
+/*global WM, moment, _*/
 
 /**
  * @ngdoc service
@@ -10,8 +10,9 @@ WM.module('wm.widgets.live')
     .service('LiveWidgetUtils', [
         'Utils',
         'CONSTANTS',
+        'Variables',
 
-        function (Utils, CONSTANTS) {
+        function (Utils, CONSTANTS, Variables) {
             'use strict';
 
             /**
@@ -385,7 +386,7 @@ WM.module('wm.widgets.live')
             function checkboxTemplate(fieldDef, index, widgetType) {
                 var template = '',
                     addToggle = widgetType === 'toggle' ? 'type="toggle"' : '';
-                template = template + '<wm-checkbox ' + getFormFields(fieldDef, index) + addToggle+ ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" ></wm-checkbox>';
+                template = template + '<wm-checkbox ' + getFormFields(fieldDef, index) + addToggle + ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" ></wm-checkbox>';
                 return template;
             }
 
@@ -426,13 +427,14 @@ WM.module('wm.widgets.live')
             }
 
             function ratingTemplate(fieldDef, index, liveType) {
-                var template = '';
+                var template = '',
+                    readonly;
                 if (fieldDef.isRange) {
                     template = template + '<div class="col-md-4 col-sm-4"><wm-rating ' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].minValue" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="{{formFields[' + index + '].readonly}}"></wm-rating></div>' +
                         '<div class="col-md-4 col-sm-4"></div>' +
                         '<div class="col-md-4 col-sm-4"><wm-rating' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].maxValue" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="{{formFields[' + index + '].readonly}}"></wm-rating></div>';
                 } else {
-                    var readonly = liveType === 'form' ? '{{!isUpdateMode}}' : '{{formFields[' + index + '].readonly}}';
+                    readonly = liveType === 'form' ? '{{!isUpdateMode}}' : '{{formFields[' + index + '].readonly}}';
                     template = template + '<wm-rating ' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].value" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="' + readonly + '"></wm-rating>';
 
                 }
@@ -641,6 +643,55 @@ WM.module('wm.widgets.live')
                 return layoutObj[layout] || 1;
             }
 
+            /*returning event options with type set to 'Default'*/
+            function getEventOptions() {
+                var eventsArray = ["NoEvent", "Javascript"].concat(Variables.retrieveEventCallbackVariables()),
+                    eventsObject;
+                eventsObject = eventsArray.map(function (event) {
+                    return {
+                        'name': event,
+                        'type': 'Default'
+                    };
+                });
+                return eventsObject;
+            }
+            /*Iterate over events and populate 'Javascript' with appropriate event name and args*/
+            function getNewEventsObject(prefix, events) {
+                var newEventName,
+                    newCustomEvent,
+                    eventNumber = 0,
+                    customEvents = [],
+                    args = '($event, $scope)';
+                _.forEach(events, function (event, index) {
+                    if (event === 'Javascript') {
+                        newCustomEvent = prefix;
+                        newEventName = newCustomEvent + args;
+                        while (_.includes(events, newEventName)) {
+                            eventNumber += 1;
+                            newCustomEvent = prefix + eventNumber;
+                            newEventName = newCustomEvent + args;
+                        }
+                        events[index] = newEventName;
+                        customEvents = customEvents.concat(newCustomEvent);
+                    }
+                });
+                return {
+                    'events' : events,
+                    'customEvents' : customEvents
+                };
+            }
+            /*function to update script link visibility*/
+            function toggleActionMessage(selectedItem, actionsList, isField, eventType, value) {
+                if (isField && eventType) {
+                    selectedItem[eventType] = value;
+                    return selectedItem.include && !selectedItem.remove && _.includes(selectedItem[eventType], 'Javascript');
+                }
+                return selectedItem.include && !selectedItem.remove && !_.includes(actionsList, selectedItem.action);
+            }
+
+            this.getNewEventsObject = getNewEventsObject;
+            this.toggleActionMessage = toggleActionMessage;
+            this.getEventOptions = getEventOptions;
             this.getEventTypes = getEventTypes;
             this.getDefaultValue = getDefaultValue;
             this.getFormButtons = getFormButtons;

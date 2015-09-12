@@ -1,4 +1,4 @@
-/*global WM, wm, document*/
+/*global WM, wm, document, _*/
 /*jslint todo: true */
 /*jslint sub: true */
 /**
@@ -846,7 +846,7 @@ wm.variables.services.Variables = [
 
                     }
                 }
-                return variableArray;
+                return _.uniq(variableArray);
             },
             saveContextVariables = function (context, contextVariables) {
                 var variables = self.variableCollection;
