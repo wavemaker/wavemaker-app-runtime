@@ -49,7 +49,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
             },
             getModel :   {
                 model: {
-                    model: 'iPhone 5,1'
+                    model: 'DEVICEMODEL'
                 },
                 properties : ['startUpdate'],
                 invoke : function (variable, options, success) {
@@ -58,7 +58,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
             },
             getOS :   {
                 model: {
-                    os: 'iOS'
+                    os: 'DEVICEOS'
                 },
                 properties : ['startUpdate'],
                 invoke : function (variable, options, success) {
@@ -67,7 +67,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
             },
             getOSVersion :   {
                 model: {
-                    osversion: '0.0.0'
+                    osversion: 'X.X.X'
                 },
                 properties : ['startUpdate'],
                 invoke : function (variable, options, success) {
@@ -76,7 +76,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
             },
             getCordovaVersion :   {
                 model: {
-                    version: '0.0.0'
+                    version: 'X.X.X'
                 },
                 properties : ['startUpdate'],
                 invoke : function (variable, options, success) {
@@ -85,7 +85,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
             },
             getDeviceUUID :   {
                 model: {
-                    UUID: 'AC79F43E593BK11S'
+                    UUID: 'DEVICEUUID'
                 },
                 properties : ['startUpdate'],
                 invoke : function (variable, options, success) {
@@ -94,7 +94,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
             },
             getAppVersionNumber :   {
                 model: {
-                    appversion: '0.0.0'
+                    appversion: 'X.X.X'
                 },
                 properties : ['startUpdate'],
                 invoke : function (variable, options, success) {
