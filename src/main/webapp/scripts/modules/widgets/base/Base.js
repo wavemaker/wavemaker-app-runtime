@@ -1155,7 +1155,7 @@ WM.module('wm.widgets.base', [])
                         "fileuploadmessage": {"type": "string", "value": "You can also browse for files"},
                         "tabindex": {"type": "string"},
                         "uploadedFiles": {"type": "array", "bindable": "in-out-bound"},
-                        "destination": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound"},
+                        "destination": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound", "value": ""},
                         "caption": {"type": "string", "value": "Upload", "bindable": "in-out-bound", "maxlength": 256},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "glyphicon glyphicon-upload", "pattern": classRegex},
 

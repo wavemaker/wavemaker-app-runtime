@@ -202,7 +202,6 @@ WM.module('wm.widgets.form')
                         scope.isAbortVisible = false;
                         scope.isAborted = false;
                         scope.fileNameSeperator = ";";
-                        scope.destination = scope.destination || '';
                         scope.uploadedFiles = {
                             "fileName": "",
                             "path": "",
