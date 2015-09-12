@@ -394,10 +394,10 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns text template */
-            function textNumberTemplate(fieldDef, index) {
-                var template = '', step, type;
+            function textNumberTemplate(fieldDef, index, type) {
+                var template = '', step;
 
-                type = fieldDef.type;
+                type = type || fieldDef.type;
                 type = Utils.isNumberType(type) ? 'number' : 'text';
                 step = getStepValue(type);
 
@@ -473,7 +473,7 @@ WM.module('wm.widgets.live')
                 switch (widgetType) {
                 case 'number':
                 case 'text':
-                    template += textNumberTemplate(fieldDef, index);
+                    template += textNumberTemplate(fieldDef, index, widgetType);
                     break;
                 case 'select':
                     template += selectTemplate(fieldDef, index);
