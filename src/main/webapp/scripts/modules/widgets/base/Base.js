@@ -2351,6 +2351,7 @@ WM.module('wm.widgets.base', [])
             'use strict';
 
             var notifyFor = {},
+                DIMENSION_PROPS,
 
                 propNameCSSKeyMap = {
                     'backgroundattachment'  : 'backgroundAttachment',
@@ -2378,10 +2379,6 @@ WM.module('wm.widgets.base', [])
                     'minwidth'              : 'minWidth',
                     'opacity'               : 'opacity',
                     'overflow'              : 'overflow',
-                    'paddingbottom'         : 'paddingBottom',
-                    'paddingleft'           : 'paddingLeft',
-                    'paddingright'          : 'paddingRight',
-                    'paddingtop'            : 'paddingTop',
                     'picturesource'         : 'backgroundImage',
                     'textalign'             : 'textAlign',
                     'textdecoration'        : 'textDecoration',
@@ -2392,7 +2389,7 @@ WM.module('wm.widgets.base', [])
                     'wordbreak'             : 'wordbreak',
                     'zindex'                : 'zIndex'
                 },
-                SHELL_TYPE_IGNORE_LIST = 'height minheight maxheight overflow paddingunit paddingtop paddingright paddingbottom paddingleft',
+                SHELL_TYPE_IGNORE_LIST     = 'height minheight maxheight overflow paddingunit paddingtop paddingright paddingbottom paddingleft',
                 CONTAINER_TYPE_IGNORE_LIST = 'textalign';
 
             _.keys(propNameCSSKeyMap)
@@ -2402,15 +2399,23 @@ WM.module('wm.widgets.base', [])
                     notifyFor[propName] = true;
                 });
 
-            // few extra properties which need some calculation before applying as CSS.
+            DIMENSION_PROPS = _.flatten(_.map(['padding', 'border', 'margin'], function (prop) {
+                return [prop + 'top', prop + 'right', prop + 'bottom', prop + 'left', prop + 'unit'];
+            }));
+
+            // add dimension related properties to notifyFor
+            _.forEach(DIMENSION_PROPS, function (prop) {
+                notifyFor[prop] = true;
+            });
+
+            // few extra properties which need some calculation/manipulations before applying as CSS.
             notifyFor.fontsize        = true;
             notifyFor.fontunit        = true;
             notifyFor.backgroundimage = true;
-            notifyFor.marginbottom    = true;
-            notifyFor.marginleft      = true;
-            notifyFor.marginright     = true;
-            notifyFor.margintop       = true;
 
+            function isDimensionProp(key) {
+                return _.includes(DIMENSION_PROPS, key);
+            }
 
             function setDimensionProp($is, cssObj, key) {
                 var prefix,
@@ -2437,7 +2442,9 @@ WM.module('wm.widgets.base', [])
             function applyCSS($is, $el, applyType, key, nv) {
 
                 var obj = {},
-                    cssName = propNameCSSKeyMap[key];
+                    cssName = propNameCSSKeyMap[key],
+                    keys,
+                    resetObj;
 
                 if (applyType === 'shell' && _.includes(SHELL_TYPE_IGNORE_LIST, key)) {
                     return;
@@ -2447,17 +2454,24 @@ WM.module('wm.widgets.base', [])
                     return;
                 }
 
-                if (cssName) {
-                    obj[cssName] = nv;
-                } else if (key === 'fontsize' || key === 'fontunit') {
-                    obj.fontSize = $is.fontsize === '' ? '' : $is.fontsize + $is.fontunit;
-                } else if (key === 'backgroundimage') {
-                    obj.backgroundImage = $is.picturesource;
-                } else {
+                if (isDimensionProp(key)) {
                     setDimensionProp($is, obj, key);
+                } else {
+                    if (cssName) {
+                        obj[cssName] = nv;
+                    } else if (key === 'fontsize' || key === 'fontunit') {
+                        obj.fontSize = $is.fontsize === '' ? '' : $is.fontsize + $is.fontunit;
+                    } else if (key === 'backgroundimage') {
+                        obj.backgroundImage = $is.picturesource;
+                    }
                 }
 
-                if (_.keys(obj).length) {
+                keys = _.keys(obj);
+
+                if (keys.length) {
+                    //reset obj;
+                    resetObj = _.object(keys, _.range(keys.length).map(function () { return ''; }));
+                    $el.css(resetObj);
                     $el.css(obj);
                 }
             }
@@ -2601,12 +2615,12 @@ WM.module('wm.widgets.base', [])
 
             /* checks if the widget name already exists */
             function isExists(name) {
-                var isExists = false;
+                var _isExists = false;
                 /* check for the name */
                 if (nameIdMap[name]) {
-                    isExists = true;
+                    _isExists = true;
                 }
-                return isExists;
+                return _isExists;
             }
 
             /* this is a private method to the Widgets service. This function unregisters the widget by its name. So that we can re-use the name */
