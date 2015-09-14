@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                     '<div class="app-media-fullscreen modal fade in" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
                         '<div class="image-container">' +
                             '<div class="image-container-cell">' +
-                                '<img class="center-block" data-ng-src="{{fieldDefs[selectedMediaIndex].mediaurl}}">' +
+                                '<img class="center-block" data-ng-src="{{fieldDefs[selectedMediaIndex][mediaurl]}}">' +
                             '</div>' +
                         '</div>' +
                         '<div class="app-media-fullscreen-info-panel">' +
@@ -98,7 +98,9 @@ WM.module('wm.layouts.containers')
             /** With given data, creates media list items*/
             function updateFieldDefs($is, $el, data) {
                 $is.fieldDefs = data;
-                $is.$mediaScope.fieldDefs = data;
+                if (CONSTANTS.isRunMode) {
+                    $is.$mediaScope.fieldDefs = data;
+                }
             }
 
             function getVariable($is, variableName) {
