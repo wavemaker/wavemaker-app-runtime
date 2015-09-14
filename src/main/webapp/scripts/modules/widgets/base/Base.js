@@ -843,6 +843,12 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
                     },
 
+                    'wm.containers.lazy' : {
+                        "loadmode" : {"type" : "list", "options" : ["", "after-select", "after-delay"], "value" : ""},
+                        "loaddelay" : {"type" : "number", "min": "10", "value" : "10"},
+                        "onReady" : {"type" : "event", "options": widgetEventOptions, "widget": "eventlist"},
+                    },
+
                     'wm.layouts.header': {
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },
@@ -1550,7 +1556,8 @@ WM.module('wm.widgets.base', [])
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchbuttoniconclass", "searchbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype"], "parent": "properties"},
+                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchbuttoniconclass",
+                    "searchbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype", "loadmode", "loaddelay"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "infscroll", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
@@ -1564,7 +1571,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "displaystyle", "properties": ["padding", "paddingunit", "margin", "marginunit", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},
                 {"name": "prefablifecycleevents", "properties": ["onLoad", "onDestroy"], "parent": "events"},
                 {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
-                {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onDayclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
+                {"name": "mouseevents", "properties": ["onReady", "onClick", "onDblclick", "onDayclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "touchevents", "properties": ["onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect",
@@ -1745,8 +1752,9 @@ WM.module('wm.widgets.base', [])
      * @description
      * When this attribute directive is applied on an element, the elements transcluded content is processed and appended to the element.
      */
-    .directive('wmtransclude', function () {
+    .directive('wmtransclude', ['CONSTANTS', '$timeout', 'Utils', function (CONSTANTS, $timeout, Utils) {
         "use strict";
+
         return {
             "restrict": "A",
             "link": function (scope, element, attrs, nullCtrl, transcludeFn) {
@@ -1759,19 +1767,36 @@ WM.module('wm.widgets.base', [])
                     element.attr("data-droptarget-for", scope.widgettype);
                 }
 
-                var elScope = element.scope();
+                var eleScope = element.scope();
 
-                if (elScope.hasOwnProperty('$$isolateBindings') && !elScope.__compileWithIScope) {
-                    elScope = elScope.$parent;
+                if (eleScope.hasOwnProperty('$$isolateBindings') && !eleScope.__compileWithIScope) {
+                    eleScope = eleScope.$parent;
                 }
-
-                transcludeFn(elScope, function (clone) {
-                    element.append(clone);
-                });
+                scope.__load = WM.noop;
+                if (CONSTANTS.isRunMode && scope.loadmode === 'after-select') {
+                    scope.__load = function () {
+                        transcludeFn(eleScope, function (clone) {
+                            element.append(clone);
+                            scope.__load = WM.noop;
+                            Utils.triggerFn(scope.onReady);
+                        });
+                    }
+                } else if (CONSTANTS.isRunMode &&  scope.loadmode === 'after-delay') {
+                    $timeout(function () {
+                        transcludeFn(eleScope, function (clone) {
+                            element.append(clone);
+                            Utils.triggerFn(scope.onReady);
+                        });
+                    }, scope.loaddelay);
+                } else {
+                    transcludeFn(eleScope, function (clone) {
+                        element.append(clone);
+                        Utils.triggerFn(scope.onReady);
+                    });
+                }
             }
         };
-    })
-
+    }])
     /**
      * @ngdoc directive
      * @name wm.widgets.directive:roles

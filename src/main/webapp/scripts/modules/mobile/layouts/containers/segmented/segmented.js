@@ -102,7 +102,7 @@ WM.module('wm.layouts.containers')
                                 left = $segment.position().left;
                             $scope.currentSelectedIndex = index;
                             $scope.onBeforesegmentchange(eventData);
-
+                            currentContent.onShow();
                             if (currentContent && currentContent.widgetid && CONSTANTS.isStudioMode) {
                                 $scope.$root.$emit('set-active-widget', currentContent.widgetid);
                             }
@@ -113,6 +113,7 @@ WM.module('wm.layouts.containers')
                             );
                             $scope.onSegmentchange(eventData);
                         };
+                        $scope.showContent(0);
                         /**add studio mode changes**/
                         if (CONSTANTS.isStudioMode) {
                             $scope.add = function () {
@@ -130,7 +131,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmSegmentContent', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base', 'wm.layouts', 'wm.containers']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base', 'wm.layouts', 'wm.containers', 'wm.containers.lazy']);
         return {
             'restrict' : 'E',
             'replace' : 'true',
@@ -142,6 +143,9 @@ WM.module('wm.layouts.containers')
                 return {
                     'pre' : function ($scope) {
                         $scope.widgetProps = widgetProps;
+                        $scope.onShow = function () {
+                            $scope.__load();
+                        };
                     },
                     'post' : function ($scope, element, attrs, controller) {
                         controller.addContent($scope);
