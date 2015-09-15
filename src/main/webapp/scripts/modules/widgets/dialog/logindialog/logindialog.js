@@ -5,29 +5,17 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/logindialog.html",
-            '<div class="app-dialog modal-dialog app-login-dialog"  data-ng-style="{width: width}" init-widget data-ng-show="show" >' +
-                ' <div class="modal-content"  wmtransclude>' +
-                ' </div>' +
-            ' </div>'
+                '<div class="app-dialog modal-dialog app-login-dialog"  data-ng-style="{width: width}" init-widget data-ng-show="show">' +
+                    '<div class="modal-content" wmtransclude></div>' +
+                '</div>'
             );
-        $templateCache.put("template/widget/dialog/logindialogcontainer.html",
-            '<div wmtransclude></div>'
-            );
+        $templateCache.put("template/widget/dialog/logindialogcontainer.html", '<div wmtransclude></div>');
+
     }]).directive('wmLogindialog', ['PropertiesFactory', 'WidgetUtilService', "$templateCache", '$compile', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $templateCache, $compile, CONSTANTS) {
         'use strict';
         var transcludedContent = "",
             id,
-            widgetProps = PropertiesFactory.getPropertiesOf("wm.logindialog", ["wm.basicdialog", "wm.base", "wm.base.events.successerror"]),
-            notifyFor = {
-                'width': true,
-                'height': true
-            };
-
-        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
-            switch (key) {
-            }
-        }
+            widgetProps = PropertiesFactory.getPropertiesOf("wm.logindialog", ["wm.basicdialog", "wm.base", "wm.base.events.successerror"]);
 
         return {
             "restrict": "E",
@@ -68,16 +56,11 @@ WM.module('wm.widgets.dialog')
                         scope.header = element.find('[data-identifier=dialog-header]').isolateScope() || {};
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
                         //Update the title and iconclass for the old login dialogs based on the parent container property set
-                        if(attrs.title && !scope.header.caption){
+                        if (attrs.title && !scope.header.caption) {
                             scope.header.caption = attrs.title;
                         }
-                        if(attrs.iconclass && !scope.header.iconclass){
+                        if (attrs.iconclass && !scope.header.iconclass) {
                             scope.header.iconclass = attrs.iconclass;
-                        }
-
-                        /* register the property change handler */
-                        if (scope.propertyManager) {
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                         }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
