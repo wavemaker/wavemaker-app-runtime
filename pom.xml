@@ -43,7 +43,7 @@
 
         <guava.version>18.0</guava.version>
 
-        <db.hsql.driver.version>2.3.2</db.hsql.driver.version>
+        <db.hsql.driver.version>2.3.3</db.hsql.driver.version>
         <db.oracle.driver.version>11.2.0</db.oracle.driver.version>
         <db.mysql.driver.version>5.1.30</db.mysql.driver.version>
         <db.mssql.driver.version>4.0</db.mssql.driver.version>
