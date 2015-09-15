@@ -529,31 +529,9 @@ WM.module('wm.widgets.form')
                                 return ServiceFactory.getServiceObjectByName(service).type;
                             },
 
+                            /*emit event to workspace to create a service variable*/
                             createVariable = function (service, operation) {
-                                $servicevariable.getServiceOperationInfo(operation, service,
-                                    function (response) {
-                                        var varName = service + Utils.initCaps(operation),
-                                            variable,
-                                            variableDetails = {
-                                                "service": service,
-                                                "operation": operation,
-                                                "owner": $rootScope.isPrefabTemplate ? VARIABLE_CONSTANTS.OWNER.PAGE : VARIABLE_CONSTANTS.OWNER.APP,
-                                                "serviceType": getServiceType(service)
-                                            };
-                                        /*if variable already exists, just update it and save the variable*/
-                                        if (Variables.isExists(varName)) {
-                                            variable = Variables.getVariableByName(varName);
-                                            variable["wmServiceOperationInfo"] = response;
-                                        } else {
-                                            /*if variable does not exist, create it and update the service info and save*/
-                                            variableDetails["wmServiceOperationInfo"] = response;
-                                            /*Invoke the function to create a variable.*/
-                                            varName = Variables.createServiceVariable(variableDetails, true);
-                                        }
-                                        $rootScope.$emit("set-markup-attr", scope.widgetid, {'service': service, 'operation': operation});
-                                        /*setting flag to save variables*/
-                                        $rootScope.saveVariables = true;
-                                    }, {}, true);
+                                scope.$root.$emit("create-service-variable", service, getServiceType(service), operation);
                             };
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
