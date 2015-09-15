@@ -111,8 +111,12 @@ wm.plugins.database.services.QueryBuilder = [
                         "service": options.prefabName ? "" : "services",
                         "url": options.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + options.prefabName) : $rootScope.project.deployedUrl
                     }, function (response) {
-                        $liveVariable.processResponse(response.content);
-                        Utils.triggerFn(success, response);
+                        if (response.errors) {
+                            Utils.triggerFn(error, response);
+                        } else {
+                            $liveVariable.processResponse(response.content);
+                            Utils.triggerFn(success, response);
+                        }
                     }, function (response) {
                         Utils.triggerFn(error, response);
                     });
