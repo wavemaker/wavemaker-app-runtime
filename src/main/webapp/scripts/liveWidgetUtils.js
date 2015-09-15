@@ -397,9 +397,7 @@ WM.module('wm.widgets.live')
             function textNumberTemplate(fieldDef, index, type) {
                 var template = '', step;
 
-                type = type || fieldDef.type;
-                type = Utils.isNumberType(type) ? 'number' : 'text';
-                step = getStepValue(type);
+                step = getStepValue(fieldDef.type);
 
                 if (fieldDef.isRange) {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
