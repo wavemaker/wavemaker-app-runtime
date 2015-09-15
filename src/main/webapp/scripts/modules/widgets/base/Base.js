@@ -846,7 +846,7 @@ WM.module('wm.widgets.base', [])
                     'wm.containers.lazy' : {
                         "loadmode" : {"type" : "list", "options" : ["", "after-select", "after-delay"], "value" : ""},
                         "loaddelay" : {"type" : "number", "min": "10", "value" : "10"},
-                        "onReady" : {"type" : "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onReady" : {"type" : "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
                     'wm.layouts.header': {
@@ -906,8 +906,8 @@ WM.module('wm.widgets.base', [])
                         "layout":  {"type": "list", "options": ["blank", "gridlayout", "inline", "media", "panel", "thumbnail"], "value": "panel"}
                     },
                     'wm.layouts.mediatemplate': {
-                        "width": {"type": "string", "pattern": dimensionRegex,"value": 100},
-                        "height": {"type": "string", "pattern": dimensionRegex,"value": 100}
+                        "width": {"type": "string", "pattern": dimensionRegex, "value": 100},
+                        "height": {"type": "string", "pattern": dimensionRegex, "value": 100}
                     },
                     'wm.layouts.listitem': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1780,7 +1780,7 @@ WM.module('wm.widgets.base', [])
                             scope.__load = WM.noop;
                             Utils.triggerFn(scope.onReady);
                         });
-                    }
+                    };
                 } else if (CONSTANTS.isRunMode &&  scope.loadmode === 'after-delay') {
                     $timeout(function () {
                         transcludeFn(eleScope, function (clone) {
@@ -1857,8 +1857,8 @@ WM.module('wm.widgets.base', [])
      * @description
      * The `WidgetUtilService` provides utility methods for the widgets
      */
-    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache', '$timeout',
-        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache, $timeout) {
+    .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache',
+        function ($parse, $rootScope, CONSTANTS, Utils, $templateCache) {
             "use strict";
 
             var deviceSizeArray = {
@@ -1898,23 +1898,22 @@ WM.module('wm.widgets.base', [])
                     'onPinchout':       {'name': 'hm-pinch-out',        'value': 'onPinchout({$event: $event, $scope: this})'}
                 },
                 triggerFn,
-                cleanUpTimer;
+                attrsToBeRemoved;
 
-            function cleanupMarkup() {
-                $timeout.cancel(cleanUpTimer);
-                cleanUpTimer = $timeout(function () {
-                    var attrsToBeRemoved = 'data-ng-style data-ng-change data-ng-click data-ng-dblclick data-ng-mouseout data-ng-mouseover data-ng-blur data-ng-focus' +
-                        ' data-ng-show data-ng-hide data-ng-readonly data-ng-disabled data-ng-required data-ng-attr-placeholder ng-attr-name' +
-                        ' on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect ';
+            attrsToBeRemoved =
+                ' data-ng-style data-ng-change data-ng-click data-ng-dblclick data-ng-mouseout data-ng-mouseover data-ng-blur data-ng-focus' +
+                ' data-ng-show data-ng-hide data-ng-readonly data-ng-disabled data-ng-required data-ng-attr-placeholder ng-attr-name' +
+                ' on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect ' +
+                ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius ' +
+                ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight maxheight maxwidth minheight ' +
+                ' minwidth opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility ' +
+                ' whitespace wordbreak zindex bordertop borderright borderbottom borderleft borderunit paddingtop paddingright paddingbottom paddingleft' +
+                ' paddingunit margintop marginright marginbottom marginleft marginunit fontsize fontunit show hint caption animation backgroundimage';
 
-                    attrsToBeRemoved += ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight maxheight maxwidth minheight minwidth opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility whitespace wordbreak zindex ';
-                    attrsToBeRemoved += ' bordertop borderright borderbottom borderleft borderunit ' +
-                        'paddingtop paddingright paddingbottom paddingleft paddingunit ' +
-                        'margintop marginright marginbottom marginleft marginunit fontsize fontunit' +
-                        'show hint caption animation backgroundimage';
-                    WM.element(document.body).find('*').removeAttr(attrsToBeRemoved);
-                }, undefined, false);
+            function cleanupMarkup(element) {
+                element.removeAttr(attrsToBeRemoved);
             }
+
             function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
                 var variableKeys = [],
                     wp = scope.widgetProps;
