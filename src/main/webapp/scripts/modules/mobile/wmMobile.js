@@ -1,7 +1,8 @@
 /*global WM, _, cordova*/
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova'])
     //Initialize project
-    .run(['$rootScope', '$location', 'CONSTANTS', 'Utils', function ($rootScope, $location, CONSTANTS, Utils) {
+    .run(['$rootScope', '$location', 'CONSTANTS', 'Utils', 'AppAutoUpdateService',
+        function ($rootScope, $location, CONSTANTS, Utils, AppAutoUpdateService) {
         'use strict';
         /* Mark the mobileApplication type to true */
         $rootScope.isMobileApplicationType = true;
@@ -9,6 +10,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
         if ($location.protocol() === 'file') {
             CONSTANTS.hasCordova = true;
             $rootScope.$on('application-ready', function () {
+                AppAutoUpdateService.start();
                 /* Set root url */
                 Utils.fetchContent(
                     'json',

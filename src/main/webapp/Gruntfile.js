@@ -476,6 +476,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/i18n/services/i18nService.js',
                         //Mobile Specific files start
                         '<%= config.scripts %>/modules/mobile/wmMobile.js',
+                        '<%= config.scripts %>/modules/mobile/common/services/appAutoUpdateService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/fileSelectorService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/fileUploadService.js',
                         '<%= config.scripts %>/modules/mobile/layouts/device/services/deviceview.js',
