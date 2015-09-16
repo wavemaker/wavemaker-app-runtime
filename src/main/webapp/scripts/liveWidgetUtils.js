@@ -155,6 +155,19 @@ WM.module('wm.widgets.live')
                 }
                 return actions;
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getGridActions
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * return an array consisting of the grid default actions.
+             *
+             */
+            function getGridActions() {
+                return ['addNewRow()', 'deleteRow()', 'editRow()'];
+            }
 
             /**
              * @ngdoc function
@@ -631,6 +644,7 @@ WM.module('wm.widgets.live')
             this.getEventTypes = getEventTypes;
             this.getDefaultValue = getDefaultValue;
             this.getFormButtons = getFormButtons;
+            this.getGridActions = getGridActions;
             this.getCustomItems = getCustomItems;
             this.getColumnDef = getColumnDef;
             this.getTemplate = getTemplate;
