@@ -889,16 +889,12 @@ WM.module('wm.widgets.live')
                         if (attrs.defaultValue) {
                             if (Utils.stringStartsWith(attrs.defaultValue, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = attrs.defaultValue.replace('bind:', '');
-                                if (scope.Variables && !Utils.isEmptyObject(scope.Variables) && scope.$eval(expr)) {
-                                    columnDef.defaultValue = scope.$eval(expr);
-                                } else {
-                                    exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
-                                        parentIsolateScope.formFields[index].defaultValue = newVal;
-                                        if (parentIsolateScope.operationType !== 'update') {
-                                            parentIsolateScope.setDefaultValueToValue(columnDef);
-                                        }
-                                    }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
-                                }
+                                exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
+                                    parentIsolateScope.formFields[index].defaultValue = newVal;
+                                    if (parentIsolateScope.operationType !== 'update') {
+                                        parentIsolateScope.setDefaultValueToValue(columnDef);
+                                    }
+                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                             } else {
                                 columnDef.defaultValue = attrs.defaultValue;
                             }
