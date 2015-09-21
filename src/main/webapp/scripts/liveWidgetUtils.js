@@ -689,6 +689,33 @@ WM.module('wm.widgets.live')
                 return selectedItem.include && !selectedItem.remove && !_.includes(actionsList, selectedItem.action);
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getCustomFieldKey
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * returns the auto incremented event string based on the already existing events
+             *
+             * @param {array} fields array of the columns/ buttons
+             * @param {string} key key where the field name is stored in object
+             * @param {string} prefix name for the event/ action
+             */
+            function getCustomFieldKey(fields, key, prefix) {
+                var keys = fields.map(function (event) {
+                    return event[key];
+                }), index;
+                if (keys && _.includes(keys, prefix)) {
+                    index = 1;
+                    while (_.includes(keys, prefix + index)) {
+                        index += 1;
+                    }
+                    prefix = prefix + index;
+                }
+                return prefix;
+            }
+
             this.getNewEventsObject = getNewEventsObject;
             this.toggleActionMessage = toggleActionMessage;
             this.getEventOptions = getEventOptions;
@@ -702,5 +729,6 @@ WM.module('wm.widgets.live')
             this.getFormActions = getFormActions;
             this.translateVariableObject = translateVariableObject;
             this.getColumnCountByLayoutType = getColumnCountByLayoutType;
+            this.getCustomFieldKey = getCustomFieldKey;
         }
     ]);
