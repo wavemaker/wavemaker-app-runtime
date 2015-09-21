@@ -222,20 +222,21 @@ WM.module('wm.widgets.live')
 
             function getCaptionByWidget(type, index) {
                 var caption = 'formFields[' + index + '].value';
+                if (type === 'password') {
+                    return caption = '********';
+                }
                 if (type === 'datetime' || type === 'timestamp') {
                     caption += ' | date:formFields[' + index + '].datepattern || \'yyyy-MM-dd HH:mm:ss\'';
                 } else if (type === 'time') {
                     caption += ' | date:\'HH:mm:ss\'';
                 } else if (type === 'date') {
                     caption += ' | date:formFields[' + index + '].datepattern';
-                } else if (type === 'password') {
-                    caption = '********';
-                } else if (type === 'select') {
+                } if (type === 'select') {
                     caption =  'formFields[' + index + '].isRelated ? getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayvalue || formFields[' + index + '].displayfield) : formFields[' + index + '].value';
                 } else if (type === 'rating') {
                     caption = '';
                 }
-                return caption;
+                return '{{' + caption + '}}';
             }
 
             function getFormFields(fieldDef, index, type) {
@@ -481,7 +482,7 @@ WM.module('wm.widgets.live')
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="form-timestamp">' +
                     '<wm-label class="col-sm-3 col-xs-12" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="col-sm-9 col-xs-12 {{formFields[' + index + '].class}}">' +
-                    '<wm-label class="form-control-static" caption="{{' + getCaptionByWidget(widgetType, index) + '}}" show="{{!isUpdateMode}}"></wm-label>';
+                    '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
 
                 switch (widgetType) {
                 case 'number':
