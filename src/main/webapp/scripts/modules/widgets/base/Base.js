@@ -14,7 +14,7 @@ WM.module('wm.widgets.base', [])
      * The `PropertiesFactory` contains properties of all the widgets in the studio and
      * provides utility methods for getting a specific widget's property
      */
-    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', '$rootScope', 'CONSTANTS', function (WIDGET_CONSTANTS, $rootScope, CONSTANTS) {
+    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', function (WIDGET_CONSTANTS, CONSTANTS) {
         "use strict";
         /**
          * TODO: fetch the properties from the config-properties.json
@@ -376,8 +376,7 @@ WM.module('wm.widgets.base', [])
 
                         /* Number properties */
                         "minvalue": {"type": "number", "bindable": "in-bound"},
-                        "maxvalue": {"type": "number", "bindable": "in-bound"},
-                        "places": {"type": "number", "value": 0}
+                        "maxvalue": {"type": "number", "bindable": "in-bound"}
                     },
 
                     "wm.currency": {
@@ -1543,7 +1542,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "content", "properties": ["content", "url"], "parent": "properties"},
                 {"name": "display", "properties": ["picturesource", "modal", "vertical", "fileuploadtitle", "fileuploadmessage"], "parent": "properties"},
                 {"name": "values", "properties": [ "scopedatavalue", "datavalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultvalue", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
-                {"name": "valuedisplay", "properties": ["places", "datepattern", "ismeridian", "hourstep", "minutestep", "limit"], "parent": "properties"},
+                {"name": "valuedisplay", "properties": ["datepattern", "ismeridian", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
                 {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "editcolumn", "editfields", "editfilters", "method", "action", "enctype", "searchkey", "displaylabel", "imgsrc", "displayimagesrc", "usekeys", "actions",  "datafield", "itemlabel", "itemicon", "itemlink", "itemchildren", "displayfield", "displayexpression", "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype", "thumbnailurl", "mediaurl"], "parent": "properties"},
                 {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},

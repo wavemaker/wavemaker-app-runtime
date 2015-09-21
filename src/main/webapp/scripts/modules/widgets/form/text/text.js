@@ -134,8 +134,6 @@ WM.module('wm.widgets.form')
  *                  If the selected value is `blur`: datavalue will be updated on blur event, `default`: datavalue will be updated on keyup.
  * @param {number=} updatedelay
  *                  The amount of delay in milliseconds to update the datavalue.
- * @param {number=} places
- *                  The number of decimal places to show for after decimal point.
  * @param {boolean=} required
  *                  Required is a bindable property. <br>
  *                  This property defines if the text widget is a required field while form submission. <br>
