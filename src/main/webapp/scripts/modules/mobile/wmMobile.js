@@ -3,37 +3,37 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
     //Initialize project
     .run(['$rootScope', '$location', 'CONSTANTS', 'Utils', 'AppAutoUpdateService',
         function ($rootScope, $location, CONSTANTS, Utils, AppAutoUpdateService) {
-        'use strict';
-        /* Mark the mobileApplication type to true */
-        $rootScope.isMobileApplicationType = true;
+            'use strict';
+            /* Mark the mobileApplication type to true */
+            $rootScope.isMobileApplicationType = true;
 
-        if ($location.protocol() === 'file') {
-            CONSTANTS.hasCordova = true;
-            $rootScope.$on('application-ready', function () {
-                AppAutoUpdateService.start();
-                /* Set root url */
-                Utils.fetchContent(
-                    'json',
-                    Utils.preventCachingOf('./config.json'),
-                    function (response) {
-                        if (!response.error) {
-                            $rootScope.project.deployedUrl = response.baseUrl;
-                        }
-                    },
-                    WM.noop,
-                    true
-                );
-            });
-        }
-        if (CONSTANTS.isRunMode) {
-            $rootScope.$on("$routeChangeStart", function () {
-                WM.element('body >.app-spinner:first').removeClass('ng-hide');
-            });
-            $rootScope.$on('page-ready', function () {
-                WM.element('body >.app-spinner:first').addClass('ng-hide');
-            });
-        }
-    }])
+            if ($location.protocol() === 'file') {
+                CONSTANTS.hasCordova = true;
+                $rootScope.$on('application-ready', function () {
+                    AppAutoUpdateService.start();
+                    /* Set root url */
+                    Utils.fetchContent(
+                        'json',
+                        Utils.preventCachingOf('./config.json'),
+                        function (response) {
+                            if (!response.error) {
+                                $rootScope.project.deployedUrl = response.baseUrl;
+                            }
+                        },
+                        WM.noop,
+                        true
+                    );
+                });
+            }
+            if (CONSTANTS.isRunMode) {
+                $rootScope.$on("$routeChangeStart", function () {
+                    WM.element('body >.app-spinner:first').removeClass('ng-hide');
+                });
+                $rootScope.$on('page-ready', function () {
+                    WM.element('body >.app-spinner:first').addClass('ng-hide');
+                });
+            }
+        }])
     //Initialize variables
     .run(['Variables', 'WIDGET_CONSTANTS', 'BaseVariablePropertyFactory', 'MobileVariableService',
         function (Variables, WIDGET_CONSTANTS, BaseVariablePropertyFactory, MobileVariableService) {
@@ -52,24 +52,24 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
             BaseVariablePropertyFactory.addNavigationOption("gotoSegment", "gotoSegment");
             //Register the Mobile variable.
             BaseVariablePropertyFactory.register('wm.MobileVariable',
-                                                    {'invoke': MobileVariableService.invoke},
-                                                    ['wm.mobileVariable'],
-                                                    {});
+                {'invoke': MobileVariableService.invoke},
+                ['wm.mobileVariable'],
+                {});
         }])
     //Apply platform OS specific stylesheets
-    .run(['$rootScope', 'CONSTANTS', 'Utils', '$location',  function ($rootScope, CONSTANTS, Utils, $location) {
+    .run(['$rootScope', 'CONSTANTS', 'Utils', '$location', function ($rootScope, CONSTANTS, Utils, $location) {
         'use strict';
         var selectedOs = '';
 
         function applyOSTheme(os) {
             var themeUrl = '';
             selectedOs = os || selectedOs;
-            themeUrl = 'themes/' + $rootScope.project.activeTheme + '/' + selectedOs.toLowerCase() + '.css';
+            themeUrl = 'themes/' + $rootScope.project.activeTheme + '/' + selectedOs.toLowerCase() + '/' + 'style.css';
             if (CONSTANTS.isStudioMode) {
                 themeUrl = 'services/projects/' + $rootScope.project.id + '/resources/web/' + themeUrl;
             }
-            WM.element('link[theme="wmtheme-os"]').remove();
-            Utils.loadStyleSheet(themeUrl, {name: "theme", value: "wmtheme-os"});
+            WM.element('link[theme="wmtheme"]').remove();
+            Utils.loadStyleSheet(themeUrl, {name: "theme", value: "wmtheme"});
         }
         if (CONSTANTS.isStudioMode) {
             $rootScope.$on('switch-theme', function () {
@@ -89,7 +89,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
             $rootScope.$on('application-ready', function () {
                 //Notify preview window that application is ready. Otherwise, identify the OS.
                 if (window.top !== window) {
-                    window.top.postMessage({ key : 'on-load'}, '*');
+                    window.top.postMessage({key: 'on-load'}, '*');
                 } else if (Utils.isAndroid()) {
                     applyOSTheme('android');
                 } else if (Utils.isIphone()) {
