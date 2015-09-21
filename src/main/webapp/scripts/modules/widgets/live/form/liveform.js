@@ -640,7 +640,6 @@ WM.module('wm.widgets.live')
                                 gridObj,
                                 variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
                                 variableObj,
-                                formFields = [],
                                 elScope = element.scope();
 
                             switch (key) {
@@ -658,21 +657,16 @@ WM.module('wm.widgets.live')
                                         translatedObj = scope.translateVariableObject(newVal);
                                         scope.translatedObj = translatedObj;
                                         /*Check if the formFields is defined, then in the formFields array override only certain fields.*/
-                                        translatedObj.forEach(function (transObj) {
-                                            var formFieldObj;
-                                            formFieldObj = _.find(scope.formFields, function(fieldObject) {
-                                                return transObj.key === fieldObject.key
+                                        scope.formFields.forEach(function (fieldObject) {
+                                            translatedObj.forEach(function (transObj) {
+                                                if (transObj.key === fieldObject.key) {
+                                                    fieldObject.isRelated = transObj.isRelated;
+                                                    fieldObject.type = transObj.type; /*Set the type of the column to the default variable type*/
+                                                    fieldObject.outputformat = scope.getOutputPatterns(fieldObject.type, fieldObject.outputformat);
+                                                }
                                             });
-                                            if (formFieldObj) {
-                                                formFieldObj.isRelated = transObj.isRelated;
-                                                formFieldObj.type = transObj.type; /*Set the type of the column to the default variable type*/
-                                                formFieldObj.outputformat = scope.getOutputPatterns(formFieldObj.type, formFieldObj.outputformat);
-                                            } else {
-                                                formFieldObj = transObj;
-                                            }
-                                            formFields.push(formFieldObj);
                                         });
-                                        scope.formFields = formFields;
+
                                         variableObj =  elScope.Variables && elScope.Variables[scope.variableName];
                                         scope.variableObj = variableObj;
                                         if (variableObj) {
