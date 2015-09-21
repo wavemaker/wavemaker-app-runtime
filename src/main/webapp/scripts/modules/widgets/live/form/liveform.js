@@ -880,6 +880,7 @@ WM.module('wm.widgets.live')
                             'minvalue' : attrs.minvalue
                         });
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
+                        columnDef.isRelated = attrs.isRelated;
                         /*if the show property is set to false, set the required property to false (except for identity columns)
                          * This will prevent 'required field can not be focused' error*/
                         if (CONSTANTS.isRunMode && columnDef.show === false && columnDef.generator !== 'identity') {
