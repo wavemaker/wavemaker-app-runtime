@@ -38,7 +38,7 @@ WM.module('wm.widgets.advanced')
             );
         $templateCache.put('template/widget/advanced/carousel/carousel-content.html',
                              '<div class="app-carousel-item item" apply-styles init-widget wmtransclude></div>');
-    }]).directive('wmCarousel', ['$interval', 'PropertiesFactory', '$templateCache', 'CONSTANTS', '$timeout', function ($interval, PropertiesFactory, $templateCache, CONSTANTS, $timeout) {
+    }]).directive('wmCarousel', ['$interval', 'PropertiesFactory', '$templateCache', 'CONSTANTS', '$timeout', 'WidgetUtilService', function ($interval, PropertiesFactory, $templateCache, CONSTANTS, $timeout, WidgetUtilService) {
         'use strict';
         /* get the properties related to the carousel */
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base', 'wm.containers']);
@@ -163,16 +163,17 @@ WM.module('wm.widgets.advanced')
                             };
                         }
                     },
-                    'post': function (scope) {
+                    'post': function (scope, element, attrs) {
                         if (CONSTANTS.isRunMode) {
                             /**function to auto start the slide show**/
                             scope.play();
                         }
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
             }
         };
-    }]).directive('wmCarouselContent', ['PropertiesFactory', '$templateCache', function (PropertiesFactory, $templateCache) {
+    }]).directive('wmCarouselContent', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
         'use strict';
         /* Get the properties related to the carousel-content */
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']);
@@ -198,6 +199,7 @@ WM.module('wm.widgets.advanced')
                         });
                         controller.register(scope);
 
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
             }

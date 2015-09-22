@@ -1,46 +1,47 @@
-/*global WM, window, cordova*/
+/*global WM, window, cordova, _*/
 /*jslint sub: true */
 
 /*Directive for file Selector in mobile applications*/
 WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($templateCache) {
+        'use strict';
         $templateCache.put('template/widget/advanced/mobileFileBrowser.html',
-            '<div class="app-file-browser" data-ng-show="show">'+
-                '<div class="modal-backdrop fade" data-ng-class="{in : show}"></div>'+
-                '<div class="modal fade" style="display: block;" data-ng-class="{in : show}" >'+
-                    '<div class="modal-dialog">'+
-                        '<div class="modal-content">'+
-                            '<div class="modal-header">'+
-                                '<h4 class="modal-title pull-left">'+
-                                    '<span data-ng-click="onFileClick(directory.parent)" data-ng-show="directory.parent">'+
-                                        '<i class="fa fa-long-arrow-left"></i>'+
-                                    '</span>' +
-                                    ' {{directory.name}}'+
-                                '</h4>'+
-                                '<div data-ng-show="selectedFiles.length > 0" class="selected-file-button pull-right">'+
-                                    '<i class="fa fa-file-o" data-ng-show="selectedFiles.length == 1"></i>'+
-                                    '<i class="fa fa-files-o" data-ng-show="selectedFiles.length > 1"></i>'+
-                                    ' {{selectedFiles.length}}'+
-                                '</div>'+
-                            '</div>'+
-                            '<div class="modal-body">'+
-                                '<div class="file-info-box" data-ng-repeat="file in directory.files">'+
-                                    '<div class="file-info"  data-ng-class="{\'bg-primary\': file.isSelected}" data-ng-click="onFileClick(file)">'+
-                                        '<i class="file-icon fa fa-folder" data-ng-if="!file.isFile"/>' +
-                                        '<i class="file-icon fa fa-file-o {{getFileExtension(file.name)}}" data-ng-if="file.isFile"/>' +
-                                        '<span class="file-name">{{file.name}}</span>'+
-                                    '</div>'+
-                                '</div>'+
-                            '</div>'+
-                            '<div class="modal-footer">'+
-                                '<button type="button" class="btn btn-primary" data-ng-show="selectedFiles && selectedFiles.length > 0" data-ng-click="submit()">Done</button>'+
-                                '<button type="button" class="btn btn-default" data-ng-click="show = false;">Close</button>'+
-                            '</div>'+
-                        '</div>'+
-                    '</div>'+
-                '</div>'+
-            '</div>'
-        );
+                '<div class="app-file-browser" data-ng-show="show">' +
+                    '<div class="modal-backdrop fade" data-ng-class="{in : show}"></div>' +
+                    '<div class="modal fade" style="display: block;" data-ng-class="{in : show}" >' +
+                        '<div class="modal-dialog">' +
+                            '<div class="modal-content">' +
+                                '<div class="modal-header">' +
+                                    '<h4 class="modal-title pull-left">' +
+                                        '<span data-ng-click="onFileClick(directory.parent)" data-ng-show="directory.parent">' +
+                                            '<i class="fa fa-long-arrow-left"></i>' +
+                                        '</span>' +
+                                        ' {{directory.name}}' +
+                                    '</h4>' +
+                                    '<div data-ng-show="selectedFiles.length > 0" class="selected-file-button pull-right">' +
+                                        '<i class="fa fa-file-o" data-ng-show="selectedFiles.length == 1"></i>' +
+                                        '<i class="fa fa-files-o" data-ng-show="selectedFiles.length > 1"></i>' +
+                                        ' {{selectedFiles.length}}' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="modal-body">' +
+                                    '<div class="file-info-box" data-ng-repeat="file in directory.files">' +
+                                        '<div class="file-info"  data-ng-class="{\'bg-primary\': file.isSelected}" data-ng-click="onFileClick(file)">' +
+                                            '<i class="file-icon fa fa-folder" data-ng-if="!file.isFile"/>' +
+                                            '<i class="file-icon fa fa-file-o {{getFileExtension(file.name)}}" data-ng-if="file.isFile"/>' +
+                                            '<span class="file-name">{{file.name}}</span>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                                '<div class="modal-footer">' +
+                                    '<button type="button" class="btn btn-primary" data-ng-show="selectedFiles && selectedFiles.length > 0" data-ng-click="submit()">Done</button>' +
+                                    '<button type="button" class="btn btn-default" data-ng-click="show = false;">Close</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            );
     }]).directive('wmMobileFileBrowser', [ '$templateCache', function ($templateCache) {
         'use strict';
         function loadFileSize(files, onComplete, index) {
@@ -61,7 +62,7 @@ WM.module('wm.widgets.advanced')
             scope: {
                 onSelect : '&'
             },
-            link : function (scope, element, attrs) {
+            link : function (scope) {
                 scope.selectedFiles = [];
                 scope.directory = undefined;
                 scope.getFileExtension = function (fileName) {
@@ -72,16 +73,16 @@ WM.module('wm.widgets.advanced')
                     return '';
                 };
                 scope.selectFile = function (file) {
-                    if(!scope.multiple && scope.selectedFiles.length > 0) {
+                    if (!scope.multiple && scope.selectedFiles.length > 0) {
                         scope.selectedFiles[0].isSelected = false;
                         scope.selectedFiles = [];
                     }
                     scope.selectedFiles.push(file);
                     file.isSelected = true;
-                }
+                };
                 scope.deselectFile = function (file) {
-                     _.remove(scope.selectedFiles, file);
-                     file.isSelected = false;
+                    _.remove(scope.selectedFiles, file);
+                    file.isSelected = false;
                 };
                 scope.onFileClick = function (file) {
                     if (file.isFile) {
@@ -99,7 +100,7 @@ WM.module('wm.widgets.advanced')
                         directory.createReader().readEntries(function (entries) {
                             directory.files = _.sortBy(entries, function (e) {
                                 return (e.isFile ? '1_' : '0_') + e.name.toLowerCase();
-                            });;
+                            });
                             directory.parent = scope.directory;
                             scope.directory = directory;
                             scope.$apply();
@@ -122,9 +123,9 @@ WM.module('wm.widgets.advanced')
                         scope.onSelect({files: files});
                     });
                 };
-                scope.$watch('show', function (value) {
+                scope.$watch('show', function () {
                     if (scope.show && !scope.directory) {
-                        window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function(root){
+                        window.resolveLocalFileSystemURL(cordova.file.externalRootDirectory, function (root) {
                             scope.goToDirectory(root);
                         });
                     }

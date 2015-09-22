@@ -84,9 +84,6 @@ WM.module('wm.layouts.containers')
                         /* Register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                        /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
-                         * style declarations.*/
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
             }
