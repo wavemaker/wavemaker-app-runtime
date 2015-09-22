@@ -266,7 +266,7 @@ WM.module('wm.widgets.live')
                 /* In run mode, making the first element selected, if flag is set */
                 if ($is.selectfirstitem) {
                     unbindWatcher = $is.$watch(function () {
-                        var items = $el.find('.list-group li:first-of-type');
+                        var items = $el.find('.list-group li.app-list-item:first-of-type');
                         if (items.length) {
                             $rs.$safeApply($is, function () {
                                 $timeout(function () {items.first().click(); }, 0, false);
