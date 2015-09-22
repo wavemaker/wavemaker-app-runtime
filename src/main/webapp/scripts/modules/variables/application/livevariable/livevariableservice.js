@@ -800,7 +800,7 @@ wm.variables.services.$liveVariable = [
                                 });
                             }
                             options.compositeKeysData = compositeKeysData;
-                        } else {
+                        } else if (!WM.element.isEmptyObject(rowObject)) {
                             primaryKey.forEach(function (key) {
                                 if (key.indexOf(".") === -1) {
                                     id = rowObject[key];
