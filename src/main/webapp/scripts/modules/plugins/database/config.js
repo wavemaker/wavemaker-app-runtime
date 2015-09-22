@@ -99,7 +99,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         updateColumn: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns/:columnName",
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns/:columnName?forceDataLoss=:forceDataLoss",
             method: "PUT"
         },
         deleteColumn: {

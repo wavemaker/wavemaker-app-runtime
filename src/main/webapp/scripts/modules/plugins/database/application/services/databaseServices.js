@@ -738,7 +738,8 @@ wm.plugins.database.services.DatabaseService = [
                         projectID: params.projectID,
                         dataModelName: params.dataModelName,
                         entityName: params.entityName,
-                        columnName: params.columnName
+                        columnName: params.columnName,
+                        forceDataLoss: params.forceDataLoss || false
                     },
                     data: params.data
                 }, successCallback, failureCallback);
