@@ -72,9 +72,6 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
             Utils.loadStyleSheet(themeUrl, {name: "theme", value: "wmtheme"});
         }
         if (CONSTANTS.isStudioMode) {
-            $rootScope.$on('switch-theme', function () {
-                applyOSTheme();
-            });
             $rootScope.$on('switch-device', function (event, device) {
                 applyOSTheme(device.os);
             });
