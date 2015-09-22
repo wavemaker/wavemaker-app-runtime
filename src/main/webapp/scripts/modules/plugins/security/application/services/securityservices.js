@@ -751,7 +751,7 @@ wm.plugins.security.services.SecurityService = [
                 return BaseService.send({
                     target: 'Security',
                     action: 'appLogin',
-                    data: "j_username=" + params.username + "&j_password=" + params.password
+                    data: "j_username=" + encodeURIComponent(params.username) + "&j_password=" + encodeURIComponent(params.password)
                 }, successCallback, failureCallback);
             },
 
