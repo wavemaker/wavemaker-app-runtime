@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
             '<div class="app-datetime input-group" init-widget has-model apply-styles ' +
             ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox display-input" data-ng-model="_displayModel">' +
-                '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" data-ng-model="_dateModel" datepicker-popup={{datepattern}} min-date=mindate max-date=maxdate is-open="isDateOpen">' +
+                '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" data-ng-model="_dateModel" datepicker-popup min-date=mindate max-date=maxdate is-open="isDateOpen">' +
                 '<div dropdown is-open="isTimeOpen" class="dropdown">' +
                     '<div class="dropdown-menu">' +
                         '<timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></timepicker>' +
