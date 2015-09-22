@@ -704,7 +704,7 @@ wm.variables.services.$liveVariable = [
                     callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
                 }
 
-                if (options.row && options.transform) {
+                if (options.row) {
                     rowObject = options.row;
                 } else {
                     WM.forEach(variableDetails.inputFields, function (fieldValue, fieldName) {
