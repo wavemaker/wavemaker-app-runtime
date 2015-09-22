@@ -333,6 +333,20 @@ wm.variables.services.Variables = [
                     /*iterating over the collection to update the variables appropriately.*/
                     if (variable.category === "wm.Variable") {
                         $rootScope.variables[name] = variable.dataSet.dataValue;
+                        /*
+                         * Case: a LIST type static variable having only one object
+                         * and the object has all fields empty, remove that object
+                         */
+                        if (CONSTANTS.isRunMode && variable.isList && variable.dataSet.length === 1) {
+                            var obj = variable.dataSet[0],
+                                keys = Object.keys(obj),
+                                isValueEmpty = function (val) {
+                                    return obj[val] === "" || WM.isObject(obj[val]);
+                                };
+                            if (keys.every(isValueEmpty)) {
+                                variable.dataSet = [];
+                            }
+                        }
                     } else if (variable.category === "wm.ServiceVariable") {
                         if (!runMode || variable.startUpdate) {
                             /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
