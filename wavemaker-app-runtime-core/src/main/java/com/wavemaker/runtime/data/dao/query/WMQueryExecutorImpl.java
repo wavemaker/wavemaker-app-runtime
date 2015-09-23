@@ -18,6 +18,7 @@ import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.CustomQueryParam;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.runtime.util.WMRuntimeUtils;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.util.TypeConversionUtils;
@@ -38,6 +39,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     }
 
     public Page<Object> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable) {
+        pageable = WMRuntimeUtils.getOneIndexedPageable(pageable);
         Session currentSession = template.getSessionFactory().getCurrentSession();
         Query namedQuery = currentSession.getNamedQuery(queryName);
         QueryHelper.setResultTransformer(namedQuery);
@@ -53,6 +55,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     @Override
     public Page<Object> executeCustomQuery(CustomQuery customQuery, Pageable pageable) {
+        pageable = WMRuntimeUtils.getOneIndexedPageable(pageable);
         Map<String, Object> params = new HashMap<String, Object>();
         prepareParams(params, customQuery);
 
