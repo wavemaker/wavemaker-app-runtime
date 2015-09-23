@@ -68,7 +68,7 @@ WM.module('wm.widgets.live')
                 }
                 var col = itemsperrow && 12 / (+itemsperrow);
 
-                return ' col-xs-' + col + ' col-sm-' + col + ' col-md-' + col;
+                return ' col-sm-' + col + ' col-md-' + col;
             }
 
             function getVariable($is, variableName) {
