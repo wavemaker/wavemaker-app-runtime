@@ -3,16 +3,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
     "use strict";
 
     var operations = {
-            getConnectionType: {
-                model: {
-                    data : 'NONE'
-                },
-                properties : ['startUpdate'],
-                invoke : function (variable, options, success) {
-                    success({ data: $cordovaNetwork.getNetwork()});
-                }
-            },
-            getGeoLocation : {
+            getGeoLocation: {
                 model: {
                     coords: {
                         latitude: 0,
@@ -25,8 +16,8 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
                     },
                     timestamp: 0
                 },
-                properties : ['startUpdate', 'geolocationHighAccuracy', 'geolocationMaximumAge', 'geolocationTimeout'],
-                invoke: function (variable, options, success, error) {
+                properties: ['startUpdate', 'geolocationHighAccuracy', 'geolocationMaximumAge', 'geolocationTimeout'],
+                invoke: function(variable, options, success, error) {
                     var geoLocationOptions = {
                         maximumAge: variable.geolocationMaximumAge * 1000,
                         timeout: variable.geolocationTimeout * 1000,
@@ -35,71 +26,49 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaNetwork', '$cor
                     $cordovaGeolocation.getCurrentPosition(geoLocationOptions).then(success, error);
                 }
             },
-            vibrate :   {
+            vibrate: {
                 model: {
                     data: {}
                 },
-                properties : ['vibrationtime'],
-                invoke: function (variable) {
+                properties: ['vibrationtime'],
+                invoke: function(variable) {
                     var vibrationTimeOptions = {
                         time: variable.vibrationtime * 1000
-                    };
+                        };
                     $cordovaVibration.vibrate(vibrationTimeOptions.time);
                 }
             },
-            getModel :   {
+            getDeviceInfo: {
                 model: {
-                    model: 'DEVICEMODEL'
+                    connectionType: 'NONE',
+                    deviceModel: 'DEVICEMODEL',
+                    os: 'DEVICEOS',
+                    osVersion: 'X.X.X',
+                    deviceUUID: 'DEVICEUUID'
                 },
-                properties : ['startUpdate'],
-                invoke : function (variable, options, success) {
-                    success({ model: $cordovaDevice.getModel()});
+                properties: ['startUpdate'],
+                invoke: function(variable, options, success) {
+                    success({
+                        connectionType: $cordovaNetwork.getNetwork(),
+                        deviceModel: $cordovaDevice.getModel(),
+                        os: $cordovaDevice.getPlatform(),
+                        osVersion: $cordovaDevice.getVersion(),
+                        deviceUUID: $cordovaDevice.getUUID()
+                    });
                 }
             },
-            getOS :   {
+            getAppInfo: {
                 model: {
-                    os: 'DEVICEOS'
+                    appversion: 'X.X.X',
+                    cordovaversion: 'X.X.X'
                 },
-                properties : ['startUpdate'],
-                invoke : function (variable, options, success) {
-                    success({ os: $cordovaDevice.getPlatform()});
-                }
-            },
-            getOSVersion :   {
-                model: {
-                    osversion: 'X.X.X'
-                },
-                properties : ['startUpdate'],
-                invoke : function (variable, options, success) {
-                    success({ osversion: $cordovaDevice.getVersion()});
-                }
-            },
-            getCordovaVersion :   {
-                model: {
-                    version: 'X.X.X'
-                },
-                properties : ['startUpdate'],
-                invoke : function (variable, options, success) {
-                    success({ version: $cordovaDevice.getCordova()});
-                }
-            },
-            getDeviceUUID :   {
-                model: {
-                    UUID: 'DEVICEUUID'
-                },
-                properties : ['startUpdate'],
-                invoke : function (variable, options, success) {
-                    success({ UUID: $cordovaDevice.getUUID()});
-                }
-            },
-            getAppVersionNumber :   {
-                model: {
-                    appversion: 'X.X.X'
-                },
-                properties : ['startUpdate'],
-                invoke : function (variable, options, success) {
-                    $cordovaAppVersion.getVersionNumber().then(function(appversion) {
-                        success({appversion: appversion});
+                properties: ['startUpdate'],
+                invoke: function (variable, options, success) {
+                    $cordovaAppVersion.getVersionNumber().then(function (appversion) {
+                        success({
+                            appversion: appversion,
+                            cordovaversion: $cordovaDevice.getCordova()
+                        });
                     });
                 }
             }
