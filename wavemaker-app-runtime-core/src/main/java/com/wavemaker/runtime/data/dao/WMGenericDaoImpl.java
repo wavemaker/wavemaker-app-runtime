@@ -11,11 +11,7 @@ import java.util.Iterator;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.hibernate.type.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +21,7 @@ import org.springframework.orm.hibernate4.HibernateTemplate;
 import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.runtime.util.WMRuntimeUtils;
 import com.wavemaker.studio.common.ser.WMDateDeSerializer;
 import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
 
@@ -83,6 +80,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     public Page<Entity> search(QueryFilter queryFilters[], Pageable pageable) {
+        pageable = WMRuntimeUtils.getOneIndexedPageable(pageable);
         validateQueryFilters(queryFilters);
         Criteria criteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
         Criteria countCriteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
