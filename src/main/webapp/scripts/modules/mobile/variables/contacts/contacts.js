@@ -1,9 +1,9 @@
 /*global WM, _*/
-WM.module('wm.variables').run(['MobileVariableService', '$cordovaContacts', function (MobileVariableService, $cordovaContacts) {
+WM.module('wm.variables').run(['DeviceVariableService', '$cordovaContacts', function (DeviceVariableService, $cordovaContacts) {
     "use strict";
 
     var operations = {
-        list : {
+        getContacts : {
             model : [{
                 id: '',
                 displayName: '',
@@ -26,6 +26,6 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaContacts', func
         }
     };
     WM.forEach(operations, function (value, key) {
-        MobileVariableService.addOperation('contacts', key, value);
+        DeviceVariableService.addOperation('contacts', key, value);
     });
 }]);

@@ -171,7 +171,7 @@ wm.variables.services.Variables = [
                             if (variable.autoUpdate && !WM.isUndefined(newVal)) {
                                 variable.login();
                             }
-                        } else if(variable.category === "wm.MobileVariable") {
+                        } else if(variable.category === "wm.DeviceVariable") {
                             variable[param] = newVal;
                         }
                     }));
@@ -189,7 +189,7 @@ wm.variables.services.Variables = [
                     if (variable.dataBinding[param]) {
                         variable.dataSet[param] = variable.dataSet[param] || variable.dataBinding[param];
                     }
-                } else if(variable.category === "wm.MobileVariable") {
+                } else if(variable.category === "wm.DeviceVariable") {
                     variable[param] = bindingVal;
                 }
             },
@@ -398,7 +398,7 @@ wm.variables.services.Variables = [
                                 variable.fire();
                             }, null, false);
                         }
-                    } else if (variable.category === "wm.MobileVariable") {
+                    } else if (variable.category === "wm.DeviceVariable") {
                         if (runMode && variable.startUpdate) {
                             /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
                             $timeout(function () {
@@ -704,21 +704,25 @@ wm.variables.services.Variables = [
            /* function to return variable category list to populate in filter dropdowns */
             getVariableCategoryList = function (collectionType, getKeysList) {
                 var categoryList = {},
-                    isPrefabProject = $rootScope.isPrefabTemplate;
+                    isPrefabProject = $rootScope.isPrefabTemplate,
+                    filteredVariables = [];
 
                 if (!isPrefabProject) {
                     variableConfig.forEach(function (variable) {
                         if (!collectionType || collectionType.toLowerCase() === 'all' || variable.collectionType === collectionType) {
-                            categoryList[variable.category] = variable.labelKey;
+                            filteredVariables.push(variable);
                         }
                     });
                 } else {
                     variableConfig.forEach(function (variable) {
                         if (!variable.appOnly && (!collectionType || collectionType.toLowerCase() === 'all' || variable.collectionType === collectionType)) {
-                            categoryList[variable.category] = variable.labelKey;
+                            filteredVariables.push(variable);
                         }
                     });
                 }
+                _.forEach(_.sortBy(filteredVariables, 'defaultName'), function (variable) {
+                    categoryList[variable.category] = variable.labelKey;
+                });
 
                 if (getKeysList) {
                     categoryList = Object.keys(categoryList);

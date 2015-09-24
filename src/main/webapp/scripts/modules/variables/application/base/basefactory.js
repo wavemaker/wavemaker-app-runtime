@@ -146,7 +146,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "delay": {"type": "number", "value": 500},
                     "onTimerFire": {"type": "list", "options": variableEventOptions}
                 },
-                "wm.MobileVariable" : {
+                "wm.DeviceVariable" : {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
@@ -199,13 +199,13 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
-                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding",
-                            "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
-                            "allowImageEdit", "imageEncodingType", "imageQuality", "correctOrientation", "saveToPhotoAlbum",
-                            "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",
-                            "contactFilter", "localFile", "remoteFolder", "vibrationtime"], "parent": "properties"},
+                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties"},
                 /* properties under data tab */
-                {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding"], "parent": "data"},
+                {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding",
+                                "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
+                                "allowImageEdit", "imageEncodingType", "imageQuality", "correctOrientation", "saveToPhotoAlbum",
+                                "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",
+                                "contactFilter", "localFile", "remoteFolder", "vibrationtime"], "parent": "data"},
                 {"name": "inputfields", "properties": ["dataSet", "dataBinding"], "parent": "data"},
                 {"name": "filterfields", "properties": ["dataSet"], "parent": "data"},
                 {"name": "bindings", "properties": [], "parent": "data"},

@@ -4,16 +4,16 @@
 
 /**
  * @ngdoc service
- * @name wm.variables.MobileVariableService
+ * @name wm.variables.DeviceVariableService
  * @requires $rootScope
  * @requires Varibales
  * @requires Utils
  * @requires BaseVariablePropertyFactory
  * @requires CONSTANTS
  * @description
- * The 'MobileVariableService' provides methods to work with Mobile API.
+ * The 'DeviceVariableService' provides methods to work with Mobile API.
  */
-wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils', 'CONSTANTS',
+wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils', 'CONSTANTS',
     function ($rootScope, Variables, Utils, CONSTANTS) {
         "use strict";
         var initiateCallback = Variables.initiateCallback,
@@ -46,7 +46,7 @@ wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils
             if (operation && CONSTANTS.hasCordova) {
                 operation.invoke(this, options, successCb, errorCb);
             } else if (operation) {
-                successCb(_.cloneDeep(operation.model));
+                successCb(_.cloneDeep(operation.model || {}));
             } else {
                 errorCb();
             }
@@ -54,8 +54,8 @@ wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils
         return {
             /**
             * @ngdoc method
-            * @name $MobileVariableService#addOperation
-            * @methodOf wm.variables.MobileVariableService
+            * @name $DeviceVariableService#addOperation
+            * @methodOf wm.variables.DeviceVariableService
             * @description
             * adds a new operation.
             * @params serviceName Name of the service to which this operation belongs
@@ -75,11 +75,7 @@ wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils
                 service[operationName]  = serviceInfo;
             },
             listServices : function () {
-                var  allServices = [];
-                WM.forEach(availableServices, function (service, name) {
-                    allServices[name] = name;
-                });
-                return allServices;
+                return _.sortBy(_.keys(availableServices));
             },
             getOperation : function (serviceName, operationName) {
                 var operation =  {};
@@ -89,7 +85,7 @@ wm.variables.services.MobileVariableService = ['$rootScope', 'Variables', 'Utils
                 return operation;
             },
             listAllOperations : function (serviceName) {
-                return _.keys(availableServices[serviceName]);
+                return _.sortBy(_.keys(availableServices[serviceName]));
             },
             listAllProperties : function () {
                 var allProperties = [];
