@@ -1323,6 +1323,12 @@ WM.module('wm.widgets.basic')
 
         /* prepares and configures the chart properties */
         function configureChart(scope, element, datum) {
+            /*Copy the data only in case of pie chart with default data*/
+            /*Reason : when multiple pie charts are bound to same data, first chart theme will be applied to all charts*/
+            var chartData = datum;
+            if (isPieType(scope.type) && (!scope.binddataset || !scope.scopedataset)) {
+                chartData = WM.copy(scope.scopedataset || datum)
+            }
             /* checking the parent container before plotting the chart */
             if (!element[0].getBoundingClientRect().height) {
                 return;
@@ -1435,7 +1441,7 @@ WM.module('wm.widgets.basic')
 
             /** changing the default no data message**/
             d3.select('#wmChart' + scope.$id + ' svg')
-                .datum(datum)
+                .datum(chartData)
                 .call(chart);
 
             postPlotProcess(scope, element, chart);
