@@ -1,11 +1,11 @@
 /*global wm, WM*/
-WM.module('wm.variables').run(['MobileVariableService', '$cordovaCamera', '$cordovaCapture', function (MobileVariableService, $cordovaCamera, $cordovaCapture) {
+WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cordovaCapture', function (DeviceVariableService, $cordovaCamera, $cordovaCapture) {
     "use strict";
 
     var operations = {
-        capturePicture: {
+        captureImage: {
             model: {
-                data: 'resources/images/imagelists/default-image.png'
+                imagePath: 'resources/images/imagelists/default-image.png'
             },
             properties: ['allowImageEdit', 'imageQuality', 'imageEncodingType', 'correctOrientation'],
             invoke: function(variable, options, success, error) {
@@ -19,26 +19,26 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaCamera', '$cord
                     correctOrientation: variable.correctOrientation
                 };
                 $cordovaCamera.getPicture(cameraOptions).then(function(data) {
-                    success({data: data});
+                    success({imagePath: data});
                 }, error);
             }
         },
         captureVideo: {
             model: {
-                data: ''
+                videoPath: ''
             },
             properties: [],
             invoke: function(variable, options, success, error) {
                 var videoOptions = {
                     limit   : 1
                 };
-                $cordovaCapture.captureVideo(videoOptions).then(function(videoData) {
-                    success({data: videoData});
+                $cordovaCapture.captureVideo(videoOptions).then(function(data) {
+                    success({videoPath: data});
                 }, error);
             }
         }
     }
     WM.forEach(operations, function (value, key) {
-        MobileVariableService.addOperation('camera', key, value);
+        DeviceVariableService.addOperation('camera', key, value);
     });
 }]);

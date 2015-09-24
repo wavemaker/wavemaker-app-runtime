@@ -1,5 +1,5 @@
 /*global WM*/
-WM.module('wm.variables').run(['$rootScope', 'MobileVariableService', '$cordovaFileTransfer', function ($rootScope, MobileVariableService, $cordovaFileTransfer) {
+WM.module('wm.variables').run(['$rootScope', 'DeviceVariableService', '$cordovaFileTransfer', function ($rootScope, DeviceVariableService, $cordovaFileTransfer) {
     "use strict";
 
     var operations = {
@@ -26,6 +26,6 @@ WM.module('wm.variables').run(['$rootScope', 'MobileVariableService', '$cordovaF
         }
     };
     WM.forEach(operations, function (value, key) {
-        MobileVariableService.addOperation('file', key, value);
+        DeviceVariableService.addOperation('file', key, value);
     });
 }]);
