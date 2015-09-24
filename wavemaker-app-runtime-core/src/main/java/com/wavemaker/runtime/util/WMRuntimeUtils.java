@@ -110,8 +110,11 @@ public class WMRuntimeUtils {
     public static Pageable getOneIndexedPageable(Pageable pageable) {
         // Spring is following zero indexed page size,but hibernate is following one indexed result size in criteria.Hence increasing pageSize to one.
         // TODO : have to fix by adding new pageable resolver.
-        int pageSize = pageable.getPageSize() + 1;
-        return new PageRequest(pageable.getPageNumber(), pageSize, pageable.getSort());
+        if(pageable != null) {
+            int pageSize = pageable.getPageSize() + 1;
+            return new PageRequest(pageable.getPageNumber(), pageSize, pageable.getSort());
+        }
+        return pageable;
     }
 
 }
