@@ -288,7 +288,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "title": {"type": "string", "bindable": "in-out-bound"},
                         "iconclass": {"type": "string", "value": "glyphicon glyphicon-camera", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
-                        "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "3em"},
+                        "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "2em"},
                         /* capture picture options*/
                         "imagequality": {"type": "number", "value": 80, "show": true},
                         "imageencodingtype": {"type": "list", "options": [ "JPEG", "PNG"], "value" : "JPEG", "show": true},
@@ -301,7 +301,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "caption": {"type": "string", "value": "", "bindable": "in-bound", "maxlength": 256 },
                         "iconclass": {"type": "string", "value": "glyphicon glyphicon-barcode", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
-                        "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "3em"},
+                        "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "2em"},
                         /* Events */
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
