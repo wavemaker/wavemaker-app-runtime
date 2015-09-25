@@ -8,4 +8,4 @@
 WM.module('wm.mobile', []);
 
 //Mock MobileVariableService
-wm.variables.services.MobileVariableService = WM.noop;
+wm.variables.services.DeviceVariableService = WM.noop;

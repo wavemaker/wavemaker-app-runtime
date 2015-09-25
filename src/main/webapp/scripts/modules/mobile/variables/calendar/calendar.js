@@ -1,5 +1,5 @@
 /*global WM, _*/
-WM.module('wm.variables').run(['MobileVariableService', '$cordovaCalendar', function (MobileVariableService, $cordovaCalendar) {
+WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', function (DeviceVariableService, $cordovaCalendar) {
     "use strict";
     var event = {
             title: '',
@@ -14,10 +14,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaCalendar', func
         defaultStartDate = new Date(new Date().getTime() - (3 * 30 * 24 * 60 * 60 * 1000)), // 3 months previous date
         defaultEndDate = new Date(new Date().getTime() + (3 * 30 * 24 * 60 * 60 * 1000)),   // 3 months later date
         operations = {
-            addEvent: {
-                model : {
-                    data: {}
-                },
+            createEvent: {
                 properties : ['eventTitle', 'eventNotes', 'eventLocation', 'eventStart', 'eventEnd'],
                 invoke : function (variable, options, success, error) {
                     var createEventOptions = {
@@ -30,10 +27,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaCalendar', func
                     $cordovaCalendar.createEvent(createEventOptions).then(success, error);
                 }
             },
-            removeEvent: {
-                model : {
-                    data: {}
-                },
+            deleteEvent: {
                 properties : ['eventTitle', 'eventLocation', 'eventNotes', 'eventStart', 'eventEnd'],
                 invoke : function (variable, options, success, error) {
                     var removeEventOptions = {
@@ -46,7 +40,7 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaCalendar', func
                     $cordovaCalendar.deleteEvent(removeEventOptions).then(success, error);
                 }
             },
-            listEvents: {
+            getEvents: {
                 model : [event],
                 properties : ['eventTitle', 'eventLocation', 'eventNotes', 'eventStart', 'eventEnd', 'startUpdate'],
                 invoke : function (variable, options, success, error) {
@@ -63,6 +57,6 @@ WM.module('wm.variables').run(['MobileVariableService', '$cordovaCalendar', func
         };
 
     WM.forEach(operations, function (value, key) {
-        MobileVariableService.addOperation('calendar', key, value);
+        DeviceVariableService.addOperation('calendar', key, value);
     });
 }]);

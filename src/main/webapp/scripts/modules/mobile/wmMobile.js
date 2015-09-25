@@ -35,25 +35,25 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
             }
         }])
     //Initialize variables
-    .run(['Variables', 'WIDGET_CONSTANTS', 'BaseVariablePropertyFactory', 'MobileVariableService',
-        function (Variables, WIDGET_CONSTANTS, BaseVariablePropertyFactory, MobileVariableService) {
+    .run(['Variables', 'WIDGET_CONSTANTS', 'BaseVariablePropertyFactory', 'DeviceVariableService',
+        function (Variables, WIDGET_CONSTANTS, BaseVariablePropertyFactory, DeviceVariableService) {
             'use strict';
 
             /* Register Mobile specific Variables*/
             Variables.addVariableConfig({
                 "collectionType": "data",
-                "category": "wm.MobileVariable",
-                "labelKey": "LABEL_VARIABLE_MOBILE",
-                "defaultName": "mobileVariable"
+                "category": "wm.DeviceVariable",
+                "labelKey": "LABEL_VARIABLE_DEVICE",
+                "defaultName": "deviceVariable"
             });
             /* Add additional event options.*/
-            WIDGET_CONSTANTS.EVENTS_OPTIONS.push("New MobileVariable");
+            WIDGET_CONSTANTS.EVENTS_OPTIONS.push("New DeviceVariable");
             /* Add segment navigation option */
             BaseVariablePropertyFactory.addNavigationOption("gotoSegment", "gotoSegment");
             //Register the Mobile variable.
-            BaseVariablePropertyFactory.register('wm.MobileVariable',
-                {'invoke': MobileVariableService.invoke},
-                ['wm.mobileVariable'],
+            BaseVariablePropertyFactory.register('wm.DeviceVariable',
+                {'invoke': DeviceVariableService.invoke},
+                ['wm.DeviceVariable'],
                 {});
         }])
     //Apply platform OS specific stylesheets
