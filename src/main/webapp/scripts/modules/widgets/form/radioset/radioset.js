@@ -197,27 +197,32 @@ WM.module('wm.widgets.form')
             template = template + '<input name="{{name}}" data-ng-disabled="disabled" data-ng-hide="true" class="model-holder" data-ng-model="_model_">'  + '<div data-ng-if="readonly || disabled" class="readonly-wrapper"></div>';
             return template;
         }
-
-        function constructRadioSet(scope, element, dataSet) {
+        /*Function to parse the given dataset*/
+        function getParsedDataSet(dataSet, scope) {
             var parseData,
-                template,
-                useKeys = scope.usekeys,
-                compiledTemplate;
-            scope.dataObject = {};
-            scope.dataKeys = [];
+                useKeys= scope.usekeys;
             /*assign dataSet according to liveVariable or other variable*/
             dataSet = dataSet ? dataSet.data || dataSet : [];
 
             /*parsing dataset only if bound with live variable to create displayfield and datafield properties*/
             parseData = WM.isString(scope.dataset || scope.scopedataset) ||
-                (WM.isArray(scope.dataset) && !WM.isObject(scope.dataset[0])) ||
-                (WM.isArray(scope.scopedataset) && !WM.isObject(scope.scopedataset[0])) ? false : true;
+            (WM.isArray(scope.dataset) && !WM.isObject(scope.dataset[0])) ||
+            (WM.isArray(scope.scopedataset) && !WM.isObject(scope.scopedataset[0])) ? false : true;
 
             /*filter the dataSet based on datafield & displayfield*/
             if (parseData) {
                 dataSet = parseDataSet(dataSet, scope, scope.displayfield, scope.datafield, useKeys);
             }
+            return dataSet;
+        }
+        /*Function to build the radioset with the dataset*/
+        function constructRadioSet(scope, element, dataSet) {
+            var template,
+                compiledTemplate;
+            scope.dataObject = {};
+            scope.dataKeys = [];
 
+            dataSet = getParsedDataSet(dataSet, scope);
             /*creating the dataKeys for the radioset*/
             createDataKeys(scope, dataSet);
 
@@ -243,9 +248,6 @@ WM.module('wm.widgets.form')
                 radioOption = scope.dataKeys[radioOption];
                 assignModelValue(scope, dataSet, radioOption);
 
-                /*if usekeys is true, apply model value as selectedvalue*/
-                scope.selectedvalue = scope._model_;
-
                 Utils.triggerFn(scope._onChange, evt);
                 scope.$root.$safeApply(scope);
             });
@@ -267,9 +269,13 @@ WM.module('wm.widgets.form')
             case 'displayfield':
             case 'datafield':
             case 'usekeys':
-            case 'selectedvalue':
                 /*generating the radioset based on the values provided*/
                 constructRadioSet(scope, element, dataSet);
+                break;
+            case 'selectedvalue':
+                /*generating the radioset based on the values provided*/
+                dataSet = getParsedDataSet(dataSet, scope);
+                assignModelValue(scope, dataSet);
                 break;
             case 'disabled':
                 element.find('input[type="radio"]').attr('disabled', newVal);
