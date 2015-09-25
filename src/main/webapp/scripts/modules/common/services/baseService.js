@@ -464,6 +464,22 @@ wm.modules.wmCommon.services.BaseService = [
              * to handle session timeout in an app
              */
 
-            handleSessionTimeOut: handleSessionTimeOut
+            handleSessionTimeOut: handleSessionTimeOut,
+
+            /**
+             * @ngdoc function
+             * @name wm.common.$BaseService#parseError
+             * @methodOf wm.common.$BaseService
+             * @function
+             *
+             * @description
+             * to parse the error received from the server.
+             *
+             * @param {object} error
+             *
+             * @return {string} error message
+             */
+
+            parseError: parseError
         };
     }];
