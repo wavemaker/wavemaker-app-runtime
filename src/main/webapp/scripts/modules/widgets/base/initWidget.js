@@ -340,8 +340,8 @@ WM.module('wm.widgets.base')
                     _watchers           = $is._watchers,
                     UPDATE_FROM_WATCHER = key + '__updateFromWatcher',
                     isSelect     = flg  = $el.is('select'),
-                    isNumberType = flg  = flg || $el.is('input[type=number], .app-currency, .app-slider, .app-ratings'),
-                    isCheckbox          = flg || $el.is('input[type=checkbox]');
+                    isNumberType = flg  = !flg && $el.is('input[type=number], .app-currency, .app-slider, .app-ratings'),
+                    isCheckbox          = !flg && $el.is('input[type=checkbox]');
 
                 function parseDataValue(val) {
                     var modifiedVal = val,
@@ -393,8 +393,8 @@ WM.module('wm.widgets.base')
                     UPDATE_FROM_WATCHER = key + '__updateFromWatcher',
                     _watchers           = $is._watchers,
                     type                = propDetails.type,
-                    isBooleanType       = flg || type === 'boolean',
-                    isNumberType        = flg || type === 'number',
+                    isBooleanType = flg = type === 'boolean',
+                    isNumberType        = !flg && type === 'number',
                     _isBooleanAttr      = isBooleanAttr(key),
                     isFontSize          = key === 'fontsize',
                     isName              = key === 'name';
