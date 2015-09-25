@@ -33,7 +33,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cord
                     limit   : 1
                 };
                 $cordovaCapture.captureVideo(videoOptions).then(function(data) {
-                    success({videoPath: data});
+                    success({videoPath: data[0].fullPath});
                 }, error);
             }
         }
