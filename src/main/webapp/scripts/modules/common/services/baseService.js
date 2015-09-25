@@ -111,6 +111,8 @@ wm.modules.wmCommon.services.BaseService = [
                         config.url += '&preventCache=' + Date.now();
                     }*/
 
+                    config.url = Utils.preventCachingOf(config.url);
+
                     /* check for data */
                     if (serviceParams.params) {
                         config.params = serviceParams.params;
