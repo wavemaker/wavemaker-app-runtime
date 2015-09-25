@@ -9,9 +9,9 @@ WM.module('wm.widgets.advanced')
             'use strict';
 
             $tc.put('template/widget/advanced/camera.html',
-                    '<button data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openCamera()" >' +
+                    '<button class="btn app-camera" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openCamera()" >' +
                         '<i class="{{iconclass}}" data-ng-style="{\'font-size\':iconsize}"></i> ' +
-                        '<span class="btn-caption"></span>' +
+                        '<span class="btn-caption">{{caption}}</span>' +
                     '</button>'
                 );
         }
@@ -27,7 +27,7 @@ WM.module('wm.widgets.advanced')
         function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaCamera, $cordovaCapture) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.camera', ['wm.base']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.camera', ['wm.base', 'wm.base.editors']),
                 cameraOptions,
                 notifyFor = {
                     'capturetype': true
