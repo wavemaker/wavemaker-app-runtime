@@ -1143,14 +1143,18 @@ WM.module('wm.utils', [])
         }
 
         function preventCachingOf(url) {
-            //if (!url) {
-            //    return;
-            //}
-            //
-            //var _url = url + (url.indexOf('?') !== -1 ? '&' : '?');
-            //_url += 'preventCache=' + Date.now();
 
-            return url;
+            if (!isIE()) {
+                return url;
+            }
+            if (!url) {
+                return;
+            }
+
+            var _url = url + (url.indexOf('?') !== -1 ? '&' : '?');
+            _url += 'preventCache=' + Date.now();
+
+            return _url;
         }
 
         function getAllKeysOf(obj, prefix) {
