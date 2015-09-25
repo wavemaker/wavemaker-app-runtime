@@ -89,7 +89,7 @@ WM.module('wm.widgets.advanced')
                             $timeout(function () {
                                 $next.removeClass([type, direction].join(' ')).addClass('active');
                                 $active.removeClass(['active', direction].join(' '));
-                            }, 600);
+                            }, 600, false);
                         }
                         /** function for slide  to move to a specific slide index**/
                         scope.goTo = function (index) {
@@ -148,7 +148,7 @@ WM.module('wm.widgets.advanced')
                         } else if (CONSTANTS.isRunMode) {
                             /**function to play the slides**/
                             scope.play = function () {
-                                if (!scope.autoPlay) {
+                                if (!scope.autoPlay && scope.animationinterval >= 1) {
                                     scope.autoPlay = $interval(function () {
                                         scope.next();
                                     }, scope.animationinterval * 1000);
