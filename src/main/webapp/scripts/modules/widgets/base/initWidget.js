@@ -341,7 +341,7 @@ WM.module('wm.widgets.base')
                     UPDATE_FROM_WATCHER = key + '__updateFromWatcher',
                     isSelect     = flg  = $el.is('select'),
                     isNumberType = flg  = !flg && $el.is('input[type=number], .app-currency, .app-slider, .app-ratings'),
-                    isCheckbox          = !flg && $el.is('input[type=checkbox]');
+                    isCheckbox          = !flg && $el.is('.app-checkbox');
 
                 function parseDataValue(val) {
                     var modifiedVal = val,
