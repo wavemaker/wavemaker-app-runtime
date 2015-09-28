@@ -27,11 +27,6 @@ WM.module('wm.widgets.advanced')
                             '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': activeIndex === $index}"">' +
                                 '<a href="javascript:void(0);" data-ng-click="goTo($index)">{{$index + 1}}</a>' +
                             '</li>' +
-                            '<li>' +
-                                '<a  href="javascript:void(0);" data-ng-click="add()">' +
-                                    '<i class="glyphicon glyphicon-plus"></i>' +
-                                '</a>' +
-                            '</li>' +
                         '</ul>' +
                      '</div>' +
                  '</div>'
@@ -137,15 +132,8 @@ WM.module('wm.widgets.advanced')
                         scope.last = function () {
                             scope.goTo(scope.contents.length - 1);
                         };
-                        /**check studio mode and allow add of slides**/
-                        if (CONSTANTS.isStudioMode) {
-                            scope.add = function () {
-                                scope.$root.$emit('canvas-add-widget', {
-                                    'parentId': scope.widgetid,
-                                    'widgetType': 'wm-carousel-content'
-                                });
-                            };
-                        } else if (CONSTANTS.isRunMode) {
+                        /**define play and stop methods**/
+                        if (CONSTANTS.isRunMode) {
                             /**function to play the slides**/
                             scope.play = function () {
                                 if (!scope.autoPlay && scope.animationinterval >= 1) {

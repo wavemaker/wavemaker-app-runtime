@@ -1288,6 +1288,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string"}
                     },
                     "wm.carousel" : {
+                        "addchild": {"hidelabel": true, "widgettype": "wm-carousel-content", "widget": "add-widget"},
                         "animationinterval" : {"type" : "number", "value" : "3"}
                     },
                     "wm.tabbar" : {
