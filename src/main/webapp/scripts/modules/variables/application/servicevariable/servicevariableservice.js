@@ -65,6 +65,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 } else if ((type && modelTypes[type]) || (type === "string" && modelTypes['java.lang.String'])) {
                     /* case when the data returned from the service is not an object */
                     if ((type !== "string" && modelTypes[type] && modelTypes[type].primitiveType)  || ( type === "string" && modelTypes['java.lang.String'] && modelTypes['java.lang.String'].primitiveType)) {
+                        variable.buildTreeFromDataSet = true;
                         parentNode['value'] = '';
                         return;
                     }
@@ -408,6 +409,7 @@ wm.variables.services.$servicevariable = ['Variables',
                                 fieldValue = startNode ? startNode.substring(variable.name.length + 1, startNode.length) : startNode;
                             serviceModel = {};
 
+                            variable.type = typeRef;
                             /* prepare sample data-structure for the service */
                             prepareServiceModel(typeRef, serviceModel, fieldValue, variable);
 
