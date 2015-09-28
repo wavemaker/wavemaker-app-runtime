@@ -1,4 +1,4 @@
-/*global WM */
+/*global WM, _ */
 /*jslint nomen:true*/
 /*Directive for Select */
 
@@ -19,7 +19,7 @@ WM.module('wm.widgets.form')
             '</select>'
                 );
     }])
-    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
+    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, FormWidgetUtils) {
         'use strict';
 
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
@@ -53,30 +53,6 @@ WM.module('wm.widgets.form')
         }
 
         /*
-         * returns the display field
-         */
-        function getDisplayFieldKey(dataSet, scope) {
-            var displayField = scope.displayfield || scope.datafield;
-            /*if displayField is not set or set to all fields*/
-            if (!displayField || displayField === ALLFIELDS) {
-                /*if dataSet is an array*/
-                if (WM.isArray(dataSet) && dataSet.length > 0) {
-                    /*if dataSet is an array of objects*/
-                    if (WM.isObject(dataSet[0])) {
-                        /* get the first field of the object*/
-                        displayField = Object.keys(dataSet[0])[0];
-                    } else {
-                        displayField = '';
-                    }
-                } else if (WM.isObject(dataSet)) {
-                    displayField = '';
-                }
-            }
-            /* return dataValue to be the default key */
-            return displayField;
-        }
-
-        /*
          * watch the model
          * and update the modelProxy,
          * */
@@ -100,7 +76,7 @@ WM.module('wm.widgets.form')
             /*store parsed data in 'data'*/
             var data = dataSet,
                 dataField = scope.datafield,
-                displayField = getDisplayFieldKey(dataSet, scope);
+                displayField = FormWidgetUtils.getDisplayField(dataSet, scope.displayfield || scope.datafield);
 
             /*initialize the data, for 'All Fields'*/
             _dataSetModelProxyMap[scope.$id] = {};
@@ -108,12 +84,12 @@ WM.module('wm.widgets.form')
             /*if filter dataSet if dataField is selected other than 'All Fields'*/
             if (dataField && dataField !== ALLFIELDS) {
                 data = {};
-                WM.forEach(dataSet, function (option) {
+                _.forEach(dataSet, function (option) {
                     data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
                 });
             } else {
                 data = {};
-                WM.forEach(dataSet, function (option, index) {
+                _.forEach(dataSet, function (option, index) {
                     if (WM.isObject(option)) {
                         if (scope.datafield === ALLFIELDS) {
                             data[index] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
@@ -161,29 +137,29 @@ WM.module('wm.widgets.form')
                     if (WM.isObject(dataset[0])) {
                         key = getKey(dataset[0]);
                         /* if dataSet is an array, convert it to object */
-                        WM.forEach(dataset, function (option) {
+                        _.forEach(dataset, function (option) {
                             scope.selectOptions.push({'key': key, 'value': option.name || option[key]});
                         });
                     } else if (WM.isArray(dataset)) {
                         /* if dataSet is an array, convert it to object */
-                        WM.forEach(dataset, function (option) {
+                        _.forEach(dataset, function (option) {
                             scope.selectOptions.push({"key": option, "value": option});
                         });
                     } else if (WM.isObject(dataset)) {
-                        WM.forEach(dataset, function (val, key) {
+                        _.forEach(dataset, function (val, key) {
                             scope.selectOptions.push({"key": key, "value": val});
                         });
                     }
                 } else if (WM.isObject(dataset)) {
                     /*filter the dataSet based on datafield & displayfield*/
                     dataset = parseDataSet(dataset, scope);
-                    WM.forEach(dataset, function (val, key) {
+                    _.forEach(dataset, function (val, key) {
                         scope.selectOptions.push({"key": key, "value": val});
                     });
                 } else {
                     /* if dataSet is an string, convert it to object */
                     if (WM.isString(dataset)) {
-                        WM.forEach(dataset.split(','), function (opt) {
+                        _.forEach(dataset.split(','), function (opt) {
                             opt = opt.trim();
                             scope.selectOptions.push({"key": opt, "value": opt});
                         });
@@ -195,34 +171,13 @@ WM.module('wm.widgets.form')
             }
         }
 
-        /*
-         * update dataField, display field in the property panel
-         */
-        function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
-            var variableKeys = [];
-            /* on binding of data*/
-            if (dataset && WM.isObject(dataset)) {
-                dataset = dataset[0] || dataset;
-                variableKeys = WidgetUtilService.extractDataSetFields(dataset, propertiesMap) || [];
-            }
-            /* re-initialize the property values */
-            if (scope.newcolumns) {
-                scope.newcolumns = false;
-                scope.datafield = '';
-                scope.displayfield = '';
-                scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': scope.datafield, 'displayfield': scope.displayfield});
-            }
-            scope.widgetProps.datafield.options = ['', ALLFIELDS].concat(variableKeys);
-            scope.widgetProps.displayfield.options = [''].concat(variableKeys);
-        }
-
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, attrs, key, newVal) {
             switch (key) {
             case 'dataset':
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && WM.isDefined(newVal) && newVal !== null) {
-                    updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
+                    FormWidgetUtils.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
                 }
                 /*creating options for the select element, whenever the property value changes*/
                 createSelectOptions(scope.dataset, scope, element);
@@ -234,7 +189,7 @@ WM.module('wm.widgets.form')
                 /*listening on 'active' property, as losing the properties during page switch*/
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && scope.dataset && newVal) {
-                    updatePropertyPanelOptions(scope.dataset.data || scope.dataset, scope.dataset.propertiesMap, scope);
+                    FormWidgetUtils.updatePropertyPanelOptions(scope.dataset.data || scope.dataset, scope.dataset.propertiesMap, scope, false);
                 }
                 break;
             }
@@ -263,7 +218,7 @@ WM.module('wm.widgets.form')
         function scopeDatasetWatcher(scope, element) {
             /*if studio-mode, then update the displayField & dataField in property panel*/
             if (scope.widgetid) {
-                updatePropertyPanelOptions(scope.scopedataset, scope);
+                FormWidgetUtils.updatePropertyPanelOptions(scope.scopedataset, scope, false);
             }
             createSelectOptions(scope.scopedataset, scope, element);
         }
