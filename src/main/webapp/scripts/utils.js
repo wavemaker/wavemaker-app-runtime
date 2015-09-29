@@ -22,6 +22,7 @@ WM.module('wm.utils', [])
             linkEl = document.createElement('link'),
             headNode = document.getElementsByTagName('head')[0],
             isAppleProduct = /Mac|iPod|iPhone|iPad/.test(navigator.platform),
+            _isIE,
             REGEX = {
                 SNAKE_CASE: /[A-Z]/g,
                 ANDROID: /Android/i,
@@ -1142,14 +1143,17 @@ WM.module('wm.utils', [])
             return 'UNKNOWN';
         }
 
+        _isIE = isIE() || isIE11(); // check for is IE browser?
         function preventCachingOf(url) {
 
-            if (!isIE()) {
+            if (!_isIE) { // if the browser is not IE do not modify the URL
                 return url;
             }
             if (!url) {
                 return;
             }
+
+            // if the browser is IE < = 11 add preventCache param to the URL
 
             var _url = url + (url.indexOf('?') !== -1 ? '&' : '?');
             _url += 'preventCache=' + Date.now();
