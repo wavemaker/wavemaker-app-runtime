@@ -475,9 +475,9 @@ wm.modules.wmCommon.services.BaseService = [
              * @description
              * to parse the error received from the server.
              *
-             * @param {object} error
+             * @param {object} error details
              *
-             * @return {string} error message
+             * @return {string} errorMsg error message
              */
 
             parseError: parseError
