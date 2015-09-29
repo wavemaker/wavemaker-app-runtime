@@ -102,14 +102,6 @@ wm.modules.wmCommon.services.BaseService = [
                             }
                         }
                     }
-                    /* set cache false by appending timestamp to the url.
-                     * If the request contains a query string(this could be identified by the presence of =),
-                     * then use & as the separator and then append the timestamp*/
-                    /*if (config.url.indexOf("?") < 0) {
-                        config.url += '?preventCache=' + Date.now();
-                    } else {
-                        config.url += '&preventCache=' + Date.now();
-                    }*/
 
                     config.url = Utils.preventCachingOf(config.url);
 
