@@ -208,6 +208,10 @@ WM.module('wm.widgets.form')
                             "length": "",
                             "status": ""
                         };
+                        scope.reset = function () {
+                            scope.uploadedFiles = [];
+                            scope.status_messsage = '';
+                        };
                         /*fetching the list of the services only in studio mode for properties panel*/
                         if (CONSTANTS.isStudioMode && scope.service) {
                             fetchServices(scope.service);
