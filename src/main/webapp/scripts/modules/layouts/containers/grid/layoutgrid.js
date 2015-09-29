@@ -3,7 +3,7 @@
 /*Directive for Layout Grid */
 
 WM.module('wm.layouts.containers')
-    .directive('wmLayoutgrid', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmLayoutgrid', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
         'use strict';
         function refactorClassName(element, newClass) {
             var classArray = element.attr('class').split(' ');
@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
         }
 
         function setColumnWidth(columns, value) {
-            var className = 'col-md-' + value + ' ' + 'col-sm-' + value;
+            var className = ($rootScope.isMobileApplicationType ? 'col-xs-' : 'col-sm-') + value;
             WM.forEach(columns, function (column) {
                 refactorClassName(WM.element(column), className);
             });
@@ -148,7 +148,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmGridcolumn', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmGridcolumn', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.gridcolumn', ['wm.layouts']),
@@ -164,7 +164,7 @@ WM.module('wm.layouts.containers')
                     element.removeClass(classname);
                 }
             });
-            element.addClass('col-md-' + value + ' ' + 'col-sm-' + value);
+            element.addClass(($rootScope.isMobileApplicationType ? 'col-xs-' : 'col-sm-') + value);
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
