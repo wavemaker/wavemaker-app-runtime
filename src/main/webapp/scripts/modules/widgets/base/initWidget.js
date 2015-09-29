@@ -341,7 +341,8 @@ WM.module('wm.widgets.base')
                     UPDATE_FROM_WATCHER = key + '__updateFromWatcher',
                     isSelect     = flg  = $el.is('select'),
                     isNumberType = flg  = !flg && $el.is('input[type=number], .app-currency, .app-slider, .app-ratings'),
-                    isCheckbox          = !flg && $el.is('.app-checkbox');
+                    isCheckbox   = flg  = !flg && $el.is('.app-checkbox'),
+                    isDate              = !flg && $el.is('input[type=date]');
 
                 function parseDataValue(val) {
                     var modifiedVal = val,
@@ -360,6 +361,8 @@ WM.module('wm.widgets.base')
                         if (!$is.checkedvalue) {
                             modifiedVal = toBoolean(val);
                         }
+                    } else if (isDate) {
+                        modifiedVal = new Date(val);
                     }
                     return modifiedVal;
                 }
