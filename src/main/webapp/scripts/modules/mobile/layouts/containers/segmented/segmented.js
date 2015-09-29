@@ -109,7 +109,7 @@ WM.module('wm.layouts.containers')
 
                             $segmentsCtr.animate(
                                 { scrollLeft: (scrollPos + left)},
-                                { duration: "slow" }
+                                { duration: "fast" }
                             );
                             $scope.onSegmentchange(eventData);
                         };
