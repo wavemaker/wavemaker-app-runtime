@@ -654,7 +654,9 @@ WM.module('wm.widgets.base')
                 var watchInfo, _config = config || {},
                     deepWatch = _config.deepWatch,
                     allowPageable = _config.allowPageable,
-                    acceptsArray = _config.acceptsArray;
+                    acceptsArray = _config.acceptsArray,
+                    variableName = watchExpr.split('.')[1],
+                    variableObject = variableName && scope.Variables[variableName];
 
                 if (isArrayTypeExpr(watchExpr)) {
                     if (CONSTANTS.isStudioMode) {
@@ -662,7 +664,11 @@ WM.module('wm.widgets.base')
                         return;
                     }
 
-                    watchExpr = watchExpr.replace('.dataSet[$i]', '.dataSet.content[$i]');
+                    /*In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped*/
+                    /*So for procedures the watch expression will not have content in it*/
+                    if(variableObject && variableObject.operationType !== 'procedure') {
+                        watchExpr = watchExpr.replace('.dataSet[$i]', '.dataSet.content[$i]');
+                    }
                     watchInfo = getUpdatedWatchExpr(watchExpr, acceptsArray, allowPageable, listenerFn);
                 } else {
                     watchInfo = {
