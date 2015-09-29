@@ -950,8 +950,8 @@ wm.variables.services.Variables = [
                 callBackScope = variable.activeScope;
                 if (eventValue) {
                     /* if event value is javascript, call the function defined in the callback scope of the variable */
-                    if (eventValue === 'Javascript' && typeof callBackScope[variable.name + event] === 'function') {
-                        return callBackScope[variable.name + event](variable, response);
+                    if (eventValue === 'Javascript') {
+                        return Utils.triggerFn(callBackScope[variable.name + event], variable, response);
                     }
 
                     if (eventValue.indexOf('.show') > -1) {

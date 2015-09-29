@@ -95,9 +95,17 @@ wm.variables.services.LogoutVariableService = ['Variables',
             }
         };
 
+        function onLogoutSuccess() {
+            $rootScope.$emit('app-logout-success');
+        }
+
         logoutVariableObj = {
-            logout: function (success, error) {
-                methods.logout(this, {scope: this.activeScope}, success, error);
+            logout: function (options, success, error) {
+                options.scope = options.scope || this.activeScope;
+                methods.logout(this, options, function () {
+                    onLogoutSuccess();
+                    Utils.triggerFn(success);
+                }, error);
             },
             cancel: function () {
                 return methods.cancel(this);
