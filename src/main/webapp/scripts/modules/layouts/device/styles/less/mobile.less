@@ -8,10 +8,9 @@
   transition: left 0.5s  ease-in-out;
   position: fixed;
   top: 0;
-  z-index: 1000;
   &.slide-over {
     left: -100%;
-    z-index: 1000;
+    z-index: 1010;
 
     &.visible {
       left: 0;
@@ -44,7 +43,6 @@
         }
         &.slide-left {
           left: @left-panel-width;
-
           .app-header:not(.app-mobile-navbar),
           .app-search{
             left: @left-panel-width;
@@ -60,7 +58,7 @@
       height: @app-mobile-header-height !important;
       width: 100%;
       position: fixed;
-      z-index: 99999;
+      z-index: 1010;
       display: block;
       top: 0;
       left: 0;
@@ -128,6 +126,10 @@
 
     /***making the height of the datagrid auto****/
     .app-datagrid {
+      display: table;
+      table-layout: fixed;
+      overflow: auto;
+      width: 100%;
       .table-container {
         height: auto !important;
         .table {
