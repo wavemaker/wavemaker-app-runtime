@@ -562,6 +562,9 @@ html, body {
   position: relative;
   display: inline-block;
   height: 32px;
+  border-radius: 500px;
+  background: #fff;
+  border: 1px rgba(0, 0, 0, 0.1) solid;
   .btn-group {
     position: relative;
     overflow: hidden;
@@ -570,6 +573,7 @@ html, body {
     > .btn {
       border-radius: 500px;
       height: 100%;
+      padding: 0 1.4em;
       &:not(:first-child):not(:last-child) {
        border-right-color: transparent;
        border-left-color: transparent;
@@ -591,6 +595,7 @@ html, body {
     vertical-align: middle;
     pointer-events: inherit;
     height: 100%;
+    line-height: 1em;
   }
 }
 
