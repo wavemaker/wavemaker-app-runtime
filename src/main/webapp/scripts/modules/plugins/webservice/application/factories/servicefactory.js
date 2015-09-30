@@ -28,7 +28,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
             },
             serviceDefMap = {},
             supportedOperations = WS_CONSTANTS.HTTP_METHODS.map(function(method){return method.toLowerCase();}),
-            primitiveDataTypes = ['integer', 'boolean', 'string'],
+            primitiveDataTypes = WS_CONSTANTS.PRIMITIVE_DATA_TYPES,
             IS_LIST_KEY = 'x-WM-IS_LIST',
             UNIQUE_ITEMS_KEY = 'uniqueItems',
             FULLY_QUALIFIED_NAME_KEY = 'x-WM-FULLY_QUALIFIED_NAME',
@@ -223,6 +223,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     } else {
                         if (operation.responses && operation.responses['200'].schema) {
                             returnType = getReturnType(operation.responses['200'].schema, definitions);
+                            isList = operation.responses['200'].schema.type && operation.responses['200'].schema.type === 'array';
                         } else {
                             returnType = "void";
                         }
@@ -245,6 +246,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         name: operation.operationId || operation.name,
                         operationType: operation.operationType || null,
                         parameter: undefined,
+                        isList: isList,
                         return: returnObj
                     };
                     serviceObj.operations.push(operationObject);

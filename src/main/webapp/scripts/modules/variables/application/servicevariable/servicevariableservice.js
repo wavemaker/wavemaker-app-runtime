@@ -47,6 +47,9 @@ wm.variables.services.$servicevariable = ['Variables',
             RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
             parameterTypeKey = 'in',
             AUTH_HDR_KEY = "Authorization",
+            isPrimitiveType = function (type) {
+                return (WS_CONSTANTS.PRIMITIVE_DATA_TYPES.indexOf(type) !== -1);
+            },
             /* function to prepare the sample model for the service variable */
             prepareServiceModel = function (type, parentNode, startNode, variable, typeChain) {
                 var modelTypes = variable.prefabName ? prefabDataTypes[variable.prefabName] : $rootScope.dataTypes;
@@ -62,11 +65,13 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
                         });
                     }
-                } else if ((type && modelTypes[type]) || (type === "string" && modelTypes['java.lang.String'])) {
+                } else if ((type && modelTypes[type]) || isPrimitiveType(type)) {
                     /* case when the data returned from the service is not an object */
-                    if ((type !== "string" && modelTypes[type] && modelTypes[type].primitiveType)  || ( type === "string" && modelTypes['java.lang.String'] && modelTypes['java.lang.String'].primitiveType)) {
+                    if ((modelTypes[type] && modelTypes[type].primitiveType) || isPrimitiveType(type)) {
+                        if (!variable.isList) {
+                            parentNode['value'] = '';
+                        }
                         variable.buildTreeFromDataSet = true;
-                        parentNode['value'] = '';
                         return;
                     }
                     typeChain = typeChain || "";
@@ -410,6 +415,7 @@ wm.variables.services.$servicevariable = ['Variables',
                             serviceModel = {};
 
                             variable.type = typeRef;
+                            variable.isList = response.isList;
                             /* prepare sample data-structure for the service */
                             prepareServiceModel(typeRef, serviceModel, fieldValue, variable);
 
