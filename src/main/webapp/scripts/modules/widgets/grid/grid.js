@@ -1305,7 +1305,7 @@ WM.module('wm.widgets.grid')
                 }
                 if (error) {
                     setGridData([]);
-                    $scope.datagridElement.datagrid('error', error);
+                    $scope.datagridElement.datagrid('setStatus', 'error', error);
                     return false;
                 }
                 return true;
