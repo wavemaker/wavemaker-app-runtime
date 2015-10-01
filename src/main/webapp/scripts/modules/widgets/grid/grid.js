@@ -1387,7 +1387,7 @@ WM.module('wm.widgets.grid')
                             if (variableName === null) {
                                 var widgetBindingDetails = fetchReferenceDetails();
                                 if (!widgetBindingDetails.fields) {
-                                    var relatedTables = widgetBindingDetails.referenceVariable.relatedTables || [];
+                                    var relatedTables = widgetBindingDetails.referenceVariable && widgetBindingDetails.referenceVariable.relatedTables || [];
                                     variableName = widgetBindingDetails.referenceVariableName;
                                     relatedTables.forEach(function(val) {
                                         if (val.columnName === widgetBindingDetails.relatedFieldName) {
