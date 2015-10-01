@@ -479,7 +479,7 @@ WM.module('wm.widgets.live')
                     widgetType = fieldDef.widget.toLowerCase();
                 }
                 template = template +
-                    '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="form-timestamp">' +
+                    '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
                     '<wm-label class="col-sm-3 col-xs-12" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="col-sm-9 col-xs-12 {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
