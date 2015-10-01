@@ -625,7 +625,7 @@ WM.module('wm.utils', [])
                 return urlString;
             }
 
-            urlString = 'services/projects/' + $rootScope.project.id + '/resources/web/' + urlString;
+            urlString = getProjectResourcePath($rootScope.project.id) + urlString;
             return urlString;
         }
 
@@ -643,7 +643,7 @@ WM.module('wm.utils', [])
                 return urlString;
             }
 
-            urlString = 'services/projects/' + $rootScope.project.id + '/resources/web/' + urlString;
+            urlString = getProjectResourcePath($rootScope.project.id) + urlString;
             return urlString;
         }
 
@@ -1473,6 +1473,10 @@ WM.module('wm.utils', [])
             }
         });
 
+        function getProjectResourcePath(projectId) {
+            return 'services/projects/' + projectId + '/resources/content/web/';
+        }
+
         // expose the methods on the service instance.
 
         this.camelCase                  = WM.element.camelCase;
@@ -1566,4 +1570,5 @@ WM.module('wm.utils', [])
         this.arraysEqual                = arraysEqual;
         this.getNewEventsObject         = getNewEventsObject;
         this.getEvaluatedExprValue      = getEvaluatedExprValue;
+        this.getProjectResourcePath     = getProjectResourcePath;
     }]);

@@ -133,7 +133,7 @@ WM.module('wm.widgets.base')
                         }
                         /*read the file content*/
                         FileService.read({
-                            path: CONSTANTS.isStudioMode ? "../../" + page + 'page.min.html' : page + 'page.min.html',
+                            path: CONSTANTS.isStudioMode ? "../../../" + page + 'page.min.html' : page + 'page.min.html',
                             projectID : $rootScope.project.id
                         }, function (pageContent) {
                             /*get individual file contents like - html/js/css */

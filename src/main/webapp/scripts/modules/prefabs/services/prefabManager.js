@@ -111,7 +111,7 @@ WM.module('wm.prefabs')
                 } else {
                     configUrl = CONSTANTS.isRunMode
                         ? 'app/prefabs/' + prefabName + '/config.json'
-                        : 'services/projects/' + getProjectId() + '/resources/web/app/prefabs/' + prefabName + '/config.json';
+                        : Utils.getProjectResourcePath(getProjectId()) + 'app/prefabs/' + prefabName + '/config.json';
 
                     Utils.fetchContent(
                         'json',
@@ -378,7 +378,7 @@ WM.module('wm.prefabs')
             }
 
             function extendAppLocale(root) {
-                var localePath = root + (root.lastIndexOf('/') === root.length - 1 ? '' : '/') + 'resources/i18n/';
+                var localePath = root + (root.lastIndexOf('/') === root.length - 1 ? '' : '/') + 'resources/info/i18n/';
 
                 if (CONSTANTS.isRunMode) {
                     i18nService.loadComponentLocaleBundle(localePath);
@@ -406,7 +406,7 @@ WM.module('wm.prefabs')
 
                 resourcePath = CONSTANTS.isRunMode
                                 ? 'app/prefabs/' + prefabName + '/'
-                                : 'services/projects/' + getProjectId() + '/resources/web/app/prefabs/' + prefabName + '/';
+                                : 'services/projects/' + getProjectId() + '/resources/info/web/app/prefabs/' + prefabName + '/';
 
                 if (pendingTasks.resources[prefabName]) {
                     handler = $rootScope.$on(prefabName + '-dependencies-ready', function (evt, prefabContent) {

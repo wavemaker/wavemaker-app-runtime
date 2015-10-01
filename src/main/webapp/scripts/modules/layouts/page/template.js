@@ -214,7 +214,7 @@ WM.module('wm.layouts.page')
 
         function getTemplatePath(templateName) {
             var templatePath = 'pages/' + templateName + '/page.min.html';
-            return CONSTANTS.isStudioMode ? '../../' + templatePath : templatePath;
+            return CONSTANTS.isStudioMode ? '../../../' + templatePath : templatePath;
         }
 
         function displayDefaultContent(element) {

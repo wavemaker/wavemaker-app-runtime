@@ -45,6 +45,37 @@ wm.modules.wmCommon.services.FileService = function (BaseService, CONSTANTS) {
                 action: "read",
                 urlParams: urlParams
             }, successCallback, failureCallback);
+        },
+
+        /**
+         * @ngdoc function
+         * @name wm.common.$FileService#readDir
+         * @methodOf wm.common.$FileService
+         * @function
+         *
+         * @description
+         * read from the directory in the project.
+         *
+         * @param {object} params contain data of the directory to be read
+         * @param {function} successCallback to be called on success
+         * @param {function} failureCallback to be called on failure
+         */
+        readDir: function (params, successCallback, failureCallback) {
+            /*initialize url params*/
+            var urlParams = {
+                filePath: params.path
+            };
+
+            /* if in studio mode, append projectID to ural params*/
+            if (CONSTANTS.isStudioMode) {
+                urlParams.projectID = params.projectID;
+            }
+
+            BaseService.execute({
+                target: target,
+                action: "readDir",
+                urlParams: urlParams
+            }, successCallback, failureCallback);
         }
     };
 };

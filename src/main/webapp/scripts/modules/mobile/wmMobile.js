@@ -66,7 +66,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
             selectedOs = os || selectedOs;
             themeUrl = 'themes/' + $rootScope.project.activeTheme + '/' + selectedOs.toLowerCase() + '/' + 'style.css';
             if (CONSTANTS.isStudioMode) {
-                themeUrl = 'services/projects/' + $rootScope.project.id + '/resources/web/' + themeUrl;
+                themeUrl = Utils.getProjectResourcePath($rootScope.project.id) + themeUrl;
             }
             WM.element('link[theme="wmtheme"]').remove();
             Utils.loadStyleSheet(themeUrl, {name: "theme", value: "wmtheme"});

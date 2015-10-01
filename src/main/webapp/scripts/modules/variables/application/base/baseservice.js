@@ -1366,7 +1366,7 @@ wm.variables.services.Variables = [
                 writeFile({path: "app.variables.json", content: appVariables}, function () {
                     if (activePageName) {
                         /* save page variables */
-                        writeFile({path: "../../pages/" + activePageName + "/" + activePageName + ".variables.json", content: pageVariables}, function () {
+                        writeFile({path: "../../../pages/" + activePageName + "/" + activePageName + ".variables.json", content: pageVariables}, function () {
                             Utils.triggerFn(success);
                         }, function (errMsg) {
                             Utils.triggerFn(error, errMsg);
