@@ -246,7 +246,7 @@ wm.variables.services.$liveVariable = [
                                                 "relationName": relation.name,
                                                 "type": tableNameToEntityNameMap[relation.relatedType],
                                                 "package": relation.fullyQualifiedName,
-                                                "watchOn": variable.liveSource.charAt(0).toUpperCase() + variable.liveSource.slice(1) + tableNameToEntityNameMap[relation.relatedType] + "Data"
+                                                "watchOn": Utils.initCaps(variable.liveSource) + tableNameToEntityNameMap[relation.relatedType] + "Data"
                                             });
                                         }
                                     }
