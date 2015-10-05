@@ -1,5 +1,6 @@
 package com.wavemaker.runtime.data.dao;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Date;
@@ -8,22 +9,22 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.annotation.PostConstruct;
-
-import org.hibernate.Criteria;
-import org.hibernate.criterion.*;
-import org.hibernate.type.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate4.HibernateTemplate;
-
 import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.runtime.util.WMRuntimeUtils;
 import com.wavemaker.studio.common.ser.WMDateDeSerializer;
 import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
+import org.hibernate.type.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
@@ -59,79 +60,94 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return getTemplate().get(entityClass, entityId);
     }
 
-    public Page getAssociatedObjects(Object value, String entityName, String key, Pageable pageable) {
-
-        Criteria criteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass).createCriteria(entityName);
-        Criteria countCriteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass).createCriteria(entityName);
-        criteria.add(Restrictions.eq(key, value));
-        countCriteria.add(Restrictions.eq(key, value));
-        if (pageable != null) {
-            Long count = getRowCount(countCriteria);
-            criteria = prepareCriteriaForPageable(criteria, pageable);
-            return new WMPageImpl(criteria.list(), pageable, count);
-
-        } else
-            return new WMPageImpl(criteria.list());
-
+    public Page getAssociatedObjects(final Object value, final String entityName, final String key, final Pageable pageable) {
+        return getTemplate().execute(new HibernateCallback<Page>() {
+            @Override
+            public Page doInHibernate(Session session) throws HibernateException {
+                Criteria criteria = session.createCriteria(entityClass).createCriteria(entityName);
+                criteria.add(Restrictions.eq(key, value));
+                return executeAndGetPageableData(criteria, pageable);
+            }
+        });
     }
 
     public Page<Entity> list() {
-        return new WMPageImpl<Entity>(getTemplate().loadAll(entityClass));
+        return search(null, null);
     }
 
-    public Page<Entity> search(QueryFilter queryFilters[], Pageable pageable) {
-        pageable = WMRuntimeUtils.getOneIndexedPageable(pageable);
+    public Page<Entity> search(final QueryFilter queryFilters[], Pageable pageable) {
+        final Pageable oneIndexedPageable = WMRuntimeUtils.getOneIndexedPageable(pageable);
         validateQueryFilters(queryFilters);
-        Criteria criteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
-        Criteria countCriteria = getTemplate().getSessionFactory().getCurrentSession().createCriteria(entityClass);
-        if (queryFilters != null && queryFilters.length > 0) {
-            for (QueryFilter queryFilter : queryFilters) {
-                Criterion criterion;
-                Object attributeValue = queryFilter.getAttributeValue();
-                String attributeName = queryFilter.getAttributeName();
-                switch (queryFilter.getFilterCondition()) {
-                    case EQUALS:
-                        if (attributeValue instanceof Collection) {
-                            criterion = Restrictions.in(attributeName, (Collection) attributeValue);
-                        } else if (attributeValue.getClass().isArray()) {
-                            criterion = Restrictions.in(attributeName, (Object[]) attributeValue);
-                        } else {
-                            criterion = Restrictions.eq(attributeName, attributeValue);
-                        }
-                        break;
-                    case STARTING_WITH:
-                        criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.START);
-                        break;
-                    case ENDING_WITH:
-                        criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.END);
-                        break;
-                    case CONTAINING:
-                        criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.ANYWHERE);
-                        break;
-                    default:
-                        throw new RuntimeException("Unhandled filter condition: " + queryFilter.getFilterCondition());
-                }
-                criteria.add(criterion);
-                countCriteria.add(criterion);
-            }
-        }
-        if (pageable != null) {
-            Long count = getRowCount(countCriteria);
-            criteria = prepareCriteriaForPageable(criteria, pageable);
-            return new WMPageImpl<Entity>(criteria.list(), pageable, count);
 
-        } else
-            return new WMPageImpl<Entity>(criteria.list());
+        return getTemplate().execute(new HibernateCallback<Page>() {
+            @Override
+            public Page doInHibernate(Session session) throws HibernateException {
+                Criteria criteria = session.createCriteria(entityClass);
+                if (queryFilters != null && queryFilters.length > 0) {
+                    for (QueryFilter queryFilter : queryFilters) {
+                        Criterion criterion = createCriterion(queryFilter);
+                        criteria.add(criterion);
+                    }
+                }
+                return executeAndGetPageableData(criteria, oneIndexedPageable);
+            }
+        });
+    }
+
+    protected Criterion createCriterion(QueryFilter queryFilter) {
+        Criterion criterion = null;
+        Object attributeValue = queryFilter.getAttributeValue();
+        String attributeName = queryFilter.getAttributeName();
+        switch (queryFilter.getFilterCondition()) {
+            case EQUALS:
+                if (attributeValue instanceof Collection) {
+                    criterion = Restrictions.in(attributeName, (Collection) attributeValue);
+                } else if (attributeValue.getClass().isArray()) {
+                    criterion = Restrictions.in(attributeName, (Object[]) attributeValue);
+                } else {
+                    criterion = Restrictions.eq(attributeName, attributeValue);
+                }
+                break;
+            case STARTING_WITH:
+                criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.START);
+                break;
+            case ENDING_WITH:
+                criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.END);
+                break;
+            case CONTAINING:
+                criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.ANYWHERE);
+                break;
+            default:
+                throw new RuntimeException("Unhandled filter condition: " + queryFilter.getFilterCondition());
+        }
+        return criterion;
+    }
+
+    private Page executeAndGetPageableData(Criteria criteria, Pageable pageable) {
+        if (pageable != null) {
+            long count = getRowCount(criteria);
+            updateCriteriaForPageable(criteria, pageable);
+            return new WMPageImpl(criteria.list(), pageable, count);
+        } else {
+            return new WMPageImpl(criteria.list());
+        }
     }
 
     private Long getRowCount(Criteria countCriteria) {
+        //set the projection
         countCriteria.setProjection(Projections.rowCount());
-        Long count = (Long) countCriteria.uniqueResult();
+
+        Long count;
+        try {
+            count = (Long) countCriteria.uniqueResult();
+        } finally {
+            //unset the projection
+            countCriteria.setProjection(null);
+        }
         return count;
     }
 
-
-    private Criteria prepareCriteriaForPageable(Criteria criteria, Pageable pageable) {
+    protected void updateCriteriaForPageable(Criteria criteria, Pageable pageable) {
         criteria.setFirstResult(pageable.getOffset());
         criteria.setMaxResults(pageable.getPageSize());
         if (pageable.getSort() != null) {
@@ -145,7 +161,6 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 }
             }
         }
-        return criteria;
     }
 
     private void validateQueryFilters(QueryFilter[] queryFilters) {
@@ -244,6 +259,12 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public long count() {
-        return getTemplate().loadAll(entityClass).size();
+        return getTemplate().execute(new HibernateCallback<Long>() {
+            @Override
+            public Long doInHibernate(Session session) throws HibernateException {
+                Criteria criteria = session.createCriteria(entityClass);
+                return getRowCount(criteria);
+            }
+        });
     }
 }
