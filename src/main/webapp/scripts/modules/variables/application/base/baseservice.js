@@ -693,7 +693,7 @@ wm.variables.services.Variables = [
                 }
 
                 /* return the variable against active page or app (In studio mode, this is the writable variable obejct */
-                return (variables[VARIABLE_CONSTANTS.OWNER.APP] && variables[VARIABLE_CONSTANTS.OWNER.APP][variableName]) || (variables[$rootScope.activePageName] && variables[$rootScope.activePageName][variableName]) || null;
+                return (variables[$rootScope.activePageName] && variables[$rootScope.activePageName][variableName]) || (variables[VARIABLE_CONSTANTS.OWNER.APP] && variables[VARIABLE_CONSTANTS.OWNER.APP][variableName]) || null;
             },
 
             /*function to get the type of the variable by its name*/
@@ -946,28 +946,32 @@ wm.variables.services.Variables = [
             },
             initiateCallback = function (event, variable, callBackScope, response) {
                 /*checking if event is available and variable has event property and variable event property bound to function*/
-                var eventValue = variable[event];
+                var eventValues = variable[event];
                 callBackScope = variable.activeScope;
-                if (eventValue) {
-                    /* if event value is javascript, call the function defined in the callback scope of the variable */
-                    if (eventValue === 'Javascript') {
-                        return Utils.triggerFn(callBackScope[variable.name + event], variable, response);
-                    }
+                if (eventValues) {
+                    _.forEach(eventValues.split(';'), function (eventValue) {
+                        /* if event value is javascript, call the function defined in the callback scope of the variable */
+                        if (eventValue === 'Javascript') {
+                            return Utils.triggerFn(callBackScope[variable.name + event], variable, response);
+                        }
+                        if (_.includes(eventValue, '.show')) {
+                            DialogService.showDialog(eventValue.slice(0, eventValue.indexOf('.show')));
+                            return;
+                        }
+                        if (_.includes(eventValue, '.hide')) {
+                            DialogService.hideDialog(eventValue.slice(0, eventValue.indexOf('.hide')));
+                            return;
+                        }
+                        if (_.includes(eventValue, '(')) {
+                            return Utils.triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], variable, response);
+                        }
 
-                    if (eventValue.indexOf('.show') > -1) {
-                        DialogService.showDialog(eventValue.slice(0, eventValue.indexOf('.show')));
-                        return;
-                    }
-                    if (eventValue.indexOf('.hide') > -1) {
-                        DialogService.hideDialog(eventValue.slice(0, eventValue.indexOf('.hide')));
-                        return;
-                    }
-
-                    /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
-                    $timeout(function () {
-                        $rootScope.$emit("invoke-service", variable[event], {scope: callBackScope});
-                        $rootScope.$safeApply(callBackScope);
-                    }, null, false);
+                        /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
+                        $timeout(function () {
+                            $rootScope.$emit("invoke-service", eventValue, {scope: callBackScope});
+                            $rootScope.$safeApply(callBackScope);
+                        }, null, false);
+                    });
                 }
             },
 

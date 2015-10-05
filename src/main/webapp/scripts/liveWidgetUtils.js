@@ -656,31 +656,7 @@ WM.module('wm.widgets.live')
                 });
                 return eventsObject;
             }
-            /*Iterate over events and populate 'Javascript' with appropriate event name and args*/
-            function getNewEventsObject(prefix, events) {
-                var newEventName,
-                    newCustomEvent,
-                    eventNumber = 0,
-                    customEvents = [],
-                    args = '($event, $scope)';
-                _.forEach(events, function (event, index) {
-                    if (event === 'Javascript') {
-                        newCustomEvent = prefix;
-                        newEventName = newCustomEvent + args;
-                        while (_.includes(events, newEventName)) {
-                            eventNumber += 1;
-                            newCustomEvent = prefix + eventNumber;
-                            newEventName = newCustomEvent + args;
-                        }
-                        events[index] = newEventName;
-                        customEvents = customEvents.concat(newCustomEvent);
-                    }
-                });
-                return {
-                    'events' : events,
-                    'customEvents' : customEvents
-                };
-            }
+
             /*function to update script link visibility*/
             function toggleActionMessage(selectedItem, actionsList, isField, eventType, value) {
                 if (isField && eventType) {
@@ -717,7 +693,6 @@ WM.module('wm.widgets.live')
                 return prefix;
             }
 
-            this.getNewEventsObject = getNewEventsObject;
             this.toggleActionMessage = toggleActionMessage;
             this.getEventOptions = getEventOptions;
             this.getEventTypes = getEventTypes;
