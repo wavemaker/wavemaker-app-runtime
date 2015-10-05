@@ -56,7 +56,6 @@ wm.variables.services.LogoutVariableService = ['Variables',
                         $rootScope.isUserAuthenticated = false;
                         Utils.triggerFn(success);
                         if (variable.useDefaultSuccessHandler) {
-                            $rootScope.$emit("update-loggedin-user");
                             /*If the re-directing page is other than the login page changing the window location details*/
                             if (!variable.redirectTo || variable.redirectTo === 'Login' || variable.redirectTo === 'login.html') {
                                 $window.location = 'login.html';
@@ -72,6 +71,8 @@ wm.variables.services.LogoutVariableService = ['Variables',
                                 });
                             }
                         }
+                        /* clear the logged in user variable */
+                        $rootScope.$emit("update-loggedin-user");
                     }, function () {
                         /* if in RUN mode, trigger error events associated with the variable */
                         if (CONSTANTS.isRunMode) {

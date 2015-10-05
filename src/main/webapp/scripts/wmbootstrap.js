@@ -214,6 +214,12 @@ Application
                             SecurityService.getTenantId(function (tenantId) {
                                 loggedInUser.dataSet.tenantId = tenantId;
                             });
+                        } else if (loggedInUser) {
+                            loggedInUser.dataSet.isAuthenticated = false;
+                            loggedInUser.dataSet.roles = [];
+                            loggedInUser.dataSet.name = '';
+                            loggedInUser.dataSet.id = '';
+                            loggedInUser.dataSet.tenantId = '';
                         }
                     });
                 }
