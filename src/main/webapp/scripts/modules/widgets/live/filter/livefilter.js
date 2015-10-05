@@ -239,6 +239,11 @@ WM.module('wm.widgets.live')
                                 "maxResults": $scope.pagesize || 20,
                                 "currentPage": page
                             };
+                            /*Save the page options. When the filter dataSet changes, filter is applied with these options*/
+                            $scope.result.options = {
+                                "page": page,
+                                "orderBy": orderBy
+                            };
                         });
                     };
                     $scope.constructDefaultData = function (dataset) {
@@ -414,24 +419,25 @@ WM.module('wm.widgets.live')
                                 case "dataset":
                                     var fieldsObj,
                                         buttonsObj,
-                                        designerObj,
-                                        oldData;
+                                        designerObj;
                                     /*If properties map is populated and if columns are presented for filter construction*/
                                     if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                         if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
-                                            /* old data cached to avoid live variable data's effect on filter */
-                                            oldData = (scope.result && scope.result.data) || [];
-
-                                            scope.variableName = scope.binddataset.match(variableRegex)[1];
-                                            scope.result = newVal;
-
-                                            /* The filter is not depending on variable's data, as filter is making explicit call through QUERY
+                                            /* old data cached to avoid live variable data's effect on filter.
+                                             * The filter is not depending on variable's data, as filter is making explicit call through QUERY
                                              * Hence, to avoid flicker when data from explicit call is rendered, the live variable's data is ignored
                                              */
-                                            scope.result.data = oldData;
-
+                                            scope.result = scope.result || {
+                                                data: [],
+                                                pagingOptions: newVal.pagingOptions,
+                                                options: { /*Set default options with page 1*/
+                                                    page: 1
+                                                }
+                                            };
+                                            scope.variableName = scope.binddataset.match(variableRegex)[1];
                                             /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
                                             scope.result.variableName = scope.variableName;
+                                            scope.result.propertiesMap = newVal.propertiesMap;
                                             scope.result.widgetName = scope.name;
                                             scope.result.isBoundToFilter = true;
                                             /*transform the data to filter consumable data*/
@@ -457,8 +463,9 @@ WM.module('wm.widgets.live')
                                             }
                                             buttonsObj = defaultButtonsArray;
 
-                                            /*On load check if default value exists and apply filter*/
-                                            scope.filter();
+                                            /*On load check if default value exists and apply filter.
+                                            * Call the filter with the result options*/
+                                            scope.filter(scope.result.options);
                                         }
                                         /* call method to update allowed values for select type filter fields */
                                         updateAllowedValues();
