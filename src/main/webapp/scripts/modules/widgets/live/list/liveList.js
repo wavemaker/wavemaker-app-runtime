@@ -357,7 +357,7 @@ WM.module('wm.widgets.live')
             function studioMode_onDataSetChange($is, doNotRemoveTemplate) {
                 var boundVariableName = Utils.getVariableName($is),
                     variable = getVariable($is, boundVariableName);
-                if ($is.oldbinddataset !== $is.binddataset) {
+                if ($is.oldbinddataset !== $is.binddataset && $is._isInitialized) {
                     if (!doNotRemoveTemplate) {
                         updateLiveListBindings($is, true);
                     }
