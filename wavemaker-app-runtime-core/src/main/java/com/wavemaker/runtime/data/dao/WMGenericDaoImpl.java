@@ -1,6 +1,5 @@
 package com.wavemaker.runtime.data.dao;
 
-import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Date;
@@ -9,12 +8,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.wavemaker.runtime.data.expression.AttributeType;
-import com.wavemaker.runtime.data.expression.QueryFilter;
-import com.wavemaker.runtime.data.spring.WMPageImpl;
-import com.wavemaker.runtime.util.WMRuntimeUtils;
-import com.wavemaker.studio.common.ser.WMDateDeSerializer;
-import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
+import javax.annotation.PostConstruct;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -25,6 +20,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+
+import com.wavemaker.runtime.data.expression.AttributeType;
+import com.wavemaker.runtime.data.expression.QueryFilter;
+import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.studio.common.ser.WMDateDeSerializer;
+import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
@@ -75,8 +76,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return search(null, null);
     }
 
-    public Page<Entity> search(final QueryFilter queryFilters[], Pageable pageable) {
-        final Pageable oneIndexedPageable = WMRuntimeUtils.getOneIndexedPageable(pageable);
+    public Page<Entity> search(final QueryFilter queryFilters[], final Pageable pageable) {
         validateQueryFilters(queryFilters);
 
         return getTemplate().execute(new HibernateCallback<Page>() {
@@ -89,7 +89,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                         criteria.add(criterion);
                     }
                 }
-                return executeAndGetPageableData(criteria, oneIndexedPageable);
+                return executeAndGetPageableData(criteria, pageable);
             }
         });
     }

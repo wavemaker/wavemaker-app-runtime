@@ -224,7 +224,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
             return null;
         }
 
-        int page = StringUtils.hasText(pageString) ? parseAndApplyBoundaries(pageString, Integer.MAX_VALUE)
+        int page = StringUtils.hasText(pageString) ? parseAndApplyBoundaries(pageString, Integer.MAX_VALUE) - (oneIndexedParameters ? 1 : 0)
                 : defaultOrFallback.getPageNumber();
         int pageSize = StringUtils.hasText(pageSizeString) ? parseAndApplyBoundaries(pageSizeString, maxPageSize)
                 : defaultOrFallback.getPageSize();
@@ -301,7 +301,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
     private int parseAndApplyBoundaries(String parameter, int upper) {
 
         try {
-            int parsed = Integer.parseInt(parameter) - (oneIndexedParameters ? 1 : 0);
+            int parsed = Integer.parseInt(parameter);
             return parsed < 0 ? 0 : parsed > upper ? upper : parsed;
         } catch (NumberFormatException e) {
             return 0;

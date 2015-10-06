@@ -5,16 +5,11 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.converter.ByteArrayHttpMessageConverter;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.ResourceHttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.*;
 import org.springframework.http.converter.feed.AtomFeedHttpMessageConverter;
 import org.springframework.http.converter.feed.RssChannelHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
@@ -105,16 +100,6 @@ public class WMRuntimeUtils {
         }
         requestURL.append("/downloadFile?file=" + file.getName() + "&" + "returnName=" + file.getName());
         return requestURL.toString();
-    }
-
-    public static Pageable getOneIndexedPageable(Pageable pageable) {
-        // Spring is following zero indexed page size,but hibernate is following one indexed result size in criteria.Hence increasing pageSize to one.
-        // TODO : have to fix by adding new pageable resolver.
-        if(pageable != null) {
-            int pageSize = pageable.getPageSize() + 1;
-            return new PageRequest(pageable.getPageNumber(), pageSize, pageable.getSort());
-        }
-        return pageable;
     }
 
 }
