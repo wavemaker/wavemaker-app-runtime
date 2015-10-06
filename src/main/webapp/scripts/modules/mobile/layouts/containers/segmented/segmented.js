@@ -103,7 +103,7 @@ WM.module('wm.layouts.containers')
                             $scope.currentSelectedIndex = index;
                             $scope.onBeforesegmentchange(eventData);
                             currentContent.onShow();
-                            if (currentContent && currentContent.widgetid && CONSTANTS.isStudioMode) {
+                            if (currentContent && currentContent.widgetid && CONSTANTS.isStudioMode && $scope.$root) {
                                 $scope.$root.$emit('set-active-widget', currentContent.widgetid);
                             }
 
