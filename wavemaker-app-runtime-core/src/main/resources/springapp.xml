@@ -6,14 +6,70 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:aop="http://www.springframework.org/schema/aop"
 
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                 http://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/mvc
+                http://www.springframework.org/schema/mvc/spring-mvc.xsd
                 http://www.springframework.org/schema/aop
                 http://www.springframework.org/schema/aop/spring-aop.xsd">
+
     <import resource="config.xml"/>
     <import resource="servicetypes.xml"/>
+
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager" conversion-service="applicationConversionService">
+        <mvc:message-converters>
+            <bean class="com.wavemaker.runtime.converters.WMCompositeHttpMessageConverter"/>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.wavemaker.runtime.WMObjectMapper"/>
+                </property>
+            </bean>
+        </mvc:message-converters>
+        <mvc:argument-resolvers>
+            <bean class="com.wavemaker.runtime.resolver.WMPageableHandlerMethodArgumentResolver" >
+                <property name="pageParameterName" value="page"/>
+                <property name="sizeParameterName" value="size"/>
+                <property name="oneIndexedParameters" value="true"/>
+                <property name="maxPageSize" value="100"/>
+                <property name="fallbackPageable">
+                    <bean  class="org.springframework.data.domain.PageRequest">
+                        <constructor-arg  value="0"/>
+                        <constructor-arg  value="20"/>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:argument-resolvers>
+    </mvc:annotation-driven>
+
+    <mvc:interceptors>
+        <bean id="annotationInterceptor" class="com.wavemaker.runtime.web.interceptor.WMAppRequestInterceptor" />
+    </mvc:interceptors>
+
+    <bean id="contentNegotiationManager"
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+        <property name="favorPathExtension" value="false" />
+    </bean>
+
+    <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
+
+    <!-- Set user.languague to english as Javascript ONLY handles US number formatting -->
+    <bean id="systemPropertyInitializer" class="com.wavemaker.runtime.SystemPropertyInitiliazingBean">
+        <property name="systemProperties">
+            <map>
+                <entry key="user.language" value="en"/>
+                <entry key="com.mchange.v2.c3p0.management.ManagementCoordinator" value="com.mchange.v2.c3p0.management.NullManagementCoordinator"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="wmRequestCleanupFilter" class="com.wavemaker.runtime.web.filter.WMRequestCleanupFilter"/>
+
+    <bean id="cacheControlFilter" class="com.wavemaker.runtime.web.filter.CacheControlFilter"/>
+
+    <bean id="handlerExceptionResolver" class="com.wavemaker.runtime.exception.resolver.ApplicationRestServiceExceptionResolver"/>
 
     <bean id="multipartResolver"
           class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
