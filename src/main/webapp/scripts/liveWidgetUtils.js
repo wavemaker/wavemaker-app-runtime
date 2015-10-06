@@ -195,6 +195,7 @@ WM.module('wm.widgets.live')
                     'maxValue' : attrs.maxValue,
                     'minValue' : attrs.minValue,
                     'maxvalue' : attrs.maxvalue,
+                    'step' : attrs.step,
                     'onChange': attrs.onChange,
                     'onBlur': attrs.onBlur,
                     'onFocus': attrs.onFocus,
@@ -209,7 +210,7 @@ WM.module('wm.widgets.live')
                 if (type === 'text') {
                     return '';
                 }
-                if (type === 'float' || type === 'double') {
+                if (type === 'float') {
                     return 0.01;
                 }
                 if (type === 'double') {
@@ -360,10 +361,10 @@ WM.module('wm.widgets.live')
 
             /*Returns slider template */
             function sliderTemplate(fieldDef, index) {
-                var template = '', step = getStepValue(fieldDef.type);
+                var template = '', stepVal = fieldDef.step || getStepValue(fieldDef.type);
                 template = template + '<wm-slider  ' + getFormFields(fieldDef, index) + ' show="{{isUpdateMode}}" scopedatavalue="formFields[' + index + '].value"';
-                if (step) {
-                    template = template + ' step="' + step + '" ';
+                if (stepVal) {
+                    template = template + ' step="' + stepVal + '" ';
                 }
                 template = template + ' ></wm-slider>';
                 return template;
@@ -410,19 +411,19 @@ WM.module('wm.widgets.live')
 
             /*Returns text template */
             function textNumberTemplate(fieldDef, index, type) {
-                var template = '', step;
+                var template = '', stepVal;
 
-                step = getStepValue(fieldDef.type);
+                stepVal = fieldDef.step || getStepValue(fieldDef.type);
 
                 if (fieldDef.isRange) {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
                     fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-text ' + getFormFields(fieldDef, index) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].minValue" : "") + '" type="' + type + '" ' + (step ? (' step="' + step + '"') : "") + ' placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}"></wm-text></div>' +
+                    template = template + '<div class="col-md-4 col-sm-4"><wm-text ' + getFormFields(fieldDef, index) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].minValue" : "") + '" type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "") + ' placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}"></wm-text></div>' +
                         '<div class="col-md-1 col-sm-1"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-text ' + getFormFields(fieldDef, index) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].maxValue" : "") + '" type="' + type + '" ' + (step ? (' step="' + step + '"') : "") + ' placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}"></wm-text></div>';
+                        '<div class="col-md-4 col-sm-4"><wm-text ' + getFormFields(fieldDef, index) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].maxValue" : "") + '" type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "") + ' placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}"></wm-text></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
-                    template = template + '<wm-text ' + getFormFields(fieldDef, index, type) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].value" : "") + '" type="' + type + '" ' + (step ? (' step="' + step + '"') : "") + ' placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-text>';
+                    template = template + '<wm-text ' + getFormFields(fieldDef, index, type) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].value" : "") + '" type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "") + ' placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-text>';
                 }
                 return template;
             }
@@ -706,5 +707,6 @@ WM.module('wm.widgets.live')
             this.translateVariableObject = translateVariableObject;
             this.getColumnCountByLayoutType = getColumnCountByLayoutType;
             this.getCustomFieldKey = getCustomFieldKey;
+            this.getStepValue = getStepValue;
         }
     ]);

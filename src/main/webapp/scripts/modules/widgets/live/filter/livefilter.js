@@ -274,6 +274,7 @@ WM.module('wm.widgets.live')
                             colDef.multiple = '';
                             colDef.value = '';
                             colDef.type = column.type;
+                            colDef.step = LiveWidgetUtils.getStepValue(colDef.type);
                             colDef.isPrimaryKey = column.isPrimaryKey;
                             colDef.generator = column.generator;
                             colDef.show = true;
