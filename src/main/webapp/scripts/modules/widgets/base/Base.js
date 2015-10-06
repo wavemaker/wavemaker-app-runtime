@@ -589,7 +589,8 @@ WM.module('wm.widgets.base', [])
                         "displayfield": {"type": "list", "options": [""], "value": ""},
                         "displayexpression": {"type": "string"},
                         "usekeys": {"type": "boolean"},
-                        "selectedvalue": {"type": "string, object", "widget": "string", "value": "", "bindable": "in-bound"}
+                        "selectedvalue": {"type": "string, object", "widget": "string", "value": "", "bindable": "in-bound"},
+                        "itemclass": {"type": "string", "pattern": classRegex}
                     },
                     "wm.colorpicker": {
                         "readonly": {"type": "boolean", "value": false},
@@ -652,7 +653,8 @@ WM.module('wm.widgets.base', [])
                         "displayfield": {"type": "list", "options": [""], "value": ""},
                         "displayexpression": {"type": "string"},
                         "selectedvalues": {"type": "string, object", "bindable": "in-bound", "widget": "string"},
-                        "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "itemclass": {"type": "string", "pattern": classRegex}
                     },
 
                     "wm.select": {

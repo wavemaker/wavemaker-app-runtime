@@ -229,7 +229,7 @@ WM.module('wm.widgets.form')
             WM.forEach(scope.dataKeys, function (dataKey) {
                 dataKey = WM.isString(dataKey) ? dataKey.trim() : dataKey;
                 template = template +
-                    '<li class="checkbox app-checkbox">' +
+                    '<li class="checkbox app-checkbox"  data-ng-class="itemclass">' +
                     '<label class="app-checkboxset-label" data-ng-class="{\'disabled\':disabled, \'unchecked\': !valueInModel(_model_, dataObject[' + "'" + dataKey + "'" + '])}" title="' + dataKey + '">' +
                             '<input type="checkbox" ' + (scope.disabled ? ' disabled="disabled" ' : '') +  ' value="' + dataKey + '" data-ng-checked="_model_.indexOf(' + "'" + dataKey + "'" + ') !== -1 || _model_ === ' + "'" + dataKey + "'" + ' || valueInModel(_model_, dataObject[' + "'" + dataKey + "'" + '])"/>' +
                          '<span class="caption">' + dataKey + '</span><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/></label>' +

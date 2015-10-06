@@ -187,7 +187,7 @@ WM.module('wm.widgets.form')
             WM.forEach(scope.dataKeys, function (dataKey, index) {
                 dataKey = WM.isString(dataKey) ? dataKey.trim() : dataKey;
                 template = template +
-                    '<li class="radio app-radio"><label class="app-radioset-label">' +
+                    '<li class="radio app-radio" data-ng-class="itemclass"><label class="app-radioset-label">' +
                             '<input type="radio" ' + (scope.disabled ? ' disabled="disabled" ' : '') +
                                 'data-attr-index=' + index + ' ng-checked="checkModel(' + index + ')"/>' +
                     '<span class="caption">' + dataKey + '</span></label>' +
