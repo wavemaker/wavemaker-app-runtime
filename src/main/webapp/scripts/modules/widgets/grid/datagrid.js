@@ -431,6 +431,7 @@ $.widget('wm.datagrid', {
                 }
                 break;
             }
+            htm += 'title="' + colExpression + '"';
         }
         if (colExpression) {
             if (isCellCompiled) {
@@ -441,7 +442,6 @@ $.widget('wm.datagrid', {
             }
             htm += colExpression;
         } else {
-            htm += '>';
             if (colDef.type !== 'custom') {
                 columnValue = row[colDef.field];
                 /* 1. Show "null" values as null if filterNullRecords is true, else show empty string.
@@ -450,8 +450,10 @@ $.widget('wm.datagrid', {
                     this.Utils.isUndefined(columnValue)) {
                     columnValue = '';
                 }
-               htm += columnValue;
+                htm += 'title="' + columnValue + '">';
+                htm += columnValue;
             } else {
+                htm += '>';
                 switch (colDef.field) {
                 case 'checkbox':
                     htm += this._getCheckboxTemplate(row);
