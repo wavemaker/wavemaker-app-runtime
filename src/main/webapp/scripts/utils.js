@@ -1385,6 +1385,32 @@ WM.module('wm.utils', [])
             return true;
         }
 
+        /*Iterate over events and populate 'Javascript' with appropriate event name and args*/
+        function getNewEventsObject(prefix, events) {
+            var newEventName,
+                newCustomEvent,
+                eventNumber = 0,
+                customEvents = [],
+                args = '($event, $scope)';
+            _.forEach(events, function (event, index) {
+                if (event === 'Javascript') {
+                    newCustomEvent = prefix;
+                    newEventName = newCustomEvent + args;
+                    while (_.includes(events, newEventName)) {
+                        eventNumber += 1;
+                        newCustomEvent = prefix + eventNumber;
+                        newEventName = newCustomEvent + args;
+                    }
+                    events[index] = newEventName;
+                    customEvents = customEvents.concat(newCustomEvent);
+                }
+            });
+            return {
+                'events' : events,
+                'customEvents' : customEvents
+            };
+        }
+
         /*
          * Evaluates expression passed and returns corresponding value of object
          * @params: {object} object from which values are extracted
@@ -1538,5 +1564,6 @@ WM.module('wm.utils', [])
         this.getValidMarkUp             = getValidMarkUp;
         this.scrollIntoView             = scrollIntoView;
         this.arraysEqual                = arraysEqual;
+        this.getNewEventsObject         = getNewEventsObject;
         this.getEvaluatedExprValue      = getEvaluatedExprValue;
     }]);
