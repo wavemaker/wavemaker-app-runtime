@@ -6,7 +6,7 @@ WM.module('wm.layouts.containers')
         'use strict';
         $templateCache.put('template/layout/container/panel.html',
                 '<div page-container init-widget class="app-panel panel" ng-class="[helpClass]" data-ng-show="show" apply-styles="shell" wm-navigable-element="true">' +
-                    '<div class="panel-heading" data-ng-show="showheader">' +
+                    '<div class="panel-heading">' +
                         '<h3 class="panel-title">' +
                             '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="togglePanel()">' +
                                 '<i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i>' +
