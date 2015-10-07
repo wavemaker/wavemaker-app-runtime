@@ -1681,7 +1681,7 @@ wm.variables.services.Variables = [
             createServiceVariable: function (variableDetails, overWrite) {
                 /* call base service function to create the variable */
                 var variableCategory = "wm.ServiceVariable",
-                    defaultName = variableDetails.name || variableDetails.service.charAt(0).toUpperCase() + variableDetails.service.slice(1) + variableDetails.operation.charAt(0).toUpperCase() + variableDetails.operation.slice(1),
+                    defaultName = variableDetails.name || Utils.initCaps(variableDetails.service) + Utils.initCaps(variableDetails.operation),
                     createdVariable,
                     variableName,
                     variableOwner,
