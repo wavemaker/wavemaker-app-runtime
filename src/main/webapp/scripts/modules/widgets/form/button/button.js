@@ -21,12 +21,16 @@ WM.module('wm.widgets.form')
             notifyFor = {
                 'iconclass': true,
                 'iconurl': true,
-                'caption': true
+                'caption': true,
+                'iconposition': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
+            case 'iconposition':
+                element.attr('icon-position', newVal);
+                break;
             case 'iconclass':
                 /*showing icon when iconurl is not set*/
                 scope.showicon = scope.iconclass !== '_none_' && newVal !== '' && !scope.iconurl;

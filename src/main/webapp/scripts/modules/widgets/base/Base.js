@@ -265,6 +265,7 @@ WM.module('wm.widgets.base', [])
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
+                        "iconposition": {"type": "list", "options": ["left", "top", "right"]},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
                         "type": {"type": "list", "options": ["button", "reset", "submit"], "value" : "button"},
                         "tabindex": {"type": "string"},
@@ -1182,6 +1183,7 @@ WM.module('wm.widgets.base', [])
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
+                        "iconposition": {"type": "list", "options": ["left", "top", "right"]},
                         "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "hyperlink": {"type": "string", "bindable": "in-out-bound"},
@@ -1562,7 +1564,7 @@ WM.module('wm.widgets.base', [])
                     "searchbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype", "loadmode", "loaddelay"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "infscroll", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
-                {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin"], "parent": "properties"},
+                {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition"], "parent": "properties"},
                 {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "rows", "columns", "columnwidth", "taborder"], "parent": "properties"},
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["submitbutton", "resetbutton"], "parent": "properties"},
@@ -1910,7 +1912,7 @@ WM.module('wm.widgets.base', [])
                 ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight maxheight maxwidth minheight ' +
                 ' minwidth opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility ' +
                 ' whitespace wordbreak zindex bordertop borderright borderbottom borderleft borderunit paddingtop paddingright paddingbottom paddingleft' +
-                ' paddingunit margintop marginright marginbottom marginleft marginunit fontsize fontunit show hint caption animation backgroundimage';
+                ' paddingunit margintop marginright marginbottom marginleft marginunit fontsize fontunit show hint caption animation backgroundimage iconposition iconclass';
 
             function cleanupMarkup(element) {
                 element.removeAttr(attrsToBeRemoved);

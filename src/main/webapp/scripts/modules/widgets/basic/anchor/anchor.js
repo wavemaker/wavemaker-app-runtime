@@ -21,7 +21,8 @@ WM.module('wm.widgets.basic')
                 'iconurl': true,
                 'target': true,
                 'hyperlink': true,
-                'caption': true
+                'caption': true,
+                'iconposition': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -29,6 +30,9 @@ WM.module('wm.widgets.basic')
             switch (key) {
             case 'target':
                 attrs.$set('target', newVal);
+                break;
+            case 'iconposition':
+                element.attr('icon-position', newVal);
                 break;
             case 'hyperlink':
                 attrs.$set('href', newVal);

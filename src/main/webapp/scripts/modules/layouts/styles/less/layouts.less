@@ -548,6 +548,7 @@ body {
       }
     }
   }
+/********button classes ***/
   .btn-transparent {
     background: transparent !important;
     border: none !important;
@@ -559,6 +560,30 @@ body {
     height: auto;
     > * {
     vertical-align: middle;
+    }
+  }
+  /********for buttons, anchors with icon on top****/
+  .btn[icon-position = "top"], a[icon-position = "top"] {
+    height: auto;
+    text-align: center;
+    > i {
+      display: block;
+    }
+    .badge {
+      top: 2pt;
+      right: 2pt;
+      position: absolute;
+      font-size: 7px;
+      font-weight: normal;
+    }
+  }
+/********for buttons, anchors with icon on right****/
+  .btn[icon-position = "right"], a[icon-position = "right"] {
+    > i, > .btn-caption, > .anchor-caption {
+      float: right;
+    }
+    .badge {
+      float: left;
     }
   }
 }
