@@ -8,12 +8,14 @@ WM.module('wm.widgets.live')
 
         $tc.put('template/widget/list.html',
                     '<div class="app-livelist panel" init-widget apply-styles="shell" data-ng-show="show">' +
-                        '<div class="panel-heading" data-ng-if="title"><h4 class="panel-title">{{title}}</h4></div>'+
+                        '<div class="panel-heading" data-ng-if="title"><h4 class="panel-title">{{title}}</h4></div>' +
                         '<ul data-identifier="list" class="clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                        '<div class="panel-footer" data-ng-if="hasAdvancedNavigation"><wm-datanavigator show="{{showAdvancedNavigation}}" showrecordcount="true"></wm-datanavigator></div>' +
+                        '<div class="panel-footer" data-ng-if="navControls">' +
+                            '<wm-datanavigator showrecordcount="true" navcontrols="{{navControls}}"></wm-datanavigator>' +
+                        '</div>' +
                     '</div>'
                 );
 
@@ -323,7 +325,7 @@ WM.module('wm.widgets.live')
                 var $dataNavigator, // dataNavigator element
                     dataNavigator,  // dataNavigator scope
                     binddataset;
-                if ($is.hasAdvancedNavigation) {
+                if ($is.navControls) {
 
                     binddataset = $is.binddataset;
                     Utils.triggerFn($is._watchers.dataset);
@@ -387,23 +389,20 @@ WM.module('wm.widgets.live')
             }
 
             function resetNavigation($is) {
-                $is.hasAdvancedNavigation  = false;
-                $is.showAdvancedNavigation = false;
-                $is.infScroll              = false;
+                $is.navControls = undefined;
+                $is.infScroll   = false;
             }
 
-            function enableBasicNavigation() {
-                return; // implement when basic navigation is available.
+            function enableBasicNavigation($is) {
+                $is.navControls = NAVIGATION.BASIC;
             }
 
             function enableAdvancedNavigation($is) {
-                $is.hasAdvancedNavigation  = true;
-                $is.showAdvancedNavigation = true;
+                $is.navControls = NAVIGATION.ADVANCED;
             }
 
             function enableInfiniteScroll($is) {
-                $is.hasAdvancedNavigation = true;
-                $is.infScroll             = true;
+                $is.infScroll = true;
             }
 
             function onNavigationTypeChange($is, type) {
@@ -678,14 +677,15 @@ WM.module('wm.widgets.live')
  *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the list on the web page. <br>
  *                  default value: `true`.
+ * @param {boolean=} selectfirstitem
+ *                  This is a bindable property. <br>
+ *                  When the value is true, the first item of the list is selected by default. <br>
+ *                  default value: `false`.
  * @param {number=} pagesize
  *                  This property sets the number of items to show in the drop-down list.
- * @param {boolean=} shownavigation
- *                  This property controls whether or not navigation controls are displayed for the live-list.
- *                  default value: `false`.
- * @param {boolean=} showrecordcount
- *                  This property controls whether the total record count is displayed in the data navigator or not.
- *                  default value: `false`.
+ * @param {string=} navigation
+ *                  Possible values are `None`, `Advanced`, `Scroll`. <br>
+ *                  Navigation controls will be displayed based on the selected value.
  * @param {string=} on-click
  *                  Callback function which will be triggered when the widget is clicked.
  * @param {string=} on-dbclick
@@ -699,56 +699,59 @@ WM.module('wm.widgets.live')
  * @param {string=} on-setrecord
  *                  Callback function which will be triggered when the record is set using the data-navigator.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *              <div>Selected Element: {{selectedItem}}</div>
- *              <wm-livelist
- *                  name="{{caption}}"
- *                  width="{{width}}"
- *                  height="{{height}}"
- *                  show="true"
- *                  scopedataset="dataset"
- *                  on-click="f($event)">
- *              </wm-livelist><br>
- *               <wm-composite>
- *                   <wm-label caption="caption:"></wm-label>
- *                   <wm-text scopedatavalue="caption"></wm-text>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="width:"></wm-label>
- *                   <wm-text scopedatavalue="width"></wm-text>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="height:"></wm-label>
- *                   <wm-text scopedatavalue="height"></wm-text>
- *               </wm-composite>
- *               <wm-composite>
- *                   <wm-label caption="dataset:"></wm-label>
- *                   <wm-text
- *                      on-blur="blur($event, $scope)"
- *                      scopedatavalue="dataStr">
- *                   </wm-text>
- *               </wm-composite>
- *           </div>
- *       </file>
- *        <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.width = "400px";
- *              $scope.height= "200px";
- *              $scope.caption = " Users ";
- *
- *              $scope.dataset =
- *              $scope.dataStr = ["user", "admin", "superuser"];
- *
- *              $scope.f = function (event) {
- *                  $scope.selectedItem = event.target.innerText;
- *              };
- *              $scope.blur = function (event, scope) {
- *                  $scope.dataset = [];
- *                  $scope.dataset = scope.datavalue.split(',');
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+               <div>Selected Element: {{selectedItem}}</div>
+               <wm-livelist
+                   name="{{caption}}"
+                   width="{{width}}"
+                   height="{{height}}"
+                   show="true"
+                   scopedataset="dataset"
+                   on-click="f($event)">
+                    <wm-listtemplate layout="inline">
+                        <wm-button class="btn btn-primary" caption="{{item}}"></wm-button>
+                    </wm-listtemplate>
+               </wm-livelist><br>
+                <wm-composite>
+                    <wm-label caption="caption:"></wm-label>
+                    <wm-text scopedatavalue="caption"></wm-text>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="width:"></wm-label>
+                    <wm-text scopedatavalue="width"></wm-text>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="height:"></wm-label>
+                    <wm-text scopedatavalue="height"></wm-text>
+                </wm-composite>
+                <wm-composite>
+                    <wm-label caption="dataset:"></wm-label>
+                    <wm-text
+                       on-blur="blur($event, $scope)"
+                       scopedatavalue="dataStr">
+                    </wm-text>
+                </wm-composite>
+            </div>
+        </file>
+         <file name="script.js">
+           function Ctrl($scope) {
+               $scope.width = "400px";
+               $scope.height= "200px";
+               $scope.caption = " Users ";
+
+               $scope.dataset =
+               $scope.dataStr = ["user", "admin", "superuser"];
+
+               $scope.f = function (event) {
+                   $scope.selectedItem = event.target.innerText;
+               };
+               $scope.blur = function (event, scope) {
+                   $scope.dataset = [];
+                   $scope.dataset = scope.datavalue.split(',');
+               }
+            }
+        </file>
+    </example>
  */

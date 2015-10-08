@@ -6,13 +6,17 @@ WM.module("wm.widgets.basic")
         "use strict";
         $templateCache.put("template/widget/datanavigator.html",
             '<nav data-identifier="datanavigator" class="app-datanavigator clearfix" data-ng-show="show" init-widget apply-styles>' +
-                '<ul class="pagination pagination-sm">' +
+                '<ul class="pagination pagination-sm" data-ng-if="navcontrols === \'Advanced\'">' +
                     '<li data-ng-class="{\'disabled\':isDisableFirst}"><a name="first" href="javascript:void(0);" aria-label="First" data-ng-click="navigatePage(\'first\', $event)"><i class="glyphicon glyphicon-fast-backward"></i></a></li>' +
                     '<li data-ng-class="{\'disabled\':isDisablePrevious}"><a name="prev" href="javascript:void(0);" aria-label="Previous" data-ng-click="navigatePage(\'prev\', $event)"><i class="glyphicon glyphicon-step-backward"></i></a></li>' +
                     '<li class="pagecount disabled"><span class="input-group input-group-sm"><input type="number" data-ng-disabled="isDisableCurrent" data-ng-model="currentPage" data-ng-keydown="navigatePage(\'index\', $event)" class="form-control" /><span class="input-group-addon" data-ng-hide="isDisableCount"> of {{pageCount}}</span></span></li>' +
                     '<li data-ng-class="{\'disabled\':isDisableNext}"><a name="next" href="javascript:void(0);" aria-label="Next" data-ng-click="navigatePage(\'next\', $event)"><i class="glyphicon glyphicon-step-forward"></i></a></li>' +
                     '<li data-ng-class="{\'disabled\':isDisableLast}"><a name="last" href="javascript:void(0);" aria-label="Last" data-ng-click="navigatePage(\'last\', $event)"><i class="glyphicon glyphicon-fast-forward"></i></a></li>' +
                     '<li data-ng-if="showrecordcount" class="totalcount disabled"><span>Total Records: {{dataSize}}</span></li>' +
+                '</ul>' +
+                '<ul class="pager" data-ng-if="navcontrols === \'Basic\'">' +
+                    '<li class="previous" data-ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true">&larr;</span> Previous</a></li>' +
+                    '<li class="next" data-ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'next\', $event)">Next <span aria-hidden="true">&rarr;</span></a></li>' +
                 '</ul>' +
             '</nav>'
             );
@@ -394,6 +398,8 @@ WM.module("wm.widgets.basic")
                         scope.widgetProps = widgetProps;
                         /*Set the "allowPageable" flag in the scope to indicate that the data-navigator accepts Pageable objects.*/
                         scope.allowPageable = true;
+
+                        scope.navcontrols = 'Advanced';
                     },
                     'post': function (scope, element, attrs) {
                         scope.navigatorElement = element;

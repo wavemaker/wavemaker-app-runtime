@@ -5,8 +5,8 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/audio.html',
-            '<audio init-widget alt="{{hint}}" title="{{hint}}" class="app-audio"  preload="{{audiopreload}}" data-ng-src="{{mp3audioUrl}}" apply-styles data-ng-show="show" >' +
-                '<source type="audio/mp3" src="{{mp3audioUrl}}">' +
+            '<audio init-widget alt="{{hint}}" title="{{hint}}" class="app-audio" preload="{{audiopreload}}" data-ng-src="{{mp3audioUrl}}" apply-styles data-ng-show="show" >' +
+                '<source type="audio/mp3" ng-src="{{mp3audioUrl}}">' +
                 '{{audiosupportmessage}}' +
                 '</audio>');
     }]).directive('wmAudio', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, CONSTANTS) {
