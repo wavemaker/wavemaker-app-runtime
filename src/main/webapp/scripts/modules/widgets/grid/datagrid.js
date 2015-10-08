@@ -28,7 +28,6 @@ $.widget('wm.datagrid', {
         enableColumnSelection: true,
         multiselect: false,
         filterNullRecords: true,
-        caption: '',
         cssClassNames: {
             'tableRow': 'app-datagrid-row',
             'headerCell': 'app-datagrid-header-cell',
@@ -267,7 +266,7 @@ $.widget('wm.datagrid', {
 
         sel += '</select>';
         htm =
-            '<form class="form-search form-inline well well-sm row" onsubmit="return false;"><div class="form-group">' +
+            '<form class="form-search form-inline" onsubmit="return false;"><div class="form-group">' +
                 '<label class="control-label app-label" data-element="dgSearchLabel">' +
                     searchLabel + ' </label>' + sel +
                 '</div><div class="input-append input-group input-group-sm">' +
@@ -764,23 +763,6 @@ $.widget('wm.datagrid', {
                 this.gridHeader && this.removeSort();
             } else {
                 this.refreshGrid();
-            }
-            break;
-        case 'caption':
-            if (this.gridCaption) {
-                if (!value.length) {
-                    this.element.find('.table-heading').remove();
-                    this.gridCaption = null;
-                } else {
-                    this.gridCaption.text(value);
-                }
-            } else {
-                if (!value.length) {
-                    return;
-                }
-                var caption = $('<h3 class="table-heading">' + value + '</h3>');
-                caption.insertBefore(this.gridContainer);
-                this.gridCaption = this.element.find('.table-heading');
             }
             break;
         case 'dataStates':
@@ -1502,17 +1484,9 @@ $.widget('wm.datagrid', {
                 '<div class="table-container table-responsive" style="height:' + this.options.height + ';">' +
                     '<table class="' + this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid + '" id="table_' + this.tableId + '">' +
                     '</table>' +
-                '</div>',
-            caption = '<h3 class="table-heading">' + this.options.caption + '</h3>';
+                '</div>';
         this.gridContainer = $(table);
         this.gridElement = this.gridContainer.find('table');
-
-        // Set the caption if it is present.
-        if (this.options.caption.length) {
-            this.gridCaption = $(caption);
-            this.element.find('.table-heading').remove();
-            this.element.append(this.gridCaption);
-        }
 
         // Remove the grid table element.
         this.element.find('.table-container').remove();

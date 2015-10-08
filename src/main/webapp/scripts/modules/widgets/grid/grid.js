@@ -172,9 +172,10 @@ WM.module('wm.widgets.grid')
             "template": function (element) {
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
-                return '<div data-identifier="grid" init-widget data-ng-show="show" title="{{hint}}" class="app-grid" apply-styles="shell">' +
+                return '<div data-identifier="grid" init-widget data-ng-show="show" title="{{hint}}" class="app-grid panel" apply-styles="shell">' +
+                    '<div class="panel-heading" data-ng-if="title"><h3 class="panel-title">{{title}}</h3></div>' +
                     '<div class="app-datagrid"></div>' +
-                    '<div class="table-footer well well-sm clearfix" ng-show="shownavigation || actions.length">' +
+                    '<div class="panel-footer clearfix" ng-show="shownavigation || actions.length">' +
                         '<div class="app-datagrid-paginator pull-left">' +
                             '<wm-datanavigator show="{{show && shownavigation}}" showrecordcount="{{show && showrecordcount}}">' +
                             '</wm-datanavigator>' +
@@ -236,6 +237,11 @@ WM.module('wm.widgets.grid')
                         });
                     },
                     'post': function (scope, element, attrs) {
+                        /****condition for old property name for grid title*****/
+                        if( attrs.gridcaption && !attrs.title ){
+                            scope.title = scope.gridcaption;
+                        }
+
                         scope.gridElement = element;
                         scope.gridColumnCount = gridColumnCount;
                         scope.displayAllFields = attrs.displayall === '';
@@ -445,9 +451,6 @@ WM.module('wm.widgets.grid')
                                     scope.widgetProps.updaterow.show = !newVal;
                                     scope.widgetProps.insertrow.show = !newVal;
                                 }
-                                break;
-                            case 'gridcaption':
-                                scope.setDataGridOption('caption', newVal);
                                 break;
                             case 'gridclass':
                                 scope.datagridElement.datagrid('option', 'cssClassNames.grid', newVal);
@@ -1231,6 +1234,7 @@ WM.module('wm.widgets.grid')
 
                         $scope.selectedItemWatched = true;
 
+                        /*Check for sanity of newVal.*/
                         /*Check for sanity of newVal.*/
                         if (newVal && !WM.equals(newVal, oldVal)) {
 

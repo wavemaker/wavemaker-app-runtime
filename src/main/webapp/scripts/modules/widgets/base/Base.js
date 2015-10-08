@@ -1128,7 +1128,7 @@ WM.module('wm.widgets.base', [])
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-out-bound"},
                         "deletemessage": {"type": "string", "value": "Record deleted successfully", "bindable": "in-out-bound"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
-                        "gridcaption": {"type": "string", "bindable": "in-out-bound", "value": ""},
+                        "title": {"type": "string", "bindable": "in-bound"},
 
                         /* Events */
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1149,7 +1149,7 @@ WM.module('wm.widgets.base', [])
 
                         /* Styles */
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex},
-                        "class": {"type": "string", "show": false, "pattern": classRegex}
+                        "class": {"type": "string", "pattern": classRegex}
                     },
                     'wm.livegrid': {
                         'formlayout': {"type": "list", "options": ["inline", "dialog"], "value": "inline"}

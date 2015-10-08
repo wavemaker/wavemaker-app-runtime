@@ -1158,7 +1158,7 @@ If the height and width are not specified the video takes the height of the post
   position: relative;
   height: auto;
   .form-search {
-    margin-bottom: 0;
+    padding: 1em;
     .app-search-button {
       .remove-background();
       border: none;
@@ -1175,12 +1175,11 @@ If the height and width are not specified the video takes the height of the post
     margin-right: 1em;
   }
   .control-label {
-    margin-right: 1em;
+    margin-top: 0 !important;
   }
   }
 
-  .table-footer.well {
-    margin: 0;
+  > .panel-footer {
     .app-datagrid-actions {
       text-align: right;
     }
@@ -1323,11 +1322,12 @@ If the height and width are not specified the video takes the height of the post
   .overlay {
     width:100%;
     height:100%;
-    position:absolute;
+    position:relative;
     top: 0;
     z-index: 999;
     background: rgba(255, 255, 255, 0.5);
     text-align: center;
+    padding: 3em;
     .loading {
       display: inline-block;
       .width-height(16px, 16px);
@@ -1340,7 +1340,6 @@ If the height and width are not specified the video takes the height of the post
       display: inline-block;
       position: relative;
       top: 50%;
-      margin-left: 4px;
     }
     &.bg-none {
       background: none;
