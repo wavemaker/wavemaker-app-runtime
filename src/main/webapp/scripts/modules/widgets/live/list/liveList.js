@@ -13,7 +13,7 @@ WM.module('wm.widgets.live')
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                        '<div class="panel-footer" data-ng-if="navControls">' +
+                        '<div class="panel-footer" data-ng-if="navigation !== \'None\'">' +
                             '<wm-datanavigator showrecordcount="true" navcontrols="{{navControls}}"></wm-datanavigator>' +
                         '</div>' +
                     '</div>'
@@ -325,7 +325,7 @@ WM.module('wm.widgets.live')
                 var $dataNavigator, // dataNavigator element
                     dataNavigator,  // dataNavigator scope
                     binddataset;
-                if ($is.navControls) {
+                if ($is.navControls || $is.infScroll) {
 
                     binddataset = $is.binddataset;
                     Utils.triggerFn($is._watchers.dataset);
