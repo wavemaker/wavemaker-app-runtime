@@ -1442,7 +1442,9 @@ WM.module('wm.widgets.base', [])
                         "opacity": {"type": "string", "widget": "slider"},
                         "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                         "zindex": {"type": "string", "pattern": zindexRegex},
-                        "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string"},
+                        "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.datanavigator": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -2588,7 +2590,8 @@ WM.module('wm.widgets.base', [])
                             "wm-rating",
                             "wm-camera",
                             "wm-barcodescanner",
-                            "wm-mobile-navbar "
+                            "wm-mobile-navbar ",
+                            "wm-chart"
                             ];
                     } else if (types === 'page-container-widgets') {
                         types = [

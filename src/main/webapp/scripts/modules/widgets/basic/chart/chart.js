@@ -93,6 +93,17 @@ WM.module('wm.widgets.basic')
                 'Donut'          : ['showlabels', 'labeltype', 'donutratio', 'showlabelsoutside', 'title'],
                 'Bubble'         : ['showxdistance', 'showydistance', 'bubblesize', 'shape']
             },
+            /*XPaths to get actual data of data points in charts*/
+            chartDataPointXpath = {
+                'Column'         : 'rect.nv-bar',
+                'Bar'            : 'g.nv-bar',
+                'Area'           : '.nv-stackedarea .nv-point',
+                'Cumulative Line': '.nv-cumulativeLine .nv-scatterWrap path.nv-point',
+                'Line'           : '.nv-lineChart .nv-scatterWrap path.nv-point',
+                'Pie'            : '.nv-pieChart .nv-slice path',
+                'Donut'          : '.nv-pieChart .nv-slice path',
+                'Bubble'         : '.nv-scatterChart .nv-point-paths path'
+            },
             /*all properties of the chart*/
             allOptions = ['showvalues', 'showlabels', 'showcontrols', 'useinteractiveguideline', 'staggerlabels', 'reducexticks', 'barspacing', 'labeltype', 'donutratio', 'showlabelsoutside', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'xaxislabeldistance', 'yaxislabeldistance', 'showxdistance', 'showydistance', 'bubblesize', 'shape', 'captions', 'showxaxis', 'showyaxis', 'title', 'highlightpoints', 'linethickness'],
             advanceDataProps = ['aggregation', 'aggregationcolumn', 'groupby', 'orderby'],
@@ -181,7 +192,8 @@ WM.module('wm.widgets.basic')
                 'customcolors'      : true,
                 'legendtype'        : true,
                 'highlightpoints'   : true,
-                'linethickness'     : true
+                'linethickness'     : true,
+                'selecteditem'      : true
             };
 
         /* returns true if chart type is pie */
@@ -584,6 +596,8 @@ WM.module('wm.widgets.basic')
             } else if (isChartDataArray(type)) {
                 dataPoint = [xVal, yVal];
             }
+            /*Adding actual unwrapped data to chart data to use at the time of selected data point of chart event*/
+            dataPoint._dataObj = dataObj;
             return dataPoint;
         }
 
@@ -642,8 +656,8 @@ WM.module('wm.widgets.basic')
             if (WM.isArray(dataSet)) {
                 if (isPieType(scope.type)) {
                     yAxisKey = yAxisKeys[0];
-                    datum = _.map(dataSet, function (dataObj) {
-                        return valueFinder(scope, dataObj, xAxisKey, yAxisKey);
+                    datum = _.map(dataSet, function (dataObj, index) {
+                        return valueFinder(scope, dataSet[index], xAxisKey, yAxisKey);
                     });
                 } else {
                     if (isBubbleChart(scope.type)) {
@@ -652,7 +666,7 @@ WM.module('wm.widgets.basic')
                     yAxisKeys.forEach(function (yAxisKey, series) {
                         datum.push({
                             values: _.map(dataSet, function (dataObj, index) {
-                                return valueFinder(scope, dataObj, xAxisKey, yAxisKey, index, (WM.isArray(shapes) && shapes[series]) || scope.shape);
+                                return valueFinder(scope, dataSet[index], xAxisKey, yAxisKey, index, (WM.isArray(shapes) && shapes[series]) || scope.shape);
                             }),
                             key: yAxisKey
                         });
@@ -1105,6 +1119,35 @@ WM.module('wm.widgets.basic')
             return formater;
         }
 
+        /*Call user defined javascript function when user links it to click event of the widget.*/
+        function attachClickEvent(scope) {
+            var dataObj;
+            d3.select('#wmChart' + scope.$id + ' svg').selectAll(chartDataPointXpath[scope.type]).style("pointer-events", "all").on('click', function (data, index) {
+                switch (scope.type) {
+                case 'Column':
+                case 'Bar':
+                    dataObj = data._dataObj;
+                    break;
+                case 'Pie':
+                case 'Donut':
+                    dataObj = data.data._dataObj;
+                    break;
+                case 'Area':
+                case 'Cumulative Line':
+                case 'Line':
+                    dataObj = data[0].values[index]._dataObj;
+                    break;
+                case 'Bubble':
+                    dataObj = data.data.point[4]._dataObj;
+                    break;
+                }
+                $rootScope.$safeApply(scope, function () {
+                    scope.selecteditem = dataObj;
+                    scope.onSelect && scope.onSelect({$event: d3.event, $isolateScope: scope, selectedChartItem: data, selectedItem: scope.selecteditem});
+                });
+            });
+        }
+
         /* intializes the chart obejct */
         function initChart(scope) {
             var chart, theme;
@@ -1327,7 +1370,7 @@ WM.module('wm.widgets.basic')
             /*Reason : when multiple pie charts are bound to same data, first chart theme will be applied to all charts*/
             var chartData = datum;
             if (isPieType(scope.type) && (!scope.binddataset || !scope.scopedataset)) {
-                chartData = WM.copy(scope.scopedataset || datum)
+                chartData = WM.copy(scope.scopedataset || datum);
             }
             /* checking the parent container before plotting the chart */
             if (!element[0].getBoundingClientRect().height) {
@@ -1476,6 +1519,13 @@ WM.module('wm.widgets.basic')
 
             nv.addGraph(function () {
                 configureChart(scope, element, datum);
+            }, function () {
+                /*Bubble chart has an time out delay of 300ms in their implementation due to which we
+                * won't be getting required data points on attaching events
+                * hence delaying it 600ms*/
+                setTimeout(function () {
+                    attachClickEvent(scope);
+                }, 600);
             });
         }
 
@@ -1806,7 +1856,8 @@ WM.module('wm.widgets.basic')
             replace: true,
             scope: {
                 "scopedataset": '=?',
-                "onTransform": '&'
+                "onTransform": '&',
+                "onSelect": '&'
             },
             template: $templateCache.get("template/widget/form/chart.html"),
             compile: function () {
