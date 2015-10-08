@@ -16,7 +16,8 @@ WM.module('wm.prefabs')
 */
     .factory('debugModePrefabResourceInterceptor',
         [
-            function () {
+            'WMSPreferences',
+            function ($P) {
                 'use strict';
 
                 var configs = [],
@@ -64,34 +65,38 @@ WM.module('wm.prefabs')
                     }
                 }
 
-                return {
-                    'request': function (config) {
+                function requestInterceptor(config) {
 
-                        if (enableInterceptor) {
-                            var _url = getDevModePrefabUrl(config.url);
+                    if (enableInterceptor) {
+                        var _url = getDevModePrefabUrl(config.url);
 
-                            if (_url) {
-                                config.url = _url;
-                            }
+                        if (_url) {
+                            config.url = _url;
                         }
-                        return config;
-                    },
-                    'register': function (pfName, url) {
-                        enableInterceptor = true;
-
-                        if (!url.endsWith('/')) {
-                            url = url + '/';
-                        }
-
-                        configs.push(
-                            {
-                                'prefabName'    : pfName,
-                                'prefabAppUrl'  : url,
-                                'resourceMatch' : 'app/prefabs/' + pfName + '/',
-                                'servicesMatch' : '/prefabs/' + pfName + '/'
-                            }
-                        );
                     }
+                    return config;
+                }
+
+                function registerConfig(pfName, url) {
+                    enableInterceptor = true;
+
+                    if (!url.endsWith('/')) {
+                        url = url + '/';
+                    }
+
+                    configs.push(
+                        {
+                            'prefabName'    : pfName,
+                            'prefabAppUrl'  : url,
+                            'resourceMatch' : 'app/prefabs/' + pfName + '/',
+                            'servicesMatch' : '/prefabs/' + pfName + '/'
+                        }
+                    );
+                }
+
+                return {
+                    'request' : $P.hasAccess('components.prefabs.debugMode') ? requestInterceptor : WM.identity,
+                    'register': registerConfig
                 };
             }
         ])
@@ -113,8 +118,9 @@ WM.module('wm.prefabs')
         'DialogService',
         'PrefabService',
         'debugModePrefabResourceInterceptor',
+        'WMSPreferences',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rootScope, DialogService, PrefabService, debugModePrefabResourceInterceptor) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rootScope, DialogService, PrefabService, debugModePrefabResourceInterceptor, $P) {
             'use strict';
 
             var prefabDefaultProps = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -232,6 +238,10 @@ WM.module('wm.prefabs')
                         widgetProps[key] = prop;
                     }
                 });
+
+                if (!$P.hasAccess('components.prefabs.debugMode')) {
+                    widgetProps.debugurl.show = false;
+                }
 
                 prefabWidgetPropsMap[iScope.prefabname] = widgetProps;
                 prefabMethodsMap[iScope.prefabname] = methodsMap;
