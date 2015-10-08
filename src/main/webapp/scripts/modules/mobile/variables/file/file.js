@@ -14,11 +14,15 @@ WM.module('wm.variables').run(['$rootScope', 'DeviceVariableService', '$cordovaF
             invoke: function (variable, options, success, error) {
                 var serverUrl = $rootScope.project.deployedUrl + '/services/file/uploadFile?relativePath=' + variable.remoteFolder,
                     fileName = variable.localFile,
-                    fileNameStartIndex = fileName.lastIndexOf('/');
+                    fileNameStartIndex = fileName.lastIndexOf('/'),
+                    ftOptions = {fileKey : 'files',
+                                   fileName: fileName,
+                                   chunkedMode : false};
                 if (fileNameStartIndex >= 0) {
-                    fileName  = fileName.substring(fileNameStartIndex + 1);
+                    ftOptions.fileName  = fileName.substring(fileNameStartIndex + 1);
                 }
-                $cordovaFileTransfer.upload(serverUrl, variable.localFile, {fileKey : 'files', fileName: fileName})
+
+                $cordovaFileTransfer.upload(serverUrl, variable.localFile, ftOptions)
                     .then(function (data) {
                         success(JSON.parse(data.response)[0]);
                     }, error);
