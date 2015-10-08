@@ -1305,6 +1305,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.livelist": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
+                        "title": {"type": "string", "bindable": "in-bound"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
                         "pagesize": {"type": "number"},

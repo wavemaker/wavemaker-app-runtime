@@ -7,12 +7,13 @@ WM.module('wm.widgets.live')
         'use strict';
 
         $tc.put('template/widget/list.html',
-                    '<div class="app-livelist" init-widget apply-styles="shell" data-ng-show="show">' +
+                    '<div class="app-livelist panel" init-widget apply-styles="shell" data-ng-show="show">' +
+                        '<div class="panel-heading" data-ng-if="title"><h4 class="panel-title">{{title}}</h4></div>'+
                         '<ul data-identifier="list" class="clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                        '<wm-datanavigator class="well well-sm clearfix" data-ng-if="hasAdvancedNavigation" show="{{showAdvancedNavigation}}" showrecordcount="true"></wm-datanavigator>' +
+                        '<div class="panel-footer" data-ng-if="hasAdvancedNavigation"><wm-datanavigator show="{{showAdvancedNavigation}}" showrecordcount="true"></wm-datanavigator></div>' +
                     '</div>'
                 );
 
@@ -46,7 +47,7 @@ WM.module('wm.widgets.live')
         function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base.editors', 'wm.base.events']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events']),
                 liTemplateWrapper_start = '<li data-ng-repeat="item in fieldDefs track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ',
                 liTemplateWrapper_end = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>',
                 notifyFor = {
@@ -202,7 +203,7 @@ WM.module('wm.widgets.live')
             }
 
             function bindScrollEvt($is, $el) {
-                var $dataNavigator = $el.find('> [data-identifier=datanavigator]'),
+                var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
                     navigator = $dataNavigator.isolateScope();
 
                 $el.find('> ul')
@@ -328,7 +329,7 @@ WM.module('wm.widgets.live')
                     Utils.triggerFn($is._watchers.dataset);
 
                     $timeout(function () {
-                        $dataNavigator = $el.find('> [data-identifier=datanavigator]');
+                        $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]');
                         dataNavigator = $dataNavigator.isolateScope();
 
                         dataNavigator.pagingOptions = {
@@ -430,6 +431,7 @@ WM.module('wm.widgets.live')
                 if (key === 'dataset') {
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, nv);
+                    return;
                 }
 
                 if (CONSTANTS.isStudioMode) {
