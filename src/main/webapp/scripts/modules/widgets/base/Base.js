@@ -1224,7 +1224,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.prefabs": {
                         "margin": {"type": "string", "widget": "box"},
-                        "debugurl": {"type": "string"},
+                        "debugurl": {"type": "string", "show": false},
                         "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},

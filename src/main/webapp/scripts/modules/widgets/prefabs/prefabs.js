@@ -16,8 +16,7 @@ WM.module('wm.prefabs')
 */
     .factory('debugModePrefabResourceInterceptor',
         [
-            'WMSPreferences',
-            function ($P) {
+            function () {
                 'use strict';
 
                 var configs = [],
@@ -95,16 +94,16 @@ WM.module('wm.prefabs')
                 }
 
                 return {
-                    'request' : $P.hasAccess('components.prefabs.debugMode') ? requestInterceptor : WM.identity,
+                    'request' : requestInterceptor,
                     'register': registerConfig
                 };
             }
         ])
-    .config(function ($httpProvider) {
+    /*.config(function ($httpProvider) {
         'use strict';
 
         $httpProvider.interceptors.push('debugModePrefabResourceInterceptor');
-    })
+    })*/
     .directive('wmPrefab', [
         'PrefabManager',
         'Utils',
@@ -118,9 +117,8 @@ WM.module('wm.prefabs')
         'DialogService',
         'PrefabService',
         'debugModePrefabResourceInterceptor',
-        'WMSPreferences',
 
-        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rootScope, DialogService, PrefabService, debugModePrefabResourceInterceptor, $P) {
+        function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rootScope, DialogService, PrefabService, debugModePrefabResourceInterceptor) {
             'use strict';
 
             var prefabDefaultProps = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
@@ -239,10 +237,6 @@ WM.module('wm.prefabs')
                     }
                 });
 
-                if (!$P.hasAccess('components.prefabs.debugMode')) {
-                    widgetProps.debugurl.show = false;
-                }
-
                 prefabWidgetPropsMap[iScope.prefabname] = widgetProps;
                 prefabMethodsMap[iScope.prefabname] = methodsMap;
 
@@ -272,9 +266,11 @@ WM.module('wm.prefabs')
                 'compile': function () {
                     return {
                         'pre': function (iScope, element, attrs) {
+                            /*
                             if (attrs.debugurl) {
                                 debugModePrefabResourceInterceptor.register(iScope.prefabname, attrs.debugurl);
                             }
+                            */
 
                             var serverProps;
                             function loadDependencies() {
