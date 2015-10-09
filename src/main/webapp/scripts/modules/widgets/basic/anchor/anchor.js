@@ -7,7 +7,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/anchor.html',
                 '<a data-identifier="anchor" class="app-anchor" init-widget data-ng-show="show" title="{{hint}}" apply-styles>' +
                     '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}" data-ng-if="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
-                    '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-if="showicon"></i> ' +
+                    '<i class="app-icon {{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-if="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +
                     '<span data-ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
                 '</a>'
