@@ -71,7 +71,7 @@ WM.module('wm.widgets.live')
                 }
                 var col = itemsperrow && 12 / (+itemsperrow);
 
-                return $rs.isMobileApplicationType ?  ' col-xs-' + col : 'col-sm-' + col + ' col-md-' + col;
+                return $rs.isMobileApplicationType ?  ' col-xs-' + col : 'col-sm-' + col;
             }
 
             function getVariable($is, variableName) {
