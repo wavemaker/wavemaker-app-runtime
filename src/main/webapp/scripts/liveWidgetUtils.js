@@ -196,6 +196,7 @@ WM.module('wm.widgets.live')
                     'minValue' : attrs.minValue,
                     'maxvalue' : attrs.maxvalue,
                     'step' : attrs.step,
+                    'ismeridian' : attrs.ismeridian,
                     'onChange': attrs.onChange,
                     'onBlur': attrs.onBlur,
                     'onFocus': attrs.onFocus,
