@@ -582,11 +582,12 @@ body {
   }
 /********for buttons, anchors with icon on right****/
   .btn[icon-position = "right"], a[icon-position = "right"] {
-    > i, > .btn-caption, > .anchor-caption {
+    clear: both;
+    > i {
       float: right;
     }
     .badge {
-      float: left;
+      right: 20pt;
     }
   }
   /***reset the margin for the panel***/
