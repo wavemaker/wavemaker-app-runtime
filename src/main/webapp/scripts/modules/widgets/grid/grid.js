@@ -1294,7 +1294,6 @@ WM.module('wm.widgets.grid')
                     }, true);
                 }
             };
-
             $scope.isDataValid = function () {
                 var error;
 
@@ -1570,7 +1569,6 @@ WM.module('wm.widgets.grid')
                     setGridData($scope.serverData);
                 }
             };
-
             /* function to prepare fieldDefs for the grid according to data provided */
             $scope.prepareFieldDefs = function (data, propertiesMap) {
                 var defaultFieldDefs,
@@ -1613,6 +1611,7 @@ WM.module('wm.widgets.grid')
                             columnDef.fractionsize = column.fractionsize;
                             columnDef.suffix = column.suffix;
                             columnDef.prefix = column.prefix;
+                            columnDef.accessRoles = column.accessRoles;
                         }
                     });
                     /* if properties map is provided, append the same to column defs*/
@@ -1863,7 +1862,8 @@ WM.module('wm.widgets.grid')
                                 'currencypattern': attrs.currencypattern,
                                 'fractionsize': attrs.fractionsize,
                                 'suffix': attrs.suffix,
-                                'prefix': attrs.prefix
+                                'prefix': attrs.prefix,
+                                'accessRoles': attrs.accessroles || ''
                             },
                             updateCustomExpression = function (column) {
                                 var widgetType = column.widgetType,
