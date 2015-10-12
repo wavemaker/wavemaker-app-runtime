@@ -170,6 +170,8 @@ WM.module('wm.widgets.form')
  *                  Callback function which will be triggered when the mouse enters the widget.
  * @param {string=} on-mouseleave
  *                  Callback function which will be triggered when the mouse leaves the widget.
+ *@param {string=} on-keypress
+ *                  Callback function which will be triggered when any key is pressed while widget is focused.
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
@@ -180,6 +182,7 @@ WM.module('wm.widgets.form')
  *                  <div>change count: {{changeCount}}</div>
  *                  <div>mouse enter count: {{mouseenterCount}}</div>
  *                  <div>mouse leave count: {{mouseleaveCount}}</div>
+ *                  <div>key press count: {{keypressCount}}</div>
  *                  <div>focus count: {{focusCount}}</div>
  *                  <div>blur count: {{blurCount}}</div><br>
  *                  <wm-text
@@ -195,7 +198,8 @@ WM.module('wm.widgets.form')
  *                      on-focus="f('focus');"
  *                      on-blur="f('blur');"
  *                      on-mouseenter="f('mouseenter');"
- *                      on-mouseleave="f('mouseleave')"
+ *                      on-mouseleave="f('mouseleave');"
+ *                      on-keypress="f('keypress')"
  *                      width="{{width}}"
  *                      height="{{height}}">
  *                  </wm-text><br><br>
@@ -253,6 +257,7 @@ WM.module('wm.widgets.form')
  *              $scope.changeCount =
  *              $scope.mouseenterCount =
  *              $scope.mouseleaveCount =
+ *              $scope.keypressCount =
  *              $scope.focusCount =
  *              $scope.blurCount = 0;
  *              $scope.type = "text";
