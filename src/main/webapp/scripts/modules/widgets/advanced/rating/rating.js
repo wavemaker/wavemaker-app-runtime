@@ -26,14 +26,14 @@ WM.module('wm.widgets.advanced')
             notifyFor = {
                 'maxvalue': true,
                 'readonly': true
-            };
+            },
+            MAX_RATING = 5;
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
             case 'maxvalue':
                 var range = [],
                     i,
-                    MAX_RATING = 5,
                     maxValue = parseInt(newVal, 10);
                 for (i = maxValue || MAX_RATING; i > 0; i--) {
                     range.push({'value': i});
@@ -66,7 +66,7 @@ WM.module('wm.widgets.advanced')
                         iScope.ratingsWidth = function () {
                             var dataValue = parseFloat(iScope.datavalue),
                                 starWidth = 0.925,
-                                maxValue = parseInt(iScope.maxvalue, 10);
+                                maxValue = parseInt(iScope.maxvalue, 10) || MAX_RATING;
                             $el.find('.ratings-container').css("width", (starWidth * maxValue) + 'em');
                             if (iScope.datavalue === undefined || iScope.datavalue === '' || iScope.datavalue === null) {
                                 return 0;
