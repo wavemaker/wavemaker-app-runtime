@@ -70,7 +70,9 @@ WM.module('wm.widgets.advanced')
                 var calendar = scope.calendarOptions.calendar;
                 switch (key) {
                 case 'dataset':
-                    scope.eventSources.push(newVal);
+                    if (!_.includes(scope.eventSources, newVal)) {
+                        scope.eventSources.push(newVal);
+                    }
                     break;
                 case 'height':
                     calendar.height = parseInt(newVal, 10);
@@ -204,6 +206,10 @@ WM.module('wm.widgets.advanced')
                             scope.$on('$destroy', function () {
                                 handlers.forEach(Utils.triggerFn);
                             });
+
+                            scope.redraw = function () {
+                                element.children().first().fullCalendar('render');
+                            };
                             /* register the property change handler */
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
