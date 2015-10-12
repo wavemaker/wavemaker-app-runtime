@@ -656,7 +656,7 @@ WM.module('wm.widgets.base')
                     allowPageable = _config.allowPageable,
                     acceptsArray = _config.acceptsArray,
                     variableName = watchExpr.split('.')[1],
-                    variableObject = variableName && scope.Variables[variableName];
+                    variableObject = variableName && scope.Variables && scope.Variables[variableName];
 
                 if (isArrayTypeExpr(watchExpr)) {
                     if (CONSTANTS.isStudioMode) {
