@@ -315,21 +315,9 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmTabheader', ['$compile', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', 'Utils', function ($compile, PropertiesFactory, WidgetUtilService, $templateCache, Utils) {
+    .directive('wmTabheader', ['$compile', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', function ($compile, PropertiesFactory, WidgetUtilService, $templateCache) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabheader', ['wm.base', 'wm.layouts']),
-            notifyFor = {
-                'paneicon': true
-            };
-
-        /*Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
-            switch (key) {
-            case 'paneicon':
-                scope.iconsource = Utils.getBackGroundImageUrl(newVal);
-                break;
-            }
-        }
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabheader', ['wm.base', 'wm.layouts']);
 
         return {
             'restrict': 'E',
@@ -352,15 +340,12 @@ WM.module('wm.layouts.containers')
                         var transcludeTarget = element.children('[wmtransclude]'),
                             template;
 
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-
                         /* if the tabheader is not provided with any content[i.e, no transcluded content] use the default template */
                         if (transcludeTarget.children().length === 0) {
                             /* default template for the tabheader */
                             template =
                                     '<div class="tab-heading">' +
-                                        '<i class="app-icon" data-ng-show="iconsource" data-ng-style ="{backgroundImage:iconsource}">&nbsp;</i>' +
+                                    '<i class="app-icon {{paneicon}}" data-ng-if="paneicon"></i> ' +
                                         '<span data-ng-bind-html="heading"></span>' +
                                         '<i data-ng-click="tab.onClose();" data-ng-if="tab.closable">&nbsp;</i>' +
                                     '</div>';

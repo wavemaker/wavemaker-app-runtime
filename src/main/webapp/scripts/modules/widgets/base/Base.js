@@ -1283,7 +1283,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.tabheader": {
                         "heading": {"type": "string", "value": "Tab Title", "bindable": "in-bound"},
-                        "paneicon": {"type": "string", "bindable": "in-bound"},
+                        "paneicon": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "pattern": classRegex},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
                         "tabindex": {"type": "string"}
                     },
