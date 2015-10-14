@@ -377,7 +377,8 @@ WM.module('wm.widgets.base', [])
 
                         /* Number properties */
                         "minvalue": {"type": "number", "bindable": "in-bound"},
-                        "maxvalue": {"type": "number", "bindable": "in-bound"}
+                        "maxvalue": {"type": "number", "bindable": "in-bound"},
+                        "onKeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
                     "wm.currency": {
@@ -700,7 +701,8 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Place your text"},
                         "maxchars": {"type": "number"},
                         "updateon": {"type": "list", "value": "blur", "widget": "updateon"},
-                        "updatedelay": {"type": "number", "value": 0}
+                        "updatedelay": {"type": "number", "value": 0},
+                        "onKeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
                     "wm.basicdialog": {
@@ -1897,6 +1899,8 @@ WM.module('wm.widgets.base', [])
 
                     'onFocus':          {'name': 'data-ng-focus',       'value': 'onFocus({$event: $event, $scope: this})'},
                     'onBlur':           {'name': 'data-ng-blur',        'value': 'onBlur({$event: $event, $scope: this})'},
+
+                    'onKeypress':       {'name': 'data-ng-keypress',  'value': 'onKeypress({$event: $event, $scope: this})'},
 
                     'onSwipeup':        {'name': 'hm-swipe-up',         'value': 'onSwipeup({$event: $event, $scope: this})'},
                     'onSwipedown':      {'name': 'hm-swipe-down',       'value': 'onSwipedown({$event: $event, $scope: this})'},
