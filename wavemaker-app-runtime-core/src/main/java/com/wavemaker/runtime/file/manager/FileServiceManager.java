@@ -112,10 +112,15 @@ public class FileServiceManager {
        * typically private or temporary files not for users to interact with
        */
         File[] files = uploadDirectory.listFiles(
-                new java.io.FilenameFilter() {
-                    public boolean accept(File dir, String name) {
-                        return (name.indexOf(".") != 0);
+                new java.io.FileFilter() {
+                    @Override
+                    public boolean accept(final File pathname) {
+                        if(pathname.isDirectory()){
+                            return false;
+                        }
+                        return (pathname.getName().indexOf(".") != 0);
                     }
+
                 });
 
 
