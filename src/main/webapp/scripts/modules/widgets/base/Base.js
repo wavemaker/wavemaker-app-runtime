@@ -1272,7 +1272,8 @@ WM.module('wm.widgets.base', [])
                     "wm.tabs": {
                         "addchild": {"hidelabel": true, "widgettype": "wm-tabpane", "widget": "add-widget"},
                         "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
-                        "taborder": {"type": "list", "widget": "tabordering", "dataset": []}
+                        "taborder": {"type": "list", "widget": "tabordering", "dataset": []},
+                        "transition": {"type": "list", "options": ["none", "slide"], "value": "none"}
                     },
 
                     "wm.tab": {
@@ -1566,7 +1567,7 @@ WM.module('wm.widgets.base', [])
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchbuttoniconclass",
+                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchbuttoniconclass",
                     "searchbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype", "loadmode", "loaddelay"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "infscroll", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},

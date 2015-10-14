@@ -3,24 +3,24 @@
 /*Directive for tabs */
 
 WM.module('wm.layouts.containers')
-    .run(['$rootScope', '$templateCache', function ($rootScope, $templateCache) {
+    .run(['$templateCache', function ($templateCache) {
         'use strict';
 
         /* define the template for the tabs directive */
         $templateCache.put('template/layout/container/tabs.html',
                 '<div class="app-tabs clearfix" init-widget data-ng-show="show" apply-styles="container">' +
                     '<ul class="nav nav-tabs" data-ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
-                    '<div class="tab-content" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude></div>' +
+                    '<div class="tab-content" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
                 '</div>'
             );
 
         /* define the template for the tabpane directive */
         $templateCache.put('template/layout/container/tab-pane.html',
-            '<div class="tab-pane" wmtransclude init-widget data-ng-show="show" data-ng-class="{active: isActive, disabled:disabled}" wm-navigable-element="true"></div>');
+            '<div class="tab-pane" wmtransclude init-widget data-ng-show="show" data-ng-class="{disabled:disabled}" wm-navigable-element="true"></div>');
 
         /* define the template for the tabheader directive */
         $templateCache.put('template/layout/container/tab-header.html',
-            '<li class="tab-header" data-ng-class="{active: tab.isActive, disabled: tab.disabled}" data-ng-show="tab.show" data-tab-id="{{tab.widgetid}}" data-ng-click="tab.select()" init-widget>' +
+            '<li class="tab-header" data-ng-class="{active: tab.isActive, disabled: tab.disabled}" data-ng-show="tab.show" data-tab-id="{{tab.widgetid}}" data-ng-click="tab.select()"  hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);" init-widget>' +
                 '<a wmtransclude apply-styles="container"></a>' +
             '</li>');
 
@@ -29,7 +29,7 @@ WM.module('wm.layouts.containers')
             '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget apply-styles></div>');
 
     }])
-    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
+    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope) {
         'use strict';
 
         /* get the properties related to the tabs */
@@ -107,6 +107,10 @@ WM.module('wm.layouts.containers')
                         tab.onSelect();
                     }
 
+                    if (tab) {
+                        tab._animateIn($element.hasClass('has-transition'));
+                    }
+
                     // when tabContent is set to display external page, triggering $lazyLoad on select of the tab will render the content.
                     Utils.triggerFn(tab.tabContent.$lazyLoad);
                 };
@@ -114,135 +118,184 @@ WM.module('wm.layouts.containers')
                 /* make selectedTab method available to the isolateScope of the tabs directive. */
                 $scope.selectTab = this.selectTab;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /* save the reference to widgetProps in scope */
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
+            link: {
+                'pre': function (scope, element, attrs) {
+                    /* save the reference to widgetProps in scope */
+                    scope.widgetProps = widgetProps;
 
-                        var tabs = scope.tabs,
-                            activeTab,
-                            tab;
-                        /* find the first tab which has isdefaulttab set and make it active.
-                         * mark the other tabs as inactive
-                         */
-                        tabs.forEach(function (tab) {
-                            if (!activeTab) {
-                                if (tab.isdefaulttab) {
-                                    activeTab = tab;
-                                }
-                            } else {
-                                tab.isActive = false;
+                    // In run mode when the tabs position is horizontal and transition is setup add 'has-transition' class
+                    if (CONSTANTS.isRunMode && attrs.transition && attrs.transition !== 'none' && (!attrs.tabsposition || attrs.tabsposition === 'top' || attrs.tabsposition === 'bottom')) {
+                        element.addClass('has-transition');
+                    }
+
+                    if (CONSTANTS.isStudioMode) {
+                        // define the _select method. This will be called in studio mode when a tab is selected using tabslist dropdown
+                        scope._select = function (el) {
+                            if (el.selectedIndex) {
+                                $rootScope.$safeApply($rootScope, function () {
+                                    //trigger the select method on selected tab.
+                                    WM.element(el).children().eq(el.selectedIndex).scope().tab.select();
+                                });
                             }
-                        });
-
-                        /*selects a given tab and executes onBeforeSwitchTab before switching*/
-                        function selectTab(tab, onBeforeSwitchTab) {
-                            /*trigger onBeforeSwitchTab callback before switching*/
-                            Utils.triggerFn(onBeforeSwitchTab);
-
-                            if (tab) {
-                                tab.select();
-                            }
-                        }
-
-                        /* if isdefaulttab is not set on any of the tabs, then set the first tab as active */
-                        activeTab = activeTab || tabs[0];
-                        /*Set active only if at least one is present*/
-                        if (activeTab) {
-                            activeTab.isActive = true;
-                            scope.selectTab(activeTab, true);
-                        }
-                        /**
-                         * @ngdoc function
-                         * @name wm.layouts.containers.directive:wmTabs#next
-                         * @methodOf wm.layouts.containers.directive:wmTabs
-                         * @function
-                         *
-                         * @description
-                         * This methods moves from the current active tabpane to next tabpane
-                         *
-                         * @param {function} onBeforeSwitchTab
-                         *                 Callback function to be triggered before moving to next tab.
-                         */
-                        /*method exposed to move to next tab from current active tab*/
-                        scope.next = function (onBeforeSwitchTab) {
-                            selectTab(tabs[scope.activeTabIndex + 1], onBeforeSwitchTab);
                         };
 
-                        /**
-                         * @ngdoc function
-                         * @name wm.layouts.containers.directive:wmTabs#previous
-                         * @methodOf wm.layouts.containers.directive:wmTabs
-                         * @function
-                         *
-                         * @description
-                         * This methods moves from the current tabpane to previous tabpane
-                         *
-                         * @param {function} onBeforeSwitchTab
-                         *                 Callback function to be triggered before moving to previous tab.
-                         */
-                        /*method exposed to move to previous tab from current active tab*/
-                        scope.previous = function (onBeforeSwitchTab) {
-                            selectTab(tabs[scope.activeTabIndex - 1], onBeforeSwitchTab);
-                        };
-                        /**
-                         * @ngdoc function
-                         * @name wm.layouts.containers.directive:wmTabs#goToTab
-                         * @methodOf wm.layouts.containers.directive:wmTabs
-                         * @function
-                         *
-                         * @description
-                         * This methods moves from the current tabpane to a given tab.
-                         *
-                         * @param {number} tabNum
-                         *                 tabNumber to which the user needs to switch.(starts from 1)
-                         * @param {function} onBeforeSwitchTab
-                         *                 Callback function to be triggered before moving to given tab.
-                         */
-                        /*method exposed to move to a particular tab from current active tab*/
-                        scope.goToTab = function (tabNum, onBeforeSwitchTab) {
-                            /*to go to a particular tab, we need tabScope.
-                            * If number is passed, we fetch the tabscope and then select that particular tab, else return*/
-                            if (WM.isNumber(tabNum)) {
-                                /*tabNum should be more than 0 and less than tabs length*/
-                                if (tabNum > 0 && tabNum <= tabs.length) {
-                                    tab = tabs[tabNum - 1];
-                                } else {
-                                    return;
-                                }
+                        // add the tabs-list element to the root element.
+                        element
+                            .append('<select class=tabs-list onchange="WM.element(this).scope()._select(this)" title="Select a Tab"><option hidden></option></select>');
+                    }
+                },
+                'post': function (scope, element, attrs) {
+
+                    var tabs = scope.tabs,
+                        activeTab,
+                        tab,
+                        $ul = element.find('> ul');
+                    /* find the first tab which has isdefaulttab set and make it active.
+                     * mark the other tabs as inactive
+                     */
+                    tabs.forEach(function (tab) {
+                        if (!activeTab) {
+                            if (tab.isdefaulttab) {
+                                activeTab = tab;
+                            }
+                        } else {
+                            tab.isActive = false;
+                        }
+                    });
+
+                    /*selects a given tab and executes onBeforeSwitchTab before switching*/
+                    function selectTab(tab, onBeforeSwitchTab) {
+                        /*trigger onBeforeSwitchTab callback before switching*/
+                        Utils.triggerFn(onBeforeSwitchTab);
+
+                        if (tab) {
+                            tab.select();
+                        }
+                    }
+
+                    /* if isdefaulttab is not set on any of the tabs, then set the first tab as active */
+                    activeTab = activeTab || tabs[0];
+                    /*Set active only if at least one is present*/
+                    if (activeTab) {
+                        activeTab.select();
+                    }
+                    /**
+                     * @ngdoc function
+                     * @name wm.layouts.containers.directive:wmTabs#next
+                     * @methodOf wm.layouts.containers.directive:wmTabs
+                     * @function
+                     *
+                     * @description
+                     * This methods moves from the current active tabpane to next tabpane
+                     *
+                     * @param {function} onBeforeSwitchTab
+                     *                 Callback function to be triggered before moving to next tab.
+                     */
+                    /*method exposed to move to next tab from current active tab*/
+                    scope.next = function (onBeforeSwitchTab) {
+                        selectTab(tabs[scope.activeTabIndex + 1], onBeforeSwitchTab);
+                    };
+
+                    /**
+                     * @ngdoc function
+                     * @name wm.layouts.containers.directive:wmTabs#previous
+                     * @methodOf wm.layouts.containers.directive:wmTabs
+                     * @function
+                     *
+                     * @description
+                     * This methods moves from the current tabpane to previous tabpane
+                     *
+                     * @param {function} onBeforeSwitchTab
+                     *                 Callback function to be triggered before moving to previous tab.
+                     */
+                    /*method exposed to move to previous tab from current active tab*/
+                    scope.previous = function (onBeforeSwitchTab) {
+                        selectTab(tabs[scope.activeTabIndex - 1], onBeforeSwitchTab);
+                    };
+                    /**
+                     * @ngdoc function
+                     * @name wm.layouts.containers.directive:wmTabs#goToTab
+                     * @methodOf wm.layouts.containers.directive:wmTabs
+                     * @function
+                     *
+                     * @description
+                     * This methods moves from the current tabpane to a given tab.
+                     *
+                     * @param {number} tabNum
+                     *                 tabNumber to which the user needs to switch.(starts from 1)
+                     * @param {function} onBeforeSwitchTab
+                     *                 Callback function to be triggered before moving to given tab.
+                     */
+                    /*method exposed to move to a particular tab from current active tab*/
+                    scope.goToTab = function (tabNum, onBeforeSwitchTab) {
+                        /*to go to a particular tab, we need tabScope.
+                        * If number is passed, we fetch the tabscope and then select that particular tab, else return*/
+                        if (WM.isNumber(tabNum)) {
+                            /*tabNum should be more than 0 and less than tabs length*/
+                            if (tabNum > 0 && tabNum <= tabs.length) {
+                                tab = tabs[tabNum - 1];
                             } else {
                                 return;
                             }
-                            /*select the tab*/
-                            selectTab(tab, onBeforeSwitchTab);
-                        };
+                        } else {
+                            return;
+                        }
+                        /*select the tab*/
+                        selectTab(tab, onBeforeSwitchTab);
+                    };
 
-                        scope.setTabsPosition = function (tabsposition) {
-                            var _tabs = element.find('>ul.nav-tabs');
-                            element.removeClass('inverted');
-                            if (tabsposition === 'bottom' || tabsposition === 'right') {
-                                element.addClass('inverted');
-                                element.append(_tabs);
-                            } else {
-                                element.prepend(_tabs);
-                            }
-                            scope.vertical = (tabsposition === 'left' || tabsposition === 'right');
-                        };
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                    scope.setTabsPosition = function (tabsposition) {
+                        var _tabs = element.find('>ul.nav-tabs');
+                        element.removeClass('inverted');
+                        if (tabsposition === 'bottom' || tabsposition === 'right') {
+                            element.addClass('inverted');
+                            element.append(_tabs);
+                        } else {
+                            element.prepend(_tabs);
+                        }
+                        scope.vertical = (tabsposition === 'left' || tabsposition === 'right');
+                    };
 
-                        /* initialize the widget */
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                        scope.setTabsPosition(attrs.tabsposition || (attrs.vertical === "true" ? 'left' : 'top'));
+                    // function to scroll the header into the viewport
+                    function _scrollHeader(delta) {
+                        var left = $ul[0].scrollLeft,
+                            _delta = -1 * delta;
+                        $ul.animate({scrollLeft: left + _delta}, {'duration': 10});
                     }
-                };
+
+                    if (CONSTANTS.isRunMode) {
+
+                        // define functions to select next/previous tabs on swipe action
+                        if (scope.transition && scope.transition !== 'none') {
+                            scope._onSwipeLeft = function () {
+                                // select next
+                                selectTab(tabs[scope.activeTabIndex + 1]);
+                            };
+
+                            scope._onSwipeRight = function () {
+                                // select previous
+                                selectTab(tabs[scope.activeTabIndex - 1]);
+                            };
+                        }
+
+                        element.find('> ul').on('mousewheel', function (e) {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            _scrollHeader(e.originalEvent.wheelDelta);
+                        });
+                    }
+
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+
+                    /* initialize the widget */
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    scope.setTabsPosition(attrs.tabsposition || (attrs.vertical === "true" ? 'left' : 'top'));
+                }
             }
         };
     }])
-    .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils) {
+    .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base']);
         return {
@@ -308,6 +361,40 @@ WM.module('wm.layouts.containers')
                             ctrl.selectTab(scope);
                         };
 
+                        scope._animateIn = function (hasTransition) {
+
+                            var index = element.index(),
+                                $parent = element.parent(),
+                                delta,
+                                tabHeadEl,
+                                ul;
+
+                            // when the transition is setup animate the selected tab into the view.
+                            if (hasTransition) {
+                                delta = index * $parent.width();
+
+                                $parent.animate({scrollLeft: delta}, {
+                                    'duration': 'fast',
+                                    'start'   : function () {
+                                        element.addClass('active');
+                                    }
+                                });
+                            } else {
+                                //when the animation is not present toggle the active class.
+                                element.siblings('.active').removeClass('active');
+                                element.addClass('active');
+                            }
+
+                            tabHeadEl = scope.tabHead._element;
+                            ul = tabHeadEl.parent()[0];
+                            // move the tabheader into the viewport
+                            if (tabHeadEl.index()) {
+                                ul.scrollLeft = tabHeadEl.prev()[0].offsetLeft;
+                            } else {
+                                ul.scrollLeft = 0;
+                            }
+                        };
+
                         /* initialize the widget */
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
@@ -315,7 +402,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmTabheader', ['$compile', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', function ($compile, PropertiesFactory, WidgetUtilService, $templateCache) {
+    .directive('wmTabheader', ['$compile', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', 'CONSTANTS', function ($compile, PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabheader', ['wm.base', 'wm.layouts']);
 
@@ -338,7 +425,8 @@ WM.module('wm.layouts.containers')
                     'post': function (scope, element, attrs, ctrl) {
                         /* find the target element to append the default template of the tabheader */
                         var transcludeTarget = element.children('[wmtransclude]'),
-                            template;
+                            template,
+                            $opt;
 
                         /* if the tabheader is not provided with any content[i.e, no transcluded content] use the default template */
                         if (transcludeTarget.children().length === 0) {
@@ -368,6 +456,35 @@ WM.module('wm.layouts.containers')
                          */
                         scope.tab = ctrl.registerHead(scope);
                         scope.tab.isdefaulttab = scope.isdefaulttab;
+
+                        function _scrollHeader(delta) {
+                            var $ul = element.parent(),
+                                left = $ul[0].scrollLeft,
+                                _delta = -2 * delta;
+                            $ul.animate({scrollLeft: left + _delta}, {'duration': 10});
+                        }
+
+                        if (CONSTANTS.isRunMode) {
+                            // define the functions to scroll the header into the view port on swipe.
+                            scope._onHeaderSwipeLeft = function (e) {
+                                _scrollHeader(e.deltaX);
+                            };
+
+                            scope._onHeaderSwipeRight = function (e) {
+                                _scrollHeader(e.deltaX);
+                            };
+                        } else {
+                            // create an option element and add it to the tabs-list element.
+                            $opt = WM.element('<option ng-bind-html="heading"></option>');
+                            $opt = $compile($opt)(scope);
+                            element.closest('.app-tabs').children('select').append($opt);
+
+                            scope.$on('$destroy', function () {
+                                if ($opt) {
+                                    $opt.remove();
+                                }
+                            });
+                        }
 
                         /* initialize the widget */
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
@@ -449,8 +566,12 @@ WM.module('wm.layouts.containers')
  * @param {string=} height
  *                  Height of the tabs widget.
  * @param {boolean=} tabsposition
- *                  Align the tab headers to left/right/top/bottom of the content.
+ *                  Align the tab headers to left/right/top/bottom of the content. <br>
  *                  Default value: `top`
+ * @param {string=} transition
+ *                  Possible values are `none`, `slide`. <br>
+ *                  When the transition value is other than `none`, animation will be used show the selected tab. <br>
+ *                  Default value: `none`
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the tabs on the web page. <br>

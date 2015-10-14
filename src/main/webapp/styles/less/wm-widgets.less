@@ -1696,12 +1696,28 @@ If the height and width are not specified the video takes the height of the post
 @app-tabs-bg-color: #FFFFFF;
 
 .app-tabs {
+
+  &.has-transition {
+    > .tab-content {
+      overflow-x: hidden;
+      white-space: nowrap;
+      position: relative;
+      > .tab-pane {
+        vertical-align: top;
+        display: inline-block;
+        width: 100%;
+      }
+    }
+  }
   position: relative;
   width: 100%;
   display: table;
   table-layout: fixed;
   overflow: hidden;
+
   .nav.nav-tabs {
+    overflow: hidden;
+    white-space: nowrap;
     > li {
       float: none;
       cursor: pointer;
