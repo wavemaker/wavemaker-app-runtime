@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                             ' data-ng-repeat="opt in options track by $index" data-ng-class="{\'selected\': selected.index === $index}"' +
                             ' data-ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</button>' +
                     '</div>' +
-                    '<span class="btn btn-primary app-switch-overlay switch-handle" data-ng-style="{\'width\': btnwidth + \'%\'}"><b>{{_model_}}</b></span>' +
+                    '<span class="btn btn-primary app-switch-overlay switch-handle" data-ng-style="{\'width\': btnwidth + \'%\'}"><b>{{options[selected.index][displayfield || "label"] || _model_}}</b></span>' +
                     '<input type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
                 '</div>'
                 );
