@@ -5,11 +5,15 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 
-import org.springframework.http.converter.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.feed.AtomFeedHttpMessageConverter;
 import org.springframework.http.converter.feed.RssChannelHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
@@ -93,12 +97,23 @@ public class WMRuntimeUtils {
     }
 
     public static String getContextRelativePath(File file, HttpServletRequest request) {
+      	return getContextRelativePath(file, request, null);
+    }
+    
+    public static String getContextRelativePath(File file, HttpServletRequest request, String relativePath) {
         final StringBuffer requestURL = request.getRequestURL();
         final int index = requestURL.lastIndexOf("/");
         if (index != -1) {
             requestURL.delete(index, requestURL.length());
         }
-        requestURL.append("/downloadFile?file=" + file.getName() + "&" + "returnName=" + file.getName());
+        String filePath;
+        if (StringUtils.isNotBlank(relativePath)) {
+            final String absolutePath = file.getAbsolutePath();
+            filePath = absolutePath.substring(absolutePath.lastIndexOf(relativePath));
+        } else {
+            filePath = file.getName();
+        }
+        requestURL.append("/downloadFile?file=" + filePath + "&" + "returnName=" + file.getName());
         return requestURL.toString();
     }
 
