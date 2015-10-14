@@ -378,7 +378,7 @@ WM.module('wm.prefabs')
             }
 
             function extendAppLocale(root) {
-                var localePath = root + (root.lastIndexOf('/') === root.length - 1 ? '' : '/') + 'resources/info/i18n/';
+                var localePath = root + (root.lastIndexOf('/') === root.length - 1 ? '' : '/') + 'resources/i18n/';
 
                 if (CONSTANTS.isRunMode) {
                     i18nService.loadComponentLocaleBundle(localePath);
