@@ -9,13 +9,12 @@ WM.module('wm.widgets.form')
             'use strict';
             $templateCache.put('template/widget/form/switch.html',
                 '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles>' +
-                    '<div class="btn-group">' +
-                        '<button class="btn btn-default" data-ng-disabled="disabled" ' +
-                            ' data-ng-style="{\'width\': btnwidth + \'%\'}"' +
+                    '<div class="btn-group btn-group-justified">' +
+                        '<a class="btn btn-default" data-ng-disabled="disabled" ' +
                             ' data-ng-repeat="opt in options track by $index" data-ng-class="{\'selected\': selected.index === $index}"' +
-                            ' data-ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</button>' +
+                            ' data-ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</a>' +
                     '</div>' +
-                    '<span class="btn btn-primary app-switch-overlay switch-handle" data-ng-style="{\'width\': btnwidth + \'%\'}"><b>{{options[selected.index][displayfield || "label"] || _model_}}</b></span>' +
+                    '<span class="btn btn-primary app-switch-overlay switch-handle" data-ng-style="{\'width\': btnwidth + \'%\'}">{{options[selected.index][displayfield || "label"] || _model_}}</span>' +
                     '<input type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
                 '</div>'
                 );

@@ -207,6 +207,12 @@ html, body {
   .btn-caption {
     margin: 0 0.2em;
   }
+  //BADGE
+  .badge {
+    position: absolute;
+    top: 9pt;
+    right: 9pt;
+  }
 }
 
 .app-menu {
@@ -450,12 +456,7 @@ html, body {
 /**checkbox set**/
 .app-checkboxset, .app-radioset {
   overflow: auto;
-  .app-checkbox.checkbox, .app-radio.radio {
-    float: none;
-  }
-  li label {
-    .ellipsis(100%);
-  }
+  margin-bottom: 0 !important;
   &.inline {
     li {
       display: inline-block;
@@ -472,22 +473,23 @@ html, body {
 .app-anchor {
   cursor: pointer;
   display: inline-block;
+  //BADGE
+  .badge {
+    position: absolute;
+    top: 9pt;
+    right: 9pt;
+  }
 }
 
 .radio.app-radio, .app-checkbox.checkbox {
   display: inline-block;
-  margin-right: 30px;
-  margin-top: 10px !important;
-  input[type="checkbox"], input[type="radio"] {
-    margin-top: 2px;
-    margin-bottom: 0;
-    margin-right: 0;
-  }
   label {
-    vertical-align: middle;
+    .ellipsis(100%);
+    > * {
+      vertical-align: middle;
+    }
   }
   .caption {
-    vertical-align: middle;
     display: inline-block;
     height: 100%;
   }
@@ -520,6 +522,7 @@ html, body {
     height: 100%;
     opacity: 0;
     z-index: 6;
+    margin-top: 0 !important;
   }
   .caption {
     visibility: hidden;
@@ -562,27 +565,16 @@ html, body {
 .app-switch {
   position: relative;
   display: inline-block;
-  height: 32px;
   border-radius: 500px;
   background: #fff;
-  border: 1px rgba(0, 0, 0, 0.1) solid;
   overflow: hidden;
   .btn-group {
     position: relative;
     overflow: hidden;
-    width: 100%;
     height: 100%;
     > .btn {
       border-radius: 500px;
       height: 100%;
-      padding: 0 1.4em;
-      &:not(:first-child):not(:last-child) {
-       border-right-color: transparent;
-       border-left-color: transparent;
-      }
-      &:last-child {
-        border-left-color: transparent;
-      }
     }
   }
   span.app-switch-overlay {
@@ -593,11 +585,9 @@ html, body {
     z-index: 10;
     pointer-events: none;
     margin-left: 0;
-    border-radius: 500px;
-    vertical-align: middle;
     pointer-events: inherit;
     height: 100%;
-    line-height: 1em;
+    vertical-align: middle;
   }
 }
 
@@ -1130,9 +1120,6 @@ If the height and width are not specified the video takes the height of the post
 .app-datanavigator {
   position: relative;
   overflow-y: auto;
-  ul.pagination {
-      margin: 4px 0;
-  }
   .pagecount {
     .input-group {
       width: 8em;
@@ -1602,7 +1589,7 @@ If the height and width are not specified the video takes the height of the post
 ******************************** Tile classes ******************************
 *********************************************************************************/
 
-.app-tile{
+.app-tile {
     padding : 0;
     margin  : 0;
     position : relative;

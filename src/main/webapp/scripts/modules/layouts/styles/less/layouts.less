@@ -88,7 +88,7 @@ body {
         box-shadow: none;
         border: none;
         padding: 0;
-        margin-right: 0.25em;
+        margin-left: 1em;
       }
       .label {
         margin-right: 0.25em;
@@ -252,6 +252,9 @@ body {
   /*********************breadcrumb********************/
   .app-breadcrumb {
     position: relative;
+    label {
+      margin-bottom: 0;
+    }
   }
 
 /********************************* Navbar classes *****************************/
@@ -284,9 +287,6 @@ body {
         padding: 10px 15px;
         border: none;
       }
-    }
-    &.nav-pills > li > a {
-      border-radius: 4px;
     }
   }
 
@@ -521,9 +521,14 @@ body {
     }
   }
 
+  .app-tile.panel {
+    margin-bottom: 0;
+  }
+
   label {
     font-weight: normal;
   }
+
   .navbar {
     border-radius: 0;
     margin-bottom: 0;
@@ -575,7 +580,6 @@ body {
     .badge {
       top: 2pt;
       right: 2pt;
-      position: absolute;
       font-size: 7px;
       font-weight: normal;
     }
@@ -594,4 +598,22 @@ body {
   .app-livelist.panel {
     margin-bottom: 0;
   }
-}
+  /****toggle button****/
+  .app-toggle.checkbox {
+    margin-top: 0;
+    display: inline-block;
+  }
+  /*****fix for checkboxes in teh old project****/
+  .checkbox.col-md-push-3, .radio.col-md-push-3 {
+    max-width: 75%;
+  }
+  /***adding padding when there are 2 checkboxes or radio are placed*****/
+  .form-group {
+    .checkbox + .checkbox , .radio + .radio {
+      margin-top: 10px;
+    }
+  }
+  .checkbox + .list-group-item.checkbox , .radio + .list-group-item.radio  {
+    margin-top: 0;
+  }
+  }
