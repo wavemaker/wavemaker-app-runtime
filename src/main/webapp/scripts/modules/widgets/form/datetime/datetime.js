@@ -28,10 +28,11 @@ WM.module('wm.widgets.form')
             notifyFor = {
                 'readonly': true,
                 'disabled': true,
-                'autofocus': true
+                'autofocus': true,
+                'timestamp': true
             };
 
-        function propertyChangeHandler(element, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             var inputEl = element.find('input'),
                 buttonEl = element.find('button');
             switch (key) {
@@ -44,6 +45,12 @@ WM.module('wm.widgets.form')
                 break;
             case 'autofocus':
                 inputEl.first().attr(key, newVal);
+                break;
+            case 'timestamp':
+                /*Single equal is used not to update model if newVal and oldVal have same values with string and integer types*/
+                if (newVal != oldVal) {
+                    scope._model_ = newVal;
+                }
                 break;
             }
         }
@@ -110,7 +117,7 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                     },
                     post: function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, element);
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
@@ -127,6 +134,7 @@ WM.module('wm.widgets.form')
                                 dateString = $filter('date')(date, 'yyyy-MM-dd');
                                 timeString = $filter('date')(time, 'HH:mm');
                                 value = moment(dateString + ' ' + timeString).valueOf();
+                                this.timestamp = value;
                                 if (scope.datepattern && scope.datepattern !== 'timestamp') {
                                     scope._displayModel = $filter('date')(value, scope.datepattern);
                                 } else {
@@ -229,6 +237,9 @@ WM.module('wm.widgets.form')
  * @param {string=} datavalue
  *                  This property defines the value of the time widget. <br>
  *                  This property is bindable
+ * @param {string=} timestamp
+ *                  This property returns the unix timestamp (epoch) of the datavalue. <br>
+ *                  This property can be used for intermediate calculations and validations. <br>
  * @param {string=} ismeridian
  *                  whether do display 12H or 24H. <br>
  * @param {string=} hourstep
@@ -236,7 +247,7 @@ WM.module('wm.widgets.form')
  * @param {string=} minutestep
  *                  Number of minutes to increase or decrease.
  * @param {string=} datepattern
- *                  display pattern of dates. <br>
+ *                  display pattern of the date. <br>
  *                  This property is bindable. <br>
  *                  Default value : 'dd-MM-yyyy'
  * @param {string=} outputformat
@@ -282,7 +293,6 @@ WM.module('wm.widgets.form')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>Selected Time: {{currentTime | date:'hh:mm'}}</div><br>
  *               <wm-datetime
  *                  on-change="f($event, $scope)"
  *                  name="time1"
@@ -291,10 +301,29 @@ WM.module('wm.widgets.form')
  *                  minutestep="{{minutestep}}"
  *                  ismeridian="{{ismeridian}}"
  *                  datepattern="{{datepattern}}"
- *                   mindate="{{mindate}}"
+ *                  outputformat="{{outputformat}}"
+ *                  mindate="{{mindate}}"
  *                  maxdate="{{maxdate}}">
  *               </wm-datetime><br>
  *
+ *               <div>Selected Time: {{currentTime}}</div><br>
+ *               <div>timestamp: {{currentTimestamp}}</div><br>
+ *               <wm-composite>
+ *                   <wm-label caption="datepattern:"></wm-label>
+ *                   <wm-text scopedatavalue="datepattern"></wm-text>
+ *               </wm-composite>
+ *               <wm-composite>
+ *                   <wm-label caption="output format:"></wm-label>
+ *                   <wm-text scopedatavalue="outputformat"></wm-text>
+ *               </wm-composite>
+ *               <wm-composite>
+ *                   <wm-label caption="mindate:"></wm-label>
+ *                   <wm-text scopedatavalue="mindate"></wm-text>
+ *               </wm-composite>
+ *               <wm-composite>
+ *                   <wm-label caption="maxdate:"></wm-label>
+ *                   <wm-text scopedatavalue="maxdate"></wm-text>
+ *               </wm-composite>
  *               <wm-composite>
  *                   <wm-label caption="ismeridian :"></wm-label>
  *                   <wm-text scopedatavalue="ismeridian"></wm-text>
@@ -315,9 +344,13 @@ WM.module('wm.widgets.form')
  *              $scope.ismeridian="true"
  *              $scope.hourstep="2"
  *              $scope.minutestep="4"
- *
+*               $scope.datepattern="dd-MM-yy hh:mm a"
+ *              $scope.outputformat = "yyyy, dd MMMM hh:mm a"
+ *              $scope.mindate="01-01-2015"
+ *              $scope.maxdate="01-01-2020"
  *              $scope.f = function (event,scope) {
  *                  $scope.currentTime = scope.datavalue;
+ *                  $scope.currentTimestamp = scope.timestamp;
  *              }
  *           }
  *       </file>

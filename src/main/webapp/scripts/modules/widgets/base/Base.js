@@ -468,7 +468,8 @@ WM.module('wm.widgets.base', [])
                         "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
                         "datepattern": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
-                        "datavalue": {"type": "date, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd"}
+                        "datavalue": {"type": "date, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd"},
+                        "timestamp": {"type": "date, string, number", "widget": "string", "show": "false", "bindable": "out-bound"}
                     },
                     "wm.calendar": {
                         "placeholder": {"type": "string", "value": "Select date"},
@@ -498,7 +499,8 @@ WM.module('wm.widgets.base', [])
                         "ismeridian": {"type": "boolean", "value": true},
                         "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "required": {"type": "boolean"},
-                        "datavalue": {"type": "time, date, string, number", "widget": "string", "bindable": "in-out-bound", hint: "HH:mm"}
+                        "datavalue": {"type": "time, date, string, number", "widget": "string", "bindable": "in-out-bound", hint: "HH:mm"},
+                        "timestamp": {"type": "time, date, string, number", "widget": "string", "show": "false", "bindable": "out-bound"}
                     },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time"},
@@ -513,7 +515,8 @@ WM.module('wm.widgets.base', [])
                         "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
                         "datepattern": {"value": "yyyy-MM-dd HH:mm", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
-                        "datavalue": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"}
+                        "datavalue": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"},
+                        "timestamp": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "show": "false", "bindable": "out-bound"}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},

@@ -30,10 +30,11 @@ WM.module('wm.widgets.form')
                 'readonly': true,
                 'disabled': true,
                 'mindate': true,
-                'maxdate': true
+                'maxdate': true,
+                'timestamp': true
             };
 
-        function propertyChangeHandler(scope, element, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             switch (key) {
             case 'readonly':
             case 'disabled':
@@ -44,6 +45,12 @@ WM.module('wm.widgets.form')
             case 'maxdate':
                 if (newVal && !isNaN(newVal) && WM.isString(newVal)) {
                     scope[key] = new Date(parseInt(newVal, 10));
+                }
+                break;
+            case 'timestamp':
+                /*Single equal is used not to update model if newVal and oldVal have same values with string and integer types*/
+                if (newVal != oldVal) {
+                    scope._model_ = newVal;
                 }
                 break;
             }
@@ -127,8 +134,10 @@ WM.module('wm.widgets.form')
                          *  */
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
+                                var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                                this.timestamp = timestamp;
                                 if (this.outputformat === "timestamp") {
-                                    return this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                                    return timestamp;
                                 }
                                 if (!this.outputformat) {
                                     this.outputformat = 'yyyy-MM-dd';
@@ -232,15 +241,17 @@ WM.module('wm.widgets.form')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>Selected Date: {{currentDate | date:'medium'}}</div><br>
  *               <wm-date name="date1"
  *                   on-change="f($event, $scope)"
  *                   placeholder="{{placeholder}}"
  *                   hint="Add a date"
  *                   datepattern="{{datepattern}}"
+ *                   outputformat="{{outputformat}}"
  *                   mindate="{{mindate}}"
  *                  maxdate="{{maxdate}}">
  *               </wm-date><br>
+ *               <div>Selected Date: {{currentDate}}</div><br>
+ *               <div>timestamp: {{currentTimestamp}}</div><br>
  *               <wm-composite>
  *                   <wm-label caption="placeholder:"></wm-label>
  *                   <wm-text scopedatavalue="placeholder"></wm-text>
@@ -248,6 +259,10 @@ WM.module('wm.widgets.form')
  *               <wm-composite>
  *                   <wm-label caption="datepattern:"></wm-label>
  *                   <wm-text scopedatavalue="datepattern"></wm-text>
+ *               </wm-composite>
+ *               <wm-composite>
+ *                   <wm-label caption="output format:"></wm-label>
+ *                   <wm-text scopedatavalue="outputformat"></wm-text>
  *               </wm-composite>
  *               <wm-composite>
  *                   <wm-label caption="mindate:"></wm-label>
@@ -264,11 +279,13 @@ WM.module('wm.widgets.form')
  *          function Ctrl($scope) {
  *              $scope.placeholder="Fix a date"
  *              $scope.datepattern="dd-MM-yy"
- *              $scope.mindate="01-01-2014"
- *              $scope.maxdate="01-02-2014"
+ *              $scope.outputformat = "yyyy, dd MMMM"
+ *              $scope.mindate="01-01-2015"
+ *              $scope.maxdate="01-01-2020"
  *
  *              $scope.f = function (event, scope) {
  *                  $scope.currentDate = scope.datavalue;
+ *                  $scope.currentTimestamp = scope.timestamp;
  *              }
  *           }
  *       </file>

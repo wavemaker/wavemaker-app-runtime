@@ -27,10 +27,11 @@ WM.module('wm.widgets.form')
             notifyFor = {
                 'readonly': true,
                 'disabled': true,
-                'autofocus': true
+                'autofocus': true,
+                'timestamp': true
             };
 
-        function propertyChangeHandler(element, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             var inputEl = element.find('input'),
                 buttonEl = element.find('button');
             switch (key) {
@@ -43,6 +44,12 @@ WM.module('wm.widgets.form')
                 break;
             case 'autofocus':
                 inputEl.first().attr(key, newVal);
+                break;
+            case 'timestamp':
+                /*Single equal is used not to update model if newVal and oldVal have same values with string and integer types*/
+                if (newVal != oldVal) {
+                    scope._model_ = newVal;
+                }
                 break;
             }
         }
@@ -95,7 +102,7 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                     },
                     post: function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, element);
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
@@ -116,6 +123,7 @@ WM.module('wm.widgets.form')
                                 if (this._proxyModel) {
                                     this._timeModel = $filter('date')(this._proxyModel, "hh:mm a");
                                     timeValue = moment($filter('date')(this._proxyModel, "yyyy-MM-dd HH:mm")).valueOf();
+                                    this.timestamp = timeValue;
                                     if (this.outputformat === "timestamp") {
                                         return timeValue;
                                     }
@@ -194,6 +202,9 @@ WM.module('wm.widgets.form')
  * @param {string=} datavalue
  *                  This property defines the value of the time widget. <br>
  *                  This property is bindable
+ * @param {string=} timestamp
+ *                  This property returns the unix timestamp (epoch) of the datavalue. <br>
+ *                  This property can be used for intermediate calculations and validations. <br>
  * @param {string=} ismeridian
  *                  whether do display 12H or 24H. <br>
  * @param {string=} hourstep
@@ -234,16 +245,22 @@ WM.module('wm.widgets.form')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>Selected Time: {{currentTime | date:'hh:mm'}}</div><br>
  *               <wm-time
  *                  on-change="f($event, $scope)"
  *                  name="time1"
  *                  placeholder="set the time"
+ *                  outputformat="{{outputformat}}"
  *                  hourstep="{{hourstep}}"
  *                  minutestep="{{minutestep}}"
  *                  ismeridian="{{ismeridian}}">
  *               </wm-time><br>
  *
+ *               <div>Selected Time: {{currentTime}}</div><br>
+ *               <div>timestamp: {{currentTimestamp}}</div><br>
+ *               <wm-composite>
+ *                   <wm-label caption="output format:"></wm-label>
+ *                   <wm-text scopedatavalue="outputformat"></wm-text>
+ *               </wm-composite>
  *               <wm-composite>
  *                   <wm-label caption="ismeridian :"></wm-label>
  *                   <wm-text scopedatavalue="ismeridian"></wm-text>
@@ -264,9 +281,10 @@ WM.module('wm.widgets.form')
  *              $scope.ismeridian="true"
  *              $scope.hourstep="2"
  *              $scope.minutestep="4"
- *
+ *              $scope.outputformat = "hh:mm a"
  *              $scope.f = function (event,scope) {
  *                  $scope.currentTime = scope.datavalue;
+ *                  $scope.currentTimestamp = scope.timestamp;
  *              }
  *           }
  *       </file>
