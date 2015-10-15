@@ -1,4 +1,4 @@
-/*global WM*/
+/*global WM, _*/
 /*Directive for Radio */
 
 WM.module('wm.widgets.form')
@@ -20,7 +20,7 @@ WM.module('wm.widgets.form')
             '</div>'
             );
     }])
-    .directive('wmRadio', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', function (PropertiesFactory, WidgetUtilService, $templateCache) {
+    .directive('wmRadio', ['PropertiesFactory', 'WidgetUtilService', '$templateCache',  'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, $templateCache,  FormWidgetUtils) {
         'use strict';
         /*Obtaining properties specific to radio widget by extending from all editor related widget properties*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.radio', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
@@ -52,25 +52,8 @@ WM.module('wm.widgets.form')
                 radioBtn = template.find('input[type=radio]');
 
                 if (!isWidgetInsideCanvas) {
-                    if (tAttrs.hasOwnProperty('onClick')) {
-                        template.attr('data-ng-click', 'onClick({$event: $event, $scope: this})');
-                    }
-
-                    if (tAttrs.hasOwnProperty('onMouseenter')) {
-                        template.attr('data-ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
-                    }
-
-                    if (tAttrs.hasOwnProperty('onMouseleave')) {
-                        template.attr('data-ng-mouseleave', 'onMouseleave({$event: $event, $scope: this})');
-                    }
-
-                    if (tAttrs.hasOwnProperty('onFocus')) {
-                        radioBtn.attr('data-ng-focus', 'onFocus({$event: $event, $scope: this})');
-                    }
-
-                    if (tAttrs.hasOwnProperty('onBlur')) {
-                        radioBtn.attr('data-ng-blur', 'onBlur({$event: $event, $scope: this})');
-                    }
+                    WidgetUtilService.addEventAttributes(template, tAttrs, FormWidgetUtils.getProxyEventsMap());
+                    WidgetUtilService.addEventAttributes(radioBtn, tAttrs, FormWidgetUtils.getFocusBlurEvents());
                 }
                 /*Set name for the model-holder, to ease submitting a form*/
                 radioBtn.attr('name', tAttrs.name);
@@ -83,7 +66,7 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
-
+                        scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
                         /* register the property change handler */
                         var radtioBtn = element.find('input[type=radio]');
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, radtioBtn), scope, notifyFor);

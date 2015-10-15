@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM, _ */
 /*Directive for radioset */
 
 WM.module('wm.widgets.form')
@@ -11,7 +11,7 @@ WM.module('wm.widgets.form')
                 '</ul>'
             );
     }])
-    .directive('wmRadioset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils) {
+    .directive('wmRadioset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache) {
         'use strict';
         /*getting widget properties for the specific widget*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.radioset', ['wm.base', 'wm.booleaneditors']),
@@ -56,7 +56,7 @@ WM.module('wm.widgets.form')
             element.empty().append(compiledTemplate);
             /*register a click event handler for the radio*/
             element.find('.app-radioset-label').on('click', function (evt) {
-                if (scope.disabled || scope.readonly) {
+                if (scope.disabled || scope.readonly || _.includes(evt.target.classList, 'caption')) {
                     return;
                 }
                 var radioOption;
@@ -120,7 +120,14 @@ WM.module('wm.widgets.form')
                 'scopedataset': '=?'
             },
             'replace': true,
-            'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/radioset.html'),
+            'template': function (tElement, tAttrs) {
+                var template = WM.element($templateCache.get('template/widget/form/radioset.html')),
+                    isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid');
+                if (!isWidgetInsideCanvas) {
+                    WidgetUtilService.addEventAttributes(template, tAttrs, FormWidgetUtils.getProxyEventsMap());
+                }
+                return template[0].outerHTML;
+            },
             'compile': function () {
                 return {
                     'pre': function (iScope) {
@@ -131,6 +138,7 @@ WM.module('wm.widgets.form')
                         }
                     },
                     'post': function (scope, element, attrs) {
+                        scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 

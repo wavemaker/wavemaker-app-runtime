@@ -2201,14 +2201,14 @@ WM.module('wm.widgets.base', [])
                 return columns;
             }
 
-            function addEventAttributes($template, tAttrs) {
+            function addEventAttributes($template, tAttrs, customEventsMap) {
 
                 if (tAttrs.widgetid) { // widget is inside canvas
                     return;
                 }
-
-                Object.keys(EventsMap).forEach(function (evtName) {
-                    var evtDetails = EventsMap[evtName];
+                var eventsMap = customEventsMap || EventsMap;
+                Object.keys(eventsMap).forEach(function (evtName) {
+                    var evtDetails = eventsMap[evtName];
                     if (tAttrs[evtName]) {
                         $template.attr(evtDetails.name, evtDetails.value);
                     }
@@ -2345,6 +2345,16 @@ WM.module('wm.widgets.base', [])
                  */
                 getPreparedTemplate: getPreparedTemplate,
 
+                /**
+                 * @ngdoc function
+                 * @name wm.widgets.$WidgetUtilService#addEventAttributes
+                 * @methodOf wm.widgets.$WidgetUtilService
+                 * @function
+                 *
+                 * @description
+                 * returns the widget template after adding event related attributes
+                 */
+                addEventAttributes: addEventAttributes,
                 /**
                  * @ngdoc function
                  * @name wm.widgets.$WidgetUtilService#registerPropertyChangeListener

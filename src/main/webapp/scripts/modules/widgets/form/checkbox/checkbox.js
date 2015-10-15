@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM, _*/
 /*Directive for checkbox */
 
 WM.module('wm.widgets.form')
@@ -21,14 +21,14 @@ WM.module('wm.widgets.form')
                         ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                     '</input>' +
                 '<span class="caption">{{caption || "&nbsp;"}}</span>' +
-                '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>'+
+                '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>' +
                 '</label>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
             '</div>'
             );
     }])
-    .directive('wmCheckbox', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$templateCache', function (PropertiesFactory, WidgetUtilService, CONSTANTS, $templateCache) {
+    .directive('wmCheckbox', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$templateCache', 'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, $templateCache, FormWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkbox', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
             notifyFor = {
@@ -69,25 +69,8 @@ WM.module('wm.widgets.form')
                     checkbox.attr('data-ng-false-value', "'" + tAttrs.uncheckedvalue + "'");
                 }
                 if (!isWidgetInsideCanvas) {
-                    if (tAttrs.hasOwnProperty('onClick')) {
-                        template.attr('data-ng-click', 'onClick({$event: $event, $scope: this})');
-                    }
-
-                    if (tAttrs.hasOwnProperty('onMouseenter')) {
-                        template.attr('data-ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
-                    }
-
-                    if (tAttrs.hasOwnProperty('onMouseleave')) {
-                        template.attr('data-ng-mouseleave', 'onMouseleave({$event: $event, $scope: this})');
-                    }
-
-                    if (tAttrs.hasOwnProperty('onFocus')) {
-                        checkbox.attr('data-ng-focus', 'onFocus({$event: $event, $scope: this})');
-                    }
-
-                    if (tAttrs.hasOwnProperty('onBlur')) {
-                        checkbox.attr('data-ng-blur', 'onBlur({$event: $event, $scope: this})');
-                    }
+                    WidgetUtilService.addEventAttributes(template, tAttrs, FormWidgetUtils.getProxyEventsMap());
+                    WidgetUtilService.addEventAttributes(checkbox, tAttrs, FormWidgetUtils.getFocusBlurEvents());
                 }
                 /*Set name for the model-holder, to ease submitting a form*/
                 template.find('.model-holder').attr('name', tAttrs.name);
@@ -105,6 +88,7 @@ WM.module('wm.widgets.form')
 
                     },
                     'post': function (scope, element, attrs) {
+                        scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 

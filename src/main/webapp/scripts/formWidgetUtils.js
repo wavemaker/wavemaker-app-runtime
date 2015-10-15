@@ -368,6 +368,62 @@ WM.module('wm.widgets.form')
                 noDataMsg = '<li>' + $rootScope.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO + '</li>';
                 element.empty().append(noDataMsg);
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getProxyEventsMap
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to get the proxy events map for radioset, checkboxset, radio, checkbox
+             *
+             */
+            function getProxyEventsMap() {
+                return {
+                    'onClick':          {'name': 'data-ng-click',       'value': 'eventProxy("onClick", {$event: $event, $scope: this})'},
+                    'onDblclick':       {'name': 'data-ng-dblclick',    'value': 'onDblclick({$event: $event, $scope: this})'},
+                    'onMouseenter':     {'name': 'data-ng-mouseenter',  'value': 'onMouseenter({$event: $event, $scope: this})'},
+                    'onMouseleave':     {'name': 'data-ng-mouseleave',  'value': 'onMouseleave({$event: $event, $scope: this})'},
+                    'onMouseover':      {'name': 'data-ng-mouseover',   'value': 'onMouseover({$event: $event, $scope: this})'},
+                    'onMouseout':       {'name': 'data-ng-mouseout',    'value': 'onMouseout({$event: $event, $scope: this})'}
+                };
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getFocusBlurEvents
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to get the blur and focus events map for radioset, checkboxset, radio, checkbox
+             *
+             */
+            function getFocusBlurEvents() {
+                return {
+                    'onFocus':          {'name': 'data-ng-focus',       'value': 'onFocus({$event: $event, $scope: this})'},
+                    'onBlur':           {'name': 'data-ng-blur',        'value': 'onBlur({$event: $event, $scope: this})'}
+                };
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#eventProxy
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to trigger the event
+             *
+             * @param {object} scope scope of the widget
+             * @param {string} eventType type of the event
+             * @param {object} eventArgs arguments passed for the event
+             */
+            function eventProxy(scope, eventType, eventArgs) {
+                /*On click of caption for the label, two events are triggered. Event is not called for caption event*/
+                if (_.includes(eventArgs.$event.target.classList, 'caption')) {
+                    return;
+                }
+                Utils.triggerFn(scope[eventType], eventArgs);
+            }
 
             this.getDisplayField = getDisplayField;
             this.createDataKeys = createDataKeys;
@@ -377,5 +433,8 @@ WM.module('wm.widgets.form')
             this.createWidgetTemplate = createWidgetTemplate;
             this.getBoundVariableCategory = getBoundVariableCategory;
             this.appendMessage = appendMessage;
+            this.getProxyEventsMap = getProxyEventsMap;
+            this.getFocusBlurEvents = getFocusBlurEvents;
+            this.eventProxy = eventProxy;
         }
     ]);
