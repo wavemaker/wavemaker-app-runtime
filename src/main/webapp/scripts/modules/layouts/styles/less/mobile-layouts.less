@@ -1,8 +1,9 @@
 .wm-app {
 @app-mobile-nav-font-size: 14pt;
 @app-mobile-nav-icon-size: 22pt;
+@app-mobile-tabbar-icon-size: 25pt;
 @app-mobile-nav-height: 44pt;
-@app-mobile-tabbar-height: 49pt;
+@app-mobile-tabbar-height: 52pt;
 @app-mobile-nav-searchinput-border: #fff;
 @app-mobile-nav-button-padding: (@app-mobile-nav-height - @app-mobile-nav-font-size)/2;
 /********************************************************************************
@@ -58,7 +59,7 @@
     position: absolute;
   }
   .app-icon {
-    font-size: @app-mobile-nav-icon-size;
+    font-size: @app-mobile-tabbar-icon-size;
   }
   >.navbar {
     border: none;
@@ -84,7 +85,6 @@
       > li {
         > a {
           text-align: center;
-          text-transform: uppercase;
           padding: 8pt 0;
           height: @app-mobile-tabbar-height;
           > label {
@@ -92,7 +92,6 @@
             text-align: center;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-size: 0.8em;
             margin: 0;
           }
         }
@@ -165,9 +164,11 @@
       }
       &.navbar-left {
         white-space:nowrap;
+        padding-left: 3pt;
       }
       &.navbar-right {
-       text-align: right;
+        text-align: right;
+        padding-right: 8pt;
         .dropdown {
           background-color: inherit;
         }
@@ -185,10 +186,11 @@
           font-size: @app-mobile-nav-icon-size;
           vertical-align: middle;
         }
-        > * {
+        > a {
           display: inline-block;
           line-height: @app-mobile-nav-height;
           padding: 0 5pt;
+          color: inherit;
           &:hover {
             background-color: transparent;
           }
