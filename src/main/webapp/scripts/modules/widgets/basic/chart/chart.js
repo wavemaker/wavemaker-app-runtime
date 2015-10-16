@@ -1408,8 +1408,8 @@ WM.module('wm.widgets.basic')
                 yaxislabel += scope.yunits ? "(" + scope.yunits + ")" : "";
 
                 if (scope.captions) {
-                    chart.xAxis.axisLabel(xaxislabel);
-                    chart.yAxis.axisLabel(yaxislabel);
+                    chart.xAxis.axisLabel(Utils.prettifyLabels(xaxislabel));
+                    chart.yAxis.axisLabel(Utils.prettifyLabels(yaxislabel));
                 }
 
 
@@ -1572,7 +1572,8 @@ WM.module('wm.widgets.basic')
                     if (isNumberType(type)) {
                         scope.numericColumns.push(key);
                     }
-                    if (!columns[key].isPrimaryKey) {
+                    /*Hiding only table's primary key*/
+                    if (columns[key].isRelatedPk === 'true' || !columns[key].isPrimaryKey) {
                         scope.nonPrimaryColumns.push(key);
                     }
                 });
