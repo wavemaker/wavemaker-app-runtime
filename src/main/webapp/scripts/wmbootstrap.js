@@ -119,6 +119,7 @@ Application
                     if (!content) {
                         _load(pageName, deferred.resolve, deferred.reject);
                     } else {
+                        $rs.activePageName = pageName;
                         deferred.resolve(content);
                     }
 
