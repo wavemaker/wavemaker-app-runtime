@@ -1208,6 +1208,7 @@ WM.module('wm.widgets.base', [])
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
                         "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256},
+                        "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "tabindex": {"type": "string"},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
