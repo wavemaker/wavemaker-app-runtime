@@ -1,4 +1,4 @@
-/*global WM, _*/
+/*global WM, _, document*/
 
 WM.module('wm.layouts.page')
     .directive('wmPage', ['DeviceViewService', 'CONSTANTS', '$rootScope', '$routeParams', 'Utils', '$timeout', 'Variables', 'NavigationVariableService', function (DeviceViewService, CONSTANTS, $rootScope, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
@@ -46,6 +46,10 @@ WM.module('wm.layouts.page')
                                 if (containerScope) {
                                     containerScope.Widgets = scope.Widgets;
                                 }
+                            }
+
+                            if (($routeParams.name === $rootScope.activePageName) && attrs.pagetitle) {
+                                document.title = attrs.pagetitle;
                             }
                         }
 
