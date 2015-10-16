@@ -1,6 +1,5 @@
 package com.wavemaker.runtime.exception.resolver;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +20,12 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.wavemaker.studio.common.core.web.rest.ErrorResponse;
-import com.wavemaker.studio.common.core.web.rest.ErrorResponses;
 import com.wavemaker.runtime.data.exception.EntityNotFoundException;
 import com.wavemaker.runtime.data.exception.QueryParameterMismatchException;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.studio.common.core.web.rest.ErrorResponse;
+import com.wavemaker.studio.common.core.web.rest.ErrorResponses;
 
 /**
  * @author sunilp
@@ -83,21 +82,15 @@ public class ApplicationRestServiceExceptionResolver extends AbstractHandlerExce
     }
 
     private ModelAndView handleWMExceptions(WMRuntimeException ex) {
-        ModelAndView modelAndView = null;
-        if (ex.getCause() instanceof RemoteException) {
-            modelAndView = new ModelAndView(ex.getCause().getMessage());
+        MessageResource messageResource = ex.getMessageResource();
+        ErrorResponse errorResponse = null;
+        if (messageResource != null) {
+            errorResponse = getErrorResponse(ex.getMessageResource(), ex.getArgs());
         } else {
-            MessageResource messageResource = ex.getMessageResource();
-            ErrorResponse errorResponse = null;
-            if (messageResource != null) {
-                errorResponse = getErrorResponse(ex.getMessageResource(), ex.getArgs());
-            } else {
-                String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
-                errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
-            }
-            modelAndView = getModelAndView(errorResponse);
+            String msg = (ex.getMessage() != null) ? ex.getMessage() : "";
+            errorResponse = getErrorResponse(MessageResource.UNEXPECTED_ERROR, msg);
         }
-        return modelAndView;
+        return getModelAndView(errorResponse);
     }
 
     private ModelAndView handleHttpMessageNotReadableException(HttpMessageNotReadableException ex,
