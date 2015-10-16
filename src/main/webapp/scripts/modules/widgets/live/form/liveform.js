@@ -320,8 +320,10 @@ WM.module('wm.widgets.live')
                         if (dataValue.type === 'blob') {
                             WM.element($scope.formElement).find('[name=' + dataValue.key + ']').val('');
                             dataValue.href = '';
+                            dataValue.value = null;
+                        } else {
+                            dataValue.value = '';
                         }
-                        dataValue.value = '';
                     });
                 }
                 /*Method to update, sets the operationType to "update" disables the readonly*/
@@ -500,16 +502,17 @@ WM.module('wm.widgets.live')
                 $scope.changeDataObject = function (dataObj) {
                     var primaryKey,
                         href;
-                    $scope.formFields.forEach(function (value) {
-                        if (isTimeType(value)) {
-                            value.value = getValidTime(dataObj[value.key]);
-                        } else if (value.type === "blob") {
+                    $scope.formFields.forEach(function (formField) {
+                        if (isTimeType(formField)) {
+                            formField.value = getValidTime(dataObj[formField.key]);
+                        } else if (formField.type === "blob") {
                             primaryKey = $scope.dataset.propertiesMap.primaryKeys.join();
                             href = (($scope.variableObj.prefabName !== "" &&  $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
-                            href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + value.key + '?' + Math.random();
-                            value.href = href;
+                            href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + formField.key + '?' + Math.random();
+                            formField.href = href;
+                            formField.value = dataObj[formField.key];
                         } else {
-                            value.value = dataObj[value.key];
+                            formField.value = dataObj[formField.key];
                         }
                     });
                     $scope.setPrevDataValues();
