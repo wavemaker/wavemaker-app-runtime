@@ -424,6 +424,38 @@ WM.module('wm.widgets.form')
                 }
                 Utils.triggerFn(scope[eventType], eventArgs);
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getProxyExcludeDates
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to get all dates to be excluded.
+             *
+             * @param {object} excludeDates dates to be excluded
+             */
+            function getProxyExcludeDates(excludeDates) {
+                var dates,
+                    proxyExcludeDates = [];
+                dates = WM.isString(excludeDates) ? excludeDates.split(',') : excludeDates;
+                dates = dates.map(function (date) {
+                    if (WM.isDate(date)) {
+                        return date;
+                    } else {
+                        if (!isNaN(date)) {
+                            return parseInt(date, 10);
+                        }
+                        return date;
+                    }
+                });
+                _.forEach(dates, function (date) {
+                    /*formatting date/timestamp in to date and converting it to long value and populating
+                     'proxyExcludeDates' which is used in 'excludeDates()'*/
+                    proxyExcludeDates.push(moment(moment(date).format('MM/DD/YYYY')).valueOf());
+                });
+                return proxyExcludeDates;
+            }
 
             this.getDisplayField = getDisplayField;
             this.createDataKeys = createDataKeys;
@@ -436,5 +468,6 @@ WM.module('wm.widgets.form')
             this.getProxyEventsMap = getProxyEventsMap;
             this.getFocusBlurEvents = getFocusBlurEvents;
             this.eventProxy = eventProxy;
+            this.getProxyExcludeDates = getProxyExcludeDates;
         }
     ]);

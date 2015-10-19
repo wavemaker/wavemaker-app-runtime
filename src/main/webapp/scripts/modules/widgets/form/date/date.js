@@ -1,4 +1,4 @@
-/*global WM */
+/*global WM, _ */
 /*Directive for date */
 
 WM.module('wm.widgets.form')
@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/date.html',
             '<div class="app-date input-group" init-widget has-model data-ng-show="show" role="input">' +
-                '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} apply-styles ' +
+                '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} date-disabled="excludeDays(date) || excludeDates(date)" apply-styles ' +
                     ' title="{{hint}}" ' +
                     ' min-date=mindate max-date=maxdate is-open=isOpen' +
                     ' data-ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
@@ -23,13 +23,14 @@ WM.module('wm.widgets.form')
             '</div>'
             );
     }])
-    .directive('wmDate', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', function (PropertiesFactory, WidgetUtilService, $templateCache, $filter) {
+    .directive('wmDate', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', 'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.date', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
                 'readonly': true,
                 'disabled': true,
-                'timestamp': true
+                'timestamp': true,
+                'excludedates': true
             };
 
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
@@ -44,6 +45,9 @@ WM.module('wm.widgets.form')
                 if (newVal != oldVal) {
                     scope._model_ = newVal;
                 }
+                break;
+            case 'excludedates':
+                scope.proxyExcludeDates = FormWidgetUtils.getProxyExcludeDates(newVal);
                 break;
             }
         }
@@ -146,6 +150,13 @@ WM.module('wm.widgets.form')
                             }
                         });
 
+                        scope.excludeDays = function (date) {
+                            return _.includes(attrs.excludedays, date.getDay());
+                        };
+                        scope.excludeDates = function (date) {
+                            return _.includes(scope.proxyExcludeDates, Date.parse(date));
+                        };
+
                         if (attrs.datavalue) {
                             scope._model_ = attrs.datavalue;
                         }
@@ -206,8 +217,14 @@ WM.module('wm.widgets.form')
  *                  MinDate is the minimum date to start with. <br>
  *                  The default input pattern is mm/dd/yyyy
  * @param {string=} maxdate
- *                  MinDate is the maximum date to end with. <br>
+ *                  MaxDate is the maximum date to end with. <br>
  *                  The default input pattern is mm/dd/yyyy
+ * @param {string=} excludedays
+ *                  Days which are to be excluded.<br>
+ *                  Hint : sunday-0, saturday-6.
+ * @param {string=} excludedates
+ *                  Dates which are to be excluded.<br>
+ *                  Hint : 'YYYY-MM-DD'.
  * @param {boolean=} autofocus
  *                   This property makes the widget get focused automatically when the page loads.
  * @param {boolean=} readonly
@@ -245,7 +262,9 @@ WM.module('wm.widgets.form')
  *                   datepattern="{{datepattern}}"
  *                   outputformat="{{outputformat}}"
  *                   mindate="{{mindate}}"
- *                  maxdate="{{maxdate}}">
+ *                  maxdate="{{maxdate}}"
+ *                  excludedays="{{excludedays}}"
+ *                  excludedates="{{excludedates}}">
  *               </wm-date><br>
  *               <div>Selected Date: {{currentDate}}</div><br>
  *               <div>timestamp: {{currentTimestamp}}</div><br>
@@ -269,7 +288,14 @@ WM.module('wm.widgets.form')
  *                   <wm-label caption="maxdate:"></wm-label>
  *                   <wm-text scopedatavalue="maxdate"></wm-text>
  *               </wm-composite>
- *
+ *               <wm-composite>
+ *                   <wm-label caption="excludedates:"></wm-label>
+ *                   <wm-text scopedatavalue="excludedates"></wm-text>
+ *               </wm-composite>
+ *                <wm-composite>
+ *                   <wm-label caption="excludedays:"></wm-label>
+ *                   <wm-text scopedatavalue="excludedays"></wm-text>
+ *               </wm-composite>
  *           </div>
  *       </file>
  *       <file name="script.js">
@@ -279,7 +305,8 @@ WM.module('wm.widgets.form')
  *              $scope.outputformat = "yyyy, dd MMMM"
  *              $scope.mindate="01-01-2015"
  *              $scope.maxdate="01-01-2020"
- *
+ *              $scope.excludedates="2015-05-18, 2015-10-27"
+ *              $scope.excludedays="0,6"
  *              $scope.f = function (event, scope) {
  *                  $scope.currentDate = scope.datavalue;
  *                  $scope.currentTimestamp = scope.timestamp;
