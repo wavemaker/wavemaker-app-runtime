@@ -21,8 +21,8 @@ public class QueryHelper {
     private static final String SELECT_COUNT1 = "select count(*) ";
     private static final String GROUP_BY = " group by ";
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(QueryHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryHelper.class);
+    private static final String ORDER_BY = " order by ";
 
     public static void configureParameters(Query query, Map<String, Object> params) {
         String[] namedParameters = query.getNamedParameters();
@@ -62,11 +62,8 @@ public class QueryHelper {
     }
 
 
-    public static Long getQueryResultCount(String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template)
-    {
-
+    public static Long getQueryResultCount(String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template) {
         return getCountFromCountStringQuery(queryStr, params, isNative, template);
-
     }
 
     private static Long getCountFromCountStringQuery(String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template) {
@@ -93,28 +90,29 @@ public class QueryHelper {
     }
     private static String getCountQuery(String query, Map<String, Object> params, boolean isNative) {
         LOGGER.debug("Getting count query for query {} with params {}", query, params);
-
         query = query.trim();
         if (isNative) {
             String countQuery = SELECT_COUNT + query + ALIAS;
             LOGGER.debug("Got count query string {}", countQuery);
             return countQuery;
-
         } else {
             int index = StringUtils.indexOfIgnoreCase(query, GROUP_BY);
-            if(index>=0)
-            {
+            if (index >= 0) {
                 return null;
             }
             index = StringUtils.indexOfIgnoreCase(query, FROM_HQL);
             if (index != 0) {
                 index = StringUtils.indexOfIgnoreCase(query, FROM);
-
             }
-            if (index < 0)
+            if (index < 0) {
                 throw new RuntimeException("Malformed query : " + query);
+            }
             String subQuery = query.substring(index, query.length());
-            return SELECT_COUNT1+subQuery;
+            index = StringUtils.indexOfIgnoreCase(subQuery, ORDER_BY);
+            if(index >= 0){
+                subQuery = subQuery.substring(0, index);
+            }
+            return SELECT_COUNT1 + subQuery;
         }
 
     }
