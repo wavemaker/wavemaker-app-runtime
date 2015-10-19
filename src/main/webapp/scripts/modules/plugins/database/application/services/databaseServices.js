@@ -25,6 +25,7 @@
  * - {@link wm.database.$DatabaseService#methods_updateEntity updateEntity}
  * - {@link wm.database.$DatabaseService#methods_deleteEntity deleteEntity}
  * - {@link wm.database.$DatabaseService#methods_addColumns addColumns}
+ * - {@link wm.database.$DatabaseService#methods_addPrimaryKey addPrimaryKey}
  * - {@link wm.database.$DatabaseService#methods_updateColumn updateColumn}
  * - {@link wm.database.$DatabaseService#methods_deleteColumn deleteColumn}
  * - {@link wm.database.$DatabaseService#methods_addRelation addRelation}
@@ -682,6 +683,36 @@ wm.plugins.database.services.DatabaseService = [
                 }, successCallback, failureCallback);
             },
 
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#addPrimaryKey
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to add columns to the specified table in the specified database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database, table, column to be created/updated.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            addPrimaryKey: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "addPrimaryKey",
+                    urlParams: {
+                        projectID: params.projectID,
+                        dataModelName: params.dataModelName,
+                        entityName: params.entityName
+                    },
+                    data: params.data
+                }, successCallback, failureCallback);
+            },
             /**
              * @ngdoc function
              * @name wm.database.$DatabaseService#addColumns
