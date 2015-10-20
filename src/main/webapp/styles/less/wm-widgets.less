@@ -1893,8 +1893,9 @@ If the height and width are not specified the video takes the height of the post
 .app-calendar {
   display: inline-block;
   position: relative;
+  padding-top: 1em;
   .well {
-    padding: 0;
+    padding: 0.2em;
     margin-bottom: 0;
   }
   /***overriding the calendar classes*****/
@@ -1908,7 +1909,10 @@ If the height and width are not specified the video takes the height of the post
     }
     th {
       text-align: center;
-      padding: 0.25em;
+      padding: 0.5em;
+    }
+    .fc-day-number {
+      font-size:
     }
     .fc-row {
       .fc-content-skeleton, .fc-helper-skeleton {
@@ -1918,9 +1922,27 @@ If the height and width are not specified the video takes the height of the post
       }
     }
     .fc-toolbar {
-      button {
-        height: auto;
-        padding: 0.3em 1em;
+      margin-bottom: 0.25em;
+      padding: 0 0.5em;
+      .fc-button {
+        border-radius: 0;
+        box-shadow: none;
+        background: #fff;
+        border-color: rgba(0,0,0,0.1);
+        text-shadow: 0;
+      }
+      //title
+      h2 {
+        font-size: 1.1rem;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      > * > * {
+        margin: 0;
+      }
+      .fc-today-button {
+        margin-left: .75em;
       }
     }
     .fc-divider {

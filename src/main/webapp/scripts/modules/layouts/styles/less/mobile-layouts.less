@@ -129,6 +129,7 @@
   font-size: @app-mobile-nav-font-size;
   .btn {
     outline-color: transparent;
+    box-shadow: none;
   }
   .navbar {
     background-color: inherit;
@@ -147,8 +148,11 @@
         height: 100%;
         float: none;
         margin: 0;
-        padding: @app-mobile-nav-button-padding 0;
-        font-size: @app-mobile-nav-font-size;
+        padding: 15pt 0;
+        font-size: inherit;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
     .navbar-nav {
@@ -157,6 +161,16 @@
       .app-menu, .app-popover {
         > a {
           line-height: @app-mobile-nav-height;
+          text-decoration: none;
+          background-color: transparent;
+          color: inherit;
+        }
+      }
+      .popover {
+        min-width: 200pt;
+        height: 300pt;
+        .popover-content {
+          padding: 0;
         }
       }
       .btn-back > * {
@@ -171,10 +185,19 @@
         padding-right: 8pt;
         .dropdown {
           background-color: inherit;
+          > .app-button {
+            background-color: transparent;
+            font-size: inherit;
+            padding: 0 5pt;
+            line-height: 42pt;
+            color: inherit;
+          }
         }
         .dropdown-menu {
           position: absolute;
-          background-color: inherit;
+          background-color: #fff;
+          right: 0;
+          left: auto;
         }
       }
       > li {
