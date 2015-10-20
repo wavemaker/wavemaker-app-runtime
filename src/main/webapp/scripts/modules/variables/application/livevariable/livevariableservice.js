@@ -296,8 +296,14 @@ wm.variables.services.$liveVariable = [
                     primaryKey = variable.getPrimaryKey(),
                     hasCompositeKey = variable.isCompositeKey(primaryKey),
                     hasNoPrimaryKey = variable.isNoPrimaryKey(primaryKey);
-
-                filterFields = (!options.filterFields || WM.element.isEmptyObject(options.filterFields)) ? variable.filterFields : options.filterFields;
+                if (!options.filterFields || WM.element.isEmptyObject(options.filterFields)) {
+                    /*If filter fields are not passed from options, set filter fields from variable*/
+                    filterFields = variable.filterFields;
+                } else {
+                    /*If filter fields are passed from options, merge option and variable filter fields, with option fields as priority*/
+                    filterFields = WM.copy(variable.filterFields);
+                    _.merge(filterFields, options.filterFields);
+                }
                 if (variable.operation === 'read') {
                     WM.forEach(filterFields, function (fieldOptions, fieldName) {
                         var attributeName,
