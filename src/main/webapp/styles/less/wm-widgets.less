@@ -1966,10 +1966,14 @@ If the height and width are not specified the video takes the height of the post
   overflow : auto;
   .app-message {
     padding: 4px;
-    margin: 1em 2em 0;
+    margin: 1em 1.5em 0;
+    /*To overcome specificity issue*/
+    &.alert {
+      margin-bottom: 0;
+    }
   }
   .app-form.app-login-form {
-    padding: 0.5em;
+    padding: 1.5em;
     .app-login-button {
       margin-right: 0;
     }
