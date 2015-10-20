@@ -884,7 +884,8 @@ WM.module('wm.widgets.base', [])
                         "itemicon": {"type": "list", "options": [""]},
                         "itemlabel": {"type": "list", "options": [""]},
                         "itemlink": {"type": "list", "options": [""]},
-                        "itemchildren": {"type": "list", "options": [""]}
+                        "itemchildren": {"type": "list", "options": [""]},
+                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor'}, {'label': 'Menu', 'widgettype': 'wm-menu'}, {'label': 'Popover', 'widgettype': 'wm-popover'}], "widget": "add-widget"}
                     },
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1240,7 +1241,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordion": {
-                        "addchild": {"hidelabel": true, "widgettype": "wm-accordionpane", "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Accordion pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
                         "closeothers": { "type": "boolean", "value": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -1274,7 +1275,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.tabs": {
-                        "addchild": {"hidelabel": true, "widgettype": "wm-tabpane", "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Tab pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
                         "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
                         "taborder": {"type": "list", "widget": "tabordering", "dataset": []},
                         "transition": {"type": "list", "options": ["none", "slide"], "value": "none"}
@@ -1295,7 +1296,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string"}
                     },
                     "wm.carousel" : {
-                        "addchild": {"hidelabel": true, "widgettype": "wm-carousel-content", "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}] , "widget": "add-widget"},
                         "animationinterval" : {"type" : "number", "value" : "3"}
                     },
                     "wm.tabbar" : {
