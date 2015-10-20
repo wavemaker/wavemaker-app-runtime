@@ -11,7 +11,7 @@ WM.module('wm.layouts.containers')
                     '</form>'
             );
     }])
-    .directive('wmForm', ['PropertiesFactory', 'WidgetUtilService', '$compile', function (PropertiesFactory, WidgetUtilService, $compile) {
+    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
@@ -97,6 +97,13 @@ WM.module('wm.layouts.containers')
                     }
                     return scope.onSubmit({$event: event, $scope: scope, $formData: serializedArray});
                 }
+            });
+            /*clear the file uploader in the form*/
+            element.bind('reset', function () {
+                element.find('.app-fileupload').each(function (index, form) {
+                    scope.$parent.Widgets[form.getAttribute('name')].reset();
+                });
+                $rootScope.$safeApply(scope);
             });
         }
 

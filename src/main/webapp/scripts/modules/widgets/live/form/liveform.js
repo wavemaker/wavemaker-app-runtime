@@ -303,14 +303,24 @@ WM.module('wm.widgets.live')
                         });
                     }
                 };
+                /*clear the file uploader widget for reset*/
+                function resetFileUploadWidget(dataValue) {
+                    WM.element($scope.formElement).find('[name=' + dataValue.key + ']').val('');
+                    dataValue.href = '';
+                    dataValue.value = null;
+                }
                 /*Method to reset the form to original state*/
                 $scope.reset = function () {
                     if (WM.isArray($scope.formFields)) {
                         $scope.formFields.forEach(function (dataValue) {
-                            var prevObj = _.find($scope.prevDataValues, function (obj) {
-                                return obj.key === dataValue.key;
-                            });
-                            dataValue.value = prevObj ? prevObj.value : undefined;
+                            if (dataValue.type === 'blob') {
+                                resetFileUploadWidget(dataValue);
+                            } else {
+                                var prevObj = _.find($scope.prevDataValues, function (obj) {
+                                    return obj.key === dataValue.key;
+                                });
+                                dataValue.value = prevObj ? prevObj.value : undefined;
+                            }
                         });
                     }
                 };
@@ -318,9 +328,7 @@ WM.module('wm.widgets.live')
                 function emptyDataModel() {
                     $scope.formFields.forEach(function (dataValue) {
                         if (dataValue.type === 'blob') {
-                            WM.element($scope.formElement).find('[name=' + dataValue.key + ']').val('');
-                            dataValue.href = '';
-                            dataValue.value = null;
+                            resetFileUploadWidget(dataValue);
                         } else {
                             dataValue.value = '';
                         }
