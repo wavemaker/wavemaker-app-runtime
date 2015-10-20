@@ -207,6 +207,27 @@ WM.module('wm.utils', [])
             label = periodSeparate(label);
             return label;
         }
+
+        /*Accepts an array or a string separated with symbol and returns pretiffied result*/
+        function prettifyLabels(names, separator) {
+            var modifiedNames = [],
+                namesArray = [],
+                isArray = WM.isArray(names),
+                separator = separator || ',';
+            if(!isArray) {
+                namesArray = names.split(separator);
+            }
+
+            WM.forEach(namesArray,function (name) {
+                modifiedNames.push(prettifyLabel(name));
+            });
+            if (isArray) {
+                return modifiedNames;
+            } else {
+                return modifiedNames.join(separator);
+            }
+        }
+
         /*function to get variable name bound to an element*/
         function getVariableName(iScope, scope) {
             if (iScope.binddataset) {
@@ -1485,6 +1506,7 @@ WM.module('wm.utils', [])
         this.periodSeparate             = periodSeparate;
         this.spaceSeparate              = spaceSeparate;
         this.prettifyLabel              = prettifyLabel;
+        this.prettifyLabels              = prettifyLabels;
         this.getVariableName            = getVariableName;
         this.getImageUrl                = getImageUrl;
         this.getResourceUrl             = getResourceURL;
