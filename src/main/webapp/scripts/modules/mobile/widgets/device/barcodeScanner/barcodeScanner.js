@@ -47,7 +47,9 @@ WM.module('wm.widgets.advanced')
             return {
                 'restrict': 'E',
                 'replace': true,
-                'scope': {},
+                'scope': {
+                    onSuccess: '&'
+                },
                 'template': $tc.get('template/widget/advanced/barcodeScanner.html'),
                 'link': {
                     'pre': function ($is) {
