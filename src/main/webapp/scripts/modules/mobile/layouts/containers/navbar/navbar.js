@@ -36,7 +36,7 @@ WM.module('wm.layouts.containers')
                         '</div>' +
                     '</nav>' +
                     '<nav class="navbar searchbar ng-show" ng-show="showSearchbar">' +
-                            '<input type="search" data-ng-model="_model_" class="searchInput" id="search" placeholder="Search...">' +
+                            '<input type="search" data-ng-model="_model_" class="searchInput" id="search" placeholder="{{searchplaceholder}}">' +
                             '<i class="btn-close glyphicon glyphicon-remove" data-ng-click="close();"></i>' +
                     '</nav>' +
                 '</header>'

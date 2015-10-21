@@ -104,7 +104,8 @@ WM.module('wm.utils', [])
                 'wm.LogoutVariable'      : 'logout-variable',
                 'wm.NavigationVariable'  : 'navigation-variable',
                 'wm.NotificationVariable': 'notification-variable',
-                'wm.TimerVariable'       : 'time'
+                'wm.TimerVariable'       : 'time',
+                'wm.DeviceVariable'      :  'device-variable'
             },
             fieldTypeWidgetTypeMap = {
                 'integer'    : ['Number', 'Text', 'Slider', 'Select', 'Radioset', 'Rating'],
