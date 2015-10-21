@@ -2586,6 +2586,7 @@ WM.module('wm.widgets.base', [])
                             "wm-button",
                             "wm-picture",
                             "wm-anchor",
+                            "wm-popover",
                             "wm-date",
                             "wm-calendar",
                             "wm-time",
