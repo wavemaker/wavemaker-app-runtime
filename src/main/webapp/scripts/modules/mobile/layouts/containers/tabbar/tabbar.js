@@ -19,8 +19,8 @@ WM.module('wm.layouts.containers')
                             '</a>' +
                             '<ul class="dropdown-menu dropdown-menu-right" data-ng-class="{\'nav navbar-nav\' : menutype == \'thumbnail\'}">' +
                                 '<li class="menu-item" data-ng-repeat="item in tabItems" data-ng-show="$index+1 >= layout.max">' +
-                                    '<a data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label });">' +
-                                    '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +
+                                    '<a data-ng-href="{{item.link}}" data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label });">' +
+                                        '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +
                                     '</a>' +
                                 '</li>' +
                             '</ul>' +
