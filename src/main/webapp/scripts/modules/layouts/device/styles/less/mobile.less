@@ -1,5 +1,5 @@
-@app-mobile-header-height: 44pt;
-
+@app-mobile-nav-height: 36pt;
+@app-mobile-nav-icon-size: 18pt;
 .mobile-left-panel(@left-panel-width){
   display: block;
   height: 100%;
@@ -55,7 +55,7 @@
     }
 
     .app-header {
-      height: @app-mobile-header-height !important;
+      height: @app-mobile-nav-height !important;
       width: 100%;
       position: fixed;
       z-index: 1010;
@@ -63,10 +63,10 @@
       top: 0;
       left: 0;
       .app-header-action {
-        font-size: 22pt;
+        font-size: @app-mobile-nav-icon-size;
         text-decoration: none;
         cursor: pointer;
-        line-height: @app-mobile-header-height;
+        line-height: @app-mobile-nav-height;
         vertical-align: middle;
         color: inherit;
       }
@@ -93,20 +93,20 @@
       }
       /********provide the margin top if the header exist*******/
       & + .app-top-nav, & + .app-content {
-        margin-top: @app-mobile-header-height;
+        margin-top: @app-mobile-nav-height;
       }
 
       .app-picture {
-        max-height: 36pt;
-        max-width: 36pt;
-        margin: 4pt 0;
+        max-height: unit((@app-mobile-nav-height - 2) , pt);
+        max-width: unit((@app-mobile-nav-height - 2) , pt);
       }
+
     /*Search widget container (available only in Mobile)*/
       .app-search {
         z-index: 99999;
         position: fixed;
         left: 0;
-        top: @app-mobile-header-height;
+        top: @app-mobile-nav-height;
         display: none;
         margin: 0;
         right: 0;

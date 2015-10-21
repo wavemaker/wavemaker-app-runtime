@@ -7,7 +7,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layouts/containers/mobile/navbar.html',
                 '<header data-role="mobile-navbar" has-model init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show" apply-styles>' +
                     '<nav class="navbar ng-show" ng-show="!showSearchbar">' +
-                        '<div class="col-xs-4">' +
+                        '<div class="col-xs-3">' +
                             '<ul class="nav navbar-nav navbar-left">' +
                                 '<li data-ng-if="leftNavPanel != undefined" >' +
                                     '<a data-ng-click="leftNavPanel.toggle();">' +
@@ -21,10 +21,10 @@ WM.module('wm.layouts.containers')
                                 '</li>' +
                             '</ul>' +
                         '</div>' +
-                        '<div class="col-xs-4">' +
+                        '<div class="col-xs-6">' +
                             '<div class="navbar-header"><h1 class="navbar-brand">{{title}}</h1></div>' +
                         '</div>' +
-                        '<div class="col-xs-4">' +
+                        '<div class="col-xs-3">' +
                             '<ul class="nav navbar-nav navbar-right">' +
                                 '<li wmtransclude></li>' +
                                 '<li data-ng-if="searchbutton">' +
@@ -36,8 +36,8 @@ WM.module('wm.layouts.containers')
                         '</div>' +
                     '</nav>' +
                     '<nav class="navbar searchbar ng-show" ng-show="showSearchbar">' +
-                            '<input type="search" data-ng-model="_model_" class="searchInput" id="search" placeholder="{{searchplaceholder}}">' +
-                            '<i class="btn-close glyphicon glyphicon-remove" data-ng-click="close();"></i>' +
+                            '<div class="search-container"><input type="search" data-ng-model="_model_" class="form-control" id="search" placeholder="{{searchplaceholder}}">' +
+                            '<i class="btn-close glyphicon glyphicon-remove" data-ng-click="close();"></i></div>' +
                     '</nav>' +
                 '</header>'
                 );

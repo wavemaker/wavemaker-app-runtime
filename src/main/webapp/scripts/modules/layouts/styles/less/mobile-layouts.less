@@ -1,9 +1,9 @@
 .wm-app {
-@app-mobile-nav-font-size: 14pt;
-@app-mobile-nav-icon-size: 22pt;
-@app-mobile-tabbar-icon-size: 25pt;
-@app-mobile-nav-height: 44pt;
-@app-mobile-tabbar-height: 52pt;
+@app-mobile-nav-font-size: 12pt;
+@app-mobile-nav-icon-size: 18pt;
+@app-mobile-tabbar-icon-size: 20pt;
+@app-mobile-nav-height: 36pt;
+@app-mobile-tabbar-height: 44pt;
 @app-mobile-nav-searchinput-border: #fff;
 @app-mobile-nav-button-padding: (@app-mobile-nav-height - @app-mobile-nav-font-size)/2;
 /********************************************************************************
@@ -60,6 +60,8 @@
   }
   .app-icon {
     font-size: @app-mobile-tabbar-icon-size;
+    display: block;
+    max-height: @app-mobile-tabbar-icon-size;
   }
   >.navbar {
     border: none;
@@ -122,7 +124,7 @@
 /********************************************************************************
 **************************** Mobile Navbar ***********************
 *********************************************************************************/
-.app-mobile-navbar{
+.app-mobile-navbar {
   position: relative;
   z-index: 100;
   overflow: inherit;
@@ -148,22 +150,28 @@
         height: 100%;
         float: none;
         margin: 0;
-        padding: 15pt 0;
+        padding: 0;
         font-size: inherit;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: @app-mobile-nav-height;
       }
     }
     .navbar-nav {
       margin: auto;
       background-color: inherit;
-      .app-menu, .app-popover {
-        > a {
-          line-height: @app-mobile-nav-height;
-          text-decoration: none;
-          background-color: transparent;
-          color: inherit;
+      > li {
+        > .app-menu, > .app-popover {
+          > a {
+            line-height: @app-mobile-nav-height;
+            text-decoration: none;
+            background-color: transparent;
+            color: inherit;
+          }
+          .caret {
+            display: none;
+          }
         }
       }
       .popover {
@@ -178,19 +186,18 @@
       }
       &.navbar-left {
         white-space:nowrap;
-        padding-left: 3pt;
       }
       &.navbar-right {
         text-align: right;
-        padding-right: 8pt;
         .dropdown {
           background-color: inherit;
           > .app-button {
             background-color: transparent;
             font-size: inherit;
             padding: 0 5pt;
-            line-height: 42pt;
+            line-height: @app-mobile-nav-height;
             color: inherit;
+            border: 0;
           }
         }
         .dropdown-menu {
@@ -221,23 +228,47 @@
       }
     }
     /* navbar with searchbar */
-    &.searchbar{
-      > .searchInput {
-        width : 100%;
-        position: absolute;
-        top:0;
-        bottom: 5pt;
-        background-color: transparent;
-        border-color: transparent;
+    &.searchbar {
+      padding: 7pt 4pt 0 4pt;
+      .search-container {
+        position: relative;
         border-bottom: 1px solid @app-mobile-nav-searchinput-border;
-        box-sizing: border-box;
-        padding: 0 14pt 0 5pt;
-        text-overflow: ellipsis;
-      }
-      > .btn-close{
-        position: absolute;
-        right:0;
-        padding: 12pt 3pt;
+        height: unit((@app-mobile-nav-height - 12) , pt);
+        ::-webkit-input-placeholder { color: inherit; }
+        ::-moz-placeholder { color: inherit; } /* firefox 19+ */
+        :-ms-input-placeholder { color: inherit; } /* ie */
+        input:-moz-placeholder { color: inherit; }
+
+        .form-control {
+          width : 100%;
+          background-color: transparent;
+          border: 0;
+          padding: 5pt 18pt 0 22pt;
+          color: inherit;
+          font-size: inherit;
+          height: auto;
+          box-shadow: none;
+        }
+
+        .btn-close {
+          position: absolute;
+          right:0;
+          padding: 6pt;
+          font-size: unit((@app-mobile-nav-icon-size - 4) , pt) ;
+        }
+
+        &:before {
+          content: "\f002";
+          font-family: FontAwesome;
+          font-style: normal;
+          font-weight: normal;
+          text-decoration: inherit;
+        /*--adjust as necessary--*/
+          position: absolute;
+          top: 6pt;
+          left: 6pt;
+          font-size: unit((@app-mobile-nav-icon-size - 4) , pt) ;
+        }
       }
     }
   }
