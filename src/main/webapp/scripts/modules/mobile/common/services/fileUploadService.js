@@ -31,7 +31,8 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', functi
         var ft = new FileTransfer(),
             ftOptions = {
                 fileKey : 'files',
-                fileName: file.name
+                fileName: file.name,
+                chunkedMode : false
             },
             getEventHandler = function (callback) {
                 return function (event) {
