@@ -214,6 +214,8 @@ wm.variables.services.$liveVariable = [
                             });
                         });
 
+                        setVariableProp(variable, writableVariable, "relatedTables", []);
+                        setVariableProp(variable, writableVariable, "properties", []);
                         WM.forEach(table.dataRelations, function (relation) {
 
                             /*Loop through the table's columns*/
