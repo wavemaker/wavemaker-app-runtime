@@ -377,6 +377,9 @@ WM.module('wm.layouts.containers')
                                     'duration': 'fast',
                                     'start'   : function () {
                                         element.addClass('active');
+                                    },
+                                    'complete': function () {
+                                        element.siblings('.active').removeClass('active');
                                     }
                                 });
                             } else {

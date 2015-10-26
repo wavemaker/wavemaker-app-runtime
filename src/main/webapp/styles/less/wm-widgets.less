@@ -1690,13 +1690,18 @@ If the height and width are not specified the video takes the height of the post
 
   &.has-transition {
     > .tab-content {
-      overflow-x: hidden;
+      overflow: hidden;
       white-space: nowrap;
       position: relative;
       > .tab-pane {
         vertical-align: top;
         display: inline-block;
         width: 100%;
+        &::before, &::after {
+          display: inline;
+          font-size: 0;
+          content: '';
+        }
       }
     }
   }
