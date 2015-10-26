@@ -86,7 +86,7 @@ WM.module('wm.layouts.containers')
             'replace': true,
             'scope': {},
             'transclude': true,
-            'template': '<div init-widget class="app-grid-layout clearfix" apply-styles="container" wmtransclude></div>',
+            'template': '<div init-widget class="app-grid-layout clearfix" data-ng-show="show" apply-styles="container" wmtransclude></div>',
             'compile': function () {
                 return {
                     'pre': function (scope) {

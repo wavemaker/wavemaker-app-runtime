@@ -1022,6 +1022,7 @@ WM.module('wm.widgets.base', [])
                         "marginbottom": {"type": "string", "pattern": numberRegex},
                         "marginright": {"type": "string", "pattern": numberRegex},
                         "marginleft": {"type": "string", "pattern": numberRegex},
+                        "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "insert": {"type": "toolbar", "actions": [{'action': 'addrow', 'label': 'LABEL_PROPERTY_ADDROW', 'icon': 'add-row'}]}
                     },
                     'wm.layouts.gridcolumn': {
