@@ -1795,20 +1795,20 @@ WM.module('wm.widgets.base', [])
                         transcludeFn(eleScope, function (clone) {
                             element.append(clone);
                             scope.__load = WM.noop;
-                            Utils.triggerFn(scope.onReady);
+                            Utils.triggerFn(scope.__onTransclude);
                         });
                     };
                 } else if (CONSTANTS.isRunMode &&  scope.loadmode === 'after-delay') {
                     $timeout(function () {
                         transcludeFn(eleScope, function (clone) {
                             element.append(clone);
-                            Utils.triggerFn(scope.onReady);
+                            Utils.triggerFn(scope.__onTransclude);
                         });
                     }, scope.loaddelay);
                 } else {
                     transcludeFn(eleScope, function (clone) {
                         element.append(clone);
-                        Utils.triggerFn(scope.onReady);
+                        Utils.triggerFn(scope.__onTransclude);
                     });
                 }
             }
@@ -2044,7 +2044,9 @@ WM.module('wm.widgets.base', [])
                             }
                         });
                     scope._isInitialized = true;
-                    Utils.triggerFn(scope.onReady, scope, element, attrs);
+                    if (!scope.__onTransclude) {
+                        Utils.triggerFn(scope.onReady, scope, element, attrs);
+                    }
                 }
 
                 triggerInitValueChange();

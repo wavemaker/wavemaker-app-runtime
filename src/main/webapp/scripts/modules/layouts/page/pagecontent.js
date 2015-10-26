@@ -7,7 +7,7 @@ WM.module('wm.layouts.page')
             '<div init-widget class="app-page-content app-content-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>'
             );
     }])
-    .directive('wmPageContent', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmPageContent', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.pagecontent', ['wm.layouts', 'wm.base.events.touch']),
@@ -34,9 +34,17 @@ WM.module('wm.layouts.page')
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/pagecontent.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope) {
+                    'pre': function (scope, element) {
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
+                        if (CONSTANTS.isRunMode) {
+                            Utils.triggerFn(element.scope().registerPagePart);
+                            scope.loadmode = 'after-delay';
+                            scope.loaddelay = 100;
+                            scope.__onTransclude = function () {
+                                Utils.triggerFn(element.scope().onPagePartLoad);
+                            };
+                        }
                     },
 
                     'post': function (scope, element, attrs) {
