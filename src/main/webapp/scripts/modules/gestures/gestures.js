@@ -19,10 +19,16 @@ function configureHammerTimeEl(hammertime, event) {
         hammertime.get('pinch').set({enable: true});
         break;
     case 'swipeup':
+        hammertime.get('swipe').set({direction: Hammer.DIRECTION_VERTICAL, velocity:0.3});
+        break;
     case 'swipedown':
+        hammertime.get('swipe').set({direction: Hammer.DIRECTION_VERTICAL, velocity:0.3});
+        break;
     case 'swipeleft':
+        hammertime.get('swipe').set({direction: Hammer.DIRECTION_HORIZONTAL, velocity:0.3});
+        break;
     case 'swiperight':
-        hammertime.get('swipe').set({direction: Hammer.DIRECTION_ALL});
+        hammertime.get('swipe').set({direction: Hammer.DIRECTION_HORIZONTAL, velocity:0.3});
         break;
     }
 }

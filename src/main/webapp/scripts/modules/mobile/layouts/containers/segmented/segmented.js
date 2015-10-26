@@ -18,7 +18,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
             '<li init-widget wmtransclude class="app-segment-content clearfix" apply-styles="container" wm-navigable-element="true"></li>');
     }])
-    .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
+    .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', 'WidgetUtilService', function ($templateCache, PropertiesFactory, CONSTANTS, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrol', ['wm.base', 'wm.layouts', 'wm.containers']);
         return {
@@ -80,7 +80,7 @@ WM.module('wm.layouts.containers')
                         $scope.animate = true;
                         $scope.currentSelectedIndex = 0;
                     },
-                    'post' : function ($scope, $element) {
+                    'post' : function ($scope, $element, attrs) {
                         /**
                          * Displays content at the given index.
                          */
@@ -124,12 +124,13 @@ WM.module('wm.layouts.containers')
                                 $scope.currentSelectedIndex =  ($scope.contents.length - 1);
                             };
                         }
+                        WidgetUtilService.postWidgetCreate($scope, $element, attrs);
                     }
                 };
             }
         };
     }])
-    .directive('wmSegmentContent', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, PropertiesFactory, CONSTANTS) {
+    .directive('wmSegmentContent', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', 'Utils', 'WidgetUtilService', function ($templateCache, PropertiesFactory, CONSTANTS, Utils, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base', 'wm.layouts', 'wm.containers', 'wm.containers.lazy']);
         return {
@@ -146,6 +147,9 @@ WM.module('wm.layouts.containers')
                         $scope.onShow = function () {
                             $scope.__load();
                         };
+                        $scope.__onTransclude = function () {
+                            Utils.triggerFn($scope.onReady);
+                        };
                     },
                     'post' : function ($scope, element, attrs, controller) {
                         controller.addContent($scope);
@@ -158,6 +162,7 @@ WM.module('wm.layouts.containers')
                                 controller.removeContent($scope);
                             });
                         }
+                        WidgetUtilService.postWidgetCreate($scope, element, attrs);
                     }
                 };
             }
