@@ -1298,7 +1298,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string"}
                     },
                     "wm.carousel" : {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}] , "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
                         "animationinterval" : {"type" : "number", "value" : "3"}
                     },
                     "wm.tabbar" : {
@@ -1785,7 +1785,8 @@ WM.module('wm.widgets.base', [])
                     element.attr("data-droptarget-for", scope.widgettype);
                 }
 
-                var eleScope = element.scope();
+                var eleScope = element.scope(),
+                    onTranscludeFn = scope.__onTransclude || WM.noop;
 
                 if (eleScope.hasOwnProperty('$$isolateBindings') && !eleScope.__compileWithIScope) {
                     eleScope = eleScope.$parent;
@@ -1796,20 +1797,20 @@ WM.module('wm.widgets.base', [])
                         transcludeFn(eleScope, function (clone) {
                             element.append(clone);
                             scope.__load = WM.noop;
-                            Utils.triggerFn(scope.__onTransclude);
+                            $timeout(onTranscludeFn, undefined, false);
                         });
                     };
                 } else if (CONSTANTS.isRunMode &&  scope.loadmode === 'after-delay') {
                     $timeout(function () {
                         transcludeFn(eleScope, function (clone) {
                             element.append(clone);
-                            Utils.triggerFn(scope.__onTransclude);
+                            $timeout(onTranscludeFn, undefined, false);
                         });
                     }, scope.loaddelay);
                 } else {
                     transcludeFn(eleScope, function (clone) {
                         element.append(clone);
-                        Utils.triggerFn(scope.__onTransclude);
+                        onTranscludeFn();
                     });
                 }
             }
