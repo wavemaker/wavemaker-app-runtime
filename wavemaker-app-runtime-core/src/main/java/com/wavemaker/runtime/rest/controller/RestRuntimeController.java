@@ -9,16 +9,15 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.view.AbstractView;
 
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestResponse;
@@ -30,16 +29,25 @@ import com.wavemaker.studio.common.util.IOUtils;
 /**
  * @author Uday Shankar
  */
-@RestController
-public class RestRuntimeController {
+public class RestRuntimeController extends AbstractController {
 
     @Autowired
     private RestRuntimeService restRuntimeService;
 
-    @RequestMapping(value = "/{serviceId}/{operationId}")
-    public void executeRestCall(@PathVariable("serviceId") String serviceId, @PathVariable("operationId") String operationId,
-                                        HttpServletRequest httpServletRequest,
-                                        HttpServletResponse httpServletResponse) throws IOException {
+    @Override
+    protected ModelAndView handleRequestInternal(
+            final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        final String pathInfo = request.getPathInfo();
+        final int index = pathInfo.lastIndexOf('/');
+        final String serviceId = pathInfo.substring(1, index);
+        final String operation = pathInfo.substring(index + 1, pathInfo.length());
+        executeRestCall(serviceId, operation, request, response);
+        return new ModelAndView(new NoOpView(), new HashMap<String,Object>());
+    }
+
+    private void executeRestCall(String serviceId, String operationId,
+                                HttpServletRequest httpServletRequest,
+                                HttpServletResponse httpServletResponse) throws IOException {
         Map<String, Object> params = new HashMap();
         addHeaders(httpServletRequest, params);
         addRequestParams(httpServletRequest, params);
@@ -108,5 +116,12 @@ public class RestRuntimeController {
         }
     }
 
+    static class NoOpView extends AbstractView {
+        @Override
+        protected void renderMergedOutputModel(
+                final Map<String, Object> model, final HttpServletRequest request,
+                final HttpServletResponse response) throws Exception {
 
+        }
+    }
 }

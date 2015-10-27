@@ -97,4 +97,7 @@
 
     <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
 
+    <bean id="restServiceSimpleUrlHandlerMapping" class="com.wavemaker.runtime.rest.handler.RestServiceSimpleUrlHandlerMapping"/>
+    <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
+
 </beans>
