@@ -93,7 +93,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         },
 
         /*Entity Columns related services*/
-
+        addPrimaryKey: {
+            url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/primaryKey",
+            method: "PUT"
+        },
         addColumns: {
             url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/columns",
             method: "POST"
