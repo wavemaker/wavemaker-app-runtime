@@ -141,7 +141,8 @@ WM.module('wm.utils', [])
                 'datetime'       : 'yyyy-MM-ddTHH:mm:ss',
                 'datetime_oracle': 'yyyy-MM-dd HH:mm:ss'
             },
-            indexPage = getIndexPage();
+            indexPage = getIndexPage(),
+            resetFormWidgets = [];
 
         /* set default attrs for link */
         linkEl.rel = 'stylesheet';
@@ -409,6 +410,10 @@ WM.module('wm.utils', [])
             data[property2] = temp;
         }
 
+        /*Returns require form reset widgets array*/
+        function getResetFormWidgets() {
+            return resetFormWidgets;
+        }
 
         /*function to check if fn is a function and then execute*/
         function triggerFn(fn) {
@@ -1594,4 +1599,5 @@ WM.module('wm.utils', [])
         this.getNewEventsObject         = getNewEventsObject;
         this.getEvaluatedExprValue      = getEvaluatedExprValue;
         this.getProjectResourcePath     = getProjectResourcePath;
+        this.getResetFormWidgets        = getResetFormWidgets;
     }]);

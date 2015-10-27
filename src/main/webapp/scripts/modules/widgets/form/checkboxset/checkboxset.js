@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/checkboxset.html',
-            '<ul class="app-checkboxset list-group {{layout}}" init-widget has-model apply-styles' +
+            '<ul class="app-checkboxset list-group {{layout}}" init-widget has-model apply-styles require-form-reset="app-checkboxset"' +
                 ' title="{{hint}}" ' +
                 ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' data-ng-show="show" ' +
@@ -211,6 +211,11 @@ WM.module('wm.widgets.form')
                                 });
                             }
                         }, false);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            scope._model_ = [];
+                        };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }

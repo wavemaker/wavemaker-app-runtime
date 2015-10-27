@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
         function ($templateCache) {
             'use strict';
             $templateCache.put('template/widget/form/switch.html',
-                '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles>' +
+                '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles require-form-reset="app-switch">' +
                     '<div class="btn-group btn-group-justified">' +
                         '<a class="btn btn-default" data-ng-disabled="disabled" ' +
                             ' data-ng-repeat="opt in options track by $index" data-ng-class="{\'selected\': selected.index === $index}"' +
@@ -220,6 +220,14 @@ WM.module('wm.widgets.form')
                             });
 
                             scope.selected = {};
+
+                            /*Called from form reset when users clicks on form reset*/
+                            scope.reset = function () {
+                                if (scope.options.length > 0) {
+                                    scope.datavalue = scope.options[0].value;
+                                    scope.selected.index = 0;
+                                }
+                            };
 
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
