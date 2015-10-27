@@ -1,4 +1,4 @@
-/*global wm, WM*/
+/*global wm, WM, _, moment*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -153,9 +153,9 @@ wm.variables.services.$liveVariable = [
                         variableType,
                         tableNameToEntityNameMap = {},
                         entityNameToTableNameMap = {};
-                    WM.forEach(database.dataTables, function (table) {
-                        tableNameToEntityNameMap[table.tableName] = table.entityName;
-                        entityNameToTableNameMap[table.entityName] = table.tableName;
+                    WM.forEach(database.tables, function (table) {
+                        tableNameToEntityNameMap[table.name] = table.entityName;
+                        entityNameToTableNameMap[table.entityName] = table.name;
                     });
                     variableType = entityNameToTableNameMap[variable.type];
 
@@ -167,10 +167,20 @@ wm.variables.services.$liveVariable = [
                     }
 
                     /*Loop through the tables*/
-                    WM.forEach(database.dataTables, function (table) {
+                    WM.forEach(database.tables, function (table) {
 
-                        var tableName = table.tableName,
-                            tablePackageName = database.packageName + "." + table.entityName;
+                        var tableName = table.name,
+                            tablePackageName = database.packageName + "." + table.entityName,
+                            primaryKeys = table.primaryKey.columns || [],
+                            foreignKeys = [];
+                        /*Find out the foreign keys from the relations*/
+                        _.each(table.relations, function (relation) {
+                            if (relation.primary) {
+                                _.each(relation.mappings, function (mapping) {
+                                    foreignKeys.push(mapping.sourceColumn);
+                                });
+                            }
+                        });
 
                         /*Add the "table-name" as a key to "tableDetails" and initialize "columnNames" and "relations".*/
                         tableDetails[tableName] = {};
@@ -182,19 +192,20 @@ wm.variables.services.$liveVariable = [
                         /*Check if the current table is same as the table associated with the variable.*/
                         if (tableName === variableType) {
                             setVariableProp(variable, writableVariable, "package", tablePackageName);
-                            setVariableProp(variable, writableVariable, "tableName", table.tableName);
-                            setVariableProp(variable, writableVariable, "tableType", WM.isDefined(table.tableType) ? table.tableType : "TABLE");
+                            setVariableProp(variable, writableVariable, "tableName", table.name);
+                            setVariableProp(variable, writableVariable, "tableType", WM.isDefined(table.type) ? table.type : "TABLE");
                         }
 
                         /*Loop through the table*/
-                        WM.forEach(table.dataColumns, function (column) {
-                            var sqlType;
-                            sqlType = column.sqlType;
-                            if (!column.isRelated && DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType]) {
+                        WM.forEach(table.columns, function (column) {
+                            var sqlType = column.sqlType,
+                                isPrimaryKey = _.includes(primaryKeys, column.name),
+                                isForeignKey = _.includes(foreignKeys, column.name);
+                            if (DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType]) {
                                 sqlType = DB_CONSTANTS.DATABASE_DATA_TYPES[DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType].sql_type].sql_type;
                             }
 
-                            if (column.isPk && WM.element.inArray(column.fieldName, packageDetails[tablePackageName].primaryKeys) === -1) {
+                            if (isPrimaryKey && WM.element.inArray(column.fieldName, packageDetails[tablePackageName].primaryKeys) === -1) {
                                 tableDetails[tableName].primaryKeys.push(column.fieldName);
                                 packageDetails[tablePackageName].primaryKeys.push(column.fieldName);
                             }
@@ -203,25 +214,33 @@ wm.variables.services.$liveVariable = [
                                 "type": sqlType,
                                 "hibernateType": column.hibernateType,
                                 "fullyQualifiedType": sqlType,
-                                "columnName": column.columnName,
-                                "isPrimaryKey": column.isPk,
-                                "notNull": column.notNull,
+                                "columnName": column.name,
+                                "isPrimaryKey": isPrimaryKey,
+                                "notNull": !column.nullable,
                                 "length": column.length,
                                 "precision": column.precision,
                                 "generator": column.generator,
-                                "isRelated": column.isFk,
+                                "isRelated": isForeignKey,
                                 "defaultValue": column.defaultValue
                             });
                         });
 
-                        WM.forEach(table.dataRelations, function (relation) {
-
+                        WM.forEach(table.relations, function (relation) {
+                            var relatedColumns = [];
+                            /*Find out the related columns for the relation*/
+                            _.each(relation.mappings, function (mapping) {
+                                if (relation.primary) {
+                                    relatedColumns.push(mapping.sourceColumn);
+                                } else {
+                                    relatedColumns.push(mapping.targetColumn);
+                                }
+                            });
                             /*Loop through the table's columns*/
                             WM.forEach(tableDetails[tableName].columns, function (column) {
 
                                 var fkColumnName = column.columnName;
                                 /*Check if the column is a foreign-key/related column and it is present in the "relatedColumns" of the current relation.*/
-                                if (column.isRelated && WM.element.inArray(fkColumnName, relation.relatedColumns) !== -1) {
+                                if (column.isRelated && WM.element.inArray(fkColumnName, relatedColumns) !== -1) {
 
                                     /*Check if the current table is same as the table associated with the variable.*/
                                     if (tableName === variableType) {
@@ -236,17 +255,17 @@ wm.variables.services.$liveVariable = [
                                         /*column.columnName = column.fieldName;
                                         column.fieldName = tableNameToEntityNameMap[relation.relatedType];
                                         column.fieldName = column.fieldName.charAt(0).toLowerCase() + column.fieldName.slice(1);*/
-                                        column.relatedTableName = relation.relatedType;
-                                        column.relatedEntityName = tableNameToEntityNameMap[relation.relatedType];
-                                        if ((WM.element.inArray(relation.name, variable.properties) === -1)) {
-                                            variable.properties.push(relation.name);
+                                        column.relatedTableName = relation.targetTable;
+                                        column.relatedEntityName = tableNameToEntityNameMap[relation.targetTable];
+                                        if ((WM.element.inArray(relation.fieldName, variable.properties) === -1)) {
+                                            variable.properties.push(relation.fieldName);
                                             setVariableProp(variable, writableVariable, "relatedTables", (variable.relatedTables || []));
                                             variable.relatedTables.push({
                                                 "columnName": column.fieldName,
-                                                "relationName": relation.name,
-                                                "type": tableNameToEntityNameMap[relation.relatedType],
-                                                "package": relation.fullyQualifiedName,
-                                                "watchOn": Utils.initCaps(variable.liveSource) + tableNameToEntityNameMap[relation.relatedType] + "Data"
+                                                "relationName": relation.fieldName,
+                                                "type": tableNameToEntityNameMap[relation.targetTable],
+                                                "package": tablePackageName,
+                                                "watchOn": Utils.initCaps(variable.liveSource) + tableNameToEntityNameMap[relation.targetTable] + "Data"
                                             });
                                         }
                                     }
@@ -741,85 +760,85 @@ wm.variables.services.$liveVariable = [
                 }
 
                 switch (action) {
-                    case 'insertTableData':
-                    case 'insertMultiPartTableData':
-                        primaryKey = variableDetails.getPrimaryKey();
-                        /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
-                        if (variableDetails.isCompositeKey(primaryKey)) {
-                            if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                                formattedData.id = WM.copy(rowObject);
-                                rowObject = {};
-                            } else {
-                                formattedData.id = {};
-                                primaryKey.forEach(function (key) {
-                                    formattedData.id[key] = rowObject[key];
-                                    delete rowObject[key];
-                                });
-                            }
-                            rowObject.id = formattedData.id;
+                case 'insertTableData':
+                case 'insertMultiPartTableData':
+                    primaryKey = variableDetails.getPrimaryKey();
+                    /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
+                    if (variableDetails.isCompositeKey(primaryKey)) {
+                        if (variableDetails.isNoPrimaryKey(primaryKey)) {
+                            formattedData.id = WM.copy(rowObject);
+                            rowObject = {};
+                        } else {
+                            formattedData.id = {};
+                            primaryKey.forEach(function (key) {
+                                formattedData.id[key] = rowObject[key];
+                                delete rowObject[key];
+                            });
                         }
-                        break;
-                    case 'updateTableData':
-                    case 'updateMultiPartTableData':
-                        prevData = options.prevData || {};
-                        primaryKey = variableDetails.getPrimaryKey();
+                        rowObject.id = formattedData.id;
+                    }
+                    break;
+                case 'updateTableData':
+                case 'updateMultiPartTableData':
+                    prevData = options.prevData || {};
+                    primaryKey = variableDetails.getPrimaryKey();
 
-                        /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
-                        if (variableDetails.isCompositeKey(primaryKey)) {
-                            if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                                prevCompositeKeysData = prevData;
-                                compositeKeysData = rowObject;
-                                rowObject = {};
-                            } else {
-                                primaryKey.forEach(function (key) {
-                                    compositeKeysData[key] = rowObject[key];
-                                    prevCompositeKeysData[key] = prevData[key];
-                                    delete rowObject[key];
-                                });
-                            }
-                            rowObject.id = compositeKeysData;
-                            options.row = rowObject;
-                            options.compositeKeysData = prevCompositeKeysData;
+                    /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
+                    if (variableDetails.isCompositeKey(primaryKey)) {
+                        if (variableDetails.isNoPrimaryKey(primaryKey)) {
+                            prevCompositeKeysData = prevData;
+                            compositeKeysData = rowObject;
+                            rowObject = {};
                         } else {
                             primaryKey.forEach(function (key) {
-                                if (key.indexOf(".") === -1) {
-                                    id = prevData[key] || (options.rowData && options.rowData[key]) || rowObject[key];
-                                } else {
-                                    columnName = key.split(".");
-                                    id = prevData[columnName[0]][columnName[1]];
-                                }
+                                compositeKeysData[key] = rowObject[key];
+                                prevCompositeKeysData[key] = prevData[key];
+                                delete rowObject[key];
                             });
-                            options.id = id;
-                            options.row = rowObject;
                         }
-
-                        break;
-                    case 'deleteTableData':
-                        primaryKey = variableDetails.getPrimaryKey();
-                        /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
-                        if (variableDetails.isCompositeKey(primaryKey)) {
-                            if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                                compositeKeysData = rowObject;
+                        rowObject.id = compositeKeysData;
+                        options.row = rowObject;
+                        options.compositeKeysData = prevCompositeKeysData;
+                    } else {
+                        primaryKey.forEach(function (key) {
+                            if (key.indexOf(".") === -1) {
+                                id = prevData[key] || (options.rowData && options.rowData[key]) || rowObject[key];
                             } else {
-                                primaryKey.forEach(function (key) {
-                                    compositeKeysData[key] = rowObject[key];
-                                });
+                                columnName = key.split(".");
+                                id = prevData[columnName[0]][columnName[1]];
                             }
-                            options.compositeKeysData = compositeKeysData;
-                        } else if (!WM.element.isEmptyObject(rowObject)) {
+                        });
+                        options.id = id;
+                        options.row = rowObject;
+                    }
+
+                    break;
+                case 'deleteTableData':
+                    primaryKey = variableDetails.getPrimaryKey();
+                    /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
+                    if (variableDetails.isCompositeKey(primaryKey)) {
+                        if (variableDetails.isNoPrimaryKey(primaryKey)) {
+                            compositeKeysData = rowObject;
+                        } else {
                             primaryKey.forEach(function (key) {
-                                if (key.indexOf(".") === -1) {
-                                    id = rowObject[key];
-                                } else {
-                                    columnName = key.split(".");
-                                    id = rowObject[columnName[0]][columnName[1]];
-                                }
+                                compositeKeysData[key] = rowObject[key];
                             });
-                            options.id = id;
                         }
-                        break;
-                    default:
-                        break;
+                        options.compositeKeysData = compositeKeysData;
+                    } else if (!WM.element.isEmptyObject(rowObject)) {
+                        primaryKey.forEach(function (key) {
+                            if (key.indexOf(".") === -1) {
+                                id = rowObject[key];
+                            } else {
+                                columnName = key.split(".");
+                                id = rowObject[columnName[0]][columnName[1]];
+                            }
+                        });
+                        options.id = id;
+                    }
+                    break;
+                default:
+                    break;
                 }
 
                 /*Check if "options" have the "compositeKeysData" property.*/
