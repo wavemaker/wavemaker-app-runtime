@@ -6,7 +6,7 @@ WM.module('wm.widgets.advanced')
         'use strict';
 
         $templateCache.put('template/widget/advanced/rating.html',
-            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model apply-styles>' +
+            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model apply-styles require-form-reset="app-ratings">' +
                 '<div data-ng-if="!readonly" class="rating-style">' +
                 '<label data-ng-class="{active : rate.value <= datavalue}" for="{{$id}}+{{rate.value}}" data-ng-style="{\'font-size\':iconsize}" data-ng-repeat="rate in range track by $index" title="{{rate.value}}">' +
                     '<input type="radio" id="{{$id}}+{{rate.value}}" data-ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
@@ -77,6 +77,10 @@ WM.module('wm.widgets.advanced')
                             if (dataValue > maxValue) {
                                 return maxValue * starWidth + 'em';
                             }
+                        };
+                        /*Called from form reset when users clicks on form reset*/
+                        iScope.reset = function () {
+                            iScope.datavalue = '';
                         };
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope), iScope, notifyFor);
                         WidgetUtilService.postWidgetCreate(iScope, $el, attrs);

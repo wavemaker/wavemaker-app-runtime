@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/radioset.html',
-            '<ul class="app-radioset list-group {{layout}}" init-widget has-model apply-styles ' +
+            '<ul class="app-radioset list-group {{layout}}" init-widget has-model apply-styles require-form-reset="app-radioset"' +
                 ' title="{{hint}}" data-ng-model="_model_" data-ng-show="show"' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</ul>'
@@ -154,6 +154,11 @@ WM.module('wm.widgets.form')
                         /*method to check the value of the model and appropriately check or uncheck the element*/
                         scope.checkModel = function (index) {
                             return (scope._model_ === scope.dataKeys[index]) || WM.equals(scope._model_, scope.dataObject[scope.dataKeys[index]]);
+                        };
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            scope._model_ = [];
                         };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);

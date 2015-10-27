@@ -11,7 +11,7 @@ WM.module('wm.widgets.form')
         * note: attribute 'ng-checked' removed as it is conflicting with the new property 'datavalue'
         */
         $templateCache.put('template/widget/form/checkbox.html',
-            '<div class="app-checkbox checkbox" data-ng-class="{\'app-toggle\' : (type === \'toggle\')}" init-widget has-model data-ng-show="show" title="{{hint}}">' +
+            '<div class="app-checkbox checkbox" data-ng-class="{\'app-toggle\' : (type === \'toggle\')}" init-widget has-model data-ng-show="show" title="{{hint}}" require-form-reset="app-toggle">' +
                 '<label data-ng-class="{\'disabled\':disabled,\'unchecked\': (_model_=== uncheckedvalue || _model_ === false)}" apply-styles>' +
                     '<input type="checkbox" ' +
                         ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
@@ -92,6 +92,10 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            scope._model_ = false;
+                        };
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
