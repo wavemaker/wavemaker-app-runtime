@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0)" class="accordion-toggle" wmtransclude></a>' +
                     '</h3>' +
-                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button class="app-icon glyphicon panel-action" data-ng-class="pane.active ? \'glyphicon-minus\': \'glyphicon-plus\'"></button></div>' +
+                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type=button class="app-icon glyphicon panel-action" data-ng-class="pane.active ? \'glyphicon-minus\': \'glyphicon-plus\'"></button></div>' +
                 '</div>'
             );
         $templateCache.put('template/layout/container/accordion-content.html',
