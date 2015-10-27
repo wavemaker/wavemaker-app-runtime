@@ -23,6 +23,19 @@ public class Procedure {
     private String description = null;
     private boolean returnsSingleResult = false;
 
+    public Procedure(Procedure procedure) {
+        this.name = procedure.getName();
+        this.procedure = procedure.getProcedure();
+        this.comment = procedure.getComment();
+        this.description = procedure.getDescription();
+        this.returnsSingleResult = procedure.isReturnsSingleResult();
+        this.procedureParams = procedure.getProcedureParams();
+        this.outputType = procedure.getOutputType();
+    }
+
+    public Procedure() {
+    }
+
     private List<ProcedureParam> procedureParams = new ArrayList<ProcedureParam>();
 
     private String outputType;
