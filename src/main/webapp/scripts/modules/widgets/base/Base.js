@@ -464,12 +464,12 @@ WM.module('wm.widgets.base', [])
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean"},
                         "disabled": {"type": "boolean"},
-                        "mindate": {"type": "string", "hint": "yyyy-MM-dd"},
-                        "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
+                        "mindate": {"type": "string", "bindable": "in-bound", "hint": "yyyy-MM-dd"},
+                        "maxdate": {"type": "string", "bindable": "in-bound", "hint": "yyyy-MM-dd"},
                         "datepattern": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
-                        "datavalue": {"type": "date, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd"},
-                        "timestamp": {"type": "date, string, number", "widget": "string", "show": "false", "bindable": "out-bound"}
+                        "datavalue": {"type": "date, datetime, timestamp, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd"},
+                        "timestamp": {"type": "date, datetime, timestamp, string, number", "widget": "string", "show": "false", "bindable": "out-bound"}
                     },
                     "wm.calendar": {
                         "placeholder": {"type": "string", "value": "Select date"},
@@ -511,8 +511,8 @@ WM.module('wm.widgets.base', [])
                         "hourstep": {"type": "number", "value": 1},
                         "minutestep": {"type": "number", "value": 15},
                         "ismeridian": {"type": "boolean", "value": true},
-                        "mindate": {"type": "string", "hint": "yyyy-MM-dd"},
-                        "maxdate": {"type": "string", "hint": "yyyy-MM-dd"},
+                        "mindate": {"type": "string",  "bindable": "in-bound", "hint": "yyyy-MM-dd"},
+                        "maxdate": {"type": "string",  "bindable": "in-bound", "hint": "yyyy-MM-dd"},
                         "datepattern": {"value": "yyyy-MM-dd HH:mm", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "datavalue": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"},

@@ -29,8 +29,6 @@ WM.module('wm.widgets.form')
             notifyFor = {
                 'readonly': true,
                 'disabled': true,
-                'mindate': true,
-                'maxdate': true,
                 'timestamp': true
             };
 
@@ -40,12 +38,6 @@ WM.module('wm.widgets.form')
             case 'disabled':
                 // prevent the click events on decrement/increment buttons
                 element.css('pointer-events', newVal ? 'none' : 'all');
-                break;
-            case 'mindate':
-            case 'maxdate':
-                if (newVal && !isNaN(newVal) && WM.isString(newVal)) {
-                    scope[key] = new Date(parseInt(newVal, 10));
-                }
                 break;
             case 'timestamp':
                 /*Single equal is used not to update model if newVal and oldVal have same values with string and integer types*/
