@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                 ' data-ng-required="required"' +
                 ' data-ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
                 ' data-ng-options="option.key as $root.locale[option.value] || option.value for option in selectOptions">' +
-                '<option selected disabled value="">{{placeholder}}</option>' +
+                '<option selected value="">{{placeholder}}</option>' +
             '</select>'
                 );
     }])
