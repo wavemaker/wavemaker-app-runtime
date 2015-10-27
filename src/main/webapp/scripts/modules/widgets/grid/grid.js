@@ -1868,7 +1868,7 @@ WM.module('wm.widgets.grid')
                             updateCustomExpression = function (column) {
                                 var widgetType = column.widgetType,
                                     field = column.field,
-                                    val = "{{row.getProperty('" + field + "')}}";
+                                    val = widgetType === 'button' ? "{{row.getProperty('" + field + "') || 'Button'}}" : "{{row.getProperty('" + field + "')}}";
                                 if (!widgetType) {
                                     return;
                                 }
