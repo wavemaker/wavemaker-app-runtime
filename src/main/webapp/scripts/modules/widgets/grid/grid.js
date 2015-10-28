@@ -1611,7 +1611,7 @@ WM.module('wm.widgets.grid')
                             columnDef.fractionsize = column.fractionsize;
                             columnDef.suffix = column.suffix;
                             columnDef.prefix = column.prefix;
-                            columnDef.accessRoles = column.accessRoles;
+                            columnDef.accessroles = column.accessroles;
                         }
                     });
                     /* if properties map is provided, append the same to column defs*/
@@ -1863,7 +1863,7 @@ WM.module('wm.widgets.grid')
                                 'fractionsize': attrs.fractionsize,
                                 'suffix': attrs.suffix,
                                 'prefix': attrs.prefix,
-                                'accessRoles': attrs.accessroles || ''
+                                'accessroles': attrs.accessroles || ''
                             },
                             updateCustomExpression = function (column) {
                                 var widgetType = column.widgetType,
@@ -1957,6 +1957,7 @@ WM.module('wm.widgets.grid')
                                 'class': attrs.class || '',
                                 'icon': attrs.icon,
                                 'action': attrs.action,
+                                'accessroles': attrs.accessroles || '',
                                 'type': attrs.type || "button"
                             };
 
