@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
-                '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown >' +
+                '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown role="input">' +
                     '<button class="btn app-button dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles' +
                         '><i class="{{iconclass}}"></i>' +
                         ' {{caption}} ' +
@@ -188,6 +188,12 @@ WM.module('wm.widgets.form')
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
+
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         if (!scope.widgetid && attrs.scopedataset) {
                             $timeout(function () {

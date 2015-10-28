@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/richtexteditor.html',
-            '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles data-ng-show="show">' +
+            '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles data-ng-show="show" role="input">' +
                 '<div text-angular data-ng-model="_model_"></div>' +
                 '<div data-ng-bind-html="_model_" class="ta-preview" data-ng-if="showpreview"></div>' +
                 /*Holder for the model for submitting values in a form*/
@@ -85,6 +85,11 @@ WM.module('wm.widgets.form')
                         ngModelCtrl.$viewChangeListeners.push(function () {
                             scope._onChange(new Event('change'));
                         });
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }

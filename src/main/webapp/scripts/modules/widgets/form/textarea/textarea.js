@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/textarea.html',
-                '<textarea init-widget has-model class="form-control app-textarea" apply-styles' +
+                '<textarea init-widget has-model class="form-control app-textarea" apply-styles role="input"' +
                     ' data-ng-model="_model_" title="{{hint}}"' +
                     ' data-ng-show = "show" ' +
                     ' data-ng-disabled="disabled" ' +
@@ -49,6 +49,12 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
+
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };

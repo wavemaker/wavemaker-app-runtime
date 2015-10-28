@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/time.html',
-            '<div class="app-timeinput input-group dropdown" dropdown init-widget has-model apply-styles ' +
+            '<div class="app-timeinput input-group dropdown" dropdown init-widget has-model apply-styles role="input"' +
                 ' title="{{hint}}" ' +
                 ' data-ng-model="_proxyModel"' + /* _proxyModel is a private variable inside this scope */
                 ' data-ng-show="show" ' +
@@ -105,6 +105,12 @@ WM.module('wm.widgets.form')
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
+
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         scope._onClick = _onClick.bind(undefined, scope);
 

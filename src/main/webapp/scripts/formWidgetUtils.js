@@ -437,14 +437,4 @@ WM.module('wm.widgets.form')
             this.getFocusBlurEvents = getFocusBlurEvents;
             this.eventProxy = eventProxy;
         }
-    ]).directive('requireFormReset', ['Utils' , function (Utils) {
-        'use strict';
-        return {
-            restrict : 'A',
-            link : function (scope, element, attrs) {
-                if (Utils.getResetFormWidgets().indexOf('.' + attrs['requireFormReset']) < 0) {
-                    Utils.getResetFormWidgets().push('.' + attrs['requireFormReset']);
-                }
-            }
-        };
-    }]);
+    ]);

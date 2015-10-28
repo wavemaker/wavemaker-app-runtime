@@ -9,7 +9,7 @@ WM.module('wm.widgets.form')
         'use strict';
         /*Assigning the template to an identifier.*/
         $templateCache.put('template/widget/form/colorpicker.html',
-            '<div class="input-group app-colorpicker" data-ng-show="show" init-widget has-model>' +
+            '<div class="input-group app-colorpicker" data-ng-show="show" init-widget has-model role="input">' +
                 '<input colorpicker colorpicker-parent="true" class="form-control app-textbox" ' +
                 ' data-ng-disabled="readonly || disabled"' +
                 ' data-ng-required="required"' +
@@ -65,7 +65,10 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
-
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
                         /*Executing WidgetUtilService method to initialize the widget with the essential configurations needed.*/
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }

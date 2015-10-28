@@ -11,7 +11,7 @@ WM.module('wm.layouts.containers')
                     '</form>'
             );
     }])
-    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', 'Utils', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile, Utils) {
+    .directive('wmForm', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$compile', function ($rootScope, PropertiesFactory, WidgetUtilService, $compile) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.form', ['wm.base', 'wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
@@ -101,7 +101,7 @@ WM.module('wm.layouts.containers')
             /*clear the file uploader in the form*/
             element.bind('reset', function () {
                 var eleScope = element.scope();
-                element.find(Utils.getResetFormWidgets().join()).each(function (index, form) {
+                element.find('[role="input"]').each(function (index, form) {
                     eleScope.$parent.Widgets[form.getAttribute('name')].reset();
                 });
                 $rootScope.$safeApply(scope);

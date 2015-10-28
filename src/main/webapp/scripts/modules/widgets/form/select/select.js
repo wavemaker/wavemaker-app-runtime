@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/select.html',
-            '<select init-widget has-model class="form-control app-select" apply-styles ' +
+            '<select init-widget has-model class="form-control app-select" apply-styles role="input"' +
                 ' data-ng-model="modelProxy"' + /* proxy-object is updated in the onChangeProxy function*/
                 ' title="{{hint}}"' +
                 ' data-ng-show="show"' +
@@ -257,6 +257,11 @@ WM.module('wm.widgets.form')
 
                         /*decorate onChange function*/
                         iScope.onChangeProxy = onChangeProxy.bind(undefined, iScope);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        iScope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
 
                         /*Executing WidgetUtilService method to initialize the widget with the essential configurations.*/
                         WidgetUtilService.postWidgetCreate(iScope, element, attrs);

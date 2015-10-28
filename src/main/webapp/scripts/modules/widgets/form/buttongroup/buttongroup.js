@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/button-group.html',
-                '<div class="btn-group app-button-group" wmtransclude init-widget data-ng-class=\'{"btn-group-vertical": vertical}\' apply-styles="container" title="{{hint}}" data-ng-show="show"></div>'
+                '<div class="btn-group app-button-group" wmtransclude init-widget data-ng-class=\'{"btn-group-vertical": vertical}\' apply-styles="container" title="{{hint}}" data-ng-show="show" role="input"></div>'
             );
     }])
     .directive('wmButtongroup', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($templateCache, PropertiesFactory, WidgetUtilService) {
@@ -25,6 +25,12 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
+
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };

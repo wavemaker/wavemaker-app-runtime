@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
         function ($templateCache) {
             'use strict';
             $templateCache.put('template/widget/form/switch.html',
-                '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles require-form-reset="app-switch">' +
+                '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles role="input">' +
                     '<div class="btn-group btn-group-justified">' +
                         '<a class="btn btn-default" data-ng-disabled="disabled" ' +
                             ' data-ng-repeat="opt in options track by $index" data-ng-class="{\'selected\': selected.index === $index}"' +

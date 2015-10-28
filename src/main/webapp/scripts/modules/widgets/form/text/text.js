@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/text.html',
-            '<input class="form-control app-textbox" init-widget has-model apply-styles' +
+            '<input class="form-control app-textbox" init-widget has-model apply-styles role="input"' +
                 ' title="{{hint}}" ' +
                 ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' data-ng-readonly="readonly" ' +
@@ -78,6 +78,11 @@ WM.module('wm.widgets.form')
 
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, attrs), scope, notifyFor);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }

@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/datetime.html',
-            '<div class="app-datetime input-group" init-widget has-model apply-styles ' +
+            '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox display-input" data-ng-model="_displayModel">' +
                 '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" data-ng-model="_dateModel" datepicker-popup min-date=mindate max-date=maxdate is-open="isDateOpen">' +
@@ -171,6 +171,12 @@ WM.module('wm.widgets.form')
                             onPropertyChange('disabled', scope.disabled);
                             onPropertyChange('readonly', scope.readonly);
                         });
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
+
                         /* _model_ acts as a converter for _proxyModel
                          * read operation of _model_/datavalue will return epoch format of the date
                          * write operation of _model_ will update _proxyModel with Date object.

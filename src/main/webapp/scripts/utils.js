@@ -141,8 +141,7 @@ WM.module('wm.utils', [])
                 'datetime'       : 'yyyy-MM-ddTHH:mm:ss',
                 'datetime_oracle': 'yyyy-MM-dd HH:mm:ss'
             },
-            indexPage = getIndexPage(),
-            resetFormWidgets = [];
+            indexPage = getIndexPage();
 
         /* set default attrs for link */
         linkEl.rel = 'stylesheet';
@@ -408,11 +407,6 @@ WM.module('wm.utils', [])
             var temp = data[property1];
             data[property1] = data[property2];
             data[property2] = temp;
-        }
-
-        /*Returns require form reset widgets array*/
-        function getResetFormWidgets() {
-            return resetFormWidgets;
         }
 
         /*function to check if fn is a function and then execute*/
@@ -1599,5 +1593,4 @@ WM.module('wm.utils', [])
         this.getNewEventsObject         = getNewEventsObject;
         this.getEvaluatedExprValue      = getEvaluatedExprValue;
         this.getProjectResourcePath     = getProjectResourcePath;
-        this.getResetFormWidgets        = getResetFormWidgets;
     }]);

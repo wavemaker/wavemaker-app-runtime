@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/slider.html',
-                '<div class="app-slider slider" init-widget has-model data-ng-show="show" title="{{hint}}" apply-styles>' +
+                '<div class="app-slider slider" init-widget has-model data-ng-show="show" title="{{hint}}" apply-styles role="input">' +
                     '<span class="app-slider-value">{{minvalue}}</span>' +
                     '<span class="app-slider-value pull-right">{{maxvalue}}</span>' +
                     '<input class="range-input" type="range" title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
@@ -37,6 +37,12 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
+
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };

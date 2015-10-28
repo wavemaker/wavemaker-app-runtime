@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
 
         $templateCache.put('template/widget/form/composite.html',
-                '<div class="form-group app-composite-widget clearfix" init-widget apply-styles="container" ' +
+                '<div class="form-group app-composite-widget clearfix" init-widget apply-styles="container" role="input"' +
                 ' data-ng-class="{\'caption-left\': captionposition == \'left\',\'caption-right\': captionposition == \'right\',\'caption-top\': captionposition == \'top\'}"' +
                 ' title="{{hint}}"' +
                 ' data-ng-disabled="disabled"' +
@@ -63,6 +63,11 @@ WM.module('wm.widgets.form')
                                 labelEl.attr('for', inputName);
                             }
                         }
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }

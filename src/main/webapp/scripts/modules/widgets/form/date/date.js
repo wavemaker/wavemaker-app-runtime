@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/date.html',
-            '<div class="app-date input-group" init-widget has-model data-ng-show="show">' +
+            '<div class="app-date input-group" init-widget has-model data-ng-show="show" role="input">' +
                 '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} apply-styles ' +
                     ' title="{{hint}}" ' +
                     ' min-date=mindate max-date=maxdate is-open=isOpen' +
@@ -117,6 +117,11 @@ WM.module('wm.widgets.form')
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                         scope._onClick = _onClick.bind(undefined, scope);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
 

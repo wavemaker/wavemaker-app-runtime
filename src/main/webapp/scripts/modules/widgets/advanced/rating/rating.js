@@ -6,7 +6,7 @@ WM.module('wm.widgets.advanced')
         'use strict';
 
         $templateCache.put('template/widget/advanced/rating.html',
-            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model apply-styles require-form-reset="app-ratings">' +
+            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model apply-styles role="input">' +
                 '<div data-ng-if="!readonly" class="rating-style">' +
                 '<label data-ng-class="{active : rate.value <= datavalue}" for="{{$id}}+{{rate.value}}" data-ng-style="{\'font-size\':iconsize}" data-ng-repeat="rate in range track by $index" title="{{rate.value}}">' +
                     '<input type="radio" id="{{$id}}+{{rate.value}}" data-ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +

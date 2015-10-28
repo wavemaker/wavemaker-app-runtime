@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
 
         $templateCache.put('template/widget/form/button.html',
-            '<button class="btn app-button" init-widget title="{{hint}}" apply-styles data-ng-disabled="disabled" data-ng-show="show">' +
+            '<button class="btn app-button" init-widget title="{{hint}}" apply-styles data-ng-disabled="disabled" data-ng-show="show" role="input">' +
                 '<img data-identifier="img" class="button-image-icon" data-ng-src="{{iconsrc}}"  data-ng-if="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                 '<i class="app-icon {{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" data-ng-if="showicon"></i> ' +
                 '<span class="btn-caption"></span>' +
@@ -71,6 +71,12 @@ WM.module('wm.widgets.form')
                     },
                     'post': function (scope, element, attrs) {
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
+
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };

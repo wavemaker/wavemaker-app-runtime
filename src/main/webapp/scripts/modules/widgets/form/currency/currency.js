@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/currency.html',
-            '<div init-widget has-model class="input-group app-currency" data-ng-show="show"><span class="input-group-addon">{{currencysymbol}}</span>' +
+            '<div init-widget has-model class="input-group app-currency" data-ng-show="show" role="input"><span class="input-group-addon">{{currencysymbol}}</span>' +
                 '<input type="number" class="form-control app-textbox app-currency-input" title="{{hint}}" apply-styles' +
                 ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' data-ng-readonly="readonly" ' +
@@ -94,6 +94,11 @@ WM.module('wm.widgets.form')
 
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }

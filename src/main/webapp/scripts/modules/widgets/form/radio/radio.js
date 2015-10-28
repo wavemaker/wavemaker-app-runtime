@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/radio.html',
-            '<div class="radio app-radio" init-widget has-model data-ng-show="show" title="{{hint}}">' +
+            '<div class="radio app-radio" init-widget has-model data-ng-show="show" title="{{hint}}" role="input">' +
                 '<label apply-styles>' +
                     '<input type="radio" class="app-radiobutton"' +
                         ' value="{{checkedvalue}}"' +
@@ -70,6 +70,11 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         var radtioBtn = element.find('input[type=radio]');
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, radtioBtn), scope, notifyFor);
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                        };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
