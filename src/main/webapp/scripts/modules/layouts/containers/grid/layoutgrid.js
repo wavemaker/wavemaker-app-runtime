@@ -3,83 +3,34 @@
 /*Directive for Layout Grid */
 
 WM.module('wm.layouts.containers')
-    .directive('wmLayoutgrid', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
+    .directive('wmLayoutgrid', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
-        function refactorClassName(element, newClass) {
-            var classArray = element.attr('class').split(' ');
-            WM.forEach(classArray, function (classname) {
-                if (classname.indexOf('col-') === 0) {
-                    element.removeClass(classname);
-                }
-            });
-            element.addClass(newClass);
-        }
-
-        function setColumnWidth(columns, value) {
-            var className = ($rootScope.isMobileApplicationType ? 'col-xs-' : 'col-sm-') + value;
-            WM.forEach(columns, function (column) {
-                refactorClassName(WM.element(column), className);
-            });
-        }
 
         /* Applies default width to columns which don't already have their width set. */
-        function setDefaultColumnWidth(gridColumns, totalColWidth) {
-            var cols = [], defaultWidth;
-            WM.forEach(gridColumns, function (column) {
-                var col = WM.element(column),
-                    width = col.attr('columnwidth');
+        function setDefaultColumnWidth($gridColumns, totalColWidth) {
+            var cols = [],
+                defaultWidth;
+
+            $gridColumns.each(function () {
+                var $col = WM.element(this),
+                    width = $col.attr('columnwidth');
                 if (width) {
                     totalColWidth -= width;
                 } else {
-                    cols.push(col);
+                    cols.push($col);
                 }
             });
+
             if (cols.length) {
                 defaultWidth = parseInt(totalColWidth / cols.length, 10);
-                setColumnWidth(cols, defaultWidth);
+
+                cols.forEach(function ($col) {
+                    $col.isolateScope().columnwidth = defaultWidth;
+                });
             }
         }
 
-        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
-            var oldValue, columnElements, rowElements, i;
-            switch (key) {
-            case 'columns':
-                oldValue = oldVal || scope.columns;
-                scope.$root.$emit('construct-grid', key, element, oldValue, newVal);
-                /*if old value equals new value then ignore*/
-                if (parseInt(oldValue, 10) !== parseInt(newVal, 10)) {
-                    rowElements = element.children('.app-grid-row');
-                    WM.forEach(rowElements, function (rowElement) {
-                        columnElements = WM.element(rowElement).children('.app-grid-column');
-                        setDefaultColumnWidth(columnElements, 12);
-                    });
-                }
-                break;
-            case 'rows':
-                oldValue = oldVal || scope.rows;
-                oldValue = parseInt(oldValue, 10);
-                scope.$root.$emit('construct-grid', key, element, oldValue, newVal);
-                rowElements = element.children('.app-grid-row');
-                /* If new rows were added, then apply CSS classes to their columns */
-                if (oldValue < newVal) {
-                    for (i = 0; i < newVal - oldValue; i++) {
-                        columnElements = rowElements.eq(oldValue + i).children('.app-grid-column');
-                        setColumnWidth(columnElements, (12 / scope.columns));
-                    }
-                }
-                if (newVal === 0) {
-                    scope.columns = 0;
-                }
-                break;
-            }
-        }
-
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.layoutgrid', ['wm.layouts']),
-            notifyFor = {
-                'columns': true,
-                'rows': true
-            };
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.layoutgrid', ['wm.layouts']);
 
         return {
             'restrict': 'E',
@@ -96,15 +47,14 @@ WM.module('wm.layouts.containers')
 
                     'post': function (scope, element, attrs) {
                         var totalColumnWidth = 12,
-                            gridRows = element.children('.app-grid-row');
+                            $gridRows = element.children('.app-grid-row');
 
-                        WM.forEach(gridRows, function (row) {
-                            var gridColumns = WM.element(row).children('.app-grid-column');
-                            setDefaultColumnWidth(gridColumns, totalColumnWidth);
+                        $gridRows.each(function () {
+                            var $row = WM.element(this),
+                                $columns = $row.children('.app-grid-column');
+
+                            setDefaultColumnWidth($columns, totalColumnWidth);
                         });
-
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
@@ -154,24 +104,18 @@ WM.module('wm.layouts.containers')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.gridcolumn', ['wm.layouts']),
             notifyFor = {
                 'columnwidth': true
-            };
+            },
+            prefix = $rootScope.isMobileApplicationType ? 'col-xs-' : 'col-sm-';
 
-        function setColumnWidth(element, value) {
-            var classArray = element.attr('class').split(' ');
-            /* Remove the previous column width class */
-            WM.forEach(classArray, function (classname) {
-                if (classname.indexOf('col-') === 0) {
-                    element.removeClass(classname);
-                }
-            });
-            element.addClass(($rootScope.isMobileApplicationType ? 'col-xs-' : 'col-sm-') + value);
+        function setColumnWidth(element, nv, ov) {
+            element.removeClass(prefix + ov).addClass(prefix + nv);
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(element, key, newVal) {
+        function propertyChangeHandler(element, key, newVal, oldVal) {
             switch (key) {
             case 'columnwidth':
-                setColumnWidth(element, newVal);
+                setColumnWidth(element, newVal, oldVal);
                 break;
             }
         }
