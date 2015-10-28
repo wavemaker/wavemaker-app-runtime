@@ -275,50 +275,24 @@ wm.variables.services.$servicevariable = ['Variables',
                     callBackScope,
                     methodInfo;
 
-                if (serviceType !== SERVICE_TYPE_DATA) {
-                    /* loop over the parameters required for the variable and push them request dataParams */
-                    WM.forEach(variable.dataBinding, function (param) {
-                        dataParams.push(param);
-                    });
-                }
+                /* loop over the parameters required for the variable and push them request dataParams */
+                WM.forEach(variable.dataBinding, function (param) {
+                    dataParams.push(param);
+                });
 
-                /* if service type is DataBase service, push additional property object to data params */
-                if (serviceType === SERVICE_TYPE_DATA) {
-                    /* loop over the parameters required for the variable and push them request dataParams */
-                    WM.forEach(variable.dataBinding, function (paramValue, paramName) {
-                        paramValue = WM.isDefined(paramValue) ? paramValue : '';
-                        requestParams += paramName + "=" + encodeURIComponent(paramValue) + "&";
-                    });
-                    requestParams = requestParams.slice(0, -1);
-
-                    if (variable.operationType === "procedure") {
-                        params = {
-                            "projectID": $rootScope.project.id,
-                            "service": variable.prefabName ? "" : "services",
-                            "dataModelName": service,
-                            "procedureName": operation,
-                            "page": options.page || 1,
-                            "procedureParams": requestParams,
-                            "size": parseInt(variable.maxResults, 10) || 20, /* consider additional params only if maxResults field is set with valid value */
-                            "url": $rootScope.project.deployedUrl
-                        };
-                    } else {
-                        params = {
-                            "projectID": $rootScope.project.id,
-                            "service": variable.prefabName ? "" : "services",
-                            "dataModelName": service,
-                            "queryName": operation,
-                            "page": options.page || 1,
-                            "queryParams": requestParams,
-                            "size": parseInt(variable.maxResults, 10) || 20, /* consider additional params only if maxResults field is set with valid value */
-                            "url": $rootScope.project.deployedUrl
-                        };
-                    }
-                } else if (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
+                if (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
                     methodInfo = WM.copy(variable.wmServiceOperationInfo);
                     if (methodInfo.parameters) {
                         methodInfo.parameters.forEach(function (param) {
                             param.sampleValue = variable.dataBinding[param.name];
+                            /* supporting pagination for query service variable */
+                            if (serviceType === SERVICE_TYPE_DATA && ["page", "size"].indexOf(param.name) !== -1) {
+                                if (param.name === "size") {
+                                    param.sampleValue = parseInt(variable.maxResults, 10) || 20;
+                                } else if (param.name === "page") {
+                                    param.sampleValue = options.page || 1;
+                                }
+                            }
                         });
                     }
                     params = constructRestRequestParams(methodInfo, serviceType, variable);
@@ -341,7 +315,6 @@ wm.variables.services.$servicevariable = ['Variables',
                         "url": $rootScope.project.deployedUrl
                     };
                 }
-
 
                 if (variable.prefabName && VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) === -1) {
                 /* if it is a prefab variable (used in a normal project), modify the url */
@@ -366,19 +339,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     variableActive[variable.activeScope.$id][variable.name] = true;
                 }
 
-                if (serviceType === SERVICE_TYPE_DATA) {
-                    if (variable.operationType === "procedure") {
-                        requestMethod = "executeNamedProcedure";
-                    } else {
-                        requestMethod = "executeNamedQuery";
-
-                    }
-                    variable.promise = DatabaseService[requestMethod](params, function (response) {
-                        processSuccessResponse(response, variable, callBackScope, options, success, error);
-                    }, function (errorMsg) {
-                        processErrorResponse(errorMsg, variable, callBackScope, error);
-                    });
-                } else if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
+                if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
                     /* Here we are invoking JavaService through the new REST api (old classes implementation removed, older projects migrated with new changes for corresponding service variable) */
                     variable.promise = WebService.invokeJavaService(params, function (response) {
                         processSuccessResponse(response, variable, callBackScope, options, success, error);
@@ -414,10 +375,10 @@ wm.variables.services.$servicevariable = ['Variables',
                                 fieldValue = startNode ? startNode.substring(variable.name.length + 1, startNode.length) : startNode;
                             serviceModel = {};
 
-                            variable.type = typeRef;
+                            variable.type = variable.type || typeRef;
                             variable.isList = response.isList;
                             /* prepare sample data-structure for the service */
-                            prepareServiceModel(typeRef, serviceModel, fieldValue, variable);
+                            prepareServiceModel(variable.type, serviceModel, fieldValue, variable);
 
                             /* check for transformation columns in variable */
                             if (variable.transformationColumns) {

@@ -30,7 +30,7 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     SERVICE_TYPE_DATA: "DataService",
     SERVICE_TYPE_SECURITY: "SecurityServiceType",
     SERVICE_NAME_FEED: "FeedService",
-    REST_SUPPORTED_SERVICES: ["JavaService", "SoapService", "FeedService", "RestService", "SecurityServiceType"]
+    REST_SUPPORTED_SERVICES: ["JavaService", "SoapService", "FeedService", "RestService", "SecurityServiceType", "DataService"]
 });
 
 /*End of Module definition*/
