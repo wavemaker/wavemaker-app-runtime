@@ -1,4 +1,5 @@
-/*global WM, _, cordova*/
+/*global WM, window, _, cordova, document*/
+
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova'])
     //Initialize project
     .run(['$rootScope', '$location', 'CONSTANTS', 'Utils', 'AppAutoUpdateService',
@@ -26,7 +27,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
                 });
             }
             if (CONSTANTS.isRunMode) {
-                $rootScope.$on("$routeChangeStart", function () {
+                $rootScope.$on('$routeChangeStart', function () {
                     WM.element('body >.app-spinner:first').removeClass('ng-hide');
                 });
                 $rootScope.$on('page-ready', function () {
@@ -41,15 +42,15 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
 
             /* Register Mobile specific Variables*/
             Variables.addVariableConfig({
-                "collectionType": "data",
-                "category": "wm.DeviceVariable",
-                "labelKey": "LABEL_VARIABLE_DEVICE",
-                "defaultName": "deviceVariable"
+                'collectionType': 'data',
+                'category': 'wm.DeviceVariable',
+                'labelKey': 'LABEL_VARIABLE_DEVICE',
+                'defaultName': 'deviceVariable'
             });
             /* Add additional event options.*/
-            WIDGET_CONSTANTS.EVENTS_OPTIONS.push("New DeviceVariable");
+            WIDGET_CONSTANTS.EVENTS_OPTIONS.push('New DeviceVariable');
             /* Add segment navigation option */
-            BaseVariablePropertyFactory.addNavigationOption("gotoSegment", "gotoSegment");
+            BaseVariablePropertyFactory.addNavigationOption('gotoSegment', 'gotoSegment');
             //Register the Mobile variable.
             BaseVariablePropertyFactory.register('wm.DeviceVariable',
                 {'invoke': DeviceVariableService.invoke},
@@ -57,7 +58,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
                 {});
         }])
     //Apply platform OS specific stylesheets
-    .run(['$rootScope', 'CONSTANTS', 'Utils', '$location', function ($rootScope, CONSTANTS, Utils, $location) {
+    .run(['$rootScope', 'CONSTANTS', 'Utils', function ($rootScope, CONSTANTS, Utils) {
         'use strict';
         var selectedOs = '';
 
@@ -69,7 +70,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
                 themeUrl = Utils.getProjectResourcePath($rootScope.project.id) + themeUrl;
             }
             WM.element('link[theme="wmtheme"]').remove();
-            Utils.loadStyleSheet(themeUrl, {name: "theme", value: "wmtheme"});
+            Utils.loadStyleSheet(themeUrl, {name: 'theme', value: 'wmtheme'});
         }
         if (CONSTANTS.isStudioMode) {
             $rootScope.$on('switch-device', function (event, device) {

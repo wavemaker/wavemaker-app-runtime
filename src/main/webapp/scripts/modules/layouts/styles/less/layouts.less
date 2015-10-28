@@ -474,6 +474,146 @@ body {
   .app-checkbox {
     width: auto;
   }
+
+  /************************************************** Page Transitions *************************************************/
+
+  .transform(@transformValue){
+    transform: @transformValue;
+    -webkit-transform: @transformValue;
+    -moz-transform: @transformValue;
+    -ms-transform: @transformValue;
+  }
+
+  @keyframes flipEntry {
+    0% {
+      opacity: 0;
+      .transform(perspective(1000px) rotateY(180deg));
+    }
+    50%{opacity: 0;}
+    51% {opacity : 1;}
+    100% {
+      opacity : 1;
+      .transform(perspective(1000px) rotateY(0deg));
+    }
+  }
+
+  @keyframes flipExit {
+    0% {
+      opacity: 1;
+      .transform(perspective(1000px) rotateY(0deg));
+    }
+    50%{opacity: 1;}
+    51% {opacity : 0;}
+    100% {
+      opacity : 0;
+      .transform(perspective(1000px) rotateY(-180deg));
+    }
+  }
+
+  @keyframes flipReverseEntry {
+    0% {
+      opacity: 0;
+      .transform(perspective(1000px) rotateY(-180deg));
+    }
+    50%{opacity: 0;}
+    51% {opacity : 1;}
+    100% {
+      opacity : 1;
+      .transform(perspective(1000px) rotateY(0deg));
+    }
+  }
+
+  @keyframes flipReverseExit {
+    0% {
+      opacity: 1;
+      .transform(perspective(1000px) rotateY(0deg));
+    }
+    50%{opacity: 1;}
+    51% {opacity : 0;}
+    100% {
+      opacity : 0;
+      .transform(perspective(1000px) rotateY(180deg));
+    }
+  }
+
+  #wm-app-content {
+    +.ng-enter, &.ng-leave{
+      position: fixed;
+      top: 0;
+      left: 0;
+      -webkit-backface-visibility: visible !important;
+      -ms-backface-visibility: visible !important;
+      backface-visibility: visible !important;
+      animation-duration: 0.5s;
+      animation-timing-function: linear;
+      -webkit-animation-fill-mode: forwards;
+      animation-fill-mode: forwards;
+
+      > .app-page >.app-left-panel {
+        display: none;
+      }
+    }
+
+    &.page-transition-slide {
+      &.ng-leave {
+        animation-name: slideOutLeft;
+      }
+      +.ng-enter {
+        animation-name: slideInRight;
+      }
+    }
+
+    &.page-transition-slide-exit {
+      &.ng-leave {
+        animation-name: slideOutRight;
+      }
+      +.ng-enter {
+        animation-name: slideInLeft;
+      }
+    }
+
+    /** popup **/
+    &.page-transition-pop +.ng-enter {
+      animation-name: zoomIn ;
+    }
+
+    &.page-transition-pop-exit {
+      &.ng-leave {
+        z-index: 1;
+        animation-name: zoomOut;
+      }
+      &.ng-enter {
+        z-index: 0;
+      }
+    }
+
+    &.page-transition-flip {
+      &.ng-leave {
+        animation-name: flipExit;
+      }
+      +.ng-enter {
+        animation-name: flipEntry;
+      }
+    }
+
+    &.page-transition-flip-exit {
+      &.ng-leave {
+        animation-name: flipReverseExit;
+      }
+      +.ng-enter {
+        animation-name: flipReverseEntry;
+      }
+    }
+
+    /** fade **/
+    &.page-transition-fade +.ng-enter {
+      animation-name: fadeIn;
+    }
+    &.page-transition-fade-exit.ng-leave {
+      animation-name: fadeOut;
+      z-index: 1;
+    }
+  }
 }
 /************************** APP CAROUSEL ***************************************/
 .app-carousel{

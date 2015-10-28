@@ -11,7 +11,8 @@
 wm.variables.factories.BaseVariablePropertyFactory = [
     'WIDGET_CONSTANTS',
     'Utils',
-    function (WIDGET_CONSTANTS, Utils) {
+    '$rootScope',
+    function (WIDGET_CONSTANTS, Utils, $rootScope) {
 
         "use strict";
         var variableEventOptions = {}, /*A copy of the variable to preserve the actual value.*/
@@ -120,7 +121,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "tabName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
                     "accordionName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
                     "segmentName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
-                    "dataBinding": {"type": "string", "value": {}, "hide": true}
+                    "dataBinding": {"type": "string", "value": {}, "hide": true},
+                    "pageTransitions": {"type": "list", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": !$rootScope.isMobileApplicationType}
                 },
                 "wm.NotificationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
@@ -196,7 +198,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"properties": ["liveSource", "type", "isList"], "parent": "properties"},
                 {"name": "service", "properties": ["service", "operation"], "parent": "properties"},
                 {"name": "serveroptions", "properties": ["downloadFile", "matchMode", "firstRow", "maxResults", "designMaxResults", "orderBy", "ignoreCase"], "parent": "properties"},
-                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating"], "parent": "properties"},
+                {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties"},

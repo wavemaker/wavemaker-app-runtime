@@ -349,7 +349,9 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/variables/application/timervariable/timervariableservice.js',
                         '<%= config.scripts %>/modules/i18n/config.js',
                         '<%= config.scripts %>/modules/i18n/services/i18nService.js',
-                        '<%= config.scripts %>/modules/wmMobile.js'
+                        '<%= config.scripts %>/modules/wmMobile.js',
+                        '<%= config.scripts %>/modules/common/services/navigationService.js'
+
                     ],
                     '<%= config.editor %>/application/scripts/runtimeloader.min.js': [
                         '<%= config.editor %>/application/scripts/runtimeloader.js'
@@ -481,6 +483,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/common/services/appAutoUpdateService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/fileSelectorService.js',
                         '<%= config.scripts %>/modules/mobile/common/services/fileUploadService.js',
+                        '<%= config.scripts %>/modules/common/services/navigationService.js',
                         '<%= config.scripts %>/modules/mobile/layouts/device/services/deviceview.js',
                         '<%= config.scripts %>/modules/mobile/variables/calendar/calendar.js',
                         '<%= config.scripts %>/modules/mobile/variables/contacts/contacts.js',

@@ -11,119 +11,9 @@
  * The 'NavigationVariableService' provides methods to work with Navigation variables
  */
 
-wm.variables.services.NavigationVariableService = function ($rootScope, BaseVariablePropertyFactory, Utils, ViewService, $window, DialogService, $timeout) {
+wm.variables.services.NavigationVariableService = function ($rootScope, BaseVariablePropertyFactory, Utils, NavigationService) {
     "use strict";
 
-    /*
-     * shows all the parent container view elements for a given view element
-     */
-    function showAncestors(element) {
-        var ancestorSearchQuery = "[wm-navigable-element='true']",
-            elemScope;
-        element.parents(ancestorSearchQuery).toArray().reverse().forEach(function (parent) {
-            elemScope = WM.element(parent).isolateScope();
-            switch (elemScope._widgettype) {
-            case 'wm-view':
-                ViewService.showView(elemScope.name);
-                break;
-            case 'wm-accordionpane':
-                elemScope.expand();
-                break;
-            case 'wm-tabpane':
-                elemScope.select();
-                break;
-            case 'wm-segment-content':
-                elemScope.navigate();
-                break;
-            case 'wm-panel':
-                /* flip the active flag */
-                elemScope.expanded = true;
-                break;
-            }
-        });
-    }
-
-    /*
-     * searches for a given view element inside the available dialogs in current page
-     * if found, the dialog is displayed, the dialog id is returned.
-     */
-    function showAncestorDialog(viewName) {
-        var dialogId;
-        WM.element("#wm-app-content [dialogtype]").each(function (i, dialog) {
-            dialog = WM.element(dialog);
-            if (WM.element(dialog.html()).find("[name='" + viewName + "']").length) {
-                dialogId = dialog.attr("name");
-                DialogService.closeAllDialogs();
-                DialogService.showDialog(dialogId);
-                return false;
-            }
-        });
-        return dialogId;
-    }
-
-    /*
-     * navigates the user to a view element with given name
-     * if the element not found in the compiled markup, the same is searched in the available dialogs in the page
-     */
-    function navigateToView(viewName) {
-        var viewElement = WM.element("[name='" + viewName + "']"),
-            elemScope = viewElement.isolateScope(),
-            parentDialog;
-
-        if (viewElement.length) {
-            switch (elemScope._widgettype) {
-            case 'wm-view':
-                showAncestors(viewElement);
-                ViewService.showView(viewName);
-                break;
-            case 'wm-accordionpane':
-                showAncestors(viewElement);
-                elemScope.expand();
-                break;
-            case 'wm-tabpane':
-                showAncestors(viewElement);
-                elemScope.select();
-                break;
-            case 'wm-segment-content':
-                showAncestors(viewElement);
-                elemScope.navigate();
-                break;
-            case 'wm-panel':
-                /* flip the active flag */
-                elemScope.expanded = true;
-                break;
-            }
-        } else {
-            parentDialog = showAncestorDialog(viewName);
-            $timeout(function () {
-                if (parentDialog) {
-                    navigateToView(viewName, false);
-                }
-            });
-        }
-
-    }
-
-    /*
-     * returns the path prefix for the app
-     */
-    function getPathPrefix(pageName) {
-        var pathPrefix;
-        if ($rootScope.isSecurityEnabled && pageName === "Login") {
-            pathPrefix = "login.html";
-        } else if ($window.location.pathname.split("/").pop() === "index.html") {
-            pathPrefix = "index.html";
-        } else {
-            pathPrefix = "./";
-        }
-
-        return pathPrefix;
-    }
-
-    function partialWithNameExists(name) {
-        var partials = WM.element("[page-container][content='" + name + "']");
-        return partials.length;
-    }
 
     /* properties of a basic variable - should contain methods applicable on this particular object */
     var methods = {
@@ -131,8 +21,7 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                 var pageName,
                     viewName,
                     operation,
-                    sourceScope,
-                    pathPrefix;
+                    sourceScope;
 
                 /* sanity checking */
                 if (!Utils.isEmptyObject(variable)) {
@@ -144,8 +33,7 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                     switch (operation) {
                     case 'gotoPage':
                         try {
-                            pathPrefix = getPathPrefix(pageName);
-                            $window.location = pathPrefix + '#/' + pageName;
+                            NavigationService.goToPage(pageName, variable.pageTransitions);
                             sourceScope.$root.$safeApply(sourceScope);
                         } catch (ignore) {
                         }
@@ -166,12 +54,7 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
 
                     /* if view name found, call routine to navigate to it */
                     if (viewName) {
-                        /* if view's page name is not current page, change the route with the required page and view name */
-                        if (variable.pageName  && variable.pageName !== $rootScope.activePageName && !partialWithNameExists(variable.pageName)) {
-                            $window.location = getPathPrefix(pageName) + '#/' + variable.pageName + "." + viewName;
-                            return;
-                        }
-                        navigateToView(viewName);
+                        NavigationService.goToView(pageName, viewName, variable.pageTransitions);
                     }
                 }
             }
@@ -186,6 +69,8 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
     BaseVariablePropertyFactory.register('wm.NavigationVariable', basicVariableObj, [], methods);
 
     return {
-        navigateToView: navigateToView
+        goToView: function (viewName) {
+            NavigationService.goToView(undefined, viewName);
+        }
     };
 };

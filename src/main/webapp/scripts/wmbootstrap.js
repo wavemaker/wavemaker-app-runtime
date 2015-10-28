@@ -29,7 +29,8 @@ var Application =
             'oc.lazyLoad',
             'wm.prefabs',
             'i18n',
-            'angular-gestures'
+            'angular-gestures',
+            'ngAnimate'
         ]);
 
 Application

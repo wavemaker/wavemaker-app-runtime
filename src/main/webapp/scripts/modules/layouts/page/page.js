@@ -84,7 +84,7 @@ WM.module('wm.layouts.page')
                                     if ($routeParams && $routeParams.name) {
                                         subView = $routeParams.name.split(".");
                                         if (subView.length > 1) {
-                                            NavigationVariableService.navigateToView(subView.pop());
+                                            NavigationVariableService.goToView(subView.pop());
                                         }
                                     }
 

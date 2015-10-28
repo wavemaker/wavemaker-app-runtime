@@ -41,7 +41,7 @@ WM.module('wm.layouts.containers')
                     '</nav>' +
                 '</header>'
                 );
-    }]).directive('wmMobileNavbar', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$window', 'CONSTANTS', 'Utils', '$timeout', function ($templateCache, PropertiesFactory, WidgetUtilService, $window, CONSTANTS, Utils, $timeout) {
+    }]).directive('wmMobileNavbar', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', '$timeout', 'NavigationService', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $timeout, NavigationService, $window) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mobile.navbar', ['wm.layouts']),
             notifyFor = {
@@ -50,9 +50,9 @@ WM.module('wm.layouts.containers')
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
-                case 'imgsrc':
-                    scope.imagesrc = Utils.getImageUrl(newVal);
-                    break;
+            case 'imgsrc':
+                scope.imagesrc = Utils.getImageUrl(newVal);
+                break;
             }
         }
         return {
@@ -72,7 +72,11 @@ WM.module('wm.layouts.containers')
                         scope.leftNavPanel = WM.element(element.closest('.app-page').find('.app-left-panel:first')).isolateScope();
                         if (CONSTANTS.isRunMode) {
                             scope.goBack = function () {
-                                $window.history.go(-1);
+                                if (CONSTANTS.hasCordova) {
+                                    $window.history.go(-1);
+                                } else {
+                                    NavigationService.goToPrevious();
+                                }
                             };
                             scope.search = function () {
                                 scope.showSearchbar = true;
