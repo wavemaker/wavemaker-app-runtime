@@ -1390,7 +1390,8 @@ WM.module('wm.widgets.base', [])
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "tabindex": {"type": "string"},
-                        "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
+                        "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
+                        "width": {"type": "string", "value": '100%', "pattern": dimensionRegex}
                     },
                     "wm.chart": {
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},
