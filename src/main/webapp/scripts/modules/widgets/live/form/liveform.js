@@ -1,4 +1,4 @@
-/*global WM, window, document, FormData, Blob*/
+/*global WM, window, document, FormData, Blob, _*/
 /*Directive for liveform */
 
 WM.module('wm.widgets.live')
@@ -28,6 +28,7 @@ WM.module('wm.widgets.live')
                 var date = (new Date()).toDateString();
                 return (new Date(date + ' ' + val)).getTime();
             },
+            variableRegex = /^bind:Variables\.(.*)\.dataSet/,
             dateTimeFormats = Utils.getDateTimeDefaultFormats();
 
         return {
@@ -142,7 +143,8 @@ WM.module('wm.widgets.live')
                         prevData,
                         requestData = {},
                         elScope = $scope.element.scope(),
-                        variable = elScope.Variables[$scope.variableName],
+                        variableName = $scope.variableName || $scope.binddataset.match(variableRegex)[1],
+                        variable = elScope.Variables[variableName],
                         isValid;
                     if ($scope.propertiesMap && $scope.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
@@ -649,7 +651,6 @@ WM.module('wm.widgets.live')
                                 translatedObj,
                                 tempVarName,
                                 gridObj,
-                                variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
                                 variableObj,
                                 elScope = element.scope();
 

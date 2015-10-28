@@ -225,7 +225,7 @@ WM.module('wm.widgets.live')
             function getCaptionByWidget(type, index) {
                 var caption = 'formFields[' + index + '].value';
                 if (type === 'password') {
-                    return caption = '********';
+                    return '********';
                 }
                 if (type === 'datetime' || type === 'timestamp') {
                     caption += ' | date:formFields[' + index + '].datepattern || \'yyyy-MM-dd HH:mm:ss\'';
@@ -233,7 +233,7 @@ WM.module('wm.widgets.live')
                     caption += ' | date:\'HH:mm:ss\'';
                 } else if (type === 'date') {
                     caption += ' | date:formFields[' + index + '].datepattern';
-                } if (type === 'select') {
+                } else if (type === 'select') {
                     caption =  'formFields[' + index + '].isRelated ? getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayvalue || formFields[' + index + '].displayfield) : formFields[' + index + '].value';
                 } else if (type === 'rating') {
                     caption = '';
