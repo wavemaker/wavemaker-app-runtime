@@ -308,27 +308,32 @@ wm.variables.services.$liveVariable = [
             },
         /*Function to prepare the options required to read data from the table.*/
             prepareTableOptions = function (variable, options) {
-                var filterFields,
+                var filterFields = [],
                     filterOptions = [],
                     orderByFields,
                     orderByOptions = '',
                     primaryKey = variable.getPrimaryKey(),
                     hasCompositeKey = variable.isCompositeKey(primaryKey),
                     hasNoPrimaryKey = variable.isNoPrimaryKey(primaryKey);
-                if (!options.filterFields || WM.element.isEmptyObject(options.filterFields)) {
-                    /*If filter fields are not passed from options, set filter fields from variable*/
-                    filterFields = variable.filterFields;
-                } else {
-                    /*If filter fields are passed from options, merge option and variable filter fields, with option fields as priority*/
-                    filterFields = WM.copy(variable.filterFields);
-                    _.merge(filterFields, options.filterFields);
-                }
+                /*get the filter fields from the variable*/
+                _.each(variable.filterFields, function (value, key) {
+                    value.fieldName = key;
+                    value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];
+                    filterFields.push(value);
+                });
+                /*get the filter fields from the options*/
+                _.each(options.filterFields, function (value, key) {
+                    value.fieldName = key;
+                    value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[options.matchMode];
+                    filterFields.push(value);
+                });
                 if (variable.operation === 'read') {
-                    WM.forEach(filterFields, function (fieldOptions, fieldName) {
+                    _.each(filterFields, function (fieldOptions) {
                         var attributeName,
+                            fieldName = fieldOptions.fieldName,
                             fieldValue = fieldOptions.value,
                             fieldType = fieldOptions.type || getHibernateType(variable, fieldName) || getSqlType(variable, fieldName) || "integer",
-                            filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[options.matchMode || variable.matchMode];
+                            filterCondition = fieldOptions.filterCondition;
                         /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
                         if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
                             WM.forEach(fieldValue, function (subFieldValue, subFieldName) {
@@ -355,6 +360,7 @@ wm.variables.services.$liveVariable = [
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "date":
+                            case "datetime":
                                 fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
@@ -362,15 +368,11 @@ wm.variables.services.$liveVariable = [
                                 fieldValue = new Date(fieldValue).getTime();
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
-                            case "datetime":
-                                fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
-                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
-                                break;
                             case "string":
                                 if (WM.isArray(fieldValue)) {
                                     filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 } else {
-                                    filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["anywhere"];
+                                    filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["anywhere"];
                                 }
                                 break;
                             default:
