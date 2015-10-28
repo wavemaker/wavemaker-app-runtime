@@ -7,7 +7,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layouts/containers/mobile/navbar.html',
                 '<header data-role="mobile-navbar" has-model init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show" apply-styles>' +
                     '<nav class="navbar ng-show" ng-show="!showSearchbar">' +
-                        '<div class="col-xs-3">' +
+                        '<div class="mobile-navbar-left">' +
                             '<ul class="nav navbar-nav navbar-left">' +
                                 '<li data-ng-if="leftNavPanel != undefined" >' +
                                     '<a data-ng-click="leftNavPanel.toggle();">' +
@@ -21,10 +21,10 @@ WM.module('wm.layouts.containers')
                                 '</li>' +
                             '</ul>' +
                         '</div>' +
-                        '<div class="col-xs-6">' +
-                            '<div class="navbar-header"><h1 class="navbar-brand">{{title}}</h1></div>' +
+                        '<div class="mobile-navbar-center">' +
+                            '<div class="navbar-header"><h1 class="navbar-brand"><img data-identifier="img" class="brand-image" alt="{{title}}" width="32" height="32" data-ng-if="imgsrc" data-ng-src="{{imagesrc}}"/>{{title}}</h1></div>' +
                         '</div>' +
-                        '<div class="col-xs-3">' +
+                        '<div class="mobile-navbar-right">' +
                             '<ul class="nav navbar-nav navbar-right">' +
                                 '<li wmtransclude></li>' +
                                 '<li data-ng-if="searchbutton">' +
@@ -43,7 +43,18 @@ WM.module('wm.layouts.containers')
                 );
     }]).directive('wmMobileNavbar', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$window', 'CONSTANTS', 'Utils', '$timeout', function ($templateCache, PropertiesFactory, WidgetUtilService, $window, CONSTANTS, Utils, $timeout) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mobile.navbar', ['wm.layouts']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mobile.navbar', ['wm.layouts']),
+            notifyFor = {
+                'imgsrc': true
+            };
+        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+        function propertyChangeHandler(scope, key, newVal) {
+            switch (key) {
+                case 'imgsrc':
+                    scope.imagesrc = Utils.getImageUrl(newVal);
+                    break;
+            }
+        }
         return {
             'restrict': 'E',
             'replace': true,
@@ -86,6 +97,8 @@ WM.module('wm.layouts.containers')
                                 }
                             });
                         }
+                        /* Register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                         /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
                          * style declarations.*/
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
