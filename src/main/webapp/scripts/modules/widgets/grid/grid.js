@@ -230,7 +230,7 @@ WM.module('wm.widgets.grid')
                         var elScope = element.scope();
                         iScope.Variables = elScope.Variables;
                         iScope.Widgets = elScope.Widgets;
-
+                        iScope.columns = {};
 
                         Object.defineProperty(iScope, 'selecteditem', {
                             configurable: true
@@ -317,6 +317,12 @@ WM.module('wm.widgets.grid')
 
                         /* compile all the markup tags inside the grid, resulting into setting the fieldDefs*/
                         $compile(attrs.gridColumnMarkup)(scope);
+
+                        /*This is expose columns property to user so that he can programatically
+                         * use columns to do some custom logic */
+                        scope.gridOptions.colDefs.map(function(column) {
+                            scope.columns[column.field] = column;
+                        });
 
                         scope.datagridElement.datagrid(scope.gridOptions);
 
@@ -1818,6 +1824,24 @@ WM.module('wm.widgets.grid')
     .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', function ($parse, Utils, CONSTANTS) {
         'use strict';
 
+        /*
+         * Class : ColumnDef
+         * Description : ColumnDef contains setter and getter with custom logic
+         * which will be extended by actual columndefs of grid columns.
+         * */
+        function ColumnDef () {
+        }
+
+        ColumnDef.prototype = {
+            setProperty : function (property, newval) {
+                this.$is.setProperty.call(this, property, newval);
+                this.$is.datagridElement.datagrid(this.$is.gridOptions);
+            },
+            getProperty : function (property) {
+                return this.$is.getProperty.call(this, property);
+            }
+        };
+
         return {
             'restrict': 'E',
             'scope': true,
@@ -1833,7 +1857,9 @@ WM.module('wm.widgets.grid')
                             styleDef = 'width: ' + width +
                                 '; background-color: ' + backgroundColor +
                                 '; color: ' + textColor + ';',
-                            columnDef = {
+                            //Obj of its base with setter and getter defined
+                            columnDef = new ColumnDef(scope.$parent),
+                            columnDefProps = {
                                 'field': attrs.binding,
                                 'displayName': attrs.caption,
                                 'pcDisplay': (attrs.pcdisplay === "1" || attrs.pcdisplay === "true"),
@@ -1879,6 +1905,12 @@ WM.module('wm.widgets.grid')
                                         break;
                                 }
                             };
+
+                        //Will be used in ColumnDef prototype methods to re-render grid.
+                        ColumnDef.prototype.$is = scope.$parent;
+
+                        //Extends the columnDef class with column meta data
+                        WM.extend(columnDef, columnDefProps);
 
                         if (tElement.context.innerHTML) {
                             columnDef.customExpression = tElement.context.innerHTML;
