@@ -256,17 +256,15 @@ WM.module("wm.widgets.basic")
                             /*Invoke the function to get the data corresponding to the specific page.*/
                             variable.update({
                                 "page": $scope.currentPage,
-                                "isNotTriggerForRelated": true,
                                 "filterFields": $scope.filterFields,
                                 'orderBy': $scope.sortOptions,
                                 "matchMode": 'anywhere',
                                 "scope": $scope.navigatorElement.scope()
-                            }, function (data, propertiesMap, relatedData, pagingOptions) {
+                            }, function (data, propertiesMap, pagingOptions) {
                                 /*Update the "result" in the scope so that widgets bound to the data-navigator are updated.*/
                                 $scope.result = {
                                     "data": data,
                                     "propertiesMap": propertiesMap,
-                                    "relatedData": relatedData,
                                     "pagingOptions": pagingOptions,
                                     "filterFields": $scope.filterFields,
                                     "orderBy": $scope.sortOptions,
@@ -285,7 +283,6 @@ WM.module("wm.widgets.basic")
                             /*Invoke the function to get the data corresponding to the specific page.*/
                             variable.update({
                                 "page": $scope.currentPage,
-                                "isNotTriggerForRelated": true,
                                 "filterFields": $scope.filterFields,
                                 "orderBy": $scope.sortOptions,
                                 "matchMode": 'anywhere',

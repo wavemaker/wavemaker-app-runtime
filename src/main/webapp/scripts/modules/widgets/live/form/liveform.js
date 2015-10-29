@@ -28,7 +28,6 @@ WM.module('wm.widgets.live')
                 var date = (new Date()).toDateString();
                 return (new Date(date + ' ' + val)).getTime();
             },
-            variableRegex = /^bind:Variables\.(.*)\.dataSet/,
             dateTimeFormats = Utils.getDateTimeDefaultFormats();
 
         return {
@@ -143,7 +142,7 @@ WM.module('wm.widgets.live')
                         prevData,
                         requestData = {},
                         elScope = $scope.element.scope(),
-                        variableName = $scope.variableName || $scope.binddataset.match(variableRegex)[1],
+                        variableName = $scope.variableName || Utils.getVariableNameFromExpr($scope.binddataset),
                         variable = elScope.Variables[variableName],
                         isValid;
                     if ($scope.propertiesMap && $scope.propertiesMap.tableType === "VIEW") {
@@ -210,8 +209,7 @@ WM.module('wm.widgets.live')
                                 } else {
                                     /*get updated data without refreshing page*/
                                     variable.update({
-                                        "type": "wm.LiveVariable",
-                                        "isNotTriggerForRelated": true
+                                        "type": "wm.LiveVariable"
                                     }, WM.noop);
                                 }
                             }
@@ -236,8 +234,7 @@ WM.module('wm.widgets.live')
                                 } else {
                                     /*get updated data without refreshing page*/
                                     variable.update({
-                                        "type": "wm.LiveVariable",
-                                        "isNotTriggerForRelated": true
+                                        "type": "wm.LiveVariable"
                                     }, WM.noop);
                                 }
                             }
@@ -270,8 +267,7 @@ WM.module('wm.widgets.live')
                                 $scope.$emit("on-result", "delete", success);
                             } else {
                                 variable.update({
-                                    "type": "wm.LiveVariable",
-                                    "isNotTriggerForRelated": true
+                                    "type": "wm.LiveVariable"
                                 }, WM.noop);
                             }
 
@@ -658,7 +654,7 @@ WM.module('wm.widgets.live')
                             case "dataset":
                                 /*Process the dataset if only the data is an array*/
                                 if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
-                                    tempVarName = scope.binddataset.match(variableRegex)[1];
+                                    tempVarName = Utils.getVariableNameFromExpr(scope.binddataset);
                                     if (scope.variableName && (tempVarName !== scope.variableName)) {
                                         scope.formCreated = false;
                                         scope.formConstructed = false;
@@ -866,12 +862,15 @@ WM.module('wm.widgets.live')
                             variableObj = {},
                             variableData,
                             dataSetWatchHandler,
+                            boundVariable,
+                            elScope = element.scope(),
                             defaultObj;
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
                         } else {
                             parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         }
+                        boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableNameFromExpr(parentIsolateScope.binddataset)];
 
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                             'key': attrs.key || attrs.binding,
@@ -914,7 +913,7 @@ WM.module('wm.widgets.live')
                                 expr = attrs.dataset.replace('bind:', '');
                                 /*Watch on the bound variable. dataset will be set after variable is populated.*/
                                 dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
-                                    variable = parentIsolateScope.Variables[expr.split('.')[1]];
+                                    variable = elScope.Variables[expr.split('.')[1]];
                                     if (WM.isObject(variable)) {
                                         if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
                                             parentIsolateScope.formFields[index].dataset = newVal.content;
@@ -932,28 +931,23 @@ WM.module('wm.widgets.live')
                             } else {
                                 columnDef.dataset = attrs.dataset;
                             }
-                        } else if (attrs.isRelated) {
-                            /*when the field is related and dataset is not bound, set the dataset to related data of the live form bound variable
-                             and set the display field to primary key of the related table*/
-                            expr = parentIsolateScope.binddataset.replace('bind:', ''); /*live form bound variable*/
-                            /*Watch on the bound variable. dataset will be set after variable is populated.*/
-                            dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
-                                if (newVal) {
-                                    parentIsolateScope.formFields[index].dataset = newVal.relatedData && newVal.relatedData[columnDef.key];
+                        } else if (attrs.isRelated && CONSTANTS.isRunMode) {
+                            if (boundVariable) {
+                                boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
+                                    parentIsolateScope.formFields[index].dataset = response;
                                     variableObj.type = columnDef.displayName;
                                     variableObj.isDefault = true;
                                     variableObj.category = 'wm.LiveVariable';
                                     variableData = Variables.filterByVariableKeys(variableObj, true);
                                     /*Search for the live variable with the table name*/
+                                    parentIsolateScope.formFields[index].datafield = "All Fields";
                                     if (variableData.length) {
                                         parentIsolateScope.formFields[index].displayfield = parentIsolateScope.getPrimaryKey(variableData[0].propertiesMap.columns);
-                                        parentIsolateScope.formFields[index].datafield = "All Fields";
-                                    } else if (newVal.propertiesMap) {
+                                    } else {
                                         parentIsolateScope.formFields[index].displayfield = columnDef.relatedFieldName;
-                                        parentIsolateScope.formFields[index].datafield = "All Fields";
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                         if (attrs.extensions) {
                             columnDef.extensions = attrs.extensions;

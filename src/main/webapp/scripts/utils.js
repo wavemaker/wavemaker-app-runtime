@@ -1498,6 +1498,11 @@ WM.module('wm.utils', [])
             return 'services/projects/' + projectId + '/resources/content/web/';
         }
 
+        function getVariableNameFromExpr(expr) {
+            var variableRegex = /^bind:Variables\.(.*)\.dataSet/;
+            return expr.match(variableRegex)[1];
+        }
+
         // expose the methods on the service instance.
 
         this.camelCase                  = WM.element.camelCase;
@@ -1593,4 +1598,5 @@ WM.module('wm.utils', [])
         this.getNewEventsObject         = getNewEventsObject;
         this.getEvaluatedExprValue      = getEvaluatedExprValue;
         this.getProjectResourcePath     = getProjectResourcePath;
+        this.getVariableNameFromExpr    = getVariableNameFromExpr;
     }]);

@@ -127,11 +127,10 @@ wm.variables.services.$liveVariable = [
                 }
                 return true;
             },
-            updateVariableDataset = function (variable, data, propertiesMap, relatedData, pagingOptions) {
+            updateVariableDataset = function (variable, data, propertiesMap, pagingOptions) {
                 variable.dataSet = {
                     "data": data,
                     "propertiesMap": propertiesMap,
-                    "relatedData": relatedData,
                     "pagingOptions": pagingOptions
                 };
             },
@@ -431,7 +430,7 @@ wm.variables.services.$liveVariable = [
                         }
 
                         /* update the dataSet against the variable */
-                        updateVariableDataset(variable, [], variable.propertiesMap, $rootScope.variables[variable.name].relatedData || {}, $rootScope.variables[variable.name].pagingOptions);
+                        updateVariableDataset(variable, [], variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
 
                         /* If callback function is provided, send the data to the callback.
                          * The same callback if triggered in case of error also. The error-handling is done in grid.js*/
@@ -503,10 +502,10 @@ wm.variables.services.$liveVariable = [
                         });
                     }
                     /* update the dataSet against the variable */
-                    updateVariableDataset(variable, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].relatedData || {}, $rootScope.variables[variable.name].pagingOptions);
+                    updateVariableDataset(variable, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
 
                     /* if callback function is provided, send the data to the callback */
-                    Utils.triggerFn(success, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].relatedData || {}, $rootScope.variables[variable.name].pagingOptions);
+                    Utils.triggerFn(success, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
 
                     /* process next requests in the queue */
                     if (CONSTANTS.isRunMode) {
@@ -521,64 +520,6 @@ wm.variables.services.$liveVariable = [
                     variable.promise = promiseObj;
                 }
             },
-        /*Function to fetch the data for the related tables.*/
-            getRelatedTablesData = function (projectID, variable, options, success) {
-                var promiseObj, resultProperties = {
-                    "firstResult": 0,
-                    "maxResults": CONSTANTS.isRunMode ? variable.maxResults : variable.designMaxResults
-                };
-                /* if orderBy properties is set, append it to the resultProperties */
-                if (variable.orderBy) {
-                    resultProperties.orderBy = variable.orderBy.split(',');
-                }
-
-                /*Loop through all the related tables*/
-                WM.forEach(variable.relatedTables, function (relatedTable) {
-                    /*Fetch the table data*/
-                    promiseObj = DatabaseService.readTableData({
-                        "projectID": projectID,
-                        "service": variable.prefabName ? "" : "services",
-                        "dataModelName": variable.liveSource,
-                        "entityName": relatedTable.type,
-                        "page": 1,
-                        "size": resultProperties.maxResults,
-                        "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl
-                    }, function (response) {
-                        var primaryDataSize = ($rootScope.variables[variable.name].pagingOptions && $rootScope.variables[variable.name].pagingOptions.dataSize) || null;
-                        /*If there are related tables corresponding to the current table, then read their data also.
-                         * This data is only needed while inserting data into the primary table. Hence data is fetched only in the run mode.*/
-                        /* Also, set the data property of the variable to correspond to the table-data*/
-                        $rootScope.variables[variable.name].relatedData = $rootScope.variables[variable.name].relatedData || {};
-                        $rootScope.variables[variable.name].relatedData[relatedTable.columnName] = response.content;
-                        /* update the dataset against the variable */
-                        updateVariableDataset(variable, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].relatedData, {"dataSize": primaryDataSize, "maxResults": variable.maxResults, "relatedDataChange": true});
-                        Utils.triggerFn(success, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].relatedData, {"dataSize": primaryDataSize, "maxResults": variable.maxResults, "relatedDataChange": true});
-
-                        /*A watch is registered on the related table's data so that the relatedData in the primary table is also updated.
-                        Do not register the watch when the table to be watched(i.e., related table) and the variable are the same-Self reference.*/
-                        if (relatedTable.watchOn !== variable.name) {
-                            /*Register a watch on the rootScope to update the "relatedData" in the variable when the "data" in the "relatedTable" changes.*/
-                            $rootScope.$watch("variables." + relatedTable.watchOn + ".data", function (newVal, oldVal) {
-                                /*Check for sanity*/
-                                if (newVal && !WM.equals(oldVal, newVal)) {
-                                    $rootScope.variables[variable.name].relatedData[relatedTable.columnName] = newVal;
-
-                                    /*Get the data of the primary table also so that any changes in related data will also be reflected in the data.*/
-                                    options.isNotTriggerForRelated = true;
-                                    getPrimaryTableData(projectID, variable, options, success);
-
-                                    /* update the dataSet against the variable */
-                                    updateVariableDataset(variable, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].relatedData, {"dataSize": primaryDataSize, "maxResults": variable.maxResults, "relatedDataChange": true});
-                                    Utils.triggerFn(success, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].relatedData, {"dataSize": primaryDataSize, "maxResults": variable.maxResults, "relatedDataChange": true});
-                                }
-                            });
-                        }
-                    });
-                    if (CONSTANTS.isRunMode) {
-                        variable.promise = promiseObj;
-                    }
-                });
-            },
         /*Function to fetch the data for the variable (i.e., primary & related tables data)*/
             getTableData = function (projectID, variable, options, success, error) {
                 var variableIndex = WM.element.inArray(variable.name, invalidVariables);
@@ -587,11 +528,6 @@ wm.variables.services.$liveVariable = [
                 if (variableIndex === -1) {
                     /*Get the data of the primary table*/
                     getPrimaryTableData(projectID, variable, options, success, error);
-
-                    /*If there are related tables corresponding to the current table, then read their data also.*/
-                    if (CONSTANTS.isRunMode && !options.isNotTriggerForRelated && variable.relatedTables && variable.relatedTables.length) {
-                        getRelatedTablesData(projectID, variable, options, success);
-                    }
                 } else {
                     invalidVariables.splice(variableIndex, 1);
                 }
@@ -663,13 +599,13 @@ wm.variables.services.$liveVariable = [
                         isProjectDeployInProgress = false;
 
                         /*Update the variable with empty data so that the widgets reflect the same.*/
-                        updateVariableDataset(variable, {'error': true, 'errorMessage': $rootScope.locale["MESSAGE_INFO_DATABASE_DATA_LOADING_FAILED"]}, variable.propertiesMap, {}, {});
+                        updateVariableDataset(variable, {'error': true, 'errorMessage': $rootScope.locale["MESSAGE_INFO_DATABASE_DATA_LOADING_FAILED"]}, variable.propertiesMap, {});
                         /*Check for sanity*/
                         if (callbackParams.length) {
                             /*Iterate through the "callbackParams" and set empty data for each of them.*/
                             WM.forEach(callbackParams, function (callbackParam) {
                                 /*Update the variable with empty data so that the widgets reflect the same.*/
-                                updateVariableDataset(callbackParam.variable, {'error': true, 'errorMessage': $rootScope.locale["MESSAGE_INFO_DATABASE_DATA_LOADING_FAILED"]}, callbackParam.variable.propertiesMap, {}, {});
+                                updateVariableDataset(callbackParam.variable, {'error': true, 'errorMessage': $rootScope.locale["MESSAGE_INFO_DATABASE_DATA_LOADING_FAILED"]}, callbackParam.variable.propertiesMap, {});
                             });
                             /*Reset the array*/
                             callbackParams = [];
@@ -974,7 +910,7 @@ wm.variables.services.$liveVariable = [
                             writableVariable = Variables.getVariableByName(variable.name);
                             getTableMetaData(projectID, variable, writableVariable, options, function () {
                                 /*For variables of all operations, update the dataSet with the "propertiesMap" only.*/
-                                updateVariableDataset(variable, {}, variable.propertiesMap, {}, {});
+                                updateVariableDataset(variable, {}, variable.propertiesMap, {});
                                 /* if callback function is provided, send the data to the callback */
                                 Utils.triggerFn(success, $rootScope.variables[variable.name].data, variable.propertiesMap, {}, {"dataSize": null, "maxResults": variable.maxResults});
                             });
@@ -982,7 +918,7 @@ wm.variables.services.$liveVariable = [
                         /*In the Run mode, for variables of insert/update/delete type operation, update the dataSet with the "propertiesMap" only.*/
                         if (CONSTANTS.isRunMode && variable.operation !== 'read') {
                             /* update the dataSet against the variable */
-                            updateVariableDataset(variable, {}, variable.propertiesMap, {}, {});
+                            updateVariableDataset(variable, {}, variable.propertiesMap, {});
                         }
 
                         /* Do not make calls to fetch data in case 'skipFetchData' is true, This flag is true when the variable is created for the first time */
@@ -1140,6 +1076,33 @@ wm.variables.services.$liveVariable = [
                         modifiedFieldName = 'id.' + fieldName;
                     }
                     return modifiedFieldName;
+                },
+                getRelatedTableData: function (variable, columnName, options, success, error) {
+                    var projectID = $rootScope.project.id || $rootScope.projectName,
+                        resultProperties = {
+                            "firstResult": 0,
+                            "maxResults": options.maxResults || 100
+                        },
+                        relatedTable = _.find(variable.relatedTables, function (table) {
+                            return table.columnName === columnName;
+                        });
+                    /* if orderBy properties is set, append it to the resultProperties */
+                    if (variable.orderBy) {
+                        resultProperties.orderBy = variable.orderBy.split(',');
+                    }
+                    DatabaseService.readTableData({
+                        "projectID": projectID,
+                        "service": variable.prefabName ? "" : "services",
+                        "dataModelName": variable.liveSource,
+                        "entityName": relatedTable.type,
+                        "page": 1,
+                        "size": resultProperties.maxResults,
+                        "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl
+                    }, function (response) {
+                        Utils.triggerFn(success, response.content);
+                    }, function (errMsg) {
+                        Utils.triggerFn(error, errMsg);
+                    });
                 }
             },
 
@@ -1153,11 +1116,11 @@ wm.variables.services.$liveVariable = [
                         $rootScope.$emit('toggle-variable-state', name, true);
                     }
 
-                    methods.getData(this, options, function (data, propertiesMap, relatedData, pageOptions) {
+                    methods.getData(this, options, function (data, propertiesMap, pageOptions) {
                         if (CONSTANTS.isRunMode) {
                             $rootScope.$emit('toggle-variable-state', name, false);
                         }
-                        Utils.triggerFn(success, data, propertiesMap, relatedData, pageOptions);
+                        Utils.triggerFn(success, data, propertiesMap, pageOptions);
                     }, function (errMsg) {
                         if (CONSTANTS.isRunMode) {
                             $rootScope.$emit('toggle-variable-state', name, false);
@@ -1232,8 +1195,8 @@ wm.variables.services.$liveVariable = [
                     options = options || {};
                     options.scope = this.activeScope;
 
-                    methods.updateRelatedData(this, options, function (data, propertiesMap, relatedData, pageOptions) {
-                        Utils.triggerFn(success, data, propertiesMap, relatedData, pageOptions);
+                    methods.updateRelatedData(this, options, function (data, propertiesMap, pageOptions) {
+                        Utils.triggerFn(success, data, propertiesMap, pageOptions);
                     }, function (errMsg) {
                         Utils.triggerFn(error, errMsg);
                     });
@@ -1267,6 +1230,9 @@ wm.variables.services.$liveVariable = [
                 },
                 getModifiedFieldName: function (fieldName) {
                     return methods.getModifiedFieldName(this, fieldName);
+                },
+                getRelatedTableData: function (columnName, options, success, error) {
+                    return methods.getRelatedTableData(this, columnName, options, success, error);
                 }
             };
 

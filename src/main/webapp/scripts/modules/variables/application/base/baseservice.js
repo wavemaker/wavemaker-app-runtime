@@ -765,12 +765,12 @@ wm.variables.services.Variables = [
                     type = variable.category;
 
                 /*invoke the getData method of the specified variable category*/
-                return BaseVariablePropertyFactory.invoke(method, type, variable, options, function (data, propertiesMap, relatedData, pagingOptions) {
-                    Utils.triggerFn(success, data, propertiesMap, relatedData, pagingOptions);
+                return BaseVariablePropertyFactory.invoke(method, type, variable, options, function (data, propertiesMap, pagingOptions) {
+                    Utils.triggerFn(success, data, propertiesMap, pagingOptions);
                 }, error);
             },
 
-            updateVariableDataSet = function (name, data, propertiesMap, relatedData, pagingOptions) {
+            updateVariableDataSet = function (name, data, propertiesMap, pagingOptions) {
                 /* sanity checking */
                 if (!returnObject[name]) {
                     return;
@@ -786,7 +786,6 @@ wm.variables.services.Variables = [
                     returnObject[name].dataSet = {
                         "data": data,
                         "propertiesMap": propertiesMap,
-                        "relatedData": relatedData,
                         "pagingOptions": pagingOptions
                     };
                 } else {
