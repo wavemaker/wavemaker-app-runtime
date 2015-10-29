@@ -1174,6 +1174,7 @@ WM.module('wm.widgets.base', [])
                         "uploadedFiles": {"type": "array", "bindable": "in-out-bound"},
                         "destination": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound", "value": ""},
                         "caption": {"type": "string", "value": "Upload", "bindable": "in-out-bound", "maxlength": 256},
+                        "disabled": {"type": "boolean", "value": false},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "glyphicon glyphicon-upload", "pattern": classRegex},
 
                         /* ---- events ---- */

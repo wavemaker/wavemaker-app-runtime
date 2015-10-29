@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
                             '<div class="message">' +
                                 '<label data-ng-bind="fileuploadtitle"></label>' +
                                     '<form class="form-horizontal" name="{{multipleFileFormName}}">' +
-                                        '<input class="file-input" type="file" name="files" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" multiple>' +
+                                        '<input class="file-input" type="file" name="files" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" multiple data-ng-disabled="disabled">' +
                                         '<a href="javascript:void(0);" class="app-anchor" data-ng-bind="fileuploadmessage"></a>' +
                                     '</form>' +
                             '</div>' +
@@ -23,7 +23,7 @@ WM.module('wm.widgets.form')
                     '<div class="app-single-file-upload" data-ng-hide="multiple">' +
                         '<div class="app-button-wrapper">' +
                             '<form class="form-horizontal" name="{{singleFileFormName}}">' +
-                                '<input class="file-input" type="file"  name="files" on-file-select="uploadSingleFile($event, $files)" data-ng-attr-accept="{{chooseFilter}}">' +
+                                '<input class="file-input" type="file"  name="files" on-file-select="uploadSingleFile($event, $files)" data-ng-attr-accept="{{chooseFilter}}" data-ng-disabled="disabled">' +
                                 '<button class="app-button btn btn-default">' +
                                     '<i class="{{iconclass}}"></i> ' +
                                     '<span>{{caption}}</span>' +
