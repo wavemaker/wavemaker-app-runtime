@@ -1419,6 +1419,8 @@ WM.module('wm.widgets.base', [])
                         "theme": {"type": "list", "options": ["Terrestrial", "Annabelle", "Azure", "Retro", "Mellow", "Orient", "GrayScale", "Flyer", "Luminosity"]},
                         "customcolors": {"type": "array", "bindable": "in-bound", "widget": "string"},
                         "nodatamessage": {"type": "string", "value": "No Data Available.", "bindable": "in-out-bound"},
+                        "xdomain" : {"type": "list", "options": ["Default", "Min"], "value": "Default"},
+                        "ydomain" : {"type": "list", "options": ["Default", "Min"], "value": "Default"},
                         /**Style**/
                         "border": {"type": "string", "widget": "box"},
                         "borderunit": {"type": "string", "options": ["em", "px"], "value": "px", "widget": "icons_radio"},
@@ -1573,7 +1575,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "behavior", "properties": ["navigation", "pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "deletemessage", "ignoreparentreadonly", "readonlygrid",
                     "multiple", "show", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
-                    "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "showvalues",
+                    "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                     "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchbuttoniconclass",
                     "searchbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype", "loadmode", "loaddelay", "searchplaceholder"], "parent": "properties"},
