@@ -1,4 +1,4 @@
-/*global wm, WM*/
+/*global wm, WM, _*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -42,7 +42,7 @@ wm.variables.services.$servicevariable = ['Variables',
             AUTH_TYPE_BASIC = "BASIC",
             AUTH_TYPE_NONE = "NONE",
             AUTH_TYPE_OAUTH = "OAUTH",
-            supportedOperations = WS_CONSTANTS.HTTP_METHODS.map(function(method){return method.toLowerCase();}),
+            supportedOperations = WS_CONSTANTS.HTTP_METHODS.map(function (method) { return method.toLowerCase(); }),
             BASE_PATH_KEY = 'x-WM-BASE_PATH',
             RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
             parameterTypeKey = 'in',
@@ -194,7 +194,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     invokeParams,
                     authType = AUTH_TYPE_NONE,
                     uname,
-                    pswd;
+                    pswd,
+                    method;
 
                 /* loop through all the parameters */
                 WM.forEach(operationInfo.parameters, function (param) {
@@ -245,15 +246,26 @@ wm.variables.services.$servicevariable = ['Variables',
                     target = "invokePrefabRestService";
                 }
 
+                method = operationInfo.httpMethod || operationInfo.methodType;
+                url += (variable.prefabName ? '' : '/services') + endPointRelativePath;
 
-                url += (variable.prefabName ? '' : '/services') + endPointRelativePath + queryParams;
+                // if the consumes has application/x-www-form-urlencoded and
+                // if the http request of given method type can have body send the queryParams as Form Data
+                if (_.includes(operationInfo.consumes, WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED)
+                        && !_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, (method || '').toUpperCase())) {
+                    // remove the '?' at the start of the queryParams
+                    requestBody = queryParams.substring(1);
+                    headers['Content-Type'] = WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED;
+                } else {
+                    url += queryParams;
+                }
 
                 /*creating the params needed to invoke the service. url is generated from the relative path for the operation*/
                 invokeParams = {
                     "projectID": $rootScope.project.id,
                     "url": url,
                     "target": target,
-                    "method": operationInfo.httpMethod || operationInfo.methodType,
+                    "method": method,
                     "headers": headers,
                     "dataParams": requestBody,
                     "authType": authType
@@ -431,9 +443,9 @@ wm.variables.services.$servicevariable = ['Variables',
                  * parameters to create a unique url pattern*/
                 ServiceFactory.getServiceDef(selectedService, function (response) {
                     /*iterate over the paths received from the service response*/
-                        var pathsArr = Object.keys(response.paths),
-                            securityDefinitions = response.securityDefinitions,
-                            AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization';
+                    var pathsArr = Object.keys(response.paths),
+                        securityDefinitions = response.securityDefinitions,
+                        AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization';
                     for (var i= 0, nPaths = pathsArr.length; i <nPaths; i++) {
                         var pathKey = pathsArr[i],
                             path = response.paths[pathKey];
