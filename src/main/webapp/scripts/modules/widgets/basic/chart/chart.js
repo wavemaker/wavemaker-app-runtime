@@ -84,7 +84,7 @@ WM.module('wm.widgets.basic')
             },
            /* properties of the respective chart type */
             options = {
-                'Column'         : ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'xdomain','ydomain'],
+                'Column'         : ['showcontrols', 'staggerlabels', 'reducexticks', 'barspacing', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'xdomain', 'ydomain'],
                 'Line'           : ['xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints', 'linethickness'],
                 'Area'           : ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints', 'xdomain', 'ydomain'],
                 'Cumulative Line': ['showcontrols', 'xaxislabel', 'yaxislabel', 'xunits', 'yunits', 'yaxislabeldistance', 'captions', 'showxaxis', 'showyaxis', 'highlightpoints', 'linethickness'],
@@ -249,7 +249,7 @@ WM.module('wm.widgets.basic')
         }
 
         /*X/Y Domain properties are supported only for Column and Area charts*/
-        function isAxisDomainSupported (type) {
+        function isAxisDomainSupported(type) {
             return isColumnChart(type) || isAreaChart(type);
         }
 
@@ -594,7 +594,7 @@ WM.module('wm.widgets.basic')
         }
 
         /*Getting the min and max values among all the x values*/
-        function getXMinMaxValues (datum) {
+        function getXMinMaxValues(datum) {
             if (!datum) {
                 return;
             }
@@ -627,7 +627,7 @@ WM.module('wm.widgets.basic')
         }
 
         /*Getting the min and max values among all the y values*/
-        function getYMinMaxValues (datum) {
+        function getYMinMaxValues(datum) {
             var yValues = {},
                 minValues = [],
                 maxValues = [];
@@ -649,9 +649,9 @@ WM.module('wm.widgets.basic')
                 max y values : '40'(among first set) & '50'(among second set)
              */
 
-            _.forEach(datum, function(data){
-                minValues.push(_.min(data.values, function(dataObject){ return dataObject.y || dataObject[1]; }));
-                maxValues.push(_.max(data.values, function(dataObject){ return dataObject.y || dataObject[1]; }));
+            _.forEach(datum, function (data) {
+                minValues.push(_.min(data.values, function (dataObject) { return dataObject.y || dataObject[1]; }));
+                maxValues.push(_.max(data.values, function (dataObject) { return dataObject.y || dataObject[1]; }));
             });
             /*Gets the least and highest values among all the min and max values of respective series of data*/
             yValues.min = _.min(minValues, function (dataObject) {
@@ -690,7 +690,6 @@ WM.module('wm.widgets.basic')
 
         /*Formatting the binded data compatible to chart data*/
         function getChartData(scope) {
-            var shapes = [];
             scope.sampleData = getSampleData(scope);
             /* scope variables used to keep the actual key values for x-axis */
             scope.xDataKeyArr = [];
@@ -728,7 +727,8 @@ WM.module('wm.widgets.basic')
                 xAxisKey = scope.xaxisdatakey,
                 yAxisKeys = scope.yaxisdatakey ? scope.yaxisdatakey.split(',') : [],
                 dataSet = scope.chartData,
-                yAxisKey;
+                yAxisKey,
+                shapes = [];
 
             /*check if the datasource is live variable then get the column definition else directly get the data type of the object passed*/
             if (scope.isLiveVariable) {
@@ -1260,20 +1260,16 @@ WM.module('wm.widgets.basic')
                 Output  : 7
         */
 
-        function getYScaleMinValue (value) {
+        function getYScaleMinValue(value) {
             var _min = Math.floor(value);
-            /*If the number has decimal part returning floored value - 0.1*/
-             if (Math.abs(value) - _min > 0) {
-                 return value - 0.1;
-             } else {
-                 /*If the number has no decimal part returning floored value - 1*/
-                 return _min - 1;
-             }
+            /* If the number has a) decimal part returning floor value - 0.1
+                                 b) no decimal part returning floor value - 1 */
+            return Math.abs(value) - _min > 0 ? value - 0.1 : _min - 1;
         }
 
         /* intializes the chart obejct */
         function initChart(scope, xDomainValues, yDomainValues) {
-            var chart, theme, xValue= {}, yValue= {};
+            var chart, theme, xValue = {}, yValue = {};
             switch (scope.type) {
             case 'Column':
                 chart = nv.models.multiBarChart()
@@ -1385,7 +1381,7 @@ WM.module('wm.widgets.basic')
             }
 
             /*Setting the legend type choosen by user or default it will be furious*/
-           chart.legend.vers(scope.legendtype && scope.legendtype.toLowerCase() || 'furious');
+            chart.legend.vers((scope.legendtype && scope.legendtype.toLowerCase()) || 'furious');
 
             if (chartTypes.indexOf(scope.type) === -1) {
                 chart = nv.models.multiBarChart()
@@ -1406,7 +1402,7 @@ WM.module('wm.widgets.basic')
                     .showYAxis(scope.showyaxis);
             }
 
-            if(CONSTANTS.isStudioMode) {
+            if (CONSTANTS.isStudioMode) {
                 /*Updating the markup with the theme*/
                 scope.theme = theme;
                 scope.$root.$emit("set-markup-attr", scope.widgetid, {'theme': theme});
@@ -1517,7 +1513,14 @@ WM.module('wm.widgets.basic')
             /*Reason : when multiple pie charts are bound to same data, first chart theme will be applied to all charts*/
             var chartData = datum,
                 xDomainValues,
-                yDomainValues;
+                yDomainValues,
+                chart,
+                xFormat,
+                yFormat,
+                xnumberformat = scope.xnumberformat,
+                ynumberformat = scope.ynumberformat,
+                xaxislabel,
+                yaxislabel;
             if (isAxisDomainValid(scope, 'x')) {
                 xDomainValues = scope.binddataset ? getXMinMaxValues(datum[0]) : { 'min' : {'x': 1},  'max' : {'x' : 5}};
             }
@@ -1532,13 +1535,6 @@ WM.module('wm.widgets.basic')
             if (!element[0].getBoundingClientRect().height) {
                 return;
             }
-            var chart,
-                xFormat,
-                yFormat,
-                xnumberformat = scope.xnumberformat,
-                ynumberformat = scope.ynumberformat,
-                xaxislabel,
-                yaxislabel;
 
             if (scope.xnumberformat && scope.xdigits) {
                 xFormat = getFormatOptions(scope.xnumberformat, scope.xdigits);
