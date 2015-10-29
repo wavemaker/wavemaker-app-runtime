@@ -862,7 +862,7 @@ WM.module('wm.widgets.live')
                             variableObj = {},
                             variableData,
                             dataSetWatchHandler,
-                            boundVariable,
+                            relatedDataWatchHandler,
                             elScope = element.scope(),
                             defaultObj;
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
@@ -870,8 +870,6 @@ WM.module('wm.widgets.live')
                         } else {
                             parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         }
-                        boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableNameFromExpr(parentIsolateScope.binddataset)];
-
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                             'key': attrs.key || attrs.binding,
                             'outputformat': attrs.outputformat,
@@ -932,7 +930,9 @@ WM.module('wm.widgets.live')
                                 columnDef.dataset = attrs.dataset;
                             }
                         } else if (attrs.isRelated && CONSTANTS.isRunMode) {
-                            if (boundVariable) {
+                            relatedDataWatchHandler = parentIsolateScope.$watch(parentIsolateScope.binddataset.replace('bind:', ''), function () {
+                                relatedDataWatchHandler();
+                                var boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableNameFromExpr(parentIsolateScope.binddataset)];
                                 boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
                                     parentIsolateScope.formFields[index].dataset = response;
                                     variableObj.type = columnDef.displayName;
@@ -947,7 +947,7 @@ WM.module('wm.widgets.live')
                                         parentIsolateScope.formFields[index].displayfield = columnDef.relatedFieldName;
                                     }
                                 });
-                            }
+                            });
                         }
                         if (attrs.extensions) {
                             columnDef.extensions = attrs.extensions;
@@ -991,6 +991,9 @@ WM.module('wm.widgets.live')
                             }
                             if (exprWatchHandler) {
                                 exprWatchHandler();
+                            }
+                            if (relatedDataWatchHandler) {
+                                relatedDataWatchHandler();
                             }
                         });
                     }
