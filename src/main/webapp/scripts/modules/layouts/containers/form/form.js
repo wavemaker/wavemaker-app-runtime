@@ -77,9 +77,17 @@ WM.module('wm.layouts.containers')
             }
         }
 
+        /*Called by users programatically.*/
         function resetForm(element) {
-            //Clear the html content from the widgets(file upload, rich text editor) after reset
-            element.find('.app-files-upload-status, .app-richtexteditor [ng-model]').empty();
+            resetFormFields(element);
+        }
+
+        function resetFormFields(element) {
+            var eleScope = element.scope();
+            element.find('[role="input"]').each(function () {
+                WM.element(this).isolateScope().reset();
+            });
+            $rootScope.$safeApply(eleScope);
         }
 
         function bindEvents(scope, element) {
@@ -100,11 +108,7 @@ WM.module('wm.layouts.containers')
             });
             /*clear the file uploader in the form*/
             element.bind('reset', function () {
-                var eleScope = element.scope();
-                element.find('[role="input"]').each(function (index, form) {
-                    eleScope.$parent.Widgets[form.getAttribute('name')].reset();
-                });
-                $rootScope.$safeApply(scope);
+                resetFormFields(element);
             });
         }
 

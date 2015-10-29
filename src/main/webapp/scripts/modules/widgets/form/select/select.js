@@ -261,6 +261,7 @@ WM.module('wm.widgets.form')
                         /*Called from form reset when users clicks on form reset*/
                         iScope.reset = function () {
                             //TODO implement custom reset logic here
+                            iScope._model_ = '';
                         };
 
                         /*Executing WidgetUtilService method to initialize the widget with the essential configurations.*/

@@ -121,6 +121,7 @@ WM.module('wm.widgets.form')
                         /*Called from form reset when users clicks on form reset*/
                         scope.reset = function () {
                             //TODO implement custom reset logic here
+                            scope._model_ = '';
                         };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
