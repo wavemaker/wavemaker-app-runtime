@@ -239,6 +239,11 @@ WM.module('wm.widgets.base', [])
                         "onPinchout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
+                    "wm.base.events.keyboard": {
+                        "onKeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onKeydown": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onKeyup": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    },
                     "wm.base.events.focus": {
                         "onFocus": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
@@ -399,8 +404,7 @@ WM.module('wm.widgets.base', [])
 
                         /* Number properties */
                         "minvalue": {"type": "number", "bindable": "in-bound"},
-                        "maxvalue": {"type": "number", "bindable": "in-bound"},
-                        "onKeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "maxvalue": {"type": "number", "bindable": "in-bound"}
                     },
 
                     "wm.currency": {
@@ -730,8 +734,7 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Place your text"},
                         "maxchars": {"type": "number"},
                         "updateon": {"type": "list", "value": "blur", "widget": "updateon"},
-                        "updatedelay": {"type": "number", "value": 0},
-                        "onKeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "updatedelay": {"type": "number", "value": 0}
                     },
 
                     "wm.basicdialog": {
@@ -1939,7 +1942,9 @@ WM.module('wm.widgets.base', [])
                     'onFocus':          {'name': 'data-ng-focus',       'value': 'onFocus({$event: $event, $scope: this})'},
                     'onBlur':           {'name': 'data-ng-blur',        'value': 'onBlur({$event: $event, $scope: this})'},
 
-                    'onKeypress':       {'name': 'data-ng-keypress',  'value': 'onKeypress({$event: $event, $scope: this})'},
+                    'onKeypress':       {'name': 'data-ng-keypress',    'value': 'onKeypress({$event: $event, $scope: this})'},
+                    'onKeydown':        {'name': 'data-ng-keydown',     'value': 'onKeydown({$event: $event, $scope: this})'},
+                    'onKeyup':          {'name': 'data-ng-keyup',       'value': 'onKeyup({$event: $event, $scope: this})'},
 
                     'onSwipeup':        {'name': 'hm-swipe-up',         'value': 'onSwipeup({$event: $event, $scope: this})'},
                     'onSwipedown':      {'name': 'hm-swipe-down',       'value': 'onSwipedown({$event: $event, $scope: this})'},

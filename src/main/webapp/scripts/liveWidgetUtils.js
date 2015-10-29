@@ -14,7 +14,9 @@ WM.module('wm.widgets.live')
 
         function (Utils, CONSTANTS, Variables) {
             'use strict';
-
+            var keyEventsWidgets = ["number", "text", "select", "password", "textarea"],
+                eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
+                allEventTypes = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup');
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#formatBooleanValue
@@ -36,8 +38,25 @@ WM.module('wm.widgets.live')
                 return value;
             }
 
-            function getEventTypes() {
-                return ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'];
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getEventTypes
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * return event types based on widget type if provided
+             *
+             * @param {string} widgetType type to the widget
+             */
+            function getEventTypes(widgetType) {
+                if (widgetType) {
+                    if (_.includes(keyEventsWidgets, widgetType.toLowerCase())) {
+                        return allEventTypes;
+                    }
+                    return eventTypes;
+                }
+                return allEventTypes;
             }
 
             /**
@@ -202,7 +221,10 @@ WM.module('wm.widgets.live')
                     'onFocus': attrs.onFocus,
                     'onMouseleave': attrs.onMouseleave,
                     'onMouseenter': attrs.onMouseenter,
-                    'onClick': attrs.onClick
+                    'onClick': attrs.onClick,
+                    'onKeypress': attrs.onKeypress,
+                    'onKeyup': attrs.onKeyup,
+                    'onKeydown': attrs.onKeydown
                 };
             }
 

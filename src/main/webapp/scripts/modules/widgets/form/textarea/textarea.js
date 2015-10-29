@@ -18,7 +18,7 @@ WM.module('wm.widgets.form')
     .directive('wmTextarea', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         /*Obtaining properties specific to textarea widget by extending from all editor related widget properties*/
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.textarea', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.textarea', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard']);
 
         return {
             'restrict': 'E',

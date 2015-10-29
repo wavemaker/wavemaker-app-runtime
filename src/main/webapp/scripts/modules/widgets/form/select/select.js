@@ -23,7 +23,7 @@ WM.module('wm.widgets.form')
         'use strict';
 
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.select', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.editors.dataseteditors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.select', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.editors.dataseteditors', 'wm.base.events.keyboard']),
             notifyFor = {
                 'dataset': true,
                 'multiple': true,

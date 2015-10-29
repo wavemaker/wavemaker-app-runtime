@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
     .directive('wmButton', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', function (PropertiesFactory, WidgetUtilService, $sce, Utils) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.button', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.events.focus']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.button', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.events.focus', 'wm.base.events.keyboard']),
             notifyFor = {
                 'iconclass': true,
                 'iconurl': true,
