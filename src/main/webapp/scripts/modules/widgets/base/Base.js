@@ -316,7 +316,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "datavalue": {"type": "string, object", "bindable": "in-out-bound", "widget": "string"},
                         "scopedatavalue": {"type": "string"},
-                        "dataset": {"type": "array, string", "bindable": "in-bound", "widget": "string", "value": "on, off"},
+                        "dataset": {"type": "array, string", "bindable": "in-bound", "widget": "string", "value": "yes, no, maybe"},
                         "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
                         "displayfield": {"type": "list", "options": [""], "value": ""}
