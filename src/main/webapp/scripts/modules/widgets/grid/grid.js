@@ -689,20 +689,18 @@ WM.module('wm.widgets.grid')
 
                     variable.update({
                         "type": "wm.LiveVariable",
-                        "isNotTriggerForRelated": true,
                         "page": 1,
                         "filterFields": filterFields,
                         "matchMode": 'anywhere',
                         "ignoreCase": true,
                         "scope": $scope.gridElement.scope()
-                    }, function (data, propertiesMap, relatedData, pagingOptions) {
+                    }, function (data, propertiesMap, pagingOptions) {
                         $scope.serverData = data;
                         /*Check for sanity*/
                         if ($scope.dataNavigator) {
                             $scope.dataNavigator.dataset = {
                                 "data": data,
                                 "propertiesMap": propertiesMap,
-                                "relatedData": relatedData,
                                 "pagingOptions": pagingOptions,
                                 "filterFields": filterFields,
                                 "variableName": $scope.variableName
@@ -750,14 +748,13 @@ WM.module('wm.widgets.grid')
                             /* else get sorted data through variable */
                             variable.update({
                                 'type': 'wm.LiveVariable',
-                                'isNotTriggerForRelated': true,
                                 'page': 1,
                                 'filterFields': filterFields,
                                 'orderBy': sortOptions,
                                 'matchMode': 'anywhere',
                                 'ignoreCase': true,
                                 'scope': $scope.gridElement.scope()
-                            }, function (data, propertiesMap, relatedData, pagingOptions) {
+                            }, function (data, propertiesMap, pagingOptions) {
                                 /*Navigate to the first page upon sorting.*/
                                 $scope.dataNavigator.navigatePage("first");
                                 $scope.serverData = data;
@@ -766,7 +763,6 @@ WM.module('wm.widgets.grid')
                                     $scope.dataNavigator.dataset = {
                                         'data': data,
                                         'propertiesMap': propertiesMap,
-                                        'relatedData': relatedData,
                                         'pagingOptions': pagingOptions,
                                         'filterFields': filterFields,
                                         'sortOptions': sortOptions,
@@ -1261,7 +1257,7 @@ WM.module('wm.widgets.grid')
                                             'id': reference.referenceWidget.selecteditem[referenceVariableKey],
                                             'relatedFieldName': reference.relatedFieldName,
                                             'scope': $scope.gridElement.scope()
-                                        }, function (data, propertiesMap, relatedData, pagingOptions) {
+                                        }, function (data, propertiesMap, pagingOptions) {
                                             /*Check for sanity of data.*/
                                             if (WM.isDefined(data)) {
                                                 if (!$scope.dataNavigatorWatched) {
@@ -1274,7 +1270,6 @@ WM.module('wm.widgets.grid')
                                                 $scope.dataNavigator.dataset = {
                                                     "data": data,
                                                     "propertiesMap": propertiesMap,
-                                                    "relatedData": relatedData,
                                                     "pagingOptions": pagingOptions,
                                                     "variableName": reference.referenceVariableName
                                                 };
@@ -1751,7 +1746,6 @@ WM.module('wm.widgets.grid')
 
                     variable.update({
                         'type': 'wm.LiveVariable',
-                        'isNotTriggerForRelated': true,
                         'page': $scope.dataNavigator ? $scope.dataNavigator.currentPage : 1,
                         'scope': $scope.gridElement.scope()
                     }, function (data) {
