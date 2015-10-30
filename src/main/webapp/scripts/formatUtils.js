@@ -56,6 +56,9 @@ WM.module('wm.utils')
                 if (!WM.isDefined(data)) {
                     return undefined;
                 }
+                if (!isNaN(data)) {
+                    data = parseInt(data, 10);
+                }
                 /*get the timestamp value. If data is time string, append date string to the time value*/
                 timestamp = moment(data).valueOf() || moment(new Date().toDateString() + ' ' + data).valueOf();
                 if (timestamp) {
