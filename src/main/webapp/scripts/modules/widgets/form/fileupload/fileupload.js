@@ -532,6 +532,8 @@ WM.module('wm.widgets.form')
                             /*emit event to workspace to create a service variable*/
                             createVariable = function (service, operation) {
                                 scope.$root.$emit("create-service-variable", service, getServiceType(service), operation);
+                                /*Saving service and operation in markup*/
+                                $rootScope.$emit("set-markup-attr", scope.widgetid, {'service': service, 'operation': operation});
                             };
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
