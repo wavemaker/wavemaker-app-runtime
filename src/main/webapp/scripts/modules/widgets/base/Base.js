@@ -37,6 +37,28 @@ WM.module('wm.widgets.base', [])
                 'name': 'Large',
                 'value': 'lg'
             }],
+            daysOptions = [{
+                'name': 'Sunday',
+                'value': '0'
+            }, {
+                'name': 'Monday',
+                'value': '1'
+            }, {
+                'name': 'Tuesday',
+                'value': '2'
+            }, {
+                'name': 'Wednesday',
+                'value': '3'
+            }, {
+                'name': 'Thursday',
+                'value': '4'
+            }, {
+                'name': 'Friday',
+                'value': '5'
+            }, {
+                'name': 'Saturday',
+                'value': '6'
+            }],
             nameRegex      = '^[a-zA-Z_][A-Za-z0-9_]+$',
             numberRegex    = '(^$|[0-9]+$)',
             classRegex     = '(^$|^-?[_a-zA-Z ]+[_a-zA-Z0-9- ]*)$',
@@ -469,7 +491,9 @@ WM.module('wm.widgets.base', [])
                         "datepattern": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "yyyy-MM-dd", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "datavalue": {"type": "date, datetime, timestamp, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd"},
-                        "timestamp": {"type": "date, datetime, timestamp, string, number", "widget": "string", "show": "false", "bindable": "out-bound"}
+                        "timestamp": {"type": "date, datetime, timestamp, string, number", "widget": "string", "show": "false", "bindable": "out-bound"},
+                        "excludedays": {"type": "selectall", "options": daysOptions, "displaytype": "block", "value": " "},
+                        "excludedates": {"type": "datetime, timestamp, date, array, string", "bindable": "in-bound", "widget": "string", "hint": "yyyy-MM-dd"}
                     },
                     "wm.calendar": {
                         "placeholder": {"type": "string", "value": "Select date"},
@@ -516,7 +540,9 @@ WM.module('wm.widgets.base', [])
                         "datepattern": {"value": "yyyy-MM-dd HH:mm", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "datavalue": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"},
-                        "timestamp": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "show": "false", "bindable": "out-bound"}
+                        "timestamp": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "show": "false", "bindable": "out-bound"},
+                        "excludedays": {"type": "selectall", "options": daysOptions, "displaytype": "block", "value": " "},
+                        "excludedates": {"type": "datetime, timestamp, date, array, string", "bindable": "in-bound", "widget": "string", "hint": "yyyy-MM-dd"}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
@@ -1571,7 +1597,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
-                {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "novalidate", "maxchars"], "parent": "properties"},
+                {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "help", "properties": ["helptext"], "parent": "properties"},
                 {"name": "behavior", "properties": ["navigation", "pollinterval", "radiogroup", "viewgroup", "startchecked", "autofocus", "readonly", "insertmessage", "updatemessage", "deletemessage", "ignoreparentreadonly", "readonlygrid",
                     "multiple", "show", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
@@ -1774,7 +1800,7 @@ WM.module('wm.widgets.base', [])
      * @description
      * When this attribute directive is applied on an element, the elements transcluded content is processed and appended to the element.
      */
-    .directive('wmtransclude', ['CONSTANTS', '$timeout', 'Utils', function (CONSTANTS, $timeout, Utils) {
+    .directive('wmtransclude', ['CONSTANTS', '$timeout', function (CONSTANTS, $timeout) {
         "use strict";
 
         return {
