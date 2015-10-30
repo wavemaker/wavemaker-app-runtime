@@ -247,7 +247,8 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         operationType: operation.operationType || null,
                         parameter: undefined,
                         isList: isList,
-                        return: returnObj
+                        return: returnObj,
+                        controller: operation.tags && operation.tags[0]
                     };
                     serviceObj.operations.push(operationObject);
 
