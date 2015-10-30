@@ -388,27 +388,27 @@ WM.module('wm.widgets.grid')
                                 }
                                 break;
                             case 'insertrow':
-                                scope.insertrow = (newVal === true || newVal === 'true');
-                                var addNewRowButtonIndex = getObjectIndexInArray('key', 'addNewRow', scope.actions);
-                                if (scope.insertrow) {
-                                    // Add button definition to actions if it does not already exist.
-                                    if (addNewRowButtonIndex === -1) {
-                                        scope.actions.unshift({
-                                            'key': 'addNewRow',
-                                            'label': 'New',
-                                            'value': 'new',
-                                            'icon': 'new',
-                                            'show': true,
-                                            'class': 'btn-primary',
-                                            'action': 'addNewRow()'
-                                        });
-                                    }
-                                } else {
-                                    if (scope.actions.length && addNewRowButtonIndex !== -1) {
-                                        scope.actions.splice(addNewRowButtonIndex, 1);
-                                    }
-                                }
                                 if (CONSTANTS.isStudioMode) {
+                                    scope.insertrow = (newVal === true || newVal === 'true');
+                                    var addNewRowButtonIndex = getObjectIndexInArray('key', 'addNewRow', scope.actions);
+                                    if (scope.insertrow) {
+                                        // Add button definition to actions if it does not already exist.
+                                        if (addNewRowButtonIndex === -1) {
+                                            scope.actions.unshift({
+                                                'key': 'addNewRow',
+                                                'label': 'New',
+                                                'value': 'new',
+                                                'icon': 'new',
+                                                'show': true,
+                                                'class': 'btn-primary',
+                                                'action': 'addNewRow()'
+                                            });
+                                        }
+                                    } else {
+                                        if (scope.actions.length && addNewRowButtonIndex !== -1) {
+                                            scope.actions.splice(addNewRowButtonIndex, 1);
+                                        }
+                                    }
                                     var actionsObj = {
                                         type: 'GRID',
                                         widgetName: scope.name,
