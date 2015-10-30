@@ -51,10 +51,6 @@ public class RuntimeAccess {
 
     private static ThreadLocal<RuntimeAccess> runtimeThreadLocal = new NamedThreadLocal<RuntimeAccess>("Wavemaker Runtime");
 
-    private String projectId;
-
-    private String projectRoot;
-
     private HttpServletRequest request = null;
 
     private HttpServletResponse response = null;
@@ -135,22 +131,6 @@ public class RuntimeAccess {
 
     public long getStartTime() {
         return this.startTime;
-    }
-
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
-    public String getProjectRoot() {
-        return projectRoot;
-    }
-
-    public void setProjectRoot(String projectRoot) {
-        this.projectRoot = projectRoot;
     }
 
     public void setApplicationContext(ApplicationContext context) {
