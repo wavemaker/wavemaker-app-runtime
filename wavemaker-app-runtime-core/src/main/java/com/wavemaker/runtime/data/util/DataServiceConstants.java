@@ -34,10 +34,6 @@ public class DataServiceConstants {
 
     public static final String DEFAULT_TENANT_ID_PROPERTY_NAME = "defTenantId";
 
-    public static final String DEFAULT_TENANT_FIELD = "None";
-
-    public static final int DEFAULT_TENANT_ID = 999;
-
     public static final String QUERY_EXECUTION_CONTROLLER_JAVA = "QueryExecutionController.java";
 
     public static final String PROCEDURE_EXECUTION_CONTROLLER_JAVA = "ProcedureExecutionController.java";
