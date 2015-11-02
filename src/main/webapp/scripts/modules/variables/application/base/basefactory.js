@@ -11,8 +11,7 @@
 wm.variables.factories.BaseVariablePropertyFactory = [
     'WIDGET_CONSTANTS',
     'Utils',
-    '$rootScope',
-    function (WIDGET_CONSTANTS, Utils, $rootScope) {
+    function (WIDGET_CONSTANTS, Utils) {
 
         "use strict";
         var variableEventOptions = {}, /*A copy of the variable to preserve the actual value.*/
@@ -122,7 +121,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "accordionName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
                     "segmentName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
                     "dataBinding": {"type": "string", "value": {}, "hide": true},
-                    "pageTransitions": {"type": "list", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": !$rootScope.isMobileApplicationType}
+                    "pageTransitions": {"type": "list", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": true}
                 },
                 "wm.NotificationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
