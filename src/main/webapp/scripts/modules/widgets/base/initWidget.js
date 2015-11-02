@@ -503,6 +503,23 @@ WM.module('wm.widgets.base')
                     });
             }
 
+            /*
+             * Class : FieldDef
+             * Discription : FieldDef contains getter and setter methods to get and set fields of widgets
+             * */
+            wm.baseClasses.FieldDef = function () {
+            };
+
+            wm.baseClasses.FieldDef.prototype = {
+                setProperty : function (field, newval) {
+                    this.$is.setProperty.call(this, field, newval);
+                    this.$is.reRender && this.$is.reRender();
+                },
+                getProperty : function (field) {
+                    return this.$is.getProperty.call(this, field);
+                }
+            };
+
             return {
                 'restrict': 'A',
                 'compile': function ($tEl) {

@@ -330,6 +330,8 @@ WM.module('wm.widgets.live')
                             iScope.filterElement = element;
                             iScope.Variables = elScope.Variables;
                             iScope.Widgets = elScope.Widgets;
+                            //Map for filterFields with filter key as key
+                            iScope.filterFields = {};
                         },
                         post: function (scope, element, attrs) {
                             /*
@@ -462,6 +464,11 @@ WM.module('wm.widgets.live')
                                                         }
                                                     }
                                                 });
+
+                                                //This creates filterFields as map with name of the field as key
+                                                scope.formFields.map(function (field) {
+                                                    scope.filterFields[field.key] = field;
+                                                });
                                             }
                                             buttonsObj = defaultButtonsArray;
 
@@ -560,6 +567,12 @@ WM.module('wm.widgets.live')
                             scope.$on("$destroy", function () {
                                 handlers.forEach(Utils.triggerFn);
                             });
+
+                            //Will be called after setting filter property.
+                            scope.reRender = function () {
+                                scope.filter(scope.result.options);
+                            };
+
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         }
                     };
@@ -581,13 +594,23 @@ WM.module('wm.widgets.live')
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
                         scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
 
+                        /*
+                         * Class : FilterField
+                         * Discription : FilterField is intermediate class which extends FieldDef base class
+                         * */
+                        scope.FilterField = function () {
+                        };
+
+                        scope.FilterField.prototype = new wm.baseClasses.FieldDef();
+
                         var expr,
                             exprWatchHandler,
                             template,
                             index,
                             defaultVal,
                             parentIsolateScope = scope.parentIsolateScope,
-                            columnsDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
+                            columnsDef = new scope.FilterField(),
+                            columnsDefProps = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                                 'field': attrs.field || attrs.binding,
                                 'filterOn': attrs.filterOn || attrs.field || attrs.binding,
                                 'isRange': attrs.isRange === "true" || attrs.isRange === true,
@@ -600,7 +623,10 @@ WM.module('wm.widgets.live')
                                 'relatedEntityName': attrs.relatedEntityName
                             });
 
+                        WM.extend(columnsDef, columnsDefProps);
                         columnsDef.key = columnsDef.field;
+                        //This is used to call base set and get methods on widgets
+                        scope.FilterField.prototype.$is = parentIsolateScope;
 
                         /*Set the default value*/
                         if (attrs.value) {
