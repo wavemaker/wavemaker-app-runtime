@@ -542,6 +542,16 @@ WM.module('wm.widgets.base')
                                 }
                             }
 
+                            /*Setter for widget properties*/
+                            $is.setProperty = function(option, value) {
+                                this[option] = value;
+                            };
+
+                            /*Getter for widget properties*/
+                            $is.getProperty = function(option) {
+                                return this[option];
+                            };
+
                             if (CONSTANTS.isStudioMode) {
                                 WM.extend($is.widgetProps, {'active': {}});
                             }
