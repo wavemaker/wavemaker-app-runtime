@@ -14,7 +14,7 @@ WM.module('wm.widgets.base', [])
      * The `PropertiesFactory` contains properties of all the widgets in the studio and
      * provides utility methods for getting a specific widget's property
      */
-    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', function (WIDGET_CONSTANTS, CONSTANTS) {
+    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'Utils', function (WIDGET_CONSTANTS, CONSTANTS, Utils) {
         "use strict";
         /**
          * TODO: fetch the properties from the config-properties.json
@@ -37,28 +37,7 @@ WM.module('wm.widgets.base', [])
                 'name': 'Large',
                 'value': 'lg'
             }],
-            daysOptions = [{
-                'name': 'Sunday',
-                'value': '0'
-            }, {
-                'name': 'Monday',
-                'value': '1'
-            }, {
-                'name': 'Tuesday',
-                'value': '2'
-            }, {
-                'name': 'Wednesday',
-                'value': '3'
-            }, {
-                'name': 'Thursday',
-                'value': '4'
-            }, {
-                'name': 'Friday',
-                'value': '5'
-            }, {
-                'name': 'Saturday',
-                'value': '6'
-            }],
+            daysOptions    = Utils.getDaysOptions(),
             nameRegex      = '^[a-zA-Z_][A-Za-z0-9_]+$',
             numberRegex    = '(^$|[0-9]+$)',
             classRegex     = '(^$|^-?[_a-zA-Z ]+[_a-zA-Z0-9- ]*)$',

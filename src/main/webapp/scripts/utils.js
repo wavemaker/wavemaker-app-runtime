@@ -134,6 +134,28 @@ WM.module('wm.utils', [])
                 'timestamp' : true,
                 'datetime'  : true
             },
+            daysOptions = [{
+                'name': 'Sunday',
+                'value': '0'
+            }, {
+                'name': 'Monday',
+                'value': '1'
+            }, {
+                'name': 'Tuesday',
+                'value': '2'
+            }, {
+                'name': 'Wednesday',
+                'value': '3'
+            }, {
+                'name': 'Thursday',
+                'value': '4'
+            }, {
+                'name': 'Friday',
+                'value': '5'
+            }, {
+                'name': 'Saturday',
+                'value': '6'
+            }],
             dateTimeDefaultFormats = {
                 'date'           : 'yyyy-MM-dd',
                 'time'           : 'HH:mm:ss',
@@ -1285,6 +1307,10 @@ WM.module('wm.utils', [])
         function getDateTimeTypes() {
             return dateTimeTypes;
         }
+        /*Function to get days options*/
+        function getDaysOptions() {
+            return daysOptions;
+        }
         /*Function to get date time default formats*/
         function getDateTimeDefaultFormats() {
             return dateTimeDefaultFormats;
@@ -1585,6 +1611,7 @@ WM.module('wm.utils', [])
         this.processMarkup              = processMarkup;
         this.getFieldTypeWidgetTypesMap = getFieldTypeWidgetTypesMap;
         this.getDateTimeTypes           = getDateTimeTypes;
+        this.getDaysOptions             = getDaysOptions;
         this.getDateTimeDefaultFormats  =  getDateTimeDefaultFormats;
         this.isValidDataSet             = isValidDataSet;
         this.parseCombinedPageContent   = parseCombinedPageContent;
