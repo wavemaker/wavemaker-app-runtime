@@ -930,7 +930,10 @@ WM.module('wm.widgets.live')
                                 columnDef.dataset = attrs.dataset;
                             }
                         } else if (attrs.isRelated && CONSTANTS.isRunMode) {
-                            relatedDataWatchHandler = parentIsolateScope.$watch(parentIsolateScope.binddataset.replace('bind:', ''), function () {
+                            relatedDataWatchHandler = parentIsolateScope.$watch(parentIsolateScope.binddataset.replace('bind:', ''), function (newVal) {
+                                if (!newVal) {
+                                    return;
+                                }
                                 relatedDataWatchHandler();
                                 var boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableNameFromExpr(parentIsolateScope.binddataset)];
                                 boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
