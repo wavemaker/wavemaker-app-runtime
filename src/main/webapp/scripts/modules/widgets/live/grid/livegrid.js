@@ -164,8 +164,8 @@ WM.module('wm.widgets.live')
                                     }
                                 }));
                                 /* this function will be called from liveform , when the service call ended */
-                                handlers.push(scope.gridform.$on('on-result', function (event, operation, response, newForm) {
-                                    scope.gridform.isUpdateMode = newForm ? true : false;
+                                handlers.push(scope.gridform.$on('on-result', function (event, operation, response, newForm, updateMode) {
+                                    scope.gridform.isUpdateMode = WM.isDefined(updateMode) ? updateMode : newForm ? true : false;
                                     switch (operation) {
                                     case 'insert':
                                         if (newForm) {
@@ -182,7 +182,12 @@ WM.module('wm.widgets.live')
                                         break;
                                     case 'update':
                                         /*The updated row would be found in the current page itself. Hence simply highlight the row in the current page.*/
-                                        scope.grid.initiateHighlightRow('current', response, scope.primaryKey);
+                                        if (newForm) {
+                                            scope.grid.gridfirstrowselect = false;
+                                            scope.grid.initiateHighlightRow('current', response, scope.primaryKey, true);
+                                        } else {
+                                            scope.grid.initiateHighlightRow('current', response, scope.primaryKey);
+                                        }
                                         break;
                                     case 'delete':
                                         scope.grid.onRecordDelete();

@@ -119,7 +119,7 @@ WM.module('wm.widgets.live')
                         action: '',
                         displayName: 'Save',
                         show: true,
-                        type: 'Submit',
+                        type: 'submit',
                         updateMode: true
                     },
                     {
@@ -167,7 +167,7 @@ WM.module('wm.widgets.live')
              */
             function getFormActions(getFlat) {
                 var actions = {
-                    'edit': ['cancel()', 'reset()', 'save()', 'saveAndNew()'],
+                    'edit': ['cancel()', 'reset()', 'save()', 'saveAndNew()', 'saveAndView()'],
                     'view': ['delete()', 'new()', 'edit()']
                 };
                 if (getFlat) {
