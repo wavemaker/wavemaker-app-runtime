@@ -1,10 +1,6 @@
 /*global WM, window, _, cordova, document*/
 
 WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova'])
-    .config(['CONSTANTS', function (CONSTANTS) {
-        'use strict';
-        CONSTANTS.enablePageTransitions = true;
-    }])
     //Initialize project
     .run(['$rootScope', '$location', 'CONSTANTS', 'Utils', 'AppAutoUpdateService',
         function ($rootScope, $location, CONSTANTS, Utils, AppAutoUpdateService) {
