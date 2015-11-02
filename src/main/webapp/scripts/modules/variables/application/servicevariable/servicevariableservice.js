@@ -231,7 +231,8 @@ wm.variables.services.$servicevariable = ['Variables',
                         case 'BODY':
                             requestBody = paramValue;
                             break;
-                        case 'FORM':
+                        case 'FORMDATA':
+                            requestBody = paramValue;
                             /* to be handled*/
                             break;
                         }
@@ -248,6 +249,10 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 method = operationInfo.httpMethod || operationInfo.methodType;
                 url += (variable.prefabName ? '' : '/services') + endPointRelativePath;
+                /*Based on the formData browser will automatically set the content type to 'multipart/form-data' and webkit boundary*/
+                if (operationInfo.consumes[0] === WS_CONSTANTS.CONTENT_TYPES.MULTIPART_FORMDATA) {
+                    headers['Content-Type'] = undefined;
+                }
 
                 // if the consumes has application/x-www-form-urlencoded and
                 // if the http request of given method type can have body send the queryParams as Form Data

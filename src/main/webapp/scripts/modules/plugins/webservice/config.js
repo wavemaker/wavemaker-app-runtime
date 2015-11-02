@@ -127,7 +127,8 @@ wm.plugins.webServices.constant('WS_CONSTANTS', {
     NON_BODY_HTTP_METHODS: ["GET", "HEAD"],
     PRIMITIVE_DATA_TYPES: ["number", "integer", "string", "boolean", "file"],
     CONTENT_TYPES: {
-        FORM_URL_ENCODED: "application/x-www-form-urlencoded"
+        FORM_URL_ENCODED: "application/x-www-form-urlencoded",
+        MULTIPART_FORMDATA: "multipart/form-data"
     }
 });
 

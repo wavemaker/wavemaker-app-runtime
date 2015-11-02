@@ -146,7 +146,8 @@ WM.module('wm.widgets.form')
                 'uploadpath': true,
                 'contenttype': true,
                 'service': true,
-                'operation': true
+                'operation': true,
+                'mode': true
             };
         return {
             restrict: 'E',
@@ -464,6 +465,15 @@ WM.module('wm.widgets.form')
                                             fd.append('files', newVal.file, newVal.file.name);
                                         }
                                     }
+                                    /*Exposing the select files*/
+                                    scope.selectedFiles = undefined;
+                                    $timeout(function () {
+                                        scope.selectedFiles = fd;
+                                    });
+                                    /*Uploading the files only when mode is Upload*/
+                                    if (scope.mode === 'Select') {
+                                        return;
+                                    }
                                     /* create ajax xmlHttp request */
                                     xhr = new XMLHttpRequest();
                                     /* create progress,success,error,aborted event handlers */
@@ -484,6 +494,10 @@ WM.module('wm.widgets.form')
                                         url: completeUrl,
                                         formName: scope.multiple ? scope.multipleFileFormName : scope.singleFileFormName
                                     };
+                                    /*Uploading the files only when mode is Upload*/
+                                    if (scope.mode === 'Select') {
+                                        return;
+                                    }
                                     Utils.fileUploadFallback(uploadConfig, onSuccess, onFail);
                                 }
                             },
@@ -571,6 +585,9 @@ WM.module('wm.widgets.form')
                                         createVariable(scope.service, scope.operation);
                                     }
                                 }
+                                break;
+                            case 'mode':
+                                scope.caption = scope.mode;
                                 break;
                             }
                         }
