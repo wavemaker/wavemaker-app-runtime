@@ -1103,6 +1103,19 @@ wm.variables.services.$liveVariable = [
                     }, function (errMsg) {
                         Utils.triggerFn(error, errMsg);
                     });
+                },
+                getRelatedTablePrimaryKeys: function (variable, columnName, options) {
+                    var relatedVariable,
+                        relatedTable,
+                        primaryKeys;
+                    options = options || {};
+                    options.scope = options.scope || $rootScope;
+                    relatedTable = _.find(variable.relatedTables, function (table) {
+                        return table.columnName === columnName;
+                    });
+                    relatedVariable = relatedTable && options.scope.Variables[relatedTable.watchOn];
+                    primaryKeys = relatedVariable ? relatedVariable.getPrimaryKey() : [];
+                    return primaryKeys;
                 }
             },
 
@@ -1233,6 +1246,9 @@ wm.variables.services.$liveVariable = [
                 },
                 getRelatedTableData: function (columnName, options, success, error) {
                     return methods.getRelatedTableData(this, columnName, options, success, error);
+                },
+                getRelatedTablePrimaryKeys: function (columnName, options) {
+                    return methods.getRelatedTablePrimaryKeys(this, columnName, options);
                 }
             };
 

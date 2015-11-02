@@ -937,18 +937,11 @@ WM.module('wm.widgets.live')
                                 relatedDataWatchHandler();
                                 var boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableNameFromExpr(parentIsolateScope.binddataset)];
                                 boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
-                                    parentIsolateScope.formFields[index].dataset = response;
-                                    variableObj.type = columnDef.displayName;
-                                    variableObj.isDefault = true;
-                                    variableObj.category = 'wm.LiveVariable';
-                                    variableData = Variables.filterByVariableKeys(variableObj, true);
-                                    /*Search for the live variable with the table name*/
-                                    parentIsolateScope.formFields[index].datafield = "All Fields";
-                                    if (variableData.length) {
-                                        parentIsolateScope.formFields[index].displayfield = parentIsolateScope.getPrimaryKey(variableData[0].propertiesMap.columns);
-                                    } else {
-                                        parentIsolateScope.formFields[index].displayfield = columnDef.relatedFieldName;
-                                    }
+                                    var primaryKeys = boundVariable.getRelatedTablePrimaryKeys(columnDef.key, {scope: elScope}),
+                                        relatedFormField = parentIsolateScope.formFields[index];
+                                    relatedFormField.dataset = response;
+                                    relatedFormField.datafield = "All Fields";
+                                    relatedFormField.displayfield = primaryKeys.length ? primaryKeys[0] : (response && _.keys(response[0])[0]);
                                 });
                             });
                         }
