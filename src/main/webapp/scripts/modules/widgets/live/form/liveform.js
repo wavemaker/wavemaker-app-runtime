@@ -16,7 +16,6 @@ WM.module('wm.widgets.live')
                 'formdata': true,
                 'updatemode': true,
                 'formtype': true,
-                'layout': true,
                 'defaultmode': true
             },
             /*check if the field is of column type time or widget type time*/
@@ -784,21 +783,6 @@ WM.module('wm.widgets.live')
                                 scope.isLayoutDialog = newVal === 'dialog';
                                 element.toggleClass('liveform-dialog', scope.isLayoutDialog);
                                 break;
-                            case "layout":
-                                if (newVal) {
-                                    if ((newVal === 'dialog') || (newVal === 'inline')) {
-                                    //remove this condition later. for backward compatibility for the layout property
-                                        scope.formtype = newVal;
-                                    } else {
-                                        gridObj = getNonEmptyDatSetGridObj();
-
-                                        if (CONSTANTS.isStudioMode && gridObj && scope.newcolumns) {
-                                            scope.newcolumns = false;
-                                            $rootScope.$emit('formFieldsDefs-modified', gridObj);
-                                        }
-                                    }
-                                }
-                                break;
                             }
                         }
 
@@ -819,8 +803,8 @@ WM.module('wm.widgets.live')
                                     if (markup) {
                                         scope.formConstructed = true;
                                         var markupObj = WM.element('<div>' + markup + '</div>'),
-                                            fieldsObj = markupObj.find('wm-layoutgrid'),
-                                            actionsObj = markupObj.find('wm-form-action');
+                                            fieldsObj = markupObj.find('> :not(wm-form-action)'), // select nodes other than form-actions
+                                            actionsObj = markupObj.find('wm-form-action'); // select form-action nodes
 
                                         /* if layout grid template found, simulate canvas dom addition of the elements */
                                         if (fieldsObj) {
@@ -856,13 +840,25 @@ WM.module('wm.widgets.live')
         'use strict';
         return {
             "restrict": 'E',
-            "template": "",
+            "template": "<div data-role='form-field'></div>",
             "scope": true,
             "replace": true,
             "compile": function () {
                 return {
                     "pre": function (scope) {
                         scope.widgetProps = [];
+                        if (CONSTANTS.isStudioMode) {
+                            // define setter/getter for the name property.
+                            // If we don't define this the `name` of the nearest live form will be modified because prototype based inheritance.
+                            Object.defineProperty(scope, 'name', {
+                                'get': function () {
+                                    return this._name;
+                                },
+                                'set': function (val) {
+                                    this._name = val;
+                                }
+                            });
+                        }
                     },
                     "post": function (scope, element, attrs) {
                         /*scope.$parent is defined when compiled with live filter scope*/
@@ -1099,10 +1095,6 @@ WM.module('wm.widgets.live')
  *                  Width of the form widget.
  * @param {string=} height
  *                  Height of the form widget.
- * @param {string=} layout
- *                  This property controls how contained widgets are displayed within the widget container. <br>
- *                  Possible values are `One Column`, `Two Column`, `Three Column`, and `Four Column`. <br>
- *                  Default value is `One Column`.
  * @param {string=} formdata
  *                  This property sets the data to show in the form. <br>
  *                  This is a bindable property.

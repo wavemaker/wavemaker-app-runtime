@@ -1084,7 +1084,6 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts.liveform': {
                         "title": {"type": "string"},
                         "formtype": {"type": "string", "value": "inline", "show": false},
-                        "layout": {"type": "list", "options": ["One Column", "Two Column", "Three Column", "Four Column"], "value": "One Column"},
                         "autocomplete": {"type": "boolean", "value": true},
                         "captionsize": {"type": "string", "value": ""},
                         "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left"},
