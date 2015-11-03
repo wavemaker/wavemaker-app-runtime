@@ -250,7 +250,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 method = operationInfo.httpMethod || operationInfo.methodType;
                 url += (variable.prefabName ? '' : '/services') + endPointRelativePath;
                 /*Based on the formData browser will automatically set the content type to 'multipart/form-data' and webkit boundary*/
-                if (operationInfo.consumes[0] === WS_CONSTANTS.CONTENT_TYPES.MULTIPART_FORMDATA) {
+                if (operationInfo.consumes && operationInfo.consumes[0] === WS_CONSTANTS.CONTENT_TYPES.MULTIPART_FORMDATA) {
                     headers['Content-Type'] = undefined;
                 }
 

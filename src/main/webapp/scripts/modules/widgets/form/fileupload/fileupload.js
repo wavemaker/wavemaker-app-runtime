@@ -587,7 +587,11 @@ WM.module('wm.widgets.form')
                                 }
                                 break;
                             case 'mode':
-                                scope.caption = scope.mode;
+                                if (scope.multiple) {
+                                    scope.fileuploadtitle = scope.mode === 'Upload' ? 'Drop your files here to start uploading.' : 'Drop your files here.';
+                                } else {
+                                    scope.caption = scope.mode;
+                                }
                                 break;
                             }
                         }
