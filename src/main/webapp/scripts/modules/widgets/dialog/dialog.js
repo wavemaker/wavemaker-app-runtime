@@ -138,6 +138,7 @@ WM.module('wm.widgets.dialog')
                 'iconheight': true,
                 'iconmargin': true,
                 'iconclass': true,
+                'closable': true,
                 'title': true
             };
 
@@ -164,6 +165,7 @@ WM.module('wm.widgets.dialog')
             case "iconheight":
             case "iconmargin":
             case "iconclass":
+            case "closable":
                 scope.header[key] = newVal;
                 break;
             case "title":

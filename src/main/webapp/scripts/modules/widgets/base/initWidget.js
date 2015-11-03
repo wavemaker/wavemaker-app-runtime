@@ -91,7 +91,7 @@ WM.module('wm.widgets.base')
                         return;
                     }
                     if (parts[1] === DLG_ACTIONS.HIDE) {
-                        DialogService.hideDialog($s, parts[0], false);
+                        handleDialogShowHideActions($s, parts[0], false);
                         return;
                     }
                 }
