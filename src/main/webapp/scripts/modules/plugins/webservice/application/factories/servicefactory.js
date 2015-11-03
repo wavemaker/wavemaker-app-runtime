@@ -261,16 +261,29 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     if (!WM.element.isEmptyObject(operation[paramsKey])) {
                         operationObject.parameter = [];
                         WM.forEach(operation[paramsKey], function (param) {
-                            if (param.type) {
-                                typeRef = param.type;
+                            isList = param[IS_LIST_KEY];
+
+                            /* special cases for MultiPart type params */
+                            if (param[parameterTypeKey].toLowerCase() === "formdata") {
+                                if (param.type === "ref") {
+                                    typeRef = param['x-WM-FULLY_QUALIFIED_TYPE'];
+                                } else if (param.type === 'array') {
+                                    isList = true;
+                                    typeRef = param.items && param.items.type;
+                                }
                             } else {
-                                if (param.schema) {
-                                    typeRef = getReturnType(param.schema, definitions);
-                                } else if (param.items) {
-                                    typeRef = getReturnType(param.items, definitions);
+                                if (param.type) {
+                                    typeRef = param.type;
+                                } else {
+                                    if (param.schema) {
+                                        typeRef = getReturnType(param.schema, definitions);
+                                    } else if (param.items) {
+                                        typeRef = getReturnType(param.items, definitions);
+                                    }
                                 }
                             }
-                            isList = param[IS_LIST_KEY];
+
+                            /* push the param info into operation object */
                             operationObject.parameter.push({
                                 name: param.name,
                                 typeRef: typeRef,

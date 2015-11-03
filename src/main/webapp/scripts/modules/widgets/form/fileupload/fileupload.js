@@ -430,6 +430,7 @@ WM.module('wm.widgets.form')
                                     uploadUrl,
                                     variableObject,
                                     completeUrl,
+                                    selectedFiles = [],
                                     fileName;
                                 xhr = undefined;
                                 scope.uploadedFiles = [];
@@ -458,17 +459,19 @@ WM.module('wm.widgets.form')
                                         WM.forEach(newVal, function (fileObject) {
                                             if (fileObject.file && fileObject.uploadPath) {
                                                 fd.append('files', fileObject.file, fileObject.file.name);
+                                                selectedFiles.push(fileObject.file);
                                             }
                                         });
                                     } else if (WM.isObject(newVal)) {
                                         if (newVal.file && newVal.uploadPath) {
                                             fd.append('files', newVal.file, newVal.file.name);
+                                            selectedFiles = [newVal.file];
                                         }
                                     }
                                     /*Exposing the select files*/
                                     scope.selectedFiles = undefined;
                                     $timeout(function () {
-                                        scope.selectedFiles = fd;
+                                        scope.selectedFiles = selectedFiles;
                                     });
                                     /*Uploading the files only when mode is Upload*/
                                     if (scope.mode === 'Select') {

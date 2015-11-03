@@ -195,8 +195,14 @@ wm.variables.services.$servicevariable = ['Variables',
                     authType = AUTH_TYPE_NONE,
                     uname,
                     pswd,
-                    method;
+                    method,
+                    isFormDataSupported = Utils.isFileUploadSupported(),
+                    formData,
+                    formDataContentType;
 
+                if (isFormDataSupported) {
+                    formData = new FormData();
+                }
                 /* loop through all the parameters */
                 WM.forEach(operationInfo.parameters, function (param) {
                     var paramValue = param.sampleValue;
@@ -232,8 +238,26 @@ wm.variables.services.$servicevariable = ['Variables',
                             requestBody = paramValue;
                             break;
                         case 'FORMDATA':
-                            requestBody = paramValue;
-                            /* to be handled*/
+                            if (isFormDataSupported) {
+                                if (param.type === "file") {
+                                    if (WM.isArray(paramValue)) {
+                                        WM.forEach(paramValue, function (fileObject) {
+                                            formData.append(param.name, fileObject, fileObject.name);
+                                        });
+                                    } else {
+                                        formData.append(param.name, paramValue, paramValue.name);
+                                    }
+                                } else {
+                                    if (WM.isObject(paramValue)) {
+                                        paramValue = JSON.stringify(paramValue);
+                                        formDataContentType = "application/json";
+                                    } else {
+                                        formDataContentType = "text/plain";
+                                    }
+                                    formData.append(param.name, new Blob([paramValue], {type: formDataContentType}));
+                                }
+                                requestBody = formData;
+                            }
                             break;
                         }
                     }
@@ -450,7 +474,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     /*iterate over the paths received from the service response*/
                     var pathsArr = Object.keys(response.paths),
                         securityDefinitions = response.securityDefinitions,
-                        AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization';
+                        AUTH_TYPE_KEY = 'WM_Rest_Service_Authorization',
+                        paramDataType;
                     for (var i= 0, nPaths = pathsArr.length; i <nPaths; i++) {
                         var pathKey = pathsArr[i],
                             path = response.paths[pathKey];
@@ -469,9 +494,15 @@ wm.variables.services.$servicevariable = ['Variables',
 
                                 if (operation.parameters && operation.parameters.length) {
                                     operation.parameters.forEach(function (parameter) {
+                                        if (parameter[parameterTypeKey].toLowerCase() === 'formdata') {
+                                            paramDataType = parameter.type === "array" ? (parameter.items && parameter.items.type) || parameter.type : parameter.type;
+                                        } else {
+                                            paramDataType = parameter.type;
+                                        }
                                         operationInfo.parameters.push({
                                             "name": parameter.name || (parameter[parameterTypeKey] && parameter[parameterTypeKey].toLowerCase()),
-                                            "parameterType": parameter[parameterTypeKey]
+                                            "parameterType": parameter[parameterTypeKey],
+                                            "type": paramDataType
                                         });
                                     });
                                 }
