@@ -1,4 +1,4 @@
-/*global wm, WM*/
+/*global wm, WM, _*/
 WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cordovaCapture', function (DeviceVariableService, $cordovaCamera, $cordovaCapture) {
     "use strict";
 
@@ -7,7 +7,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cord
             model: {
                 imagePath: 'resources/images/imagelists/default-image.png'
             },
-            properties: ['allowImageEdit', 'imageQuality', 'imageEncodingType', 'correctOrientation'],
+            properties: ['allowImageEdit', 'imageQuality', 'imageEncodingType', 'correctOrientation', 'imageTargetWidth', 'imageTargetHeight'],
             invoke: function(variable, options, success, error) {
                 var cameraOptions = {
                     quality           : variable.imageQuality,
@@ -16,7 +16,9 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cord
                     allowEdit         : variable.allowImageEdit,
                     encodingType      : parseInt(variable.imageEncodingType, 10),
                     mediaType         : 0, //always picture
-                    correctOrientation: variable.correctOrientation
+                    correctOrientation: variable.correctOrientation,
+                    targetWidth       : variable.imageTargetWidth,
+                    targetHeight      : variable.imageTargetHeight
                 };
                 $cordovaCamera.getPicture(cameraOptions).then(function(data) {
                     success({imagePath: data});
