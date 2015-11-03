@@ -1076,7 +1076,7 @@ WM.module('wm.widgets.base', [])
                         "show": {"type": "boolean", "value": true}
                     },
                     'wm.layouts.view': {
-                        "show": {"type": "boolean", "value": true},
+                        "show": {"type": "boolean", "value": true, "bindable" : "in-out-bound"},
                         "viewgroup": {"type": "string", "value": "default"},
                         "animation": {"type": "list", "options": animationOptions}
                     },
@@ -2657,7 +2657,8 @@ WM.module('wm.widgets.base', [])
                             "wm-camera",
                             "wm-barcodescanner",
                             "wm-mobile-navbar ",
-                            "wm-chart"
+                            "wm-chart",
+                            "wm-view"
                             ];
                     } else if (types === 'page-container-widgets') {
                         types = [
