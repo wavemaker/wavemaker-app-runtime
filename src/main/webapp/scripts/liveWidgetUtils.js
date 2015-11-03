@@ -214,6 +214,8 @@ WM.module('wm.widgets.live')
                     'maxValue' : attrs.maxValue,
                     'minValue' : attrs.minValue,
                     'maxvalue' : attrs.maxvalue,
+                    'excludedays': attrs.excludedays,
+                    'excludedates': attrs.excludedates,
                     'step' : attrs.step,
                     'ismeridian' : attrs.ismeridian,
                     'onChange': attrs.onChange,
