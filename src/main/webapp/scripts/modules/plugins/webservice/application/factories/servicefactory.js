@@ -214,6 +214,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         typeRef,
                         returnObj,
                         returnType,
+                        dbOperationName,
                         isDbServiceOp = function (type) {
                             return type === "hqlquery" || type === "nativequery" || type === "procedure";
                         };
@@ -221,7 +222,11 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     if (isDbServiceOp(operation.operationType)) {
                         returnType = operation.return;
                     } else {
-                        if (operation.responses && operation.responses['200'].schema) {
+                        dbOperationName = operation.relativePath && operation.relativePath.split("/").pop();
+                        /* special case for user created query/procedure operations, actual type info is not given by swagger */
+                        if ((operation.tags[0] === "QueryExecutionController" || operation.tags[0] === "ProcedureExecutionController") && dbOperationName !== "wm_custom" && dbOperationName !== "wm_custom_update") {
+                            returnType = serviceObj.name + dbOperationName + "rtnType";
+                        } else if (operation.responses && operation.responses['200'].schema) {
                             returnType = getReturnType(operation.responses['200'].schema, definitions);
                             isList = operation.responses['200'].schema.type && operation.responses['200'].schema.type === 'array';
                         } else {
@@ -344,6 +349,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                             WM.forEach(supportedOperations, function (operation) {
                                 if (path[operation]) {
                                     path[operation].operationType = operation;
+                                    path[operation].relativePath = path['x-WM-RELATIVE_PATH'];
                                     operations.push(path[operation]);
                                 }
                             });
