@@ -90,6 +90,14 @@ WM.module('wm.widgets.live')
                             Utils.triggerFn($scope.onError, {$event: event, $operation: $scope.operationType, $data: data});
                         }
 
+                    },
+                    onVariableUpdate = function (response, newForm, updateMode) {
+                        if (newForm) {
+                            $scope.new();
+                        } else {
+                            $scope.changeDataObject(response);
+                        }
+                        $scope.isUpdateMode = WM.isDefined(updateMode) ? updateMode : true;
                     };
                 $scope.prevDataValues = {};
                 /*Function to check whether the key is a composite key or not.*/
@@ -130,14 +138,22 @@ WM.module('wm.widgets.live')
                     }
                     return operation || 'insert';
                 };
+                /*Call respective functions for save and cancel*/
+                $scope.save = function () {
+                    $scope.formSave(undefined, true);
+                };
 
                 /*Function use to save the form and open new form after save*/
                 $scope.saveAndNew = function () {
-                    $scope.formSave(undefined, true);
+                    $scope.formSave(undefined, true, true);
+                };
+                /*Function use to save the form and open new form after save*/
+                $scope.saveAndView = function () {
+                    $scope.formSave(undefined, false);
                 };
                 /*Method to handle the insert, update, delete actions*/
                 /*The operationType decides the type of action*/
-                $scope.formSave = function (event, newForm) {
+                $scope.formSave = function (event, updateMode, newForm) {
                     var data,
                         prevData,
                         requestData = {},
@@ -205,12 +221,13 @@ WM.module('wm.widgets.live')
                                 onResult(response, true, event);
                                 if ($scope.ctrl) {
                                     /* highlight the current updated row */
-                                    $scope.$emit("on-result", "update", response, newForm);
+                                    $scope.$emit("on-result", "update", response, newForm, updateMode);
                                 } else {
                                     /*get updated data without refreshing page*/
                                     variable.update({
                                         "type": "wm.LiveVariable"
                                     }, WM.noop);
+                                    onVariableUpdate(response, newForm, updateMode);
                                 }
                             }
                         }, function (error) {
@@ -230,12 +247,13 @@ WM.module('wm.widgets.live')
                                 /* if successfully inserted  change editable mode to false */
                                 if ($scope.ctrl) {
                                     /* highlight the current updated row */
-                                    $scope.$emit("on-result", "insert", response, newForm);
+                                    $scope.$emit("on-result", "insert", response, newForm, updateMode);
                                 } else {
                                     /*get updated data without refreshing page*/
                                     variable.update({
                                         "type": "wm.LiveVariable"
                                     }, WM.noop);
+                                    onVariableUpdate(response, newForm, updateMode);
                                 }
                             }
                         }, function (error) {
@@ -558,11 +576,6 @@ WM.module('wm.widgets.live')
                     return outputFormat;
                 };
 
-                /*Call respective functions for save and cancel*/
-                $scope.save = function () {
-                    $scope.formSave();
-                };
-
                 $scope.cancel = function () {
                     $scope.formCancel();
                 };
@@ -640,7 +653,7 @@ WM.module('wm.widgets.live')
                         }
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-                        function propertyChangeHandler(key, newVal) {
+                        function propertyChangeHandler(key, newVal, oldVal) {
                             var value,
                                 labelElements,
                                 elementScope,
@@ -654,58 +667,60 @@ WM.module('wm.widgets.live')
                             case "dataset":
                                 /*Process the dataset if only the data is an array*/
                                 if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
-                                    tempVarName = Utils.getVariableNameFromExpr(scope.binddataset);
-                                    if (scope.variableName && (tempVarName !== scope.variableName)) {
-                                        scope.formCreated = false;
-                                        scope.formConstructed = false;
-                                    }
-                                    scope.variableName = tempVarName;
-                                    /*Check if form has been created, if true translate the variable object.*/
-                                    if ((scope.formCreated || scope.formConstructed) && scope.formFields) {
-                                        translatedObj = scope.translateVariableObject(newVal);
-                                        scope.translatedObj = translatedObj;
-                                        /*Check if the formFields is defined, then in the formFields array override only certain fields.*/
-                                        scope.formFields.forEach(function (fieldObject) {
-                                            translatedObj.forEach(function (transObj) {
-                                                if (transObj.key === fieldObject.key) {
-                                                    fieldObject.isRelated = transObj.isRelated;
-                                                    fieldObject.type = transObj.type; /*Set the type of the column to the default variable type*/
-                                                    fieldObject.outputformat = scope.getOutputPatterns(fieldObject.type, fieldObject.outputformat);
-                                                }
-                                            });
-                                        });
-
-                                        variableObj =  elScope.Variables && elScope.Variables[scope.variableName];
-                                        scope.variableObj = variableObj;
-                                        if (variableObj) {
-                                            /* set the variable type info to the live-form selected-entry type, so that type matches to the variable for which variable is created*/
-                                            scope.widgetProps.formdata.type = variableObj.type;
-                                            scope.widgetProps.dataoutput.type = 'object, ' + variableObj.type;
+                                    if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns)) {
+                                        tempVarName = Utils.getVariableNameFromExpr(scope.binddataset);
+                                        if (scope.variableName && (tempVarName !== scope.variableName)) {
+                                            scope.formCreated = false;
+                                            scope.formConstructed = false;
                                         }
-                                    } else {
-                                        /*Defining two buttons for default actions*/
-                                        scope.buttonArray = LiveWidgetUtils.getFormButtons().filter(function (button) {
-                                            return button.key === 'cancel' || button.key === 'save';
-                                        });
-                                        variableObj = elScope.Variables && elScope.Variables[scope.variableName];
-                                        scope.variableObj = variableObj;
-                                        if (variableObj) {
-                                            /* set the variable type info to the live-form selected-entry type, so that type matches to the variable for which variable is created*/
-                                            scope.widgetProps.formdata.type = variableObj.type;
-                                        }
-                                        /*Check if the newVal is in the required format, checking for key and type for each field,
-                                         * else call the translateVariableObject method*/
-                                        if (scope.isInReqdFormat(newVal)) {
-                                            translatedObj = newVal;
-                                        } else {
+                                        scope.variableName = tempVarName;
+                                        /*Check if form has been created, if true translate the variable object.*/
+                                        if ((scope.formCreated || scope.formConstructed) && scope.formFields) {
                                             translatedObj = scope.translateVariableObject(newVal);
+                                            scope.translatedObj = translatedObj;
+                                            /*Check if the formFields is defined, then in the formFields array override only certain fields.*/
+                                            scope.formFields.forEach(function (fieldObject) {
+                                                translatedObj.forEach(function (transObj) {
+                                                    if (transObj.key === fieldObject.key) {
+                                                        fieldObject.isRelated = transObj.isRelated;
+                                                        fieldObject.type = transObj.type; /*Set the type of the column to the default variable type*/
+                                                        fieldObject.outputformat = scope.getOutputPatterns(fieldObject.type, fieldObject.outputformat);
+                                                    }
+                                                });
+                                            });
+
+                                            variableObj =  elScope.Variables && elScope.Variables[scope.variableName];
+                                            scope.variableObj = variableObj;
+                                            if (variableObj) {
+                                                /* set the variable type info to the live-form selected-entry type, so that type matches to the variable for which variable is created*/
+                                                scope.widgetProps.formdata.type = variableObj.type;
+                                                scope.widgetProps.dataoutput.type = 'object, ' + variableObj.type;
+                                            }
+                                        } else {
+                                            /*Defining two buttons for default actions*/
+                                            scope.buttonArray = LiveWidgetUtils.getFormButtons().filter(function (button) {
+                                                return button.key === 'cancel' || button.key === 'save';
+                                            });
+                                            variableObj = elScope.Variables && elScope.Variables[scope.variableName];
+                                            scope.variableObj = variableObj;
+                                            if (variableObj) {
+                                                /* set the variable type info to the live-form selected-entry type, so that type matches to the variable for which variable is created*/
+                                                scope.widgetProps.formdata.type = variableObj.type;
+                                            }
+                                            /*Check if the newVal is in the required format, checking for key and type for each field,
+                                             * else call the translateVariableObject method*/
+                                            if (scope.isInReqdFormat(newVal)) {
+                                                translatedObj = newVal;
+                                            } else {
+                                                translatedObj = scope.translateVariableObject(newVal);
+                                            }
+                                            scope.translatedObj = translatedObj;
+                                            scope.formFields = translatedObj;
                                         }
-                                        scope.translatedObj = translatedObj;
-                                        scope.formFields = translatedObj;
-                                    }
-                                    gridObj = getNonEmptyDatSetGridObj();
-                                    if (CONSTANTS.isRunMode) {
-                                        scope.setDefaults();
+                                        gridObj = getNonEmptyDatSetGridObj();
+                                        if (CONSTANTS.isRunMode) {
+                                            scope.setDefaults();
+                                        }
                                     }
                                 } else if (!newVal) {
                                     /*If variable binding has been removed empty the form and the variableName*/
