@@ -54,7 +54,9 @@ WM.module('wm.widgets.advanced')
                             'sourceType'      : 1, // only camera
                             'allowEdit'       : $is.allowedit,
                             'encodingType'    : $is.imageencodingtype === ENCODING_TYPE.JPEG ? 0 : 1,
-                            'saveToPhotoAlbum': $is.savetogallery
+                            'saveToPhotoAlbum': $is.savetogallery,
+                            'targetWidth'     : $is.imagetargetwidth,
+                            'targetHeight'    : $is.imagetargetheight
                         };
                     } else {
                         cameraOptions = {

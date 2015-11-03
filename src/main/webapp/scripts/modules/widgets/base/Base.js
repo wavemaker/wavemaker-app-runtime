@@ -318,10 +318,12 @@ WM.module('wm.widgets.base', [])
                         "iconclass": {"type": "string", "value": "glyphicon glyphicon-camera", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "2em"},
                         /* capture picture options*/
-                        "imagequality": {"type": "number", "value": 80, "show": true},
-                        "imageencodingtype": {"type": "list", "options": [ "JPEG", "PNG"], "value" : "JPEG", "show": true},
-                        "savetogallery": {"type": "boolean", "value" : false, "show": true},
-                        "allowedit": {"type": "boolean", "value" : false, "show": true},
+                        "imagequality": {"type": "number", "value": 80},
+                        "imageencodingtype": {"type": "list", "options": [ "JPEG", "PNG"], "value" : "JPEG"},
+                        "savetogallery": {"type": "boolean", "value" : false},
+                        "allowedit": {"type": "boolean", "value" : false},
+                        "imagetargetwidth": {"type": "number"},
+                        "imagetargetheight": {"type": "number"},
                         /* Events */
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
@@ -1630,7 +1632,7 @@ WM.module('wm.widgets.base', [])
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onActionsclick", "onBeforeSegmentChange", "onSegmentChange", "onSearch"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice"], "parent": "mobile"},
-                {"name": "imageproperties", "properties": [ "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
+                {"name": "imageproperties", "properties": [ , "imagetargetwidth", "imagetargetheight", "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
             ];
         }
         properties = result.properties;

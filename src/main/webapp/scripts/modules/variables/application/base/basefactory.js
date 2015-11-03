@@ -165,6 +165,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "recurringEventFrequency": {"type": "string", "dataBinding": true, "hide" : true},
                     /* capture picture options*/
                     "imageQuality": {"type": "number", "value": 80, "hide" : true},
+                    "imageTargetWidth": {"type": "number", "hide" : true},
+                    "imageTargetHeight": {"type": "number", "hide" : true},
                     "imageEncodingType": {"type": "list", "options": {"0" : "JPEG", "1" : "PNG"}, "value" : "0", "hide" : true},
                     "allowImageEdit": {"type": "boolean", "value" : false, "hide" : true},
                     "correctOrientation": {"type": "boolean", "value" : true, "hide" : true},
@@ -204,7 +206,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 /* properties under data tab */
                 {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding",
                                 "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
-                                "allowImageEdit", "imageEncodingType", "imageQuality", "correctOrientation", "saveToPhotoAlbum",
+                                "imageTargetWidth", "imageTargetHeight", "imageQuality",  "imageEncodingType", "correctOrientation", "saveToPhotoAlbum", "allowImageEdit",
                                 "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",
                                 "contactFilter", "localFile", "remoteFolder", "vibrationtime"], "parent": "data"},
                 {"name": "inputfields", "properties": ["dataSet", "dataBinding"], "parent": "data"},
