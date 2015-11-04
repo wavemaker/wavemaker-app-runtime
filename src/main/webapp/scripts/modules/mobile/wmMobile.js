@@ -65,14 +65,19 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
         var selectedOs = '';
 
         function applyOSTheme(os) {
-            var themeUrl = '';
+            var themeUrl = '',
+                oldStyleSheet = WM.element('link[theme="wmtheme"]:first'),
+                newStyleSheet;
             selectedOs = os || selectedOs;
             themeUrl = 'themes/' + $rootScope.project.activeTheme + '/' + selectedOs.toLowerCase() + '/' + 'style.css';
             if (CONSTANTS.isStudioMode) {
                 themeUrl = Utils.getProjectResourcePath($rootScope.project.id) + themeUrl;
             }
-            WM.element('link[theme="wmtheme"]').remove();
-            Utils.loadStyleSheet(themeUrl, {name: 'theme', value: 'wmtheme'});
+            newStyleSheet = Utils.loadStyleSheet(themeUrl, {name: 'theme', value: 'wmtheme'});
+            if (newStyleSheet) {
+                WM.element(newStyleSheet).insertAfter(oldStyleSheet);
+                oldStyleSheet.remove();
+            }
         }
         if (CONSTANTS.isStudioMode) {
             $rootScope.$on('switch-device', function (event, device) {
