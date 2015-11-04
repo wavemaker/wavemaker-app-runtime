@@ -17,8 +17,8 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cord
                     encodingType      : parseInt(variable.imageEncodingType, 10),
                     mediaType         : 0, //always picture
                     correctOrientation: variable.correctOrientation,
-                    targetWidth       : variable.imageTargetWidth,
-                    targetHeight      : variable.imageTargetHeight
+                    targetWidth       : WM.isNumber(variable.imageTargetWidth) ?  variable.imageTargetWidth : undefined,
+                    targetHeight      : WM.isNumber(variable.imageTargetHeight) ? variable.imageTargetHeight : undefined,
                 };
                 $cordovaCamera.getPicture(cameraOptions).then(function(data) {
                     success({imagePath: data});
