@@ -15,7 +15,7 @@ WM.module('wm.layouts.containers')
                                     '</a>' +
                                 '</li>' +
                                 '<li data-ng-if="backbutton">' +
-                                    '<a class="btn-back" type="button" data-ng-click="goBack();">' +
+                                    '<a class="btn-back" type="button" data-ng-click="goBack($event)">' +
                                         '<i data-ng-class="backbuttoniconclass"></i><span>{{backbuttonlabel}}</span>' +
                                     '</a>' +
                                 '</li>' +
@@ -71,8 +71,10 @@ WM.module('wm.layouts.containers')
                     'post': function (scope, element, attrs) {
                         scope.leftNavPanel = WM.element(element.closest('.app-page').find('.app-left-panel:first')).isolateScope();
                         if (CONSTANTS.isRunMode) {
-                            scope.goBack = function () {
-                                if (CONSTANTS.hasCordova) {
+                            scope.goBack = function ($event) {
+                                if (attrs.onBackbtnclick) {
+                                    Utils.triggerFn(scope.onBackbtnclick, $event, scope);
+                                } else if (CONSTANTS.hasCordova) {
                                     $window.history.go(-1);
                                 } else {
                                     NavigationService.goToPrevious();
