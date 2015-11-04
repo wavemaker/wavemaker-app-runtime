@@ -15,16 +15,21 @@
  */
 package com.wavemaker.runtime.ws;
 
-import com.wavemaker.infra.WMTestCase;
+
+import com.wavemaker.infra.WMTestUtils;
 import com.wavemaker.runtime.feed.model.Feed;
 import com.wavemaker.runtime.feed.service.FeedService;
 import com.wavemaker.studio.common.classloader.ClassLoaderUtils;
 import com.wavemaker.studio.json.JSONMarshaller;
+import org.testng.Assert;
+
+import static org.testng.Assert.*;
+import org.testng.annotations.*;
 
 /**
  * @author Frankie Fu
  */
-public class FeedServiceTest extends WMTestCase {
+public class FeedServiceTest {
 
     /**
      * URL: http://www.wavemaker.com/rss/wavemaker.xml Type: RSS 0.91
@@ -86,43 +91,43 @@ public class FeedServiceTest extends WMTestCase {
 
     public void testBBCNewsWorldEdition() throws Exception {
         Feed feed = getFeed(BBCNewsWorldEditionFeed);
-        assertEquals("rss_2.0", feed.getFeedType());
+       assertEquals("rss_2.0", feed.getFeedType());
         checkJSONTransformation(feed);
     }
 
     public void testGoogleNewsTopStories() throws Exception {
         Feed feed = getFeed(GoogleNewsTopStoriesFeed);
-        assertEquals("atom_0.3", feed.getFeedType());
+       assertEquals("atom_0.3", feed.getFeedType());
         checkJSONTransformation(feed);
     }
 
     public void testJornalismoPortoNet() throws Exception {
         Feed feed = getFeed(JornalismoPortoNetFeed);
-        assertEquals("atom_1.0", feed.getFeedType());
+       assertEquals("atom_1.0", feed.getFeedType());
         checkJSONTransformation(feed);
     }
 
     public void testBostonNews() throws Exception {
         Feed feed = getFeed(BostonNewsFeed);
-        assertEquals("rss_1.0", feed.getFeedType());
+   assertEquals("rss_1.0", feed.getFeedType());
         checkJSONTransformation(feed);
     }
 
     public void testJapanTimesAllStories() throws Exception {
         Feed feed = getFeed(JapanTimesAllStoriesFeed);
-        assertEquals("rss_2.0", feed.getFeedType());
+        Assert.assertEquals("rss_2.0", feed.getFeedType());
         checkJSONTransformation(feed);
     }
 
     public void testESPNNews() throws Exception {
         Feed feed = getFeed(ESPNNewsFeed);
-        assertEquals("rss_2.0", feed.getFeedType());
+      assertEquals("rss_2.0", feed.getFeedType());
         checkJSONTransformation(feed);
     }
 
     public void testDigg() throws Exception {
         Feed feed = getFeed(DiggFeed);
-        assertEquals("rss_2.0", feed.getFeedType());
+       assertEquals("rss_2.0", feed.getFeedType());
         checkJSONTransformation(feed);
     }
 }
