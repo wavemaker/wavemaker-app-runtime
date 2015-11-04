@@ -29,13 +29,11 @@ WM.module('wm.widgets.live')
             if (CONSTANTS.isStudioMode) {
                 notifyFor = {
                     'dataset': true,
-                    'layout': true,
                     'pagesize': true
                 };
             } else {
                 notifyFor = {
-                    'dataset': true,
-                    'layout': true
+                    'dataset': true
                 };
             }
 
@@ -495,20 +493,6 @@ WM.module('wm.widgets.live')
                                         scope.$root.$emit('filterDefs-modified', designerObj);
                                     }
                                     break;
-                                case "layout":
-                                    if (CONSTANTS.isStudioMode && scope.newcolumns) {
-                                        scope.newcolumns = false;
-                                        designerObj = {
-                                            widgetName: scope.name,
-                                            fieldDefs: scope.formFields,
-                                            buttonDefs: scope.buttonArray,
-                                            variableName: scope.variableName,
-                                            scopeId: scope.$id,
-                                            numColumns: scope.getActiveLayout()
-                                        };
-                                        $rootScope.$emit('filterDefs-modified', designerObj);
-                                    }
-                                    break;
                                 case "pagesize":
                                     if (WM.isDefined(scope.variableName) && WM.isDefined(newVal) && !WM.equals(newVal, oldVal)) {
                                         scope.filter();
@@ -651,6 +635,11 @@ WM.module('wm.widgets.live')
                                 exprWatchHandler();
                             }
                         });
+
+                        // when the filter-field element is removed, remove the corresponding entry from parentIScope.formFields
+                        element.on('$destroy', function () {
+                            _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnsDef));
+                        });
                     }
                 };
             }
@@ -718,10 +707,6 @@ WM.module('wm.widgets.live')
  *                  Width of the filter widget.
  * @param {string=} height
  *                  Height of the filter widget.
- * @param {string=} layout
- *                  This property controls how contained widgets are displayed within the widget container. <br>
- *                  Possible values are `One Column`, `Two Column`, `Three Column`, and `Four Column`. <br>
- *                  Default value is `One Column`.
  * @param {string=} scopedataset
  *                  This property sets a variable to populate the data required to display the list of values.
  * @param {string=} dataset

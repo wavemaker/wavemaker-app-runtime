@@ -3,65 +3,99 @@
 /*Directive for Layout Grid */
 
 WM.module('wm.layouts.containers')
-    .directive('wmLayoutgrid', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
-        'use strict';
+    .directive('wmLayoutgrid', [
+        'PropertiesFactory',
+        'WidgetUtilService',
+        'CONSTANTS',
+        '$rootScope',
+        '$compile',
 
-        /* Applies default width to columns which don't already have their width set. */
-        function setDefaultColumnWidth($gridColumns, totalColWidth) {
-            var cols = [],
-                defaultWidth;
+        function (PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $compile) {
+            'use strict';
 
-            $gridColumns.each(function () {
-                var $col = WM.element(this),
-                    width = $col.attr('columnwidth');
-                if (width) {
-                    totalColWidth -= width;
-                } else {
-                    cols.push($col);
-                }
-            });
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.layoutgrid', ['wm.layouts']),
+                notifyFor = CONSTANTS.isStudioMode ? {'columns': true} : undefined;
 
-            if (cols.length) {
-                defaultWidth = parseInt(totalColWidth / cols.length, 10);
+            /* Applies default width to columns which don't already have their width set. */
+            function setDefaultColumnWidth($grid) {
 
-                cols.forEach(function ($col) {
-                    $col.isolateScope().columnwidth = defaultWidth;
+                var $gridRows;
+
+                $gridRows = $grid.children('.app-grid-row');
+
+                $gridRows.each(function () {
+                    var $row = WM.element(this),
+                        $columns = $row.children('.app-grid-column'),
+                        cols = [],
+                        defaultWidth,
+                        totalColWidth = 12;
+
+                    $columns.each(function () {
+                        var $col = WM.element(this),
+                            width = $col.attr('columnwidth');
+                        if (width) {
+                            totalColWidth -= width;
+                        } else {
+                            cols.push($col);
+                        }
+                    });
+
+                    if (cols.length) {
+                        defaultWidth = parseInt(totalColWidth / cols.length, 10);
+
+                        cols.forEach(function ($col) {
+                            $col.isolateScope().columnwidth = defaultWidth;
+                        });
+                    }
+
                 });
             }
-        }
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.layoutgrid', ['wm.layouts']);
+            function propertyChangeHandler($s, $is, $el, key, nv) {
 
-        return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
-            'transclude': true,
-            'template': '<div init-widget class="app-grid-layout clearfix" data-ng-show="show" apply-styles="container" wmtransclude></div>',
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
+                if (!$is._isInitialized) {
+                    return;
+                }
+
+                if (key === 'columns') {
+                    $rs.$emit('update-layoutgrid-columns', $is.widgetid, +nv, function (markup) {
+                        // remove the existing contents.
+                        $el.contents().remove();
+                        // add the updated markup
+                        $el.append(markup);
+                        // compile the contents.
+                        $compile($el.contents())($s);
+                        // update the columnwidth of columns.
+                        setDefaultColumnWidth($el);
+                    });
+                }
+            }
+
+            return {
+                'restrict': 'E',
+                'replace': true,
+                'scope': {},
+                'transclude': true,
+                'template': '<div init-widget class="app-grid-layout clearfix" data-ng-show="show" apply-styles="container" wmtransclude></div>',
+                'link': {
+                    'pre': function ($is) {
                         /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
+                        $is.widgetProps = widgetProps;
                     },
 
-                    'post': function (scope, element, attrs) {
-                        var totalColumnWidth = 12,
-                            $gridRows = element.children('.app-grid-row');
+                    'post': function ($is, $el, attrs) {
 
-                        $gridRows.each(function () {
-                            var $row = WM.element(this),
-                                $columns = $row.children('.app-grid-column');
+                        setDefaultColumnWidth($el);
 
-                            setDefaultColumnWidth($columns, totalColumnWidth);
-                        });
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        if (CONSTANTS.isStudioMode) {
+                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $el.scope(), $is, $el), $is, notifyFor);
+                        }
+                        WidgetUtilService.postWidgetCreate($is, $el, attrs);
                     }
-                };
-            }
-        };
-    }])
+                }
+            };
+        }
+    ])
     .directive('wmGridrow', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
 
@@ -149,7 +183,6 @@ WM.module('wm.layouts.containers')
 
 /*Directive for Layout Grid */
 
-
 /**
  * @ngdoc directive
  * @name wm.layouts.containers.directive:wmLayoutgrid
@@ -166,6 +199,9 @@ WM.module('wm.layouts.containers')
  *
  * @param {string=} name
  *                  Name of the grid.
+ * @param {number=} columns
+ *                  Defines the number of columns per row. <br>
+ *                  When this property is changed in studio mode, grid layout will be re-arranged accordingly. <br>
  * @param {string=} insert
  *                  Inserts a row in the grid.
  * @param {boolean=} width

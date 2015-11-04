@@ -1035,7 +1035,8 @@ WM.module('wm.widgets.base', [])
                         "marginright": {"type": "string", "pattern": numberRegex},
                         "marginleft": {"type": "string", "pattern": numberRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
-                        "insert": {"type": "toolbar", "actions": [{'action': 'addrow', 'label': 'LABEL_PROPERTY_ADDROW', 'icon': 'add-row'}]}
+                        "insert": {"type": "toolbar", "actions": [{'action': 'addrow', 'label': 'LABEL_PROPERTY_ADDROW', 'icon': 'add-row'}]},
+                        "columns": {"type": "list", "options": ["1", "2", "3", "4", "6", "12"]}
                     },
                     'wm.layouts.gridcolumn': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1355,7 +1356,6 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "editfilters": {"type": "button", "hidelabel": true, "disabled": true},
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
-                        "layout": {"type": "list", "options": ["One Column", "Two Column", "Three Column", "Four Column"], "value": "One Column"},
                         "pagesize": {"type": "number", "value": 20}
                     },
                     "wm.search": {
@@ -1571,7 +1571,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
                 {"properties": ["caption", "gridcaption", "title", "heading", "name", "debugurl", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "imgsrc", "shape", "layoutkind", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild"], "parent": "properties"},
                 {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
@@ -1596,7 +1596,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "infscroll", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition"], "parent": "properties"},
-                {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "rows", "columns", "columnwidth", "taborder"], "parent": "properties"},
+                {"name": "format", "properties": [ "showtooltip", "horizontalalign", "verticalalign", "columnwidth", "taborder"], "parent": "properties"},
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["submitbutton", "resetbutton"], "parent": "properties"},
                 {"properties": [ "class", "menuclass", "listclass", "itemclass", "gridclass",  "theme", "customcolors"], "parent": "styles"},
