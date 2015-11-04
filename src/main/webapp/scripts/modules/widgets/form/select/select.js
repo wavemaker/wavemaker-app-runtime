@@ -62,7 +62,7 @@ WM.module('wm.widgets.form')
                 if (scope.datafield !== ALLFIELDS) {
                     scope.modelProxy = WM.isObject(_model_) ? _model_ : _model_ && _model_.toString();
                 } else if (_dataSetModelMap[scope.$id]) {  /* check for sanity */
-                    scope.modelProxy = _dataSetModelMap[scope.$id][JSON.stringify(_model_)];
+                    scope.modelProxy = _dataSetModelMap[scope.$id][WM.toJson(_model_)];
                 }
             }
             /* reset the value */
