@@ -345,10 +345,10 @@ WM.module('wm.widgets.live')
                         // create a watch on dataNavigator.result
                         $is._watchers.dataNavigatorResult = dataNavigator.$watch('result', function (_nv) {
                             onDataChange($is, $el, _nv);
-                        });
+                        }, true);
                         $is._watchers.dataNavigatorMaxResults = dataNavigator.$watch('maxResults', function (_nv) {
                             $is.pagesize = _nv;
-                        });
+                        }, true);
 
                         dataNavigator.dataset = binddataset;
                     });
