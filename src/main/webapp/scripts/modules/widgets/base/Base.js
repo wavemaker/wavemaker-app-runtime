@@ -1183,7 +1183,7 @@ WM.module('wm.widgets.base', [])
                         "fileuploadmessage": {"type": "string", "value": "You can also browse for files"},
                         "tabindex": {"type": "string"},
                         "uploadedFiles": {"type": "array", "bindable": "in-out-bound"},
-                        "selectedFiles": {"type": "array", "bindable": "in-out-bound", "show" : "false"},
+                        "selectedFiles": {"type": "array, file", "bindable": "in-out-bound", "show" : "false"},
                         "mode": {"type": "list", "options": ["Upload", "Select"], "value": "Upload"},
                         "destination": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound", "value": ""},
                         "caption": {"type": "string", "value": "Upload", "bindable": "in-out-bound", "maxlength": 256},
