@@ -159,7 +159,7 @@ WM.module('wm.utils', [])
             dateTimeDefaultFormats = {
                 'date'           : 'yyyy-MM-dd',
                 'time'           : 'HH:mm:ss',
-                'timestamp'      : 'epoch format',
+                'timestamp'      : 'timestamp',
                 'datetime'       : 'yyyy-MM-ddTHH:mm:ss',
                 'datetime_oracle': 'yyyy-MM-dd HH:mm:ss'
             },
