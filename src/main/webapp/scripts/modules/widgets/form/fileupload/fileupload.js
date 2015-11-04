@@ -37,12 +37,15 @@ WM.module('wm.widgets.form')
                             '<label title="{{status_messsage}}" data-ng-bind="status_messsage" data-ng-show="showStatusMessage"></label>' +
                             '<div class="progress" data-ng-show="showProgress"><div class="progress-bar progress-bar-info progress-bar-striped" data-ng-style="{width:progressWidth}"></div></div>' +
                         '</div>' +
-                        '<div class="status" data-ng-repeat="file in uploadedFiles" data-ng-show="isValidFiles()">' +
+                        '<div class="status" data-ng-repeat="file in uploadedFiles" data-ng-show="isValidFiles(uploadedFiles, \'Upload\')">' +
                                 '<div class="action"><span class="badge" data-ng-bind="file.extension"></span></div>' +
                                 '<div class="name" title="{{file.fileName}}" data-ng-bind="file.fileName"></div>' +
                                 '<div class="size" title="{{file.length}}" data-ng-if="file.length !== 0" data-ng-bind="file.length | suffix: \' bytes\'"></div>' +
                                 '<span class="state glyphicon" data-ng-class="{\'glyphicon-ok\' : file.status === \'success\', \'glyphicon-remove\' : file.status === \'Fail\'}"></span>' +
                                 '<span data-ng-show="{{file.state === \'success\'}}" title="{{file.errorMessage}}">{{file.errorMessage}}</span>' +
+                        '</div>' +
+                        '<div class="status" data-ng-repeat="file in selectedFiles" data-ng-show="isValidFiles(selectedFiles, \'Select\')">' +
+                            '<div class="name" title="{{file.name}}" data-ng-bind="file.name"></div>' +
                         '</div>' +
                         '<div class="action" data-ng-if="isAbortVisible"><button class="cancel glyphicon glyphicon-remove" title="Cancel" data-ng-click="abortUpload()"></button></div>' +
                     '</div>' +
@@ -447,6 +450,8 @@ WM.module('wm.widgets.form')
                                 if (scope.destination) {
                                     completeUrl += '?relativePath=' + scope.destination;
                                 }
+                                scope.status_messsage = 'Selected';
+                                scope.showStatusMessage = scope.mode === 'Select';
 
                                 if (window.FormData) {
                                     if (xhr !== undefined) {
@@ -575,8 +580,6 @@ WM.module('wm.widgets.form')
                                         scope.widgetProps.operation.options = operations;
                                         if (scope.service === CONSTANT_FILE_SERVICE) {
                                             scope.operation = 'uploadFile';
-                                        } else {
-                                            scope.operation = '';
                                         }
                                     });
                                 }
@@ -608,7 +611,7 @@ WM.module('wm.widgets.form')
                             onError : onFail,
                             onAbort : onAbort
                         };
-;
+
                         /* change server path based on user option */
                         scope.changeServerUploadPath = function (path) {
                             selectedUploadTypePath = path;
@@ -670,8 +673,8 @@ WM.module('wm.widgets.form')
                             }
                         };
 
-                        scope.isValidFiles = function () {
-                            return WM.isArray(scope.uploadedFiles) && scope.uploadedFiles.length;
+                        scope.isValidFiles = function (files, mode) {
+                            return scope.mode === mode && WM.isArray(files) && files.length;
                         };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
