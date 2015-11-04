@@ -472,6 +472,7 @@ WM.module('wm.utils', [])
                 link.setAttribute(attr.name, attr.value);
             }
             headNode.appendChild(link);
+            return link;
         }
 
         /*function to load stylesheets */
