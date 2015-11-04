@@ -39,7 +39,7 @@ public class RestRuntimeController extends AbstractController {
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         final String pathInfo = request.getPathInfo();
         final int index = pathInfo.lastIndexOf('/');
-        final String serviceId = pathInfo.substring(1, index);
+        final String serviceId = getServiceId(pathInfo.substring(1, index));
         final String operation = pathInfo.substring(index + 1, pathInfo.length());
         executeRestCall(serviceId, operation, request, response);
         return new ModelAndView(new NoOpView(), new HashMap<String,Object>());
@@ -114,6 +114,21 @@ public class RestRuntimeController extends AbstractController {
             }
             ((List) o).add(value);
         }
+    }
+
+    /**
+     * Returns serviceIds from path for imported artifacts like prefab else returns path as it is.
+     *
+     * @param path
+     * @return serviceId
+     */
+    private String getServiceId(String path) {
+        final int index = path.lastIndexOf('/');
+        if (index != -1) {
+            final String serviceIdForImportedArtifacts = path.substring(index + 1, path.length());
+            return serviceIdForImportedArtifacts;
+        }
+        return path;
     }
 
     static class NoOpView extends AbstractView {
