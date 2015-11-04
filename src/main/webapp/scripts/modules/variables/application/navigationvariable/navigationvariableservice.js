@@ -31,6 +31,9 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
 
                     /*if operation is goToPage, navigate to the pageName*/
                     switch (operation) {
+                    case 'goToPreviousPage' :
+                        NavigationService.goToPrevious();
+                        break;
                     case 'gotoPage':
                         try {
                             NavigationService.goToPage(pageName, variable.pageTransitions);
