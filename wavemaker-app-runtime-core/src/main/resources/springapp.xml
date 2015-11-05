@@ -33,7 +33,7 @@
                 <property name="pageParameterName" value="page"/>
                 <property name="sizeParameterName" value="size"/>
                 <property name="oneIndexedParameters" value="true"/>
-                <property name="maxPageSize" value="100"/>
+                <property name="maxPageSize" value="1000"/>
                 <property name="fallbackPageable">
                     <bean  class="org.springframework.data.domain.PageRequest">
                         <constructor-arg  value="0"/>
