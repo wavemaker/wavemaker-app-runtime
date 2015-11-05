@@ -15,6 +15,10 @@ wm.init = (function () {
 
     /*Plugin modules*/
     wm.plugins = {};
+
+    /*Module to define some base classes*/
+    wm.baseClasses = wm.baseClasses || {};
+
 }());
 
 WM.module('wm.layouts.page', []);

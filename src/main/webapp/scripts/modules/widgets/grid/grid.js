@@ -508,6 +508,11 @@ WM.module('wm.widgets.grid')
                             scope.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         }, 0, false);
+
+                        //Will be called after setting grid column property.
+                        scope.reRender = function () {
+                            scope.datagridElement.datagrid(scope.gridOptions);
+                        }
                     }
                 };
             }
@@ -1824,24 +1829,6 @@ WM.module('wm.widgets.grid')
     .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', function ($parse, Utils, CONSTANTS) {
         'use strict';
 
-        /*
-         * Class : ColumnDef
-         * Description : ColumnDef contains setter and getter with custom logic
-         * which will be extended by actual columndefs of grid columns.
-         * */
-        function ColumnDef () {
-        }
-
-        ColumnDef.prototype = {
-            setProperty : function (property, newval) {
-                this.$is.setProperty.call(this, property, newval);
-                this.$is.datagridElement.datagrid(this.$is.gridOptions);
-            },
-            getProperty : function (property) {
-                return this.$is.getProperty.call(this, property);
-            }
-        };
-
         return {
             'restrict': 'E',
             'scope': true,
@@ -1850,6 +1837,16 @@ WM.module('wm.widgets.grid')
             'compile': function (tElement) {
                 return {
                     'pre': function (scope, element, attrs) {
+
+                        /*
+                         * Class : ColumnDef
+                         * Discription : ColumnDef is intermediate class which extends FieldDef base class
+                         * */
+                        scope.ColumnDef = function () {
+                        }
+
+                        scope.ColumnDef.prototype = new wm.baseClasses.FieldDef();
+
                         var textAlignment = attrs.textalignment || 'left',
                             backgroundColor = attrs.backgroundcolor || '',
                             textColor = attrs.textcolor || '',
@@ -1858,7 +1855,7 @@ WM.module('wm.widgets.grid')
                                 '; background-color: ' + backgroundColor +
                                 '; color: ' + textColor + ';',
                             //Obj of its base with setter and getter defined
-                            columnDef = new ColumnDef(scope.$parent),
+                            columnDef = new scope.ColumnDef(),
                             columnDefProps = {
                                 'field': attrs.binding,
                                 'displayName': attrs.caption,
@@ -1907,7 +1904,7 @@ WM.module('wm.widgets.grid')
                             };
 
                         //Will be used in ColumnDef prototype methods to re-render grid.
-                        ColumnDef.prototype.$is = scope.$parent;
+                        scope.ColumnDef.prototype.$is = scope.$parent;
 
                         //Extends the columnDef class with column meta data
                         WM.extend(columnDef, columnDefProps);
