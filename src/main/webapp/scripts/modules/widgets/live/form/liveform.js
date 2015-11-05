@@ -168,12 +168,6 @@ WM.module('wm.widgets.live')
                     because the earlier reference "$scope.formElement" would be destroyed on close of the dialog.*/
                     $scope.formElement = $scope.isLayoutDialog ? (document.forms[$scope.name]) : ($scope.formElement || document.forms[$scope.name]);
 
-                    /*Check if checkValidity is defined and then the validity of the inputs*/
-                    if (WM.isFunction($scope.formElement[0].checkValidity)) {
-                        if (!$scope.formElement[0].checkValidity()) {
-                            return;
-                        }
-                    }
                     $scope.operationType = $scope.operationType || $scope.findOperationType();
                     /*Construct the data object with required values from the formFields*/
                     /*If it is an update call send isUpdate true for constructDataObject so the dataObject is
