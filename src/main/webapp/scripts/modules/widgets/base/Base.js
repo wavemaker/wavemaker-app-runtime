@@ -906,7 +906,7 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts.mobile.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
-                        "datavalue": {"type": "string", "bindable": "in-out-bound", "show": false},
+                        "searchText": {"type": "string", "bindable": "out-bound", "show": false, "value" : ""},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "leftnavpaneliconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-menu-hamburger"},
                         "backbutton":  {"type": "boolean", "value": true},

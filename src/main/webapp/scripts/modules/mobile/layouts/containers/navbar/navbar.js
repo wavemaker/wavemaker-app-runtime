@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layouts/containers/mobile/navbar.html',
-                '<header data-role="mobile-navbar" has-model init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show" apply-styles>' +
+                '<header data-role="mobile-navbar" init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show" apply-styles>' +
                     '<nav class="navbar ng-show" ng-show="!showSearchbar">' +
                         '<div class="mobile-navbar-left">' +
                             '<ul class="nav navbar-nav navbar-left">' +
@@ -36,7 +36,7 @@ WM.module('wm.layouts.containers')
                         '</div>' +
                     '</nav>' +
                     '<nav class="navbar searchbar ng-show" ng-show="showSearchbar">' +
-                            '<div class="search-container"><input type="search" data-ng-model="_model_" class="form-control" id="search" placeholder="{{searchplaceholder}}">' +
+                            '<div class="search-container"><input type="search" data-ng-model="searchText" class="form-control" id="search" placeholder="{{searchplaceholder}}">' +
                             '<i class="btn-close glyphicon glyphicon-remove" data-ng-click="close();"></i></div>' +
                     '</nav>' +
                 '</header>'
@@ -72,8 +72,8 @@ WM.module('wm.layouts.containers')
                         scope.leftNavPanel = WM.element(element.closest('.app-page').find('.app-left-panel:first')).isolateScope();
                         if (CONSTANTS.isRunMode) {
                             scope.goBack = function ($event) {
-                                if (attrs.onBackbtnclick) {
-                                    Utils.triggerFn(scope.onBackbtnclick, $event, scope);
+                                if (attrs.onBackbtnclick && scope.onBackbtnclick) {
+                                    scope.onBackbtnclick({'$event' : $event, '$scope' : scope});
                                 } else if (CONSTANTS.hasCordova) {
                                     $window.history.go(-1);
                                 } else {
@@ -87,19 +87,15 @@ WM.module('wm.layouts.containers')
                                 }, undefined, false);
                             };
                             scope.close = function () {
-                                if (element.find('.searchInput').val()) {
-                                    element.find('.searchInput').val('');
-                                }
-                                if (scope._model_) {
-                                    scope._model_ = '';
+                                if (scope.searchText) {
+                                    scope.searchText = '';
                                 } else {
                                     scope.showSearchbar = false;
                                 }
                             };
-                            element.bind('keydown', function (event) {
-                                if (Utils.getActionFromKey(event) === "ENTER") {
-                                    scope._model_ = element.find('.searchInput').val();
-                                    scope.onSearch({ $scope: scope});
+                            scope.$watch('searchText', function (newValue, oldValue) {
+                                if (scope.onSearch && newValue != oldValue) {
+                                    scope.onSearch({'$scope' : scope});
                                 }
                             });
                         }
