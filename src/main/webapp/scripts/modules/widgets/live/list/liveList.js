@@ -1,4 +1,4 @@
-/*global WM, window, _, document*/
+/*global WM, window, _, document, Hammer*/
 /*jslint todo: true */
 /*Directive for liveList */
 
@@ -531,23 +531,57 @@ WM.module('wm.widgets.live')
                 $tmpl = applyWrapper($tmpl, attrs);
                 return $tmpl;
             }
-
+            /*Function to get data of all active elements*/
+            function getSelectedItems($el) {
+                var selectedItems = [];
+                $el.find('li.active').each(function () {
+                    var liScope = WM.element(this).scope();
+                    selectedItems.push(liScope.item);
+                });
+                return selectedItems;
+            }
             function setupEvtHandlers($is, $el) {
+                var pressStartTimeStamp = 0,
+                    $hammerEl = new Hammer($el[0], {}),
+                    selectCount = 0,
+                    isMultiSelect = false;// Setting to true on first long press
                 /*listen on to the click event for the ul element & get li clicked of the live-list */
                 $el.on('click.wmActive', 'ul', function (evt) {
+                    /*returning if click event is triggered within 50ms after pressup event occurred*/
+                    if (pressStartTimeStamp + 50 > Date.now()) {
+                        return;
+                    }
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
-                        $liScope = $li.scope();
-                    if ($li) {
-                        $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
-                        $li.addClass('active'); // adding active class to current selectedItem
-                        if ($liScope) {
-                            $is.selecteditem = $liScope.item || null; // update the selectedItem with current clicked li
+                        $liScope = $li && $li.scope(),
+                        isActive = $li.hasClass('active');
+                    if ($liScope) {
+                        if (isMultiSelect) {
+                            $li.toggleClass('active');
+                            selectCount += (isActive ? -1 : 1);
+                            isMultiSelect = selectCount > 0;//Setting 'isMultiSelect' to false if no items are selected
+                        } else {
+                            selectCount = 0;
+                            $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
+                            if (!isActive) {
+                                $li.addClass('active');
+                            }
                             /*trigger $apply, as 'click' is out of angular-scope*/
-                            $is.selectedItems = [$is.selecteditem]; // live-form listens to selectedItems
 
                             Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
-                            $rs.$safeApply($is);
                         }
+                    }
+                    $rs.$safeApply($is);
+                });
+                $hammerEl.on('pressup', function (evt) {
+                    if (!isMultiSelect) {
+                        selectCount = 0;
+                        pressStartTimeStamp = evt.timeStamp;//Recording pressup event's timestamp
+                        var $li = WM.element(evt.target).closest('li.app-list-item');
+                        $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
+                        selectCount += 1;
+                        $li.addClass('active'); // adding active class to current selectedItem
+                        isMultiSelect = true;
+                        $rs.$safeApply($is);
                     }
                 });
             }
@@ -564,7 +598,9 @@ WM.module('wm.widgets.live')
                 $is.dataset = [];   // The data that is bound to the list. Stores the name for reference.
                 $is.fieldDefs = []; // The data required by the wmListItem directive to populate the items
                 $is.noDataFound = false;
-
+                Object.defineProperty($is, 'selecteditem', {
+                    configurable: true
+                });
                 defineProps($is, $el);
             }
 
@@ -594,6 +630,15 @@ WM.module('wm.widgets.live')
                 /* register the property change handler */
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);
 
+                Object.defineProperty($is, 'selecteditem', {
+                    get: function () {
+                        var selectedRows = getSelectedItems($el);
+                        if (selectedRows && selectedRows.length === 1) {
+                            return selectedRows[0];
+                        }
+                        return selectedRows;
+                    }
+                });
                 // in the run mode navigation can not be changed dynamically
                 // process the navigation type before the dataset is set.
                 if (attrs.hasOwnProperty('shownavigation') && (attrs.shownavigation === "true")) {
