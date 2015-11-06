@@ -8,7 +8,8 @@ WM.module('wm.widgets.form')
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox display-input" data-ng-model="_displayModel">' +
-                '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" date-disabled="excludeDays(date) || excludeDates(date)" data-ng-model="_dateModel" datepicker-popup min-date=mindate max-date=maxdate is-open="isDateOpen">' +
+                '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" date-disabled="excludeDays(date) || excludeDates(date)" data-ng-model="_dateModel" ' +
+                    ' datepicker-popup min-date=mindate max-date=maxdate is-open="isDateOpen" show-weeks="{{showweeks}}">' +
                 '<div dropdown is-open="isTimeOpen" class="dropdown">' +
                     '<div class="dropdown-menu">' +
                         '<timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></timepicker>' +
@@ -290,6 +291,9 @@ WM.module('wm.widgets.form')
  *                  Default value: `false`.
  * @param {boolean=} autofocus
  *                   This property makes the widget get focused automatically when the page loads.
+ * @param {boolean=} showweeks
+ *                   When set, week number will be displayed in date-picker UI.<br>
+ *                   Default value: `false`
  * @param {boolean=} readonly
  *                   Readonly is a bindable property. <br>
  *                   This property will be used to make the time widget readonly on the web page. <br>

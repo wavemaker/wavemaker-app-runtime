@@ -13,6 +13,7 @@ WM.module('wm.widgets.form')
                     ' data-ng-readonly="readonly" ' +
                     ' data-ng-required="required" ' +
                     ' data-ng-disabled="disabled" ' +
+                    ' show-weeks={{showweeks}} ' +
                     ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</input>' +
                 /*Holder for the model for submitting values in a form*/
@@ -228,6 +229,9 @@ WM.module('wm.widgets.form')
  *                  Hint : 'YYYY-MM-DD'.
  * @param {boolean=} autofocus
  *                   This property makes the widget get focused automatically when the page loads.
+ * @param {boolean=} showweeks
+ *                   When set, week number will be displayed in date-picker UI.<br>
+ *                   Default value: `false`
  * @param {boolean=} readonly
  *                   Readonly is a bindable property. <br>
  *                   This property will be used to make the date widget non-editable on the web page. <br>
