@@ -46,7 +46,7 @@ WM.module('wm.widgets.basic')
                 }
                 break;
             case 'subtitlesource':
-                if (WM.isString(newVal) && newVal.indexOf('Variables') === -1) {
+                if (WM.isString(newVal) && newVal.length && newVal.indexOf('Variables') === -1) {
                     scope.tracksource =  Utils.getResourceUrl(newVal);
                 }
                 break;
