@@ -613,7 +613,7 @@ html, body {
   width: 13em;
   position: relative;
   .dropdown-menu {
-   width: 100%;
+    width: auto;
    text-align: center;
     table {
       display: inline-table;
@@ -630,6 +630,7 @@ html, body {
   .dropdown-menu {
     top: 100% !important;
     text-align: center;
+    width: auto;
     table {
       display: inline-table;
     }
@@ -652,6 +653,7 @@ html, body {
   }
   .dropdown-menu {
      padding: 0.5em;
+     width: auto;
   }
 }
 
@@ -964,6 +966,7 @@ body.modal-open {
     overflow-y: auto;
     overflow-x: hidden;
     display: block;
+    padding-bottom: 1px; //Fix for unnecessary vertical scrollbar on the list
   }
   ul.list-group {
     margin-bottom: 0;
