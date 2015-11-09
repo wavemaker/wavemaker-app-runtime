@@ -22,7 +22,8 @@ public class Procedure {
     private String comment = null;
     private String description = null;
     private boolean returnsSingleResult = false;
-    private String testValue;
+    private List<ProcedureParam> procedureParams = new ArrayList<>();
+
 
     public Procedure(Procedure procedure) {
         this.name = procedure.getName();
@@ -32,13 +33,10 @@ public class Procedure {
         this.returnsSingleResult = procedure.isReturnsSingleResult();
         this.procedureParams = procedure.getProcedureParams();
         this.outputType = procedure.getOutputType();
-        this.testValue = procedure.getTestValue();
     }
 
     public Procedure() {
     }
-
-    private List<ProcedureParam> procedureParams = new ArrayList<ProcedureParam>();
 
     private String outputType;
 
@@ -96,13 +94,5 @@ public class Procedure {
 
     public void setOutputType(String outputType) {
         this.outputType = outputType;
-    }
-
-    public String getTestValue() {
-        return testValue;
-    }
-
-    public void setTestValue(final String testValue) {
-        this.testValue = testValue;
     }
 }

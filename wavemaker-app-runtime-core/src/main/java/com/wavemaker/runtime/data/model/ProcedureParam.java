@@ -24,6 +24,7 @@ public class ProcedureParam {
     private ProcedureParamType procedureParamType = null;
     private String valueType = null;
     private Boolean isList = Boolean.FALSE;
+    private String testValue;
 
     public ProcedureParam() {
     }
@@ -64,6 +65,14 @@ public class ProcedureParam {
 
     public void setList(Boolean isList) {
         this.isList = isList;
+    }
+
+    public String getTestValue() {
+        return testValue;
+    }
+
+    public void setTestValue(final String testValue) {
+        this.testValue = testValue;
     }
 
     @Override
