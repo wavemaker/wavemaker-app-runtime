@@ -350,7 +350,7 @@ WM.module('wm.widgets.live')
                                     {
                                         key : 'filter',
                                         class: 'btn-primary',
-                                        iconname: 'filter',
+                                        iconclass: 'glyphicon glyphicon-filter',
                                         action: 'filter()',
                                         displayName: 'Filter',
                                         show: true,
@@ -359,7 +359,7 @@ WM.module('wm.widgets.live')
                                     {
                                         key : 'clear',
                                         class: 'btn',
-                                        iconname: 'clear',
+                                        iconclass: 'glyphicon glyphicon-remove-circle',
                                         action: 'clearFilter()',
                                         displayName: 'Clear',
                                         show: true,
@@ -691,7 +691,9 @@ WM.module('wm.widgets.live')
                             'displayName': attrs.displayName || attrs.caption,
                             'show': attrs.show === "true" || attrs.show === true,
                             'class': attrs.class || '',
+                            /*iconame support for old projects*/
                             'iconname': attrs.iconname,
+                            'iconclass': attrs.iconclass,
                             'action': attrs.action
                         };
                         scope.parentIsolateScope.buttonArray = scope.parentIsolateScope.buttonArray || [];
@@ -699,7 +701,7 @@ WM.module('wm.widgets.live')
                         scope.parentIsolateScope.columnsDefCreated = true;
 
                         buttonTemplate = '<wm-button caption="{{buttonArray[' + index + '].displayName}}" show="{{buttonArray[' + index + '].show}}" ' +
-                            'class="{{buttonArray[' + index + '].class}}" iconname="{{buttonArray[' + index + '].iconname}}" ' +
+                            'class="{{buttonArray[' + index + '].class}}" iconname="{{buttonArray[' + index + '].iconname}}" iconclass="{{buttonArray[' + index + '].iconclass}}"' +
                             'on-click="' + buttonDef.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
                         element.closest('[data-identifier="livefilter"]').find('.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
                         $compile(element.contents())(scope.parentIsolateScope);
