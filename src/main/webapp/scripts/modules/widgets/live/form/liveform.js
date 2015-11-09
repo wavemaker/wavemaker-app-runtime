@@ -24,8 +24,11 @@ WM.module('wm.widgets.live')
             },
             /*Convert time value to a valid date time value*/
             getValidTime = function (val) {
-                var date = (new Date()).toDateString();
-                return (new Date(date + ' ' + val)).getTime();
+                if (val) {
+                    var date = (new Date()).toDateString();
+                    return (new Date(date + ' ' + val)).getTime();
+                }
+                return undefined;
             },
             dateTimeFormats = Utils.getDateTimeDefaultFormats();
 

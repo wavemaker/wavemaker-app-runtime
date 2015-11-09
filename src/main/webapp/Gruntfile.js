@@ -513,9 +513,6 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/widgets/device/barcodeScanner/barcodeScanner.js',
                         '<%= config.scripts %>/modules/mobile/widgets/device/fileBrowser/fileBrowser.js',
                         '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js',
-                        '<%= config.scripts %>/modules/mobile/widgets/form/date/date.js',
-                        '<%= config.scripts %>/modules/mobile/widgets/form/time/time.js',
-                        '<%= config.scripts %>/modules/mobile/widgets/form/datetime/datetime.js'
                     ],
                     '<%= config.editor %>/mobile/scripts/mobileruntimeloader.min.js': [
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js'

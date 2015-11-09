@@ -13,8 +13,9 @@ WM.module('wm.widgets.form')
         'Utils',
         'Variables',
         '$rootScope',
+        '$filter',
 
-        function (WidgetUtilService, CONSTANTS, Utils, Variables, $rootScope) {
+        function (WidgetUtilService, CONSTANTS, Utils, Variables, $rootScope, $filter) {
             'use strict';
             var ALLFIELDS = 'All Fields';
 
@@ -457,6 +458,31 @@ WM.module('wm.widgets.form')
                 return proxyExcludeDates;
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getUpdatedModel
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to get the model value of date, datetime, time widgets in mobile.
+             *
+             * @param {object} excludeDates dates to be excluded
+             */
+            function getUpdatedModel(minDate, maxDate, modelValue, proxyModelValue, previousValue) {
+                if (minDate || maxDate) {
+                    var startDate = Date.parse($filter('date')(minDate, 'yyyy-MM-dd')),
+                        endDate = Date.parse($filter('date')(maxDate, 'yyyy-MM-dd')),
+                        selectedDate = Date.parse(new Date(modelValue).toLocaleDateString());
+                    if (startDate <= selectedDate && selectedDate <= endDate) {
+                        return proxyModelValue;
+                    }
+                    alert('Please enter date between ' + minDate + " & " + maxDate);
+                    return previousValue;
+                }
+                return proxyModelValue;
+            }
+
             this.getDisplayField = getDisplayField;
             this.createDataKeys = createDataKeys;
             this.updatePropertyPanelOptions = updatePropertyPanelOptions;
@@ -469,5 +495,6 @@ WM.module('wm.widgets.form')
             this.getFocusBlurEvents = getFocusBlurEvents;
             this.eventProxy = eventProxy;
             this.getProxyExcludeDates = getProxyExcludeDates;
+            this.getUpdatedModel = getUpdatedModel;
         }
     ]);

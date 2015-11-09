@@ -21,7 +21,10 @@ WM.module('wm.widgets.form')
                 '</span>' +
             '</div>'
             );
-    }]).directive('wmTime', ['PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', function (PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter) {
+        $templateCache.put('template/device/widget/form/time.html',
+            '<input type="time" class="form-control app-textbox" role="input" data-ng-show="show" data-ng-model="_proxyModel" has-model init-widget data-ng-change="updateModel();_onChange({$event: $event, $scope: this})">'
+            );
+    }]).directive('wmTime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.time', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -30,6 +33,13 @@ WM.module('wm.widgets.form')
                 'autofocus': true,
                 'timestamp': true
             };
+
+        if ($rs.isMobileApplicationType) {
+            /*date pattern is not supported for native date widget*/
+            widgetProps.ismeridian.show = false;
+            widgetProps.hourstep.show = false;
+            widgetProps.minutestep.show = false;
+        }
 
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             var inputEl = element.find('input'),
@@ -68,9 +78,19 @@ WM.module('wm.widgets.form')
             replace: true,
             scope: {},
             template: function (tElement, tAttrs) {
-                var template = WM.element($templateCache.get('template/widget/form/time.html', tElement, tAttrs)),
-                    isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
-                    target = template.children('input.form-control');
+                var template = '',
+                    isWidgetInsideCanvas,
+                    target;
+
+                if ($rs.isMobileApplicationType) {
+                    template = WM.element(WidgetUtilService.getPreparedTemplate('template/device/widget/form/time.html', tElement, tAttrs));
+                    return template[0].outerHTML;
+                }
+
+                template = WM.element($templateCache.get('template/widget/form/time.html', tElement, tAttrs));
+                isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid');
+                target = template.children('input.form-control');
+
                 /*Set name for the model-holder, to ease submitting a form*/
                 template.find('.model-holder').attr('name', tAttrs.name);
                 if (!isWidgetInsideCanvas) {
@@ -100,6 +120,9 @@ WM.module('wm.widgets.form')
                 return {
                     pre: function (scope) {
                         scope.widgetProps = widgetProps;
+                        if ($rs.isMobileApplicationType) {
+                            scope._nativeMode = true;
+                        }
                     },
                     post: function (scope, element, attrs) {
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
@@ -115,6 +138,10 @@ WM.module('wm.widgets.form')
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         scope._onClick = _onClick.bind(undefined, scope);
 
+                        /*update the model for device time*/
+                        scope.updateModel = function () {
+                            scope._model_ = scope._proxyModel;
+                        };
                         /* handle initial readonly/disabled values */
                         $timeout(function () {
                             onPropertyChange('disabled', scope.disabled);
@@ -124,40 +151,42 @@ WM.module('wm.widgets.form')
                          * read operation of _model_/datavalue will return epoch format of the date
                          * write operation of _model_ will update _proxyModel with Date object.
                          *  */
+
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
-                                var timeValue;
-                                if (this._proxyModel) {
-                                    this._timeModel = $filter('date')(this._proxyModel, "hh:mm a");
-                                    timeValue = moment($filter('date')(this._proxyModel, "yyyy-MM-dd HH:mm")).valueOf();
-                                    this.timestamp = timeValue;
-                                    if (this.outputformat === "timestamp") {
-                                        return timeValue;
-                                    }
-                                    if (!this.outputformat) {
-                                        this.outputformat = 'HH:mm:ss';
-                                    }
-                                    return timeValue ? $filter('date')(timeValue, this.outputformat) : undefined;
+                                var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                                this.timestamp = timestamp;
+                                if (this.outputformat === "timestamp") {
+                                    return timestamp;
                                 }
-                                return timeValue ?  timeValue.valueOf() : undefined;
+                                if (!this.outputformat) {
+                                    this.outputformat = 'HH:mm:ss';
+                                }
+                                return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
                             },
                             set: function (val) {
-                                if (val) {
-                                    if (WM.isDate(val)) {
-                                        this._proxyModel = val;
+                                if (scope._nativeMode) {
+                                    if (val) {
+                                        /*set the proxymodel and timestamp*/
+                                        this._proxyModel = new Date(val);
+                                        this.timestamp = this._proxyModel.getTime();
                                     } else {
-                                        /*if the value is a timestamp string, convert it to a number*/
-                                        if (!isNaN(val)) {
-                                            val = parseInt(val, 10);
-                                        } else {
-                                            /*if the value is in HH:mm:ss format, it returns a wrong date. So append the date to the given value to get date*/
-                                            if (!(new Date(val).getTime())) {
-                                                val = new Date().toDateString() + ' ' + val;
-                                            }
-                                        }
-                                        var date = new Date(val);
-                                        this._proxyModel = WM.isDate(date) ? date : undefined;
+                                        this._proxyModel = undefined;
                                     }
+                                    return;
+                                }
+                                if (val) {
+                                    /*if the value is a timestamp string, convert it to a number*/
+                                    if (!isNaN(val)) {
+                                        val = parseInt(val, 10);
+                                    } else {
+                                        /*if the value is in HH:mm:ss format, it returns a wrong date. So append the date to the given value to get date*/
+                                        if (!(new Date(val).getTime())) {
+                                            val = new Date().toDateString() + ' ' + val;
+                                        }
+                                    }
+                                    var date = new Date(val);
+                                    this._proxyModel = WM.isDate(date) ? date : undefined;
                                 } else {
                                     this._proxyModel = undefined;
                                 }
@@ -165,11 +194,21 @@ WM.module('wm.widgets.form')
                             }
                         });
 
+                        /*set the model if datavalue doesnt exist*/
                         if (!attrs.datavalue && !attrs.scopedatavalue) {
-                            scope._model_ = Date.now();
+                            if (scope._nativeMode) {
+                                scope._proxyModel = new Date();
+                                scope.timestamp = scope._proxyModel.getTime();
+                            } else {
+                                scope._model_ = Date.now();
+                            }
                         }
 
+                        /*set the model if datavalue exists */
                         if (attrs.datavalue) {
+                            if (scope._nativeMode) {
+                                scope._proxyModel = attrs.datavalue;
+                            }
                             scope._model_ = attrs.datavalue;
                         }
 
