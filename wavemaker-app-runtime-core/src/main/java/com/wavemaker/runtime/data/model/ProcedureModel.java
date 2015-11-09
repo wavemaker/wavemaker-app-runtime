@@ -30,7 +30,7 @@ public class ProcedureModel {
 
     public List<Procedure> getProcedures() {
         if (procedures == null) {
-            return new ArrayList<Procedure>();
+            return new ArrayList<>();
         }
         return procedures;
     }
