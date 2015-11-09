@@ -7,7 +7,7 @@ WM.module('wm.widgets.live')
         'use strict';
 
         $tc.put('template/widget/list.html',
-                    '<div class="app-livelist panel" init-widget apply-styles="shell" data-ng-show="show">' +
+                    '<div class="app-livelist panel" init-widget live-actions apply-styles="shell" data-ng-show="show">' +
                         '<div class="panel-heading" data-ng-if="title"><h4 class="panel-title">{{title}}</h4></div>' +
                         '<ul data-identifier="list" class="clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
@@ -476,7 +476,10 @@ WM.module('wm.widgets.live')
                     'onEnterkeypress'   : $is.onEnterkeypress,
                     'onSetrecord'       : $is.onSetrecord,
                     'itemclass'         : $is.itemclass,
-                    'itemsPerRowClass'  : getRowClass(attrs.itemsperrow)
+                    'itemsPerRowClass'  : getRowClass(attrs.itemsperrow),
+                    'addRow'            : $is.addRow,
+                    'updateRow'         : $is.updateRow,
+                    'deleteRow'         : $is.deleteRow
                 });
 
                 return $liScope;
@@ -540,6 +543,7 @@ WM.module('wm.widgets.live')
                         if ($liScope) {
                             $is.selecteditem = $liScope.item || null; // update the selectedItem with current clicked li
                             /*trigger $apply, as 'click' is out of angular-scope*/
+                            $is.selectedItems = [$is.selecteditem]; // live-form listens to selectedItems
 
                             Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
                             $rs.$safeApply($is);

@@ -4,7 +4,7 @@
 WM.module('wm.widgets.live')
     /*Define controller for the liveform in dialog mode - required*/
     .controller('liveFormDialogController', WM.noop)
-    .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', '$templateCache', 'wmToaster', '$filter', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, $templateCache, wmToaster, $filter, LiveWidgetUtils) {
+    .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', 'wmToaster', '$filter', 'LiveWidgetUtils', 'DialogService', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, wmToaster, $filter, LiveWidgetUtils, DialogService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.layouts.liveform", ["wm.layouts", "wm.base.events.successerror"]),
             notifyFor = {
@@ -72,7 +72,7 @@ WM.module('wm.widgets.live')
                             '<div class="basic-btn-grp form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
                         '</form>';
             },
-            controller: function ($scope, Variables) {
+            controller: function ($scope, Variables, DialogService) {
                 $scope.__compileWithIScope = true;
                 /* when the service call ended this function will be called */
                 /* prevformFields is used for showing the previous data when cancel is clicked and also for update calls*/
@@ -203,58 +203,77 @@ WM.module('wm.widgets.live')
                     case "update":
                         requestData.rowData = $scope.rowdata;
                         requestData.prevData = prevData;
-                        variable.updateRecord(requestData, function (response) {
-                            /*Display appropriate error message in case of error.*/
-                            if (response.error) {
-                                /*disable readonly and show the appropriate error*/
-                                wmToaster.show('error', 'ERROR', response.error);
-                                onResult(response, false, event);
-                            } else {
-                                wmToaster.show('success', 'SUCCESS', $scope.updatemessage);
-                                onResult(response, true, event);
-                                if ($scope.ctrl) {
-                                    /* highlight the current updated row */
-                                    $scope.$emit("on-result", "update", response, newForm, updateMode);
-                                } else {
-                                    /*get updated data without refreshing page*/
-                                    variable.update({
-                                        "type": "wm.LiveVariable"
-                                    }, WM.noop);
-                                    onVariableUpdate(response, newForm, updateMode);
+                        if ($scope.subscribedWidget) {
+                            $scope.subscribedWidget.call("update", requestData, function () {
+                                if ($scope.isLayoutDialog) {
+                                    DialogService.hideDialog($scope._dialogid);
                                 }
-                            }
-                        }, function (error) {
-                            wmToaster.show('error', 'ERROR', error);
-                            onResult(error, false, event);
-                        });
+                                $scope.isUpdateMode = false;
+                            });
+                        } else {
+                            variable.updateRecord(requestData, function (response) {
+                                /*Display appropriate error message in case of error.*/
+                                if (response.error) {
+                                    /*disable readonly and show the appropriate error*/
+                                    wmToaster.show('error', 'ERROR', response.error);
+                                    onResult(response, false, event);
+                                } else {
+                                    wmToaster.show('success', 'SUCCESS', $scope.updatemessage);
+                                    onResult(response, true, event);
+                                    if ($scope.ctrl) {
+                                        /* highlight the current updated row */
+                                        $scope.$emit("on-result", "update", response, newForm, updateMode);
+                                    } else {
+                                        /*get updated data without refreshing page*/
+                                        variable.update({
+                                            "type": "wm.LiveVariable",
+                                            "isNotTriggerForRelated": true
+                                        }, WM.noop);
+                                        onVariableUpdate(response, newForm, updateMode);
+                                    }
+                                }
+                            }, function (error) {
+                                wmToaster.show('error', 'ERROR', error);
+                                onResult(error, false, event);
+                            });
+                        }
                         break;
                     case "insert":
-                        variable.insertRecord(requestData, function (response) {
-                            /*Display appropriate error message in case of error.*/
-                            if (response.error) {
-                                wmToaster.show('error', 'ERROR', response.error);
-                                onResult(response, false, event);
-                            } else {
-                                wmToaster.show('success', 'SUCCESS', $scope.insertmessage);
-                                onResult(response, true, event);
-                                /* if successfully inserted  change editable mode to false */
-                                if ($scope.ctrl) {
-                                    /* highlight the current updated row */
-                                    $scope.$emit("on-result", "insert", response, newForm, updateMode);
-                                } else {
-                                    /*get updated data without refreshing page*/
-                                    variable.update({
-                                        "type": "wm.LiveVariable"
-                                    }, WM.noop);
-                                    onVariableUpdate(response, newForm, updateMode);
+                        if ($scope.subscribedWidget) {
+                            $scope.subscribedWidget.call("create", requestData, function () {
+                                if ($scope.isLayoutDialog) {
+                                    DialogService.hideDialog($scope._dialogid);
                                 }
-                            }
-                        }, function (error) {
-                            wmToaster.show('error', 'ERROR', error);
-                            onResult(error, false, event);
-                        });
+                                $scope.isUpdateMode = false;
+                            });
+                        } else {
+                            variable.insertRecord(requestData, function (response) {
+                                /*Display appropriate error message in case of error.*/
+                                if (response.error) {
+                                    wmToaster.show('error', 'ERROR', response.error);
+                                    onResult(response, false, event);
+                                } else {
+                                    wmToaster.show('success', 'SUCCESS', $scope.insertmessage);
+                                    onResult(response, true, event);
+                                    /* if successfully inserted  change editable mode to false */
+                                    if ($scope.ctrl) {
+                                        /* highlight the current updated row */
+                                        $scope.$emit("on-result", "insert", response, newForm, updateMode);
+                                    } else {
+                                        /*get updated data without refreshing page*/
+                                        variable.update({
+                                            "type": "wm.LiveVariable",
+                                            "isNotTriggerForRelated": true
+                                        }, WM.noop);
+                                        onVariableUpdate(response, newForm, updateMode);
+                                    }
+                                }
+                            }, function (error) {
+                                wmToaster.show('error', 'ERROR', error);
+                                onResult(error, false, event);
+                            });
+                        }
                         break;
-
                     case "delete":
                         if ($scope.ctrl) {
                             if (!$scope.ctrl.confirmMessage()) {
@@ -302,6 +321,10 @@ WM.module('wm.widgets.live')
                         $scope.formFields = WM.copy(prevformFields) || $scope.formFields;
                     }
                     $scope.$emit("on-cancel");
+                    $scope.isUpdateMode = false;
+                    if ($scope.isLayoutDialog) {
+                        DialogService.hideDialog($scope._dialogid);
+                    }
                 };
                 /*clear the formFields*/
                 /*Method to save the previous data values. This will be used on form reset*/
@@ -825,6 +848,65 @@ WM.module('wm.widgets.live')
                         });
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        function initDependency(widgetname) {
+                            var dependsonWidget = scope.$root.Widgets[widgetname],
+                                eventChangeHandler;
+                            if (dependsonWidget) {
+                                scope.subscribedWidget = dependsonWidget;
+                                eventChangeHandler = function (event, widgetid, eventName) {
+                                    /* handle operation change */
+                                    switch (eventName) {
+                                    case 'create':
+                                        scope.isSelected = true;
+                                        scope.rowdata = '';
+                                        /*In case of dialog layout set the previous data Array before clearing off*/
+                                        if (scope.isLayoutDialog) {
+                                            scope.setPrevformFields(scope.formFields);
+                                            scope.formFields = [];
+                                        }
+                                        scope.new();
+                                        if (scope.isLayoutDialog) {
+                                            DialogService.showDialog(scope._dialogid, { 'resolve': {}, 'scope' : scope });
+                                        }
+                                        break;
+                                    case 'update':
+                                        scope.isSelected = true;
+                                        /*In case of dialog layout set the previous data Array before clearing off*/
+                                        if (scope.isLayoutDialog) {
+                                            scope.setPrevformFields(scope.formFields);
+                                            scope.formFields = [];
+                                        }
+                                        scope.edit();
+                                        scope.$root.$safeApply(scope);
+                                        if (scope.isLayoutDialog) {
+                                            /*Open the dialog in view or edit mode based on the defaultmode property*/
+                                            scope.isUpdateMode = true;
+                                            DialogService.showDialog(scope._dialogid, {'resolve': {}, 'scope': scope});
+                                        }
+                                        break;
+                                    case 'read':
+                                        scope.isUpdateMode = false;
+                                        break;
+                                    case 'delete':
+                                        scope.subscribedWidget.call('delete', {"row": scope.constructDataObject(scope.formFields)});
+                                        break;
+                                    }
+                                };
+                                handlers.push(dependsonWidget.$watch('selectedItems', function (newVal) {
+                                    if (newVal && newVal.length) {
+                                        scope.rowdata = newVal[newVal.length - 1];
+                                        if (scope.isUpdateMode) {
+                                            eventChangeHandler(null, dependsonWidget.widgetid, "update");
+                                        }
+                                    }
+                                }));
+                                handlers.push($rootScope.$on('wm-event', eventChangeHandler));
+                            }
+                        }
+                        if (attrs.dependson && CONSTANTS.isRunMode) {
+                            initDependency(attrs.dependson);
+                        }
                     }
                 };
             }

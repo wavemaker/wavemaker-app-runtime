@@ -1,4 +1,4 @@
-/*global WM, moment, _*/
+/*global WM, moment, _, confirm*/
 
 /**
  * @ngdoc service
@@ -270,7 +270,7 @@ WM.module('wm.widgets.live')
                     dateTypes = ['date', 'datetime'],
                     textTypes = ['text', 'password', 'textarea'],
                     excludeMaxValTypes = ['rating'],
-                    eventTypes = getEventTypes();
+                    evtTypes = getEventTypes();
                 Object.keys(fieldDef).forEach(function (field) {
                     if (fieldDef[field]) {
                         if (field === 'key' || field === 'field') {
@@ -290,7 +290,7 @@ WM.module('wm.widgets.live')
                             }
                         } else if (_.includes(textTypes, type) && field === 'maxvalue') {
                             fields += ' maxchars="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (_.includes(eventTypes, field)) {
+                        } else if (_.includes(evtTypes, field)) {
                             fields += ' ' + Utils.hyphenate(field) + '="{{formFields[' + index + '].' + field + '}}"';
                         } else if (!(_.includes(excludeMaxValTypes, type))) {
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
@@ -734,4 +734,147 @@ WM.module('wm.widgets.live')
             this.getCustomFieldKey = getCustomFieldKey;
             this.getStepValue = getStepValue;
         }
-    ]);
+    ])
+    .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {
+        'use strict';
+        var getRecords = function (options, success, error) {
+                var variable = options.variable;
+
+                variable.update({}, function (response) {
+                    Utils.triggerFn(success, response);
+                }, function (err) {
+                    Utils.triggerFn(error, err);
+                });
+            },
+            insertRecord = function (options, success, error) {
+                var variable = options.variable,
+                    dataObject = {
+                        'row': options.row,
+                        'transform': true,
+                        'multipartData': options.multipartData
+                    };
+
+                variable.insertRecord(dataObject, function (response) {
+                    Utils.triggerFn(success, response);
+                }, function (err) {
+                    Utils.triggerFn(error, err);
+                });
+            },
+            updateRecord = function (options, success, error) {
+                var variable = options.variable,
+                    dataObject = {
+                        'row': options.row,
+                        'prevData': options.prevData,
+                        'multipartData': options.multipartData,
+                        'transform': true
+                    };
+
+                variable.updateRecord(dataObject, function (response) {
+                    Utils.triggerFn(success, response);
+                }, function (err) {
+                    Utils.triggerFn(error, err);
+                });
+            },
+            deleteRecord = function (options, success, error) {
+                var variable = options.variable,
+                    confirmMsg = options.scope.confirmdelete || 'Are you sure you want to delete this?',
+                    dataObject = {
+                        'row': options.row,
+                        'transform': true
+                    };
+
+                if (variable.propertiesMap && variable.propertiesMap.tableType === 'VIEW') {
+                    wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
+                    $rs.$safeApply(options.scope);
+                    return;
+                }
+                /* delete if user confirm to delete*/
+                if (confirm(confirmMsg)) {
+
+                    variable.deleteRecord(dataObject, function (response) {
+                        Utils.triggerFn(success, response);
+                    }, function (err) {
+                        Utils.triggerFn(error, err);
+                    });
+                } else {
+                    Utils.triggerFn(options.cancelDeleteCallback);
+                }
+            },
+            performOperation = function (operation, options) {
+                var fn,
+                    scope = options.scope,
+                    successHandler = function (response) {
+                        Utils.triggerFn(scope.liveActionSuccess, operation, response);
+                        Utils.triggerFn(options.success, response);
+                    },
+                    errorHandler = function (error) {
+                        Utils.triggerFn(scope.liveActionError, operation, error);
+                        wmToaster.show('error', 'ERROR', error);
+                        Utils.triggerFn(options.error, error);
+                    };
+
+                /* decide routine based on CRUD operation to be performed */
+                switch (operation) {
+                case 'create':
+                    fn = insertRecord;
+                    break;
+                case 'update':
+                    fn = updateRecord;
+                    break;
+                case 'delete':
+                    fn = deleteRecord;
+                    break;
+                case 'read':
+                    fn = getRecords;
+                    break;
+                }
+
+                fn(options, function (response) {
+                    if (response.error) {
+                        errorHandler(response.error);
+                        return;
+                    }
+                    if (fn !== 'read') {
+                        getRecords(options, function () {
+                            successHandler(response);
+                        }, function () {
+                            successHandler(response);
+                        });
+                    } else {
+                        successHandler(response);
+                    }
+                }, function (error) {
+                    errorHandler(error);
+                });
+            };
+
+        return {
+            'restrict': 'A',
+            'likn': {
+                'post': function ($is, $el) {
+                    $is.addRow = function () {
+                        $rs.$emit('wm-event', $is.name, 'create');
+                    };
+                    $is.updateRow = function () {
+                        $rs.$emit('wm-event', $is.name, 'update');
+                    };
+                    $is.deleteRow = function () {
+                        $rs.$emit('wm-event', $is.name, 'delete');
+                    };
+
+                    /* API exposed to make CRUD operations */
+                    $is.call = function (operation, data, success, error) {
+                        var $elScope = $el.scope(),
+                            variableName = Utils.getVariableName($is, $elScope);
+
+                        data.scope = data.scope || $is;
+                        data.success = success;
+                        data.error = error;
+                        data.variable = $elScope.Variables[variableName];
+
+                        performOperation(operation, data);
+                    };
+                }
+            }
+        };
+    }]);

@@ -1105,7 +1105,7 @@ WM.module('wm.utils', [])
             }
             try {
                 /*obtaining json from editor content string*/
-                return JSON.parse(content);
+                return WM.isObject(content) ? content : JSON.parse(content);
             } catch (e) {
                 /*terminating execution if new variable object is not valid json.*/
                 return false;

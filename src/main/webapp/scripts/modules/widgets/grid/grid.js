@@ -1,4 +1,4 @@
-/*global WM, wmGrid, confirm, window*/
+/*global WM, wmGrid, confirm, window, wm*/
 /*jslint sub: true */
 /*jslint todo: true */
 
@@ -89,19 +89,19 @@
  * @param {string=} beforerecordsupdate
  *                  Callback function which will be triggered when the record is set using the data-navigator.
  * @example
- *  <example module="wmCore">
- *      <file name="index.html">
- *          <div data-ng-controller="Ctrl" class="wm-app" style="height: 100%;">
- *              <wm-grid readonlygrid="false" name="grid3" dataset="{{data}}" shownavigation="false" enablesort="false">
- *              </wm-grid>
- *          </div>
- *      </file>
- *      <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.data = [{"deptid":1,"name":"Engineering","budget":1936760,"q1":445455,"q2":522925,"q3":426087,"q4":542293,"deptcode":"Eng","location":"San Francisco","tenantid":1},{"deptid":2,"name":"Marketing","budget":1129777,"q1":225955,"q2":271146,"q3":327635,"q4":305040,"deptcode":"Mktg","location":"New York","tenantid":1},{"deptid":3,"name":"General and Admin","budget":1452570,"q1":435771,"q2":290514,"q3":348617,"q4":377668,"deptcode":"G&A","location":"San Francisco","tenantid":1},{"deptid":4,"name":"Sales","budget":2743744,"q1":493874,"q2":658499,"q3":713373,"q4":877998,"deptcode":"Sales","location":"Austin","tenantid":1},{"deptid":5,"name":"Professional Services","budget":806984,"q1":201746,"q2":201746,"q3":177536,"q4":225955,"deptcode":"PS","location":"San Francisco","tenantid":2}];
- *          }
- *      </file>
- *  </example>
+   <example module="wmCore">
+       <file name="index.html">
+           <div data-ng-controller="Ctrl" class="wm-app" style="height: 100%;">
+               <wm-grid readonlygrid="false" name="grid3" dataset="{{data}}" shownavigation="false" enablesort="false">
+               </wm-grid>
+           </div>
+       </file>
+       <file name="script.js">
+           function Ctrl($scope) {
+               $scope.data = [{"deptid":1,"name":"Engineering","budget":1936760,"q1":445455,"q2":522925,"q3":426087,"q4":542293,"deptcode":"Eng","location":"San Francisco","tenantid":1},{"deptid":2,"name":"Marketing","budget":1129777,"q1":225955,"q2":271146,"q3":327635,"q4":305040,"deptcode":"Mktg","location":"New York","tenantid":1},{"deptid":3,"name":"General and Admin","budget":1452570,"q1":435771,"q2":290514,"q3":348617,"q4":377668,"deptcode":"G&A","location":"San Francisco","tenantid":1},{"deptid":4,"name":"Sales","budget":2743744,"q1":493874,"q2":658499,"q3":713373,"q4":877998,"deptcode":"Sales","location":"Austin","tenantid":1},{"deptid":5,"name":"Professional Services","budget":806984,"q1":201746,"q2":201746,"q3":177536,"q4":225955,"deptcode":"PS","location":"San Francisco","tenantid":2}];
+           }
+       </file>
+ </example>
  */
 WM.module('wm.widgets.grid')
     .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils) {
@@ -130,11 +130,12 @@ WM.module('wm.widgets.grid')
                 'gridclass': true,
                 'nodatamessage': true,
                 'loadingdatamsg': true,
-                'filternullrecords': true
+                'filternullrecords': true,
+                'allowinlineedit': true
             },
             getObjectIndexInArray = function (key, value, arr) {
-                var index = -1;
-                for (var i = 0; i < arr.length; i++) {
+                var index = -1, i;
+                for (i = 0; i < arr.length; i++) {
                     if (arr[i][key] === value) {
                         index = i;
                         break;
@@ -238,7 +239,7 @@ WM.module('wm.widgets.grid')
                     },
                     'post': function (scope, element, attrs) {
                         /****condition for old property name for grid title*****/
-                        if( attrs.gridcaption && !attrs.title ){
+                        if (attrs.gridcaption && !attrs.title) {
                             scope.title = scope.gridcaption;
                         }
 
@@ -320,14 +321,14 @@ WM.module('wm.widgets.grid')
 
                         /*This is expose columns property to user so that he can programatically
                          * use columns to do some custom logic */
-                        scope.gridOptions.colDefs.map(function(column) {
+                        scope.gridOptions.colDefs.map(function (column) {
                             scope.columns[column.field] = column;
                         });
 
                         scope.datagridElement.datagrid(scope.gridOptions);
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-                        function propertyChangeHandler(key, newVal, oldVal) {
+                        function propertyChangeHandler(key, newVal) {
                             /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
                             switch (key) {
                             case 'width':
@@ -470,6 +471,21 @@ WM.module('wm.widgets.grid')
                             case 'filternullrecords':
                                 scope.datagridElement.datagrid('option', 'filterNullRecords', newVal);
                                 break;
+                            case 'allowinlineedit':
+                                if (!newVal || newVal === 'false') {
+                                    scope.datagridElement.datagrid('option', {
+                                        'allowInlineEditing': false,
+                                        'multiselect': false,
+                                        'allowAddNewRow': false
+                                    });
+                                } else {
+                                    scope.datagridElement.datagrid('option', {
+                                        'allowInlineEditing': true,
+                                        'multiselect': true,
+                                        'allowAddNewRow': true
+                                    });
+                                }
+                                break;
                             }
                         }
 
@@ -504,6 +520,20 @@ WM.module('wm.widgets.grid')
                             }));
                         }
 
+                        if (!scope.allowinlineedit || scope.allowinlineedit === 'false') {
+                            scope.datagridElement.datagrid('option', {
+                                'allowInlineEditing': false,
+                                'multiselect': false,
+                                'allowAddNewRow': false
+                            });
+                        } else {
+                            scope.datagridElement.datagrid('option', {
+                                'allowInlineEditing': true,
+                                'multiselect': true,
+                                'allowAddNewRow': true
+                            });
+                        }
+
                         $timeout(function () {
                             scope.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
@@ -512,7 +542,7 @@ WM.module('wm.widgets.grid')
                         //Will be called after setting grid column property.
                         scope.reRender = function () {
                             scope.datagridElement.datagrid(scope.gridOptions);
-                        }
+                        };
                     }
                 };
             }
@@ -522,7 +552,6 @@ WM.module('wm.widgets.grid')
         "$rootScope",
         "$scope",
         "$timeout",
-        "$element",
         "$compile",
         "Variables",
         "CONSTANTS",
@@ -530,7 +559,7 @@ WM.module('wm.widgets.grid')
         "dateFilter",
         "wmToaster",
         "$servicevariable",
-        function ($rootScope, $scope, $timeout, $element, $compile, Variables, CONSTANTS, Utils, dateFilter, wmToaster, $servicevariable) {
+        function ($rootScope, $scope, $timeout, $compile, Variables, CONSTANTS, Utils, dateFilter, wmToaster, $servicevariable) {
             'use strict';
             var columnObj = {
                     rowOperationsColumn: {
@@ -815,8 +844,7 @@ WM.module('wm.widgets.grid')
                         data = record[prop];
                         /* If fieldDefs are missing, show all columns in data. */
                         isDisplayed = ($scope.fieldDefs.length && WM.isDefined($scope.fieldDefs[index]) && (CONSTANTS.isMobile ?
-                            $scope.fieldDefs[index].mobileDisplay : $scope.fieldDefs[index].pcDisplay)) ||
-                        true;
+                                $scope.fieldDefs[index].mobileDisplay : $scope.fieldDefs[index].pcDisplay)) || true;
                         /*Validating only the displayed fields*/
                         if (isDisplayed) {
                             return (data === null || data === undefined || data === '');
@@ -897,66 +925,80 @@ WM.module('wm.widgets.grid')
                         }
                     }
                 },
-                insertRecord = function (rowData, evt) {
+                insertRecord = function (options) {
                     /*TODO To be uncommented after onRowinsert gets the right value i.e., onRowinsert should have the value defined from the widget events.*/
                     /*if (WM.isDefined($scope.onRowinsert)) {
                         $scope.onRowinsert(rowData);
                         return;
                     }*/
 
-                    var variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                    var variable = $scope.gridElement.scope().Variables[$scope.variableName],
+                        dataObject = {
+                            "row": options.row,
+                            "transform": true,
+                            "scope": $scope.gridElement.scope(),
+                            "multipartData": options.multipartData
+                        };
+
                     if (!variable) {
                         return;
                     }
-
-                    variable.insertRecord({
-                        "row": rowData,
-                        "transform": true,
-                        "scope": $scope.gridElement.scope()
-                    }, function (response) {
+                    variable.insertRecord(dataObject, function (response) {
                         /*Display appropriate error message in case of error.*/
                         if (response.error) {
                             wmToaster.show('error', 'ERROR', response.error);
+                            Utils.triggerFn(options.error, response);
                         } else {
-                            var row = $(evt.target).closest('tr');
-                            $scope.datagridElement.datagrid('hideRowEditMode', row);
+                            if ($scope.allowinlineedit && $scope.allowinlineedit !== "false" && options.event) {
+                                var row = WM.element(options.event.target).closest('tr');
+                                $scope.datagridElement.datagrid('hideRowEditMode', row);
+                            }
                             wmToaster.show('success', 'SUCCESS', 'Record added successfully');
                             $scope.initiateHighlightRow('last', response, $scope.primaryKey);
+                            Utils.triggerFn(options.success, response);
                         }
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
+                        Utils.triggerFn(options.error, error);
                     });
                 },
-                updateRecord = function (rowData, prevData, evt) {
+                updateRecord = function (options) {
                     /*TODO To be uncommented after onRowupdated gets the right value i.e., onRowupdated should have the value defined from the widget events.*/
                     /*if (WM.isDefined($scope.onRowupdated)) {
                         $scope.onRowupdated(rowData);
                         return;
                     }*/
-                    var variable = $scope.gridElement.scope().Variables[$scope.variableName];
+                    var variable = $scope.gridElement.scope().Variables[$scope.variableName],
+                        dataObject = {
+                            "row": options.row,
+                            "prevData": options.prevData,
+                            "multipartData": options.multipartData,
+                            "transform": true,
+                            "scope": $scope.gridElement.scope()
+                        };
+
                     if (!variable) {
                         return;
                     }
-
-                    variable.updateRecord({
-                        "row": rowData,
-                        "transform": true,
-                        "prevData": prevData,
-                        "scope": $scope.gridElement.scope()
-                    }, function (response) {
+                    variable.updateRecord(dataObject, function (response) {
                         /*Display appropriate error message in case of error.*/
                         if (response.error) {
                             /*disable readonly and show the appropriate error*/
                             wmToaster.show('error', 'ERROR', response.error);
+                            Utils.triggerFn(options.error, response);
                         } else {
+                            if (options.event) {
+                                var row = WM.element(options.event.target).closest('tr');
+                                $scope.datagridElement.datagrid('hideRowEditMode', row);
+                            }
                             $scope.operationType = "";
-                            var row = $(evt.target).closest('tr');
-                            $scope.datagridElement.datagrid('hideRowEditMode', row);
                             wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
                             $scope.initiateHighlightRow('current', response, $scope.primaryKey);
+                            Utils.triggerFn(options.success, response);
                         }
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
+                        Utils.triggerFn(options.error, error);
                     });
                 },
             /*Function to remove the column containing row operations.*/
@@ -1010,7 +1052,7 @@ WM.module('wm.widgets.grid')
                     }
                     return details;
                 },
-                isBoundToView = function() {
+                isBoundToView = function () {
                     return $scope.dataset.propertiesMap && $scope.dataset.propertiesMap.tableType === 'VIEW';
                 };
             /* Function to reset the column definitions dynamically. */
@@ -1054,17 +1096,20 @@ WM.module('wm.widgets.grid')
             $scope.selectedItems = [];
             $scope.toggleVariableHandlerAttached = false;
 
-            $scope.$watch('gridData', function (newValue, oldValue) {
+            $scope.$watch('gridData', function (newValue) {
+                var startRowIndex,
+                    gridOptions;
+
                 if (WM.isDefined(newValue)) {
                     /*Setting the serial no's only when show navigation is enabled and data navigator is compiled
                      and its current page is set properly*/
                     if ($scope.shownavigation && $scope.dataNavigator && $scope.dataNavigator.currentPage) {
-                        var startRowIndex = (($scope.dataNavigator.currentPage - 1) * $scope.dataNavigator.maxResults) + 1;
+                        startRowIndex = (($scope.dataNavigator.currentPage - 1) * $scope.dataNavigator.maxResults) + 1;
                         $scope.setDataGridOption('startRowIndex', startRowIndex);
                     }
                     /* If colDefs are available, but not already set on the datagrid, then set them.
                      * This will happen while switching from markup to design tab. */
-                    var gridOptions = $scope.datagridElement.datagrid('getOptions');
+                    gridOptions = $scope.datagridElement.datagrid('getOptions');
                     if (!gridOptions.colDefs.length && $scope.fieldDefs.length) {
                         $scope.setDataGridOption('colDefs', WM.copy($scope.fieldDefs));
                     }
@@ -1077,7 +1122,7 @@ WM.module('wm.widgets.grid')
                 if (WM.isUndefined(shouldInsert) || shouldInsert) {
                     $scope.datagridElement.datagrid('addNewRow');
                     $scope.$emit('add-new-row');
-                    $rootScope.$safeApply($scope);
+                    $rootScope.$emit("wm-event", $scope.widgetid, "create");
                 }
             };
 
@@ -1121,18 +1166,19 @@ WM.module('wm.widgets.grid')
                     deleteRecord(rowData, cancelRowDeleteCallback);
                 },
                 onRowInsert: function (rowData, e) {
-                    insertRecord(rowData, e);
+                    insertRecord({"row": rowData, event: e});
                 },
                 beforeRowUpdate: function (rowData, e, eventName) {
                     /*TODO: Check why widgetid is undefined here.*/
                     $scope.$emit('update-row', $scope.widgetid, rowData, eventName);
                     $scope.prevData = WM.copy(rowData);
                     $rootScope.$safeApply($scope);
+                    $rootScope.$emit("wm-event", $scope.widgetid, "update");
                     /*TODO: Bind this event.*/
 //                    $scope.beforeRowupdate({$data: rowData, $event: e});
                 },
                 afterRowUpdate: function (rowData, e) {
-                    updateRecord(rowData, $scope.prevData, e);
+                    updateRecord({"row": rowData, "prevData": $scope.prevData, "event": e});
                 },
                 onSetRecord: function (rowData, e) {
                     $scope.onSetrecord({$data: rowData, $event: e});
@@ -1149,11 +1195,11 @@ WM.module('wm.widgets.grid')
                 setGridEditMode: function (val) {
                     $scope.isGridEditMode = val;
                 },
-                noChangesDetected: function() {
+                noChangesDetected: function () {
                     wmToaster.show('info', '', 'No changes detected');
                     $scope.$root.$safeApply($scope);
                 },
-                afterSort: function() {
+                afterSort: function () {
                     $rootScope.$safeApply($scope);
                 }
             };
@@ -1202,15 +1248,17 @@ WM.module('wm.widgets.grid')
             /*Function to dynamically fetch column definitions.*/
             $scope.fetchDynamicColumnDefs = function () {
                 var fields,
-                    result;
+                    result,
+                    f,
+                    dataKeys;
 
                 /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
                 result = fetchReferenceDetails();
                 if (result.fields) {
-                    var f = result.fields,
-                        dataKeys = Object.keys(f),
-                        fields = {};
-                    dataKeys.forEach(function(key) {
+                    f = result.fields;
+                    dataKeys = Object.keys(f);
+                    fields = {};
+                    dataKeys.forEach(function (key) {
                         fields[key] = '';
                     });
                 } else if (result.relatedFieldType) {
@@ -1396,9 +1444,9 @@ WM.module('wm.widgets.grid')
                             if (variableName === null) {
                                 var widgetBindingDetails = fetchReferenceDetails();
                                 if (!widgetBindingDetails.fields) {
-                                    var relatedTables = widgetBindingDetails.referenceVariable && widgetBindingDetails.referenceVariable.relatedTables || [];
+                                    var relatedTables = (widgetBindingDetails.referenceVariable && widgetBindingDetails.referenceVariable.relatedTables) || [];
                                     variableName = widgetBindingDetails.referenceVariableName;
-                                    relatedTables.forEach(function(val) {
+                                    relatedTables.forEach(function (val) {
                                         if (val.columnName === widgetBindingDetails.relatedFieldName) {
                                             variableName = val.watchOn;
                                         }
@@ -1455,7 +1503,7 @@ WM.module('wm.widgets.grid')
                             if ($scope.dataset.propertiesMap && $scope.dataset.propertiesMap.columns) {
                                 $scope.primaryKey = variableObj.getPrimaryKey();
                             }
-                            $scope.contentBaseUrl = (( variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
+                            $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                         }
                         /*if the grid is not bound to widgets*/
                     } else if ($scope.binddataset.indexOf('bind:Widgets') === -1) {
@@ -1518,7 +1566,7 @@ WM.module('wm.widgets.grid')
                         $scope.newcolumns = false;
                     }
                     /*Set the type of the column to the default variable type*/
-                    if($scope.fieldDefs && $scope.columnDefsExists() && newVal.propertiesMap) {
+                    if ($scope.fieldDefs && $scope.columnDefsExists() && newVal.propertiesMap) {
                         columns = Utils.fetchPropertiesMapColumns(newVal.propertiesMap);
                         $scope.fieldDefs.forEach(function (fieldDef) {
                             Object.keys(columns).forEach(function (key) {
@@ -1624,13 +1672,13 @@ WM.module('wm.widgets.grid')
                     if (propertiesMap) {
                         columnDef.type = columns[columnDef.field].type;
                         columnDef.primaryKey = columns[columnDef.field].isPrimaryKey;
-                        columnDef.generator = columns[columnDef.field].generator
+                        columnDef.generator = columns[columnDef.field].generator;
                         columnDef.readonly = WM.isDefined(columns[columnDef.field].readonly) ?
-                            columns[columnDef.field].readonly === "true" : (columnDef.generator === 'identity' && columns[columnDef.field].isRelatedPk !== 'true');
+                                    columns[columnDef.field].readonly === "true" : (columnDef.generator === 'identity' && columns[columnDef.field].isRelatedPk !== 'true');
 
                         /*Prevent searching and sorting on non-primary key columns in related tables.*/
                         columnDef.searchable = columnDef.sortable = !(columnDef.field && columnDef.field.indexOf('.') !== -1 && !columnDef.primaryKey);
-                        if (columnDef.type === 'timestamp' || columnDef.type === 'datetime' || columnDef.type === 'date' ) {
+                        if (columnDef.type === 'timestamp' || columnDef.type === 'datetime' || columnDef.type === 'date') {
                             if (!columnDef.formatpattern) {
                                 columnDef.formatpattern = 'toDate';
                             }
@@ -1768,6 +1816,22 @@ WM.module('wm.widgets.grid')
                 }
             };
 
+            $scope.call = function (operation, data, success, error) {
+                data.success = success;
+                data.error = error;
+                switch (operation) {
+                case "create":
+                    insertRecord(data);
+                    break;
+                case "update":
+                    updateRecord(data);
+                    break;
+                case "delete":
+                    deleteRecord(data);
+                    break;
+                }
+            };
+
         }])
 
 /**
@@ -1801,30 +1865,30 @@ WM.module('wm.widgets.grid')
  *                  The value provided will be evaluated in the 'dataset' or 'scopedataset' of the parent 'wmGrid' and the data will be displayed in the column.
  *
  * @example
- * <example module="wmCore">
- *     <file name="index.html">
- *         <div data-ng-controller="Ctrl" class="wm-app">
- *             <wm-grid readonlygrid="true" dataset="bind:Variables.gridVariable.dataSet">
- *                 <wm-grid-column binding="deptid" caption="deptid" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
- *                 <wm-grid-column binding="budget" caption="budget" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
- *                 <wm-grid-column binding="location" caption="location" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
- *                 <wm-grid-column binding="q1" caption="q1" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
- *                 <wm-grid-column binding="q2" caption="q2" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
- *                 <wm-grid-column binding="q3" caption="q3" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
- *                 <wm-grid-column binding="name" caption="name" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
- *                 <wm-grid-column binding="deptcode" caption="deptcode" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
- *             </wm-grid>
- *         </div>
- *     </file>
- *     <file name="script.js">
- *         function Ctrl($scope) {
- *             var deptData = '{"name":"HrdbDepartmentData","type":"Department","isList":true,"owner":"App","editJson":"","isBound":"","dataSet":{"data":[{"deptid":1,"name":"Engineering","budget":1936760,"q1":445455,"q2":522925,"q3":426087,"q4":542293,"deptcode":"Eng","location":"San Francisco","tenantid":1},{"deptid":2,"name":"Marketing","budget":1129777,"q1":225955,"q2":271146,"q3":327635,"q4":305040,"deptcode":"Mktg","location":"New York","tenantid":1},{"deptid":3,"name":"General and Admin","budget":1452570,"q1":435771,"q2":290514,"q3":348617,"q4":377668,"deptcode":"G&A","location":"San Francisco","tenantid":1},{"deptid":4,"name":"Sales","budget":2743744,"q1":493874,"q2":658499,"q3":713373,"q4":877998,"deptcode":"Sales","location":"Austin","tenantid":1},{"deptid":5,"name":"Professional Services","budget":806984,"q1":201746,"q2":201746,"q3":177536,"q4":225955,"deptcode":"PS","location":"San Francisco","tenantid":2}],"propertiesMap":{"columns":[{"fieldName":"deptid","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"DEPTID","isPrimaryKey":true,"notNull":true,"length":255,"precision":19,"generator":"identity","isRelated":false,"defaultValue":null},{"fieldName":"name","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"NAME","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"budget","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"BUDGET","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q1","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q1","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q2","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q2","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q3","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q3","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q4","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q4","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"deptcode","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"DEPTCODE","isPrimaryKey":false,"notNull":false,"length":20,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"location","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"LOCATION","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"tenantid","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"TENANTID","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null}],"primaryKeys":["deptid"],"entityName":"Department","fullyQualifiedName":"com.hrdb.Department","tableType":"TABLE"},"relatedData":{},"pagingOptions":{"dataSize":5,"maxResults":20}},"dataBinding":{},"saveInPhonegap":false,"firstRow":0,"maxResults":20,"designMaxResults":10,"service":"","operation":"read","operationType":"","startUpdate":true,"autoUpdate":false,"inFlightBehavior":"executeLast","transformationRequired":false,"columnField":"","dataField":"","onCanUpdate":"","onBeforeUpdate":"","onResult":"","onSuccess":"","onError":"","onPrepareSetData":"","liveSource":"hrdb","ignoreCase":false,"matchMode":"start","orderBy":"","category":"wm.LiveVariable","isDefault":true,"_id":"wm-wm.LiveVariable1428412293661","package":"com.hrdb.Department","tableName":"DEPARTMENT","tableType":"TABLE","propertiesMap":{"columns":[{"fieldName":"deptid","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"DEPTID","isPrimaryKey":true,"notNull":true,"length":255,"precision":19,"generator":"identity","isRelated":false,"defaultValue":null},{"fieldName":"name","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"NAME","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"budget","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"BUDGET","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q1","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q1","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q2","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q2","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q3","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q3","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q4","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q4","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"deptcode","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"DEPTCODE","isPrimaryKey":false,"notNull":false,"length":20,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"location","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"LOCATION","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"tenantid","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"TENANTID","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null}],"primaryKeys":["deptid"],"entityName":"Department","fullyQualifiedName":"com.hrdb.Department","tableType":"TABLE"},"bindCount":1}',
- *                 deptVar = JSON.parse(deptData);
- *             deptVar.getPrimaryKey = function () {return ["deptid"]};
- *             $scope.Variables = {"gridVariable": deptVar};
- *         }
- *     </file>
- * </example>
+  <example module="wmCore">
+      <file name="index.html">
+          <div data-ng-controller="Ctrl" class="wm-app">
+              <wm-grid readonlygrid="true" dataset="bind:Variables.gridVariable.dataSet">
+                  <wm-grid-column binding="deptid" caption="deptid" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
+                  <wm-grid-column binding="budget" caption="budget" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
+                  <wm-grid-column binding="location" caption="location" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
+                  <wm-grid-column binding="q1" caption="q1" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
+                  <wm-grid-column binding="q2" caption="q2" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
+                  <wm-grid-column binding="q3" caption="q3" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
+                  <wm-grid-column binding="name" caption="name" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
+                  <wm-grid-column binding="deptcode" caption="deptcode" pcdisplay="true" mobiledisplay="true"></wm-grid-column>
+              </wm-grid>
+          </div>
+      </file>
+      <file name="script.js">
+          function Ctrl($scope) {
+              var deptData = '{"name":"HrdbDepartmentData","type":"Department","isList":true,"owner":"App","editJson":"","isBound":"","dataSet":{"data":[{"deptid":1,"name":"Engineering","budget":1936760,"q1":445455,"q2":522925,"q3":426087,"q4":542293,"deptcode":"Eng","location":"San Francisco","tenantid":1},{"deptid":2,"name":"Marketing","budget":1129777,"q1":225955,"q2":271146,"q3":327635,"q4":305040,"deptcode":"Mktg","location":"New York","tenantid":1},{"deptid":3,"name":"General and Admin","budget":1452570,"q1":435771,"q2":290514,"q3":348617,"q4":377668,"deptcode":"G&A","location":"San Francisco","tenantid":1},{"deptid":4,"name":"Sales","budget":2743744,"q1":493874,"q2":658499,"q3":713373,"q4":877998,"deptcode":"Sales","location":"Austin","tenantid":1},{"deptid":5,"name":"Professional Services","budget":806984,"q1":201746,"q2":201746,"q3":177536,"q4":225955,"deptcode":"PS","location":"San Francisco","tenantid":2}],"propertiesMap":{"columns":[{"fieldName":"deptid","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"DEPTID","isPrimaryKey":true,"notNull":true,"length":255,"precision":19,"generator":"identity","isRelated":false,"defaultValue":null},{"fieldName":"name","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"NAME","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"budget","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"BUDGET","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q1","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q1","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q2","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q2","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q3","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q3","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q4","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q4","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"deptcode","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"DEPTCODE","isPrimaryKey":false,"notNull":false,"length":20,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"location","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"LOCATION","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"tenantid","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"TENANTID","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null}],"primaryKeys":["deptid"],"entityName":"Department","fullyQualifiedName":"com.hrdb.Department","tableType":"TABLE"},"relatedData":{},"pagingOptions":{"dataSize":5,"maxResults":20}},"dataBinding":{},"saveInPhonegap":false,"firstRow":0,"maxResults":20,"designMaxResults":10,"service":"","operation":"read","operationType":"","startUpdate":true,"autoUpdate":false,"inFlightBehavior":"executeLast","transformationRequired":false,"columnField":"","dataField":"","onCanUpdate":"","onBeforeUpdate":"","onResult":"","onSuccess":"","onError":"","onPrepareSetData":"","liveSource":"hrdb","ignoreCase":false,"matchMode":"start","orderBy":"","category":"wm.LiveVariable","isDefault":true,"_id":"wm-wm.LiveVariable1428412293661","package":"com.hrdb.Department","tableName":"DEPARTMENT","tableType":"TABLE","propertiesMap":{"columns":[{"fieldName":"deptid","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"DEPTID","isPrimaryKey":true,"notNull":true,"length":255,"precision":19,"generator":"identity","isRelated":false,"defaultValue":null},{"fieldName":"name","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"NAME","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"budget","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"BUDGET","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q1","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q1","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q2","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q2","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q3","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q3","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"q4","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"Q4","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"deptcode","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"DEPTCODE","isPrimaryKey":false,"notNull":false,"length":20,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"location","type":"string","hibernateType":"string","fullyQualifiedType":"string","columnName":"LOCATION","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null},{"fieldName":"tenantid","type":"integer","hibernateType":"integer","fullyQualifiedType":"integer","columnName":"TENANTID","isPrimaryKey":false,"notNull":false,"length":255,"precision":19,"generator":null,"isRelated":false,"defaultValue":null}],"primaryKeys":["deptid"],"entityName":"Department","fullyQualifiedName":"com.hrdb.Department","tableType":"TABLE"},"bindCount":1}',
+                 deptVar = JSON.parse(deptData);
+              deptVar.getPrimaryKey = function () {return ["deptid"]};
+              $scope.Variables = {"gridVariable": deptVar};
+          }
+      </file>
+  </example>
  */
     .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', function ($parse, Utils, CONSTANTS) {
         'use strict';
@@ -1842,8 +1906,7 @@ WM.module('wm.widgets.grid')
                          * Class : ColumnDef
                          * Discription : ColumnDef is intermediate class which extends FieldDef base class
                          * */
-                        scope.ColumnDef = function () {
-                        }
+                        scope.ColumnDef = function () {};
 
                         scope.ColumnDef.prototype = new wm.baseClasses.FieldDef();
 
@@ -1885,21 +1948,22 @@ WM.module('wm.widgets.grid')
                             updateCustomExpression = function (column) {
                                 var widgetType = column.widgetType,
                                     field = column.field,
-                                    val = widgetType === 'button' ? "{{row.getProperty('" + field + "') || 'Button'}}" : "{{row.getProperty('" + field + "')}}";
+                                    val = widgetType === 'button' ? "{{row.getProperty('" + field + "') || 'Button'}}" : "{{row.getProperty('" + field + "')}}",
+                                    widgetTitle;
                                 if (!widgetType) {
                                     return;
                                 }
                                 switch (widgetType) {
-                                    case 'image':
-                                        if (column.type === 'blob') {
-                                            column.customExpression = '<img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
-                                        }
-                                        column.customExpression = '<img data-ng-src="' + val + '" alt="' + val + '"/>';
-                                        break;
-                                    case 'button':
-                                        var widgetTitle = val || '';
-                                        column.customExpression = '<wm-button caption="' + widgetTitle + '" show="true" class="btn-sm btn-primary"></wm-button>';
-                                        break;
+                                case 'image':
+                                    if (column.type === 'blob') {
+                                        column.customExpression = '<img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
+                                    }
+                                    column.customExpression = '<img data-ng-src="' + val + '" alt="' + val + '"/>';
+                                    break;
+                                case 'button':
+                                    widgetTitle = val || '';
+                                    column.customExpression = '<wm-button caption="' + widgetTitle + '" show="true" class="btn-sm btn-primary"></wm-button>';
+                                    break;
                                 }
                             };
 
