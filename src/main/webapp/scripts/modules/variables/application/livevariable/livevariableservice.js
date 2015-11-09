@@ -68,16 +68,25 @@ wm.variables.services.$liveVariable = [
                 if (!responseData) {
                     return;
                 }
-                /*If the table has a composite key, key data will be wrapped in an object with the key "id".
-                 * Hence, the data is formatted to remove the extra key and merge it into the content.*/
+                var formatData = function (rowData) {
+                    _.each(rowData, function (value, key) {
+                        var tempData;
+                        if (WM.isObject(value)) {
+                            /*If the table has a composite key, key data will be wrapped in an object with the key "id".
+                             * Hence, the data is formatted to remove the extra key and merge it into the content.*/
+                            if (key === 'id') {
+                                tempData = rowData.id;
+                                delete rowData.id;
+                                WM.extend(rowData, tempData);
+                                return;
+                            }
+                            /*If the value is an object, check if id object is present in this object*/
+                            formatData(value);
+                        }
+                    });
+                };
                 responseData.forEach(function (rowData) {
-                    var tempData;
-                    /*Check if the value corresponding to the key "id" is an object.*/
-                    if (rowData && WM.isObject(rowData.id)) {
-                        tempData = rowData.id;
-                        delete rowData.id;
-                        WM.extend(rowData, tempData);
-                    }
+                    formatData(rowData);
                 });
             },
         /*Function to get the hibernateType of the specified field.*/
@@ -709,7 +718,17 @@ wm.variables.services.$liveVariable = [
                         } else {
                             formattedData.id = {};
                             primaryKey.forEach(function (key) {
-                                formattedData.id[key] = rowObject[key];
+                                /*Check if the given column is a foreign key*/
+                                var field = _.find(variableDetails.propertiesMap.columns, function (col) {
+                                    return col.fieldName === key;
+                                }), isRelated;
+                                isRelated = field && field.isRelated;
+                                /*If field is a foreign key, insert the rowobject directly in to id*/
+                                if (isRelated) {
+                                    formattedData.id = rowObject[key];
+                                } else {
+                                    formattedData.id[key] = rowObject[key];
+                                }
                                 delete rowObject[key];
                             });
                         }
