@@ -22,7 +22,7 @@ WM.module('wm.layouts.containers')
                             '</ul>' +
                         '</div>' +
                         '<div class="mobile-navbar-center">' +
-                            '<div class="navbar-header"><h1 class="navbar-brand"><img data-identifier="img" class="brand-image" alt="{{title}}" width="32" height="32" data-ng-if="imgsrc" data-ng-src="{{imagesrc}}"/>{{title}}</h1></div>' +
+                            '<div class="navbar-header"><h1 class="navbar-brand"><img data-identifier="img" class="brand-image" alt="{{title}}" width="32" height="32" data-ng-if="imgsrc" data-ng-src="{{imagesrc}}"/><span>{{title}}</span></h1></div>' +
                         '</div>' +
                         '<div class="mobile-navbar-right">' +
                             '<ul class="nav navbar-nav navbar-right">' +
