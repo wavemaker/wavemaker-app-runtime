@@ -12,7 +12,8 @@ module.exports = function (grunt) {
         editor: 'editor',
         mobile: 'mobile',
         styles: 'styles',
-        components: 'components'
+        components: 'components',
+        tmp: 'tmp'
     };
 
     grunt.initConfig({
@@ -25,7 +26,8 @@ module.exports = function (grunt) {
                         src: [
                             '<%= config.application %>/*',
                             '<%= config.mobile %>/*',
-                            '<%= config.editor %>/*'
+                            '<%= config.editor %>/*',
+                            '<%= config.tmp %>/*'
                         ]
                     }
                 ]
@@ -34,8 +36,7 @@ module.exports = function (grunt) {
         less: {
             dev: {
                 files: {
-                    '<%= config.application %>/styles/css/wm-style.css': '<%= config.styles %>/less/wm-runtime.less',
-                    '<%= config.mobile %>/styles/css/wm-style.css': '<%= config.styles %>/less/wm-runtime.less'
+                    '<%= config.tmp %>/styles/css/wm-style.css': '<%= config.styles %>/less/wm-runtime.less'
                 }
             }
         },
@@ -104,9 +105,22 @@ module.exports = function (grunt) {
                         dest: '<%= config.mobile %>/styles/css/images'
                     },
                     {
-                        src : '<%= config.application %>/scripts/wm-libs.min.js',
+                        src : '<%= config.tmp %>/scripts/wm-libs.min.js',
+                        dest : '<%= config.application %>/scripts/wm-libs.min.js'
+                    },
+                    {
+                        src : '<%= config.tmp %>/scripts/wm-libs.min.js',
                         dest : '<%= config.mobile %>/scripts/wm-libs.min.js'
+                    },
+                    {
+                        src : '<%= config.tmp %>/styles/css/wm-style.css',
+                        dest : '<%= config.application %>/styles/css/wm-style.css'
+                    },
+                    {
+                        src : '<%= config.tmp %>/styles/css/wm-style.css',
+                        dest : '<%= config.mobile %>/styles/css/wm-style.css'
                     }
+
                 ]
             }
         },
@@ -138,9 +152,8 @@ module.exports = function (grunt) {
                     sourceMap: false
                 },
                 files: {
-                    '<%= config.application %>/scripts/wm-libs.min.js': ['<%= config.application %>/scripts/wm-libs.min.js'],
-                    '<%= config.application %>/scripts/placeholders.min.js': ['<%= config.application %>/scripts/placeholders.min.js'],
-                    '<%= config.mobile %>/scripts/wm-libs.min.js': ['<%= config.mobile %>/scripts/wm-libs.min.js']
+                    '<%= config.tmp %>/scripts/wm-libs.min.js': ['<%= config.tmp %>/scripts/wm-libs.min.js'],
+                    '<%= config.application %>/scripts/placeholders.min.js': ['<%= config.application %>/scripts/placeholders.min.js']
                 }
             },
             'min-mangle-false-studio' : {
@@ -148,7 +161,7 @@ module.exports = function (grunt) {
                     mangle: false,
                     preserveComments: false,
                     report: 'min',
-                    sourceMap: true
+                    sourceMap: false
                 },
                 files: {
                     '<%= config.editor %>/application/scripts/runtimeloader.min.js' : ['<%= config.editor %>/application/scripts/runtimeloader.js'],
@@ -175,8 +188,7 @@ module.exports = function (grunt) {
                     report: 'min'
                 },
                 'files': {
-                    '<%= config.application %>/styles/css/wm-style.css': '<%= config.application %>/styles/css/wm-style.css',
-                    '<%= config.mobile %>/styles/css/wm-style.css': '<%= config.mobile %>/styles/css/wm-style.css'
+                    '<%= config.tmp %>/styles/css/wm-style.css': '<%= config.tmp %>/styles/css/wm-style.css'
                 }
             }
         },
@@ -195,7 +207,7 @@ module.exports = function (grunt) {
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js',
                         '<%= config.scripts %>/wmbootstrap.js'
                     ],
-                    '<%= config.application %>/scripts/wm-libs.min.js': [
+                    '<%= config.tmp %>/scripts/wm-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
                         '<%= config.components %>/jquery-ui/js/jquery-ui.js',
@@ -520,10 +532,11 @@ module.exports = function (grunt) {
         'less',
         'concat',
         'concat:wm-loader',
-        'copy',
         'uglify',
-        'cssmin'
+        'cssmin',
+        'copy'
     ]);
+
 
     /*grunt task for development*/
     grunt.registerTask('build', [
