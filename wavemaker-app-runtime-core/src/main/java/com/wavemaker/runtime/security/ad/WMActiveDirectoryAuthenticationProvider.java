@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
@@ -48,6 +47,7 @@ public class WMActiveDirectoryAuthenticationProvider extends SpringActiveDirecto
     private boolean useRolesQuery;
     private String roleQuery;
 
+
     @JsonIgnore
     private String authoritiesByUsernameQuery;
 
@@ -56,7 +56,16 @@ public class WMActiveDirectoryAuthenticationProvider extends SpringActiveDirecto
      * @param url    an LDAP url (or multiple URLs)
      */
     public WMActiveDirectoryAuthenticationProvider(String domain, String url) {
-        super(domain, url);
+        this(domain, url, null);
+    }
+
+    /**
+     * @param domain the domain name (may be null or empty)
+     * @param url    an LDAP url (or multiple URLs)
+     * @param rootDn rootDn to override the computed rootDn in super class.
+     */
+    public WMActiveDirectoryAuthenticationProvider(String domain, String url, String rootDn) {
+        super(domain, url, rootDn);
         setConvertSubErrorCodesToExceptions(true);
     }
 
@@ -76,7 +85,6 @@ public class WMActiveDirectoryAuthenticationProvider extends SpringActiveDirecto
             groupRoleAttribute = "memberOf";
         }
     }
-
 
     /**
      * Creates the user authority list from the values of the {@code memberOf} attribute obtained from the user's
