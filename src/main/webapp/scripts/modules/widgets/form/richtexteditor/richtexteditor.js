@@ -33,13 +33,16 @@ WM.module('wm.widgets.form')
                 scope.showpreview = newVal;
                 break;
             case 'readonly':
-                /*to enable/disable picture, link & unlink buttons*/
-                btnElements.attr('disabled', newVal === true);
                 /*check for newVal*/
                 if (newVal === true) {
                     /*listen on keypress, prevent default action*/
                     editorElement.on('keypress.readOnlyEvent', function (event) {
                         event.preventDefault();
+                    });
+                    editorElement.on('click.readOnlyEvent', function (event) {
+                        event.preventDefault();
+                        /*to enable/disable picture, link, unlink & YouTube buttons*/
+                        btnElements.attr('disabled', newVal === true);
                     });
                 } else {
                     /*unbind readOnlyEvent keypress action*/
@@ -67,7 +70,7 @@ WM.module('wm.widgets.form')
                     'post': function (scope, element, attrs) {
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(
-                            propertyChangeHandler.bind(undefined, scope, element.find('.ta-editor'), element.find('.fa-picture-o, .fa-link, .fa-unlink').parent('.btn')),
+                            propertyChangeHandler.bind(undefined, scope, element.find('.ta-editor'), element.find('.fa-picture-o, .fa-link, .fa-unlink, .fa-youtube-play, .fa-code').parent('.btn')),
                             scope,
                             notifyFor
                         );
