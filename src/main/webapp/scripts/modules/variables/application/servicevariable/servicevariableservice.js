@@ -437,36 +437,10 @@ wm.variables.services.$servicevariable = ['Variables',
                     });
                 });
             },
-            /*
-             * returns true if the selectedOperation matched the provided operation object
-             * sets the other operation info into the provided model for later reference
-             */
-            setMatchedOperationParams = function (model, selectedOperation, operation) {
-                if (operation.operationId === selectedOperation) {
-                    model.methodType = operation.operationType;
-                    model.name = operation.operationId;
-                    model.parameters = [];
-
-                    /*if the operation has parameters, iterate over them to create a map of parameter and
-                     * it's type*/
-                    if (operation.parameters && operation.parameters.length) {
-                        operation.parameters.forEach(function (parameter) {
-                            model.parameters.push({
-                                "name": parameter.name || (parameter[parameterTypeKey] && parameter[parameterTypeKey].toLowerCase()),
-                                "parameterType": parameter[parameterTypeKey]
-                            });
-                        });
-                    }
-                    return true;
-                }
-            },
         /*function to create the service operation info in the variable object, to create the parameter info
         * for the selected operation of the service*/
             getServiceOperationInfo = function (selectedOperation, selectedService, success, error, forceReload) {
-                var operationInfo = {},
-                    i,
-                    operations = [],
-                    matchOperations = setMatchedOperationParams.bind(undefined, operationInfo, selectedOperation);
+                var operationInfo = {};
 
                 /*invoking a service to get the operations that a particular service has and it's
                  * parameters to create a unique url pattern*/
@@ -483,7 +457,7 @@ wm.variables.services.$servicevariable = ['Variables',
                             var opType = supportedOperations[j],
                                 operation = path[opType];
                             if (operation && operation.operationId === selectedOperation) {
-                                operationInfo.methodType = opType;
+                                operationInfo.httpMethod = opType;
                                 operationInfo.name = selectedOperation;
                                 operationInfo.relativePath = (path[BASE_PATH_KEY] || "") + path[RELATIVE_PATH_KEY];
                                 /*saving the mime type only if it explicitly mentioned used in the file upload widget to decide the mime type from swagger path object*/
@@ -533,8 +507,9 @@ wm.variables.services.$servicevariable = ['Variables',
             },
 
             isPostRequest = function (variable) {
-                var opInfo = variable.wmServiceOperationInfo;
-                return (opInfo && opInfo.methodType === "POST" && opInfo.parameters.length === 1 && opInfo.parameters[0].parameterType === "BODY");
+                var opInfo = variable.wmServiceOperationInfo,
+                    _methodType = (opInfo.httpMethod || opInfo.methodType || '').toUpperCase();
+                return (opInfo && _methodType === "POST" && opInfo.parameters.length === 1 && opInfo.parameters[0].parameterType === "BODY");
             },
         /* properties of a service variable - should contain methods applicable on this particular object */
             methods = {
