@@ -182,7 +182,7 @@ WM.module('wm.widgets.grid')
                             '</wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions pull-right" data-ng-if="actions">' +
-                            '<wm-button ng-repeat="btn in actions" caption="{{btn.label}}" show="{{btn.show}}" class="btn-sm {{btn.class}}" ' +
+                            '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="btn-sm {{btn.class}}" iconclass="{{btn.iconclass}}"' +
                                 'iconname="{{btn.icon}}" on-click="{{btn.action}}"></wm-button>' +
                         '</div>' +
                     '</div></div>';
@@ -403,9 +403,8 @@ WM.module('wm.widgets.grid')
                                         if (addNewRowButtonIndex === -1) {
                                             scope.actions.unshift({
                                                 'key': 'addNewRow',
-                                                'label': 'New',
-                                                'value': 'new',
-                                                'icon': 'new',
+                                                'displayName': 'New',
+                                                'iconclass': 'glyphicon glyphicon-plus',
                                                 'show': true,
                                                 'class': 'btn-primary',
                                                 'action': 'addNewRow()'
@@ -2039,13 +2038,14 @@ WM.module('wm.widgets.grid')
                         var parentIsolateScope,
                             buttonDef = {
                                 'key': attrs.key || attrs.binding,
-                                'label': attrs.label || attrs.caption,
+                                'displayName': attrs.displayName || attrs.label || attrs.caption,
                                 'show': (attrs.show === "1" || attrs.show === "true"),
                                 'class': attrs.class || '',
+                                /*iconame support for old projects*/
                                 'icon': attrs.icon,
+                                'iconclass': attrs.iconclass,
                                 'action': attrs.action,
-                                'accessroles': attrs.accessroles || '',
-                                'type': attrs.type || "button"
+                                'accessroles': attrs.accessroles || ''
                             };
 
                         if (CONSTANTS.isRunMode) {
