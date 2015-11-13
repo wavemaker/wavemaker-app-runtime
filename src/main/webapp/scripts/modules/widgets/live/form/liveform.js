@@ -1026,9 +1026,29 @@ WM.module('wm.widgets.live')
                                 boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
                                     var primaryKeys = boundVariable.getRelatedTablePrimaryKeys(columnDef.key, {scope: elScope}),
                                         relatedFormField = parentIsolateScope.formFields[index];
+                                    relatedFormField.datafield = 'All Fields';
+                                    /*if the field is a composite key, set the dataset from response id.*/
+                                    if (primaryKeys.length > 1) {
+                                        response.forEach(function (rowData) {
+                                            var tempData;
+                                            /*Check if the value corresponding to the key "id" is an object.*/
+                                            if (rowData && WM.isObject(rowData.id)) {
+                                                tempData = rowData.id;
+                                                delete rowData.id;
+                                                WM.extend(rowData, tempData);
+                                            }
+                                        });
+                                        relatedFormField.dataset = response;
+                                        /*Set the display field as first primary key*/
+                                        relatedFormField.displayfield = primaryKeys[0];
+                                        return;
+                                    }
                                     relatedFormField.dataset = response;
-                                    relatedFormField.datafield = "All Fields";
-                                    relatedFormField.displayfield = primaryKeys.length ? primaryKeys[0] : (response && _.keys(response[0])[0]);
+                                    if (primaryKeys.length > 0) {
+                                        relatedFormField.displayfield = primaryKeys[0];
+                                        return;
+                                    }
+                                    relatedFormField.displayfield = response && _.keys(response[0]) && _.keys(response[0])[0];
                                 });
                             });
                         }

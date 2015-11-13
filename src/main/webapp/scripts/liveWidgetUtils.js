@@ -604,46 +604,51 @@ WM.module('wm.widgets.live')
              */
             function translateVariableObject(rawObject, scope) {
                 var translatedObj = [],
-                    columnArray = rawObject.propertiesMap.columns;
+                    columnArray = rawObject.propertiesMap.columns,
+                    fieldNames = [];
 
                 if (scope) {
                     scope.propertiesMap = rawObject.propertiesMap;
                     scope.columnArray = scope.propertiesMap.columns;
                     scope.primaryKey = scope.primaryKey || [];
                 }
-                columnArray.forEach(function (fieldObj, index) {
-                    translatedObj[index] = {
-                        "displayName": Utils.prettifyLabel(fieldObj.fieldName),
-                        "show": true,
-                        "primaryKey": fieldObj.isPrimaryKey,
-                        "generator": fieldObj.generator,
-                        "key": fieldObj.fieldName,
-                        "value": "",
-                        "type": fieldObj.isRelated ? "list" : fieldObj.fullyQualifiedType,
-                        "maxvalue": '',
-                        "isRelated": fieldObj.isRelated,
-                        "readonly": fieldObj.isPrimaryKey,
-                        "required": fieldObj.notNull === "true" || fieldObj.notNull === true,
-                        "relatedFieldName": fieldObj.columns && fieldObj.columns[index] && fieldObj.columns[index].fieldName
-                    };
-                    if (fieldObj.defaultValue) {
-                        translatedObj[index].defaultValue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
-                    }
-                    if (fieldObj.type === "string" || fieldObj.type === "character" || fieldObj.type === "text" || fieldObj.type === "blob" || fieldObj.type === "clob") {
-                        translatedObj[index].maxvalue = fieldObj.length;
-                    }
-                    if (fieldObj.isPrimaryKey) {
-                        /*Store the primary key of data*/
-                        if (scope) {
-                            scope.setPrimaryKey(fieldObj.fieldName);
+                _.each(columnArray, function (fieldObj) {
+                    var column;
+                    if (!_.includes(fieldNames, fieldObj.fieldName)) {
+                        fieldNames.push(fieldObj.fieldName);
+                        column = {
+                            "displayName": Utils.prettifyLabel(fieldObj.fieldName),
+                            "show": true,
+                            "primaryKey": fieldObj.isPrimaryKey,
+                            "generator": fieldObj.generator,
+                            "key": fieldObj.fieldName,
+                            "value": "",
+                            "type": fieldObj.isRelated ? "list" : fieldObj.fullyQualifiedType,
+                            "maxvalue": '',
+                            "isRelated": fieldObj.isRelated,
+                            "readonly": fieldObj.isPrimaryKey,
+                            "required": fieldObj.notNull === "true" || fieldObj.notNull === true
+                        };
+                        if (fieldObj.defaultValue) {
+                            column.defaultValue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
                         }
-                        /*If the field has assigned generator, make read only false*/
-                        if (fieldObj.generator === "assigned") {
-                            translatedObj[index].readonly = false;
-                        } else {
-                            /*Hiding primary if it is generated automatically(User can un-hide it from edit feilds dialog)*/
-                            translatedObj[index].show = false;
+                        if (fieldObj.type === "string" || fieldObj.type === "character" || fieldObj.type === "text" || fieldObj.type === "blob" || fieldObj.type === "clob") {
+                            column.maxvalue = fieldObj.length;
                         }
+                        if (fieldObj.isPrimaryKey) {
+                            /*Store the primary key of data*/
+                            if (scope) {
+                                scope.setPrimaryKey(fieldObj.fieldName);
+                            }
+                            /*If the field has assigned generator, make read only false*/
+                            if (fieldObj.generator === "assigned") {
+                                column.readonly = false;
+                            } else {
+                                /*Hiding primary if it is generated automatically(User can un-hide it from edit feilds dialog)*/
+                                column.show = false;
+                            }
+                        }
+                        translatedObj.push(column);
                     }
                 });
                 return translatedObj;
