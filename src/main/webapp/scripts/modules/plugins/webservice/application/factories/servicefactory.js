@@ -365,6 +365,14 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                 if (path[operation]) {
                                     path[operation].operationType = operation;
                                     path[operation].relativePath = path['x-WM-RELATIVE_PATH'];
+
+                                    /* set operationType for Query/Procedure operations */
+                                    if (path[operation].tags && path[operation].tags[0] === "ProcedureExecutionController") {
+                                        path[operation].serviceSubType = "procedure";
+                                    } else if (path[operation].tags && path[operation].tags[0] === "QueryExecutionController") {
+                                        path[operation].serviceSubType = "query";
+                                        /* here we have to set operationType to either hqlquery or nativequery (have to check how)*/
+                                    }
                                     operations.push(path[operation]);
                                 }
                             });
