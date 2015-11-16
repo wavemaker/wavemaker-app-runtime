@@ -506,11 +506,6 @@ wm.variables.services.$servicevariable = ['Variables',
                 }, forceReload);
             },
 
-            isPostRequest = function (variable) {
-                var opInfo = variable.wmServiceOperationInfo,
-                    _methodType = (opInfo.httpMethod || opInfo.methodType || '').toUpperCase();
-                return (opInfo && _methodType === "POST" && opInfo.parameters.length === 1 && opInfo.parameters[0].parameterType === "BODY");
-            },
         /* properties of a service variable - should contain methods applicable on this particular object */
             methods = {
                 getDataSet: function (variable) {
@@ -608,13 +603,6 @@ wm.variables.services.$servicevariable = ['Variables',
                         paramObj = key;
                     } else {
                         paramObj[key] = val;
-                    }
-
-                    if (isPostRequest(variable)) {
-                        if (!variable.dataBinding.body) {
-                            variable.dataBinding.body = {};
-                        }
-                        targetObj = variable.dataBinding.body;
                     }
 
                     WM.forEach(paramObj, function (paramVal, paramKey) {
