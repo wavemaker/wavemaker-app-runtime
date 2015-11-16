@@ -69,6 +69,7 @@ public class RestRuntimeController extends AbstractController {
                 httpServletResponse.setContentType(restResponse.getContentType());
             }
             httpServletResponse.setHeader("X-WM-STATUS_CODE", String.valueOf(statusCode));
+            responseBody = (responseBody == null) ? "" : responseBody;
             IOUtils.copy(new ByteArrayInputStream(responseBody.getBytes()), httpServletResponse.getOutputStream(), true, false);
         } else {
             throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, statusCode, responseBody);
