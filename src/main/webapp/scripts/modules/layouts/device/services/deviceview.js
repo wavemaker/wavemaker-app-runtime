@@ -83,7 +83,7 @@ WM.module("wm.layouts.device")
          */
         function bindLeftPanelEvents() {
             //tap left to show/hide left panel
-            MobileEventService.touch(roleSelector(SWIPE_ELEM_CLASS_NAME), function () {
+            MobileEventService.touch(roleSelector(SWIPE_ELEM_CLASS_NAME) + ':last', function () {
                 var leftPanel = getLeftPanelScope();
                 leftPanel && leftPanel.toggle();
             });
@@ -98,7 +98,7 @@ WM.module("wm.layouts.device")
                 var searchEle = WM.element('<a class="visible-xs-inline-block app-header-action glyphicon glyphicon-search"></a>');
                 WM.element(ele).before(searchEle);
                 //Tap icon to show/hide search box
-                MobileEventService.touch(searchEle, function(){
+                MobileEventService.touch(searchEle, function () {
                     toggleSearchContainer(ele);
                 });
             });
