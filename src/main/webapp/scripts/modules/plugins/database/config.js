@@ -303,6 +303,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "PASSWORD": "cloudjee123"
         }
     },
+    "IDENTITY_GENERATORS" : ['integer', 'short', 'big_integer'],
     "DATABASE_NUMERIC_DATA_TYPES": {
         "big_decimal": "big_decimal",
         "big_integer": "big_integer",
