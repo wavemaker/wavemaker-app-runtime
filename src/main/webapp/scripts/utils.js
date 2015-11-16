@@ -107,27 +107,6 @@ WM.module('wm.utils', [])
                 'wm.TimerVariable'       : 'time',
                 'wm.DeviceVariable'      :  'device-variable'
             },
-            fieldTypeWidgetTypeMap = {
-                'integer'    : ['Number', 'Text', 'Slider', 'Select', 'Radioset', 'Rating'],
-                'big_integer': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'short'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'byte'       : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'date'       : ['Date', 'Text', 'Select', 'Radioset'],
-                'boolean'    : ['Checkbox', 'Text', 'Select', 'Radioset', 'Toggle'],
-                'list'       : ['Select', 'Radioset', 'Text', 'Datalist'],
-                'float'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'big_decimal': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'double'     : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                'string'     : ['Text', 'Textarea', 'Password', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                'character'  : ['Text', 'Textarea', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                'text'       : ['Textarea', 'Text', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                'clob'       : ['Textarea', 'Text', 'RichText'],
-                'blob'       : ['Upload', 'Textarea', 'Text', 'RichText'],
-                'time'       : ['Time', 'Text', 'Select', 'Radioset'],
-                'timestamp'  : ['Timestamp', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
-                'datetime'   : ['Datetime', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
-                'custom'     : ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp']
-            },
             dateTimeTypes = {
                 'date'      : true,
                 'time'      : true,
@@ -1301,9 +1280,6 @@ WM.module('wm.utils', [])
 
             return content;
         }
-        function getFieldTypeWidgetTypesMap() {
-            return fieldTypeWidgetTypeMap;
-        }
         /*Function to get date time types*/
         function getDateTimeTypes() {
             return dateTimeTypes;
@@ -1610,7 +1586,6 @@ WM.module('wm.utils', [])
         this.isNumberType               = isNumberType;
         this.isFileUploadSupported      = isFileUploadSupported;
         this.processMarkup              = processMarkup;
-        this.getFieldTypeWidgetTypesMap = getFieldTypeWidgetTypesMap;
         this.getDateTimeTypes           = getDateTimeTypes;
         this.getDaysOptions             = getDaysOptions;
         this.getDateTimeDefaultFormats  =  getDateTimeDefaultFormats;

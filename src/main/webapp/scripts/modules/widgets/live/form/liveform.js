@@ -6,7 +6,7 @@ WM.module('wm.widgets.live')
     .controller('liveFormDialogController', WM.noop)
     .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', 'wmToaster', '$filter', 'LiveWidgetUtils', 'DialogService', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, wmToaster, $filter, LiveWidgetUtils, DialogService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf("wm.layouts.liveform", ["wm.layouts", "wm.base.events.successerror"]),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.liveform', ['wm.layouts', 'wm.base.events.successerror']),
             notifyFor = {
                 'dataset': true,
                 'captionsize': true,
@@ -949,8 +949,6 @@ WM.module('wm.widgets.live')
                             expr,
                             exprWatchHandler,
                             variable,
-                            variableObj = {},
-                            variableData,
                             dataSetWatchHandler,
                             relatedDataWatchHandler,
                             elScope = element.scope(),
@@ -967,8 +965,6 @@ WM.module('wm.widgets.live')
                             'regexp': attrs.regexp || ".*",
                             'datafield': attrs.datafield,
                             'displayfield': attrs.displayfield,
-                            'width' : attrs.width,
-                            'height': attrs.height,
                             'maxvalue' : attrs.maxvalue,
                             'minvalue' : attrs.minvalue
                         });
@@ -1107,7 +1103,7 @@ WM.module('wm.widgets.live')
             }
         };
     }])
-    .directive("wmFormAction", ["$compile", "CONSTANTS", function ($compile, CONSTANTS) {
+    .directive('wmFormAction', ['$compile', 'CONSTANTS', 'LiveWidgetUtils', function ($compile, CONSTANTS, LiveWidgetUtils) {
         'use strict';
 
         var getTemplate = function (btnField, index) {
@@ -1134,18 +1130,12 @@ WM.module('wm.widgets.live')
                         var parentIsolateScope,
                             template,
                             index,
-                            buttonDef = {
-                                'key': attrs.key || attrs.binding,
-                                'displayName': attrs.displayName || attrs.caption,
-                                'show': (attrs.show === "1" || attrs.show === "true"),
-                                'class': attrs.class || '',
+                            buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                                 /*iconame support for old projects*/
                                 'iconname': attrs.iconname,
-                                'iconclass': attrs.iconclass,
-                                'action': attrs.action,
-                                'type': attrs.type || "button",
-                                'updateMode': attrs.updateMode === true || attrs.updateMode === "true"
-                            };
+                                'type': attrs.type || 'button',
+                                'updateMode': attrs.updateMode === true || attrs.updateMode === 'true'
+                            });
 
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;

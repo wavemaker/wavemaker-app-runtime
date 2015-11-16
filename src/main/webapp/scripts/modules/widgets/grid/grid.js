@@ -2024,7 +2024,7 @@ WM.module('wm.widgets.grid')
             }
         };
     }])
-    .directive('wmGridAction', ['$compile', 'CONSTANTS', function ($compile, CONSTANTS) {
+    .directive('wmGridAction', ['$compile', 'CONSTANTS', 'LiveWidgetUtils', function ($compile, CONSTANTS, LiveWidgetUtils) {
         'use strict';
         return {
             "restrict": 'E',
@@ -2036,17 +2036,10 @@ WM.module('wm.widgets.grid')
                         /*scope.$parent is defined when compiled with grid scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
                         var parentIsolateScope,
-                            buttonDef = {
-                                'key': attrs.key || attrs.binding,
-                                'displayName': attrs.displayName || attrs.label || attrs.caption,
-                                'show': (attrs.show === "1" || attrs.show === "true"),
-                                'class': attrs.class || '',
+                            buttonDef =  WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                                 /*iconame support for old projects*/
-                                'icon': attrs.icon,
-                                'iconclass': attrs.iconclass,
-                                'action': attrs.action,
-                                'accessroles': attrs.accessroles || ''
-                            };
+                                'icon': attrs.icon
+                            });
 
                         if (CONSTANTS.isRunMode) {
                             parentIsolateScope = scope;

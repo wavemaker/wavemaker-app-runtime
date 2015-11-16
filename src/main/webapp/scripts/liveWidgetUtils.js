@@ -10,11 +10,10 @@ WM.module('wm.widgets.live')
     .service('LiveWidgetUtils', [
         'Utils',
         'CONSTANTS',
-        'Variables',
 
-        function (Utils, CONSTANTS, Variables) {
+        function (Utils, CONSTANTS) {
             'use strict';
-            var keyEventsWidgets = ["number", "text", "select", "password", "textarea"],
+            var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
                 eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
                 allEventTypes = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup');
             /**
@@ -93,102 +92,66 @@ WM.module('wm.widgets.live')
             function getFormButtons() {
                 return [
                     {
-                        key : 'reset',
-                        class: 'form-reset btn-secondary',
-                        iconclass: 'glyphicon glyphicon-refresh',
-                        action: 'reset()',
-                        displayName: 'Reset',
-                        show: true,
-                        type: 'button',
-                        updateMode: true
+                        key         :    'reset',
+                        class       :    'form-reset btn-secondary',
+                        iconclass   :    'glyphicon glyphicon-refresh',
+                        action      :    'reset()',
+                        displayName :    'Reset',
+                        show        :    true,
+                        type        :    'button',
+                        updateMode  :    true
                     },
                     {
-                        key : 'cancel',
-                        class: 'form-cancel btn-secondary',
-                        iconclass: 'glyphicon glyphicon-remove-circle',
-                        action: 'cancel()',
-                        displayName: 'Cancel',
-                        show: true,
-                        type: 'button',
-                        updateMode: true
+                        key         :   'cancel',
+                        class       :   'form-cancel btn-secondary',
+                        iconclass   :   'glyphicon glyphicon-remove-circle',
+                        action      :   'cancel()',
+                        displayName :   'Cancel',
+                        show        :   true,
+                        type        :   'button',
+                        updateMode  :   true
                     },
                     {
-                        key : 'save',
-                        class: 'form-save btn-success',
-                        iconclass: 'glyphicon glyphicon-save',
-                        action: '',
-                        displayName: 'Save',
-                        show: true,
-                        type: 'submit',
-                        updateMode: true
+                        key         :   'save',
+                        class       :   'form-save btn-success',
+                        iconclass   :   'glyphicon glyphicon-save',
+                        action      :   '',
+                        displayName :   'Save',
+                        show        :   true,
+                        type        :   'submit',
+                        updateMode  :   true
                     },
                     {
-                        key : 'delete',
-                        class: 'form-delete btn-secondary',
-                        iconclass: 'glyphicon glyphicon-remove',
-                        action: 'delete()',
-                        displayName: 'Delete',
-                        show: true,
-                        type: 'button',
-                        updateMode: false
+                        key         :   'delete',
+                        class       :   'form-delete btn-secondary',
+                        iconclass   :   'glyphicon glyphicon-remove',
+                        action      :   'delete()',
+                        displayName :   'Delete',
+                        show        :   true,
+                        type        :   'button',
+                        updateMode  :   false
                     },
                     {
-                        key : 'edit',
-                        class: 'form-update btn-secondary',
-                        iconclass: 'glyphicon glyphicon-pencil',
-                        action: 'edit()',
-                        displayName: 'Edit',
-                        show: true,
-                        type: 'button',
-                        updateMode: false
+                        key         :   'edit',
+                        class       :   'form-update btn-secondary',
+                        iconclass   :   'glyphicon glyphicon-pencil',
+                        action      :   'edit()',
+                        displayName :   'Edit',
+                        show        :   true,
+                        type        :   'button',
+                        updateMode  :   false
                     },
                     {
-                        key : 'new',
-                        class: 'form-new btn-success',
-                        iconclass: 'glyphicon glyphicon-plus',
-                        action: 'new()',
-                        displayName: 'New',
-                        show: true,
-                        type: 'button',
-                        updateMode: false
+                        key         :   'new',
+                        class       :   'form-new btn-success',
+                        iconclass   :   'glyphicon glyphicon-plus',
+                        action      :   'new()',
+                        displayName :   'New',
+                        show        :   true,
+                        type        :   'button',
+                        updateMode  :   false
                     }];
             }
-
-            /**
-             * @ngdoc function
-             * @name wm.widgets.live.LiveWidgetUtils#getFormActions
-             * @methodOf wm.widgets.live.LiveWidgetUtils
-             * @function
-             *
-             * @description
-             * return an object consisting form actions in edit and view mode.
-             *
-             * @param {boolean} getFlat returns a flat array of all actions
-             */
-            function getFormActions(getFlat) {
-                var actions = {
-                    'edit': ['cancel()', 'reset()', 'save()', 'saveAndNew()', 'saveAndView()'],
-                    'view': ['delete()', 'new()', 'edit()']
-                };
-                if (getFlat) {
-                    return actions.view.concat(['formSave()', 'formCancel()']).concat(actions.edit);
-                }
-                return actions;
-            }
-            /**
-             * @ngdoc function
-             * @name wm.widgets.live.LiveWidgetUtils#getGridActions
-             * @methodOf wm.widgets.live.LiveWidgetUtils
-             * @function
-             *
-             * @description
-             * return an array consisting of the grid default actions.
-             *
-             */
-            function getGridActions() {
-                return ['addNewRow()', 'deleteRow()', 'editRow()'];
-            }
-
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getColumnDef
@@ -200,34 +163,111 @@ WM.module('wm.widgets.live')
              */
             function getColumnDef(attrs) {
                 return {
-                    'displayName': attrs.displayName || attrs.caption,
-                    'show': (attrs.show === '1' || attrs.show === 'true'),
-                    'type': attrs.type || 'text',
-                    'primaryKey': attrs.primaryKey === 'true' || attrs.primaryKey === true,
-                    'generator': attrs.generator,
-                    'readonly': attrs.readonly === 'true' || attrs.readonly === true,
-                    'multiple': attrs.multiple === 'true' || attrs.multiple === true,
-                    'datepattern': attrs.datepattern,
-                    'class': attrs.class || '',
-                    'required': attrs.required === 'true' || attrs.required === true,
-                    'placeholder': attrs.placeholder,
-                    'maxValue' : attrs.maxValue,
-                    'minValue' : attrs.minValue,
-                    'maxvalue' : attrs.maxvalue,
-                    'excludedays': attrs.excludedays,
-                    'excludedates': attrs.excludedates,
-                    'step' : attrs.step,
-                    'ismeridian' : attrs.ismeridian,
-                    'onChange': attrs.onChange,
-                    'onBlur': attrs.onBlur,
-                    'onFocus': attrs.onFocus,
-                    'onMouseleave': attrs.onMouseleave,
-                    'onMouseenter': attrs.onMouseenter,
-                    'onClick': attrs.onClick,
-                    'onKeypress': attrs.onKeypress,
-                    'onKeyup': attrs.onKeyup,
-                    'onKeydown': attrs.onKeydown
+                    'displayName'       :   attrs.displayName || attrs.caption,
+                    'show'              :   (attrs.show === '1' || attrs.show === 'true'),
+                    'type'              :   attrs.type || 'text',
+                    'primaryKey'        :   attrs.primaryKey === 'true' || attrs.primaryKey === true,
+                    'generator'         :   attrs.generator,
+                    'readonly'          :   attrs.readonly === 'true' || attrs.readonly === true,
+                    'multiple'          :   attrs.multiple === 'true' || attrs.multiple === true,
+                    'datepattern'       :   attrs.datepattern,
+                    'class'             :   attrs.class || '',
+                    'width'             :   attrs.width,
+                    'height'            :   attrs.height,
+                    'textAlignment'     :   attrs.textAlignment,
+                    'backgroundColor'   :   attrs.backgroundColor,
+                    'required'          :   attrs.required === 'true' || attrs.required === true,
+                    'placeholder'       :   attrs.placeholder,
+                    'maxValue'          :   attrs.maxValue,
+                    'minValue'          :   attrs.minValue,
+                    'maxvalue'          :   attrs.maxvalue,
+                    'excludedays'       :   attrs.excludedays,
+                    'excludedates'      :   attrs.excludedates,
+                    'step'              :   attrs.step,
+                    'ismeridian'        :   attrs.ismeridian,
+                    'accessroles'       :   attrs.accessroles,
+                    'onChange'          :   attrs.onChange,
+                    'onBlur'            :   attrs.onBlur,
+                    'onFocus'           :   attrs.onFocus,
+                    'onMouseleave'      :   attrs.onMouseleave,
+                    'onMouseenter'      :   attrs.onMouseenter,
+                    'onClick'           :   attrs.onClick,
+                    'onKeypress'        :   attrs.onKeypress,
+                    'onKeyup'           :   attrs.onKeyup,
+                    'onKeydown'         :   attrs.onKeydown
                 };
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getButtonDef
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * return the common button attributes to liveFilter, liveForm and grid .
+             */
+            function getButtonDef(attrs) {
+                return {
+                    'key'           :   attrs.key || attrs.binding,
+                    'displayName'   :   attrs.displayName || attrs.label || attrs.caption,
+                    'show'          :   attrs.show === '1' || attrs.show === 'true' || attrs.show === true,
+                    'class'         :   attrs.class || '',
+                    'iconclass'     :   attrs.iconclass,
+                    'action'        :   attrs.action,
+                    'accessroles'   :   attrs.accessroles || ''
+                };
+            }
+            function getFieldTypeWidgetTypesMap(type) {
+                var fieldTypeWidgetTypeMap;
+                switch (type) {
+                case 'LIVEFORM':
+                    fieldTypeWidgetTypeMap = {
+                        'integer'    : ['Number', 'Text', 'Slider', 'Select', 'Radioset', 'Rating'],
+                        'big_integer': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                        'short'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                        'byte'       : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                        'date'       : ['Date', 'Text', 'Select', 'Radioset'],
+                        'boolean'    : ['Checkbox', 'Text', 'Select', 'Radioset', 'Toggle'],
+                        'list'       : ['Select', 'Radioset', 'Text', 'Datalist'],
+                        'float'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                        'big_decimal': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                        'double'     : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
+                        'string'     : ['Text', 'Textarea', 'Password', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
+                        'character'  : ['Text', 'Textarea', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
+                        'text'       : ['Textarea', 'Text', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
+                        'clob'       : ['Textarea', 'Text', 'RichText'],
+                        'blob'       : ['Upload', 'Textarea', 'Text', 'RichText'],
+                        'time'       : ['Time', 'Text', 'Select', 'Radioset'],
+                        'timestamp'  : ['Timestamp', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
+                        'datetime'   : ['Datetime', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
+                        'custom'     : ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp']
+                    };
+                    break;
+                case 'LIVEFILTER':
+                    fieldTypeWidgetTypeMap = {
+                        'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
+                        'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
+                        'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
+                        'byte'       : ['text', 'number', 'select', 'checkboxset', 'radioset'],
+                        'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset'],
+                        'boolean'    : ['checkbox', 'radioset', 'toggle'],
+                        'list'       : ['text', 'number', 'select'],
+                        'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
+                        'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
+                        'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
+                        'string'     : ['text', 'number', 'select', 'checkboxset', 'radioset'],
+                        'character'  : ['text', 'number', 'select', 'checkboxset', 'radioset'],
+                        'text'       : ['text', 'number', 'select', 'checkboxset', 'radioset'],
+                        'clob'       : ['text', 'number', 'select'],
+                        'blob'       : ['text', 'number', 'select'],
+                        'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset'],
+                        'timestamp'  : ['text', 'number', 'select'],
+                        'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset'],
+                        'custom'     : ['text', 'number', 'select', 'checkboxset', 'radioset', 'rating']
+                    };
+                    break;
+                }
+                return fieldTypeWidgetTypeMap;
             }
 
             /*Returns step attribute value based on input type*/
@@ -292,6 +332,8 @@ WM.module('wm.widgets.live')
                             fields += ' maxchars="{{formFields[' + index + '].' + field + '}}"';
                         } else if (_.includes(evtTypes, field)) {
                             fields += ' ' + Utils.hyphenate(field) + '="{{formFields[' + index + '].' + field + '}}"';
+                        } else if (field === 'textAlignment') {
+                            fields += ' textalign="{{formFields[' + index + '].' + field + '}}"';
                         } else if (!(_.includes(excludeMaxValTypes, type))) {
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
                         }
@@ -498,7 +540,7 @@ WM.module('wm.widgets.live')
                         fieldDef.placeholder = fieldDef.placeholder || '';
                     }
                     //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
-                    fieldTypeWidgetTypeMap = Utils.getFieldTypeWidgetTypesMap();
+                    fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap('LIVEFORM');
                     widgetType = (fieldDef.widgetType || fieldTypeWidgetTypeMap[fieldDef.type][0]).toLowerCase();
                 } else if (liveType === 'filter') {
                     fieldDef.placeholder = fieldDef.minPlaceholder || '';
@@ -617,22 +659,22 @@ WM.module('wm.widgets.live')
                     if (!_.includes(fieldNames, fieldObj.fieldName)) {
                         fieldNames.push(fieldObj.fieldName);
                         column = {
-                            "displayName": Utils.prettifyLabel(fieldObj.fieldName),
-                            "show": true,
-                            "primaryKey": fieldObj.isPrimaryKey,
-                            "generator": fieldObj.generator,
-                            "key": fieldObj.fieldName,
-                            "value": "",
-                            "type": fieldObj.isRelated ? "list" : fieldObj.fullyQualifiedType,
-                            "maxvalue": '',
-                            "isRelated": fieldObj.isRelated,
-                            "readonly": fieldObj.isPrimaryKey,
-                            "required": fieldObj.notNull === "true" || fieldObj.notNull === true
+                            'displayName': Utils.prettifyLabel(fieldObj.fieldName),
+                            'show':         true,
+                            'primaryKey':   fieldObj.isPrimaryKey,
+                            'generator':    fieldObj.generator,
+                            'key':          fieldObj.fieldName,
+                            'value':        '',
+                            'type':         fieldObj.isRelated ? 'list' : fieldObj.fullyQualifiedType,
+                            'maxvalue':     '',
+                            'isRelated':    fieldObj.isRelated,
+                            'readonly':     fieldObj.isPrimaryKey,
+                            'required':     fieldObj.notNull === 'true' || fieldObj.notNull === true
                         };
                         if (fieldObj.defaultValue) {
                             column.defaultValue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
                         }
-                        if (fieldObj.type === "string" || fieldObj.type === "character" || fieldObj.type === "text" || fieldObj.type === "blob" || fieldObj.type === "clob") {
+                        if (fieldObj.type === 'string' || fieldObj.type === 'character' || fieldObj.type === 'text' || fieldObj.type === 'blob' || fieldObj.type === 'clob') {
                             column.maxvalue = fieldObj.length;
                         }
                         if (fieldObj.isPrimaryKey) {
@@ -641,7 +683,7 @@ WM.module('wm.widgets.live')
                                 scope.setPrimaryKey(fieldObj.fieldName);
                             }
                             /*If the field has assigned generator, make read only false*/
-                            if (fieldObj.generator === "assigned") {
+                            if (fieldObj.generator === 'assigned') {
                                 column.readonly = false;
                             } else {
                                 /*Hiding primary if it is generated automatically(User can un-hide it from edit feilds dialog)*/
@@ -673,19 +715,6 @@ WM.module('wm.widgets.live')
                     'Four Column': 4
                 };
                 return layoutObj[layout] || 1;
-            }
-
-            /*returning event options with type set to 'Default'*/
-            function getEventOptions() {
-                var eventsArray = ["NoEvent", "Javascript"].concat(Variables.retrieveEventCallbackVariables()),
-                    eventsObject;
-                eventsObject = eventsArray.map(function (event) {
-                    return {
-                        'name': event,
-                        'type': 'Default'
-                    };
-                });
-                return eventsObject;
             }
 
             /*function to update script link visibility*/
@@ -723,21 +752,96 @@ WM.module('wm.widgets.live')
                 }
                 return prefix;
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#splitDimension
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * extracts value and unit from the given width or height
+             *
+             * @param {object} column column pr field definition
+             * @param {string} type width or height
+             */
+            function splitDimension(column, type) {
+                var value,
+                    unit,
+                    width,
+                    height;
+                switch (type) {
+                case 'width':
+                    /*extract the width and width unit from width*/
+                    width = column.width || '';
+                    value = parseInt(width, 10) || '';
+                    unit = width.indexOf('%') === -1 ? 'px' : '%';
 
-            this.toggleActionMessage = toggleActionMessage;
-            this.getEventOptions = getEventOptions;
-            this.getEventTypes = getEventTypes;
-            this.getDefaultValue = getDefaultValue;
-            this.getFormButtons = getFormButtons;
-            this.getGridActions = getGridActions;
-            this.getCustomItems = getCustomItems;
-            this.getColumnDef = getColumnDef;
-            this.getTemplate = getTemplate;
-            this.getFormActions = getFormActions;
-            this.translateVariableObject = translateVariableObject;
-            this.getColumnCountByLayoutType = getColumnCountByLayoutType;
-            this.getCustomFieldKey = getCustomFieldKey;
-            this.getStepValue = getStepValue;
+                    column.widthValue = value;
+                    column.widthUnit = unit;
+                    break;
+                case 'height':
+                    /*extract the width and width unit from width*/
+                    height = column.height || '';
+                    value = parseInt(height, 10) || '';
+                    unit = height.indexOf('%') === -1 ? 'px' : '%';
+
+                    column.heightValue = value;
+                    column.heightUnit = unit;
+                    break;
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#mergeDimension
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * sets width or height from the value and unit
+             *
+             * @param {object} column column or field definition
+             * @param {string} type width or height
+             */
+            function mergeDimension(column, type) {
+                /*if width is given and a number set it*/
+                switch (type) {
+                case 'width':
+                    if (column.widthValue && !isNaN(column.widthValue)) {
+                        column.width = column.widthValue + column.widthUnit;
+                    } else if (!column.widthValue || (!column.widthValue.length && Utils.stringStartsWith(column.width, column.widthValue))) {
+                        /* Reset the width to default value when the widthValue is cleared from the UI. */
+                        column.width = undefined;
+                    }
+                    column.widthValue = undefined;
+                    column.widthUnit = undefined;
+                    break;
+                case 'height':
+                    if (column.heightValue && !isNaN(column.heightValue)) {
+                        column.height = column.heightValue + column.heightUnit;
+                    } else if (!column.heightValue || (!column.heightValue.length && Utils.stringStartsWith(column.width, column.heightValue))) {
+                        /* Reset the height to default value when the heightValue is cleared from the UI. */
+                        column.height = undefined;
+                    }
+                    column.heightValue = undefined;
+                    column.heightUnit = undefined;
+                    break;
+                }
+            }
+            this.toggleActionMessage =          toggleActionMessage;
+            this.getEventTypes =                getEventTypes;
+            this.getDefaultValue =              getDefaultValue;
+            this.getFormButtons =               getFormButtons;
+            this.getCustomItems =               getCustomItems;
+            this.getColumnDef =                 getColumnDef;
+            this.getButtonDef =                 getButtonDef;
+            this.getTemplate =                  getTemplate;
+            this.translateVariableObject =      translateVariableObject;
+            this.getColumnCountByLayoutType =   getColumnCountByLayoutType;
+            this.getCustomFieldKey =            getCustomFieldKey;
+            this.getStepValue =                 getStepValue;
+            this.splitDimension =               splitDimension;
+            this.mergeDimension =               mergeDimension;
+            this.getFieldTypeWidgetTypesMap =   getFieldTypeWidgetTypesMap;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {
