@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.naming.AuthenticationException;
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -100,9 +99,10 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
     private static final int ACCOUNT_LOCKED = 0x775;
 
     private final String domain;
-    private final String rootDn;
+    private String rootDn;
     private final String url;
     private boolean convertSubErrorCodesToExceptions;
+    private String userSearchPattern = "(&(objectClass=user)(userPrincipalName={0}))";
 
     // Only used to allow tests to substitute a mock LdapContext
     ContextFactory contextFactory = new ContextFactory();
@@ -121,11 +121,25 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
      * @param url an LDAP url (or multiple URLs)
      */
     public SpringActiveDirectoryLdapAuthenticationProvider(String domain, String url) {
+        this(domain, url, null);
+
+    }
+
+    /**
+     * @param domain the domain name (may be null or empty)
+     * @param url an LDAP url (or multiple URLs)
+     * @param rootDn rootDn to override the computed rootDn.
+     */
+    public SpringActiveDirectoryLdapAuthenticationProvider(String domain, String url, String rootDn) {
         Assert.isTrue(StringUtils.hasText(url), "Url cannot be empty");
         this.domain = StringUtils.hasText(domain) ? domain.toLowerCase() : null;
         //this.url = StringUtils.hasText(url) ? url : null;
         this.url = url;
-        rootDn = this.domain == null ? null : rootDnFromDomain(this.domain);
+        if (!StringUtils.hasText(rootDn)) {
+            this.rootDn = this.domain == null ? null : rootDnFromDomain(this.domain);
+        } else {
+            this.rootDn = rootDn;
+        }
     }
 
     @Override
@@ -284,14 +298,12 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         SearchControls searchCtls = new SearchControls();
         searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-        String searchFilter = "(&(objectClass=user)(userPrincipalName={0}))";
-
         final String bindPrincipal = createBindPrincipal(username);
 
         String searchRoot = rootDn != null ? rootDn : searchRootFromPrincipal(bindPrincipal);
 
         try {
-            return SpringSecurityLdapTemplate.searchForSingleEntryInternal(ctx, searchCtls, searchRoot, searchFilter,
+            return SpringSecurityLdapTemplate.searchForSingleEntryInternal(ctx, searchCtls, searchRoot, userSearchPattern,
                     new Object[]{bindPrincipal});
         } catch (IncorrectResultSizeDataAccessException incorrectResults) {
             if (incorrectResults.getActualSize() == 0) {
@@ -355,5 +367,13 @@ public class SpringActiveDirectoryLdapAuthenticationProvider extends AbstractLda
         DirContext createContext(Hashtable<?,?> env) throws NamingException {
             return new InitialLdapContext(env, null);
         }
+    }
+
+    public String getUserSearchPattern() {
+        return userSearchPattern;
+    }
+
+    public void setUserSearchPattern(final String userSearchPattern) {
+        this.userSearchPattern = userSearchPattern;
     }
 }
