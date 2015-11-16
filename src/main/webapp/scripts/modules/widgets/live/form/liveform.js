@@ -221,7 +221,9 @@ WM.module('wm.widgets.live')
                                     wmToaster.show('error', 'ERROR', response.error);
                                     onResult(response, false, event);
                                 } else {
-                                    wmToaster.show('success', 'SUCCESS', $scope.updatemessage);
+                                    if ($scope.updatemessage) {
+                                        wmToaster.show('success', 'SUCCESS', $scope.updatemessage);
+                                    }
                                     onResult(response, true, event);
                                     if ($scope.ctrl) {
                                         /* highlight the current updated row */
@@ -256,7 +258,9 @@ WM.module('wm.widgets.live')
                                     wmToaster.show('error', 'ERROR', response.error);
                                     onResult(response, false, event);
                                 } else {
-                                    wmToaster.show('success', 'SUCCESS', $scope.insertmessage);
+                                    if ($scope.insertmessage) {
+                                        wmToaster.show('success', 'SUCCESS', $scope.insertmessage);
+                                    }
                                     onResult(response, true, event);
                                     /* if successfully inserted  change editable mode to false */
                                     if ($scope.ctrl) {
@@ -293,7 +297,9 @@ WM.module('wm.widgets.live')
                             }
                             onResult(success, true);
                             $scope.clearData();
-                            wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
+                            if ($scope.deletemessage) {
+                                wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
+                            }
                             $scope.isSelected = false;
                             /*get updated data without refreshing page*/
                             if ($scope.ctrl) {

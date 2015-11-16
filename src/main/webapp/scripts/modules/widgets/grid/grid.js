@@ -910,8 +910,9 @@ WM.module('wm.widgets.grid')
                             $scope.$emit('on-row-delete', row);
 
                             $scope.onRecordDelete();
-
-                            wmToaster.show("success", "SUCCESS", $scope.deletemessage);
+                            if ($scope.deletemessage) {
+                                wmToaster.show("success", "SUCCESS", $scope.deletemessage);
+                            }
                             /*custom EventHandler for row deleted event*/
                             $scope.onRowdeleted({$data: row});
 
