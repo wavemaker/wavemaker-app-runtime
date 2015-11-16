@@ -19,7 +19,7 @@ WM.module('wm.widgets.form')
             '</select>'
                 );
     }])
-    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'FormWidgetUtils', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, FormWidgetUtils, Utils) {
+    .directive('wmSelect', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, FormWidgetUtils) {
         'use strict';
 
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
@@ -84,45 +84,29 @@ WM.module('wm.widgets.form')
             /*if filter dataSet if dataField is selected other than 'All Fields'*/
             if (dataField && dataField !== ALLFIELDS) {
                 data = {};
-                //Widget selected item dataset will be object instead of array.
-                if (WM.isObject(dataSet) && !WM.isArray(dataSet)) {
-                    data[WidgetUtilService.getObjValueByKey(dataSet, dataField)] = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
-                } else {
-                    _.forEach(dataSet, function (option) {
-                        data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
-                    });
-                }
-
+                _.forEach(dataSet, function (option) {
+                    data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
+                });
             } else {
                 data = {};
-                //Widget selected item dataset will be object instead of array.
-                if (WM.isObject(dataSet) && !WM.isArray(dataSet)) {
-                    if (scope.datafield === ALLFIELDS) {
-                        data[0] = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                        /*store parsed dataSet in scope*/
-                        _dataSetModelProxyMap[scope.$id][0] = dataSet;
-                        _dataSetModelMap[scope.$id][JSON.stringify(dataSet)] = '0';
-                    }
-                } else {
-                    _.forEach(dataSet, function (option, index) {
-                        if (WM.isObject(option)) {
-                            if (scope.datafield === ALLFIELDS) {
-                                data[index] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                                /*store parsed dataSet in scope*/
-                                _dataSetModelProxyMap[scope.$id][index] = option;
-                                _dataSetModelMap[scope.$id][JSON.stringify(option)] = index.toString();
-                            } else {
-                                data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
-                            }
+                _.forEach(dataSet, function (option, index) {
+                    if (WM.isObject(option)) {
+                        if (scope.datafield === ALLFIELDS) {
+                            data[index] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
+                            /*store parsed dataSet in scope*/
+                            _dataSetModelProxyMap[scope.$id][index] = option;
+                            _dataSetModelMap[scope.$id][JSON.stringify(option)] = index.toString();
                         } else {
-                            if (WM.isArray(dataSet)) {
-                                data[option] = option;
-                            } else {
-                                data[index] = option;
-                            }
+                            data[WidgetUtilService.getObjValueByKey(option, dataField)] = WidgetUtilService.getEvaluatedData(scope, option, {fieldName: "displayfield", expressionName: "displayexpression"}, displayField);
                         }
-                    });
-                }
+                    } else {
+                        if (WM.isArray(dataSet)) {
+                            data[option] = option;
+                        } else {
+                            data[index] = option;
+                        }
+                    }
+                });
             }
             return data;
         }
@@ -189,20 +173,10 @@ WM.module('wm.widgets.form')
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, attrs, key, newVal) {
-            var variable,
-                eleScope = element.scope();
             switch (key) {
             case 'dataset':
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && WM.isDefined(newVal) && newVal !== null) {
-                    //Get variable and properties map only on binddataset change
-                    if (scope.oldBindDataSet !== scope.binddataset) {
-                        if (!WM.isString(newVal)) {
-                            variable = Utils.getVariableName(scope, eleScope);
-                            newVal.propertiesMap = eleScope.Variables[variable].category === 'wm.ServiceVariable' ? undefined : eleScope.Variables[variable].propertiesMap;
-                        }
-                        scope.oldBindDataSet = scope.binddataset;
-                    }
                     FormWidgetUtils.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
                 }
                 /*creating options for the select element, whenever the property value changes*/
