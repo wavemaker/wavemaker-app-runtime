@@ -23,7 +23,7 @@ WM.module('wm.widgets.live')
         'LiveWidgetUtils',
         function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils, $controller, LiveWidgetUtils) {
             "use strict";
-            var widgetProps = PropertiesFactory.getPropertiesOf("wm.livefilter", ["wm.layouts", "wm.containers"]),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.layouts', 'wm.containers']),
                 filterMarkup = '',
                 notifyFor;
             if (CONSTANTS.isStudioMode) {
@@ -46,27 +46,6 @@ WM.module('wm.widgets.live')
                     $scope.dateTimeFormats = Utils.getDateTimeDefaultFormats();
                     $scope.isDateTime = Utils.getDateTimeTypes();
                     $scope.isUpdateMode = true;
-                    $scope.getWidgetType = function (type) {
-                        var widgetType;
-                        switch (type) {
-                        case "date":
-                            widgetType = "date";
-                            break;
-                        case "time":
-                            widgetType = "time";
-                            break;
-                        case "datetime":
-                            widgetType = "datetime";
-                            break;
-                        case "boolean":
-                            widgetType = "checkbox";
-                            break;
-                        default:
-                            widgetType = "text";
-                            break;
-                        }
-                        return widgetType;
-                    };
                     $scope.__compileWithIScope = true;
                     $scope.clearFilter = function () {
                         WM.forEach($scope.formFields, function (filterField) {
@@ -97,8 +76,8 @@ WM.module('wm.widgets.live')
                             variable = $scope.Variables[$scope.variableName],
                             page = 1,
                             orderBy,
-                            ORACLE_DB_SYSTEM = "oracle",
-                            DB_SYS_KEY = "dbSystem",
+                            ORACLE_DB_SYSTEM = 'oracle',
+                            DB_SYS_KEY = 'dbSystem',
                             isOracleDbSystem = function () {
                                 return variable && variable[DB_SYS_KEY] && variable[DB_SYS_KEY].toLowerCase() === ORACLE_DB_SYSTEM;
                             };
@@ -246,37 +225,39 @@ WM.module('wm.widgets.live')
                     };
                     $scope.constructDefaultData = function (dataset) {
                         var columnObj = dataset.propertiesMap.columns,
-                            colDef,
                             colDefArray = [],
-                            column,
                             numColumns = Math.min(columnObj.length, 5),
-                            index;
-                        for (index = 0; index < numColumns; index++) {
-                            column = columnObj[index];
-                            colDef = {};
-                            colDef.field = column.fieldName;
-                            colDef.displayName = Utils.prettifyLabel(column.fieldName);
-                            colDef.widget = $scope.getWidgetType(column.type);
-                            colDef.isRange = false;
-                            colDef.filterOn = column.fieldName;
-                            colDef.lookupType = '';
-                            colDef.lookupField = '';
-                            colDef.minPlaceholder = '';
-                            colDef.maxPlaceholder = '';
-                            colDef.placeholder = '';
-                            colDef.datepattern = '';
-                            colDef.class = '';
-                            colDef.required = '';
-                            colDef.minValue = '';
-                            colDef.maxValue = '';
-                            colDef.multiple = '';
-                            colDef.value = '';
-                            colDef.type = column.type;
-                            colDef.step = LiveWidgetUtils.getStepValue(colDef.type);
-                            colDef.ismeridian = '';
-                            colDef.isPrimaryKey = column.isPrimaryKey;
-                            colDef.generator = column.generator;
-                            colDef.show = true;
+                            fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap('LIVEFILTER');
+                        _.each(columnObj, function (column, index) {
+                            var colDef = {
+                                'field'             :   column.fieldName,
+                                'displayName'       :   Utils.prettifyLabel(column.fieldName),
+                                'widget'            :   fieldTypeWidgetTypeMap[column.type][0],
+                                'isRange'           :   false,
+                                'filterOn'          :   column.fieldName,
+                                'lookupType'        :   '',
+                                'lookupField'       :   '',
+                                'minPlaceholder'    :   '',
+                                'maxPlaceholder'    :   '',
+                                'placeholder'       :   '',
+                                'datepattern'       :   '',
+                                'class'             :   '',
+                                'width'             :   '',
+                                'height'            :   '',
+                                'textAlignment'     :   '',
+                                'backgroundColor'   :   '',
+                                'required'          :   '',
+                                'minValue'          :   '',
+                                'maxValue'          :   '',
+                                'multiple'          :   '',
+                                'value'             :   '',
+                                'type'              :   column.type,
+                                'step'              :   LiveWidgetUtils.getStepValue(column.type),
+                                'ismeridian'        :   '',
+                                'isPrimaryKey'      :   column.isPrimaryKey,
+                                'generator'         :   column.generator,
+                                'show'              :   true
+                            };
                             if (column.isRelated) {
                                 /* otherwise build object with required configuration */
                                 colDef.field = column.fieldName.charAt(0).toLowerCase() + column.fieldName.slice(1);
@@ -284,7 +265,7 @@ WM.module('wm.widgets.live')
                                 colDef.isRelated = true;
                                 colDef.lookupType = column.relatedEntityName;
                                 colDef.lookupField = '';
-                                WM.forEach(column.columns, function (subcolumn) {
+                                _.each(column.columns, function (subcolumn) {
                                     if (subcolumn.isPrimaryKey) {
                                         colDef.lookupField = subcolumn.fieldName;
                                     }
@@ -294,8 +275,9 @@ WM.module('wm.widgets.live')
                                 colDef.isRelated = false;
                             }
                             colDefArray.push(colDef);
-                        }
-
+                            /*Return false will break the loop after processing numColumns*/
+                            return (index + 1) < numColumns;
+                        });
                         return colDefArray;
                     };
                     /*Calls the filter function if default values are present*/
@@ -348,22 +330,22 @@ WM.module('wm.widgets.live')
                                 handlers = [],
                                 defaultButtonsArray = [
                                     {
-                                        key : 'filter',
-                                        class: 'btn-primary',
-                                        iconclass: 'glyphicon glyphicon-filter',
-                                        action: 'filter()',
-                                        displayName: 'Filter',
-                                        show: true,
-                                        type: 'button'
+                                        key         :   'filter',
+                                        class       :   'btn-primary',
+                                        iconclass   :   'glyphicon glyphicon-filter',
+                                        action      :   'filter()',
+                                        displayName :   'Filter',
+                                        show        :   true,
+                                        type        :   'button'
                                     },
                                     {
-                                        key : 'clear',
-                                        class: 'btn',
-                                        iconclass: 'glyphicon glyphicon-remove-circle',
-                                        action: 'clearFilter()',
-                                        displayName: 'Clear',
-                                        show: true,
-                                        type: 'button'
+                                        key         :   'clear',
+                                        class       :   'btn',
+                                        iconclass   :   'glyphicon glyphicon-remove-circle',
+                                        action      :   'clearFilter()',
+                                        displayName :   'Clear',
+                                        show        :   true,
+                                        type        :   'button'
                                     }];
                             scope.filterContainer = element;
                             scope.primaryKey = null;
@@ -421,7 +403,8 @@ WM.module('wm.widgets.live')
                                 case "dataset":
                                     var fieldsObj,
                                         buttonsObj,
-                                        designerObj;
+                                        designerObj,
+                                        fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap('LIVEFILTER');
                                     /*If properties map is populated and if columns are presented for filter construction*/
                                     if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                         if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
@@ -454,7 +437,7 @@ WM.module('wm.widgets.live')
                                                         filterField.type = filterObj.type;
                                                         /*For backward compatibility of datetime column types, set widget to datetime*/
                                                         if (CONSTANTS.isStudioMode && filterField.type === 'datetime' && (!filterField.widget || filterField.widget === 'text')) {
-                                                            filterField.widget = scope.getWidgetType(filterField.type);
+                                                            filterField.widget = fieldTypeWidgetTypeMap[filterField.type][0];
                                                             scope.$root.$emit("set-markup-attr", scope.widgetid, {
                                                                 'type': filterField.type,
                                                                 'widget': filterField.widget
@@ -671,7 +654,7 @@ WM.module('wm.widgets.live')
             }
         };
     }])
-    .directive("wmFilterAction", ["$compile", function ($compile) {
+    .directive('wmFilterAction', ['$compile', 'LiveWidgetUtils', function ($compile, LiveWidgetUtils) {
         'use strict';
 
         return {
@@ -686,16 +669,10 @@ WM.module('wm.widgets.live')
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
                         scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="livefilter"]').isolateScope() : scope.$parent;
 
-                        var buttonTemplate, index, buttonDef = {
-                            'key': attrs.key || attrs.binding,
-                            'displayName': attrs.displayName || attrs.caption,
-                            'show': attrs.show === "true" || attrs.show === true,
-                            'class': attrs.class || '',
+                        var buttonTemplate, index, buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                             /*iconame support for old projects*/
-                            'iconname': attrs.iconname,
-                            'iconclass': attrs.iconclass,
-                            'action': attrs.action
-                        };
+                            'iconname': attrs.iconname
+                        });
                         scope.parentIsolateScope.buttonArray = scope.parentIsolateScope.buttonArray || [];
                         index = scope.parentIsolateScope.buttonArray.push(buttonDef) - 1;
                         scope.parentIsolateScope.columnsDefCreated = true;
