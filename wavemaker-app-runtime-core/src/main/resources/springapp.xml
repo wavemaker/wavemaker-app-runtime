@@ -29,7 +29,7 @@
             </bean>
         </mvc:message-converters>
         <mvc:argument-resolvers>
-            <bean class="com.wavemaker.runtime.resolver.WMPageableHandlerMethodArgumentResolver" >
+            <bean id="appDefaultPageableHandlerMethodArgumentResolver" class="com.wavemaker.runtime.resolver.ServiceBasedPageableHandlerMethodArgumentResolver" >
                 <property name="pageParameterName" value="page"/>
                 <property name="sizeParameterName" value="size"/>
                 <property name="oneIndexedParameters" value="true"/>
