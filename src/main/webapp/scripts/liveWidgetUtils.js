@@ -163,38 +163,41 @@ WM.module('wm.widgets.live')
              */
             function getColumnDef(attrs) {
                 return {
-                    'displayName'       :   attrs.displayName || attrs.caption,
-                    'show'              :   (attrs.show === '1' || attrs.show === 'true'),
-                    'type'              :   attrs.type || 'text',
-                    'primaryKey'        :   attrs.primaryKey === 'true' || attrs.primaryKey === true,
-                    'generator'         :   attrs.generator,
-                    'readonly'          :   attrs.readonly === 'true' || attrs.readonly === true,
-                    'multiple'          :   attrs.multiple === 'true' || attrs.multiple === true,
-                    'datepattern'       :   attrs.datepattern,
-                    'class'             :   attrs.class || '',
-                    'width'             :   attrs.width,
-                    'height'            :   attrs.height,
-                    'textAlignment'     :   attrs.textAlignment,
-                    'backgroundColor'   :   attrs.backgroundColor,
-                    'required'          :   attrs.required === 'true' || attrs.required === true,
-                    'placeholder'       :   attrs.placeholder,
-                    'maxValue'          :   attrs.maxValue,
-                    'minValue'          :   attrs.minValue,
-                    'maxvalue'          :   attrs.maxvalue,
-                    'excludedays'       :   attrs.excludedays,
-                    'excludedates'      :   attrs.excludedates,
-                    'step'              :   attrs.step,
-                    'ismeridian'        :   attrs.ismeridian,
-                    'accessroles'       :   attrs.accessroles,
-                    'onChange'          :   attrs.onChange,
-                    'onBlur'            :   attrs.onBlur,
-                    'onFocus'           :   attrs.onFocus,
-                    'onMouseleave'      :   attrs.onMouseleave,
-                    'onMouseenter'      :   attrs.onMouseenter,
-                    'onClick'           :   attrs.onClick,
-                    'onKeypress'        :   attrs.onKeypress,
-                    'onKeyup'           :   attrs.onKeyup,
-                    'onKeydown'         :   attrs.onKeydown
+                    'displayName'     : attrs.displayName || attrs.caption,
+                    'show'            : (attrs.show === '1' || attrs.show === 'true'),
+                    'type'            : attrs.type || 'text',
+                    'primaryKey'      : attrs.primaryKey === 'true' || attrs.primaryKey === true,
+                    'generator'       : attrs.generator,
+                    'readonly'        : attrs.readonly === 'true' || attrs.readonly === true,
+                    'multiple'        : attrs.multiple === 'true' || attrs.multiple === true,
+                    'datepattern'     : attrs.datepattern,
+                    'class'           : attrs.class || '',
+                    'width'           : attrs.width,
+                    'height'          : attrs.height,
+                    'textAlignment'   : attrs.textAlignment,
+                    'backgroundColor' : attrs.backgroundColor,
+                    'required'        : attrs.required === 'true' || attrs.required === true,
+                    'placeholder'     : attrs.placeholder,
+                    'excludedays'     : attrs.excludedays,
+                    'excludedates'    : attrs.excludedates,
+                    'step'            : attrs.step,
+                    'maxvalue'        : attrs.maxvalue,
+                    'minvalue'        : attrs.minvalue,
+                    'ismeridian'      : attrs.ismeridian,
+                    'accessroles'     : attrs.accessroles,
+                    'outputformat'    : attrs.outputformat,
+                    'displayvalue'    : attrs.displayvalue,
+                    'datafield'       : attrs.datafield,
+                    'displayfield'    : attrs.displayfield,
+                    'onChange'        : attrs.onChange,
+                    'onBlur'          : attrs.onBlur,
+                    'onFocus'         : attrs.onFocus,
+                    'onMouseleave'    : attrs.onMouseleave,
+                    'onMouseenter'    : attrs.onMouseenter,
+                    'onClick'         : attrs.onClick,
+                    'onKeypress'      : attrs.onKeypress,
+                    'onKeyup'         : attrs.onKeyup,
+                    'onKeydown'       : attrs.onKeydown
                 };
             }
             /**
@@ -827,21 +830,21 @@ WM.module('wm.widgets.live')
                     break;
                 }
             }
-            this.toggleActionMessage =          toggleActionMessage;
-            this.getEventTypes =                getEventTypes;
-            this.getDefaultValue =              getDefaultValue;
-            this.getFormButtons =               getFormButtons;
-            this.getCustomItems =               getCustomItems;
-            this.getColumnDef =                 getColumnDef;
-            this.getButtonDef =                 getButtonDef;
-            this.getTemplate =                  getTemplate;
-            this.translateVariableObject =      translateVariableObject;
-            this.getColumnCountByLayoutType =   getColumnCountByLayoutType;
-            this.getCustomFieldKey =            getCustomFieldKey;
-            this.getStepValue =                 getStepValue;
-            this.splitDimension =               splitDimension;
-            this.mergeDimension =               mergeDimension;
-            this.getFieldTypeWidgetTypesMap =   getFieldTypeWidgetTypesMap;
+            this.toggleActionMessage        = toggleActionMessage;
+            this.getEventTypes              = getEventTypes;
+            this.getDefaultValue            = getDefaultValue;
+            this.getFormButtons             = getFormButtons;
+            this.getCustomItems             = getCustomItems;
+            this.getColumnDef               = getColumnDef;
+            this.getButtonDef               = getButtonDef;
+            this.getTemplate                = getTemplate;
+            this.translateVariableObject    = translateVariableObject;
+            this.getColumnCountByLayoutType = getColumnCountByLayoutType;
+            this.getCustomFieldKey          = getCustomFieldKey;
+            this.getStepValue               = getStepValue;
+            this.splitDimension             = splitDimension;
+            this.mergeDimension             = mergeDimension;
+            this.getFieldTypeWidgetTypesMap = getFieldTypeWidgetTypesMap;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {

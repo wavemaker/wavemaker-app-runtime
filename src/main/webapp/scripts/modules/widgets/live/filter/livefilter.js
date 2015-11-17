@@ -355,12 +355,19 @@ WM.module('wm.widgets.live')
                             };
 
                             function updateAllowedValues() {
+                                if (!CONSTANTS.isRunMode) {
+                                    return;
+                                }
                                 var variable = scope.Variables[scope.variableName];
                                 WM.forEach(scope.formFields, function (filterField) {
-                                    var query, tableName, columns, fieldColumn;
+                                    var query,
+                                        tableName,
+                                        columns,
+                                        fieldColumn,
+                                        widgetTypes = ['select', 'radioset', 'checkboxset'];
 
                                     fieldColumn = variable.getModifiedFieldName(filterField.field);
-                                    if (filterField.widget === 'select' || filterField.widget === 'radioset' || filterField.widget === 'checkboxset') {
+                                    if (_.includes(widgetTypes, filterField.widget) && !filterField.dataset) {
                                         if (filterField.isRelated) {
                                             tableName = filterField.lookupType;
                                             columns = filterField.lookupField;
@@ -578,16 +585,16 @@ WM.module('wm.widgets.live')
                             parentIsolateScope = scope.parentIsolateScope,
                             columnsDef = new scope.FilterField(),
                             columnsDefProps = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
-                                'field': attrs.field || attrs.binding,
-                                'filterOn': attrs.filterOn || attrs.field || attrs.binding,
-                                'isRange': attrs.isRange === "true" || attrs.isRange === true,
-                                'isRelated': attrs.isRelated === "true" || attrs.isRelated === true,
-                                'widget': attrs.widget,
-                                'lookupType': attrs.lookupType,
-                                'lookupField': attrs.lookupField,
-                                'minPlaceholder': attrs.minPlaceholder,
-                                'maxPlaceholder': attrs.maxPlaceholder,
-                                'relatedEntityName': attrs.relatedEntityName
+                                'field'             : attrs.field || attrs.binding,
+                                'filterOn'          : attrs.filterOn || attrs.field || attrs.binding,
+                                'isRange'           : attrs.isRange === "true" || attrs.isRange === true,
+                                'isRelated'         : attrs.isRelated === "true" || attrs.isRelated === true,
+                                'widget'            : attrs.widget,
+                                'lookupType'        : attrs.lookupType,
+                                'lookupField'       : attrs.lookupField,
+                                'minPlaceholder'    : attrs.minPlaceholder,
+                                'maxPlaceholder'    : attrs.maxPlaceholder,
+                                'relatedEntityName' : attrs.relatedEntityName
                             });
 
                         WM.extend(columnsDef, columnsDefProps);
@@ -630,6 +637,9 @@ WM.module('wm.widgets.live')
                                     columnsDef.maxValue = defaultVal;
                                 }
                             }
+                        }
+                        if (attrs.dataset) {
+                            columnsDef.dataset = attrs.dataset;
                         }
                         parentIsolateScope.formFields = parentIsolateScope.formFields || [];
                         parentIsolateScope.columnsDefCreated = true;
