@@ -34,6 +34,10 @@ public class RestRuntimeController extends AbstractController {
     @Autowired
     private RestRuntimeService restRuntimeService;
 
+    public RestRuntimeController() {
+        setSupportedMethods(null);//This is to support all http methods instead of default supported methods get,post and head
+    }
+
     @Override
     protected ModelAndView handleRequestInternal(
             final HttpServletRequest request, final HttpServletResponse response) throws Exception {
