@@ -323,18 +323,6 @@ WM.module('wm.widgets.form')
                $scope.nodes = [
                    {
                        "label": "item1",
-                       "icon": "glyphicon glyphicon-euro"
-                   },
-                   {
-                       "label": "item2",
-                       "icon": "glyphicon glyphicon-euro"
-                   },
-                   {
-                       "label": "item3",
-                       "icon": "glyphicon glyphicon-euro"
-                   },
-                   {
-                       "label": "item4",
                        "icon": "glyphicon glyphicon-euro",
                        "children" : [
                            {
@@ -356,6 +344,18 @@ WM.module('wm.widgets.form')
                              ]
                            }
                        ]
+                   },
+                   {
+                       "label": "item2",
+                       "icon": "glyphicon glyphicon-euro"
+                   },
+                   {
+                       "label": "item3",
+                       "icon": "glyphicon glyphicon-euro"
+                   },
+                   {
+                       "label": "item4",
+                       "icon": "glyphicon glyphicon-euro"
                    }
                ];
             }
