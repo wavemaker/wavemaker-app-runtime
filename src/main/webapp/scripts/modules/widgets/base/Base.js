@@ -535,7 +535,8 @@ WM.module('wm.widgets.base', [])
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
                         "caption": {"type": "string", "value": "Message", "bindable": "in-out-bound", "maxlength": 256},
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "animation": {"type": "list", "options": animationOptions}
+                        "animation": {"type": "list", "options": animationOptions},
+                        "hideclose": {"type": "boolean", "value": false}
                     },
 
                     "wm.composite": {
@@ -1589,7 +1590,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "help", "properties": ["helptext"], "parent": "properties"},
                 {"name": "behavior", "properties": ["navigation", "pollinterval", "radiogroup", "viewgroup", "startchecked", "showweeks", "autofocus", "readonly", "insertmessage", "updatemessage", "deletemessage", "ignoreparentreadonly", "readonlygrid",
-                    "multiple", "mode", "show", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
+                    "multiple", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",

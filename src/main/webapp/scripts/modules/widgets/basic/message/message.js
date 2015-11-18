@@ -14,7 +14,7 @@ WM.module('wm.widgets.basic')
                 '"alert-info alert-loading":messageType.isLoading}\' ' +
                 '><i class="icon"></i>' +
                 '<span ng-bind-html="caption"></span>' +
-                '<i class="close" data-ng-hide="hideClose">&times;</i>' +
+                '<i class="close" data-ng-hide="hideclose">&times;</i>' +
             '</p>'
             );
     }])
@@ -95,7 +95,7 @@ WM.module('wm.widgets.basic')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
-                        scope.hideClose = attrs.hideClose || false;
+                        scope.hideclose = attrs.hideclose || attrs.hideClose || false;
 
                         /*on-click of close icon*/
                         scope.dismiss = function (eventObject) {
