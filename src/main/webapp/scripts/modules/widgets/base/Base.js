@@ -2040,7 +2040,10 @@ WM.module('wm.widgets.base', [])
                     .forEach(function (handler) {
                         var notifyFor = handler.notifyFor;
                         if ((notifyFor && notifyFor[key]) || !notifyFor) {
-                            triggerFn(handler, key, newVal, oldVal);
+                            //Fix for recursive triggering of dataset property on checkboxset
+                            if (newVal !== oldVal) {
+                                triggerFn(handler, key, newVal, oldVal);
+                            }
                         }
                     });
             }
