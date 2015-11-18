@@ -95,7 +95,7 @@ WM.module('wm.widgets.form')
 
             } else {
                 data = {};
-                if (!WM.isArray(dataSet) && scope.binddataset) {
+                if (!WM.isArray(dataSet) && scope.binddataset && scope.binddataset.indexOf('selecteditem') > -1 ) {
                     data[0] = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
                     /*store parsed dataSet in scope*/
                     _dataSetModelProxyMap[scope.$id][0] = dataSet;
