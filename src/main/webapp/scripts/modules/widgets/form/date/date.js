@@ -5,8 +5,8 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/date.html',
-            '<div class="app-date input-group" init-widget has-model data-ng-show="show" role="input">' +
-                '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} date-disabled="excludeDays(date) || excludeDates(date)" apply-styles ' +
+            '<div class="app-date input-group" init-widget has-model data-ng-show="show" role="input" apply-styles>' +
+                '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} date-disabled="excludeDays(date) || excludeDates(date)" ' +
                     ' title="{{hint}}" ' +
                     ' min-date=mindate max-date=maxdate is-open=isOpen' +
                     ' data-ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
