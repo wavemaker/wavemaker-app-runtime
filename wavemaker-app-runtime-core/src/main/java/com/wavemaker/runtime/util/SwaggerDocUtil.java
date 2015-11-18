@@ -164,6 +164,9 @@ public class SwaggerDocUtil {
         if ("integer".equals(type)) {
             return PropertyBuilder.build("integer", "int32", null);
         }
+        if ("long".equals(type)) {
+            return PropertyBuilder.build("integer", "int64", null);
+        }
         if ("$ref".equals(type)) {
             return PropertyBuilder.build("$ref", format, null);
         }
