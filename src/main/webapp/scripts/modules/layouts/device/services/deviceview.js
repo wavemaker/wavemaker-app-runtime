@@ -1,4 +1,4 @@
-/*global wm, WM, wmDevice*/
+/*global wm, WM, wmDevice, Hammer*/
 /**
  * @ngdoc service
  * @name wm.device.$DeviceViewService
@@ -6,14 +6,13 @@
  * The `DeviceViewService` service is responsible for updating the layout for mobile devices.
  */
 WM.module("wm.layouts.device")
-    .service("DeviceViewService", ['MobileEventService', 'Utils', '$rootScope', function (MobileEventService, Utils, $rootScope) {
+    .service("DeviceViewService", ['Utils', '$rootScope', function (Utils, $rootScope) {
 
         "use strict";
 
         var LEFT_PANEL_CLASS_NAME = "page-left-panel",
             RIGHT_PANEL_CLASS_NAME = "page-right-panel",
             SWIPE_ELEM_CLASS_NAME = "page-left-panel-icon",
-            SEARCH_ELEM_CLASS_NAME = "page-search-icon",
             SEARCH_CONTAINER_CLASS_NAME = "app-search",
             CONTENT_CLASS_NAME = "app-content-column",
             HEADER_CLASS_NAME = "page-header";
@@ -54,18 +53,18 @@ WM.module("wm.layouts.device")
             }
         }
 
-        /**
-         * toggles the container
-         */
-        function toggleContainer(container) {
-            /*added condition to check if the current element is not visible, then hide containers*/
-            if (!WM.element(container).is(":visible")) {
-                hidePageContainers();
-            }
-            if (Utils.isMobile()) {
-                WM.element(container).toggle();
+        /*setup touch event handler*/
+        function bindTapEvtHandler(selector, handler) {
+            var $el = WM.element(selector);
+            if ($el.length) {
+                WM.forEach($el, function (element) {
+                    new Hammer(element).on("tap", function () {
+                        Utils.triggerFn(handler);
+                    });
+                });
             }
         }
+
         /**
          * toggles the search container
          */
@@ -83,7 +82,7 @@ WM.module("wm.layouts.device")
          */
         function bindLeftPanelEvents() {
             //tap left to show/hide left panel
-            MobileEventService.touch(roleSelector(SWIPE_ELEM_CLASS_NAME) + ':last', function () {
+            bindTapEvtHandler(roleSelector(SWIPE_ELEM_CLASS_NAME), function () {
                 var leftPanel = getLeftPanelScope();
                 leftPanel && leftPanel.toggle();
             });
@@ -98,7 +97,7 @@ WM.module("wm.layouts.device")
                 var searchEle = WM.element('<a class="visible-xs-inline-block app-header-action glyphicon glyphicon-search"></a>');
                 WM.element(ele).before(searchEle);
                 //Tap icon to show/hide search box
-                MobileEventService.touch(searchEle, function () {
+                bindTapEvtHandler(searchEle, function () {
                     toggleSearchContainer(ele);
                 });
             });
@@ -110,14 +109,14 @@ WM.module("wm.layouts.device")
          */
         function bindContentEvents() {
             //touch content to hide nav pane and left panel
-            MobileEventService.touch(classSelector(CONTENT_CLASS_NAME), hidePageContainers);
+            bindTapEvtHandler(classSelector(CONTENT_CLASS_NAME), hidePageContainers);
         }
 
         /**
          * binds the touch event for content
          */
         function bindRightPanelEvents() {
-            MobileEventService.touch(roleSelector(RIGHT_PANEL_CLASS_NAME), hidePageContainers);
+            bindTapEvtHandler(roleSelector(RIGHT_PANEL_CLASS_NAME), hidePageContainers);
         }
 
         return {
