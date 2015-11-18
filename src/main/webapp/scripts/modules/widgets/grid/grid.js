@@ -1655,7 +1655,7 @@ WM.module('wm.widgets.grid')
                             columnDef.widgetType = column.widgetType;
                             columnDef.displayName = column.displayName;
                             columnDef.class = column.class;
-                            columnDef.ngClass = column.ngClass;
+                            columnDef.ngclass = column.ngclass;
                             columnDef.searchPlaceholder = column.searchPlaceholder || (
                                 columnDef.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd'
                             );
@@ -1935,7 +1935,7 @@ WM.module('wm.widgets.grid')
                                 'widgetType': attrs.widgetType,
                                 'style': styleDef,
                                 'class': attrs.colClass || '',
-                                'ngClass': attrs.colNgClass || '',
+                                'ngclass': attrs.colNgClass || '',
                                 'searchPlaceholder': attrs.searchPlaceholder || (attrs.type !== 'date' ? 'Search' : 'Enter date in yyyy-mm-dd'),
                                 'datepattern': attrs.datepattern,
                                 'formatpattern': attrs.formatpattern,

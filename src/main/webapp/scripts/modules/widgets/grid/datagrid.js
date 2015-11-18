@@ -371,7 +371,7 @@ $.widget('wm.datagrid', {
     /* Returns the table cell template. */
     _getColumnTemplate: function (row, colId, colDef) {
         var classes = this.options.cssClassNames.tableCell + ' ' + colDef.class,
-            ngClass = colDef.ngClass || '',
+            ngClass = colDef.ngclass || '',
             htm = '<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"',
             colExpression = colDef.customExpression,
             invalidExpression = false,

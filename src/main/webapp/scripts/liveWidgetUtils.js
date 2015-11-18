@@ -172,6 +172,7 @@ WM.module('wm.widgets.live')
                     'multiple'        : attrs.multiple === 'true' || attrs.multiple === true,
                     'datepattern'     : attrs.datepattern,
                     'class'           : attrs.class || '',
+                    'ngclass'         : attrs.ngclass,
                     'width'           : attrs.width,
                     'height'          : attrs.height,
                     'textAlignment'   : attrs.textAlignment,
@@ -337,6 +338,8 @@ WM.module('wm.widgets.live')
                             fields += ' ' + Utils.hyphenate(field) + '="{{formFields[' + index + '].' + field + '}}"';
                         } else if (field === 'textAlignment') {
                             fields += ' textalign="{{formFields[' + index + '].' + field + '}}"';
+                        } else if (field === 'ngclass') {
+                            fields += ' data-ng-class="{{formFields[' + index + '].' + field + '}}"';
                         } else if (!(_.includes(excludeMaxValTypes, type))) {
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
                         }
