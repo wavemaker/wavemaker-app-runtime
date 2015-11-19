@@ -162,7 +162,7 @@ WM.module('wm.widgets.form')
                                 time = scope._timeModel ? new Date(scope._timeModel) : new Date();
                                 date = scope._dateModel ? new Date(scope._dateModel) : new Date();
                                 dateString = $filter('date')(date, 'yyyy-MM-dd');
-                                timeString = $filter('date')(time, 'HH:mm');
+                                timeString = $filter('date')(time, 'HH:mm:ss');
                                 value = moment(dateString + ' ' + timeString).valueOf();
                                 this.timestamp = value;
                                 if (scope.datepattern && scope.datepattern !== 'timestamp') {

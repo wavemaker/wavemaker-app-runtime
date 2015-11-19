@@ -524,9 +524,9 @@ WM.module('wm.widgets.base', [])
                         "ismeridian": {"type": "boolean", "value": true},
                         "mindate": {"type": "string",  "bindable": "in-bound", "hint": "yyyy-MM-dd"},
                         "maxdate": {"type": "string",  "bindable": "in-bound", "hint": "yyyy-MM-dd"},
-                        "datepattern": {"value": "yyyy-MM-dd HH:mm", "type": "list", "options": [], "widget": "datetimepatterns"},
+                        "datepattern": {"value": "yyyy-MM-dd HH:mm:ss", "type": "list", "options": [], "widget": "datetimepatterns"},
                         "outputformat": {"value": "timestamp", "type": "list", "options": [], "widget": "datetimepatterns"},
-                        "datavalue": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm"},
+                        "datavalue": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "bindable": "in-out-bound", "hint": "yyyy-MM-dd HH:mm:ss"},
                         "timestamp": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "show": "false", "bindable": "out-bound"},
                         "excludedays": {"type": "selectall", "options": daysOptions, "displaytype": "block", "value": " "},
                         "excludedates": {"type": "datetime, timestamp, date, array, string", "bindable": "in-bound", "widget": "string", "hint": "yyyy-MM-dd"}
