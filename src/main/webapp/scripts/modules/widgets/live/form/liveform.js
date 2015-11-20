@@ -743,9 +743,6 @@ WM.module('wm.widgets.live')
                                             scope.formFields = translatedObj;
                                         }
                                         gridObj = getNonEmptyDatSetGridObj();
-                                        if (CONSTANTS.isRunMode) {
-                                            scope.setDefaults();
-                                        }
                                     }
                                 } else if (!newVal) {
                                     /*If variable binding has been removed empty the form and the variableName*/
@@ -985,6 +982,9 @@ WM.module('wm.widgets.live')
                                 }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                             } else {
                                 columnDef.defaultValue = attrs.defaultValue;
+                                if (CONSTANTS.isRunMode) {
+                                    parentIsolateScope.setDefaultValueToValue(columnDef);
+                                }
                             }
                         }
                         if (attrs.widgetType) {
