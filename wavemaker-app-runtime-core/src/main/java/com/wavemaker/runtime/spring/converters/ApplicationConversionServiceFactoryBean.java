@@ -19,37 +19,34 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 
     @Override
     public void setConverters(Set converters) {
-        converters.add(new WMStringToDateConverter());
-        converters.add(new WMStringToSqlDateConverter());
-        converters.add(new WMStringToLocalDateTimeConverter());
         super.setConverters(converters);
     }
 
-    static class WMStringToDateConverter implements Converter<String, Date> {
+    public static class WMStringToDateConverter implements Converter<String, Date> {
 
         @Override
         public Date convert(String source) {
-            if(StringUtils.isNumber(source)){
+            if (StringUtils.isNumber(source)) {
                 return new Date(Long.parseLong(source));
-            } else{
+            } else {
                 return WMDateDeSerializer.getDate(source);
             }
         }
     }
 
-    static class WMStringToSqlDateConverter implements Converter<String, java.sql.Date> {
+    public static class WMStringToSqlDateConverter implements Converter<String, java.sql.Date> {
 
         @Override
         public java.sql.Date convert(String source) {
-            if(StringUtils.isNumber(source)){
+            if (StringUtils.isNumber(source)) {
                 return new java.sql.Date(Long.parseLong(source));
-            } else{
+            } else {
                 return WMSqlDateDeSerializer.getDate(source);
             }
         }
     }
 
-    static class WMStringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
+    public static class WMStringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
 
         @Override
         public LocalDateTime convert(String source) {

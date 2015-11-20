@@ -53,7 +53,16 @@
         <property name="favorPathExtension" value="false" />
     </bean>
 
-    <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
+    <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean"
+          id="applicationConversionService" init-method="initConverters">
+        <property name="converters">
+            <list>
+                <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean$WMStringToDateConverter"/>
+                <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean$WMStringToSqlDateConverter"/>
+                <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean$WMStringToLocalDateTimeConverter"/>
+            </list>
+        </property>
+    </bean>
 
     <!-- Set user.languague to english as Javascript ONLY handles US number formatting -->
     <bean id="systemPropertyInitializer" class="com.wavemaker.runtime.SystemPropertyInitiliazingBean">

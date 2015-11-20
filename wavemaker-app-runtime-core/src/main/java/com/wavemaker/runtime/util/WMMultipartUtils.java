@@ -59,7 +59,7 @@ public class WMMultipartUtils {
             setMultipartsToObject(multipartHttpServletRequest.getFileMap(), t, serviceId);
         } catch (IOException | IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException | SQLException e) {
             LOGGER.error("Exception while creating a new Instance with information: {}", t);
-            throw new WMRuntimeException("Exception while preparing multipart request");
+            throw new WMRuntimeException("Exception while preparing multipart request",e);
         }
         return t;
     }
