@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
 
-        $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget data-ng-show="show" apply-styles="container"></div>');
+        $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget data-ng-show="show" apply-styles="scrollable-container"></div>');
 
         $templateCache.put('template/layout/container/accordion-pane.html',
             '<div class="app-accordion-panel panel panel-default" init-widget wmtransclude data-ng-show="show" wm-navigable-element="true"></div>'
@@ -16,11 +16,11 @@ WM.module('wm.layouts.containers')
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0)" class="accordion-toggle" wmtransclude></a>' +
                     '</h3>' +
-                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type=button class="app-icon glyphicon panel-action" data-ng-class="pane.active ? \'glyphicon-minus\': \'glyphicon-plus\'"></button></div>' +
+                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon glyphicon panel-action" data-ng-class="pane.active ? \'glyphicon-minus\': \'glyphicon-plus\'"></button></div>' +
                 '</div>'
             );
         $templateCache.put('template/layout/container/accordion-content.html',
-                '<div class="panel-collapse collapse"  data-ng-class="pane.active ? \'collapse in\' : \'collapse\'" init-widget page-container apply-styles="container">' +
+                '<div class="panel-collapse collapse"  data-ng-class="pane.active ? \'collapse in\' : \'collapse\'" init-widget page-container apply-styles="scrollable-container">' +
                     '<div class="panel-body" wmtransclude page-container-target></div>' +
                 '</div>'
             );

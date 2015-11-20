@@ -16,13 +16,13 @@ WM.module('wm.layouts.containers')
                             '<div class="panel-actions">' +
                                 '<span data-ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
                                 '<wm-menu scopedataset="actions" iconname="cog" data-ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel || displayfield}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
-                                '<button type=button class="app-icon panel-action glyphicon glyphicon-question-sign" title="{{::$root.appLocale.LABEL_HELP}}" data-ng-if="helptext" data-ng-click="toggleHelp()"></button>' +
-                                '<button type=button class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="togglePanel($event);"></button>' +
-                                '<button type=button class="app-icon glyphicon panel-action glyphicon-remove" title="{{::$root.appLocale.LABEL_CLOSE}}" data-ng-if="closable" data-ng-click="closePanel();onClose({$event: $event, $scope: this})"></button>' +
+                                '<button type="button" class="app-icon panel-action glyphicon glyphicon-question-sign" title="{{::$root.appLocale.LABEL_HELP}}" data-ng-if="helptext" data-ng-click="toggleHelp()"></button>' +
+                                '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="togglePanel($event);"></button>' +
+                                '<button type="button" class="app-icon glyphicon panel-action glyphicon-remove" title="{{::$root.appLocale.LABEL_CLOSE}}" data-ng-if="closable" data-ng-click="closePanel();onClose({$event: $event, $scope: this})"></button>' +
                             '</div>' +
                         '</h3>' +
                     '</div>' +
-                    '<div class="panel-content" data-ng-show="expanded" >' +
+                    '<div class="panel-content" data-ng-show="expanded">' +
                         '<div class="panel-body" wmtransclude page-container-target data-ng-style="{height: height, overflow: overflow,paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}" ></div>' +
                         '<aside class="panel-help-message"><h5 class="panel-help-header">{{::$root.appLocale.LABEL_HELP}}</h5><div class="panel-help-content" data-ng-bind-html="helptext"></div></aside>' +
                     '</div>' +
@@ -43,6 +43,9 @@ WM.module('wm.layouts.containers')
             case 'height':
                 if (newVal && CONSTANTS.isStudioMode) {
                     scope.minheight = 0;
+                }
+                if(newVal){
+                  scope.overflow = "auto";
                 }
                 break;
             case 'actions':

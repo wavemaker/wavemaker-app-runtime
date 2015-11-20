@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/tile/tile.html',
-            '<div init-widget class="app-tile panel" data-ng-show="show" apply-styles wm-navigable-element="true">' +
+            '<div init-widget class="app-tile panel" data-ng-show="show" apply-styles="scrollable-container" wm-navigable-element="true">' +
                 '<div class="app-tile-body panel-body" wmtransclude ></div>' +
             '</div>');
     }])

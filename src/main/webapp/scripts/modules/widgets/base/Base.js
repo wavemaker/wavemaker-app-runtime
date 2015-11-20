@@ -858,6 +858,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
+                        "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "visibility": {"type": "list", "options": visibilityOptions},
                         "display": {"type": "list", "options": displayOptions},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
@@ -2432,44 +2433,50 @@ WM.module('wm.widgets.base', [])
             var notifyFor = {},
                 DIMENSION_PROPS,
 
-                propNameCSSKeyMap = {
-                    'backgroundattachment'  : 'backgroundAttachment',
-                    'backgroundcolor'       : 'backgroundColor',
-                    'backgroundgradient'    : 'backgroundGradient',
-                    'backgroundposition'    : 'backgroundPosition',
-                    'backgroundrepeat'      : 'backgroundRepeat',
-                    'backgroundsize'        : 'backgroundSize',
-                    'bordercolor'           : 'borderColor',
-                    'borderradius'          : 'borderRadius',
-                    'borderstyle'           : 'borderStyle',
-                    'color'                 : 'color',
-                    'cursor'                : 'cursor',
-                    'display'               : 'display',
-                    'fontfamily'            : 'fontFamily',
-                    'fontstyle'             : 'fontStyle',
-                    'fontvariant'           : 'fontVariant',
-                    'fontweight'            : 'fontWeight',
-                    'height'                : 'height',
-                    'horizontalalign'       : 'textAlign',
-                    'lineheight'            : 'lineHeight',
-                    'maxheight'             : 'maxHeight',
-                    'maxwidth'              : 'maxWidth',
-                    'minheight'             : 'minHeight',
-                    'minwidth'              : 'minWidth',
-                    'opacity'               : 'opacity',
-                    'overflow'              : 'overflow',
-                    'picturesource'         : 'backgroundImage',
-                    'textalign'             : 'textAlign',
-                    'textdecoration'        : 'textDecoration',
-                    'verticalalign'         : 'verticalAlign',
-                    'visibility'            : 'visibility',
-                    'whitespace'            : 'whiteSpace',
-                    'width'                 : 'width',
-                    'wordbreak'             : 'wordbreak',
-                    'zindex'                : 'zIndex'
-                },
-                SHELL_TYPE_IGNORE_LIST     = 'height minheight maxheight overflow paddingunit paddingtop paddingright paddingbottom paddingleft',
-                CONTAINER_TYPE_IGNORE_LIST = 'textalign';
+                propNameCSSKeyMap,
+                SHELL_TYPE_IGNORE_LIST,
+                CONTAINER_TYPE_IGNORE_LIST,
+                SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST;
+
+
+            propNameCSSKeyMap = {
+                'backgroundattachment'  : 'backgroundAttachment',
+                'backgroundcolor'       : 'backgroundColor',
+                'backgroundgradient'    : 'backgroundGradient',
+                'backgroundposition'    : 'backgroundPosition',
+                'backgroundrepeat'      : 'backgroundRepeat',
+                'backgroundsize'        : 'backgroundSize',
+                'bordercolor'           : 'borderColor',
+                'borderradius'          : 'borderRadius',
+                'borderstyle'           : 'borderStyle',
+                'color'                 : 'color',
+                'cursor'                : 'cursor',
+                'display'               : 'display',
+                'fontfamily'            : 'fontFamily',
+                'fontstyle'             : 'fontStyle',
+                'fontvariant'           : 'fontVariant',
+                'fontweight'            : 'fontWeight',
+                'height'                : 'height',
+                'horizontalalign'       : 'textAlign',
+                'lineheight'            : 'lineHeight',
+                'maxheight'             : 'maxHeight',
+                'maxwidth'              : 'maxWidth',
+                'minheight'             : 'minHeight',
+                'minwidth'              : 'minWidth',
+                'opacity'               : 'opacity',
+                'overflow'              : 'overflow',
+                'picturesource'         : 'backgroundImage',
+                'textalign'             : 'textAlign',
+                'textdecoration'        : 'textDecoration',
+                'verticalalign'         : 'verticalAlign',
+                'visibility'            : 'visibility',
+                'whitespace'            : 'whiteSpace',
+                'width'                 : 'width',
+                'wordbreak'             : 'wordbreak',
+                'zindex'                : 'zIndex'
+            };
+            SHELL_TYPE_IGNORE_LIST     = 'height minheight maxheight overflow paddingunit paddingtop paddingright paddingbottom paddingleft';
+            CONTAINER_TYPE_IGNORE_LIST = SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST = 'textalign';
 
             _.keys(propNameCSSKeyMap)
                 .concat(SHELL_TYPE_IGNORE_LIST.split(' '))
@@ -2531,6 +2538,15 @@ WM.module('wm.widgets.base', [])
 
                 if (applyType === 'container' && _.includes(CONTAINER_TYPE_IGNORE_LIST, key)) {
                     return;
+                }
+                if (applyType === 'scrollable-container') {
+                    if(_.includes(SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST, key)) {
+                        return;
+                    }
+
+                    if (key === 'height') {
+                        obj.overflow = nv ? 'auto' : '';
+                    }
                 }
 
                 if (isDimensionProp(key)) {

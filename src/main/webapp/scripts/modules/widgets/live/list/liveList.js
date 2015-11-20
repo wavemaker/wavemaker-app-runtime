@@ -54,6 +54,7 @@ WM.module('wm.widgets.live')
                 liTemplateWrapper_end = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>',
                 notifyFor = {
                     'dataset'        : true,
+                    'height'        : true,
                     'navigation'     : CONSTANTS.isStudioMode,
                     'itemsperrow'    : CONSTANTS.isStudioMode
                 },
@@ -426,6 +427,10 @@ WM.module('wm.widgets.live')
                 var doNotRemoveTemplate,
                     oldClass,
                     newClass;
+                /**checking if the height is set on the element then we will enable the overflow**/
+                if(key === 'height' && nv) {
+                    $is.overflow = "auto";
+                }
 
                 if (key === 'dataset') {
                     doNotRemoveTemplate = attrs.template === 'true';

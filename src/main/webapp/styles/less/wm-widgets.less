@@ -581,6 +581,7 @@ html, body {
   border-radius: 500px;
   background: #fff;
   overflow: hidden;
+  transform: scale(1);/**fix for animated icons messing up with the switch widget style***/
   .btn-group {
     position: relative;
     overflow: hidden;
@@ -601,6 +602,7 @@ html, body {
     pointer-events: inherit;
     height: 100%;
     vertical-align: middle;
+    border-radius: 0;
   }
 }
 
@@ -966,13 +968,10 @@ body.modal-open {
 *********************************************************************************/
 .app-list, .app-livelist {
   position: relative;
-  overflow: inherit;
   list-style: none;
   margin: 0;
   padding: 0;
   > ul {
-    overflow-y: auto;
-    overflow-x: hidden;
     display: block;
     padding-bottom: 1px; //Fix for unnecessary vertical scrollbar on the list
   }
@@ -986,7 +985,8 @@ body.modal-open {
      word-break: break-all;
     }
     &.active {
-      a.app-anchor {
+      z-index: auto !important;/***fix for popover in the list item getting hidden***/
+      a {
         color: inherit;
       }
       .panel {
@@ -1610,7 +1610,6 @@ If the height and width are not specified the video takes the height of the post
     padding : 0;
     margin  : 0;
     position : relative;
-    overflow : auto;
     .panel-body.app-tile-body{
         position : relative;
         padding : 0;
@@ -1633,7 +1632,6 @@ If the height and width are not specified the video takes the height of the post
 .app-accordion {
   margin-bottom: 0;
   position: relative;
-  overflow: auto;
   .panel + .panel {
     margin: 0;
   }
@@ -1647,14 +1645,11 @@ If the height and width are not specified the video takes the height of the post
       position: relative;
     }
     .panel-body {
-      overflow: auto;
-      height: 100%;
+      position: relative;
     }
     .panel-heading {
       width: 100%;
       position: relative;
-      overflow: hidden;
-
       .panel-title {
         margin-right: 5em;
         > a {
