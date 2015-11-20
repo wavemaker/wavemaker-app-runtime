@@ -422,8 +422,12 @@ WM.module('wm.widgets.base')
                     return modifiedValue;
                 }
 
-                function hasValueChanged(nv, ov) {
+                function hasValueChanged(nv, ov, doEqualsCheck) {
                     /*When both "oldVal" and "newVal" are objects/arrays, comparison is not done.*/
+                    if (doEqualsCheck) {
+                        return !WM.equals(nv, ov);
+                    }
+
                     return (nv !== ov || WM.isObject(nv) || WM.isObject(ov));
                 }
 
@@ -433,12 +437,14 @@ WM.module('wm.widgets.base')
                     },
                     'set': function (nv) {
                         var ov = value,
-                            _nv;
+                            _nv,
+                            doEqualsCheck;
 
                         if (isBindableProperty) {
                             if (!$is[UPDATE_FROM_WATCHER]) {
                                 Utils.triggerFn(_watchers[key]);
                                 _watchers[key] = undefined;
+                                doEqualsCheck = true;
                             } else {
                                 $is[UPDATE_FROM_WATCHER] = false;
                             }
@@ -447,11 +453,13 @@ WM.module('wm.widgets.base')
                                 $is[bindKey] = nv;
                                 return;
                             }
+                        } else {
+                            doEqualsCheck = true;
                         }
 
                         _nv = parseValue(nv);
 
-                        if (!hasValueChanged(_nv, ov)) {
+                        if (!hasValueChanged(_nv, ov, doEqualsCheck)) {
                             return;
                         }
 
@@ -477,14 +485,18 @@ WM.module('wm.widgets.base')
 
             function defineGetterSettersForProp($is, $s, $el, attrs, hasModel, propName, propDetails) {
 
+                var _isBindableProperty;
+
                 if (propName === 'datavalue' && hasModel) {
                     defineBindPropertyGetterSetters($is, $s, propDetails, propName);
                     defineDataValueGetterSetters($is, $el, attrs);
                 } else {
-                    if (isBindableProperty(propDetails)) {
+
+                    _isBindableProperty = isBindableProperty(propDetails);
+                    if (_isBindableProperty) {
                         defineBindPropertyGetterSetters($is, $s, propDetails, propName);
                     }
-                    definePropertyGetterSetters($is, $s, $el, attrs, propDetails, isBindableProperty, propName, propDetails.value);
+                    definePropertyGetterSetters($is, $s, $el, attrs, propDetails, _isBindableProperty, propName, attrs[propName] ? undefined : propDetails.value);
                 }
             }
 

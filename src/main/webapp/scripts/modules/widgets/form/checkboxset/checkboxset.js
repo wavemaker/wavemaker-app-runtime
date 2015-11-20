@@ -98,17 +98,14 @@ WM.module('wm.widgets.form')
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal) {
             var dataSet,
-                newDataset = Utils.getValidJSON(scope.dataset),
-                validNewVal = Utils.getValidJSON(newVal),
                 isBoundToServiceVariable;
-            /*When an object comes as string, parsing it to object*/
-            if (newDataset) {
-                scope.dataset = newDataset;
+
+            if (key === 'dataset' && WM.isString(newVal) && newVal.length) {
+                scope.dataset = newVal = newVal.split(',').map(function (val) { return val.trim(); });
             }
-            if (validNewVal) {
-                newVal = validNewVal;
-            }
-            dataSet = scope.dataset || scope.scopedataset;
+
+            dataSet = scope.dataset;
+
             /*Checking if widget is bound to service variable*/
             if (CONSTANTS.isStudioMode && scope.binddataset) {
                 isBoundToServiceVariable = FormWidgetUtils.getBoundVariableCategory(scope) === "wm.ServiceVariable";
@@ -190,16 +187,10 @@ WM.module('wm.widgets.form')
 
                         /* fields defined in scope: {} MUST be watched explicitly */
                         /*watching scopedataset attribute to create options for the checkboxset element.*/
-                        if (!attrs.widgetid) {
+                        if (!attrs.widgetid && attrs.scopedataset) {
                             scope.$watch('scopedataset', function () {
                                 if (scope.scopedataset) {
-                                    var newScopeDataset = Utils.getValidJSON(scope.scopedataset);
-                                    /*When an object comes as string, parsing it to object*/
-                                    if (newScopeDataset) {
-                                        scope.scopedataset = newScopeDataset;
-                                    }
-                                    /*generating the radioset based on the values provided*/
-                                    constructCheckboxSet(scope, element, scope.scopedataset);
+                                    scope.dataset = scope.scopedataset;
                                 }
                             }, true);
                         }
@@ -300,48 +291,48 @@ WM.module('wm.widgets.form')
  * @param {string=} on-mouseleave
  *                  Callback function which will be triggered when the mouse leaves the widget.
  * @example
- *   <example module="wmCore">
- *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
- *               <div>single click count: {{clickCount}}</div>
- *               <div>change count: {{changeCount}}</div>
- *               <div>mouse enter count: {{mouseenterCount}}</div>
- *               <div>mouse leave count: {{mouseleaveCount}}</div>
- *               <div>focus count: {{focusCount}}</div>
- *               <div>blur count: {{blurCount}}</div>
- *
- *               <wm-composite>
- *                   <wm-label caption="Colors: "></wm-label>
- *                   <wm-checkboxset scopedatavalue="color" scopedataset=colors></wm-checkboxset>
- *               </wm-composite><br>
- *               <wm-composite>
- *                   <wm-label caption="Framework: "></wm-label>
- *                   <wm-checkboxset scopedatavalue="selectedItem" dataset="Backbone, CoffeeScript, Angular"></wm-checkboxset>
- *               </wm-composite><br>
- *
- *               <div>
- *                   <div style="font-weight: bold; color: {{color[0]}};">{{selectedItem}}</div>
- *                </div>
- *           </div>
- *       </file>
- *       <file name="script.js">
- *          function Ctrl($scope) {
- *              $scope.clickCount =
- *              $scope.changeCount =
- *              $scope.mouseenterCount =
- *              $scope.mouseleaveCount =
- *              $scope.focusCount =
- *              $scope.blurCount = 0;
- *
- *              $scope.width = "100px";
- *              $scope.height= "30px";
- *
- *              $scope.colors = ["crimson", "green", "orange", "red"];
- *
- *              $scope.f = function (eventtype) {
- *                  $scope[eventtype + 'Count']++;
- *              }
- *           }
- *       </file>
- *   </example>
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <div>single click count: {{clickCount}}</div>
+                <div>change count: {{changeCount}}</div>
+                <div>mouse enter count: {{mouseenterCount}}</div>
+                <div>mouse leave count: {{mouseleaveCount}}</div>
+                <div>focus count: {{focusCount}}</div>
+                <div>blur count: {{blurCount}}</div>
+
+                <wm-composite>
+                    <wm-label caption="Colors: "></wm-label>
+                    <wm-checkboxset scopedatavalue="color" scopedataset=colors></wm-checkboxset>
+                </wm-composite><br>
+                <wm-composite>
+                    <wm-label caption="Framework: "></wm-label>
+                    <wm-checkboxset scopedatavalue="selectedItem" dataset="Backbone, CoffeeScript, Angular"></wm-checkboxset>
+                </wm-composite><br>
+
+                <div>
+                    <div style="font-weight: bold; color: {{color[0]}};">{{selectedItem}}</div>
+                 </div>
+            </div>
+        </file>
+        <file name="script.js">
+           function Ctrl($scope) {
+               $scope.clickCount =
+               $scope.changeCount =
+               $scope.mouseenterCount =
+               $scope.mouseleaveCount =
+               $scope.focusCount =
+               $scope.blurCount = 0;
+
+               $scope.width = "100px";
+               $scope.height= "30px";
+
+               $scope.colors = ["crimson", "green", "orange", "red"];
+
+               $scope.f = function (eventtype) {
+                   $scope[eventtype + 'Count']++;
+               }
+            }
+        </file>
+   </example>
  */
