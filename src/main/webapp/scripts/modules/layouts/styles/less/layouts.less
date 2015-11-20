@@ -760,4 +760,75 @@ body {
   .checkbox + .list-group-item.checkbox , .radio + .list-group-item.radio  {
     margin-top: 0;
   }
+
+  /************** Fixing widgets when Position Right is applied on the parent ****************/
+    .position-right {
+      //Switch widget
+      .app-switch {
+        float: right;
+        .btn-group {
+          direction: ltr;
+        }
+      }
+
+      //Common styles for Radio, Checkbox, Radioset & Checkboxset widgets
+      .app-radioset, .app-checkboxset {
+        direction: ltr;
+      }
+
+      .radio, .checkbox, .radio-inline,  .checkbox-inline {
+        label {
+          text-align: right;
+        }
+
+        .caption {
+          margin-right: 1.5em;
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+          right: 0;
+        }
+
+        //Reset position from left hand side
+        &.col-md-push-3 {
+          left: 0;
+        }
+      }
+
+      //Datetime, date & time widgets
+      .app-datetime, .app-date, .app-timeinput {
+        .dropdown-menu {
+          left: 0 !important; /*!important is used to overwrite the inline styles*/
+          white-space: normal; /*In order to prevent the UI from breaking*/
+        }
+      }
+
+      //Tab Widget
+      .app-tabs {
+        .nav {
+          &.nav-tabs {
+            text-align: right;
+          }
+        }
+      }
+
+      .app-toggle {
+        float: right;
+      }
+
+      .app-slider {
+        text-align: right; /*IE9 support*/
+        .range-input {
+          margin-top: 0.5em;
+        }
+      }
+
+      .app-fileupload {
+        float: right;
+
+        .app-button-wrapper {
+          float: right;
+        }
+      }
+    }
   }
