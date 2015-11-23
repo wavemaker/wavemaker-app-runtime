@@ -239,8 +239,6 @@ wm.variables.services.$liveVariable = [
                             _.each(relation.mappings, function (mapping) {
                                 if (relation.primary) {
                                     relatedColumns.push(mapping.sourceColumn);
-                                } else {
-                                    relatedColumns.push(mapping.targetColumn);
                                 }
                             });
                             /*Loop through the table's columns*/
