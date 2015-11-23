@@ -1502,8 +1502,9 @@ WM.module('wm.utils', [])
         }
 
         function getVariableNameFromExpr(expr) {
-            var variableRegex = /^bind:Variables\.(.*)\.dataSet/;
-            return expr.match(variableRegex)[1];
+            var variableRegex = /^bind:Variables\.(.*)\.dataSet/,
+                matchValue = expr.match(variableRegex);
+            return matchValue && matchValue[1];
         }
 
         // expose the methods on the service instance.

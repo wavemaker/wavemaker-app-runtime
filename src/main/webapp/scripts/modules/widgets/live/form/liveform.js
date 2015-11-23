@@ -953,7 +953,9 @@ WM.module('wm.widgets.live')
                             exprWatchHandler,
                             relatedDataWatchHandler,
                             elScope = element.scope(),
-                            defaultObj;
+                            defaultObj,
+                            dataSetWatchHandler,
+                            variable;
                         if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
                             parentIsolateScope = scope;
                         } else {
@@ -991,7 +993,28 @@ WM.module('wm.widgets.live')
                             columnDef.widgetType = attrs.widgetType;
                         }
                         if (attrs.dataset) {
-                            columnDef.dataset = attrs.dataset;
+                            if (Utils.stringStartsWith(attrs.dataset, 'bind:') && CONSTANTS.isRunMode) {
+                                expr = attrs.dataset.replace('bind:', '');
+                                /*Watch on the bound variable. dataset will be set after variable is populated.*/
+                                dataSetWatchHandler = parentIsolateScope.$watch(expr, function (newVal) {
+                                    variable = elScope.Variables[expr.split('.')[1]];
+                                    if (WM.isObject(variable)) {
+                                        if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
+                                            parentIsolateScope.formFields[index].dataset = newVal.content;
+                                        } else if (variable.category === "wm.LiveVariable") {
+                                            parentIsolateScope.formFields[index].dataset = newVal.data;
+                                        } else {
+                                            parentIsolateScope.formFields[index].dataset = newVal;
+                                        }
+                                        /* fallback to set datafield to 'All Fields' for backward compatibility */
+                                        if (!attrs.datafield) {
+                                            parentIsolateScope.formFields[index].datafield = "All Fields";
+                                        }
+                                    }
+                                });
+                            } else {
+                                columnDef.dataset = attrs.dataset;
+                            }
                         } else if (attrs.isRelated && CONSTANTS.isRunMode) {
                             relatedDataWatchHandler = parentIsolateScope.$watch(parentIsolateScope.binddataset.replace('bind:', ''), function (newVal) {
                                 if (!newVal) {
@@ -1070,6 +1093,9 @@ WM.module('wm.widgets.live')
                             }
                             if (relatedDataWatchHandler) {
                                 relatedDataWatchHandler();
+                            }
+                            if (dataSetWatchHandler) {
+                                dataSetWatchHandler();
                             }
                         });
                     }
