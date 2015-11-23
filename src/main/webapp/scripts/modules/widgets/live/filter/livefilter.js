@@ -367,7 +367,7 @@ WM.module('wm.widgets.live')
                                         widgetTypes = ['select', 'radioset', 'checkboxset'];
 
                                     fieldColumn = variable.getModifiedFieldName(filterField.field);
-                                    if (_.includes(widgetTypes, filterField.widget) && !filterField.dataset) {
+                                    if (_.includes(widgetTypes, filterField.widget) && !filterField.tempDataset) {
                                         if (filterField.isRelated) {
                                             tableName = filterField.lookupType;
                                             columns = filterField.lookupField;
@@ -603,7 +603,8 @@ WM.module('wm.widgets.live')
                         columnsDef.key = columnsDef.field;
                         //This is used to call base set and get methods on widgets
                         scope.FilterField.prototype.$is = parentIsolateScope;
-
+                        /*Support for old projects which were using value for default value*/
+                        columnsDefProps.defaultValue = attrs.defaultValue || attrs.value;
                         /*Set the default value*/
                         if (columnsDef.defaultValue) {
                             /*If the default value is bound variable, keep watch on the expression*/
@@ -641,6 +642,8 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (attrs.dataset) {
+                            /*Store the dataset in tempdataset. If tempdataset is undefined, fetch the default values for field*/
+                            columnsDef.tempDataset = attrs.dataset;
                             if (Utils.stringStartsWith(attrs.dataset, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = attrs.dataset.replace('bind:', '');
                                 /*Watch on the bound variable. dataset will be set after variable is populated.*/

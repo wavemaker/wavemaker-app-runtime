@@ -171,7 +171,7 @@ WM.module('wm.widgets.live')
                     'readonly'        : attrs.readonly === 'true' || attrs.readonly === true,
                     'multiple'        : attrs.multiple === 'true' || attrs.multiple === true,
                     'datepattern'     : attrs.datepattern,
-                    'defaultValue'    : attrs.defaultValue || attrs.value,
+                    'defaultValue'    : attrs.defaultValue,
                     'class'           : attrs.class || '',
                     'ngclass'         : attrs.ngclass,
                     'width'           : attrs.width,
