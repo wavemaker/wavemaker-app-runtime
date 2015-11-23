@@ -242,7 +242,15 @@ WM.module('wm.widgets.form')
                                         this._proxyModel = undefined;
                                     }
                                 } else {
-                                    var dateTime = new Date(val);
+                                    var dateTime;
+                                    if (WM.isDate(val)) {
+                                        dateTime = val;
+                                    } else {
+                                        if (!isNaN(val)) {
+                                            val = parseInt(val, 10);
+                                        }
+                                        dateTime = new Date(val);
+                                    }
                                     if (dateTime.getTime()) {
                                         this._proxyModel = this._dateModel = this._timeModel = dateTime.getTime();
                                     } else {
