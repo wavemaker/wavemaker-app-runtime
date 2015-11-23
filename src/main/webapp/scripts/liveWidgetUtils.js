@@ -186,6 +186,7 @@ WM.module('wm.widgets.live')
                     'maxvalue'        : attrs.maxvalue,
                     'minvalue'        : attrs.minvalue,
                     'ismeridian'      : attrs.ismeridian,
+                    'layout'          : attrs.layout,
                     'accessroles'     : attrs.accessroles,
                     'outputformat'    : attrs.outputformat,
                     'displayvalue'    : attrs.displayvalue,
