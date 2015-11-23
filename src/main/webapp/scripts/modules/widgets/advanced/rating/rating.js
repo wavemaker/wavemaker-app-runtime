@@ -27,15 +27,18 @@ WM.module('wm.widgets.advanced')
                 'maxvalue': true,
                 'readonly': true
             },
-            MAX_RATING = 5;
+            DEFAULT_RATING = 5,
+            MAX_RATING =10;
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
             case 'maxvalue':
                 var range = [],
                     i,
-                    maxValue = parseInt(newVal, 10);
-                for (i = maxValue || MAX_RATING; i > 0; i--) {
+                    maxValue;
+                newVal = parseInt(newVal, 10);
+                maxValue = newVal > MAX_RATING ? MAX_RATING : newVal;
+                for (i = maxValue || DEFAULT_RATING; i > 0; i--) {
                     range.push({'value': i});
                 }
                 scope.range = range;
@@ -66,7 +69,7 @@ WM.module('wm.widgets.advanced')
                         iScope.ratingsWidth = function () {
                             var dataValue = parseFloat(iScope.datavalue),
                                 starWidth = 0.925,
-                                maxValue = parseInt(iScope.maxvalue, 10) || MAX_RATING;
+                                maxValue = parseInt(iScope.maxvalue, 10) || DEFAULT_RATING;
                             $el.find('.ratings-container').css("width", (starWidth * maxValue) + 'em');
                             if (iScope.datavalue === undefined || iScope.datavalue === '' || iScope.datavalue === null) {
                                 return 0;
