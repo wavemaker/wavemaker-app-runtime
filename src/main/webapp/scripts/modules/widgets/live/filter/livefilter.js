@@ -603,10 +603,10 @@ WM.module('wm.widgets.live')
                         scope.FilterField.prototype.$is = parentIsolateScope;
 
                         /*Set the default value*/
-                        if (attrs.value) {
+                        if (columnsDef.defaultValue) {
                             /*If the default value is bound variable, keep watch on the expression*/
-                            if (Utils.stringStartsWith(attrs.value, 'bind:') && CONSTANTS.isRunMode) {
-                                expr = attrs.value.replace('bind:', '');
+                            if (Utils.stringStartsWith(columnsDef.defaultValue, 'bind:') && CONSTANTS.isRunMode) {
+                                expr = columnsDef.defaultValue.replace('bind:', '');
                                 if (scope.Variables && !Utils.isEmptyObject(scope.Variables) && scope.$eval(expr)) {
                                     defaultVal = scope.$eval(expr);
                                     columnsDef.value = defaultVal;
@@ -626,7 +626,7 @@ WM.module('wm.widgets.live')
                                     }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                                 }
                             } else {
-                                defaultVal = attrs.value;
+                                defaultVal = columnsDef.defaultValue;
                                 /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
                                 if (CONSTANTS.isRunMode) {
                                     defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, columnsDef.type);

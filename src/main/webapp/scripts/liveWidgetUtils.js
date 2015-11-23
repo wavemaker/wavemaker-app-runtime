@@ -171,6 +171,7 @@ WM.module('wm.widgets.live')
                     'readonly'        : attrs.readonly === 'true' || attrs.readonly === true,
                     'multiple'        : attrs.multiple === 'true' || attrs.multiple === true,
                     'datepattern'     : attrs.datepattern,
+                    'defaultValue'    : attrs.defaultValue || attrs.value,
                     'class'           : attrs.class || '',
                     'ngclass'         : attrs.ngclass,
                     'width'           : attrs.width,
@@ -446,14 +447,14 @@ WM.module('wm.widgets.live')
             /*Returns radioset template */
             function radiosetTemplate(fieldDef, index) {
                 var template = '';
-                template = template + '<wm-radioset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" dataset="" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-radioset>';
+                template = template + '<wm-radioset ' + getFormFields(fieldDef, index) + ' dataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-radioset>';
                 return template;
             }
 
             /*Returns checkboxset template */
             function checkboxsetTemplate(fieldDef, index) {
                 var template = '';
-                template = template + '<wm-checkboxset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" dataset="" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-checkboxset>';
+                template = template + '<wm-checkboxset ' + getFormFields(fieldDef, index) + ' dataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-checkboxset>';
                 return template;
             }
 
@@ -471,13 +472,13 @@ WM.module('wm.widgets.live')
                 if (fieldDef.isRange) {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min Value';
                     fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max Value';
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-select ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-select></div>' +
+                    template = template + '<div class="col-md-4 col-sm-4"><wm-select ' + getFormFields(fieldDef, index) + ' dataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-select></div>' +
                         '<div class="col-md-1 col-sm-1"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-select ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-select></div>';
+                        '<div class="col-md-4 col-sm-4"><wm-select ' + getFormFields(fieldDef, index) + ' dataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-select></div>';
 
                 } else {
                     fieldDef.placeholder = fieldDef.placeholder || 'Select value';
-                    template = template + '<wm-select ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"></wm-select>';
+                    template = template + '<wm-select ' + getFormFields(fieldDef, index) + ' dataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"></wm-select>';
                 }
                 return template;
             }
