@@ -54,7 +54,7 @@
     </bean>
 
     <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean"
-          id="applicationConversionService" init-method="initConverters">
+          id="applicationConversionService">
         <property name="converters">
             <list>
                 <bean class="com.wavemaker.runtime.spring.converters.ApplicationConversionServiceFactoryBean$WMStringToDateConverter"/>
