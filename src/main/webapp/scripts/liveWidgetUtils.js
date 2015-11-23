@@ -447,14 +447,14 @@ WM.module('wm.widgets.live')
             /*Returns radioset template */
             function radiosetTemplate(fieldDef, index) {
                 var template = '';
-                template = template + '<wm-radioset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-radioset>';
+                template = template + '<wm-radioset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""></wm-radioset>';
                 return template;
             }
 
             /*Returns checkboxset template */
             function checkboxsetTemplate(fieldDef, index) {
                 var template = '';
-                template = template + '<wm-checkboxset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-checkboxset>';
+                template = template + '<wm-checkboxset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""></wm-checkboxset>';
                 return template;
             }
 
