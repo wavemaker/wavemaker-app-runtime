@@ -41,7 +41,7 @@ wm.modules.wmCommon.services.AppAutoUpdateService = [
 
 
         function installLatestVersion() {
-            var downloadLink = config.host + '/appBuild/rest/mobileBuilds/download?',
+            var downloadLink = config.host + '/appBuild/rest/mobileBuilds/android/download?',
                 fileName = 'app-build-' + config.latestBuildNumber + '.apk',
                 apkFile =  cordova.file.externalApplicationStorageDirectory + fileName;
 
