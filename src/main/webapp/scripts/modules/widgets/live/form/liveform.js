@@ -15,6 +15,7 @@ WM.module('wm.widgets.live')
                 'rowdata': true,
                 'formdata': true,
                 'updatemode': true,
+                'formlayout': true,
                 'formtype': true,
                 'defaultmode': true
             },
@@ -43,7 +44,18 @@ WM.module('wm.widgets.live')
             },
             require: '?^wmLivegrid',
             template: function (template, attrs) {
-                if (CONSTANTS.isRunMode && (attrs.formtype === 'dialog' || attrs.layout === 'dialog')) {
+                if (CONSTANTS.isRunMode && attrs.formlayout === 'page') {
+                    return '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-device-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
+                                '<wm-mobile-navbar title="{{title}}">' +
+                                    '<wm-button type="{{btn.type}}" class="btn-transparent btn-default" data-ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
+                                '</wm-mobile-navbar>' +
+                                '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
+                                '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
+                                    template.context.innerHTML +
+                                '</div>' +
+                            '</form>';
+                }
+                if (CONSTANTS.isRunMode && (attrs.formtype === 'dialog' || attrs.layout === 'dialog' || attrs.formlayout === 'dialog')) {
                     /*Generate a unique id for the dialog to avoid conflict with multiple dialogs.*/
                     attrs.dialogid = 'liveformdialog-' + attrs.name + '-' + Utils.generateGUId();
                     return '<div data-identifier="liveform" init-widget data-ng-show="show" class="app-liveform liveform-dialog" autocomplete="autocomplete" >' +
@@ -615,8 +627,18 @@ WM.module('wm.widgets.live')
                         var elScope = element.scope();
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
-                        //remove this condition later. for backward compatibility
-                        if (attrs.layout === "dialog" || attrs.formtype === "dialog") {
+
+                        /*check for formtype or layout values for backward compatability*/
+                        if (attrs.formtype || attrs.layout) {
+                            attrs.formlayout = attrs.formtype || attrs.layout;
+                        }
+
+                        /*enable the fromlayout for device*/
+                        if ($rootScope.isMobileApplicationType && CONSTANTS.isStudioMode) {
+                            scope.widgetProps.formlayout.show = true;
+                        }
+
+                        if (attrs.formlayout === 'dialog') {
                             scope.isLayoutDialog = true;
                             scope._dialogid = attrs.dialogid;
                         }
@@ -626,8 +648,7 @@ WM.module('wm.widgets.live')
                     },
                     post: function (scope, element, attrs, controller) {
                         scope.ctrl = controller;
-                        //remove this condition later. for backward compatibility
-                        if (attrs.formtype !== 'dialog' && attrs.layout !== 'dialog') {
+                        if (attrs.formlayout !== 'dialog') {
                             scope.formElement = element;
                         } else {
                             /* for dialog layout dialog will take the width assigned to the form */
@@ -724,7 +745,8 @@ WM.module('wm.widgets.live')
                                         } else {
                                             /*Defining two buttons for default actions*/
                                             scope.buttonArray = LiveWidgetUtils.getFormButtons().filter(function (button) {
-                                                return button.key === 'cancel' || button.key === 'save';
+                                                /* show only save button for liveform with page layout */
+                                                return attrs.formlayout === 'page' ? button.key === 'save' : button.key === 'cancel' || button.key === 'save';
                                             });
                                             variableObj = elScope.Variables && elScope.Variables[scope.variableName];
                                             scope.variableObj = variableObj;
@@ -802,6 +824,7 @@ WM.module('wm.widgets.live')
                                 }
                                 scope.isUpdateMode = scope.updateMode;
                                 break;
+                            case "formlayout":
                             case "formtype":
                                 scope.isLayoutDialog = newVal === 'dialog';
                                 element.toggleClass('liveform-dialog', scope.isLayoutDialog);
@@ -918,7 +941,7 @@ WM.module('wm.widgets.live')
             }
         };
     }])
-    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "Variables", "BindingManager", "LiveWidgetUtils", function (Utils, $compile, CONSTANTS, Variables, BindingManager, LiveWidgetUtils) {
+    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "BindingManager", "LiveWidgetUtils", function (Utils, $compile, CONSTANTS, BindingManager, LiveWidgetUtils) {
         'use strict';
         return {
             "restrict": 'E',
@@ -1148,10 +1171,13 @@ WM.module('wm.widgets.live')
                         index = parentIsolateScope.buttonArray.push(buttonDef) - 1;
                         parentIsolateScope.formCreated = true;
                         parentIsolateScope.formFieldCompiled = true;
-
                         template = getTemplate(buttonDef, index);
 
-                        element.closest('[data-identifier="liveform"]').find('> .basic-btn-grp').append($compile(template)(parentIsolateScope));
+                        if (scope.formlayout === 'page') {
+                            scope.buttonArray[index].action = buttonDef.action;
+                        } else {
+                            element.closest('[data-identifier="liveform"]').find('> .basic-btn-grp').append($compile(template)(parentIsolateScope));
+                        }
                     }
                 };
             }
