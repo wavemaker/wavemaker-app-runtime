@@ -22,6 +22,8 @@ wm.modules.wmCommon.provider(wm.modules.wmCommon.providers);
 wm.modules.wmCommon.constant('SERVICE_TYPE_CONSTANTS', {
     JAVA_SERVICE: "JavaService",
     WM_JAVA_SERVICE: "wm.JavaService",
+    WM_WEB_SERVICE: "wm.WebService",
+    WM_DB_SERVICE: "wm.DataModel",
     JAVA_SERVICE_WORKSPACE_TYPE: "javaservice",
     DEFAULT_JAVA_SERVICE_NAME: "MyJavaService",
     JAVA_SERVICE_TREE_ROOT_NODE_ICON_CLASS: "java-service",
