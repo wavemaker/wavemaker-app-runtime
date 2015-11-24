@@ -39,6 +39,13 @@ public class RestRuntimeService {
 
     public RestResponse executeRestCall(String serviceId, String operationId, Map<String, Object> params) throws IOException {
         RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationId, params);
+        logger.debug("Rest service request details {}", restRequestInfo.toString());
+        RestResponse restResponse = invokeRestCall(restRequestInfo);
+        logger.debug("Rest service response details for the endpoint {} is {}", restRequestInfo.getEndpointAddress(), restResponse.toString());
+        return restResponse;
+    }
+
+    private RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
         String responseBody = restResponse.getResponseBody();
         if (restResponse.getContentType() != null) {
@@ -167,4 +174,6 @@ public class RestRuntimeService {
         }
         return swaggerDocumentCache.get(serviceId);
     }
+
 }
+

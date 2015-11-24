@@ -140,8 +140,6 @@ public class RestRequestInfo {
                 ", contentType='" + contentType + '\'' +
                 ", requestBody='" + requestBody + '\'' +
                 ", headers=" + headers +
-                ", sampleRestResponse=" + sampleRestResponse +
-                ", redirectEnabled=" + isRedirectEnabled() +
                 '}';
     }
 }

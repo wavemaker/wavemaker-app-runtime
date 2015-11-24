@@ -70,4 +70,14 @@ public class RestResponse {
     public void setContentType(String contentType) {
         this.contentType = contentType;
     }
+
+    @Override
+    public String toString() {
+        return "RestResponse{" +
+                ", statusCode=" + statusCode +
+                ", contentType='" + contentType + '\'' +
+                ", responseHeaders=" + responseHeaders +
+                ", cookies=" + cookies +
+                '}';
+    }
 }
