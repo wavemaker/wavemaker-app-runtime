@@ -26,7 +26,8 @@ WM.module('wm.widgets.advanced')
                     'height': true,
                     'controls': true,
                     'calendartype': true,
-                    'view': true
+                    'view': true,
+                    'multiselect': true
                 },
                 defaultHeaderOptions = {
                     'left': 'prev next today',
@@ -38,6 +39,8 @@ WM.module('wm.widgets.advanced')
                     'AGENDA': 'agenda'
                 };
 
+            /* datavalue property is removed from the calendar widget.*/
+            delete widgetProps.datavalue;
             function updateCalendarOptions(scope) {
                 var ctrls = scope.controls, viewType = scope.calendartype, left = '', right = '';
                 if (ctrls && viewType) {
@@ -70,9 +73,9 @@ WM.module('wm.widgets.advanced')
                 var calendar = scope.calendarOptions.calendar;
                 switch (key) {
                 case 'dataset':
-                    if (!_.includes(scope.eventSources, newVal)) {
-                        scope.eventSources.push(newVal);
-                    }
+                    scope.eventSources.length = 0;
+                    newVal = WM.isObject(newVal) ? newVal : {};
+                    scope.eventSources.push(newVal);
                     break;
                 case 'height':
                     calendar.height = parseInt(newVal, 10);
@@ -88,6 +91,9 @@ WM.module('wm.widgets.advanced')
                         calendar.defaultView = newVal;
                     }
                     break;
+                case 'multiselect':
+                    scope.calendarOptions.calendar.selectable = newVal;
+                    break;
                 }
             }
 
@@ -96,10 +102,11 @@ WM.module('wm.widgets.advanced')
                 'replace': true,
                 'scope': {
                     "scopedataset": '=?',
-                    "onDayclick": "&",
                     "onEventdrop": "&",
                     "onEventresize": "&",
                     "onEventclick": "&",
+                    "onViewrender": "&",
+                    "onSelect": "&",
                     "onEventrender": "&"
                 },
                 'template': function (tElement, tAttrs) {
@@ -124,9 +131,6 @@ WM.module('wm.widgets.advanced')
                                 headerOptions = WM.copy(defaultHeaderOptions),
                                 uiCalScope;
 
-                            function dayProxy(date, jsEvent, view) {
-                                scope.onDayclick({$date: date, $jsEvent: jsEvent, $view: view});
-                            }
                             function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
                                 var fn = scope[method] || WM.noop;
                                 fn({$event: event, $delta: delta, $revertFunc: revertFunc, $jsEvent: jsEvent, $ui: ui, $view: view});
@@ -134,20 +138,30 @@ WM.module('wm.widgets.advanced')
                             function eventClickProxy(event, jsEvent, view) {
                                 scope.onEventclick({$event: event, $jsEvent: jsEvent, $view: view});
                             }
+                            function viewRenderProxy(view) {
+                                scope.currentview = {start: view.start._d, end: view.end._d};
+                                scope.onViewrender({$view: view});
+                            }
                             function eventRenderProxy(event, jsEvent, view) {
                                 /*unable to pass jsEvent in angular expression, hence ignoring*/
                                 scope.onEventrender({$event: event, jsEvent: {}, $view: view});
+                            }
+                            function onSelectProxy(start, end, jsEvent, view) {
+                                scope.selecteddates = {start: start._d, end: end._d};
+                                scope.onSelect({$start: start, $end: end, $view: view});
                             }
                             scope.calendarOptions = {
                                 calendar: {
                                     height: parseInt(scope.height, 10),
                                     editable: true,
+                                    selectable: true,
                                     header: headerOptions,
-                                    dayClick: dayProxy,
                                     eventDrop: eventProxy.bind(undefined, 'onEventdrop'),
                                     eventResize: eventProxy.bind(undefined, 'onEventresize'),
                                     eventClick: eventClickProxy,
+                                    select: onSelectProxy,
                                     eventRender: eventRenderProxy,
+                                    viewRender: viewRenderProxy,
                                     dayNames: $locale.DATETIME_FORMATS.DAY,
                                     dayNamesShort: $locale.DATETIME_FORMATS.SHORTDAY
                                 }
@@ -249,8 +263,15 @@ WM.module('wm.widgets.advanced')
  *                  Default value : 0
  * @param {string=} scopedatavalue
  *                  This property accepts the initial value for the Calendar widget from a variable defined in the script workspace. <br>
- * @param {string=} datavalue
- *                  This property defines the current selected value of the Calendar widget. <br>
+ * @param {string=} currentview
+ *                  This property has two sub properties start and end. <br>
+ *                  start is the first date in the calendar view.
+ *                  end is the last date in the calendar view
+ *                  This property is bindable
+ * @param {string=} selecteddates
+ *                  This property has two sub properties start and end. <br>
+ *                  start is the first date in the selected dates.
+ *                  end is the last date in selectd dates.
  *                  This property is bindable
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
@@ -269,18 +290,14 @@ WM.module('wm.widgets.advanced')
  *                  This property specifies defaultView of the calendar widget. <br>
  *                  Possible Values: `month`, `week`, `day` <br>
  *                  Default value: `month`.
- * @param {string=} on-change
- *                  Callback function which will be triggered when the widget value is changed.
- * @param {string=} on-focus
- *                  Callback function which will be triggered when the widget gets focused.
- * @param {string=} on-blur
- *                  Callback function which will be triggered when the widget loses focus.
- * @param {string=} on-click
- *                  Callback function which will be triggered when the widget is clicked.
- * @param {string=} on-mouseenter
- *                  Callback function which will be triggered when the mouse enters the widget.
- * @param {string=} on-mouseleave
- *                  Callback function which will be triggered when the mouse leaves the widget.
+ * @param {string=} on-select
+ *                  Callback function which will be triggered when multiple dates are selected. The callback comes with following parameters: <br>
+ *                  start: date object for start date <br>
+ *                  end: date object for end date <br>
+ *                  view: consisting all the properties related to current view of a calendar.
+ * @param {string=} on-viewrender
+ *                  Callback function which will be triggered when calendar view is changed. The callback comes with following parameter: <br>
+ *                  view: consisting all the properties related to current view of a calendar.
  * @example
     <example module="wmCore">
         <file name="index.html">
