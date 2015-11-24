@@ -108,7 +108,7 @@ WM.module('wm.layouts.page')
             };
 
             function postMessage(content) {
-                window.top.postMessage(content, '*');
+                window.top.postMessage(Utils.isIE9() ? JSON.stringify(content) : content, '*');
             }
 
             return {
@@ -166,19 +166,22 @@ WM.module('wm.layouts.page')
                     WM.element('html > body:first').append(element);
 
                     window.onmessage = function (msg) {
+                        var msgData = null, key;
 
-                        if (!WM.isObject(msg.data)) {
+                        msgData = Utils.isIE9() ? JSON.parse(msg.data) : msg.data;
+
+                        if (!WM.isObject(msgData)) {
                             return;
                         }
 
-                        var key = msg.data.key;
+                        key = msgData.key;
 
                         switch (key) {
                         case MSGS.HIDE_TEMPLATES_SHOW_CASE:
                             scope.hideShowCase = true;
                             break;
                         case MSGS.SELECT_TEMPLATE:
-                            scope.showTemplate(msg.data.templateIndex);
+                            scope.showTemplate(msgData.templateIndex);
                             break;
                         }
 

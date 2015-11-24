@@ -79,6 +79,9 @@ WM.module('wm.utils', [])
             isIE11 = function () {
                 return navigator.appVersion.indexOf('Trident/') > -1;
             },
+            isIE9 = function () {
+                return navigator.appVersion.indexOf('MSIE 9') > -1;
+            },
             getNode = function (tree, nodeId) {
                 var index, treeLength;
                 /*Return undefined if the 'tree' is undefined*/
@@ -1574,6 +1577,7 @@ WM.module('wm.utils', [])
         this.getNodeFromJson            = getNodeFromJson;
         this.removeJsonNodeChildren     = removeJsonNodeChildren;
         this.isIE                       = isIE;
+        this.isIE9                       = isIE9;
         this.isIE11                     = isIE11;
         this.getValidJSON               = getValidJSON;
         this.getActionFromKey           = getActionFromKey;
