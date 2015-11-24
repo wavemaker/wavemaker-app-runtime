@@ -9,9 +9,9 @@
 WM.module('wm.widgets.live')
     .service('LiveWidgetUtils', [
         'Utils',
-        'CONSTANTS',
+        '$rootScope',
 
-        function (Utils, CONSTANTS) {
+        function (Utils, $rs) {
             'use strict';
             var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
                 eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
@@ -114,7 +114,7 @@ WM.module('wm.widgets.live')
                     {
                         key         :   'save',
                         class       :   'form-save btn-success',
-                        iconclass   :   'glyphicon glyphicon-save',
+                        iconclass   :   $rs.isMobileApplicationType ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-save',
                         action      :   '',
                         displayName :   'Save',
                         show        :   true,
@@ -349,70 +349,53 @@ WM.module('wm.widgets.live')
                 });
                 return fields;
             }
-
-            /*Returns datatime/timestamp template*/
-            function dateTimeTemplate(fieldDef, index) {
-                var template = '';
+            /*Returns the default template*/
+            function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields) {
+                var template = '',
+                    widgetName = 'wm-' + widgetType;
+                additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min date time';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max date time';
+                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || minPlaceholderDefault;
+                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || maxPlaceholderDefault;
                     template = template +
-                        '<div class="col-md-4 col-sm-4"><wm-datetime ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}" ></wm-datetime></div>' +
-                        '<div class="col-md-1 col-sm-1"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-datetime ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}" ></wm-datetime></div>';
+                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-4') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}" ' + additionalFields + '></' +  widgetName + '></div>' +
+                        ($rs.isMobileApplicationType ? '' : '<div class="col-sm-1"></div>') +
+                            '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-4') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}" ' + additionalFields + '></' +  widgetName + '></div>';
                 } else {
-                    fieldDef.placeholder = fieldDef.placeholder || 'Select date time';
-                    template = template + '<wm-datetime ' + getFormFields(fieldDef, index, "datetime") + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}" ></wm-datetime>';
+                    fieldDef.placeholder = fieldDef.placeholder || defaultPlaceholder;
+                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}" ' + additionalFields + '></' +  widgetName + '>';
                 }
                 return template;
+            }
+            /*Returns datatime/timestamp template*/
+            function getDateTimeTemplate(fieldDef, index) {
+                return getDefaultTemplate('datetime', fieldDef, index, 'Select Min date time', 'Select Max date time', 'Select date time');
             }
 
             /*Returns time template*/
-            function timeTemplate(fieldDef, index) {
-                var template = '';
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min time';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max time';
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-time ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}"> </wm-time></div>' +
-                        '<div class="col-md-1 col-sm-1"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-time ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}"> </wm-time></div>';
-                } else {
-                    fieldDef.placeholder = fieldDef.placeholder || 'Select time';
-                    template = template + '<wm-time ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}"  show="{{isUpdateMode}}"> </wm-time>';
-                }
-                return template;
+            function getTimeTemplate(fieldDef, index) {
+                return getDefaultTemplate('time', fieldDef, index, 'Select Min time', 'Select Max time', 'Select time');
             }
 
             /*Returns date template*/
-            function dateTemplate(fieldDef, index) {
-                var template = '';
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min time';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max time';
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-date ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}"show="{{isUpdateMode}}"> </wm-date></div>' +
-                         '<div class="col-md-1 col-sm-1"></div>' +
-                         '<div class="col-md-4 col-sm-4"><wm-date ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}"></wm-date></div>';
-                } else {
-                    fieldDef.placeholder = fieldDef.placeholder || 'Select date';
-                    template = template + '<wm-date ' + getFormFields(fieldDef, index, "date") + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}"show="{{isUpdateMode}}"> </wm-date>';
-                }
-                return template;
+            function getDateTemplate(fieldDef, index) {
+                return getDefaultTemplate('date', fieldDef, index, 'Select Min date', 'Select Max date', 'Select date');
             }
 
             /*Returns upload template */
-            function uploadTemplate(fieldDef, index) {
+            function getFileUploadTemplate(fieldDef, index) {
                 var template = '';
                 if (fieldDef.filetype === 'image') {
-                    template = template + '<a class="col-md-8 col-sm-8 form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value || formFields[' + index + '].href"><img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" src="{{formFields[' + index + '].href}}"/></a>';
+                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value || formFields[' + index + '].href"><img height="2em" class="glyphicon glyphicon-file" src="{{formFields[' + index + '].href}}"/></a>';
                 } else {
-                    template = template + '<a class="col-md-8 col-sm-8 form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value !== null"><i class="wm-icon wm-icon24 glyphicon glyphicon-file"></i></a>';
+                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value !== null"><i class="glyphicon glyphicon-file"></i></a>';
                 }
-                template = template + '<input data-ng-class="{\'form-control app-textbox\': true, \'file-readonly\': formFields[' + index + '].readonly}" required="{{formFields[' + index + '].required}}" type="file" name="{{formFields[' + index + '].key}}" ng-required="{{formFields[' + index + '].required}}" ng-readonly="{{formFields[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="formFields[' + index + '].value" accept="{{formFields[' + index + '].permitted}}"/>';
+                template = template + '<input data-ng-class="{\'file-readonly\': formFields[' + index + '].readonly}" required="{{formFields[' + index + '].required}}" type="file" name="{{formFields[' + index + '].key}}" ng-required="{{formFields[' + index + '].required}}" ng-readonly="{{formFields[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="formFields[' + index + '].value" accept="{{formFields[' + index + '].permitted}}"/>';
                 return template;
             }
 
             /*Returns textarea template */
-            function textareaTemplate(fieldDef, index) {
+            function getTextareaTemplate(fieldDef, index) {
                 var template = '';
                 fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
                 template += '<wm-textarea' + getFormFields(fieldDef, index, 'textarea') + 'scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}"></wm-textarea>';
@@ -420,14 +403,14 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns richtext template */
-            function richtextTemplate(fieldDef, index) {
+            function getRichtextTemplate(fieldDef, index) {
                 var template = '';
                 template += '<wm-richtexteditor ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}"></wm-richtexteditor>';
                 return template;
             }
 
             /*Returns password template */
-            function passwordTemplate(fieldDef, index) {
+            function getPasswordTemplate(fieldDef, index) {
                 var template = '';
                 fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
                 template = template + '<wm-text ' + getFormFields(fieldDef, index, 'password') + ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" type="password" ></wm-text>';
@@ -435,7 +418,7 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns slider template */
-            function sliderTemplate(fieldDef, index) {
+            function getSliderTemplate(fieldDef, index) {
                 var template = '', stepVal = fieldDef.step || getStepValue(fieldDef.type);
                 template = template + '<wm-slider  ' + getFormFields(fieldDef, index) + ' show="{{isUpdateMode}}" scopedatavalue="formFields[' + index + '].value"';
                 if (stepVal) {
@@ -446,21 +429,21 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns radioset template */
-            function radiosetTemplate(fieldDef, index) {
+            function getRadiosetTemplate(fieldDef, index) {
                 var template = '';
                 template = template + '<wm-radioset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""></wm-radioset>';
                 return template;
             }
 
             /*Returns checkboxset template */
-            function checkboxsetTemplate(fieldDef, index) {
+            function getCheckboxsetTemplate(fieldDef, index) {
                 var template = '';
                 template = template + '<wm-checkboxset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""></wm-checkboxset>';
                 return template;
             }
 
             /*Returns checkbox template */
-            function checkboxTemplate(fieldDef, index, widgetType) {
+            function getCheckboxTemplate(fieldDef, index, widgetType) {
                 var template = '',
                     addToggle = widgetType === 'toggle' ? 'type="toggle"' : '';
                 template = template + '<wm-checkbox ' + getFormFields(fieldDef, index) + addToggle + ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" ></wm-checkbox>';
@@ -468,67 +451,24 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns select template */
-            function selectTemplate(fieldDef, index) {
-                var template = '';
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Select Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Select Max Value';
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-select ' + getFormFields(fieldDef, index) + ' scopdataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-select></div>' +
-                        '<div class="col-md-1 col-sm-1"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-select ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" ></wm-select></div>';
-
-                } else {
-                    fieldDef.placeholder = fieldDef.placeholder || 'Select value';
-                    template = template + '<wm-select ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"></wm-select>';
-                }
-                return template;
+            function getSelectTemplate(fieldDef, index) {
+                var additionalFields = 'scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
+                return getDefaultTemplate('select', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields);
             }
 
             /*Returns text template */
-            function textNumberTemplate(fieldDef, index, type) {
-                var template = '', stepVal;
-
+            function getTextNumberTemplate(fieldDef, index, type) {
+                var stepVal, additionalFields;
                 stepVal = fieldDef.step || getStepValue(fieldDef.type);
-
-                if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || 'Enter Min Value';
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || 'Enter Max Value';
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-text ' + getFormFields(fieldDef, index) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].minValue" : "") + '" type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "") + ' placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}"></wm-text></div>' +
-                        '<div class="col-md-1 col-sm-1"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-text ' + getFormFields(fieldDef, index) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].maxValue" : "") + '" type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "") + ' placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}"></wm-text></div>';
-                } else {
-                    fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
-                    template = template + '<wm-text ' + getFormFields(fieldDef, index, type) + ' scopedatavalue="' + (CONSTANTS.isRunMode ? "formFields[" + index + "].value" : "") + '" type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "") + ' placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-text>';
-                }
-                return template;
+                additionalFields = 'type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "");
+                return getDefaultTemplate('text', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields);
             }
 
-            function ratingTemplate(fieldDef, index, liveType) {
-                var template = '',
-                    readonly;
-                if (fieldDef.isRange) {
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-rating ' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].minValue" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="{{formFields[' + index + '].readonly}}"></wm-rating></div>' +
-                        '<div class="col-md-4 col-sm-4"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-rating' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].maxValue" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="{{formFields[' + index + '].readonly}}"></wm-rating></div>';
-                } else {
-                    readonly = liveType === 'form' ? '{{!isUpdateMode}}' : '{{formFields[' + index + '].readonly}}';
-                    template = template + '<wm-rating ' + getFormFields(fieldDef, index, "rating") + ' scopedatavalue="formFields[' + index + '].value" maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="' + readonly + '"></wm-rating>';
-
-                }
-                return template;
-            }
-
-            /*Returns default template */
-            function defaultTemplate(fieldDef, index) {
-                var template = '';
-                if (fieldDef.isRange) {
-                    template = template + '<div class="col-md-4 col-sm-4"><wm-text ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].minValue" type="text" placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}"></wm-text></div>' +
-                        '<div class="col-md-4 col-sm-4"></div>' +
-                        '<div class="col-md-4 col-sm-4"><wm-text' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].maxValue" type="text" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}"></wm-text></div>';
-                } else {
-                    template = template + '<wm-text ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].value" type="text" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}"></wm-text>';
-                }
-                return template;
+            function getRatingTemplate(fieldDef, index, liveType) {
+                var readonly, additionalFields;
+                readonly = liveType === 'form' ? '{{!isUpdateMode}}' : '{{formFields[' + index + '].readonly}}';
+                additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="' + readonly + '"';
+                return getDefaultTemplate('rating', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields);
             }
 
             /**
@@ -556,58 +496,58 @@ WM.module('wm.widgets.live')
                 }
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
-                    '<wm-label class="col-sm-3 col-xs-12" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
-                    '<div class="col-sm-9 col-xs-12 {{formFields[' + index + '].class}}">' +
+                    '<wm-label class="' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3') + '" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
+                    '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-8' : 'col-sm-9') + '" {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
 
                 switch (widgetType) {
                 case 'number':
                 case 'text':
-                    template += textNumberTemplate(fieldDef, index, widgetType);
+                    template += getTextNumberTemplate(fieldDef, index, widgetType);
                     break;
                 case 'select':
-                    template += selectTemplate(fieldDef, index);
+                    template += getSelectTemplate(fieldDef, index);
                     break;
                 case 'checkbox':
                 case 'toggle':
-                    template += checkboxTemplate(fieldDef, index, widgetType);
+                    template += getCheckboxTemplate(fieldDef, index, widgetType);
                     break;
                 case 'checkboxset':
-                    template += checkboxsetTemplate(fieldDef, index);
+                    template += getCheckboxsetTemplate(fieldDef, index);
                     break;
                 case 'radioset':
-                    template += radiosetTemplate(fieldDef, index);
+                    template += getRadiosetTemplate(fieldDef, index);
                     break;
                 case 'slider':
-                    template += sliderTemplate(fieldDef, index);
+                    template += getSliderTemplate(fieldDef, index);
                     break;
                 case 'password':
-                    template += passwordTemplate(fieldDef, index);
+                    template += getPasswordTemplate(fieldDef, index);
                     break;
                 case 'richtext':
-                    template += richtextTemplate(fieldDef, index);
+                    template += getRichtextTemplate(fieldDef, index);
                     break;
                 case 'textarea':
-                    template += textareaTemplate(fieldDef, index);
+                    template += getTextareaTemplate(fieldDef, index);
                     break;
                 case 'upload':
-                    template += uploadTemplate(fieldDef, index);
+                    template += getFileUploadTemplate(fieldDef, index);
                     break;
                 case 'date':
-                    template += dateTemplate(fieldDef, index);
+                    template += getDateTemplate(fieldDef, index);
                     break;
                 case 'time':
-                    template += timeTemplate(fieldDef, index);
+                    template += getTimeTemplate(fieldDef, index);
                     break;
                 case 'datetime':
                 case 'timestamp':
-                    template += dateTimeTemplate(fieldDef, index);
+                    template += getDateTimeTemplate(fieldDef, index);
                     break;
                 case 'rating':
-                    template += ratingTemplate(fieldDef, index, liveType);
+                    template += getRatingTemplate(fieldDef, index, liveType);
                     break;
                 default:
-                    template += defaultTemplate(fieldDef, index);
+                    template += getDefaultTemplate('text', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value');
                     break;
                 }
                 template = template + '</div></wm-composite>';
