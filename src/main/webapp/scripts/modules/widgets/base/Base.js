@@ -1089,7 +1089,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.liveform': {
                         "title": {"type": "string"},
-                        "formtype": {"type": "string", "value": "inline", "show": false},
+                        "formlayout": {"type": "list", "options": ["inline", "page"], "value": "inline", "show" : false},
                         "autocomplete": {"type": "boolean", "value": true},
                         "captionsize": {"type": "string", "value": ""},
                         "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left"},

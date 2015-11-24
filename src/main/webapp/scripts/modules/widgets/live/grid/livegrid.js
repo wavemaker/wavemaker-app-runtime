@@ -213,8 +213,8 @@ WM.module('wm.widgets.live')
                                 case 'formlayout':
                                     if (scope.gridform) {
                                         scope.isLayoutDialog = newVal === 'dialog';
-                                        scope.gridform.formtype = newVal;
-                                        scope.$root.$emit('set-markup-attr', scope.gridform.widgetid, {'formtype': newVal});
+                                        scope.gridform.formlayout = newVal;
+                                        scope.$root.$emit('set-markup-attr', scope.gridform.widgetid, {'formlayout': newVal});
                                     }
                                     break;
                                 }
