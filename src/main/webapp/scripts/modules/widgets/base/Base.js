@@ -1358,11 +1358,17 @@ WM.module('wm.widgets.base', [])
                         "layout": {"type": "list", "options": ["Single-row", "Multi-row"], "value": "Single-row"}
                     },
                     "wm.livefilter": {
+                        "title": {"type": "string"},
+                        "autocomplete": {"type": "boolean", "value": true},
+                        "captionsize": {"type": "string", "value": ""},
+                        "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left"},
+                        "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "editfilters": {"type": "button", "hidelabel": true, "disabled": true},
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
-                        "pagesize": {"type": "number", "value": 20}
+                        "pagesize": {"type": "number", "value": 20},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-filter", "pattern": classRegex}
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},

@@ -508,7 +508,7 @@ html, body {
   }
 }
 /****************************************Toggle classes******************************************/
-.app-toggle {
+.app-toggle.checkbox {
   label {
     width: 60px;
     height: 32px;
@@ -667,15 +667,7 @@ html, body {
   }
 }
 
-.app-livefilter {
-  .app-grid-layout {
-    .col-md-6.col-sm-6, .col-md-4.col-sm-4, .col-md-3.col-sm-3 {
-      .app-date, .app-datetime, .app-timeinput {
-        width: 100%;
-      }
-    }
-  }
-}
+
 
 /**input required**/
 .app-required-input {
@@ -1963,7 +1955,6 @@ If the height and width are not specified the video takes the height of the post
 
 .app-livefilter {
   position: relative;
-  padding: 8px;
   .form-control {
     display: inline-block;
   }
@@ -1988,8 +1979,10 @@ If the height and width are not specified the video takes the height of the post
       padding-right: 4px;
     }
   }
+  .app-date, .app-datetime, .app-timeinput {
+    width: 100%;
+  }
 }
-
 /********************************************************************************
 ************************* Login form classes ******************************
 *********************************************************************************/

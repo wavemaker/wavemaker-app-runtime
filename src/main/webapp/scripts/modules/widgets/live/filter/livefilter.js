@@ -5,10 +5,14 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
-                '<div data-identifier="livefilter" class="app-livefilter clearfix" init-widget title="{{hint}}" data-ng-show="show" apply-styles>' +
-                    '<div data-identifier="filter-elements" ng-transclude></div>' +
-                    '<div class="basic-btn-grp form-action clearfix app-button-group" style="text-align: right;"></div>' +
-                '</div>'
+                '<form data-identifier="livefilter" class="app-livefilter panel panel-default clearfix liveform-inline align-{{captionalign}} position-{{captionposition}}" init-widget title="{{hint}}" data-ng-show="show" apply-styles>' +
+                    '<div class="form-header panel-heading" data-ng-if="title"><h3 class="panel-title">' +
+                        '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
+                        '<span class="form-header-text">{{title}}</span>' +
+                    '</h3></div>' +
+                '<div data-identifier="filter-elements" class="panel-body" ng-transclude></div>' +
+                '<div class="basic-btn-grp form-action panel-footer clearfix"></div>' +
+                '</form>'
             );
     }]).directive('wmLivefilter', ['PropertiesFactory',
         '$rootScope',
@@ -710,7 +714,8 @@ WM.module('wm.widgets.live')
 
                         var buttonTemplate, index, buttonDef = WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                             /*iconame support for old projects*/
-                            'iconname': attrs.iconname
+                            'iconname': attrs.iconname,
+                            'type': 'button'
                         });
                         scope.parentIsolateScope.buttonArray = scope.parentIsolateScope.buttonArray || [];
                         index = scope.parentIsolateScope.buttonArray.push(buttonDef) - 1;
