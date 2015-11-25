@@ -325,7 +325,7 @@ WM.module('wm.widgets.live')
                             fields += ' displayexpression="{{formFields[' + index + '].' + field + '}}"';
                         } else if (field === 'permitted') {
                             fields += ' accept="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (field === 'caption' || field === 'type' || field === 'show' || field === 'placeholder' || field === 'minPlaceholder' || field === 'maxPlaceholder') {
+                        } else if (field === 'caption' || field === 'type' || field === 'show' || field === 'placeholder' || field === 'minPlaceholder' || field === 'maxPlaceholder' || field === 'readonly') {
                             // Avoid show attribute to support edit mode using isUpdateMode.
                         } else if (_.includes(dateTypes, type) && (field === 'minvalue' || field === 'maxvalue')) {
                             //For date, datetime, timestamp special cases
@@ -350,19 +350,20 @@ WM.module('wm.widgets.live')
                 return fields;
             }
             /*Returns the default template*/
-            function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields) {
+            function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields, isCustomWidget) {
                 var template = '',
-                    widgetName = 'wm-' + widgetType;
+                    widgetName = 'wm-' + widgetType,
+                    updateModeCondition = isCustomWidget ? '' : ' show="{{isUpdateMode}}"';
                 additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
                     fieldDef.minPlaceholder = fieldDef.minPlaceholder || minPlaceholderDefault;
                     fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || maxPlaceholderDefault;
                     template = template +
-                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" show="{{isUpdateMode}}" ' + additionalFields + '></' +  widgetName + '></div>' +
-                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" show="{{isUpdateMode}}" ' + additionalFields + '></' +  widgetName + '></div>';
+                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
+                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.placeholder || defaultPlaceholder;
-                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" show="{{isUpdateMode}}" ' + additionalFields + '></' +  widgetName + '>';
+                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition + additionalFields + '></' +  widgetName + '>';
                 }
                 return template;
             }
@@ -395,58 +396,44 @@ WM.module('wm.widgets.live')
 
             /*Returns textarea template */
             function getTextareaTemplate(fieldDef, index) {
-                var template = '';
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
-                template += '<wm-textarea' + getFormFields(fieldDef, index, 'textarea') + 'scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}"></wm-textarea>';
-                return template;
+                return getDefaultTemplate('textarea', fieldDef, index, '', '', 'Enter value');
             }
 
             /*Returns richtext template */
             function getRichtextTemplate(fieldDef, index) {
-                var template = '';
-                template += '<wm-richtexteditor ' + getFormFields(fieldDef, index) + ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}"></wm-richtexteditor>';
-                return template;
+                return getDefaultTemplate('richtexteditor', fieldDef, index, '', '', 'Enter value');
             }
 
             /*Returns password template */
             function getPasswordTemplate(fieldDef, index) {
-                var template = '';
-                fieldDef.placeholder = fieldDef.placeholder || 'Enter value';
-                template = template + '<wm-text ' + getFormFields(fieldDef, index, 'password') + ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" type="password" ></wm-text>';
-                return template;
+                var additionalFields = ' type="password"';
+                return getDefaultTemplate('text', fieldDef, index, '', '', 'Enter value', additionalFields);
             }
 
             /*Returns slider template */
             function getSliderTemplate(fieldDef, index) {
-                var template = '', stepVal = fieldDef.step || getStepValue(fieldDef.type);
-                template = template + '<wm-slider  ' + getFormFields(fieldDef, index) + ' show="{{isUpdateMode}}" scopedatavalue="formFields[' + index + '].value"';
-                if (stepVal) {
-                    template = template + ' step="' + stepVal + '" ';
-                }
-                template = template + ' ></wm-slider>';
-                return template;
+                var additionalFields,
+                    stepVal = fieldDef.step || getStepValue(fieldDef.type);
+                additionalFields = stepVal ? ' step="' + stepVal + '" ' : '';
+                return getDefaultTemplate('slider', fieldDef, index, '', '', '', additionalFields);
             }
 
             /*Returns radioset template */
             function getRadiosetTemplate(fieldDef, index) {
-                var template = '';
-                template = template + '<wm-radioset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""></wm-radioset>';
-                return template;
+                var additionalFields = ' scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""';
+                return getDefaultTemplate('radioset', fieldDef, index, '', '', '', additionalFields);
             }
 
             /*Returns checkboxset template */
             function getCheckboxsetTemplate(fieldDef, index) {
-                var template = '';
-                template = template + '<wm-checkboxset ' + getFormFields(fieldDef, index) + ' scopedataset="formFields[' + index + '].dataset" scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""></wm-checkboxset>';
-                return template;
+                var additionalFields = ' scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}" dataset=""';
+                return getDefaultTemplate('checkboxset', fieldDef, index, '', '', '', additionalFields);
             }
 
             /*Returns checkbox template */
             function getCheckboxTemplate(fieldDef, index, widgetType) {
-                var template = '',
-                    addToggle = widgetType === 'toggle' ? 'type="toggle"' : '';
-                template = template + '<wm-checkbox ' + getFormFields(fieldDef, index) + addToggle + ' scopedatavalue="formFields[' + index + '].value" show="{{isUpdateMode}}" ></wm-checkbox>';
-                return template;
+                var additionalFields = widgetType === 'toggle' ? 'type="toggle"' : '';
+                return getDefaultTemplate('checkbox', fieldDef, index, '', '', '', additionalFields);
             }
 
             /*Returns select template */
@@ -463,11 +450,9 @@ WM.module('wm.widgets.live')
                 return getDefaultTemplate('text', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields);
             }
 
-            function getRatingTemplate(fieldDef, index, liveType) {
-                var readonly, additionalFields;
-                readonly = liveType === 'form' ? '{{!isUpdateMode}}' : '{{formFields[' + index + '].readonly}}';
-                additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" readonly="' + readonly + '"';
-                return getDefaultTemplate('rating', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields);
+            function getRatingTemplate(fieldDef, index) {
+                var additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" ';
+                return getDefaultTemplate('rating', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields, true);
             }
 
             /**
