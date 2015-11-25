@@ -116,10 +116,6 @@ WM.module('wm.widgets.base', [])
                     "wm.base.editors": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "minwidth": {"type": "string", "pattern": dimensionRegex},
-                        "maxwidth": {"type": "string", "pattern": dimensionRegex},
-                        "minheight": {"type": "string", "pattern": dimensionRegex},
-                        "maxheight": {"type": "string", "pattern": dimensionRegex},
 
                         /* ---- styles ----*/
                         "border": {"type": "string", "widget": "box"},
@@ -404,10 +400,6 @@ WM.module('wm.widgets.base', [])
                         /* Style: Basic */
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "minwidth": {"type": "string", "pattern": dimensionRegex},
-                        "maxwidth": {"type": "string", "pattern": dimensionRegex},
-                        "minheight": {"type": "string", "pattern": dimensionRegex},
-                        "maxheight": {"type": "string", "pattern": dimensionRegex},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -564,10 +556,6 @@ WM.module('wm.widgets.base', [])
                     "wm.booleaneditors": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "minwidth": {"type": "string", "pattern": dimensionRegex},
-                        "maxwidth": {"type": "string", "pattern": dimensionRegex},
-                        "minheight": {"type": "string", "pattern": dimensionRegex},
-                        "maxheight": {"type": "string", "pattern": dimensionRegex},
                         /* ---- styles ----*/
                         "padding": {"type": "string", "widget": "box"},
                         "paddingunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
@@ -986,7 +974,6 @@ WM.module('wm.widgets.base', [])
                         "marginbottom": {"type": "string", "pattern": numberRegex},
                         "marginright": {"type": "string", "pattern": numberRegex},
                         "marginleft": {"type": "string", "pattern": numberRegex},
-                        "minheight": {"type": "number"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1006,7 +993,6 @@ WM.module('wm.widgets.base', [])
                         "marginbottom": {"type": "string", "pattern": numberRegex},
                         "marginright": {"type": "string", "pattern": numberRegex},
                         "marginleft": {"type": "string", "pattern": numberRegex},
-                        "minheight": {"type": "number"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1026,7 +1012,6 @@ WM.module('wm.widgets.base', [])
                         "marginbottom": {"type": "string", "pattern": numberRegex},
                         "marginright": {"type": "string", "pattern": numberRegex},
                         "marginleft": {"type": "string", "pattern": numberRegex},
-                        "minheight": {"type": "number"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1984,8 +1969,8 @@ WM.module('wm.widgets.base', [])
                 ' data-ng-show data-ng-hide data-ng-readonly data-ng-disabled data-ng-required data-ng-attr-placeholder ng-attr-name' +
                 ' on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect ' +
                 ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius ' +
-                ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight maxheight maxwidth minheight ' +
-                ' minwidth opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility ' +
+                ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight ' +
+                ' opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility ' +
                 ' whitespace wordbreak zindex bordertop borderright borderbottom borderleft borderunit paddingtop paddingright paddingbottom paddingleft' +
                 ' paddingunit margintop marginright marginbottom marginleft marginunit fontsize fontunit show hint caption animation backgroundimage iconposition iconclass';
 
@@ -2494,10 +2479,6 @@ WM.module('wm.widgets.base', [])
                 'height'                : 'height',
                 'horizontalalign'       : 'textAlign',
                 'lineheight'            : 'lineHeight',
-                'maxheight'             : 'maxHeight',
-                'maxwidth'              : 'maxWidth',
-                'minheight'             : 'minHeight',
-                'minwidth'              : 'minWidth',
                 'opacity'               : 'opacity',
                 'overflow'              : 'overflow',
                 'picturesource'         : 'backgroundImage',
@@ -2510,7 +2491,7 @@ WM.module('wm.widgets.base', [])
                 'wordbreak'             : 'wordbreak',
                 'zindex'                : 'zIndex'
             };
-            SHELL_TYPE_IGNORE_LIST     = 'height minheight maxheight overflow paddingunit paddingtop paddingright paddingbottom paddingleft';
+            SHELL_TYPE_IGNORE_LIST     = 'height overflow paddingunit paddingtop paddingright paddingbottom paddingleft';
             CONTAINER_TYPE_IGNORE_LIST = SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST = 'textalign';
 
             _.keys(propNameCSSKeyMap)
