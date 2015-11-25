@@ -597,6 +597,7 @@ WM.module('wm.widgets.grid')
                 isBoundToLiveVariable,
                 isBoundToLiveVariableRoot,
                 isBoundToServiceVariable,
+                isBoundToStaticVariable,
                 navigatorResultWatch,
                 navigatorMaxResultWatch,
             /*function to transform the service data to grid acceptable data*/
@@ -1034,7 +1035,7 @@ WM.module('wm.widgets.grid')
                     referenceVariable = Variables.getVariableByName(referenceVariableName);
                     relatedFieldName = isBoundToSelectedItemSubset && bindDataSetSplit[3];
                     fields = (referenceVariable !== null) && $rootScope.dataTypes &&
-                        $rootScope.dataTypes[referenceVariable.package].fields;
+                        $rootScope.dataTypes[referenceVariable.package || referenceVariable.type].fields;
                     details = {
                         'referenceVariableName': referenceVariableName,
                         'referenceWidget': referenceWidget,
@@ -1379,6 +1380,7 @@ WM.module('wm.widgets.grid')
                     selectedItemIndex,
                     isBoundToSelectedItem,
                     isBoundToSelectedItemSubset,
+                    isBoundToServiceVariableSelectedItem,
                     isBoundToFilter,
                     columns;
                 $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
@@ -1389,7 +1391,9 @@ WM.module('wm.widgets.grid')
                 isBoundToLiveVariable = undefined;
                 isBoundToLiveVariableRoot = undefined;
                 isBoundToServiceVariable = undefined;
+                isBoundToStaticVariable = undefined;
                 isBoundToFilter = undefined;
+                isBoundToServiceVariableSelectedItem = undefined;
                 $scope.gridVariable = '';
                 /* Always set newcolumns equal to value of redrawColumns coming from datamodel design controller. */
                 if (CONSTANTS.isStudioMode && WM.isDefined($scope.$parent) && $scope.$parent.redrawColumns) {
@@ -1438,8 +1442,10 @@ WM.module('wm.widgets.grid')
                         $scope.widgetName = widgetName;
 
                         variableName = Utils.getVariableName($scope);
+                        variableObj = element.scope().Variables && element.scope().Variables[variableName];
                         isBoundToSelectedItem = $scope.binddataset.indexOf('selecteditem') !== -1;
                         isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
+                        isBoundToServiceVariableSelectedItem = variableObj.category === 'wm.ServiceVariable';
                         if (isBoundToSelectedItemSubset || isBoundToSelectedItem) {
                             if (variableName === null) {
                                 var widgetBindingDetails = fetchReferenceDetails();
@@ -1495,6 +1501,7 @@ WM.module('wm.widgets.grid')
                             $scope.binddataset.indexOf('dataSet.') === -1 &&
                             $scope.binddataset.indexOf('selecteditem') === -1;
                         isBoundToServiceVariable = $scope.variableType === 'wm.ServiceVariable';
+                        isBoundToStaticVariable = $scope.variableType === 'wm.Variable';
 
                         if (isBoundToLiveVariable) {
                             $scope.setDataGridOption('searchHandler', searchGrid);
@@ -1516,7 +1523,7 @@ WM.module('wm.widgets.grid')
                     /* Make the 'pagesize' property readonly for live variable bindings.*/
                     $scope.widgetProps.pagesize.disabled = isBoundToLiveVariable;
                     /* In Studio, disabling readonlygrid property if bound to a service variable or view */
-                    if (!($scope.binddataset && isBoundToServiceVariable) && !isBoundToView()) {
+                    if (!($scope.binddataset && (isBoundToServiceVariable || isBoundToStaticVariable || isBoundToServiceVariableSelectedItem)) && !isBoundToView()) {
                         $scope.widgetProps.readonlygrid.disabled = false;
                     } else {
                         if ($scope.isPartOfLiveGrid) {
