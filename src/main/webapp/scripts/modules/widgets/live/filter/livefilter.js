@@ -231,7 +231,7 @@ WM.module('wm.widgets.live')
                         var columnObj = dataset.propertiesMap.columns,
                             colDefArray = [],
                             numColumns = Math.min(columnObj.length, 5),
-                            fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap('LIVEFILTER');
+                            fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap();
                         _.each(columnObj, function (column, index) {
                             var colDef = {
                                 'field'             :   column.fieldName,
@@ -260,7 +260,9 @@ WM.module('wm.widgets.live')
                                 'ismeridian'        :   '',
                                 'isPrimaryKey'      :   column.isPrimaryKey,
                                 'generator'         :   column.generator,
-                                'show'              :   true
+                                'show'              :   true,
+                                'pcDisplay'         :   true,
+                                'mobileDisplay'     :   true
                             };
                             if (column.isRelated) {
                                 /* otherwise build object with required configuration */
@@ -412,7 +414,7 @@ WM.module('wm.widgets.live')
                                     var fieldsObj,
                                         buttonsObj,
                                         designerObj,
-                                        fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap('LIVEFILTER');
+                                        fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap();
                                     /*If properties map is populated and if columns are presented for filter construction*/
                                     if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                         if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
@@ -577,7 +579,6 @@ WM.module('wm.widgets.live')
                         };
 
                         scope.FilterField.prototype = new wm.baseClasses.FieldDef();
-
                         var expr,
                             exprWatchHandler,
                             dataSetWatchHandler,
@@ -592,7 +593,6 @@ WM.module('wm.widgets.live')
                                 'filterOn'          : attrs.filterOn || attrs.field || attrs.binding,
                                 'isRange'           : attrs.isRange === "true" || attrs.isRange === true,
                                 'isRelated'         : attrs.isRelated === "true" || attrs.isRelated === true,
-                                'widget'            : attrs.widget,
                                 'lookupType'        : attrs.lookupType,
                                 'lookupField'       : attrs.lookupField,
                                 'minPlaceholder'    : attrs.minPlaceholder,
@@ -672,6 +672,21 @@ WM.module('wm.widgets.live')
                         parentIsolateScope.columnsDefCreated = true;
                         index = parentIsolateScope.formFields.push(columnsDef) - 1;
 
+                        /* this condition will run for:
+                         *  1. PC view in STUDIO mode
+                         *  2. Mobile/tablet view in RUN mode
+                         */
+                        if (CONSTANTS.isRunMode) {
+                            if (Utils.isMobile()) {
+                                if (!columnsDef.mobileDisplay) {
+                                    return;
+                                }
+                            } else {
+                                if (!columnsDef.pcDisplay) {
+                                    return;
+                                }
+                            }
+                        }
                         template = LiveWidgetUtils.getTemplate(columnsDef, index, "filter");
                         element.html(template);
                         $compile(element.contents())(parentIsolateScope);
