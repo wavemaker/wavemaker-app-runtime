@@ -121,14 +121,24 @@ body {
     }
   }
   &.show-help {
-    .panel-help-message {
-      display: block;
+    .panel-heading {
+      &.show-help {
+        .panel-actions .glyphicon-question-sign {
+          color: #333;
+        }
+      }
     }
-    .panel-body {
-      width: 79%;
-    }
-    .panel-actions .glyphicon-question-sign {
-      color: #333;
+    .panel-content {
+      .panel-body {
+        &.show-help {
+          width: 79%;
+        }
+      }
+      .panel-help-message {
+        &.show-help {
+          display: block;
+        }
+      }
     }
   }
 }

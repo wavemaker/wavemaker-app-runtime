@@ -6,7 +6,7 @@ WM.module('wm.layouts.containers')
         'use strict';
         $templateCache.put('template/layout/container/panel.html',
                 '<div page-container init-widget class="app-panel panel" ng-class="[helpClass]" data-ng-show="show" apply-styles="shell" wm-navigable-element="true">' +
-                    '<div class="panel-heading">' +
+                    '<div class="panel-heading" data-ng-class="helpClass">' +
                         '<h3 class="panel-title">' +
                             '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="togglePanel()">' +
                                 '<i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i>' +
@@ -23,8 +23,8 @@ WM.module('wm.layouts.containers')
                         '</h3>' +
                     '</div>' +
                     '<div class="panel-content" data-ng-show="expanded">' +
-                        '<div class="panel-body" wmtransclude page-container-target data-ng-style="{height: height, overflow: overflow,paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}" ></div>' +
-                        '<aside class="panel-help-message"><h5 class="panel-help-header">{{::$root.appLocale.LABEL_HELP}}</h5><div class="panel-help-content" data-ng-bind-html="helptext"></div></aside>' +
+                        '<div class="panel-body" data-ng-class="helpClass" wmtransclude page-container-target data-ng-style="{height: height, overflow: overflow,paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}" ></div>' +
+                        '<aside class="panel-help-message" data-ng-class="helpClass"><h5 class="panel-help-header">{{::$root.appLocale.LABEL_HELP}}</h5><div class="panel-help-content" data-ng-bind-html="helptext"></div></aside>' +
                     '</div>' +
                 '</div>'
             );
