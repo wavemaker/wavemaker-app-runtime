@@ -518,19 +518,20 @@ WM.module('wm.widgets.grid')
                                 }
                             }));
                         }
-
-                        if (!scope.allowinlineedit || scope.allowinlineedit === 'false') {
-                            scope.datagridElement.datagrid('option', {
-                                'allowInlineEditing': false,
-                                'multiselect': false,
-                                'allowAddNewRow': false
-                            });
-                        } else {
-                            scope.datagridElement.datagrid('option', {
-                                'allowInlineEditing': true,
-                                'multiselect': true,
-                                'allowAddNewRow': true
-                            });
+                        if (WM.isDefined(scope.allowinlineedit)) {
+                            if (!scope.allowinlineedit || scope.allowinlineedit === 'false') {
+                                scope.datagridElement.datagrid('option', {
+                                    'allowInlineEditing': false,
+                                    'multiselect': false,
+                                    'allowAddNewRow': false
+                                });
+                            } else {
+                                scope.datagridElement.datagrid('option', {
+                                    'allowInlineEditing': true,
+                                    'multiselect': true,
+                                    'allowAddNewRow': true
+                                });
+                            }
                         }
 
                         $timeout(function () {

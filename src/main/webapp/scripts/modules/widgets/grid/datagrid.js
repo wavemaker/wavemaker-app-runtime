@@ -1016,7 +1016,7 @@ $.widget('wm.datagrid', {
     },
     /* Toggles the edit state of a row. */
     toggleEditRow: function (e) {
-        //e.stopPropagation();
+        e.stopPropagation();
         var $row = $(e.target).closest('tr'),
             $originalElements = $row.find('td'),
             $editButton = $row.find('.edit-row-button'),
