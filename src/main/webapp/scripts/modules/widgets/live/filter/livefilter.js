@@ -359,9 +359,6 @@ WM.module('wm.widgets.live')
                             };
 
                             function updateAllowedValues() {
-                                if (!CONSTANTS.isRunMode) {
-                                    return;
-                                }
                                 var variable = scope.Variables[scope.variableName];
                                 WM.forEach(scope.formFields, function (filterField) {
                                     var query,
