@@ -67,8 +67,10 @@ Application
             '$compile',
             'Variables',
             '$cacheFactory',
+            '$document',
+            'CONSTANTS',
 
-            function ($q, Utils, BaseService, $location, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory) {
+            function ($q, Utils, BaseService, $location, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS) {
                 'use strict';
 
                 var prevRoute,
@@ -173,6 +175,21 @@ Application
                     i18nService.init(_sl, _dl, APP_LOCALE_PATH, NG_LOCALE_PATH);
                     i18nService.setSelectedLocale(_dl);
                 }
+                /* Returns a promise that will be resolved when device is ready.*/
+                function isDeviceReady () {
+                    var d = $q.defer(),
+                        devicereadyListener = function () {
+                            d.resolve();
+                            $document.off('deviceready', devicereadyListener);
+                        };
+                    /*Only in case of deployed mobile apps, wait for deviceready event.*/
+                    if (CONSTANTS.hasCordova) {
+                        $document.on('deviceready', devicereadyListener);
+                    } else {
+                        d.resolve();
+                    }
+                    return d.promise;
+                }
 
                 function loadCommonPage($s) {
                     var pageName = 'Common';
@@ -257,6 +274,7 @@ Application
                 this.initAppVariables       = initAppVariables;
                 this.updateLoggedInUser     = updateLoggedInUser;
                 this.getPreparedPageContent = getPreparedPageContent;
+                this.isDeviceReady          = isDeviceReady;
             }
         ])
     .config(
@@ -386,8 +404,10 @@ Application
                 /* load the common contents */
                 if ($rs.isApplicationType && Utils.getCurrentPage() !== 'login.html') {
 
-                    AppManager.loadCommonPage($s)
+                    AppManager.isDeviceReady()
                         .then(function () {
+                            return AppManager.loadCommonPage($s)
+                        }).then(function () {
                             return AppManager.initAppVariables($s);
                         })
                         .then(function (appVariables) {
