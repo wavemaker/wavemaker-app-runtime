@@ -86,15 +86,17 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
         } else if (CONSTANTS.isRunMode) {
             //This is for preview page
             window.onmessage = function (msg) {
-                if (WM.isObject(msg.data) && msg.data.key === 'switch-device') {
-                    applyOSTheme(msg.data.device.os);
+                var data = Utils.isIE9() ? JSON.parse(msg.data) : msg.data;
+                if (WM.isObject(data) && data.key === 'switch-device') {
+                    applyOSTheme(data.device.os);
                 }
             };
             //On Application start
             $rootScope.$on('application-ready', function () {
+                 var msgContent = {key: 'on-load'};
                 //Notify preview window that application is ready. Otherwise, identify the OS.
                 if (window.top !== window) {
-                    window.top.postMessage({key: 'on-load'}, '*');
+                    window.top.postMessage(Utils.isIE9() ? JSON.stringify(msgContent) : msgContent, '*');
                 } else if (Utils.isAndroid()) {
                     applyOSTheme('android');
                 } else if (Utils.isIphone()) {
