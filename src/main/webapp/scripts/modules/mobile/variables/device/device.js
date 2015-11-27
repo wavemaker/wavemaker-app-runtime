@@ -38,7 +38,21 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                         timeout: variable.geolocationTimeout * 1000,
                         enableHighAccuracy: variable.geolocationHighAccuracy
                     };
-                    $cordovaGeolocation.getCurrentPosition(geoLocationOptions).then(success, error);
+                    $cordovaGeolocation.getCurrentPosition(geoLocationOptions).then(function (position) {
+                        var result = {
+                            coords: {
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                altitude: position.coords.altitude,
+                                accuracy: position.coords.accuracy,
+                                altitudeAccuracy: position.coords.altitudeAccuracy,
+                                heading: position.coords.heading,
+                                speed: position.coords.speed
+                            },
+                            timestamp: position.timestamp
+                        };
+                        success(result);
+                    }, error);
                 }
             },
             getDeviceInfo: {
