@@ -231,7 +231,16 @@ WM.module('wm.widgets.form')
             if (scope.datafield !== ALLFIELDS) {
                 scope._model_ = scope.modelProxy;
             } else if (_dataSetModelProxyMap[scope.$id]) { /* check for sanity */
-                scope._model_ = _dataSetModelProxyMap[scope.$id][scope.modelProxy];
+                if (scope.multiple) {
+                    /*For multiple select with data field as All Fields, set model as array of objects*/
+                    var modelHolder = [];
+                    _.each(scope.modelProxy, function (proxy) {
+                        modelHolder.push(_dataSetModelProxyMap[scope.$id][proxy]);
+                    });
+                    scope._model_ = modelHolder;
+                } else {
+                    scope._model_ = _dataSetModelProxyMap[scope.$id][scope.modelProxy];
+                }
             }
             _modelChangedManually[scope.$id] = true;
             scope._onChange({$event: args.$event, $scope: args.$scope});
