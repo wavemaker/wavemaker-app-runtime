@@ -60,6 +60,11 @@ WM.module('wm.widgets.live')
                                     'multiselect': false,
                                     'allowAddNewRow': false
                                 };
+                            /* For row delete , set the row fields to the gridform */
+                            liveGridOptions.onRowDelete = function (row) {
+                                scope.gridform.rowdata = row;
+                                scope.gridform.delete();
+                            };
                             /* call the registered methods in gridform's scope */
                             /*Function to obtain parsed regular expression as provided in properties.*/
                             scope.getRegExp = function () {
@@ -146,11 +151,6 @@ WM.module('wm.widgets.live')
                                             'scope': scope.gridform
                                         });
                                     }
-                                }));
-                                /*On row delete clear the form*/
-                                handlers.push(scope.grid.$on('on-row-delete', function () {
-                                    scope.gridform.clearData();
-                                    scope.gridform.isSelected = false;
                                 }));
                                 /* watch the primaryKey field in grid form , as soon as it updated change the live grid primary key */
                                 scope.gridform.$watch('primaryKey', function (newVal) {

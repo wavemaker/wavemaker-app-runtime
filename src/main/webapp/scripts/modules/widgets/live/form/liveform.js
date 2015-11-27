@@ -83,6 +83,7 @@ WM.module('wm.widgets.live')
                                 '<span class="form-header-text">{{title}}</span>' +
                             '</h3></div>' +
                             '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
+                                '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>'+
                                 template.context.innerHTML +
                             '</div>' +
                             '<div class="basic-btn-grp form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
@@ -166,6 +167,19 @@ WM.module('wm.widgets.live')
                 $scope.saveAndView = function () {
                     $scope.formSave(undefined, false);
                 };
+                /*Function to show the message on top of the dialog or to display the toaster
+                 * type can be error or success*/
+                $scope.toggleMessage = function (show, msg, type) {
+                    if (show && msg) {
+                        if ($scope.messagelayout === 'Inline') {
+                            $scope.statusMessage = {'caption': msg || '', type: type};
+                        } else {
+                            wmToaster.show(type, type.toUpperCase(), msg);
+                        }
+                    } else {
+                        $scope.statusMessage = null;
+                    }
+                };
                 /*Method to handle the insert, update, delete actions*/
                 /*The operationType decides the type of action*/
                 $scope.formSave = function (event, updateMode, newForm) {
@@ -231,12 +245,10 @@ WM.module('wm.widgets.live')
                                 /*Display appropriate error message in case of error.*/
                                 if (response.error) {
                                     /*disable readonly and show the appropriate error*/
-                                    wmToaster.show('error', 'ERROR', response.error);
+                                    $scope.toggleMessage(true, $scope.errormessage, 'error');
                                     onResult(response, false, event);
                                 } else {
-                                    if ($scope.updatemessage) {
-                                        wmToaster.show('success', 'SUCCESS', $scope.updatemessage);
-                                    }
+                                    $scope.toggleMessage(true, $scope.updatemessage, 'success');
                                     onResult(response, true, event);
                                     if ($scope.ctrl) {
                                         /* highlight the current updated row */
@@ -251,7 +263,7 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                             }, function (error) {
-                                wmToaster.show('error', 'ERROR', error);
+                                $scope.toggleMessage(true, $scope.errormessage, 'error');
                                 onResult(error, false, event);
                             });
                         }
@@ -268,12 +280,10 @@ WM.module('wm.widgets.live')
                             variable.insertRecord(requestData, function (response) {
                                 /*Display appropriate error message in case of error.*/
                                 if (response.error) {
-                                    wmToaster.show('error', 'ERROR', response.error);
+                                    $scope.toggleMessage(true, $scope.errormessage, 'error');
                                     onResult(response, false, event);
                                 } else {
-                                    if ($scope.insertmessage) {
-                                        wmToaster.show('success', 'SUCCESS', $scope.insertmessage);
-                                    }
+                                    $scope.toggleMessage(true, $scope.insertmessage, 'success');
                                     onResult(response, true, event);
                                     /* if successfully inserted  change editable mode to false */
                                     if ($scope.ctrl) {
@@ -289,12 +299,13 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                             }, function (error) {
-                                wmToaster.show('error', 'ERROR', error);
+                                $scope.toggleMessage(true, $scope.errormessage, 'error');
                                 onResult(error, false, event);
                             });
                         }
                         break;
                     case "delete":
+                        $scope.toggleMessage(false);
                         if ($scope.ctrl) {
                             if (!$scope.ctrl.confirmMessage()) {
                                 return;
@@ -304,15 +315,13 @@ WM.module('wm.widgets.live')
                             /* check the response whether the data successfully deleted or not , if any error occurred show the
                              * corresponding error , other wise remove the row from grid */
                             if (success && success.error) {
-                                wmToaster.show('error', 'ERROR', success.error);
+                                $scope.toggleMessage(true, $scope.errormessage, 'error');
                                 onResult(success, false);
                                 return;
                             }
                             onResult(success, true);
                             $scope.clearData();
-                            if ($scope.deletemessage) {
-                                wmToaster.show('success', 'SUCCESS', $scope.deletemessage);
-                            }
+                            $scope.toggleMessage(true, $scope.deletemessage, 'success');
                             $scope.isSelected = false;
                             /*get updated data without refreshing page*/
                             if ($scope.ctrl) {
@@ -324,7 +333,7 @@ WM.module('wm.widgets.live')
                             }
 
                         }, function (error) {
-                            wmToaster.show('error', 'ERROR', error);
+                            $scope.toggleMessage(true, $scope.errormessage, 'error');
                             onResult(error, false);
                         });
                         break;
@@ -338,6 +347,7 @@ WM.module('wm.widgets.live')
                 /*Method to clear the fields and set the form to readonly*/
                 $scope.formCancel = function () {
                     $scope.clearData();
+                    $scope.toggleMessage(false);
                     /*Show the previous selected data*/
                     if ($scope.isSelected) {
                         $scope.formFields = WM.copy(prevformFields) || $scope.formFields;
@@ -365,6 +375,7 @@ WM.module('wm.widgets.live')
                 }
                 /*Method to reset the form to original state*/
                 $scope.reset = function () {
+                    $scope.toggleMessage(false);
                     if (WM.isArray($scope.formFields)) {
                         $scope.formFields.forEach(function (dataValue) {
                             if (dataValue.type === 'blob') {
@@ -390,6 +401,7 @@ WM.module('wm.widgets.live')
                 }
                 /*Method to update, sets the operationType to "update" disables the readonly*/
                 $scope.edit = function () {
+                    $scope.toggleMessage(false);
                     /*set the formFields into the prevformFields only in case of inline form
                     * in case of dialog layout the set prevformFields is called before manually clearing off the formFields*/
 
@@ -408,6 +420,7 @@ WM.module('wm.widgets.live')
                 /*Method clears the fields, sets any defaults if available,
                  disables the readonly, and sets the operationType to "insert"*/
                 $scope.new = function () {
+                    $scope.toggleMessage(false);
                     if ($scope.isSelected && !$scope.isLayoutDialog) {
                         prevformFields = WM.copy($scope.formFields);
                     }
@@ -509,7 +522,7 @@ WM.module('wm.widgets.live')
                             dataObject[field.key] = field.value;
                         }
                     });
-                    if ($scope.multipartData) {
+                    if ($scope.operationType !== 'delete' && $scope.multipartData) {
                         formData.append('wm_data_json', new Blob([JSON.stringify(dataObject)], {
                             type: "application/json"
                         }));
@@ -521,6 +534,7 @@ WM.module('wm.widgets.live')
 
                 /*Clear the fields in the array*/
                 $scope.clearData = function () {
+                    $scope.toggleMessage(false);
                     if ($scope.formFields && $scope.formFields.length > 0) {
                         emptyDataModel();
                     }
