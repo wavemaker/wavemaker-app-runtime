@@ -177,14 +177,12 @@ Application
                 }
                 /* Returns a promise that will be resolved when device is ready.*/
                 function isDeviceReady () {
-                    var d = $q.defer(),
-                        devicereadyListener = function () {
-                            d.resolve();
-                            $document.off('deviceready', devicereadyListener);
-                        };
+                    var d = $q.defer();
                     /*Only in case of deployed mobile apps, wait for deviceready event.*/
                     if (CONSTANTS.hasCordova) {
-                        $document.on('deviceready', devicereadyListener);
+                        $document.one('deviceready', function () {
+                            d.resolve();
+                        });
                     } else {
                         d.resolve();
                     }
