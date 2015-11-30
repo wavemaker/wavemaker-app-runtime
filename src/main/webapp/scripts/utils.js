@@ -1020,6 +1020,7 @@ WM.module('wm.utils', [])
                     'active'     : options.active,
                     'props'      : options.nodeProps,
                     'isDeletable': options.isDeletable,
+                    'title'      : options.title,
                     'onDelete'   : options.onDelete
                 },
                 parentIndex,
