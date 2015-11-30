@@ -218,7 +218,7 @@ WM.module('wm.widgets.form')
  *
  *               <wm-composite>
  *                   <wm-label caption="{{check3caption}}"></wm-label>
- *                   <wm-checkbox
+ *                   <wm-checkbox type="toggle"
  *                       hint="hint/title for checkbox"
  *                       checkedvalue="BLUE"
  *                       scopedatavalue="favitem3"
@@ -282,4 +282,3 @@ WM.module('wm.widgets.form')
  *       </file>
  *   </example>
  */
-
