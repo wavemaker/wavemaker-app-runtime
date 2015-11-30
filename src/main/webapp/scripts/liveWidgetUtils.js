@@ -239,7 +239,7 @@ WM.module('wm.widgets.live')
                         'big_decimal': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
                         'double'     : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
                         'string'     : ['Text', 'Textarea', 'Password', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                        'character'  : ['Text', 'Textarea', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
+                        'character'  : ['Text', 'Textarea', 'RichText', 'Select', 'Radioset'],
                         'text'       : ['Textarea', 'Text', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
                         'clob'       : ['Textarea', 'Text', 'RichText'],
                         'blob'       : ['Upload', 'Textarea', 'Text', 'RichText'],
@@ -447,12 +447,12 @@ WM.module('wm.widgets.live')
                 var stepVal, additionalFields;
                 stepVal = fieldDef.step || getStepValue(fieldDef.type);
                 additionalFields = 'type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "");
-                return getDefaultTemplate('text', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields);
+                return getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value', additionalFields);
             }
 
             function getRatingTemplate(fieldDef, index) {
                 var additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" ';
-                return getDefaultTemplate('rating', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value', additionalFields, true);
+                return getDefaultTemplate('rating', fieldDef, index, '', '', '', additionalFields, true);
             }
 
             /**
@@ -531,7 +531,7 @@ WM.module('wm.widgets.live')
                     template += getRatingTemplate(fieldDef, index, liveType);
                     break;
                 default:
-                    template += getDefaultTemplate('text', fieldDef, index, 'Select Min value', 'Select Max value', 'Select value');
+                    template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
                     break;
                 }
                 template = template + '</div></wm-composite>';
