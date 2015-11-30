@@ -310,7 +310,7 @@ WM.module('wm.widgets.form')
                     dataKey = WM.isString(dataKey) ? dataKey.trim() : dataKey;
                     if (widgetType === 'checkboxset') {
                         template = template +
-                            '<li class="checkbox app-checkbox" data-ng-class="itemclass">' +
+                            '<li class="checkbox app-checkbox {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + dataKey + "'" + ']}">' +
                                 '<label class="app-checkboxset-label" data-ng-class="{\'disabled\':disabled, \'unchecked\': !checkedValues[' + "'" + dataKey + "'" + ']}" title="' + dataKey + '">' +
                                     '<input type="checkbox" ' + (scope.disabled ? ' disabled="disabled" ' : '') + ' value="' + dataKey + '" data-ng-checked="checkedValues[' + "'" + dataKey + "'" + ']""/>' +
                                     '<span class="caption">' + dataKey + '</span>' +
@@ -319,7 +319,7 @@ WM.module('wm.widgets.form')
                             '</li>';
                     } else {
                         template = template +
-                            '<li class="radio app-radio" data-ng-class="itemclass">' +
+                            '<li class="radio app-radio {{itemclass}}" data-ng-class="{\'active\':checkModel(' + index + ')}" >' +
                                 '<label class="app-radioset-label">' +
                                     '<input type="radio" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + index + ' data-ng-checked="checkModel(' + index + ')"/>' +
                                     '<span class="caption">' + dataKey + '</span>' +
