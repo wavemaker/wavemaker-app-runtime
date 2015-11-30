@@ -139,7 +139,7 @@ WM.module('wm.widgets.advanced')
                                 scope.onEventclick({$event: event, $jsEvent: jsEvent, $view: view});
                             }
                             function viewRenderProxy(view) {
-                                scope.currentview = {start: view.start._d, end: view.end._d};
+                                scope.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
                                 scope.onViewrender({$view: view});
                             }
                             function eventRenderProxy(event, jsEvent, view) {
@@ -147,14 +147,14 @@ WM.module('wm.widgets.advanced')
                                 scope.onEventrender({$event: event, jsEvent: {}, $view: view});
                             }
                             function onSelectProxy(start, end, jsEvent, view) {
-                                scope.selecteddates = {start: start._d, end: end._d};
-                                scope.onSelect({$start: start, $end: end, $view: view});
+                                scope.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
+                                scope.onSelect({$start: start.getTime(), $end: end.getTime(), $view: view});
                             }
                             scope.calendarOptions = {
                                 calendar: {
                                     height: parseInt(scope.height, 10),
                                     editable: true,
-                                    selectable: true,
+                                    selectable: false,
                                     header: headerOptions,
                                     eventDrop: eventProxy.bind(undefined, 'onEventdrop'),
                                     eventResize: eventProxy.bind(undefined, 'onEventresize'),
