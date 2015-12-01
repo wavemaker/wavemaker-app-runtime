@@ -44,6 +44,7 @@ WM.module('wm.widgets.live')
             },
             require: '?^wmLivegrid',
             template: function (template, attrs) {
+                /*render the template with mobile-navbar if formlayout is page*/
                 if (CONSTANTS.isRunMode && attrs.formlayout === 'page') {
                     return '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-device-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
                                 '<wm-mobile-navbar title="{{title}}">' +
@@ -746,7 +747,7 @@ WM.module('wm.widgets.live')
                                             /*Defining two buttons for default actions*/
                                             scope.buttonArray = LiveWidgetUtils.getFormButtons().filter(function (button) {
                                                 /* show only save button for liveform with page layout */
-                                                return attrs.formlayout === 'page' ? button.key === 'save' : button.key === 'cancel' || button.key === 'save';
+                                                return scope.formlayout === 'page' ? button.key === 'save' : button.key === 'cancel' || button.key === 'save';
                                             });
                                             variableObj = elScope.Variables && elScope.Variables[scope.variableName];
                                             scope.variableObj = variableObj;
@@ -825,7 +826,6 @@ WM.module('wm.widgets.live')
                                 scope.isUpdateMode = scope.updateMode;
                                 break;
                             case "formlayout":
-                            case "formtype":
                                 scope.isLayoutDialog = newVal === 'dialog';
                                 element.toggleClass('liveform-dialog', scope.isLayoutDialog);
                                 break;
@@ -1174,8 +1174,10 @@ WM.module('wm.widgets.live')
                         template = getTemplate(buttonDef, index);
 
                         if (scope.formlayout === 'page') {
+                            /* add actions to the buttonArray*/
                             scope.buttonArray[index].action = buttonDef.action;
                         } else {
+                            /*append the buttons template to element with class basic-btn-grp*/
                             element.closest('[data-identifier="liveform"]').find('> .basic-btn-grp').append($compile(template)(parentIsolateScope));
                         }
                     }
