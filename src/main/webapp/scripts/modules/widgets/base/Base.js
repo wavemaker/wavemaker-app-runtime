@@ -1105,7 +1105,7 @@ WM.module('wm.widgets.base', [])
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "novalidate": {"type": "boolean", "value": true},
                         "show": {"type": "boolean", "value": true},
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "pattern": classRegex},
                         "defaultmode": {"type": "list", "options": ["View", "Edit"], "value": "View"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "insertmessage": {"type": "string", "value": "Record added successfully", "bindable": "in-out-bound"},
@@ -1368,7 +1368,11 @@ WM.module('wm.widgets.base', [])
                         "editfilters": {"type": "button", "hidelabel": true, "disabled": true},
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
                         "pagesize": {"type": "number", "value": 20},
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-filter", "pattern": classRegex}
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "value": "glyphicon glyphicon-filter", "pattern": classRegex},
+                        /* Events */
+                        "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},

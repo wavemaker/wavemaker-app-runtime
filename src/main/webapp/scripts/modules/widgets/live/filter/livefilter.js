@@ -23,9 +23,10 @@ WM.module('wm.widgets.live')
         'QueryBuilder',
         '$filter',
         'Utils',
+        'wmToaster',
         '$controller',
         'LiveWidgetUtils',
-        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils, $controller, LiveWidgetUtils) {
+        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils, wmToaster, $controller, LiveWidgetUtils) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.layouts', 'wm.containers']),
                 filterMarkup = '',
@@ -45,8 +46,24 @@ WM.module('wm.widgets.live')
                 restrict: 'E',
                 replace: true,
                 transclude: true,
-                scope: {},
+                scope: {
+                    "onBeforeservicecall": "&",
+                    "onSuccess": "&",
+                    "onError": "&"
+                },
                 controller: function ($scope) {
+                    /* when the service call ended this function will be called */
+                    var onResult = function (data, status) {
+                        /* whether service call success or failure call this method*/
+                        if (status) {
+                            /*if service call is success call this method */
+                            Utils.triggerFn($scope.onSuccess, {$data: data});
+                        } else {
+                            /* if service call fails call this method */
+                            Utils.triggerFn($scope.onError, {$data: data});
+                        }
+
+                    };
                     $scope.dateTimeFormats = Utils.getDateTimeDefaultFormats();
                     $scope.isDateTime = Utils.getDateTimeTypes();
                     $scope.isUpdateMode = true;
@@ -82,6 +99,8 @@ WM.module('wm.widgets.live')
                             orderBy,
                             ORACLE_DB_SYSTEM = 'oracle',
                             DB_SYS_KEY = 'dbSystem',
+                            isValid,
+                            dataModel = {},
                             isOracleDbSystem = function () {
                                 return variable && variable[DB_SYS_KEY] && variable[DB_SYS_KEY].toLowerCase() === ORACLE_DB_SYSTEM;
                             };
@@ -90,11 +109,49 @@ WM.module('wm.widgets.live')
                         orderBy = options.orderBy || "";
                         $scope.orderBy = options.orderBy;
                         orderBy = orderBy.split(",").join(" ");
+                        /* Copy the values to be sent to the user as '$data' before servicecall */
+                        _.each($scope.formFields, function (field) {
+                            if (!field.isRange) {
+                                dataModel[field.field] = {
+                                    'value': field.value
+                                };
+                            } else {
+                                dataModel[field.field] = {
+                                    'minValue': field.minValue,
+                                    'maxValue': field.maxValue
+                                };
+                            }
+                        });
+                        /*Perform this function for the event onBeforeservicecall*/
+                        try {
+                            isValid = $scope.onBeforeservicecall({$data: dataModel});
+                            if (isValid === false) {
+                                return;
+                            }
+                            if (isValid && isValid.error) {
+                                wmToaster.show('error', 'ERROR', isValid.error);
+                                return;
+                            }
+                            /*Update these values in the formFields with new reference, inorder to maintain the UI values*/
+                            _.each($scope.formFields, function (filterField) {
+                                if (!filterField.isRange) {
+                                    filterField._value = dataModel[filterField.field].value;
+                                } else {
+                                    filterField._minValue = dataModel[filterField.field].minValue;
+                                    filterField._maxValue = dataModel[filterField.field].maxValue;
+                                }
+                            });
+                        } catch (err) {
+                            if (err.message === "Abort") {
+                                return;
+                            }
+                        }
+                        /* Construct the formFields Variable to send it to the queryBuilder */
                         WM.forEach($scope.formFields, function (filterField) {
                             var fieldValue,
                                 noQuotes = false,
-                                minValue = filterField.minValue,
-                                maxvalue = filterField.maxValue,
+                                minValue = filterField._minValue,
+                                maxvalue = filterField._maxValue,
                                 colName = variable.getModifiedFieldName(filterField.field),
                                 minQuery,
                                 maxQuery,
@@ -147,33 +204,33 @@ WM.module('wm.widgets.live')
                                 case 'select':
                                 case 'radioset':
                                     if (filterField.type === "boolean") {
-                                        if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
-                                            fieldValue = filterField.value;
+                                        if (WM.isDefined(filterField._value) && !WM.isString(filterField._value)) {
+                                            fieldValue = filterField._value;
                                         }
                                         noQuotes = true;
                                     } else {
-                                        fieldValue = filterField.value;
+                                        fieldValue = filterField._value;
                                     }
                                     break;
                                 case 'checkboxset':
-                                    if (filterField.value && filterField.value.length) {
-                                        fieldValue = filterField.value;
+                                    if (filterField._value && filterField._value.length) {
+                                        fieldValue = filterField._value;
                                     }
                                     break;
                                 case 'date':
                                 case 'time':
                                 case 'datetime':
-                                    fieldValue = getFormattedDateTime(filterField.value, filterField.widget);
+                                    fieldValue = getFormattedDateTime(filterField._value, filterField.widget);
                                     break;
                                 case 'checkbox':
                                 case 'toggle':
-                                    if (WM.isDefined(filterField.value) && !WM.isString(filterField.value)) {
-                                        fieldValue = filterField.value;
+                                    if (WM.isDefined(filterField._value) && !WM.isString(filterField._value)) {
+                                        fieldValue = filterField._value;
                                     }
                                     noQuotes = true;
                                     break;
                                 default:
-                                    fieldValue = filterField.value;
+                                    fieldValue = filterField._value;
                                     break;
                                 }
                                 if (WM.isDefined(fieldValue) && fieldValue !== '' && fieldValue !== null) {
@@ -203,28 +260,38 @@ WM.module('wm.widgets.live')
                             "nativeSql": false,
                             "prefabName": variable.prefabName
                         }, function (data) {
-                            var tempObj = {};
-                            /*Set the response in "result" so that all widgets bound to "result" of the live-filter are updated.*/
-                            $scope.result.data = data.content;
-                            /*Create an object as required by the formFields for live-variable so that all further calls to getData take place properly.
-                            * This is used by widgets such as dataNavigator.*/
-                            WM.forEach(formFields, function (filterField) {
-                                tempObj[filterField.column] = {};
-                                tempObj[filterField.column].value = filterField.value;
-                            });
-                            $scope.result.formFields = tempObj;
-                            /*Set the paging options also in the result so that it could be used by the dataNavigator.
-                            * "currentPage" is set to "1" because each time the filter is applied, the dataNavigator should display results from the 1st page.*/
-                            $scope.result.pagingOptions = {
-                                "dataSize": data.totalElements,
-                                "maxResults": $scope.pagesize || 20,
-                                "currentPage": page
-                            };
-                            /*Save the page options. When the filter dataSet changes, filter is applied with these options*/
-                            $scope.result.options = {
-                                "page": page,
-                                "orderBy": orderBy
-                            };
+                            if (data.error) {
+                                /*disable readonly and show the appropriate error*/
+                                wmToaster.show('error', 'ERROR', (data.error));
+                                onResult(data, false);
+                            } else {
+                                var tempObj = {};
+                                /*Set the response in "result" so that all widgets bound to "result" of the live-filter are updated.*/
+                                $scope.result.data = data.content;
+                                /*Create an object as required by the formFields for live-variable so that all further calls to getData take place properly.
+                                 * This is used by widgets such as dataNavigator.*/
+                                WM.forEach(formFields, function (filterField) {
+                                    tempObj[filterField.column] = {};
+                                    tempObj[filterField.column].value = filterField.value;
+                                });
+                                $scope.result.formFields = tempObj;
+                                /*Set the paging options also in the result so that it could be used by the dataNavigator.
+                                 * "currentPage" is set to "1" because each time the filter is applied, the dataNavigator should display results from the 1st page.*/
+                                $scope.result.pagingOptions = {
+                                    "dataSize": data.totalElements,
+                                    "maxResults": $scope.pagesize || 20,
+                                    "currentPage": page
+                                };
+                                /*Save the page options. When the filter dataSet changes, filter is applied with these options*/
+                                $scope.result.options = {
+                                    "page": page,
+                                    "orderBy": orderBy
+                                };
+                                onResult(data, true);
+                            }
+                        }, function (error) {
+                            wmToaster.show('error', 'ERROR', error);
+                            onResult(error, false);
                         });
                     };
                     $scope.constructDefaultData = function (dataset) {
