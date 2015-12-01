@@ -216,7 +216,11 @@ wm.plugins.database.services.DatabaseService = [
                         "dialect": params.dialect,
                         "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
                         "impersonateUser": false,
-                        "activeDirectoryDomain": params.activeDirectoryDomain
+                        "activeDirectoryDomain": params.activeDirectoryDomain,
+                        "dbType": params.dbType,
+                        "host": params.host,
+                        "port": params.port,
+                        "dbName": params.serviceId
                     },
                     urlParams: {
                         "projectID": params.projectID
@@ -286,7 +290,11 @@ wm.plugins.database.services.DatabaseService = [
                         "dialect": params.dialect,
                         "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
                         "impersonateUser": false,
-                        "overwrite": params.overwrite
+                        "overwrite": params.overwrite,
+                        "dbType": params.dbType,
+                        "host": params.host,
+                        "port": params.port,
+                        "dbName": params.serviceId
                     },
                     urlParams: {
                         "projectID": params.projectID
@@ -326,7 +334,11 @@ wm.plugins.database.services.DatabaseService = [
                         "driverClass": params.driverClass,
                         "dialect": params.dialect,
                         "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                        "impersonateUser": false
+                        "impersonateUser": false,
+                        "dbType": params.dbType,
+                        "host": params.host,
+                        "port": params.port,
+                        "dbName": params.serviceId
                     },
                     urlParams: {
                         "projectID": params.projectID
