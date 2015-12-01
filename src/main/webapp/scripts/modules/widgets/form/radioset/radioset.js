@@ -44,13 +44,14 @@ WM.module('wm.widgets.form')
                 compiledTemplate;
             scope.dataObject = {};
             scope.dataKeys = [];
+            scope.checkedValues = {};
             dataSet = FormWidgetUtils.getParsedDataSet(dataSet, scope, element);
             /*creating the dataKeys for the radioset*/
             FormWidgetUtils.createDataKeys(scope, dataSet);
             /*assigning value to the model if selectedvalue is provided*/
             assignModelValue(scope, dataSet);
             /*creating the template based on the dataKeys created*/
-            template = FormWidgetUtils.createWidgetTemplate(scope, 'radioset');
+            template = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'radioset');
             /*compiling the appended template*/
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
@@ -113,6 +114,15 @@ WM.module('wm.widgets.form')
 
             }
         }
+        /* checks if the given value object is in the given model array of objects */
+        function valueInModel(model, value, dataObject) {
+            /*If model is equal to value, return true*/
+            if (model === value) {
+                return true;
+            }
+            /*If the dataobject is equal in model, return true*/
+            return (WM.equals(model, dataObject));
+        }
 
         return {
             'restrict': 'E',
@@ -150,11 +160,14 @@ WM.module('wm.widgets.form')
                                 constructRadioSet(scope, element, scope.scopedataset);
                             }
                         });
-
-                        /*method to check the value of the model and appropriately check or uncheck the element*/
-                        scope.checkModel = function (index) {
-                            return (scope._model_ === scope.dataKeys[index]) || WM.equals(scope._model_, scope.dataObject[scope.dataKeys[index]]);
-                        };
+                        /*Watch on the model, to check or uncheck the values of checkboxset*/
+                        scope.$watch('_model_', function () {
+                            if (scope.dataKeys && scope.checkedValues) {
+                                _.forEach(scope.dataKeys, function (dataKey) {
+                                    scope.checkedValues[dataKey] = valueInModel(scope._model_, dataKey, scope.dataObject[dataKey]);
+                                });
+                            }
+                        }, false);
 
                         /*Called from form reset when users clicks on form reset*/
                         scope.reset = function () {

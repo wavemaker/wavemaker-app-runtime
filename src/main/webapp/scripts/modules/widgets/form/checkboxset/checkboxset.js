@@ -65,7 +65,7 @@ WM.module('wm.widgets.form')
             /*assigning the value to the model, if selectedvalues are provided*/
             assignModelValue(scope, dataSet);
             /*creating the template for the widget*/
-            template = FormWidgetUtils.createWidgetTemplate(scope, 'checkboxset');
+            template = FormWidgetUtils.getRadiosetCheckboxsetTemplate(scope, 'checkboxset');
             compiledTemplate = $compile(template)(scope);
             element.empty().append(compiledTemplate);
             /*register a click event handler for the radio*/

@@ -1,4 +1,4 @@
-/*global WM, _*/
+/*global WM, _, moment, alert*/
 
 /**
  * @ngdoc service
@@ -292,40 +292,44 @@ WM.module('wm.widgets.form')
 
             /**
              * @ngdoc function
-             * @name wm.widgets.form.FormWidgetUtils#createWidgetTemplate
+             * @name wm.widgets.form.FormWidgetUtils#getRadiosetCheckboxsetTemplate
              * @methodOf wm.widgets.form.FormWidgetUtils
              * @function
              *
              * @description
-             * function to create the widget template based on the dataKeys created.
+             * function to create the widget template for radioset and checkboxset based on the dataKeys created.
              *
              * @param {object} scope isolate scope of the widget
              * @param {string} widgetType radioset or checkboxset
              *
              */
-            function createWidgetTemplate(scope, widgetType) {
-                var template = '';
+            function getRadiosetCheckboxsetTemplate(scope, widgetType) {
+                var template = '',
+                    liClass,
+                    labelClass,
+                    type;
+                switch (widgetType) {
+                case 'checkboxset':
+                    liClass = 'checkbox app-checkbox';
+                    labelClass = 'app-checkboxset-label';
+                    type = 'checkbox';
+                    break;
+                case 'radioset':
+                    liClass = 'radio app-radio';
+                    labelClass = 'app-radioset-label';
+                    type = 'radio';
+                    break;
+                }
                 /*iterating over the keys to create the template for the widget.*/
                 _.forEach(scope.dataKeys, function (dataKey, index) {
                     dataKey = WM.isString(dataKey) ? dataKey.trim() : dataKey;
-                    if (widgetType === 'checkboxset') {
-                        template = template +
-                            '<li class="checkbox app-checkbox {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + dataKey + "'" + ']}">' +
-                                '<label class="app-checkboxset-label" data-ng-class="{\'disabled\':disabled, \'unchecked\': !checkedValues[' + "'" + dataKey + "'" + ']}" title="' + dataKey + '">' +
-                                    '<input type="checkbox" ' + (scope.disabled ? ' disabled="disabled" ' : '') + ' value="' + dataKey + '" data-ng-checked="checkedValues[' + "'" + dataKey + "'" + ']""/>' +
-                                    '<span class="caption">' + dataKey + '</span>' +
-                                    '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>' +
-                                '</label>' +
-                            '</li>';
-                    } else {
-                        template = template +
-                            '<li class="radio app-radio {{itemclass}}" data-ng-class="{\'active\':checkModel(' + index + ')}" >' +
-                                '<label class="app-radioset-label">' +
-                                    '<input type="radio" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + index + ' data-ng-checked="checkModel(' + index + ')"/>' +
-                                    '<span class="caption">' + dataKey + '</span>' +
-                                '</label>' +
-                            '</li>';
-                    }
+                    template = template +
+                        '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + dataKey + "'" + ']}">' +
+                            '<label class="' + labelClass + '" data-ng-class="{\'disabled\':disabled}" title="' + dataKey + '">' +
+                                 '<input type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + index + ' value="' + dataKey + '" data-ng-checked="checkedValues[' + "'" + dataKey + "'" + ']""/>' +
+                                 '<span class="caption">' + dataKey + '</span>' +
+                            '</label>' +
+                        '</li>';
                 });
                 /*Holder for the model for submitting values in a form and a wrapper to for readonly mode*/
                 template = template + '<input name="{{name}}" data-ng-disabled="disabled" data-ng-hide="true" class="model-holder" data-ng-model="_model_">'  + '<div data-ng-if="readonly || disabled" class="readonly-wrapper"></div>';
@@ -443,12 +447,11 @@ WM.module('wm.widgets.form')
                 dates = dates.map(function (date) {
                     if (WM.isDate(date)) {
                         return date;
-                    } else {
-                        if (!isNaN(date)) {
-                            return parseInt(date, 10);
-                        }
-                        return date;
                     }
+                    if (!isNaN(date)) {
+                        return parseInt(date, 10);
+                    }
+                    return date;
                 });
                 _.forEach(dates, function (date) {
                     /*formatting date/timestamp in to date and converting it to long value and populating
@@ -467,7 +470,11 @@ WM.module('wm.widgets.form')
              * @description
              * function to get the model value of date, datetime, time widgets in mobile.
              *
-             * @param {object} excludeDates dates to be excluded
+             * @param {string} minDate minimum date
+             * @param {string} maxDate maximum date
+             * @param {string} modelValue model value
+             * @param {string} proxyModelValue proxy model value
+             * @param {string} previousValue previous model value
              */
             function getUpdatedModel(minDate, maxDate, modelValue, proxyModelValue, previousValue) {
                 if (minDate || maxDate) {
@@ -488,7 +495,7 @@ WM.module('wm.widgets.form')
             this.updatePropertyPanelOptions = updatePropertyPanelOptions;
             this.getParsedDataSet = getParsedDataSet;
             this.getModelValue = getModelValue;
-            this.createWidgetTemplate = createWidgetTemplate;
+            this.getRadiosetCheckboxsetTemplate = getRadiosetCheckboxsetTemplate;
             this.getBoundVariableCategory = getBoundVariableCategory;
             this.appendMessage = appendMessage;
             this.getProxyEventsMap = getProxyEventsMap;
