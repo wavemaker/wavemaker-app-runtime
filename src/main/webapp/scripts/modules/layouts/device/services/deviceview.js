@@ -55,14 +55,12 @@ WM.module("wm.layouts.device")
 
         /*setup touch event handler*/
         function bindTapEvtHandler(selector, handler) {
-            var $el = WM.element(selector);
-            if ($el.length) {
-                WM.forEach($el, function (element) {
-                    new Hammer(element).on("tap", function () {
-                        Utils.triggerFn(handler);
-                    });
-                });
-            }
+            /*
+             * In Iphone safari browser, tap event of HammerJs is breaking
+             * functionalities of other controls like input[type="range"].
+             * So, replaced the hammer Js handler with click event handler.
+             */
+            WM.element(selector).on('click', handler);
         }
 
         /**
