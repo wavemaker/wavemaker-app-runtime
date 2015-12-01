@@ -29,20 +29,23 @@ WM.module('wm.widgets.advanced')
 
 wm.modules.wmCommon.services.AppAutoUpdateService = [
     '$compile',
+    '$cordovaFile',
     '$cordovaFileOpener2',
     '$cordovaFileTransfer',
     '$http',
     '$q',
     '$rootScope',
     '$templateCache',
-    function ($compile, $cordovaFileOpener2, $cordovaFileTransfer, $http, $q, $rootScope, $templateCache) {
+    function ($compile, $cordovaFile, $cordovaFileOpener2, $cordovaFileTransfer, $http, $q, $rootScope, $templateCache) {
         'use strict';
-        var config, ele, scope;
+        var config, ele, scope, fileName = 'app-auto-update.apk';
 
+        function cleanAutoUpdateFile() {
+            $cordovaFile.removeFile(cordova.file.externalApplicationStorageDirectory, fileName);
+        }
 
         function installLatestVersion() {
             var downloadLink = config.host + '/appBuild/rest/mobileBuilds/android/download?',
-                fileName = 'app-build-' + config.latestBuildNumber + '.apk',
                 apkFile =  cordova.file.externalApplicationStorageDirectory + fileName;
 
             downloadLink += 'token=' + config.token
@@ -98,6 +101,7 @@ wm.modules.wmCommon.services.AppAutoUpdateService = [
                 .then(function (response) {
                     config = response.data;
                     if (config.buildMode === 'DEVELOPMENT_MODE') {
+                        cleanAutoUpdateFile();
                         checkForUpdate().then(getUserConfirmationAndInstall.bind(undefined));
                     }
                 });
