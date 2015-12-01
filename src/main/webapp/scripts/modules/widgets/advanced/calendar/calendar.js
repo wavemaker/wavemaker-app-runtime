@@ -42,7 +42,8 @@ WM.module('wm.widgets.advanced')
             /* datavalue property is removed from the calendar widget.*/
             delete widgetProps.datavalue;
             function updateCalendarOptions(scope) {
-                var ctrls = scope.controls, viewType = scope.calendartype, left = '', right = '';
+                var ctrls = scope.controls, viewType = scope.calendartype, left = '', right = '',
+                    regEx = new RegExp('\\bday\\b', 'g');
                 if (ctrls && viewType) {
                     if (_.includes(ctrls, 'navigation')) {
                         left += ' prev next';
@@ -60,7 +61,7 @@ WM.module('wm.widgets.advanced')
                         right += viewType === VIEW_TYPES.BASIC ?  ' basicWeek' : ' agendaWeek';
                     }
 
-                    if (_.includes(ctrls, 'day')) {
+                    if (regEx.test(ctrls)) {
                         right += viewType === VIEW_TYPES.BASIC ?  ' basicDay' : ' agendaDay';
                     }
 
