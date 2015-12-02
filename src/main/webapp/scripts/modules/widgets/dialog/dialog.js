@@ -19,7 +19,7 @@ WM.module('wm.widgets.dialog')
                 '</button>' +
                 '<h4 class="app-dialog-title modal-title">' +
                     '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
-                    '<span>{{caption}}</span>' +
+                    '<span>{{title}}</span>' +
                 '</h4>' +
                 '<div class="dialog-header-action" wmtransclude></div>' +
             '</div>'
@@ -74,7 +74,7 @@ WM.module('wm.widgets.dialog')
                 scope.header[key] = newVal;
                 break;
             case "title":
-                scope.header.caption = newVal;
+                scope.header.title = newVal;
                 break;
             }
         }
@@ -169,7 +169,7 @@ WM.module('wm.widgets.dialog')
                 scope.header[key] = newVal;
                 break;
             case "title":
-                scope.header.caption = newVal;
+                scope.header.title = newVal;
                 break;
             }
         }
@@ -217,7 +217,8 @@ WM.module('wm.widgets.dialog')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.base"]),
             notifyFor = {
-                'iconclass': true
+                'iconclass': true,
+                'title': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -253,6 +254,10 @@ WM.module('wm.widgets.dialog')
                             onCloseEventName,
                             onOpenedEventName,
                             parentElScope;
+                        /**************backward compatibility setting the title when the caption is available*******************/
+                        if( attrs.caption && !attrs.title ) {
+                          scope.title =  attrs.caption;
+                        }
 
                         parentEl = element.closest('.app-dialog');
                         parentElScope = parentEl.isolateScope();

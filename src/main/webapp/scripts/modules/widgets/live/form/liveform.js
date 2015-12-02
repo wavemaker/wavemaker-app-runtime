@@ -21,7 +21,7 @@ WM.module('wm.widgets.live')
             },
             /*check if the field is of column type time or widget type time*/
             isTimeType = function (field) {
-                return field.widgetType === 'Time' || (field.type === 'time' && !field.widgetType);
+                return field.widget === 'time' || (field.type === 'time' && !field.widget);
             },
             /*Convert time value to a valid date time value*/
             getValidTime = function (val) {
@@ -494,7 +494,7 @@ WM.module('wm.widgets.live')
                     formFields.forEach(function (field) {
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
-                        if (((field.widgetType && $scope.isDateTimeWidgets[field.widgetType.toLowerCase()]) || $scope.isDateTimeWidgets[field.type])) {
+                        if (((field.widget && $scope.isDateTimeWidgets[field.widget.toLowerCase()]) || $scope.isDateTimeWidgets[field.type])) {
                             if (field.value && !isNaN(field.value)) {
                                 field.value = Number(field.value);
                             }
@@ -1026,9 +1026,6 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        if (attrs.widgetType) {
-                            columnDef.widgetType = attrs.widgetType;
-                        }
                         if (attrs.dataset) {
                             if (Utils.stringStartsWith(attrs.dataset, 'bind:') && CONSTANTS.isRunMode) {
                                 expr = attrs.dataset.replace('bind:', '');
@@ -1119,7 +1116,21 @@ WM.module('wm.widgets.live')
                         }
                         parentIsolateScope.formCreated = true;
                         parentIsolateScope.formFieldCompiled = true;
-
+                        /* this condition will run for:
+                         *  1. PC view in STUDIO mode
+                         *  2. Mobile/tablet view in RUN mode
+                         */
+                        if (CONSTANTS.isRunMode) {
+                            if (Utils.isMobile()) {
+                                if (!columnDef.mobileDisplay) {
+                                    return;
+                                }
+                            } else {
+                                if (!columnDef.pcDisplay) {
+                                    return;
+                                }
+                            }
+                        }
                         template = LiveWidgetUtils.getTemplate(columnDef, index, "form");
                         element.html(template);
                         $compile(element.contents())(parentIsolateScope);

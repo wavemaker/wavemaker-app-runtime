@@ -57,7 +57,7 @@ WM.module('wm.widgets.dialog')
                         scope.content = element.find('[data-identifier=dialog-content]').isolateScope() || {};
                         //Update the title and iconclass for the old login dialogs based on the parent container property set
                         if (attrs.title && !scope.header.caption) {
-                            scope.header.caption = attrs.title;
+                            scope.header.title = attrs.title;
                         }
                         if (attrs.iconclass && !scope.header.iconclass) {
                             scope.header.iconclass = attrs.iconclass;
