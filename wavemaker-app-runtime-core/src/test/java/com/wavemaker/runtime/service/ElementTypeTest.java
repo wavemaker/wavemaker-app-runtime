@@ -18,21 +18,24 @@ package com.wavemaker.runtime.service;
 import java.util.Arrays;
 import java.util.List;
 
+import com.wavemaker.infra.WMTestUtils;
 import org.springframework.util.ClassUtils;
 
-import com.wavemaker.infra.WMTestCase;
+
 import com.wavemaker.studio.common.util.SpringUtils;
 import com.wavemaker.studio.json.type.FieldDefinition;
 import com.wavemaker.studio.json.type.ObjectTypeDefinition;
 import com.wavemaker.studio.json.type.OperationEnumeration;
 import com.wavemaker.studio.json.type.TypeDefinition;
+import org.testng.Assert;
+import static org.testng.Assert.*;
 
 /**
  * @author Matt Small
  */
-public class ElementTypeTest extends WMTestCase {
+public class ElementTypeTest {
 
-    @Override
+
     public void setUp() throws Exception {
         SpringUtils.initSpringConfig();
     }
@@ -45,17 +48,17 @@ public class ElementTypeTest extends WMTestCase {
 
         for (ElementType prop : et.getProperties()) {
             if (prop.getName().equals("stringList")) {
-                assertEquals("java.lang.String", prop.getJavaType());
+             assertEquals("java.lang.String", prop.getJavaType());
                 assertTrue(prop.isList());
                 prop.setRequire(Arrays.asList(OperationEnumeration.read, OperationEnumeration.update, OperationEnumeration.delete));
                 prop.setExclude(Arrays.asList(OperationEnumeration.insert));
                 prop.setNoChange(Arrays.asList(OperationEnumeration.update));
             } else if (prop.getName().equals("intVal")) {
-                assertEquals("int", prop.getJavaType());
-                assertFalse(prop.isList());
+              assertEquals("int", prop.getJavaType());
+              assertFalse(prop.isList());
                 prop.setSupportsQuickData(true);
             } else if (prop.getName().equals("stringArray")) {
-                assertEquals("java.lang.String", prop.getJavaType());
+               assertEquals("java.lang.String", prop.getJavaType());
                 assertTrue(prop.isList());
             } else if (prop.getName().equals("name")) {
                 continue;
@@ -67,12 +70,12 @@ public class ElementTypeTest extends WMTestCase {
         // and test fd conversion
         FieldDefinition fd = et.toFieldDefinition();
         assertEquals(0, fd.getDimensions());
-        assertNotNull(fd.getTypeDefinition());
+       assertNotNull(fd.getTypeDefinition());
 
         TypeDefinition td = fd.getTypeDefinition();
-        assertEquals(et.getJavaType(), td.getTypeName());
+       assertEquals(et.getJavaType(), td.getTypeName());
 
-        assertTrue(td instanceof ObjectTypeDefinition);
+       assertTrue(td instanceof ObjectTypeDefinition);
         ObjectTypeDefinition otd = (ObjectTypeDefinition) td;
         assertEquals(et.getProperties().size(), otd.getFields().size());
 
@@ -98,12 +101,12 @@ public class ElementTypeTest extends WMTestCase {
         FieldDefinition fd = et.toFieldDefinition();
         assertEquals("foo.bar.Baz", fd.getTypeDefinition().getTypeName());
 
-        assertTrue(fd.getTypeDefinition() instanceof ObjectTypeDefinition);
+       assertTrue(fd.getTypeDefinition() instanceof ObjectTypeDefinition);
         ObjectTypeDefinition otd = (ObjectTypeDefinition) fd.getTypeDefinition();
 
         assertEquals(1, otd.getFields().size());
         FieldDefinition nestedFD = otd.getFields().values().iterator().next();
-        assertEquals("int", nestedFD.getTypeDefinition().getTypeName());
+       assertEquals("int", nestedFD.getTypeDefinition().getTypeName());
         assertTrue(nestedFD.getDimensions() > 0);
     }
 
@@ -112,24 +115,24 @@ public class ElementTypeTest extends WMTestCase {
         assertNotNull(field);
         assertNotNull(field.getTypeDefinition());
 
-        assertEquals(prop.isList() ? 1 : 0, field.getDimensions());
-        assertEquals(prop.isAllowNull(), field.isAllowNull());
-        assertEquals(prop.getName(), field.getName());
+       assertEquals(prop.isList() ? 1 : 0, field.getDimensions());
+       assertEquals(prop.isAllowNull(), field.isAllowNull());
+       assertEquals(prop.getName(), field.getName());
 
         assertEquals(prop.isSupportsQuickData(), field.getTypeDefinition().isLiveService());
         assertEquals(prop.getJavaType(), field.getTypeDefinition().getTypeName());
 
-        assertEquals(prop.getExclude().size(), field.getExclude().size());
+       assertEquals(prop.getExclude().size(), field.getExclude().size());
         assertEquals(prop.getRequire().size(), field.getRequire().size());
         assertEquals(prop.getNoChange().size(), field.getNoChange().size());
         for (int i = 0; i < prop.getExclude().size(); i++) {
             assertEquals(prop.getExclude().get(i), field.getExclude().get(i));
         }
         for (int i = 0; i < prop.getNoChange().size(); i++) {
-            assertEquals(prop.getNoChange().get(i), field.getNoChange().get(i));
+          assertEquals(prop.getNoChange().get(i), field.getNoChange().get(i));
         }
         for (int i = 0; i < prop.getRequire().size(); i++) {
-            assertEquals(prop.getRequire().get(i), field.getRequire().get(i));
+          assertEquals(prop.getRequire().get(i), field.getRequire().get(i));
         }
     }
 

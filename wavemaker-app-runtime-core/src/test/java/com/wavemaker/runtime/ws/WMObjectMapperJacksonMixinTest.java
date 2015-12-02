@@ -3,7 +3,7 @@ package com.wavemaker.runtime.ws;
 import java.io.IOException;
 
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.junit.Assert;
+
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.wavemaker.runtime.WMObjectMapper;
 import com.wavemaker.runtime.rest.model.RestResponseModule;
+import org.testng.annotations.Test;
+import static org.testng.Assert.*;
 
 /**
  * Created to test Jackson mixin for BasicClientCookie.
@@ -22,7 +24,7 @@ public class WMObjectMapperJacksonMixinTest {
     public static final String NAME = "sample";
     public static final String VALUE = "sampl1234";
 
-    @org.junit.Test
+    @Test
     public void test() throws IOException {
         final BasicClientCookie origCookie = new BasicClientCookie(NAME,
                 VALUE);
@@ -34,7 +36,7 @@ public class WMObjectMapperJacksonMixinTest {
         String wrt = writer.withType(BasicClientCookie.class).writeValueAsString(origCookie);
         final BasicClientCookie cookie = reader.withType(BasicClientCookie.class).readValue(wrt);
 
-        Assert.assertEquals(origCookie.getName(), cookie.getName());
-        Assert.assertEquals(origCookie.getValue(), cookie.getValue());
+        assertEquals(origCookie.getName(), cookie.getName());
+        assertEquals(origCookie.getValue(), cookie.getValue());
     }
 }

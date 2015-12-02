@@ -38,15 +38,6 @@ public class DataServiceUtils {
                     th = e.getRootCause();
                 }
             }
-            if (SQLGrammarException.class.isAssignableFrom(th.getClass())) {
-//                SQLGrammarException s = (SQLGrammarException) th;
-//                if (s.getSQLException() != null) {
-//                    th = s.getSQLException();
-//                } else if (s.getCause() != null) {
-//                    th = s.getCause();
-//                }
-            }
-
             if (th instanceof RuntimeException) {
                 return (RuntimeException) th;
             } else {
