@@ -208,6 +208,9 @@ $.widget('wm.datagrid', {
             if (value.selected) {
                 headerClasses += ' info';
             }
+            if (field === 'checkbox' || field === 'radio') {
+                headerClasses += ' grid-col-small';
+            }
             htm += '<th data-col-id="' + id + '" data-col-field="' + field + '" class="' + headerClasses + '" title="' + headerLabel + '" style="text-align: ' +
                 value.textAlignment + ';"';
             if (isUndefined(value.resizable) || value.resizable) {
