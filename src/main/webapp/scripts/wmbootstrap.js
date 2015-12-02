@@ -478,6 +478,8 @@ Application
                         pageReadyDeregister();
                     });
                 }
-                $rs.$emit('application-ready');
+                AppManager.isDeviceReady().then(function () {
+                    $rs.$emit('application-ready')
+                });
             }
         ]);
