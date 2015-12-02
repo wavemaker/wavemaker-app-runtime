@@ -385,7 +385,8 @@ WM.module('wm.widgets.base', [])
 
                         /* Number properties */
                         "minvalue": {"type": "number", "bindable": "in-bound"},
-                        "maxvalue": {"type": "number", "bindable": "in-bound"}
+                        "maxvalue": {"type": "number", "bindable": "in-bound"},
+                        "step": {"type": "number", "show": false}
                     },
 
                     "wm.currency": {

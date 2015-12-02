@@ -30,6 +30,7 @@ WM.module('wm.widgets.form')
             case 'type':
                 scope.widgetProps.datavalue.type = (newVal === 'number' || newVal === 'date') ? newVal : 'string';
                 scope.widgetProps.accept.show = newVal === 'file';
+                scope.widgetProps.step.show = newVal === 'number';
                 break;
             }
         }
