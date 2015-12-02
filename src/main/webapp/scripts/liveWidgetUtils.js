@@ -154,6 +154,39 @@ WM.module('wm.widgets.live')
             }
             /**
              * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getFieldTypeWidgetTypesMap
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * return the widget types for liveFilter and liveForm .
+             */
+            function getFieldTypeWidgetTypesMap() {
+                var fieldTypeWidgetTypeMap = {
+                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider'],
+                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider'],
+                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
+                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
+                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
+                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
+                    'byte'       : ['text', 'number', 'select', 'checkboxset', 'radioset'],
+                    'string'     : ['text', 'number',  'textarea', 'password', 'richText', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp'],
+                    'character'  : ['text', 'number',  'textarea', 'password', 'richText', 'select', 'checkboxset', 'radioset'],
+                    'text'       : ['text', 'number',  'textarea', 'password', 'richText', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp'],
+                    'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset'],
+                    'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset'],
+                    'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset'],
+                    'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset'],
+                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select'],
+                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number'],
+                    'clob'       : ['text', 'number', 'select', 'textarea', 'richText'],
+                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richText'],
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richText', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp']
+                };
+                return fieldTypeWidgetTypeMap;
+            }
+            /**
+             * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getColumnDef
              * @methodOf wm.widgets.live.LiveWidgetUtils
              * @function
@@ -162,10 +195,14 @@ WM.module('wm.widgets.live')
              * return the common properties to liveFilter and liveForm .
              */
             function getColumnDef(attrs) {
+                var widgetType = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0];
                 return {
                     'displayName'     : attrs.displayName || attrs.caption,
+                    'pcDisplay'       : WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === "1" || attrs.pcDisplay === "true") : true,
+                    'mobileDisplay'   : WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === "1" || attrs.mobileDisplay === "true") : true,
                     'show'            : (attrs.show === '1' || attrs.show === 'true'),
                     'type'            : attrs.type || 'text',
+                    'widget'          : widgetType, /*Widget type support for older projects*/
                     'primaryKey'      : attrs.primaryKey === 'true' || attrs.primaryKey === true,
                     'generator'       : attrs.generator,
                     'readonly'        : attrs.readonly === 'true' || attrs.readonly === true,
@@ -222,58 +259,6 @@ WM.module('wm.widgets.live')
                     'action'        :   attrs.action,
                     'accessroles'   :   attrs.accessroles || ''
                 };
-            }
-            function getFieldTypeWidgetTypesMap(type) {
-                var fieldTypeWidgetTypeMap;
-                switch (type) {
-                case 'LIVEFORM':
-                    fieldTypeWidgetTypeMap = {
-                        'integer'    : ['Number', 'Text', 'Slider', 'Select', 'Radioset', 'Rating'],
-                        'big_integer': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                        'short'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                        'byte'       : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                        'date'       : ['Date', 'Text', 'Select', 'Radioset'],
-                        'boolean'    : ['Checkbox', 'Text', 'Select', 'Radioset', 'Toggle'],
-                        'list'       : ['Select', 'Radioset', 'Text', 'Datalist'],
-                        'float'      : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                        'big_decimal': ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                        'double'     : ['Number', 'Text', 'Slider', 'Select', 'Radioset'],
-                        'string'     : ['Text', 'Textarea', 'Password', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                        'character'  : ['Text', 'Textarea', 'RichText', 'Select', 'Radioset'],
-                        'text'       : ['Textarea', 'Text', 'RichText', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp'],
-                        'clob'       : ['Textarea', 'Text', 'RichText'],
-                        'blob'       : ['Upload', 'Textarea', 'Text', 'RichText'],
-                        'time'       : ['Time', 'Text', 'Select', 'Radioset'],
-                        'timestamp'  : ['Timestamp', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
-                        'datetime'   : ['Datetime', 'Text', 'Date', 'Time', 'Select', 'Radioset'],
-                        'custom'     : ['Text', 'Textarea', 'Password', 'RichText', 'Checkbox', 'Number', 'Slider', 'Select', 'Radioset', 'Date', 'Time', 'Timestamp']
-                    };
-                    break;
-                case 'LIVEFILTER':
-                    fieldTypeWidgetTypeMap = {
-                        'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
-                        'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
-                        'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
-                        'byte'       : ['text', 'number', 'select', 'checkboxset', 'radioset'],
-                        'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset'],
-                        'boolean'    : ['checkbox', 'radioset', 'toggle'],
-                        'list'       : ['text', 'number', 'select'],
-                        'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
-                        'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
-                        'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating'],
-                        'string'     : ['text', 'number', 'select', 'checkboxset', 'radioset'],
-                        'character'  : ['text', 'number', 'select', 'checkboxset', 'radioset'],
-                        'text'       : ['text', 'number', 'select', 'checkboxset', 'radioset'],
-                        'clob'       : ['text', 'number', 'select'],
-                        'blob'       : ['text', 'number', 'select'],
-                        'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset'],
-                        'timestamp'  : ['text', 'number', 'select'],
-                        'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset'],
-                        'custom'     : ['text', 'number', 'select', 'checkboxset', 'radioset', 'rating']
-                    };
-                    break;
-                }
-                return fieldTypeWidgetTypeMap;
             }
 
             /*Returns step attribute value based on input type*/
@@ -465,19 +450,19 @@ WM.module('wm.widgets.live')
              * return template based on widgetType for liveFilter and liveForm.
              */
             function getTemplate(fieldDef, index, liveType) {
-                var template = '', fieldTypeWidgetTypeMap, widgetType;
+                var template = '',
+                    widgetType,
+                    fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap();
                 if (liveType === 'form') {
                     //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
                     if (fieldDef.readonly && fieldDef.generator === 'identity') {
                         fieldDef.placeholder = fieldDef.placeholder || '';
                     }
-                    //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
-                    fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap('LIVEFORM');
-                    widgetType = (fieldDef.widgetType || fieldTypeWidgetTypeMap[fieldDef.type][0]).toLowerCase();
                 } else if (liveType === 'filter') {
                     fieldDef.placeholder = fieldDef.minPlaceholder || '';
-                    widgetType = fieldDef.widget.toLowerCase();
                 }
+                //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
+                widgetType = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
                     '<wm-label class="' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3') + '" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
@@ -601,7 +586,9 @@ WM.module('wm.widgets.live')
                             'maxvalue':     '',
                             'isRelated':    fieldObj.isRelated,
                             'readonly':     fieldObj.isPrimaryKey,
-                            'required':     fieldObj.notNull === 'true' || fieldObj.notNull === true
+                            'required':     fieldObj.notNull === 'true' || fieldObj.notNull === true,
+                            'pcDisplay'         :   true,
+                            'mobileDisplay'     :   true
                         };
                         if (fieldObj.defaultValue) {
                             column.defaultValue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
