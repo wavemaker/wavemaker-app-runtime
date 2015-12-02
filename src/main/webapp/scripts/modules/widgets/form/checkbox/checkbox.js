@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
         */
         $templateCache.put('template/widget/form/checkbox.html',
             '<div class="app-checkbox checkbox" data-ng-class="{\'app-toggle\' : (type === \'toggle\')}" init-widget has-model data-ng-show="show" title="{{hint}}" role="input">' +
-                '<label data-ng-class="{\'disabled\':disabled,\'unchecked\': (_model_=== uncheckedvalue || _model_ === false)}" apply-styles>' +
+                '<label data-ng-class="{\'disabled\':disabled,\'unchecked\': (_model_=== uncheckedvalue || _model_ === false)}" apply-styles role="button">' +
                     '<input type="checkbox" ' +
                         ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                         ' data-ng-readonly="readonly" ' +

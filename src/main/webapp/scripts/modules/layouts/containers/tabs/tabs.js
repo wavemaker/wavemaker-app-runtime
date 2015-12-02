@@ -8,7 +8,7 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabs directive */
         $templateCache.put('template/layout/container/tabs.html',
-                '<div class="app-tabs clearfix" init-widget data-ng-show="show" apply-styles="container">' +
+                '<div class="app-tabs clearfix" init-widget data-ng-show="show" apply-styles="container" tabindex="-1">' +
                     '<ul class="nav nav-tabs" data-ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
                     '<div class="tab-content" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
                 '</div>'
@@ -20,13 +20,13 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabheader directive */
         $templateCache.put('template/layout/container/tab-header.html',
-            '<li class="tab-header" data-ng-class="{active: tab.isActive, disabled: tab.disabled}" data-ng-show="tab.show" data-tab-id="{{tab.widgetid}}" data-ng-click="tab.select()"  hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);" init-widget>' +
-                '<a wmtransclude apply-styles="container"></a>' +
+            '<li class="tab-header" data-ng-class="{active: tab.isActive, disabled: tab.disabled}" data-ng-show="tab.show" data-tab-id="{{tab.widgetid}}" data-ng-click="tab.select()"  hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);" init-widget role="tab" tabindex="-1">' +
+                '<a href="javascript:void(0);" wmtransclude apply-styles="container" role="button" tabindex="0"></a>' +
             '</li>');
 
         /* define the template for the tabcontent directive */
         $templateCache.put('template/layout/container/tab-content.html',
-            '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget apply-styles></div>');
+            '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget apply-styles  tabindex="0"></div>');
 
     }])
     .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope) {
