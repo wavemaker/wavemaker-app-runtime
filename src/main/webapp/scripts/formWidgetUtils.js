@@ -439,7 +439,7 @@ WM.module('wm.widgets.form')
             function getProxyExcludeDates(excludeDates) {
                 var dates,
                     proxyExcludeDates = [];
-                dates = WM.isString(excludeDates) ? excludeDates.split(',') : excludeDates;
+                dates = WM.isString(excludeDates) ? excludeDates.split(',') : (WM.isArray(excludeDates) ? excludeDates : [excludeDates]);
                 dates = dates.map(function (date) {
                     if (WM.isDate(date)) {
                         return date;

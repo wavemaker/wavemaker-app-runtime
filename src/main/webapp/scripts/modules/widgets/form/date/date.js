@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/date.html',
             '<div class="app-date input-group" init-widget has-model data-ng-show="show" role="input" apply-styles>' +
-                '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} date-disabled="excludeDays(date) || excludeDates(date)" ' +
+                '<input class="form-control app-textbox app-dateinput" datepicker-popup={{datepattern}} date-disabled="excludeDays(date, mode) || excludeDates(date, mode)" ' +
                     ' title="{{hint}}" ' +
                     ' min-date=mindate max-date=maxdate is-open=isOpen' +
                     ' data-ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
@@ -193,11 +193,11 @@ WM.module('wm.widgets.form')
                             }
                         });
 
-                        scope.excludeDays = function (date) {
-                            return _.includes(attrs.excludedays, date.getDay());
+                        scope.excludeDays = function (date, mode) {
+                            return mode === 'day' && _.includes(attrs.excludedays, date.getDay());
                         };
-                        scope.excludeDates = function (date) {
-                            return _.includes(scope.proxyExcludeDates, Date.parse(date));
+                        scope.excludeDates = function (date, mode) {
+                            return mode === 'day' && _.includes(scope.proxyExcludeDates, Date.parse(date));
                         };
 
                         /*set the default value*/
