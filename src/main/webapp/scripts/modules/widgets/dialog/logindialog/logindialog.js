@@ -68,7 +68,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmLogindialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "SecurityService", "BaseService", "Utils", "CONSTANTS", function ($templateCache, PropertiesFactory, WidgetUtilService, SecurityService, BaseService, Utils, CONSTANTS) {
+    }]).directive('wmLogindialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "SecurityService", "BaseService", "Utils", "CONSTANTS", '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, SecurityService, BaseService, Utils, CONSTANTS, $window) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.logindialog", ["wm.base"]);
         return {
@@ -100,6 +100,7 @@ WM.module('wm.widgets.dialog')
                                     /*setting the received redirect url for the logged-in user's landing page configuration to the
                                     * current scope to be propogated to the common login dialog success handler*/
                                     scope.redirectUrl = response && response.url ? response.url : 'index.html';
+                                    $window.location = scope.redirectUrl;
                                     scope.onSuccess({$event: event, $scope: scope});
                                     scope.$root.$emit("update-loggedin-user");
                                     BaseService.executeErrorCallStack();
