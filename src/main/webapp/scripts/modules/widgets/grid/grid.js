@@ -1696,7 +1696,7 @@ WM.module('wm.widgets.grid')
                         }
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
                             if (columnDef.widgetType === 'image') {
-                                columnDef.customExpression = '<img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
+                                columnDef.customExpression = '<img width="48px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
                             } else {
                                 columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 glyphicon glyphicon-file"></i></a>';
                             }
@@ -1964,7 +1964,7 @@ WM.module('wm.widgets.grid')
                                 switch (widgetType) {
                                 case 'image':
                                     if (column.type === 'blob') {
-                                        column.customExpression = '<img width="48px" height="28px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
+                                        column.customExpression = '<img width="48px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
                                     }
                                     column.customExpression = '<img data-ng-src="' + val + '" alt="' + val + '"/>';
                                     break;
