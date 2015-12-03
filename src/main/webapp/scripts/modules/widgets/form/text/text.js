@@ -13,6 +13,7 @@ WM.module('wm.widgets.form')
                 ' data-ng-disabled="disabled" ' +
                 ' data-ng-show="show" ' +
                 ' pattern="{{regexp}}"' +
+                ' accesskey="{{shortcutkey}}"' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</input>'
             );

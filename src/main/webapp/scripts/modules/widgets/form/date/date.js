@@ -14,6 +14,7 @@ WM.module('wm.widgets.form')
                     ' data-ng-required="required" ' +
                     ' data-ng-disabled="disabled" ' +
                     ' show-weeks={{showweeks}} ' +
+                    ' accesskey="{{shortcutkey}}"' +
                     ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</input>' +
                 /*Holder for the model for submitting values in a form*/

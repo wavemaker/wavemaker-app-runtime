@@ -13,6 +13,7 @@ WM.module('wm.widgets.form')
                         ' data-ng-readonly="readonly" ' +
                         ' data-ng-required="required" ' +
                         ' data-ng-disabled="disabled" ' +
+                        ' accesskey="{{shortcutkey}}"' +
                         ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + /* private method defined in this scope */
                     '/>' +
                     '<span class="caption">{{caption || "&nbsp;"}}</span>' +

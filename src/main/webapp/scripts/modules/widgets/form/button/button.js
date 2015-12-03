@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
 
         $templateCache.put('template/widget/form/button.html',
-            '<button class="btn app-button" init-widget title="{{hint}}" apply-styles data-ng-disabled="disabled" data-ng-show="show" role="input">' +
+            '<button class="btn app-button" init-widget title="{{hint}}" apply-styles data-ng-disabled="disabled" data-ng-show="show" role="input" accesskey="{{shortcutkey}}">' +
                 '<img data-identifier="img" class="button-image-icon" data-ng-src="{{iconsrc}}"  data-ng-if="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                 '<i class="app-icon {{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin, fontSize:iconwidth}" data-ng-if="showicon"></i> ' +
                 '<span class="btn-caption"></span>' +

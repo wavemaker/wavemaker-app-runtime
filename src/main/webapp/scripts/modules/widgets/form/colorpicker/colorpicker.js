@@ -15,6 +15,7 @@ WM.module('wm.widgets.form')
                 ' data-ng-required="required"' +
                 ' data-ng-model="_model_"' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})"' +
+                ' accesskey="{{shortcutkey}}"' +
                 '><span class="input-group-addon" data-ng-style="{backgroundColor:_model_}">&nbsp;</span></div>');
     }])
     /*Colorpicker widget directive definition*/

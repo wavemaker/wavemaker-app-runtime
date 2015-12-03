@@ -31,12 +31,14 @@ WM.module('wm.widgets.basic')
                 ' }">' +
                     '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}" ' +
                         'data-ng-model="query"' +
+                        ' accesskey="{{shortcutkey}}"' +
                         'typeahead="item[displaylabel] for item in itemList | filter:{\'{{searchkey}}\':$viewValue} | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
                     '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfStrings\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}"' +
                         'data-ng-model="query"' +
+                        ' accesskey="{{shortcutkey}}"' +
                         'typeahead="item for item in itemList | filter:$viewValue | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +

@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
                 '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown role="input" tabindex="-1">' +
-                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles tabindex="{{tabindex}}">' +
+                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles tabindex="{{tabindex}}" accesskey="{{shortcutkey}}">' +
                     '<i class="{{iconclass}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/anchormenu.html',
                 '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown role="input" tabindex="-1">' +
-                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles><i class="{{iconclass}}" tabindex="{{tabindex}}"></i>' +
+                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles accesskey="{{shortcutkey}}"><i class="{{iconclass}}" tabindex="{{tabindex}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
