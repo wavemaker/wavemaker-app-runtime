@@ -12,9 +12,9 @@ WM.module('wm.widgets.basic')
                 '"alert-warning":messageType.isWarning, ' +
                 '"alert-info":messageType.isInfo, ' +
                 '"alert-info alert-loading":messageType.isLoading}\' ' +
-                '><i class="icon"></i>' +
+                '><i title="{{type}} Alert" class="icon"></i>' +
                 '<span ng-bind-html="caption"></span>' +
-                '<i class="close" data-ng-hide="hideclose">&times;</i>' +
+                '<button title="Close" class="btn-transparent close" data-ng-hide="hideclose">&times;</button>' +
             '</p>'
             );
     }])

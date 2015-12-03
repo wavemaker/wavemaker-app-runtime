@@ -29,13 +29,13 @@ WM.module('wm.widgets.basic')
                     ' wordBreak: wordbreak, ' +
                     ' zIndex: zindex' +
                 ' }">' +
-                    '<input data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}" ' +
+                    '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}" ' +
                         'data-ng-model="query"' +
                         'typeahead="item[displaylabel] for item in itemList | filter:{\'{{searchkey}}\':$viewValue} | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
-                    '<input data-ng-if="dataSetType === \'listOfStrings\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}"' +
+                    '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfStrings\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}"' +
                         'data-ng-model="query"' +
                         'typeahead="item for item in itemList | filter:$viewValue | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
@@ -43,7 +43,7 @@ WM.module('wm.widgets.basic')
                     '>' +
                 '<span class="input-group-addon" data-ng-if="dataSetType === \'listOfObjects\' || dataSetType === \'listOfStrings\'" >' +
                     '<form data-ng-submit="onSubmit({$event: $event, $scope: this})" >' +
-                        '<button class="app-search-button glyphicon glyphicon-search" type="submit" ' +
+                        '<button title="Search" class="app-search-button glyphicon glyphicon-search" type="submit" ' +
                             'data-ng-click="onTypeAheadSelect($event, $item, $model, $label)"' +
                         '></button>' +
                     '</form>' +

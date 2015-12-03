@@ -10,11 +10,11 @@ WM.module('wm.widgets.form')
             $templateCache.put('template/widget/form/switch.html',
                 '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles role="input">' +
                     '<div class="btn-group btn-group-justified">' +
-                        '<a href="javascript:void(0);" role="button" class="btn btn-default" data-ng-disabled="disabled" ' +
+                        '<a title="{{opt[displayfield || \'label\']}}" href="javascript:void(0);" role="button" class="btn btn-default" data-ng-disabled="disabled" ' +
                             ' data-ng-repeat="opt in options track by $index" data-ng-class="{\'selected\': selected.index === $index}"' +
                             ' data-ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</a>' +
                     '</div>' +
-                    '<span class="btn btn-primary app-switch-overlay switch-handle" data-ng-style="{\'width\': btnwidth + \'%\'}">{{options[selected.index][displayfield || "label"] || _model_}}</span>' +
+                    '<span title="{{_model_}}" class="btn btn-primary app-switch-overlay switch-handle" data-ng-style="{\'width\': btnwidth + \'%\'}">{{options[selected.index][displayfield || "label"] || _model_}}</span>' +
                     '<input type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
                 '</div>'
                 );

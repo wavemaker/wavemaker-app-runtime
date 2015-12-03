@@ -107,6 +107,7 @@ WM.module('wm.widgets.base', [])
                 "properties": {
                     "wm.base": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
+                        "hint": {"type": "string", "bindable": "in-bound"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "class": {"type": "string", "pattern": classRegex},
                         "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
@@ -166,7 +167,6 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.base.editors.abstracteditors": {
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "required": {"type": "boolean"},
                         "tabindex": {"type": "string", "value":"0"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -239,7 +239,6 @@ WM.module('wm.widgets.base', [])
 
                     "wm.html": {
                         "content": {"type": "string", "bindable": "in-out-bound", "widget": "textarea"},
-                        "hint": {"type": "string", "bindable": "in-out-bound"},
                         "autoscroll": {"type": "boolean"},
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },
@@ -253,13 +252,11 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.iframe": {
                         "iframesrc": {"type": "string", "bindable": "in-bound", "widget": "string"},
-                        "hint": {"type": "string", "bindable": "in-out-bound"},
                         "width": {"type": "string", "value": '300px', "pattern": dimensionRegex},
                         "height": {"type": "string", "value": '150px', "pattern": dimensionRegex},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all"}
                     },
                     "wm.button": {
-                        "hint": {"type": "string", "bindable": "in-out-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
@@ -311,11 +308,9 @@ WM.module('wm.widgets.base', [])
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.buttongroup": {
-                        "hint": {"type": "string", "bindable": "in-out-bound"},
                         "vertical": {"type": "boolean"}
                     },
                     "wm.switch": {
-                        "hint": {"type": "string", "bindable": "in-out-bound"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "datavalue": {"type": "string, object", "bindable": "in-out-bound", "widget": "string"},
@@ -507,7 +502,6 @@ WM.module('wm.widgets.base', [])
                         "minutestep": {"type": "number", "value": 15},
                         "outputformat": {"value": "HH:mm:ss", "type": "list", "options": [], "widget": "timepatterns"},
                         "ismeridian": {"type": "boolean", "value": true},
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "required": {"type": "boolean"},
                         "datavalue": {"type": "time, date, string, number", "widget": "string", "bindable": "in-out-bound", hint: "HH:mm"},
                         "timestamp": {"type": "time, date, string, number", "widget": "string", "show": "false", "bindable": "out-bound"},
@@ -542,7 +536,6 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.composite": {
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "captionposition": {"type": "list", "options": ["left", "right", "top"]},
                         "required": {"type": "boolean"},
                         "margin": {"type": "string", "widget": "box"},
@@ -584,7 +577,6 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256}
                     },
                     "wm.radioset": {
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value":"0"},
                         "disabled": {"type": "boolean", "value": false},
                         "readonly": {"type": "boolean", "value": false},
@@ -627,7 +619,6 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.slider": {
-                        "hint": {"type": "string", "bindable": "in-out-bound"},
                         "readonly": {"type": "boolean", "value": false},
                         "disabled": {"type": "boolean", "value": false},
                         "minvalue": {"type": "number", "bindable": "in-out-bound"},
@@ -647,7 +638,6 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256}
                     },
                     "wm.checkboxset": {
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value":"0"},
                         "disabled": {"type": "boolean", "value": false},
                         "readonly": {"type": "boolean", "value": false},
@@ -691,7 +681,6 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.label": {
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "caption": {"type": "date, string, number", "widget": "string", "value": "Label", "bindable": "in-out-bound", "maxlength": 256},
                         "required": {"type": "boolean"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
@@ -699,7 +688,6 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.picture": {
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "picturesource": {"type": "string", "value": "resources/images/imagelists/default-image.png", "bindable": "in-out-bound"},
                         "pictureaspect": {"type": "list", "options": ["Both", "H", "None", "V"], "value": "None"},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
@@ -727,7 +715,6 @@ WM.module('wm.widgets.base', [])
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "hint": {"type": "string", "bindable": "in-bound"},
                         "tabindex": {"type": "string", "value":"0"}
                     },
                     "wm.dialog.dialogheader": {
@@ -809,6 +796,8 @@ WM.module('wm.widgets.base', [])
                     },
 
                     'wm.layouts': {
+
+                        "hint": {"type": "string", "bindable": "in-bound"},
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "class": {"type": "string", "pattern": classRegex},
                         "border": {"type": "string", "widget": "box"},
@@ -1217,7 +1206,6 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "hyperlink": {"type": "string", "bindable": "in-out-bound"},
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "target": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_self", "widget": "datalist"},
                         "tabindex": {"type": "string", "value":"0"},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
@@ -1237,7 +1225,6 @@ WM.module('wm.widgets.base', [])
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
                         "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value":"0"},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
                         "wordbreak": {"type": "list", "options": ["break-word", "normal"]},
@@ -1513,7 +1500,6 @@ WM.module('wm.widgets.base', [])
                         "content": {"type": "list", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"}
                     },
                     "wm.video": {
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "mp4format": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "oggformat": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "webmformat": {"type": "string", "value": "", "bindable": "in-out-bound"},
@@ -1530,7 +1516,6 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
                     },
                     "wm.audio": {
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "mp3format": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "controls": {"type": "boolean"},
                         "audiosupportmessage": {"type": "string", "value": "Your browser does not support the audio tag."},
@@ -1542,7 +1527,6 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
                     },
                     "wm.progress": {
-                        "hint": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "minvalue": {"type": "number", "value": 0, "bindable": "in-bound"},
                         "maxvalue": {"type": "number", "value": 100, "bindable": "in-bound"},
                         "datavalue": {"type": "number, string, array", "value": 30, "bindable": "in-out-bound", "widget": "string"},
