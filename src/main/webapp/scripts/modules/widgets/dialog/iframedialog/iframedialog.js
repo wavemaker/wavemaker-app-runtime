@@ -8,7 +8,7 @@ WM.module('wm.widgets.dialog')
             '<div class="app-dialog modal-dialog app-iframe-dialog" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
                 '<wm-dialogheader iconclass="{{iconclass}}" closable="{{closable}}"  iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" title="{{title}}"></wm-dialogheader>' +
                 '<div class="app-dialog-body modal-body" data-ng-style="{height:bodyHeight}">' +
-                    '<wm-iframe iframesrc="{{iframeurl}}" wm-widget-overlay height="100%" width="100%"></wm-iframe>' +
+                    '<wm-iframe iframesrc="{{iframeurl}}" wm-widget-overlay height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
                 '</div>' +
                 '<div class="app-dialog-footer modal-footer">' +
                     '<wm-button class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
