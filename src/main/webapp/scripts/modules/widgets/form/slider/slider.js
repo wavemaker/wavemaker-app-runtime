@@ -11,6 +11,7 @@ WM.module('wm.widgets.form')
                     '<input class="range-input" type="range" title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
                        ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                        ' data-ng-disabled="disabled"' +
+                       ' accesskey="{{shortcutkey}}"' +
                        ' data-ng-change="_onChange({$event: $event, $scope: this})" />' + /* private method defined in this scope */
                     '<div data-ng-show="readonly || disabled" class="readonly-wrapper"></div>' +
                 '</div>'

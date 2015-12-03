@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
 
         $templateCache.put('template/widget/basic/popover.html',
             '<div init-widget page-container class="app-popover {{showPopover ? \'open\' : \'\'}}" tabindex="-1">' +
-                '<a  href="javascript:void(0);" data-identifier="popover" class="app-popover-link" data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" apply-styles="shell">' +
+                '<a  href="javascript:void(0);" data-identifier="popover" class="app-popover-link" data-ng-show="show" title="{{hint}}" data-ng-click="showPopover = !showPopover; handlePopoverToggle();" apply-styles="shell" accesskey="{{shortcutkey}}">' +
                     '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}"  data-ng-show="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-show="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +

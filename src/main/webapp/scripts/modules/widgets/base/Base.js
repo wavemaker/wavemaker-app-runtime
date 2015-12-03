@@ -168,7 +168,7 @@ WM.module('wm.widgets.base', [])
                     "wm.base.editors.abstracteditors": {
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
                         "required": {"type": "boolean"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -267,9 +267,10 @@ WM.module('wm.widgets.base', [])
                         "iconposition": {"type": "list", "options": ["left", "top", "right"]},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
                         "type": {"type": "list", "options": ["button", "reset", "submit"], "value" : "button"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
-                        "animation": {"type": "list", "options": animationOptions}
+                        "animation": {"type": "list", "options": animationOptions},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.rating": {
                         "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
@@ -281,7 +282,7 @@ WM.module('wm.widgets.base', [])
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "width": {"type": "string", "pattern": dimensionRegex, "show": false},
                         "height": {"type": "string", "pattern": dimensionRegex, "show": false},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.camera": {
                         "capturetype": {"type": "list", "options": ["IMAGE", "VIDEO"], "value" : "IMAGE"},
@@ -319,7 +320,7 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
                         "displayfield": {"type": "list", "options": [""], "value": ""},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.menu": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
@@ -333,7 +334,8 @@ WM.module('wm.widgets.base', [])
                         "menuposition": {"type": "list", "options": ["", "down,right", "down,left", "up,right", "up,left", "inline"], "value": ""},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "linktarget": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_blank", "widget": "datalist"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "shortcutkey": {"type": "string"}
                     },
 
                     "wm.menu.dataProps": {
@@ -352,7 +354,7 @@ WM.module('wm.widgets.base', [])
                         "nodelabel": {"type": "list", "widget": "list"},
                         "nodeicon": {"type": "list", "widget": "list"},
                         "nodechildren": {"type": "list", "widget": "list"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
 
                     "wm.text": {
@@ -380,7 +382,8 @@ WM.module('wm.widgets.base', [])
                         /* Number properties */
                         "minvalue": {"type": "number", "bindable": "in-bound"},
                         "maxvalue": {"type": "number", "bindable": "in-bound"},
-                        "step": {"type": "number", "show": false}
+                        "step": {"type": "number", "show": false},
+                        "shortcutkey": {"type": "string"}
                     },
 
                     "wm.currency": {
@@ -415,12 +418,13 @@ WM.module('wm.widgets.base', [])
                         "misc": {"type": "string"},
                         "opacity": {"type": "string", "widget": "slider"},
                         "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
-                        "zindex": {"type": "string", "pattern": zindexRegex}
+                        "zindex": {"type": "string", "pattern": zindexRegex},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.base.datetime": {
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         /* ---- styles ----*/
                         "border": {"type": "string", "widget": "box"},
                         "borderunit": {"type": "string", "options": ["em", "px"], "value": "px", "widget": "icons_radio"},
@@ -471,7 +475,8 @@ WM.module('wm.widgets.base', [])
                         "timestamp": {"type": "date, datetime, timestamp, string, number", "widget": "string", "show": "false", "bindable": "out-bound"},
                         "excludedays": {"type": "selectall", "options": daysOptions, "displaytype": "block", "value": " "},
                         "excludedates": {"type": "datetime, timestamp, date, array, string", "bindable": "in-bound", "widget": "string", "hint": "yyyy-MM-dd"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.calendar": {
                         "backgroundcolor": {"type": "string", "widget": "color"},
@@ -491,7 +496,7 @@ WM.module('wm.widgets.base', [])
                         "onEventresize": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.time": {
                         "placeholder": {"type": "string", "value": "Select time"},
@@ -505,7 +510,8 @@ WM.module('wm.widgets.base', [])
                         "required": {"type": "boolean"},
                         "datavalue": {"type": "time, date, string, number", "widget": "string", "bindable": "in-out-bound", hint: "HH:mm"},
                         "timestamp": {"type": "time, date, string, number", "widget": "string", "show": "false", "bindable": "out-bound"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time"},
@@ -525,7 +531,8 @@ WM.module('wm.widgets.base', [])
                         "timestamp": {"type": "timestamp, date, time, datetime, string, number", "widget": "string", "show": "false", "bindable": "out-bound"},
                         "excludedays": {"type": "selectall", "options": daysOptions, "displaytype": "block", "value": " "},
                         "excludedates": {"type": "datetime, timestamp, date, array, string", "bindable": "in-bound", "widget": "string", "hint": "yyyy-MM-dd"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
@@ -574,10 +581,11 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "checkedvalue": {"type": "string"},
                         "radiogroup": {"type": "string"},
-                        "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256}
+                        "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.radioset": {
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "disabled": {"type": "boolean", "value": false},
                         "readonly": {"type": "boolean", "value": false},
                         "layout":  {"type": "list", "options": ["", "inline", "stacked"]},
@@ -607,7 +615,8 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
                         "placeholder": {"type": "string", "value": "Select Color"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "shortcutkey": {"type": "string"}
                     },
 
                     "wm.inputcolorpicker": {
@@ -626,7 +635,8 @@ WM.module('wm.widgets.base', [])
                         "step": {"type": "number"},
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "shortcutkey": {"type": "string"}
                     },
 
                     "wm.checkbox": {
@@ -635,10 +645,11 @@ WM.module('wm.widgets.base', [])
                         "uncheckedvalue": {"type": "string"},
                         "scopedatavalue": {"type": "string"},
                         "startchecked": {"type": "boolean"},
-                        "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256}
+                        "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.checkboxset": {
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "disabled": {"type": "boolean", "value": false},
                         "readonly": {"type": "boolean", "value": false},
                         "layout":  {"type": "list", "options": ["", "inline", "stacked"]},
@@ -677,7 +688,8 @@ WM.module('wm.widgets.base', [])
                         "restrictvalues": {"type": "boolean", "value": true},
                         "disabled": {"value": false},
                         "multiple": {"type": "boolean", "value": false},
-                        "placeholder": {"type": "string", "value": ""}
+                        "placeholder": {"type": "string", "value": ""},
+                        "shortcutkey": {"type": "string"}
                     },
 
                     "wm.label": {
@@ -691,7 +703,7 @@ WM.module('wm.widgets.base', [])
                         "picturesource": {"type": "string", "value": "resources/images/imagelists/default-image.png", "bindable": "in-out-bound"},
                         "pictureaspect": {"type": "list", "options": ["Both", "H", "None", "V"], "value": "None"},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "shape":  {"type": "list", "options": ["", "rounded", "circle", "thumbnail"]},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions}
@@ -705,7 +717,8 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Place your text"},
                         "maxchars": {"type": "number"},
                         "updateon": {"type": "list", "value": "blur", "widget": "updateon"},
-                        "updatedelay": {"type": "number", "value": 0}
+                        "updatedelay": {"type": "number", "value": 0},
+                        "shortcutkey": {"type": "string"}
                     },
 
                     "wm.basicdialog": {
@@ -715,7 +728,7 @@ WM.module('wm.widgets.base', [])
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onOpened": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.dialog.dialogheader": {
                         "caption": {"type": "string", "maxlength": 256, "bindable": "in-bound"},
@@ -1072,7 +1085,7 @@ WM.module('wm.widgets.base', [])
                         "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left"},
                         "layout": {"type": "list", "options": ["inline", "One Column", "Two Column", "Three Column", "Four Column"], "value": "One Column"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     'wm.layouts.liveform': {
                         "title": {"type": "string",  "bindable": "in-bound"},
@@ -1103,14 +1116,14 @@ WM.module('wm.widgets.base', [])
                         "onResult": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.layouts.segmentedcontrol" : {
                         "onBeforeSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "width": {"show": false},
                         "height": {"pattern": dimensionRegex},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.layouts.segmentcontent" : {
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
@@ -1165,7 +1178,7 @@ WM.module('wm.widgets.base', [])
                         /* Styles */
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex},
                         "class": {"type": "string", "pattern": classRegex},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     'wm.livegrid': {
                         'formlayout': {"type": "list", "options": ["inline", "dialog"], "value": "inline"}
@@ -1177,7 +1190,7 @@ WM.module('wm.widgets.base', [])
                         "contenttype": {"type": "list", "options": ["all", "audio", "image", "video"], "value": "all"},
                         "fileuploadtitle": {"type": "string", "value": "Drop your files here to start uploading."},
                         "fileuploadmessage": {"type": "string", "value": "You can also browse for files"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "uploadedFiles": {"type": "array", "bindable": "in-out-bound"},
                         "selectedFiles": {"type": "array, file", "bindable": "in-out-bound", "show" : "false"},
                         "mode": {"type": "list", "options": ["Upload", "Select"], "value": "Upload"},
@@ -1207,7 +1220,7 @@ WM.module('wm.widgets.base', [])
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "hyperlink": {"type": "string", "bindable": "in-out-bound"},
                         "target": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_self", "widget": "datalist"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
                         "wordbreak": {"type": "list", "options": ["break-word", "normal"]},
                         "misc": {"type": "string"},
@@ -1215,7 +1228,8 @@ WM.module('wm.widgets.base', [])
                         "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                         "zindex": {"type": "string", "pattern": zindexRegex},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'},
-                        "animation": {"type": "list", "options": animationOptions}
+                        "animation": {"type": "list", "options": animationOptions},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.popover": {
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
@@ -1225,7 +1239,7 @@ WM.module('wm.widgets.base', [])
                         "iconmargin": {"type": "string", "pattern": dimensionRegex},
                         "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
                         "wordbreak": {"type": "list", "options": ["break-word", "normal"]},
                         "misc": {"type": "string"},
@@ -1238,7 +1252,8 @@ WM.module('wm.widgets.base', [])
                         "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                         "zindex": {"type": "string", "pattern": zindexRegex},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'},
-                        "animation": {"type": "list", "options": animationOptions}
+                        "animation": {"type": "list", "options": animationOptions},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.prefabs": {
                         "margin": {"type": "string", "widget": "box"},
@@ -1249,7 +1264,7 @@ WM.module('wm.widgets.base', [])
                         "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDestroy": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
 
                     "wm.accordion": {
@@ -1257,7 +1272,7 @@ WM.module('wm.widgets.base', [])
                         "closeothers": { "type": "boolean", "value": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
 
                     "wm.accordionpane": {
@@ -1270,7 +1285,7 @@ WM.module('wm.widgets.base', [])
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "isdefaultpane": {"type": "boolean", "bindable": "in-bound"}
                     },
 
@@ -1281,7 +1296,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", value: "", "bindable": "in-out-bound"},
                         "showpreview": {"type": "boolean", "value": false},
                         "placeholder": {"type": "string"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "scopedatavalue": {"type": "string"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
@@ -1305,7 +1320,7 @@ WM.module('wm.widgets.base', [])
                         "heading": {"type": "string", "value": "Tab Title", "bindable": "in-bound"},
                         "paneicon": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "pattern": classRegex},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.carousel" : {
                         "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
@@ -1339,14 +1354,14 @@ WM.module('wm.widgets.base', [])
                         "listclass": {"type": "string", "pattern": classRegex},
                         "navigation": {"type": "list", "options": ["None", "Basic", "Advanced", "Scroll"], "value": "None"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "thumbnailurl": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
                         "mediaurl": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
                         "layout": {"type": "list", "options": ["Single-row", "Multi-row"], "value": "Single-row"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.livefilter": {
                         "title": {"type": "string"},
@@ -1364,7 +1379,7 @@ WM.module('wm.widgets.base', [])
                         "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},
@@ -1380,9 +1395,10 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Search"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
-                        "width": {"type": "string", "value": '100%', "pattern": dimensionRegex}
+                        "width": {"type": "string", "value": '100%', "pattern": dimensionRegex},
+                        "shortcutkey": {"type": "string"}
                     },
                     "wm.chart": {
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},
@@ -1480,7 +1496,7 @@ WM.module('wm.widgets.base', [])
                         "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string"},
                         "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.datanavigator": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -1489,7 +1505,7 @@ WM.module('wm.widgets.base', [])
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
                         "onEnterKeyPress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.login": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
@@ -1512,7 +1528,7 @@ WM.module('wm.widgets.base', [])
                         "loop": {"type": "boolean"},
                         "muted": {"type": "boolean"},
                         "videopreload": {"type": "list", "options": ["none", "metadata", "auto"], "value": "none"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
                     },
                     "wm.audio": {
@@ -1523,7 +1539,7 @@ WM.module('wm.widgets.base', [])
                         "loop": {"type": "boolean"},
                         "muted": {"type": "boolean", "value": false},
                         "audiopreload": {"type": "list", "options": ["none", "metadata", "auto"], "value": "none"},
-                        "tabindex": {"type": "string", "value":"0"},
+                        "tabindex": {"type": "string", "value": "0"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'}
                     },
                     "wm.progress": {
@@ -1557,7 +1573,7 @@ WM.module('wm.widgets.base', [])
                         "opacity": {"type": "string", "widget": "slider"},
                         "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                         "zindex": {"type": "string", "pattern": zindexRegex},
-                        "tabindex": {"type": "string", "value":"0"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.template": {
                         "header": {"type": "list", "options": [], "widget": "templates-list", value: "_nocontent"},
@@ -1600,7 +1616,7 @@ WM.module('wm.widgets.base', [])
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "errormessage", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                     "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton", "searchbuttoniconclass",
-                    "searchbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype", "loadmode", "loaddelay", "searchplaceholder"], "parent": "properties"},
+                    "searchbuttonlabel", "morebuttoniconclass", "morebuttonlabel", "menuposition", "capturetype", "loadmode", "loaddelay", "searchplaceholder", "shortcutkey"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["insertrow", "deleterow", "updaterow", "shownavigation", "infscroll", "showrecordcount", "multiselect", "radioselect", "enablesort", "gridsearch", "searchlabel", "showrowindex", "gridfirstrowselect", "selectfirstitem"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},
                 {"name": "graphics", "properties": ["imagelist", "imageindex", "paneicon", "iconclass", "iconsize", "iconurl", "iconwidth", "iconheight", "iconmargin", "iconposition"], "parent": "properties"},

@@ -13,6 +13,7 @@ WM.module('wm.widgets.form')
                 ' data-ng-readonly="readonly" ' +
                 ' data-ng-disabled="disabled"' +
                 ' data-ng-required="required"' +
+                ' accesskey="{{shortcutkey}}"' +
                 ' data-ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
                 ' data-ng-options="option.key as $root.locale[option.value] || option.value for option in selectOptions">' +
                 '<option selected value="">{{placeholder}}</option>' +

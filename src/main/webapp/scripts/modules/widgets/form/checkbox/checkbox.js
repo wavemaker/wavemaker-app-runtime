@@ -18,6 +18,7 @@ WM.module('wm.widgets.form')
                         ' data-ng-readonly="readonly" ' +
                         ' data-ng-required="required"' +
                         ' data-ng-disabled="disabled" ' +
+                        ' accesskey="{{shortcutkey}}"' +
                         ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                     '</input>' +
                 '<span class="caption">{{caption || "&nbsp;"}}</span>' +
