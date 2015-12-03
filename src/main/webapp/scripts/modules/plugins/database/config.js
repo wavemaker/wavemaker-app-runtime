@@ -297,6 +297,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "POSTGRESQL_DB_TYPE": "PostgreSQL",
     "ORACLE_DB_TYPE": "Oracle",
     "SQL_SERVER_DB_TYPE": "SQLServer",
+    "MYSQL_CLOUD_HOST": "{WM_CLOUD_MYSQL_HOST}",
     "LOGIN": {
         "SAAS_MYSQL_CLOUD": {
             "USERNAME": "root",
