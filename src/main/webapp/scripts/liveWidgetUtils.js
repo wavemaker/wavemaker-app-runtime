@@ -170,18 +170,18 @@ WM.module('wm.widgets.live')
                     'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
                     'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
                     'byte'       : ['text', 'number', 'select', 'checkboxset', 'radioset'],
-                    'string'     : ['text', 'number',  'textarea', 'password', 'richText', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp'],
-                    'character'  : ['text', 'number',  'textarea', 'password', 'richText', 'select', 'checkboxset', 'radioset'],
-                    'text'       : ['text', 'number',  'textarea', 'password', 'richText', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp'],
+                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp'],
+                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset'],
+                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp'],
                     'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset'],
                     'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset'],
                     'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset'],
                     'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset'],
                     'boolean'    : ['checkbox', 'radioset', 'toggle', 'select'],
                     'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number'],
-                    'clob'       : ['text', 'number', 'select', 'textarea', 'richText'],
-                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richText'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richText', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp']
+                    'clob'       : ['text', 'number', 'select', 'textarea', 'richtext'],
+                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext'],
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp']
                 };
                 return fieldTypeWidgetTypeMap;
             }
@@ -448,6 +448,7 @@ WM.module('wm.widgets.live')
                 }
                 //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
                 widgetType = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
+                widgetType = widgetType.toLowerCase();
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
                     '<wm-label class="' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3') + '" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
