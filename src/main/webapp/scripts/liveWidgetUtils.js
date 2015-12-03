@@ -195,50 +195,38 @@ WM.module('wm.widgets.live')
              * return the common properties to liveFilter and liveForm .
              */
             function getColumnDef(attrs) {
-                var widgetType = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0];
-                return {
-                    'displayName'     : attrs.displayName || attrs.caption,
-                    'pcDisplay'       : WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === "1" || attrs.pcDisplay === "true") : true,
-                    'mobileDisplay'   : WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === "1" || attrs.mobileDisplay === "true") : true,
-                    'show'            : (attrs.show === '1' || attrs.show === 'true'),
-                    'type'            : attrs.type || 'text',
-                    'widget'          : widgetType, /*Widget type support for older projects*/
-                    'primaryKey'      : attrs.primaryKey === 'true' || attrs.primaryKey === true,
-                    'generator'       : attrs.generator,
-                    'readonly'        : attrs.readonly === 'true' || attrs.readonly === true,
-                    'multiple'        : attrs.multiple === 'true' || attrs.multiple === true,
-                    'datepattern'     : attrs.datepattern,
-                    'defaultValue'    : attrs.defaultValue,
-                    'class'           : attrs.class || '',
-                    'ngclass'         : attrs.ngclass,
-                    'width'           : attrs.width,
-                    'height'          : attrs.height,
-                    'textAlignment'   : attrs.textAlignment,
-                    'backgroundColor' : attrs.backgroundColor,
-                    'required'        : attrs.required === 'true' || attrs.required === true,
-                    'placeholder'     : attrs.placeholder,
-                    'excludedays'     : attrs.excludedays,
-                    'excludedates'    : attrs.excludedates,
-                    'step'            : attrs.step,
-                    'maxvalue'        : attrs.maxvalue,
-                    'minvalue'        : attrs.minvalue,
-                    'ismeridian'      : attrs.ismeridian,
-                    'layout'          : attrs.layout,
-                    'accessroles'     : attrs.accessroles,
-                    'outputformat'    : attrs.outputformat,
-                    'displayvalue'    : attrs.displayvalue,
-                    'datafield'       : attrs.datafield,
-                    'displayfield'    : attrs.displayfield,
-                    'onChange'        : attrs.onChange,
-                    'onBlur'          : attrs.onBlur,
-                    'onFocus'         : attrs.onFocus,
-                    'onMouseleave'    : attrs.onMouseleave,
-                    'onMouseenter'    : attrs.onMouseenter,
-                    'onClick'         : attrs.onClick,
-                    'onKeypress'      : attrs.onKeypress,
-                    'onKeyup'         : attrs.onKeyup,
-                    'onKeydown'       : attrs.onKeydown
-                };
+                var columnDef = {},
+                    widgetType = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0],
+                    excludeKeys = ['$attr', '$$element', 'name', 'initWidget', 'role', 'widgetid', 'wmResizable', 'wmWidgetDrag', 'value'];
+                /*Loop through the attrs keys and set it to columndef*/
+                _.each(attrs, function (value, key) {
+                    /*Exclude special type of keys*/
+                    if (!_.includes(excludeKeys, key)) {
+                        columnDef[key] = value;
+                    }
+                });
+                /*Handle special cases properties*/
+                columnDef.displayName = attrs.displayName || attrs.caption;
+                columnDef.pcDisplay = WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === "1" || attrs.pcDisplay === "true") : true;
+                columnDef.mobileDisplay = WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === "1" || attrs.mobileDisplay === "true") : true;
+                columnDef.show = (attrs.show === '1' || attrs.show === 'true');
+                columnDef.type = attrs.type || 'text';
+                columnDef.widget = widgetType; /*Widget type support for older projects*/
+                columnDef.primaryKey = attrs.primaryKey === 'true' || attrs.primaryKey === true;
+                columnDef.readonly = attrs.readonly === 'true' || attrs.readonly === true;
+                columnDef.multiple = attrs.multiple === 'true' || attrs.multiple === true;
+                columnDef.defaultValue = attrs.defaultValue;
+                columnDef.class = attrs.class || '';
+                columnDef.required = attrs.required === 'true' || attrs.required === true;
+                /*Set the text type based on the widget*/
+                if (columnDef.widget === 'text') {
+                    columnDef.inputtype = attrs.inputtype || 'text';
+                } else if (columnDef.widget === 'number') {
+                    columnDef.inputtype = 'number';
+                } else if (columnDef.widget === 'password') {
+                    columnDef.inputtype = 'password';
+                }
+                return columnDef;
             }
             /**
              * @ngdoc function
@@ -275,6 +263,7 @@ WM.module('wm.widgets.live')
                 if (type === 'integer') {
                     return 1;
                 }
+                return undefined;
             }
 
             function getCaptionByWidget(type, index) {
@@ -301,8 +290,12 @@ WM.module('wm.widgets.live')
                     dateTypes = ['date', 'datetime'],
                     textTypes = ['text', 'password', 'textarea'],
                     excludeMaxValTypes = ['rating'],
-                    evtTypes = getEventTypes();
+                    evtTypes = getEventTypes(),
+                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'minPlaceholder', 'maxPlaceholder', 'readonly', 'inputtype'];
                 Object.keys(fieldDef).forEach(function (field) {
+                    if (_.includes(excludeProperties, field)) {
+                        return;
+                    }
                     if (fieldDef[field]) {
                         if (field === 'key' || field === 'field') {
                             fields += ' name="{{formFields[' + index + '].' + field + '}}"';
@@ -310,8 +303,6 @@ WM.module('wm.widgets.live')
                             fields += ' displayexpression="{{formFields[' + index + '].' + field + '}}"';
                         } else if (field === 'permitted') {
                             fields += ' accept="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (field === 'caption' || field === 'type' || field === 'show' || field === 'placeholder' || field === 'minPlaceholder' || field === 'maxPlaceholder' || field === 'readonly') {
-                            // Avoid show attribute to support edit mode using isUpdateMode.
                         } else if (_.includes(dateTypes, type) && (field === 'minvalue' || field === 'maxvalue')) {
                             //For date, datetime, timestamp special cases
                             if (field === 'minvalue') {
@@ -389,12 +380,6 @@ WM.module('wm.widgets.live')
                 return getDefaultTemplate('richtexteditor', fieldDef, index, '', '', 'Enter value');
             }
 
-            /*Returns password template */
-            function getPasswordTemplate(fieldDef, index) {
-                var additionalFields = ' type="password"';
-                return getDefaultTemplate('text', fieldDef, index, '', '', 'Enter value', additionalFields);
-            }
-
             /*Returns slider template */
             function getSliderTemplate(fieldDef, index) {
                 var additionalFields,
@@ -428,10 +413,10 @@ WM.module('wm.widgets.live')
             }
 
             /*Returns text template */
-            function getTextNumberTemplate(fieldDef, index, type) {
+            function getTextNumberTemplate(fieldDef, index) {
                 var stepVal, additionalFields;
                 stepVal = fieldDef.step || getStepValue(fieldDef.type);
-                additionalFields = 'type="' + type + '" ' + (stepVal ? (' step="' + stepVal + '"') : "");
+                additionalFields = 'type="{{formFields[' + index + '].inputtype}}" ' + (stepVal ? (' step="' + stepVal + '"') : "");
                 return getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value', additionalFields);
             }
 
@@ -472,7 +457,8 @@ WM.module('wm.widgets.live')
                 switch (widgetType) {
                 case 'number':
                 case 'text':
-                    template += getTextNumberTemplate(fieldDef, index, widgetType);
+                case 'password':
+                    template += getTextNumberTemplate(fieldDef, index);
                     break;
                 case 'select':
                     template += getSelectTemplate(fieldDef, index);
@@ -489,9 +475,6 @@ WM.module('wm.widgets.live')
                     break;
                 case 'slider':
                     template += getSliderTemplate(fieldDef, index);
-                    break;
-                case 'password':
-                    template += getPasswordTemplate(fieldDef, index);
                     break;
                 case 'richtext':
                     template += getRichtextTemplate(fieldDef, index);
@@ -533,7 +516,7 @@ WM.module('wm.widgets.live')
             * return the array of custom actions/events defined by the user.
             *
             * @param {string} actions actions/events of a button
-            * @param {array} definedActions Predefined actions for the widget
+            * @param {object} definedActions Predefined actions for the widget
             */
             function getCustomItems(actions, definedActions) {
                 var customItems = [];
@@ -654,7 +637,7 @@ WM.module('wm.widgets.live')
              * @description
              * returns the auto incremented event string based on the already existing events
              *
-             * @param {array} fields array of the columns/ buttons
+             * @param {object} fields array of the columns/ buttons
              * @param {string} key key where the field name is stored in object
              * @param {string} prefix name for the event/ action
              */

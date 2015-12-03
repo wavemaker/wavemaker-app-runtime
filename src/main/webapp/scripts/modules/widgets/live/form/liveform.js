@@ -494,7 +494,7 @@ WM.module('wm.widgets.live')
                     formFields.forEach(function (field) {
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
-                        if (((field.widget && $scope.isDateTimeWidgets[field.widget.toLowerCase()]) || $scope.isDateTimeWidgets[field.type])) {
+                        if (((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type])) {
                             if (field.value && !isNaN(field.value)) {
                                 field.value = Number(field.value);
                             }
