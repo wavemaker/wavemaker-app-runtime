@@ -718,7 +718,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string", "value":"0"}
                     },
                     "wm.dialog.dialogheader": {
-                        "title": {"type": "string", "maxlength": 256, "bindable": "in-bound"},
+                        "caption": {"type": "string", "maxlength": 256, "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconwidth": {"type": "string", "pattern": dimensionRegex},
                         "iconheight": {"type": "string", "pattern": dimensionRegex},
