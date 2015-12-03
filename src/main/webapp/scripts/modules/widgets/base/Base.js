@@ -323,6 +323,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.menu": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
+                        "hint": {"type": "string", "bindable": "in-bound"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
                         "scopedataset": {"type": "string"},
