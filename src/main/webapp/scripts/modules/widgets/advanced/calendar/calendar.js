@@ -149,7 +149,7 @@ WM.module('wm.widgets.advanced')
                             }
                             function onSelectProxy(start, end, jsEvent, view) {
                                 scope.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
-                                scope.onSelect({$start: start.getTime(), $end: end.getTime(), $view: view});
+                                scope.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view});
                             }
                             scope.calendarOptions = {
                                 calendar: {
