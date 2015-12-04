@@ -1,14 +1,13 @@
 package com.wavemaker.runtime.data.util;
 
-import static org.testng.Assert.*;
-
-import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.testng.annotations.Test;
 
-import javax.validation.constraints.Null;
-import java.io.FileNotFoundException;
-import java.nio.file.FileSystemNotFoundException;
+import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Created by anitha on 2/11/15.
@@ -46,7 +45,53 @@ public class DataServiceUtilsTest {
         assertFalse(DataServiceUtils.isDML(query3));
         assertTrue(DataServiceUtils.isDML(query4));
         assertTrue(DataServiceUtils.isDML(query5));
+    }
 
+    @Test
+    public void testReplaceMysqlHostPattern() throws Exception {
+        String testUrl = "jdbc:mysql://{WM_CLOUD_MYSQL_HOST}/a1?useUnicode=yes&characterEncoding=UTF-8" +
+                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
 
+        String expectedUrl = "jdbc:mysql://localhost:3306/a1?useUnicode=yes&characterEncoding=UTF-8" +
+                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+
+        final String result = DataServiceUtils.replaceMySqlCloudToken(testUrl, "localhost:3306");
+        assertEquals(expectedUrl, result);
+    }
+
+    @Test
+    public void testReplaceMysqlHostPatternWithPort() throws Exception {
+        String testUrl = "jdbc:mysql://{WM_CLOUD_MYSQL_HOST}:320/a1?useUnicode=yes&characterEncoding=UTF-8" +
+                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+
+        String expectedUrl = "jdbc:mysql://localhost:3306/a1?useUnicode=yes&characterEncoding=UTF-8" +
+                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+
+        final String result = DataServiceUtils.replaceMySqlCloudToken(testUrl, "localhost:3306");
+        assertEquals(expectedUrl, result);
+    }
+
+    @Test
+    public void testReplaceMysqlHostPatternNegative() throws Exception {
+        String testUrl = "jdbc:mysql://randomhost:3306/a1?useUnicode=yes&characterEncoding=UTF-8" +
+                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+
+        String expectedUrl = "jdbc:mysql://randomhost:3306/a1?useUnicode=yes&characterEncoding=UTF-8" +
+                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+
+        final String result = DataServiceUtils.replaceMySqlCloudToken(testUrl, "localhost:3306");
+        assertEquals(expectedUrl, result);
+    }
+
+    @Test
+    public void testReplaceMysqlHostPatternNegative2() throws Exception {
+        String testUrl = "jdbc:mysql://randomhost/a1?useUnicode=yes&characterEncoding=UTF-8" +
+                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+
+        String expectedUrl = "jdbc:mysql://randomhost/a1?useUnicode=yes&characterEncoding=UTF-8" +
+                "&zeroDateTimeBehavior=convertToNull&createDatabaseIfNotExist=true";
+
+        final String result = DataServiceUtils.replaceMySqlCloudToken(testUrl, "localhost:3306");
+        assertEquals(expectedUrl, result);
     }
 }

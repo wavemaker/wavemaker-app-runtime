@@ -21,6 +21,7 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.util.DataServiceConstants;
+import com.wavemaker.runtime.data.util.DataServiceUtils;
 import com.wavemaker.studio.common.util.StringUtils;
 import com.wavemaker.studio.common.util.SystemUtils;
 
@@ -48,8 +49,7 @@ public class WMPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigur
         }
 
         if(value.contains(DataServiceConstants.WM_MY_SQL_CLOUD_HOST_TOKEN)) {
-            value = StringUtils.replacePlainStr(value, DataServiceConstants.WM_MY_SQL_CLOUD_HOST_TOKEN,
-                    DataServiceConstants.WM_MY_SQL_CLOUD_HOST);
+            value = DataServiceUtils.replaceMySqlCloudToken(value, DataServiceConstants.WM_MY_SQL_CLOUD_HOST);
         }
 
         if(value.contains(DataServiceConstants.WM_MY_SQL_CLOUD_USER_NAME_TOKEN)) {

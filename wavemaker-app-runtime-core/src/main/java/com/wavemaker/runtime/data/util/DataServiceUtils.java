@@ -15,7 +15,9 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import org.hibernate.exception.SQLGrammarException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
 import com.wavemaker.runtime.data.exception.DataServiceRuntimeException;
@@ -25,6 +27,9 @@ import com.wavemaker.studio.common.util.SystemUtils;
  * @author Simon Toens
  */
 public class DataServiceUtils {
+
+    private static final String WM_MYSQL_CLOUD_TOKEN_PATTERN_STRING = "\\{WM_CLOUD_MYSQL_HOST\\}(:[\\d]+)?";
+    private static final Pattern WM_MYSQL_CLOUD_TOKEN_PATTERN = Pattern.compile(WM_MYSQL_CLOUD_TOKEN_PATTERN_STRING);
 
     public static RuntimeException unwrap(Throwable th) {
         if (th instanceof DataServiceRuntimeException) {
@@ -51,6 +56,11 @@ public class DataServiceUtils {
         String q = query.trim().toLowerCase();
 
         return q.startsWith("update") || q.startsWith("insert") || q.startsWith("delete") || q.startsWith("alter");
+    }
+
+    public static String replaceMySqlCloudToken(String url, String hostPortString) {
+        final Matcher matcher = WM_MYSQL_CLOUD_TOKEN_PATTERN.matcher(url);
+        return matcher.replaceFirst(hostPortString);
     }
 
     private DataServiceUtils() {
