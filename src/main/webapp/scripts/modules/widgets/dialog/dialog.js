@@ -25,7 +25,7 @@ WM.module('wm.widgets.dialog')
             '</div>'
             );
         $templateCache.put("template/widget/dialog/design.html",
-            '<div class="app-dialog-body modal-body" data-ng-style="{height: height}" data-identifier="dialog-content" init-widget wmtransclude></div>'
+            '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" data-identifier="dialog-content" init-widget wmtransclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog-footer.html",
             '<div data-ng-show="show" class="app-dialog-footer modal-footer" data-identifier="actions" init-widget wmtransclude></div>'

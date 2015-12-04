@@ -51,7 +51,7 @@ WM.module('wm.widgets.live')
                                     '<wm-button type="{{btn.type}}" class="btn-transparent btn-default" data-ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
                                 '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
-                                '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
+                                '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="scrollable-container">' +
                                     template.context.innerHTML +
                                 '</div>' +
                             '</form>';
@@ -60,11 +60,11 @@ WM.module('wm.widgets.live')
                     /*Generate a unique id for the dialog to avoid conflict with multiple dialogs.*/
                     attrs.dialogid = 'liveformdialog-' + attrs.name + '-' + Utils.generateGUId();
                     return '<div data-identifier="liveform" init-widget data-ng-show="show" class="app-liveform liveform-dialog" autocomplete="autocomplete" >' +
-                                '<wm-dialog width="{{dialogWidth}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
+                                '<wm-dialog class="app-liveform-dialog" width="{{dialogWidth}}" name="' + attrs.dialogid + '" title="{{title}}" modal="true" controller="liveFormDialogController">' +
                                     '<wm-dialogheader iconclass="{{iconclass}}"></wm-dialogheader>' +
                                     '<wm-dialogcontent class="noscroll">' +
                                         '<form data-identifier="liveform" role="form" name="' + attrs.name + '" class="app-liveform align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" apply-styles="shell">' +
-                                            '<div class="form-elements" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
+                                            '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
                                                 '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                             '</div>' +
                                             '<div class="basic-btn-grp form-action modal-footer clearfix">' +
@@ -73,7 +73,6 @@ WM.module('wm.widgets.live')
                                         '</form>' +
                                     '</wm-dialogcontent>' +
                                 '</wm-dialog>' +
-                                //'<div ng-transclude></div>' +
                             '</div>';
                 }
                 return '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
@@ -82,7 +81,7 @@ WM.module('wm.widgets.live')
                                 '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
                                 '<span class="form-header-text">{{title}}</span>' +
                             '</h3></div>' +
-                            '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
+                            '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="scrollable-container">' +
                                 '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>'+
                                 template.context.innerHTML +
                             '</div>' +

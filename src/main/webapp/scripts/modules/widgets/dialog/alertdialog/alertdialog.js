@@ -7,7 +7,7 @@ WM.module('wm.widgets.dialog')
         $templateCache.put("template/widget/dialog/alertdialog.html",
             '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
                 '<wm-dialogheader iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
-                '<div class="app-dialog-body modal-body" data-ng-style="{height:bodyHeight}">' +
+                '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
                     '<p class="app-dialog-message text-{{alerttype}}"> {{message}}</p>' +
                 '</div>' +
                 '<div class="app-dialog-footer modal-footer">' +

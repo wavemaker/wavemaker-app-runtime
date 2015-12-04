@@ -8,7 +8,7 @@ WM.module('wm.widgets.dialog')
                 '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}">' +
                     '<div class="modal-content">' +
                         '<wm-dialogheader caption="{{title}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}"></wm-dialogheader>' +
-                        '<div class="app-dialog-body modal-body" data-ng-style="{height:bodyHeight}">' +
+                        '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
                             '<p class="app-dialog-message {{messageclass}}"> {{message}}</p>' +
                         '</div>' +
                         '<div class="app-dialog-footer modal-footer">' +

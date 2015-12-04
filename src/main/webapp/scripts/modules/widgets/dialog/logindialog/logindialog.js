@@ -6,7 +6,7 @@ WM.module('wm.widgets.dialog')
         "use strict";
         $templateCache.put("template/widget/dialog/logindialog.html",
                 '<div class="app-dialog modal-dialog app-login-dialog"  data-ng-style="{width: width}" init-widget data-ng-show="show">' +
-                    '<div class="modal-content" wmtransclude></div>' +
+                    '<div class="modal-content" wmtransclude ></div>' +
                 '</div>'
             );
         $templateCache.put("template/widget/dialog/logindialogcontainer.html", '<div wmtransclude></div>');

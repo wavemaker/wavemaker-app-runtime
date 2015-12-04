@@ -731,7 +731,6 @@ html, body {
 /**dialog body**/
 .app-dialog-body {
   min-height: 100px;
-  overflow-y: auto;
   position: relative;
   &.noscroll {
     overflow: inherit;
@@ -771,7 +770,7 @@ html, body {
 
 /**iframe dialog**/
 .app-iframe-dialog {
-  .app-dialog-body {
+  .app-dialog-body.modal-body {
     padding: 0;
     .app-iframe iframe {
       height: 100%;

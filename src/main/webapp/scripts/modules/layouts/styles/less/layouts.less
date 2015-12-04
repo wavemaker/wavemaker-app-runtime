@@ -329,7 +329,6 @@ body {
   /***********************************Form styles***********************************************************************/
   .app-form, .app-liveform, .app-device-liveform, .app-livefilter {
     position: relative;
-    overflow: inherit;
     border-collapse: separate;
     .app-label {
         overflow-x: hidden;
@@ -426,7 +425,11 @@ body {
       padding: 0 3pt;
     }
   }
-
+  .app-liveform-dialog {
+    .app-dialog-body {
+      padding: 0;
+    }
+  }
   /************** Composite Widget - Caption Position Styles ****************/
   .caption-left, .caption-right {
     > .app-currency, > .app-colorpicker {
