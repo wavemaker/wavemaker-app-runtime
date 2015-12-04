@@ -40,6 +40,7 @@ public class RestRequestInfo {
     private Object requestBody;
     private AuthType authType;
     private Map<String, Object> headers;
+    private Map<String, Object> queryParams;
     private RestResponse sampleRestResponse;
     private boolean redirectEnabled = true;
 
@@ -73,6 +74,14 @@ public class RestRequestInfo {
 
     public void setHeaders(Map<String, Object> headers) {
         this.headers = headers;
+    }
+
+    public Map<String, Object> getQueryParams() {
+        return queryParams;
+    }
+
+    public void setQueryParams(Map<String, Object> queryParams) {
+        this.queryParams = queryParams;
     }
 
     public String getMethod() {
@@ -139,7 +148,8 @@ public class RestRequestInfo {
                 ", method='" + method + '\'' +
                 ", contentType='" + contentType + '\'' +
                 ", requestBody='" + requestBody + '\'' +
-                ", headers=" + headers +
+                ", headers=" + headers + '\'' +
+                ", queryParams=" + queryParams +
                 '}';
     }
 }
