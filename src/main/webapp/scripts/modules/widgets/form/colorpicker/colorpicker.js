@@ -9,7 +9,7 @@ WM.module('wm.widgets.form')
         'use strict';
         /*Assigning the template to an identifier.*/
         $templateCache.put('template/widget/form/colorpicker.html',
-            '<div class="input-group app-colorpicker" data-ng-show="show" init-widget has-model role="input">' +
+            '<div title="{{hint}}" class="input-group app-colorpicker" data-ng-show="show" init-widget has-model role="input">' +
                 '<input colorpicker colorpicker-parent="true" class="form-control app-textbox" ' +
                 ' data-ng-disabled="readonly || disabled"' +
                 ' data-ng-required="required"' +
