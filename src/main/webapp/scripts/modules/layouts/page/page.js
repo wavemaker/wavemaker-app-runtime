@@ -49,7 +49,7 @@ WM.module('wm.layouts.page')
                             }
 
                             if (($routeParams.name === $rootScope.activePageName) && attrs.pagetitle) {
-                                document.title = attrs.pagetitle + ' - ' + $rootScope.project.id;
+                                document.title = attrs.pagetitle;
                             }
                         }
 
