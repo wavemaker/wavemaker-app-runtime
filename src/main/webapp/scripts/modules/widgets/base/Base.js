@@ -6,15 +6,20 @@ WM.module('wm.widgets.base', [])
     .constant('WIDGET_CONSTANTS', {
         EVENTS_OPTIONS: ["No Event", "Javascript", "New ServiceVariable", "New LiveVariable", "New NavigationCall", "New NotificationCall"]
     })
+    /*platform types constant*/
+    .constant('PLATFORM_TYPE', {
+        WEB : 'WEB',
+        MOBILE : 'MOBILE'
+    })
 
     /**
      * @ngdoc service
      * @name wm.widgets.$PropertiesFactory
      * @description
      * The `PropertiesFactory` contains properties of all the widgets in the studio and
-     * provides utility methods for getting a specific widget's property
+     * provides utility methods for getting a specific widget's propertyFORM
      */
-    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'Utils', function (WIDGET_CONSTANTS, CONSTANTS, Utils) {
+    .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'Utils', 'PLATFORM_TYPE', function (WIDGET_CONSTANTS, CONSTANTS, Utils, PLATFORM_TYPE) {
         "use strict";
         /**
          * TODO: fetch the properties from the config-properties.json
@@ -169,9 +174,10 @@ WM.module('wm.widgets.base', [])
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
                         "required": {"type": "boolean"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
                         "onFocus": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
@@ -199,10 +205,12 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.base.events": {
-                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onDoubleTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]}
                     },
 
                     "wm.base.events.touch": {
@@ -592,9 +600,10 @@ WM.module('wm.widgets.base', [])
                         "layout":  {"type": "list", "options": ["", "inline", "stacked"]},
                         /* ---- events ---- */
 
-                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
                         "onFocus": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -657,9 +666,10 @@ WM.module('wm.widgets.base', [])
 
                         /* ---- events ---- */
 
-                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
                         "onFocus": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -979,10 +989,10 @@ WM.module('wm.widgets.base', [])
                         "marginleft": {"type": "string", "pattern": numberRegex},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -998,12 +1008,14 @@ WM.module('wm.widgets.base', [])
                         "marginleft": {"type": "string", "pattern": numberRegex},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onDoubleTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
                         "animation": {"type": "list", "options": animationOptions}
                     },
                     'wm.layouts.tile': {
@@ -1017,12 +1029,14 @@ WM.module('wm.widgets.base', [])
                         "marginleft": {"type": "string", "pattern": numberRegex},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onDblclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onDoubleTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
                         "animation": {"type": "list", "options": animationOptions}
                     },
                     'wm.layouts.footer': {
@@ -1160,7 +1174,8 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "bindable": "in-bound"},
 
                         /* Events */
-                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.WEB]},
+                        "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "platforms": [PLATFORM_TYPE.MOBILE]},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSort": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1632,8 +1647,8 @@ WM.module('wm.widgets.base', [])
                 {"name": "prefablifecycleevents", "properties": ["onLoad", "onDestroy"], "parent": "events"},
                 {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
                 {"name": "mouseevents", "properties": ["onReady", "onClick", "onDblclick", "onDayclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events"},
+                {"name": "touchevents", "properties": ["onTap", "onDoubleTap", "onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
-                {"name": "touchevents", "properties": ["onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onActionsclick", "onBeforeSegmentChange", "onSegmentChange", "onSearch", "onBackbtnclick"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
@@ -1960,7 +1975,10 @@ WM.module('wm.widgets.base', [])
                     'onSwipeleft':      {'name': 'hm-swipe-left',       'value': 'onSwipeleft({$event: $event, $scope: this})'},
                     'onSwiperight':     {'name': 'hm-swipe-right',      'value': 'onSwiperight({$event: $event, $scope: this})'},
                     'onPinchin':        {'name': 'hm-pinch-in',         'value': 'onPinchin({$event: $event, $scope: this})'},
-                    'onPinchout':       {'name': 'hm-pinch-out',        'value': 'onPinchout({$event: $event, $scope: this})'}
+                    'onPinchout':       {'name': 'hm-pinch-out',        'value': 'onPinchout({$event: $event, $scope: this})'},
+                    'onTap':            {'name': 'data-ng-click',       'value': 'onTap({$event: $event, $scope: this})'},
+                    'onDoubleTap':      {'name': 'data-ng-dblclick',    'value': 'onDoubleTap({$event: $event, $scope: this})'}
+
                 },
                 triggerFn,
                 attrsToBeRemoved;
