@@ -197,7 +197,7 @@ WM.module('wm.widgets.live')
             function getColumnDef(attrs) {
                 var columnDef = {},
                     widgetType = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0],
-                    excludeKeys = ['$attr', '$$element', 'name', 'initWidget', 'role', 'widgetid', 'wmResizable', 'wmWidgetDrag', 'value'];
+                    excludeKeys = ['$attr', '$$element', 'name', 'initWidget', 'role', 'widgetid', 'wmResizable', 'wmWidgetDrag', 'value', 'dataset', 'extensions', 'filetype'];
                 /*Loop through the attrs keys and set it to columndef*/
                 _.each(attrs, function (value, key) {
                     /*Exclude special type of keys*/
