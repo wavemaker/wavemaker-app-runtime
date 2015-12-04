@@ -298,10 +298,11 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     "ORACLE_DB_TYPE": "Oracle",
     "SQL_SERVER_DB_TYPE": "SQLServer",
     "MYSQL_CLOUD_HOST": "{WM_CLOUD_MYSQL_HOST}",
+    "MYSQL_CLOUD_DB_TYPE": "MySQL-Cloud",
     "LOGIN": {
         "SAAS_MYSQL_CLOUD": {
-            "USERNAME": "root",
-            "PASSWORD": "cloudjee123"
+            "USERNAME": "{WM_CLOUD_MYSQL_USERNAME}",
+            "PASSWORD": "{WM_CLOUD_MYSQL_PASSWORD}"
         }
     },
     "IDENTITY_GENERATORS" : ['integer', 'short', 'big_integer'],
