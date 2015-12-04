@@ -306,7 +306,7 @@ WM.module('wm.widgets.live')
                         break;
                     case "delete":
                         $scope.toggleMessage(false);
-                        if ($scope.ctrl && $scope.confirmdelete) {
+                        if ($scope.ctrl) {
                             if (!$scope.ctrl.confirmMessage()) {
                                 return;
                             }

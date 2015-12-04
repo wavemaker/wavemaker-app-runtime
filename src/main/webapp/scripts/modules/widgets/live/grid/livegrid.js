@@ -32,7 +32,7 @@ WM.module('wm.widgets.live')
                 scope: {},
                 controller: function ($scope) {
                     this.confirmMessage = function () {
-                        if (!$scope.grid) {
+                        if (!($scope.grid && $scope.grid.confirmdelete)) {
                             return true;
                         }
                         return confirm($scope.grid.confirmdelete);
