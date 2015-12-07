@@ -1446,7 +1446,7 @@ WM.module('wm.widgets.grid')
                         variableObj = element.scope().Variables && element.scope().Variables[variableName];
                         isBoundToSelectedItem = $scope.binddataset.indexOf('selecteditem') !== -1;
                         isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
-                        isBoundToServiceVariableSelectedItem = variableObj.category === 'wm.ServiceVariable';
+                        isBoundToServiceVariableSelectedItem = variableObj && variableObj.category === 'wm.ServiceVariable';
                         if (isBoundToSelectedItemSubset || isBoundToSelectedItem) {
                             if (variableName === null) {
                                 var widgetBindingDetails = fetchReferenceDetails();
