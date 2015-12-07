@@ -1288,7 +1288,7 @@ $.widget('wm.datagrid', {
         sortInfo.direction = direction;
         sortInfo.field = field;
         this.preparedHeaderData[id].sortInfo = {'sorted': true, 'direction': direction};
-        this.options.sortHandler.call(this, this.options.sortInfo, e);
+        this.options.sortHandler.call(this, this.options.sortInfo, e, 'sort');
     },
 
     /* Attaches all event handlers for the table. */
@@ -1367,7 +1367,7 @@ $.widget('wm.datagrid', {
                 'type': type,
                 'event': e
             };
-            self.options.searchHandler.call(self, self.searchObj);
+            self.options.searchHandler.call(self, self.searchObj, e, 'search');
         }
 
         this.element.find('.form-search').remove();
