@@ -6,37 +6,38 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($tc) {
         'use strict';
         $tc.put('template/widget/medialist-design.html',
-                '<div class="app-medialist" init-widget apply-styles="shell">' +
-                    '<div wmtransclude></div>' +
-                '</div>'
-            );
+            '<div class="app-medialist" init-widget apply-styles="shell">' +
+            '<div wmtransclude></div>' +
+            '</div>'
+        );
         $tc.put('template/widget/medialist.html',
-                '<div class="app-medialist" data-ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget>' +
-                    '<ul class="list-unstyled list-inline" wmtransclude></ul>' +
-                    '<div class="app-media-fullscreen modal fade in" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
-                        '<div class="image-container">' +
-                            '<div class="image-container-cell">' +
-                                '<img class="center-block" data-ng-src="{{fieldDefs[selectedMediaIndex][mediaurl]}}">' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="app-media-fullscreen-info-panel">' +
-                            '<span class="pagination-info">{{selectedMediaIndex+1 + "/" + fieldDefs.length}}</span>' +
-                            '<i class="back-btn fa fa-long-arrow-left pull-left" data-ng-click="exitFullScreen()"></i>' +
-                        '</div>' +
-                        '<a class="app-media-fullscreen-nav-control left" data-ng-show="selectedMediaIndex < fieldDefs.length-1" data-ng-click="showNext()">' +
-                            '<i class="glyphicon glyphicon-menu-left"></i>' +
-                        '</a>' +
-                        '<a class="app-media-fullscreen-nav-control right" data-ng-show="selectedMediaIndex >= 1" data-ng-click="showPrev()">' +
-                            '<i class="glyphicon glyphicon-menu-right"></i>' +
-                        '</a>' +
+            '<div class="app-medialist" data-ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget>' +
+                '<ul class="list-unstyled list-inline app-media-thumbnail" wmtransclude></ul>' +
+                    '<div class="app-media-fullscreen" data-ng-show="selectedMediaIndex >= 0" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
+                        '<wm-mobile-navbar on-backbtnclick="exitFullScreen();" show-leftnav="false" backbuttoniconclass="fa fa-chevron-left" title= "{{selectedMediaIndex+1}}/{{fieldDefs.length}}"></wm-mobile-navbar>' +
+                        '<wm-content>' +
+                             '<wm-page-content>' +
+                                '<div class="app-content-column">' +
+                                        '<div class="image-container">' +
+                                            '<img class="center-block" data-ng-src="{{fieldDefs[selectedMediaIndex][mediaurl]}}">' +
+                                                '<a class="app-media-fullscreen-nav-control left" data-ng-show="selectedMediaIndex > 0" data-ng-click="showNext()">' +
+                                                    '<i class="glyphicon glyphicon-menu-left"></i>' +
+                                                '</a>' +
+                                                '<a class="app-media-fullscreen-nav-control right" data-ng-show="selectedMediaIndex < fieldDefs.length-1" data-ng-click="showPrev()">' +
+                                                    '<i class="glyphicon glyphicon-menu-right"></i>' +
+                                                '</a>' +
+                                         '</div>' +
+                                 '</div>' +
+                                '</wm-page-content>' +
+                            '</wm-content>' +
                     '</div>' +
-                '</div>'
+            '</div>'
             );
         $tc.put('template/widget/medialist-template.html',
-                '<div init-widget data-ng-style="{\'width\': width, \'height\': height}" class="app-medialist-template thumbnail">' +
-                    '<img class="thumbnail-image-template" data-ng-src="{{imagesource}}">' +
-                    '<div class="thumbnail-details" wmtransclude></div>' +
-                '</div>'
+            '<div init-widget data-ng-style="{\'width\': width, \'height\': height}" class="app-medialist-template thumbnail">' +
+                '<img class="thumbnail-image-template" data-ng-src="{{imagesource}}">' +
+                '<div class="thumbnail-details" wmtransclude></div>' +
+            '</div>'
             );
 
     }])
@@ -227,17 +228,16 @@ WM.module('wm.layouts.containers')
                 $mediaScope.showFullScreen = function (index) {
                     if (index < $mediaScope.fieldDefs.length) {
                         $is.selectedMediaIndex = index;
-                        $el.find('.app-media-fullscreen').show();
                     }
                 };
                 $is.exitFullScreen = function () {
-                    $el.find('.app-media-fullscreen').hide();
+                    $is.selectedMediaIndex = -1;
                 };
                 $is.showPrev = function () {
-                    $mediaScope.showFullScreen($is.selectedMediaIndex - 1);
+                    $mediaScope.showFullScreen($is.selectedMediaIndex + 1);
                 };
                 $is.showNext = function () {
-                    $mediaScope.showFullScreen($is.selectedMediaIndex + 1);
+                    $mediaScope.showFullScreen($is.selectedMediaIndex - 1);
                 };
                 /* register the property change handler */
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);

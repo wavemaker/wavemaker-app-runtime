@@ -9,7 +9,7 @@ WM.module('wm.layouts.containers')
                     '<nav class="navbar ng-show" ng-show="!showSearchbar">' +
                         '<div class="mobile-navbar-left">' +
                             '<ul class="nav navbar-nav navbar-left">' +
-                                '<li data-ng-if="leftNavPanel != undefined" >' +
+                                '<li data-ng-if="showLeftnav" >' +
                                     '<a data-ng-click="leftNavPanel.toggle();">' +
                                         '<i data-ng-class="leftnavpaneliconclass"></i>' +
                                     '</a>' +
@@ -70,6 +70,9 @@ WM.module('wm.layouts.containers')
                     },
                     'post': function (scope, element, attrs) {
                         scope.leftNavPanel = WM.element(element.closest('.app-page').find('.app-left-panel:first')).isolateScope();
+                        if (scope.leftNavPanel) {
+                            scope.showLeftnav = attrs.showLeftnav !== 'false';
+                        }
                         if (CONSTANTS.isRunMode) {
                             scope.goBack = function ($event) {
                                 if (attrs.onBackbtnclick && scope.onBackbtnclick) {

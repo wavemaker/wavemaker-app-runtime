@@ -1547,10 +1547,18 @@ If the height and width are not specified the video takes the height of the post
   &.singlerow {
     white-space: nowrap;
   }
-
+  .app-media-thumbnail {
+    z-index: 100;
+  }
   .app-media-fullscreen {
-    &.modal{
-      background: @app-media-full-screen-modal-bg-color;
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    .app-mobile-navbar .left-nav-btn{
+      display: none;
     }
     .image-container {
       display: table;
@@ -1577,7 +1585,7 @@ If the height and width are not specified the video takes the height of the post
     }
     .app-media-fullscreen-nav-control{
       position: absolute;
-      top: 50%;
+      top: 10%;
       background-color: @app-media-full-screen-nav-control-bg-color;
       padding: 0.5em 0.6em;
       border-radius: 2em;
