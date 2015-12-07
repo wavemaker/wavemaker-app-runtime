@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/anchor.html',
-                '<a href="javascript:void(0);" data-identifier="anchor" class="app-anchor" init-widget data-ng-show="show" title="{{hint}}" apply-styles role="button" accesskey="{{shortcutkey}}">' +
+                '<a data-identifier="anchor" class="app-anchor" init-widget data-ng-show="show" title="{{hint}}" apply-styles role="button" accesskey="{{shortcutkey}}">' +
                     '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}" data-ng-if="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="app-icon {{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-if="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +
@@ -84,6 +84,9 @@ WM.module('wm.widgets.basic')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        if (!attrs.hyperlink && !attrs.href) {
+                            element.attr('href', 'javascript:void(0)');
+                        }
                     }
                 };
             }
