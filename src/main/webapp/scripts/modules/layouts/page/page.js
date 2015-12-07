@@ -250,13 +250,13 @@ WM.module('wm.layouts.page')
                             if (scope.hasOwnProperty('onPageReady')) {
                                 Utils.triggerFn(scope.onPageReady);
                             }
+                            /* canvasTree will listen for this event and will hide itself upon occurrence of it */
+                            element.on('$destroy', function () {
+                                /* destroy loaded variables */
+                                Variables.unload(attrs.ngController.replace('PageController', ''), scope);
+                                handlers.forEach(Utils.triggerFn);
+                            });
                         }
-                        /* canvasTree will listen for this event and will hide itself upon occurrence of it */
-                        element.on('$destroy', function () {
-                            /* destroy loaded variables */
-                            Variables.unload(attrs.ngController.replace('PageController', ''), scope);
-                            handlers.forEach(Utils.triggerFn);
-                        });
                     }
                 };
             }
