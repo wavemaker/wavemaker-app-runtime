@@ -83,7 +83,6 @@ WM.module('wm.widgets.form')
         }
 
         function _onClick(scope, evt) {
-            evt.stopPropagation();
             scope.isOpen = !scope.isOpen;
             if (scope.onClick) {
                 scope.onClick({$event: evt, $scope: scope});
