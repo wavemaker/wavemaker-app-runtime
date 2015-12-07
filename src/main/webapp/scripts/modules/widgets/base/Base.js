@@ -2567,10 +2567,22 @@ WM.module('wm.widgets.base', [])
                     keys,
                     resetObj;
 
+                // if the type is `shell` and the key is in the SHELL_TYPE_IGNORE_LIST, return
                 if (applyType === 'shell' && _.includes(SHELL_TYPE_IGNORE_LIST, key)) {
                     return;
                 }
 
+                // if the type is `inner-shell` and the key is NOT in the SHELL_TYPE_IGNORE_LIST, return
+                if (applyType === 'inner-shell') {
+                    if (!_.includes(SHELL_TYPE_IGNORE_LIST, key)) {
+                        return;
+                    }
+                    if (key === 'height') {
+                        obj.overflow = nv ? 'auto' : '';
+                    }
+                }
+
+                // if the type is `container` and the key is in the CONTAINER_TYPE_IGNORE_LIST, return
                 if (applyType === 'container' && _.includes(CONTAINER_TYPE_IGNORE_LIST, key)) {
                     return;
                 }
