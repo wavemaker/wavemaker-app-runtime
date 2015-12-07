@@ -5,9 +5,9 @@ WM.module('wm.layouts.containers')
         'use strict';
         $templateCache.put('template/layout/container/form.html',
                 '<form role="form" data-ng-show="show" init-widget class="panel app-form" ng-class="[captionAlignClass, captionPositionClass, formClassName]"' +
-                ' autocomplete="autocomplete" apply-styles="container"' +
+                ' autocomplete="autocomplete" apply-styles="shell"' +
                 ' ><div class="panel-heading" data-ng-if="title"><h4 class="form-header panel-title">{{title}}</h4></div>' +
-                    '<div class="form-body panel-body"  apply-styles="scrollable-container" wmtransclude></div>' +
+                    '<div class="form-body panel-body"  apply-styles="inner-shell" wmtransclude></div>' +
                     '</form>'
             );
     }])

@@ -51,7 +51,7 @@ WM.module('wm.widgets.live')
                                     '<wm-button type="{{btn.type}}" class="btn-transparent btn-default" data-ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
                                 '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
-                                '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="scrollable-container">' +
+                                '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
                                     template.context.innerHTML +
                                 '</div>' +
                             '</form>';
@@ -81,7 +81,7 @@ WM.module('wm.widgets.live')
                                 '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
                                 '<span class="form-header-text">{{title}}</span>' +
                             '</h3></div>' +
-                            '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="scrollable-container">' +
+                            '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
                                 '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>'+
                                 template.context.innerHTML +
                             '</div>' +
