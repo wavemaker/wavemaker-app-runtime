@@ -30,6 +30,8 @@ import java.util.WeakHashMap;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.LRUMap;
 import org.apache.commons.logging.LogFactory;
 import org.hsqldb.DatabaseManager;
 import org.hsqldb.lib.HsqlTimer;
@@ -152,14 +154,8 @@ public class CleanupListener implements ServletContextListener {
             try {
                 Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
                 if (klass != null) {
-                    Object defaultInstance = klass.getMethod("defaultInstance").invoke(null);
-                    Field typeCache = klass.getDeclaredField("_typeCache");
-                    typeCache.setAccessible(true);
-                    Map cache = (Map) typeCache.get(defaultInstance);
-                    if (!cache.isEmpty()) {
-                        logger.info("Attempt to clear typeCache from {} class instance", className);
-                        cache.clear();//TODO instead of clearing full map,should remove only the entries of the current webapp.
-                    }
+                    logger.info("Attempt to clear typeCache from {} class instance", klass);
+                    TypeFactory.defaultInstance().clearCache();
                 }
             } catch (Throwable e) {
                 logger.warn("Failed to Clear TypeCache from {}", className, e);
