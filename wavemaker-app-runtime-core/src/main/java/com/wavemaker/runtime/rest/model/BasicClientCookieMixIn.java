@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Created by ArjunSahasranam on 10/9/15.
  */
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class BasicClientCookieMixIn extends BasicClientCookie {
     @JsonCreator
     public BasicClientCookieMixIn(@JsonProperty("name") final String name, @JsonProperty("value") final String value) {
