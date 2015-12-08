@@ -299,21 +299,20 @@ wm.variables.services.Variables = [
                  * Primary reason for this:
                  * StudioMode: any update to the dataSet or other properties by variable will not reflect in the actual collection
                  * RunMode: The same collection is used by same partials/prefabs appearing twice in a page */
-                self.variableCollection[scope.$id] = WM.copy(self.variableCollection[context]) || {};
+                self.variableCollection[scope.$id] = Utils.getClonedObject(self.variableCollection[context]);
+
                 scope.Variables = self.variableCollection[scope.$id];
 
                 /* extend scope variables with app variables, in studio mode */
                 if (CONSTANTS.isStudioMode && context !== VARIABLE_CONSTANTS.OWNER.APP) {
-                    if (!scope.Variables.hasOwnProperty(name)) {
-                        WM.forEach(self.variableCollection[$rootScope.$id], function (variable, name) {
-                            Object.defineProperty(scope.Variables, name, {
-                                configurable: true,
-                                get: function () {
-                                    return variable;
-                                }
-                            });
+                    WM.forEach(self.variableCollection[$rootScope.$id], function (variable, name) {
+                        Object.defineProperty(scope.Variables, name, {
+                            configurable: true,
+                            get: function () {
+                                return variable;
+                            }
                         });
-                    }
+                    });
                 }
                 WM.forEach(self.variableCollection[scope.$id], function (variable, name) {
                     /* assign variable name to the variable object for later use */
@@ -925,7 +924,7 @@ wm.variables.services.Variables = [
 
                 /* Store variable based on type */
                 varCollectionObj[owner][name] = variableObj;
-                varCollectionObj[scope.$id][name] = WM.copy(variableObj);
+                varCollectionObj[scope.$id][name] = Utils.getClonedObject(variableObj);
                 varCollectionObj[scope.$id][name].name = name;
                 self.studioCopy[owner][name] = varCollectionObj[scope.$id][name];
 
@@ -1351,8 +1350,8 @@ wm.variables.services.Variables = [
              */
             'saveVariables': function (activePageName, success, error, updateValues) {
                 var variables = self.variableCollection,
-                    appVariables = WM.copy(variables[VARIABLE_CONSTANTS.OWNER.APP]),
-                    pageVariables = WM.copy(variables[activePageName]);
+                    appVariables = Utils.getClonedObject(variables[VARIABLE_CONSTANTS.OWNER.APP]),
+                    pageVariables = Utils.getClonedObject(variables[activePageName]);
                 if (activePageName && updateValues) {
                     updateVariableValues(activePageName);
                 }
@@ -1396,7 +1395,7 @@ wm.variables.services.Variables = [
                     return;
                 }
                 var variables = self.variableCollection,
-                    pageVariables = WM.copy(variables[activePageName]);
+                    pageVariables = Utils.getClonedObject(variables[activePageName]);
                 if (updateValues) {
                     updateVariableValues(activePageName);
                 }
@@ -1425,7 +1424,7 @@ wm.variables.services.Variables = [
              */
             'saveAppVariables': function (success, error, updateValues) {
                 var variables = self.variableCollection,
-                    appVariables = WM.copy(variables[VARIABLE_CONSTANTS.OWNER.APP]);
+                    appVariables = Utils.getClonedObject(variables[VARIABLE_CONSTANTS.OWNER.APP]);
 
                 if (updateValues) {
                     updateVariableValues();

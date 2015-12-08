@@ -1510,6 +1510,15 @@ WM.module('wm.utils', [])
             return matchValue && matchValue[1];
         }
 
+        /**
+         * Returns a deep cloned replica of the passed object/array
+         * @param object object/array to clone
+         * @returns a clone of the passed object
+         */
+        function getClonedObject (object) {
+            return _.cloneDeep(object);
+        }
+
         // expose the methods on the service instance.
 
         this.camelCase                  = WM.element.camelCase;
@@ -1607,4 +1616,5 @@ WM.module('wm.utils', [])
         this.getEvaluatedExprValue      = getEvaluatedExprValue;
         this.getProjectResourcePath     = getProjectResourcePath;
         this.getVariableNameFromExpr    = getVariableNameFromExpr;
+        this.getClonedObject            = getClonedObject;
     }]);
