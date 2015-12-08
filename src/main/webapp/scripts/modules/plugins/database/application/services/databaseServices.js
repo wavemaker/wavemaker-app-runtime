@@ -220,7 +220,7 @@ wm.plugins.database.services.DatabaseService = [
                         "dbType": params.dbType,
                         "host": params.host,
                         "port": params.port,
-                        "dbName": params.serviceId
+                        "dbName": params.dbName
                     },
                     urlParams: {
                         "projectID": params.projectID
@@ -294,7 +294,7 @@ wm.plugins.database.services.DatabaseService = [
                         "dbType": params.dbType,
                         "host": params.host,
                         "port": params.port,
-                        "dbName": params.serviceId
+                        "dbName": params.dbName
                     },
                     urlParams: {
                         "projectID": params.projectID
@@ -338,7 +338,7 @@ wm.plugins.database.services.DatabaseService = [
                         "dbType": params.dbType,
                         "host": params.host,
                         "port": params.port,
-                        "dbName": params.serviceId
+                        "dbName": params.dbName
                     },
                     urlParams: {
                         "projectID": params.projectID
