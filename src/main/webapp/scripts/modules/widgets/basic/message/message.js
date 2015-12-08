@@ -5,7 +5,13 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/message.html',
-            '<p class="alert app-message {{messageClass}}" data-ng-show="show" init-widget apply-styles ' +
+            '<p class="alert app-message" data-ng-show="show" init-widget apply-styles ' +
+                'data-ng-class=\'{' +
+                '"alert-success":messageType.isSuccess, ' +
+                '"alert-danger":messageType.isError, ' +
+                '"alert-warning":messageType.isWarning, ' +
+                '"alert-info":messageType.isInfo, ' +
+                '"alert-info alert-loading":messageType.isLoading}\' ' +
                 '><i title="{{type}} Alert" class="icon"></i>' +
                 '<span ng-bind-html="caption"></span>' +
                 '<button title="Close" class="btn-transparent close" data-ng-hide="hideclose">&times;</button>' +
@@ -35,21 +41,28 @@ WM.module('wm.widgets.basic')
         function propertyChangeHandler(scope, attrs, key, newVal) {
             switch (key) {
             case 'type':
-                switch (newVal) {
-                case 'error':
-                    scope.messageClass = 'alert-danger';
-                    break;
-                case 'warn':
-                    scope.messageClass = 'alert-warning';
-                    break;
-                case 'loading':
-                    scope.messageClass = 'alert-info alert-loading';
-                    break;
-                case 'success':
-                case 'warning':
-                case 'info':
-                    scope.messageClass = 'alert-' + newVal;
-                    break;
+                if (newVal === 'success') {
+                    scope.messageType = {
+                        isSuccess: true
+                    };
+                } else if (newVal === 'error') {
+                    scope.messageType = {
+                        isError: true
+                    };
+                } else if (newVal === 'warning') {
+                    scope.messageType = {
+                        isWarning: true
+                    };
+                } else if (newVal === 'warn') {/*Fallback to support old projects with type as "warn"*/
+                    scope.type = 'warning';
+                } else if (newVal === 'info') {
+                    scope.messageType = {
+                        isInfo: true
+                    };
+                } else if (newVal === 'loading') {
+                    scope.messageType = {
+                        isLoading: true
+                    };
                 }
                 break;
             case 'dataset':
