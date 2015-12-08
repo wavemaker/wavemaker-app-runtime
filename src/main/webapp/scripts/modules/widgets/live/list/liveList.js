@@ -54,7 +54,7 @@ WM.module('wm.widgets.live')
                 liTemplateWrapper_end = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>',
                 notifyFor = {
                     'dataset'        : true,
-                    'height'        : true,
+                    'height'         : true,
                     'navigation'     : CONSTANTS.isStudioMode,
                     'itemsperrow'    : CONSTANTS.isStudioMode
                 },
@@ -428,24 +428,29 @@ WM.module('wm.widgets.live')
                     oldClass,
                     newClass;
                 /**checking if the height is set on the element then we will enable the overflow**/
-                if(key === 'height' && nv) {
-                    $is.overflow = "auto";
-                }
 
-                if (key === 'dataset') {
+                switch (key) {
+                case 'height':
+                    if (nv) {
+                        $is.overflow = 'auto';
+                    }
+                    break;
+                case 'dataset':
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, nv);
-                    return;
-                }
-
-                if (CONSTANTS.isStudioMode) {
-                    if (key === 'itemsperrow') {
+                    break;
+                case 'itemsperrow':
+                    if (CONSTANTS.isStudioMode) {
                         oldClass = ov && 'col-md-' + 12 / (+ov);
                         newClass = nv && 'col-md-' + 12 / (+nv);
                         $el.find('.app-listtemplate').removeClass(oldClass).addClass(newClass);
-                    } else {
+                    }
+                    break;
+                case 'navigation':
+                    if (CONSTANTS.isStudioMode) {
                         onNavigationTypeChange($is, nv);
                     }
+                    break;
                 }
             }
 
@@ -600,8 +605,8 @@ WM.module('wm.widgets.live')
 
                 // initialising oldDataSet to -1, so as to handle live-list with variable binding with live variables, during page 'switches' or 'refreshes'
                 $is.oldbinddataset = CONSTANTS.isStudioMode ? attrs.dataset : undefined;
-                $is.dataset = [];   // The data that is bound to the list. Stores the name for reference.
-                $is.fieldDefs = []; // The data required by the wmListItem directive to populate the items
+                $is.dataset     = [];   // The data that is bound to the list. Stores the name for reference.
+                $is.fieldDefs   = []; // The data required by the wmListItem directive to populate the items
                 $is.noDataFound = false;
                 Object.defineProperty($is, 'selecteditem', {
                     configurable: true
