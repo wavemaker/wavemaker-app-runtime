@@ -82,13 +82,13 @@ WM.module('wm.widgets.live')
                                 '<span class="form-header-text">{{title}}</span>' +
                             '</h3></div>' +
                             '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
-                                '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>'+
+                                '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
                                 template.context.innerHTML +
                             '</div>' +
                             '<div class="basic-btn-grp form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
                         '</form>';
             },
-            controller: function ($scope, Variables, DialogService) {
+            controller: function ($scope, DialogService) {
                 $scope.__compileWithIScope = true;
                 /* when the service call ended this function will be called */
                 /* prevformFields is used for showing the previous data when cancel is clicked and also for update calls*/
@@ -444,7 +444,7 @@ WM.module('wm.widgets.live')
                     });
                 };
                 $scope.setDefaultValueToValue = function (fieldObj) {
-                    var defaultValue = fieldObj.defaultValue;
+                    var defaultValue = fieldObj.defaultvalue;
                     /*Set the default value only if it exists.*/
                     if (defaultValue && defaultValue !== "null") {
                         fieldObj.value = LiveWidgetUtils.getDefaultValue(defaultValue, fieldObj.type);
@@ -954,29 +954,17 @@ WM.module('wm.widgets.live')
             }
         };
     }])
-    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "BindingManager", "LiveWidgetUtils", function (Utils, $compile, CONSTANTS, BindingManager, LiveWidgetUtils) {
+    .directive("wmFormField", ["Utils", "$compile", "CONSTANTS", "BindingManager", "LiveWidgetUtils", "WidgetUtilService", function (Utils, $compile, CONSTANTS, BindingManager, LiveWidgetUtils, WidgetUtilService) {
         'use strict';
         return {
             "restrict": 'E',
-            "template": "<div data-role='form-field'></div>",
-            "scope": true,
+            "template": "<div init-widget data-role='form-field'></div>",
+            "scope": {},
             "replace": true,
-            "compile": function () {
+            "compile": function (tElement) {
                 return {
-                    "pre": function (scope) {
-                        scope.widgetProps = [];
-                        if (CONSTANTS.isStudioMode) {
-                            // define setter/getter for the name property.
-                            // If we don't define this the `name` of the nearest live form will be modified because prototype based inheritance.
-                            Object.defineProperty(scope, 'name', {
-                                'get': function () {
-                                    return this._name;
-                                },
-                                'set': function (val) {
-                                    this._name = val;
-                                }
-                            });
-                        }
+                    "pre": function (scope, element, attrs) {
+                        LiveWidgetUtils.preProcessFields('wm-form-field', scope, attrs, tElement);
                     },
                     "post": function (scope, element, attrs) {
                         /*scope.$parent is defined when compiled with live filter scope*/
@@ -991,12 +979,10 @@ WM.module('wm.widgets.live')
                             elScope = element.scope(),
                             defaultObj,
                             dataSetWatchHandler,
-                            variable;
-                        if (CONSTANTS.isRunMode && scope.isLayoutDialog) {
-                            parentIsolateScope = scope;
-                        } else {
-                            parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
-                        }
+                            variable,
+                            isLayoutDialog;
+                        parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
+                        isLayoutDialog = parentIsolateScope.isLayoutDialog;
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                             'key'    : attrs.key || attrs.binding,
                             'regexp' : attrs.regexp || ".*"
@@ -1009,17 +995,17 @@ WM.module('wm.widgets.live')
                             columnDef.required = false;
                         }
                         /*If defaultValue is set then assign it to the attribute*/
-                        if (attrs.defaultValue) {
-                            if (Utils.stringStartsWith(attrs.defaultValue, 'bind:') && CONSTANTS.isRunMode) {
-                                expr = attrs.defaultValue.replace('bind:', '');
-                                exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
-                                    parentIsolateScope.formFields[index].defaultValue = newVal;
+                        if (attrs.defaultvalue) {
+                            if (Utils.stringStartsWith(attrs.defaultvalue, 'bind:') && CONSTANTS.isRunMode) {
+                                expr = attrs.defaultvalue.replace('bind:', '');
+                                exprWatchHandler = BindingManager.register(parentIsolateScope, expr, function (newVal) {
+                                    parentIsolateScope.formFields[index].defaultvalue = newVal;
                                     if (parentIsolateScope.operationType !== 'update') {
                                         parentIsolateScope.setDefaultValueToValue(columnDef);
                                     }
                                 }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                             } else {
-                                columnDef.defaultValue = attrs.defaultValue;
+                                columnDef.defaultvalue = attrs.defaultvalue;
                                 if (CONSTANTS.isRunMode) {
                                     parentIsolateScope.setDefaultValueToValue(columnDef);
                                 }
@@ -1091,7 +1077,7 @@ WM.module('wm.widgets.live')
                             columnDef.filetype = attrs.filetype;
                         }
 
-                        if (scope.isLayoutDialog) {
+                        if (isLayoutDialog) {
                             defaultObj = _.find(parentIsolateScope.translatedObj, function (obj) {
                                 return obj.key === columnDef.key;
                             });
@@ -1107,10 +1093,10 @@ WM.module('wm.widgets.live')
                             }
                         }
 
-                        scope.options = columnDef;
+                        scope.fieldDefConfig = columnDef;
                         parentIsolateScope.formFields = parentIsolateScope.formFields || [];
                         index = parentIsolateScope.formFields.push(columnDef) - 1;
-                        if (scope.isLayoutDialog) {
+                        if (isLayoutDialog) {
                             parentIsolateScope.setPrevDataValues();
                         }
                         parentIsolateScope.formCreated = true;
@@ -1130,7 +1116,7 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        template = LiveWidgetUtils.getTemplate(columnDef, index, "form");
+                        template = LiveWidgetUtils.getTemplate(columnDef, index);
                         element.html(template);
                         $compile(element.contents())(parentIsolateScope);
 
@@ -1145,6 +1131,9 @@ WM.module('wm.widgets.live')
                                 dataSetWatchHandler();
                             }
                         });
+                        if (!CONSTANTS.isRunMode) {
+                            WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope, undefined);
+                        }
                     }
                 };
             }
@@ -1190,7 +1179,6 @@ WM.module('wm.widgets.live')
                             parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         }
 
-                        scope.options = buttonDef;
                         parentIsolateScope.buttonArray = parentIsolateScope.buttonArray || [];
                         index = parentIsolateScope.buttonArray.push(buttonDef) - 1;
                         parentIsolateScope.formCreated = true;
