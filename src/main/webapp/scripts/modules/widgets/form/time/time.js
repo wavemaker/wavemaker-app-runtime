@@ -72,6 +72,22 @@ WM.module('wm.widgets.form')
                 scope.onClick({$event: evt, $scope: scope});
             }
         }
+        /*  This function returns date object. If val is undefined it returns invalid date */
+        function parseTime(val) {
+            if (WM.isDate(val)) {
+                return val;
+            }
+            /*if the value is a timestamp string, convert it to a number*/
+            if (!isNaN(val)) {
+                val = parseInt(val, 10);
+            } else {
+                /*if the value is in HH:mm:ss format, it returns a wrong date. So append the date to the given value to get date*/
+                if (!(new Date(val).getTime())) {
+                    val = new Date().toDateString() + ' ' + val;
+                }
+            }
+            return new Date(val);
+        }
 
         return {
             restrict: 'E',
@@ -165,10 +181,12 @@ WM.module('wm.widgets.form')
                                 return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
                             },
                             set: function (val) {
+                                var dateTime;
                                 if (scope._nativeMode) {
                                     if (val) {
+                                        dateTime = parseTime(val);
                                         /*set the proxymodel and timestamp*/
-                                        this._proxyModel = new Date(val);
+                                        this._proxyModel = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
                                         this.timestamp = this._proxyModel.getTime();
                                     } else {
                                         this._proxyModel = undefined;
@@ -176,17 +194,8 @@ WM.module('wm.widgets.form')
                                     return;
                                 }
                                 if (val) {
-                                    /*if the value is a timestamp string, convert it to a number*/
-                                    if (!isNaN(val)) {
-                                        val = parseInt(val, 10);
-                                    } else {
-                                        /*if the value is in HH:mm:ss format, it returns a wrong date. So append the date to the given value to get date*/
-                                        if (!(new Date(val).getTime())) {
-                                            val = new Date().toDateString() + ' ' + val;
-                                        }
-                                    }
-                                    var date = new Date(val);
-                                    this._proxyModel = WM.isDate(date) ? date : undefined;
+                                    dateTime = parseTime(val);
+                                    this._proxyModel = WM.isDate(dateTime) ? dateTime : undefined;
                                 } else {
                                     this._proxyModel = undefined;
                                 }
@@ -207,7 +216,7 @@ WM.module('wm.widgets.form')
                         /*set the model if datavalue exists */
                         if (attrs.datavalue) {
                             if (scope._nativeMode) {
-                                scope._proxyModel = attrs.datavalue;
+                                scope._proxyModel = new Date(attrs.datavalue);
                             }
                             scope._model_ = attrs.datavalue;
                         }

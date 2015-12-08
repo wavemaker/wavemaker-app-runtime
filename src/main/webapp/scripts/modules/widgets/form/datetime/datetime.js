@@ -93,6 +93,19 @@ WM.module('wm.widgets.form')
             scope.isDateOpen = false;
         }
 
+        /* this function returns date object. If val is undefined it returns invalid date */
+        function parseDateTime(val) {
+            /* check if the val is date object */
+            if (WM.isDate(val)) {
+                return val;
+            }
+            /*if the value is a timestamp string, convert it to a number*/
+            if (!isNaN(val)) {
+                val = parseInt(val, 10);
+            }
+            return new Date(val);
+        }
+
         return {
             restrict: 'E',
             replace: true,
@@ -234,23 +247,17 @@ WM.module('wm.widgets.form')
                                 return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
                             },
                             set: function (val) {
+                                var dateTime;
                                 if (scope._nativeMode) {
                                     if (val) {
-                                        this._proxyModel = new Date(val);
+                                        dateTime = parseDateTime(val);
+                                        this._proxyModel = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
                                         this.timestamp = this._proxyModel.getTime();
                                     } else {
                                         this._proxyModel = undefined;
                                     }
                                 } else {
-                                    var dateTime;
-                                    if (WM.isDate(val)) {
-                                        dateTime = val;
-                                    } else {
-                                        if (!isNaN(val)) {
-                                            val = parseInt(val, 10);
-                                        }
-                                        dateTime = new Date(val);
-                                    }
+                                    dateTime = parseDateTime(val);
                                     if (dateTime.getTime()) {
                                         this._proxyModel = this._dateModel = this._timeModel = dateTime.getTime();
                                     } else {
