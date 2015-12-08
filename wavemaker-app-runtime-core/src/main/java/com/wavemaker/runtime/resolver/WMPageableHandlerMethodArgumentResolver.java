@@ -224,7 +224,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
      */
     @Override
     public Pageable resolveArgument(MethodParameter methodParameter, ModelAndViewContainer mavContainer,
-                                    NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+                                    NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
         assertPageableUniqueness(methodParameter);
 
