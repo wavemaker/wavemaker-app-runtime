@@ -294,11 +294,13 @@ WM.module('wm.widgets.base')
                 return val === true || val === 'true' || (identity ? val === identity : false);
             }
 
-            function defineBindPropertyGetterSetters($is, $s, propDetails, key, value) {
-                var bindKey       = 'bind' +  key,
-                    acceptedTypes = propDetails.type,
-                    acceptsArray  = _.includes(acceptedTypes, 'array'),
-                    _watchers     = $is._watchers;
+            function defineBindPropertyGetterSetters($is, $s, attrs, propDetails, key, value) {
+                var bindKey              = 'bind' +  key,
+                    acceptedTypes        = propDetails.type,
+                    acceptsArray         = _.includes(acceptedTypes, 'array'),
+                    _watchers            = $is._watchers,
+                    isWidgetInsideCanvas = attrs.widgetid,
+                    isShowProperty       = key === 'show';
 
                 Object.defineProperty($is, bindKey, {
                     'get': function () {
@@ -309,23 +311,20 @@ WM.module('wm.widgets.base')
                             watchExpr,
                             listenerFn;
 
-                        Utils.triggerFn(fn); // deregister the existing watch
+                        Utils.triggerFn(fn); // de register the existing watch
 
                         /* if property is bound to a variable/widget, watch on it */
                         if (nv) {
-                            watchExpr = nv.replace('bind:', '');
-                            listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, watchExpr);
-                            _watchers[key] = BindingManager.register($s, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': $is.allowPageable, 'acceptsArray': acceptsArray});
+                            // when the `show` property is bound to a property/expression do not evaluate that when the widget is in canvas
+                            if (isWidgetInsideCanvas && isShowProperty) {
+                                $is.show = true;
+                            } else {
+                                watchExpr = nv.replace('bind:', '');
+                                listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, watchExpr);
+                                _watchers[key] = BindingManager.register($s, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': $is.allowPageable, 'acceptsArray': acceptsArray});
+                            }
                         } else {
                             _watchers[key] = undefined;
-
-                            //todo -- check this.
-                            // reset the dataset value in $is
-                            /*if (key === 'show') {
-                                $is[key] = true;
-                            } else {
-                                $is[key] = '';
-                            }*/
                         }
 
                         value = nv;
@@ -488,13 +487,13 @@ WM.module('wm.widgets.base')
                 var _isBindableProperty;
 
                 if (propName === 'datavalue' && hasModel) {
-                    defineBindPropertyGetterSetters($is, $s, propDetails, propName);
+                    defineBindPropertyGetterSetters($is, $s, attrs, propDetails, propName);
                     defineDataValueGetterSetters($is, $el, attrs);
                 } else {
 
                     _isBindableProperty = isBindableProperty(propDetails);
                     if (_isBindableProperty) {
-                        defineBindPropertyGetterSetters($is, $s, propDetails, propName);
+                        defineBindPropertyGetterSetters($is, $s, attrs, propDetails, propName);
                     }
                     definePropertyGetterSetters($is, $s, $el, attrs, propDetails, _isBindableProperty, propName, attrs[propName] ? undefined : propDetails.value);
                 }
