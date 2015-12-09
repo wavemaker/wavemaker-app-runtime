@@ -25,7 +25,6 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Random;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -41,9 +40,14 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.studio.common.InvalidInputException;
 import com.wavemaker.studio.common.WMRuntimeException;
-import net.sf.jmimemagic.*;
+import net.sf.jmimemagic.Magic;
+import net.sf.jmimemagic.MagicException;
+import net.sf.jmimemagic.MagicMatch;
+import net.sf.jmimemagic.MagicMatchNotFoundException;
+import net.sf.jmimemagic.MagicParseException;
 
 /**
  * @author sunilp
@@ -189,22 +193,7 @@ public class WMMultipartUtils {
      */
     public static <T> void buildHttpResponseForBlob(T instance, String fieldName, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         try {
-            String methodName = "get" + StringUtils.capitalize(fieldName);
-            Method method = instance.getClass().getMethod(methodName);
-            byte[] bytes = null;
-            if (BLOB.equals(method.getReturnType().getSimpleName())) {
-                Blob blob = (Blob) method.invoke(instance);
-                try {
-                    bytes = (blob != null) ? IOUtils.toByteArray(blob.getBinaryStream()) : null;
-                } catch (SQLException e) {
-                    throw new WMRuntimeException("Failed to cast Blob content ", e);
-                }
-            } else if (BYTE_ARRAY.equals(method.getReturnType().getSimpleName())) {
-                bytes = (byte[]) method.invoke(instance);
-            }
-            if (bytes == null) {
-                throw new WMRuntimeException("Data is empty in column " + fieldName);
-            }
+            byte[] bytes = getBlobBytes((T) instance, fieldName);
             httpServletResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
             httpServletResponse.setHeader("Content-Disposition", "filename=" + fieldName + new Random().nextInt(99) + ";size=" + bytes.length);
             int contentLength = IOUtils.copy(new ByteArrayInputStream(bytes), httpServletResponse.getOutputStream());
@@ -213,6 +202,41 @@ public class WMMultipartUtils {
             throw new WMRuntimeException("Failed to prepare response for fieldName" + fieldName, e);
         }
 
+    }
+
+    public static <T> DownloadResponse buildDownloadResponseForBlob(T instance, String fieldName, HttpServletRequest httpServletRequest, boolean download) {
+        DownloadResponse downloadResponse = new DownloadResponse();
+        try {
+            byte[] bytes = getBlobBytes(instance, fieldName);
+            downloadResponse.setContents(new ByteArrayInputStream(bytes));
+            downloadResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
+            downloadResponse.setFileName(fieldName + new Random().nextInt(99));
+            downloadResponse.setInline(!download);
+        } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new WMRuntimeException("Failed to prepare response for fieldName" + fieldName, e);
+        }
+        return downloadResponse;
+
+    }
+
+    private static <T> byte[] getBlobBytes(final T instance, final String fieldName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
+        String methodName = "get" + StringUtils.capitalize(fieldName);
+        Method method = instance.getClass().getMethod(methodName);
+        byte[] bytes = null;
+        if (BLOB.equals(method.getReturnType().getSimpleName())) {
+            Blob blob = (Blob) method.invoke(instance);
+            try {
+                bytes = (blob != null) ? IOUtils.toByteArray(blob.getBinaryStream()) : null;
+            } catch (SQLException e) {
+                throw new WMRuntimeException("Failed to cast Blob content ", e);
+            }
+        } else if (BYTE_ARRAY.equals(method.getReturnType().getSimpleName())) {
+            bytes = (byte[]) method.invoke(instance);
+        }
+        if (bytes == null) {
+            throw new WMRuntimeException("Data is empty in column " + fieldName);
+        }
+        return bytes;
     }
 
     /**
