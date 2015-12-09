@@ -2,7 +2,7 @@
 /*Directive for Navbar*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$timeout', function (PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.layouts']),
             notifyFor = {
@@ -27,9 +27,9 @@ WM.module('wm.layouts.containers')
             } else if (WM.isArray(newVal)) {
                 WM.forEach(newVal, function (item) {
                     nodes.push({
-                        'label': item[scope.itemlabel || "label"],
-                        'icon': item[scope.itemicon || "icon"],
-                        'link': item[scope.itemlink || "link"]
+                        'label' : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label,
+                        'icon'  : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'}) || item.icon,
+                        'link'  : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlink'}) || item.link
                     });
                 });
             } else if (WM.isObject(newVal)) {
@@ -39,23 +39,23 @@ WM.module('wm.layouts.containers')
                     'link': newVal[scope.itemlink || "link"]
                 }];
             }
-
-            if (scope.widgetid) { // when the widget is inside canvas
-                scope.keys = WM.isObject(nodes[0]) ? Object.keys(nodes[0]) : [];
-                /*Changing the properties like labels, link and icons*/
-                scope.widgetProps.itemlabel.options = scope.widgetProps.itemicon.options = scope.widgetProps.itemlink.options = scope.keys;
-            }
             return nodes;
         }
 
-        function propertyChangeHandler(scope, key) {
+        function propertyChangeHandler(scope, key, newVal) {
+            var dataset = scope.dataset || {};
             switch (key) {
-            case 'dataset':
             case 'scopedataset':
+            case 'dataset':
+                dataset = newVal;
+                /*if studio-mode, then update the itemlabel, itemicon, itemlink & itemchildren in property panel*/
+                if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
+                    WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, scope);
+                }
             case 'itemicon':
             case 'itemlabel':
             case 'itemlink':
-                scope.nodes = getNodes(scope, scope.dataset);
+                scope.nodes = getNodes(scope, dataset.data || dataset);
                 break;
             }
         }
@@ -63,7 +63,9 @@ WM.module('wm.layouts.containers')
         return {
             'restrict': 'E',
             'replace': true,
-            'scope': {},
+            'scope': {
+                'scopedataset': '=?'
+            },
             'transclude': true,
             'template':
                 '<ol class="breadcrumb app-breadcrumb" data-ng-show="show" apply-styles data-element-type="wmBreadCrumb"  init-widget has-model >' +
@@ -83,6 +85,14 @@ WM.module('wm.layouts.containers')
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope);
                         /* Register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+
+                        if (CONSTANTS.isRunMode && attrs.scopedataset) {
+                            $timeout(function () {
+                                scope.$watch('scopedataset', function (newVal) {
+                                    onPropertyChange('scopedataset', newVal);
+                                }, true);
+                            }, 0);
+                        }
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
