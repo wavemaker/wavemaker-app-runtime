@@ -101,8 +101,9 @@ WM.module('wm.widgets.base', [])
                 }
             ],
             PLATFORM_TYPE = {
-                WEB : 'WEB',
-                MOBILE : 'MOBILE'
+                WEB      :   'WEB',
+                MOBILE   :   'MOBILE',
+                DEFAULT  :   'DEFAULT'
             },
             animationOptions = [" ", "bounce", "bounceIn", "bounceInDown", "bounceInLeft", "bounceInRight", "bounceInUp", "bounceOut", "bounceOutDown", "bounceOutLeft", "bounceOutRight", "bounceOutUp", "fadeIn", "fadeInDown", "fadeInDownBig", "fadeInLeft", "fadeInLeftBig", "fadeInRight", "fadeInRightBig", "fadeInUp", "fadeInUpBig", "fadeOut", "fadeOutDown", "fadeOutDownBig", "fadeOutLeft", "fadeOutLeftBig", "fadeOutRight", "fadeOutRightBig", "fadeOutUp", "fadeOutUpBig", "flash", "flipInX", "flipInY", "flipOutX", "flipOutY", "hinge", "lightSpeedIn", "lightSpeedOut", "pulse", "rollIn", "rollOut", "rotateIn", "rotateInDownLeft", "rotateInDownRight", "rotateInUpLeft", "rotateInUpRight", "rotateOut", "rotateOutDownLeft", "rotateOutDownRight", "rotateOutUpLeft", "rotateOutUpRight", "rubberBand", "shake", "slideInDown", "slideInLeft", "slideInRight", "slideInUp", "slideOutDown", "slideOutLeft", "slideOutRight", "slideOutUp", "swing", "tada", "wobble", "zoomIn", "zoomInDown", "zoomInLeft", "zoomInRight", "zoomInUp", "zoomOut", "zoomOutDown", "zoomOutLeft", "zoomOutRight", "zoomOutUp"],
             visibilityOptions = ["collapse", "hidden", "initial", "inherit", "visible"],
@@ -1645,7 +1646,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "displaystyle", "properties": ["padding", "paddingunit", "margin", "marginunit", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},
                 {"name": "prefablifecycleevents", "properties": ["onLoad", "onDestroy"], "parent": "events"},
                 {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
-                {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events", "platforms": [PLATFORM_TYPE.WEB]},
+                {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events", "platforms": [PLATFORM_TYPE.WEB, PLATFORM_TYPE.DEFAULT]},
                 {"name": "touchevents", "properties": ["onTap", "onDoubletap", "onSwipeup", "onSwipedown", "onSwipeleft", "onSwiperight", "onPinchin", "onPinchout"], "parent": "events"},
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender",
