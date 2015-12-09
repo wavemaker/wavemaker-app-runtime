@@ -204,7 +204,7 @@ WM.module('wm.widgets.base')
                     return {
                         'pre': function (iScope, element, attrs) {
                             var partialName = attrs.page || attrs.content;
-                            WM.extend(iScope.widgetProps || {}, WM.copy(props));
+                            WM.extend(iScope.widgetProps || {}, Utils.getClonedObject(props));
                             iScope['page-container'] = true;
                             //Trigger registerPageContainer method of page widget when the content of this widget is loaded from other page.
                             // if the $lazyLoad method is defined on the iScope, do not register the pagePart.

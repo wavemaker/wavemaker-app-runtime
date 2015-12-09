@@ -150,7 +150,7 @@ WM.module('wm.prefabs')
             function onConfigLoad(iScope, serverProps, config) {
 
                 if (prefabWidgetPropsMap[iScope.prefabname]) {
-                    iScope.widgetProps = WM.copy(prefabWidgetPropsMap[iScope.prefabname]);
+                    iScope.widgetProps = Utils.getClonedObject(prefabWidgetPropsMap[iScope.prefabname]);
                     iScope._methodsMap = prefabMethodsMap[iScope.prefabname];
                     if (CONSTANTS.isStudioMode) {
                         iScope.serverProps = serverProps;
@@ -240,7 +240,7 @@ WM.module('wm.prefabs')
                 prefabWidgetPropsMap[iScope.prefabname] = widgetProps;
                 prefabMethodsMap[iScope.prefabname] = methodsMap;
 
-                iScope.widgetProps = WM.copy(prefabWidgetPropsMap[iScope.prefabname]);
+                iScope.widgetProps = Utils.getClonedObject(prefabWidgetPropsMap[iScope.prefabname]);
                 iScope._methodsMap = prefabMethodsMap[iScope.prefabname];
                 if (CONSTANTS.isStudioMode) {
                     iScope.serverProps = serverProps;
@@ -471,7 +471,7 @@ WM.module('wm.prefabs')
                             });
 
                             if (config) {
-                                resources = WM.copy(config.resources);
+                                resources = Utils.getClonedObject(config.resources);
                                 if (resources.scripts) { // modify the script urls if necessary
                                     resources.scripts = resources.scripts.map(function (script) {
                                         var _script = script && script.trim();

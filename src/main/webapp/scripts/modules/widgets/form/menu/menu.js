@@ -179,7 +179,7 @@ WM.module('wm.widgets.form')
                             }
                         }
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
                         }

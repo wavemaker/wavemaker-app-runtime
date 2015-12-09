@@ -1529,7 +1529,7 @@ WM.module('wm.widgets.basic')
             }
 
             if (isPieType(scope.type) && (!scope.binddataset || !scope.scopedataset)) {
-                chartData = WM.copy(scope.scopedataset || datum);
+                chartData = Utils.getClonedObject(scope.scopedataset || datum);
             }
             /* checking the parent container before plotting the chart */
             if (!element[0].getBoundingClientRect().height) {
@@ -1746,7 +1746,7 @@ WM.module('wm.widgets.basic')
         /*Sets the groupby columns to the non primary key columns and other than aggregation column if chosen*/
         function setGroupByColumns(scope) {
             var index,
-                columns = WM.copy(scope.nonPrimaryColumns),
+                columns = Utils.getClonedObject(scope.nonPrimaryColumns),
                 choosenColumn = scope.widgetProps.groupby && scope.widgetProps.groupby.selectedvalues ?  scope.widgetProps.groupby.selectedvalues.split(',')[0] : '';
             /*Removing the aggregation column out of the non primary columns*/
             if (scope.nonPrimaryColumns && scope.aggregationcolumn) {
@@ -2019,7 +2019,7 @@ WM.module('wm.widgets.basic')
                 return {
                     pre: function (iScope) {
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
                         }

@@ -188,7 +188,7 @@ WM.module('wm.widgets.basic')
                                 path = '/' + current + path;
                             });
 
-                        scope.selecteditem = WM.copy(data);
+                        scope.selecteditem = Utils.getClonedObject(data);
                         scope.selecteditem.path = path;
 
                         fn = scope.onSelect({$event: evt, $scope: scope, $item: data, $path: path});
@@ -211,7 +211,7 @@ WM.module('wm.widgets.basic')
                     return {
                         'pre': function (iScope) {
                             if (CONSTANTS.isStudioMode) {
-                                iScope.widgetProps = WM.copy(widgetProps);
+                                iScope.widgetProps = Utils.getClonedObject(widgetProps);
                             } else {
                                 iScope.widgetProps = widgetProps;
                             }

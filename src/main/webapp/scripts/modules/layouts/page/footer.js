@@ -7,7 +7,7 @@ WM.module('wm.layouts.page')
                 '<footer data-role="page-footer" page-container page-container-target init-widget class="app-footer clearfix" apply-styles="container" wmtransclude></footer>'
             );
     }])
-    .directive('wmFooter', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
+    .directive('wmFooter', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils',  function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.footer', ['wm.layouts', 'wm.base.events.touch']);
 
@@ -21,7 +21,7 @@ WM.module('wm.layouts.page')
                 return {
                     'pre': function (iScope, element) {
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
                             // this flag is used to change the layout of the mobile view accordingly

@@ -292,7 +292,7 @@ wm.variables.services.$liveVariable = [
                         if (column.isRelated) {
                             /*Since "columns" may contain a reference to itself, "copy" is being used.
                             * This is done because there is a "copy" done in Variables.store.*/
-                            column.columns = WM.copy(tableDetails[column.relatedTableName].columns);
+                            column.columns = Utils.getClonedObject(tableDetails[column.relatedTableName].columns);
                             column.relatedFieldName = column.fieldName + "." + tableDetails[column.relatedTableName].primaryKeys[0];
                             if ($rootScope.dataTypes[variable.package]) {
                                 columnDef = $rootScope.dataTypes[variable.package].fields[column.fieldName];
@@ -711,7 +711,7 @@ wm.variables.services.$liveVariable = [
                     /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
                     if (variableDetails.isCompositeKey(primaryKey)) {
                         if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                            formattedData.id = WM.copy(rowObject);
+                            formattedData.id = Utils.getClonedObject(rowObject);
                             rowObject = {};
                         } else {
                             formattedData.id = {};

@@ -340,8 +340,8 @@ WM.module('wm.widgets.live')
                 };
                 /*Function to set the previous data array to be used while updating records in a live-form.*/
                 $scope.setPrevformFields = function (formFields) {
-                    prevformFields = WM.copy(formFields);
-                    prevDataObject = WM.copy($scope.rowdata);
+                    prevformFields = Utils.getClonedObject(formFields);
+                    prevDataObject = Utils.getClonedObject($scope.rowdata);
                 };
                 /*Method to clear the fields and set the form to readonly*/
                 $scope.formCancel = function () {
@@ -349,7 +349,7 @@ WM.module('wm.widgets.live')
                     $scope.toggleMessage(false);
                     /*Show the previous selected data*/
                     if ($scope.isSelected) {
-                        $scope.formFields = WM.copy(prevformFields) || $scope.formFields;
+                        $scope.formFields = Utils.getClonedObject(prevformFields) || $scope.formFields;
                     }
                     $scope.$emit("on-cancel");
                     $scope.isUpdateMode = false;
@@ -406,11 +406,11 @@ WM.module('wm.widgets.live')
 
                     if (!$scope.isLayoutDialog) {
                         if ($scope.isSelected) {
-                            prevformFields = WM.copy($scope.formFields);
+                            prevformFields = Utils.getClonedObject($scope.formFields);
                         }
                         /*Set the rowdata to prevDataObject irrespective whether the row is selected
                          or not*/
-                        prevDataObject = WM.copy($scope.rowdata);
+                        prevDataObject = Utils.getClonedObject($scope.rowdata);
                     }
                     $scope.setReadonlyFields();
                     $scope.isUpdateMode = true;
@@ -421,7 +421,7 @@ WM.module('wm.widgets.live')
                 $scope.new = function () {
                     $scope.toggleMessage(false);
                     if ($scope.isSelected && !$scope.isLayoutDialog) {
-                        prevformFields = WM.copy($scope.formFields);
+                        prevformFields = Utils.getClonedObject($scope.formFields);
                     }
                     if ($scope.formFields && $scope.formFields.length > 0) {
                         emptyDataModel();
@@ -481,7 +481,7 @@ WM.module('wm.widgets.live')
                 };
                 /*construct the data object from the formFields*/
                 $scope.constructDataObject = function (formFields) {
-                    var dataObject = ($scope.operationType === 'update') ? WM.copy(Utils.isEmptyObject(prevDataObject) ? $scope.formdata : prevDataObject) : {},
+                    var dataObject = ($scope.operationType === 'update') ? Utils.getClonedObject(Utils.isEmptyObject(prevDataObject) ? $scope.formdata : prevDataObject) : {},
                         formName = $scope.name,
                         isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
                         formData;

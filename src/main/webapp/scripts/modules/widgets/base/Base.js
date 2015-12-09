@@ -20,7 +20,7 @@ WM.module('wm.widgets.base', [])
          * TODO: fetch the properties from the config-properties.json
          */
 
-        var widgetEventOptions = WM.copy(WIDGET_CONSTANTS.EVENTS_OPTIONS), /*A copy of the variable to preserve the actual value.*/
+        var widgetEventOptions = Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), /*A copy of the variable to preserve the actual value.*/
             showInDeviceOptions = [{
                 'name': 'All',
                 'value': 'all'
@@ -1684,7 +1684,7 @@ WM.module('wm.widgets.base', [])
 
             if (!parents) {
                 /* This widget doesn't inherit from other widgets. Fetch the properties of only this widget */
-                widgetProps = WM.copy(properties[widget]);
+                widgetProps = Utils.getClonedObject(properties[widget]);
             } else {
                 parentsArr = WM.isArray(parents) ? parents : [parents];
                 parentsArr.push(widget);

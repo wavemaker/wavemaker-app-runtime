@@ -9,7 +9,7 @@ WM.module('wm.layouts.page')
                 '</aside>'
             );
     }])
-    .directive('wmRightPanel', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
+    .directive('wmRightPanel', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.rightpanel', ['wm.layouts', 'wm.base.events.touch']),
             notifyFor = {
@@ -47,7 +47,7 @@ WM.module('wm.layouts.page')
                 return {
                     'pre': function (iScope) {
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
                         }

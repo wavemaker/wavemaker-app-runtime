@@ -598,7 +598,7 @@ WM.module('wm.widgets.live')
 
             function preLinkFn($is, $el, attrs) {
                 if (CONSTANTS.isStudioMode) {
-                    $is.widgetProps = WM.copy(widgetProps);
+                    $is.widgetProps = Utils.getClonedObject(widgetProps);
                 } else {
                     $is.widgetProps = widgetProps;
                 }

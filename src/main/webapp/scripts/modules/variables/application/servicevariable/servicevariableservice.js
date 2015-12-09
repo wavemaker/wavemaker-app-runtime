@@ -371,7 +371,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 });
 
                 if (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
-                    methodInfo = WM.copy(variable.wmServiceOperationInfo);
+                    methodInfo = Utils.getClonedObject(variable.wmServiceOperationInfo);
                     if (methodInfo.parameters) {
                         methodInfo.parameters.forEach(function (param) {
                             param.sampleValue = variable.dataBinding[param.name];
@@ -387,7 +387,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                     params = constructRestRequestParams(methodInfo, serviceType, variable);
                 } else if (serviceType === SERVICE_TYPE_REST) {
-                    dataParams = [service, operation, WM.copy(variable.dataBinding)];
+                    dataParams = [service, operation, Utils.getClonedObject(variable.dataBinding)];
 
                     /*prepare request params*/
                     params = {

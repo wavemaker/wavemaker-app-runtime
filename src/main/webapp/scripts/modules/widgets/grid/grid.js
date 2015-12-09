@@ -218,7 +218,7 @@ WM.module('wm.widgets.grid')
                 return {
                     'pre': function (iScope, element) {
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
                         }
@@ -304,7 +304,7 @@ WM.module('wm.widgets.grid')
                                 /*TODO: Check if grid options can be passed.*/
                                 /*Invoke the function to render the operation columns.*/
                                 scope.renderOperationColumns();
-                                scope.setDataGridOption('colDefs', WM.copy(scope.fieldDefs));
+                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
                             }
                         }));
                         /* event emitted whenever grid actions are modified */
@@ -342,7 +342,7 @@ WM.module('wm.widgets.grid')
                                 break;
                             case 'deleterow':
                                 scope.renderOperationColumns();
-                                scope.setDataGridOption('colDefs', WM.copy(scope.fieldDefs));
+                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
                                 if (CONSTANTS.isStudioMode) {
                                     scope.widgetProps.confirmdelete.show = newVal;
                                     scope.widgetProps.deletemessage.show = newVal;
@@ -350,7 +350,7 @@ WM.module('wm.widgets.grid')
                                 break;
                             case 'updaterow':
                                 scope.renderOperationColumns();
-                                scope.setDataGridOption('colDefs', WM.copy(scope.fieldDefs));
+                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
                                 break;
                             case 'dataset':
                                 scope.watchVariableDataSet(newVal, element);
@@ -769,7 +769,7 @@ WM.module('wm.widgets.grid')
                     $scope.gridOptions.sortInfo.direction = sortObj.direction;
 
                     if (sortObj.direction) {
-                        $scope.sortInfo = WM.copy(sortObj);
+                        $scope.sortInfo = Utils.getClonedObject(sortObj);
                         if ($scope.gridsearch && currentSearch) {
                             /*Set the filter fields based on the search options entered.*/
                             filterFields = {};
@@ -1060,7 +1060,7 @@ WM.module('wm.widgets.grid')
             /* Function to reset the column definitions dynamically. */
             $scope.resetColumnDefinitions = function () {
                 $scope.fieldDefs = [];
-                $scope.setDataGridOption('colDefs', WM.copy($scope.fieldDefs));
+                $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
             };
 
             /*Function to render the column containing row operations.*/
@@ -1113,9 +1113,9 @@ WM.module('wm.widgets.grid')
                      * This will happen while switching from markup to design tab. */
                     gridOptions = $scope.datagridElement.datagrid('getOptions');
                     if (!gridOptions.colDefs.length && $scope.fieldDefs.length) {
-                        $scope.setDataGridOption('colDefs', WM.copy($scope.fieldDefs));
+                        $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
                     }
-                    $scope.setDataGridOption('data', WM.copy(newValue));
+                    $scope.setDataGridOption('data', Utils.getClonedObject(newValue));
                 }
             });
 
@@ -1131,7 +1131,7 @@ WM.module('wm.widgets.grid')
             $scope.isGridEditMode = false;
             $scope.gridData = [];
             $scope.gridOptions = {
-                data: WM.copy($scope.gridData),
+                data: Utils.getClonedObject($scope.gridData),
                 colDefs: $scope.fieldDefs,
                 startRowIndex: 1,
                 onRowSelect: function (rowData, e) {
@@ -1173,7 +1173,7 @@ WM.module('wm.widgets.grid')
                 beforeRowUpdate: function (rowData, e, eventName) {
                     /*TODO: Check why widgetid is undefined here.*/
                     $scope.$emit('update-row', $scope.widgetid, rowData, eventName);
-                    $scope.prevData = WM.copy(rowData);
+                    $scope.prevData = Utils.getClonedObject(rowData);
                     $rootScope.$safeApply($scope);
                     $rootScope.$emit("wm-event", $scope.widgetid, "update");
                     /*TODO: Bind this event.*/
@@ -1709,7 +1709,7 @@ WM.module('wm.widgets.grid')
                  (defaultFieldDefs will be passed to markup and fieldDefs are used for grid)
                  (a copy is kept to prevent changes made by ng-grid in the fieldDefs)
                  */
-                $scope.fieldDefs = WM.copy(defaultFieldDefs);
+                $scope.fieldDefs = Utils.getClonedObject(defaultFieldDefs);
 
                 /*push the fieldDefs in respective grid markup*/
                 gridObj = {
@@ -1718,7 +1718,7 @@ WM.module('wm.widgets.grid')
                     scopeId: $scope.$id
                 };
                 $rootScope.$emit('grid-defs-modified', gridObj);
-                $scope.setDataGridOption('colDefs', WM.copy($scope.fieldDefs));
+                $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
             };
 
             $scope.setDataGridOption = function (optionName, newVal) {

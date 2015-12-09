@@ -188,7 +188,7 @@ WM.module('wm.layouts.containers')
                 };
             }
         };
-    }]).directive('wmAccordioncontent', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'CONSTANTS', function ($templateCache, WidgetUtilService, PropertiesFactory, CONSTANTS) {
+    }]).directive('wmAccordioncontent', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'CONSTANTS', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, CONSTANTS, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordioncontent', ['wm.base', 'wm.layouts',  'wm.containers']);
@@ -205,7 +205,7 @@ WM.module('wm.layouts.containers')
                     'pre': function (iScope) {
 
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                             delete iScope.widgetProps.show;
                         } else {
                             iScope.widgetProps = widgetProps;

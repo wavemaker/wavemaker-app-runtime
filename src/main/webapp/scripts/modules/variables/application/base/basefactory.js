@@ -22,7 +22,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$';
 
         /* make events compatible to select widget options */
-        WM.forEach(WM.copy(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
+        WM.forEach(Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
             variableEventOptions[event] = event;
         });
 
@@ -236,7 +236,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             if (!parentCategories) {
                 /* This variableCategory doesn't inherit from other variableCategories.
                  Fetch the properties of only this variableCategory */
-                variablePropertiesObject.variableProps = WM.copy(properties[variableCategory]);
+                variablePropertiesObject.variableProps = Utils.getClonedObject(properties[variableCategory]);
             } else {
                 /* If parent categories are present, add their properties to current variable */
                 parentCategories = WM.isArray(parentCategories) ? parentCategories : [parentCategories];
@@ -293,7 +293,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
          * function to get the properties for a variable
          */
         function getProperties(category) {
-            return variableMap[category] ? WM.copy(variableMap[category].properties) : {};
+            return variableMap[category] ? Utils.getClonedObject(variableMap[category].properties) : {};
         }
 
         /*

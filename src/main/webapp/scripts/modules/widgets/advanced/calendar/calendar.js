@@ -129,7 +129,7 @@ WM.module('wm.widgets.advanced')
                         },
                         'post': function (scope, element, attrs) {
                             var handlers = [],
-                                headerOptions = WM.copy(defaultHeaderOptions),
+                                headerOptions = Utils.getClonedObject(defaultHeaderOptions),
                                 uiCalScope;
 
                             function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {

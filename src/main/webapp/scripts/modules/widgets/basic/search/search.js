@@ -53,7 +53,7 @@ WM.module('wm.widgets.basic')
             '</div>'
             );
     }])
-    .directive('wmSearch', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS) {
+    .directive('wmSearch', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base']),
             dataSetRegEx = new RegExp(/scopedataset\./ig),
@@ -86,7 +86,7 @@ WM.module('wm.widgets.basic')
                 /* get the variable-data w.r.t the variable type */
                 data = (data && data.data) || data;
                 /*set data-set*/
-                var dataSet = WM.copy(data);
+                var dataSet = Utils.getClonedObject(data);
                 /*if data-set is an array, show the 'listOfObjects' mode*/
                 if (WM.isArray(dataSet)) {
                     /*check if dataSet contains list of objects, then switch to 'listOfObjects', else display 'default'*/
@@ -201,7 +201,7 @@ WM.module('wm.widgets.basic')
                             $event = $event || {};
                             /* 'wmImgSrc' attr is found for the item select, then delete it */
                             if ($item && $item.wmImgSrc) {
-                                $item = WM.copy($item);
+                                $item = Utils.getClonedObject($item);
                                 delete $item.wmImgSrc;
                             }
                             /* add the selected object to the event.data and send to the user */

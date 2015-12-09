@@ -348,7 +348,7 @@ Application
                 'use strict';
 
                 var projectID = ProjectService.getId(), /*ProjectID will always be at the same index in the URL*/
-                    appProperties = WM.copy(_WM_APP_PROPERTIES),
+                    appProperties = Utils.getClonedObject(_WM_APP_PROPERTIES),
                     pageReadyDeregister;
 
                 $rs.isPrefabType         = appProperties.type === 'PREFAB';

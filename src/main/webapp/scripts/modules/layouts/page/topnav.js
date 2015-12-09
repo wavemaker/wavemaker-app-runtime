@@ -7,7 +7,7 @@ WM.module('wm.layouts.page')
                 '<section data-role="page-topnav" page-container init-widget class="app-top-nav" apply-styles wmtransclude page-container-target></section>'
             );
     }])
-    .directive('wmTopNav', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
+    .directive('wmTopNav', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.topnav', ['wm.layouts', 'wm.base.events.touch']);
 
@@ -21,7 +21,7 @@ WM.module('wm.layouts.page')
                 return {
                     'pre': function (iScope, element) {
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
                             element.scope().layout.navigationBar = true;

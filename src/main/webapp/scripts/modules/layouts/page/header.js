@@ -10,7 +10,7 @@ WM.module('wm.layouts.page')
                 '</header>'
             );
     }])
-    .directive('wmHeader', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, CONSTANTS) {
+    .directive('wmHeader', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.header', ['wm.layouts', 'wm.base.events.touch']);
 
@@ -24,7 +24,7 @@ WM.module('wm.layouts.page')
                 return {
                     'pre': function (iScope, element) {
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
                             element.scope().layout.header = true;

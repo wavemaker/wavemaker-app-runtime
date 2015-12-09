@@ -376,7 +376,7 @@ WM.module('wm.widgets.live')
                         pre: function (iScope, element) {
                             var elScope = element.scope();
                             if (CONSTANTS.isStudioMode) {
-                                iScope.widgetProps = WM.copy(widgetProps);
+                                iScope.widgetProps = Utils.getClonedObject(widgetProps);
                             } else {
                                 iScope.widgetProps = widgetProps;
                             }

@@ -32,7 +32,7 @@ WM.module('wm.layouts.containers')
                 return {
                     'pre': function (iScope) {
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
                         }

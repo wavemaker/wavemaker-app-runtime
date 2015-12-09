@@ -65,7 +65,7 @@ wm.plugins.database.services.DatabaseService = [
                 requestData;
 
             config = BaseServiceManager.getConfig();
-            config = WM.copy(config.Database[action]);
+            config = Utils.getClonedObject(config.Database[action]);
             requestData = params.data;
 
             urlParams = {
@@ -119,7 +119,7 @@ wm.plugins.database.services.DatabaseService = [
                         Utils.triggerFn(failureCallback, (parsedData.error && parsedData.error.message) || parsedData.error);
                     } else if (parsedData.hasOwnProperty('errorDetails')) {
                         localeObject = $rootScope.locale || $rootScope.appLocale;
-                        errMsg = WM.copy(localeObject[parsedData.errorDetails.code]);
+                        errMsg = Utils.getClonedObject(localeObject[parsedData.errorDetails.code]);
                         Utils.triggerFn(failureCallback, Utils.replace(errMsg, parsedData.errorDetails.data) || parsedData.errorDetails);
                     } else {
                         Utils.triggerFn(successCallback, parsedData);

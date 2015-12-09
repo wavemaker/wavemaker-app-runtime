@@ -80,7 +80,7 @@ wm.modules.wmCommon.services.BaseService = [
 
                 /*get the config out of baseServiceManager*/
                 if (config.hasOwnProperty(serviceParams.target) && config[serviceParams.target].hasOwnProperty(serviceParams.action)) {
-                    config = WM.copy(config[serviceParams.target][serviceParams.action]);
+                    config = Utils.getClonedObject(config[serviceParams.target][serviceParams.action]);
 
                     /*To handle dynamic urls, append the serviceParams.config.url with the static url(i.e., config.url)*/
                     if (serviceParams.config) {
@@ -142,7 +142,7 @@ wm.modules.wmCommon.services.BaseService = [
                 }
 
                 /*Assigning the error message*/
-                errMsg = WM.copy(localeObject[errorDetails.messageKey]);
+                errMsg = Utils.getClonedObject(localeObject[errorDetails.messageKey]);
                 /*Replace the parameters in the error code with the actual strings.*/
                 errMsg = Utils.replace(errMsg, errorDetails.parameters);
                 return errMsg;

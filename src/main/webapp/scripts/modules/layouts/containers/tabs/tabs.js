@@ -496,7 +496,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmTabcontent', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS) {
+    .directive('wmTabcontent', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabcontent', ['wm.base', 'wm.layouts']);
 
@@ -512,7 +512,7 @@ WM.module('wm.layouts.containers')
                 return {
                     'pre': function (iScope) {
                         if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = WM.copy(widgetProps);
+                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
                             delete iScope.widgetProps.show;// show property should be handled from pane.
                         } else {
                             iScope.widgetProps = widgetProps;

@@ -171,7 +171,7 @@ WM.module('wm.prefabs')
                 function onConfigLoad() {
                     count -= 1;
                     if (!count) {
-                        var content = WM.copy(studioPrefabNamePropertiesMap);
+                        var content = Utils.getClonedObject(studioPrefabNamePropertiesMap);
                         Object
                             .keys(studioPrefabNameConfigMap)
                             .forEach(function (prefabName) {
@@ -206,7 +206,7 @@ WM.module('wm.prefabs')
                     projectId: getProjectId(),
                     prefabId: studioPrefabNamePropertiesMap[prefabName].id
                 }, function () {
-                    appPrefabNamePropertiesMap[prefabName] = WM.copy(studioPrefabNamePropertiesMap[prefabName]);
+                    appPrefabNamePropertiesMap[prefabName] = Utils.getClonedObject(studioPrefabNamePropertiesMap[prefabName]);
                     appPrefabNameConfigMap[prefabName] = studioPrefabNameConfigMap[prefabName];
                     Utils.triggerFn(callback);
                 }, function () {
