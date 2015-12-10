@@ -5,8 +5,8 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
-                '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown role="input" tabindex="-1">' +
-                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles tabindex="{{tabindex}}" accesskey="{{shortcutkey}}">' +
+                '<div class="dropdown app-menu" init-widget data-ng-show="show" uib-dropdown role="input" tabindex="-1">' +
+                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles tabindex="{{tabindex}}" accesskey="{{shortcutkey}}">' +
                     '<i class="{{iconclass}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
@@ -16,8 +16,8 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
-                '<div class="dropdown app-menu" init-widget data-ng-show="show" dropdown role="input" tabindex="-1">' +
-                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" dropdown-toggle apply-styles accesskey="{{shortcutkey}}"><i class="{{iconclass}}" tabindex="{{tabindex}}"></i>' +
+                '<div class="dropdown app-menu" init-widget data-ng-show="show" uib-dropdown role="input" tabindex="-1">' +
+                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{shortcutkey}}"><i class="{{iconclass}}" tabindex="{{tabindex}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
@@ -26,7 +26,7 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',
-                '<ul class="dropdown-menu {{menualign}}">' +
+                '<ul ng-class="menualign" uib-dropdown-menu>' +
                     '<wm-menu-dropdown-item data-ng-repeat="item in items" linktarget="linktarget" item="item" menualign="menualign"/>' +
                 '</ul>'
             );

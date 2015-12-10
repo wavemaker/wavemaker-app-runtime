@@ -9,20 +9,20 @@
  */
 
 /*
- $modal injected to open the dialog using $modal.open
- $rootScope injected to maintain the default value for scope to be passed $modal.open
+ $uibModal injected to open the dialog using $uibModal.open
+ $rootScope injected to maintain the default value for scope to be passed $uibModal.open
  */
 WM.module('wm.widgets.dialog')
-    .service('DialogService', ['$rootScope', '$modal', 'CONSTANTS', '$modalStack', function ($rootScope, $modal, CONSTANTS, $modalStack) {
+    .service('DialogService', ['$rootScope', '$uibModal', 'CONSTANTS', '$uibModalStack', function ($rootScope, $uibModal, CONSTANTS, $uibModalStack) {
         'use strict';
 
         /*
          keep track of all the dialog instances that got opened.
-         remove from $modalInstances when a dialog is closed using hideDialog
+         remove from $uibModalInstances when a dialog is closed using hideDialog
          */
-        var $modalInstances = {},
+        var $uibModalInstances = {},
         /*dialogId is the id of the dialog to be opened
-         and params is a key value pair with values for resolve, scope, windowClass that are required as options in $modal
+         and params is a key value pair with values for resolve, scope, windowClass that are required as options in $uibModal
          */
             openDialogIds = [];
 
@@ -45,7 +45,7 @@ WM.module('wm.widgets.dialog')
         function showDialog(dialogId, params) {
 
             /* id must be provided to open the dialog*/
-            if (!dialogId || ($modalInstances && $modalInstances[dialogId])) {
+            if (!dialogId || ($uibModalInstances && $uibModalInstances[dialogId])) {
                 return;
             }
             var template = WM.element("script[id=" + dialogId + "]"),
@@ -70,7 +70,7 @@ WM.module('wm.widgets.dialog')
                 backdrop = true;
             }
             keyboard = template.attr('keyboard');
-            /* to change original keyboard value(which is string) to boolean because $modal.open expects boolean */
+            /* to change original keyboard value(which is string) to boolean because $uibModal.open expects boolean */
             keyboard = keyboard !== 'false';
             /* in case no params are passed, creating an empty object*/
             if (!params) {
@@ -98,7 +98,7 @@ WM.module('wm.widgets.dialog')
             dialogContainer = null;
             /* dialogContainer will be eligible for GC */
 
-            $modalInstances[dialogId] = $modal.open({
+            $uibModalInstances[dialogId] = $uibModal.open({
                 template: content,
                 controller: controller || dialogId + "Controller",
                 backdrop: backdrop,
@@ -109,26 +109,26 @@ WM.module('wm.widgets.dialog')
                 windowClass: windowClass || params.windowClass || ""
             });
 
-            $modalInstances[dialogId].result.then(null,
+            $uibModalInstances[dialogId].result.then(null,
                 /* called when dialog closes on backdrop click*/
                 function () {
                     // destroy the scope of the dialog
-                    if ($modalInstances[dialogId].scope) {
-                        $modalInstances[dialogId].scope.$destroy();
+                    if ($uibModalInstances[dialogId].scope) {
+                        $uibModalInstances[dialogId].scope.$destroy();
                     }
-                    $modalInstances[dialogId] = null;
+                    $uibModalInstances[dialogId] = null;
                 });
 
             // save a reference to the scope which with dialog got compiled.
-            $modalInstances[dialogId].opened.then(function () {
-                var dialogCtrlScope = $modalStack.getTop().value.modalScope;
+            $uibModalInstances[dialogId].opened.then(function () {
+                var dialogCtrlScope = $uibModalStack.getTop().value.modalScope;
                 if (params._props) {
                     WM.extend(dialogCtrlScope, params._props);
                 }
-                $modalInstances[dialogId].scope = dialogCtrlScope;
+                $uibModalInstances[dialogId].scope = dialogCtrlScope;
 
                 if (WM.isFunction(params.onOpen)) {
-                    params.onOpen($modalInstances[dialogId].scope);
+                    params.onOpen($uibModalInstances[dialogId].scope);
                 }
             });
 
@@ -161,15 +161,15 @@ WM.module('wm.widgets.dialog')
         function hideDialog(dialogId) { /* to close the dialog, hideDialog MUST be used*/
 
             /* id must be provided to close the dialog*/
-            if (!dialogId || ($modalInstances && !$modalInstances[dialogId])) {
+            if (!dialogId || ($uibModalInstances && !$uibModalInstances[dialogId])) {
                 return;
             }
-            $modalInstances[dialogId].close();
+            $uibModalInstances[dialogId].close();
             // destroy the scope of the dialog
-            if ($modalInstances[dialogId].scope) {
-                $modalInstances[dialogId].scope.$destroy();
+            if ($uibModalInstances[dialogId].scope) {
+                $uibModalInstances[dialogId].scope.$destroy();
             }
-            $modalInstances[dialogId] = null;
+            $uibModalInstances[dialogId] = null;
             /* to pop the dialog id from the openDialogIds array */
             _closeDialog(dialogId);
         }
@@ -199,7 +199,7 @@ WM.module('wm.widgets.dialog')
                 dialogContainer;
 
             /* id must be provided to open the dialog*/
-            if ($modalInstances && $modalInstances[dialogId]) {
+            if ($uibModalInstances && $uibModalInstances[dialogId]) {
                 return;
             }
             template = WM.element("script[id=" + dialogId + "]");
@@ -214,7 +214,7 @@ WM.module('wm.widgets.dialog')
             /* backdrop expects 3 values from {true, false, static}*/
             if (backdrop !== 'static') {
                 if (backdrop === 'false') {
-                    /* to change original backdrop value(which is string) to boolean because $modal.open expects boolean or 'static' */
+                    /* to change original backdrop value(which is string) to boolean because $uibModal.open expects boolean or 'static' */
                     backdrop = false;
                 } else if (backdrop === 'true' || backdrop === 'undefined') {
                     /* to maintain the default value as maintained by bootstrap modal */
@@ -223,7 +223,7 @@ WM.module('wm.widgets.dialog')
             }
             keyboard = params.keyboard || template.attr('keyboard');
             if (keyboard === 'false') {
-                /* to change original keyboard value(which is string) to boolean because $modal.open expects boolean */
+                /* to change original keyboard value(which is string) to boolean because $uibModal.open expects boolean */
                 keyboard = false;
             } else if (keyboard === 'true' || keyboard === 'undefined') {
                 /* to maintain the default value as maintained by bootstrap modal */
@@ -280,7 +280,7 @@ WM.module('wm.widgets.dialog')
             dialogContainer = null;
             /* dialogContainer will be eligible for GC */
 
-            $modalInstances[dialogId] = $modal.open({
+            $uibModalInstances[dialogId] = $uibModal.open({
                 template: content,
                 controller: controller || dialogId + "Controller",
                 backdrop: backdrop,
@@ -291,15 +291,15 @@ WM.module('wm.widgets.dialog')
                 windowTemplateUrl: "template/widget/dialog/dialog-template.html"
             });
 
-            $modalInstances[dialogId].result.then(null,
+            $uibModalInstances[dialogId].result.then(null,
                 /* called when dialog closes on backdrop click*/
                 function () {
-                    $modalInstances[dialogId] = null;
+                    $uibModalInstances[dialogId] = null;
                 });
 
             // save a reference to the scope which with dialog got compiled.
-            $modalInstances[dialogId].opened.then(function () {
-                $modalInstances[dialogId].scope = $modalStack.getTop().value.modalScope;
+            $uibModalInstances[dialogId].opened.then(function () {
+                $uibModalInstances[dialogId].scope = $uibModalStack.getTop().value.modalScope;
             });
             openDialogIds.push(dialogId);
         }

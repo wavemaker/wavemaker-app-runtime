@@ -9,17 +9,17 @@ WM.module('wm.widgets.form')
             ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox display-input" data-ng-model="_displayModel" accesskey="{{shortcutkey}}">' +
                 '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" date-disabled="excludeDays(date) || excludeDates(date)" data-ng-model="_dateModel" ' +
-                    ' datepicker-popup min-date=mindate max-date=maxdate is-open="isDateOpen" show-weeks="{{showweeks}}">' +
-                '<div dropdown is-open="isTimeOpen" class="dropdown">' +
-                    '<div class="dropdown-menu">' +
-                        '<timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></timepicker>' +
+                    ' uib-datepicker-popup min-date=mindate max-date=maxdate is-open="isDateOpen" show-weeks="{{showweeks}}">' +
+                '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
+                    '<div uib-dropdown-menu>' +
+                        '<uib-timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></uib-timepicker>' +
                     '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
                 '<span class="input-group-btn">' +
                     '<button type="button" class="btn btn-default btn-date"><i class="glyphicon glyphicon-calendar"></i></button>' +
-                    '<button type="button" class="btn btn-default btn-time dropdown-toggle"><i class="glyphicon glyphicon-time"></i></button>' +
+                    '<button type="button" class="btn btn-default btn-time uib-dropdown-toggle"><i class="glyphicon glyphicon-time"></i></button>' +
                 '</span>' +
             '</div>'
             );

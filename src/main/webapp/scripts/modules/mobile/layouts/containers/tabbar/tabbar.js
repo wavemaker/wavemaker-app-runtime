@@ -14,10 +14,10 @@ WM.module('wm.layouts.containers')
                             '</a>' +
                         '</li>' +
                         '<li class="menu-items dropdown" data-ng-show="tabItems.length > layout.max" data-ng-class="{\'dropup\' : position == \'bottom\'}" dropdown>' +
-                            '<a dropdown-toggle>' +
+                            '<a uib-dropdown-toggle>' +
                                 '<i class="app-icon {{morebuttoniconclass}}"></i><label>{{morebuttonlabel}}</label>' +
                             '</a>' +
-                            '<ul class="dropdown-menu dropdown-menu-right" data-ng-class="{\'nav navbar-nav\' : menutype == \'thumbnail\'}">' +
+                            '<ul class="dropdown-menu-right" uib-dropdown-menu data-ng-class="{\'nav navbar-nav\' : menutype == \'thumbnail\'}">' +
                                 '<li class="menu-item" data-ng-repeat="item in tabItems" data-ng-show="$index+1 >= layout.max">' +
                                     '<a data-ng-href="{{item.link}}" data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label });">' +
                                         '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +

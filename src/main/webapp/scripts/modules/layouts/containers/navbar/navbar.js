@@ -37,7 +37,7 @@ WM.module('wm.layouts.containers')
                             '</a>' +
                         '</div>' +
                         /* Collect the nav links, forms, and other content for toggling */
-                        '<div class="collapse navbar-collapse" id="collapse-content" wmtransclude ng-init="navbarCollapsed = true" collapse="navbarCollapsed">' +
+                        '<div class="collapse navbar-collapse" id="collapse-content" wmtransclude ng-init="navbarCollapsed = true" uib-collapse="navbarCollapsed">' +
                         '</div>' +
                     '</div>' +
                 '</nav> ',

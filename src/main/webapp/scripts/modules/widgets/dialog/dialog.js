@@ -7,7 +7,7 @@ WM.module('wm.widgets.dialog')
     }).run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/dialog-template.html",
-            '<div tabindex="-1" role="dialog"  class="modal default" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)" modal-transclude ></div>'
+            '<div tabindex="-1" role="dialog" class="modal default" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)" uib-modal-transclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog.html",
             '<div class="modal-dialog app-dialog" init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}" ><div class="modal-content" wmtransclude></div></div>'

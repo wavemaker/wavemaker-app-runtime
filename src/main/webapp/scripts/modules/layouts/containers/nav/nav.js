@@ -78,9 +78,9 @@ WM.module('wm.layouts.containers')
                     }
                     if (itemChildren && WM.isArray(itemChildren)) {
                         $iconNode.addClass(itemClass);
-                        $anchor.html(itemLabel).attr('dropdown-toggle', '').addClass('app-anchor dropdown-toggle').prepend($iconNode).append($caret);
-                        $list.append($anchor).attr('dropdown', '').addClass('dropdown');
-                        ulNode = WM.element('<ul class="dropdown-menu"></ul>');
+                        $anchor.html(itemLabel).attr('uib-dropdown-toggle', '').addClass('app-anchor dropdown-toggle').prepend($iconNode).append($caret);
+                        $list.append($anchor).attr('uib-dropdown', '').addClass('dropdown');
+                        ulNode = WM.element('<ul uib-dropdown-menu></ul>');
                         itemChildren.forEach(function (child) {
                             $innerAnchor = WM.element('<a class="app-anchor"></a>');
                             $innerList = WM.element('<li class="app-nav-item"></li>');

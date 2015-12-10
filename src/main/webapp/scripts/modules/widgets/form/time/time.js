@@ -5,18 +5,18 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/time.html',
-            '<div class="app-timeinput input-group dropdown" dropdown init-widget has-model apply-styles role="input"' +
+            '<div class="app-timeinput input-group dropdown" uib-dropdown init-widget has-model apply-styles role="input"' +
                 ' title="{{hint}}" ' +
                 ' data-ng-model="_proxyModel"' + /* _proxyModel is a private variable inside this scope */
                 ' data-ng-show="show" ' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})" >' +
-                '<input class="form-control app-textbox" data-ng-model="_timeModel" accesskey="{{shortcutkey}}" dropdown-toggle>' +
-                '<div class="dropdown-menu">' +
-                    '<timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian"></timepicker>' +
+                '<input class="form-control app-textbox" data-ng-model="_timeModel" accesskey="{{shortcutkey}}" uib-dropdown-toggle>' +
+                '<div uib-dropdown-menu>' +
+                    '<uib-timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian"></uib-timepicker>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
-                '<span class="input-group-btn dropdown-toggle" dropdown-toggle>' +
+                '<span class="input-group-btn dropdown-toggle" uib-dropdown-toggle>' +
                     '<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-time"></i></button>' +
                 '</span>' +
             '</div>'

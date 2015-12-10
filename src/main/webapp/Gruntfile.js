@@ -510,7 +510,7 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/modules/mobile/widgets/device/camera/camera.js',
                         '<%= config.scripts %>/modules/mobile/widgets/device/barcodeScanner/barcodeScanner.js',
                         '<%= config.scripts %>/modules/mobile/widgets/device/fileBrowser/fileBrowser.js',
-                        '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js',
+                        '<%= config.scripts %>/modules/mobile/widgets/form/fileupload/fileupload.js'
                     ],
                     '<%= config.editor %>/mobile/scripts/mobileruntimeloader.min.js': [
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js'
