@@ -101,7 +101,10 @@ public class RestRuntimeService {
             throw new WMRuntimeException("Operation does not exist with id " + operationId);
         }
         RestRequestInfo restRequestInfo = new RestRequestInfo();
-        StringBuilder endpointAddressStringBuilder = new StringBuilder(swagger.getBasePath() + ((relativePath == null) ? "" : relativePath));
+        final String seheme = swagger.getSchemes().get(0).toValue();
+        StringBuilder endpointAddressStringBuilder = new StringBuilder(
+                seheme + "://" + swagger.getHost() + swagger
+                        .getBasePath() + ((relativePath == null) ? "" : relativePath));
         String methodType = SwaggerDocUtil.getOperationType(path, operation.getOperationUid());
         restRequestInfo.setMethod(methodType.toUpperCase());
         List<String> consumes = operation.getConsumes();
