@@ -411,7 +411,7 @@ WM.module('wm.widgets.basic')
 
                 scope.widgetProps.yaxisdatakey.widget = 'multiselect';
                 $timeout(function () {
-                    scope.widgetDataset.yaxisdatakey = scope.axisoptions ? scope.axisoptions.join(',') : '';
+                    scope.widgetDataset.yaxisdatakey = scope.axisoptions || [];
                 }, 5);
             }
         }
@@ -462,7 +462,7 @@ WM.module('wm.widgets.basic')
                 scope.widgetProps.yaxisdatakey.widget = 'list';
                 scope.widgetProps.yaxisdatakey.options = options;
             } else {
-                scope.widgetDataset.yaxisdatakey = dataSet || options ? options.join(',') : '';
+                scope.widgetDataset.yaxisdatakey = dataSet || options || [];
             }
         }
 
@@ -1766,7 +1766,7 @@ WM.module('wm.widgets.basic')
                 $rootScope.$emit('update-widget-property', 'groupby', choosenColumn);
             } else {
                 scope.widgetProps.groupby.widget = 'multiselect';
-                scope.widgetDataset.groupby = columns ? columns.join(',') : '';
+                scope.widgetDataset.groupby = columns || [];
             }
         }
 
