@@ -52,6 +52,7 @@ wm.variables.services.LogoutVariableService = ['Variables',
                 performLogout = $rootScope.isUserAuthenticated;
 
                 if (performLogout) {
+                    var currentPage = $window.location.hash;
                     variable.promise = SecurityService.appLogout(function () {
                         $rootScope.isUserAuthenticated = false;
                         Utils.triggerFn(success);
@@ -61,6 +62,10 @@ wm.variables.services.LogoutVariableService = ['Variables',
                                 $window.location = 'login.html';
                             } else {
                                 $window.location.hash = '#/' + (variable.redirectTo === "index.html" ? "Main" : variable.redirectTo);
+                                /*If the current page and logout redirecting page is same then refresh the window*/
+                                if (currentPage === $window.location.hash) {
+                                    $window.location.reload();
+                                }
                             }
                         } else {
                             if (CONSTANTS.isRunMode) {
