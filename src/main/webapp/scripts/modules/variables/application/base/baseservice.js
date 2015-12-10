@@ -1137,19 +1137,20 @@ wm.variables.services.Variables = [
                 return filteredVariables;
             },
 
-            getBindMap = function (type, parentReference, oldBindings, typeChain) {
+            getBindMap = function (type, parentReference, oldBindings, visitedNodes) {
                 var types = $rootScope.dataTypes,
-                    curFieldObj,
-                    typeChainArr;
+                    curFieldObj;
 
                 oldBindings = oldBindings || {};
-                typeChain = typeChain || "";
-                typeChainArr = typeChain.split("~");
-                if (typeChainArr.indexOf(type) !== -1) {
+                if (!visitedNodes) {
+                    visitedNodes = [];
+                }
+                if (visitedNodes.indexOf(type) !== -1) {
                     return;
                 }
-                typeChain += "~" + type;
-                if (types && types[type] && types[type].fields) {
+
+                if (types && types[type] && types[type].fields && Object.keys(types[type].fields).length) {
+                    visitedNodes.push(type);
                     parentReference.fields = [];
                     WM.forEach(types[type].fields, function (field, fieldName) {
                         curFieldObj = {
@@ -1161,7 +1162,7 @@ wm.variables.services.Variables = [
                             curFieldObj.value = oldBindings[fieldName];
                         }
                         parentReference.fields.push(curFieldObj);
-                        getBindMap(field.type, curFieldObj, oldBindings[fieldName], typeChain);
+                        getBindMap(field.type, curFieldObj, oldBindings[fieldName], visitedNodes);
                     });
                 }
             };
