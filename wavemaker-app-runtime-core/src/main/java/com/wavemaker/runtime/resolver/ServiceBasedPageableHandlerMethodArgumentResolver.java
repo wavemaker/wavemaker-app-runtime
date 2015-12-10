@@ -38,7 +38,7 @@ public class ServiceBasedPageableHandlerMethodArgumentResolver extends WMPageabl
         }
         if (StringUtils.isNotBlank(serviceId)) {
             try {
-                HandlerMethodArgumentResolver handlerMethodArgumentResolver = WMAppContext.getInstance().getSpringBean(serviceId + "WMPageableHandlerMethodArgumentResolver");
+                HandlerMethodArgumentResolver handlerMethodArgumentResolver = WMAppContext.getInstance().getSpringBean(serviceId + "PageableHandlerMethodArgumentResolver");
                 return (Pageable) handlerMethodArgumentResolver.resolveArgument(methodParameter, mavContainer, webRequest, binderFactory);
             } catch (NoSuchBeanDefinitionException e) {
                 logger.debug("No service level pageableHandlerMethodResolver found for request url {}, using the app default resolver", servletRequest.getRequestURI());
