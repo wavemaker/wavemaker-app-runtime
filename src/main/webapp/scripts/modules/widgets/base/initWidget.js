@@ -489,7 +489,7 @@ WM.module('wm.widgets.base')
                 if (propName === 'datavalue' && hasModel) {
                     defineBindPropertyGetterSetters($is, $s, attrs, propDetails, propName);
                     defineDataValueGetterSetters($is, $el, attrs);
-                } else {
+                } else if (!propDetails.ignoreGetterSetters){
 
                     _isBindableProperty = isBindableProperty(propDetails);
                     if (_isBindableProperty) {

@@ -363,7 +363,9 @@ WM.module('wm.widgets.base', [])
                         "nodelabel": {"type": "list", "widget": "list"},
                         "nodeicon": {"type": "list", "widget": "list"},
                         "nodechildren": {"type": "list", "widget": "list"},
-                        "tabindex": {"type": "string", "value": "0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "levels": {"type": "number", "value": 0, "min": "0", "max": "10", "step": "1"},
+                        "datavalue": {"type": "string", "bindable": "in-bound", "ignoreGetterSetters": true, "widget": "tree-datavalue"}
                     },
 
                     "wm.text": {
@@ -1611,7 +1613,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
                 {"properties": ["caption", "gridcaption", "title", "heading", "name", "debugurl", "type", "accept", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "treeicons", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "treeicons", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild"], "parent": "properties"},
                 {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
@@ -2588,7 +2590,7 @@ WM.module('wm.widgets.base', [])
                     return;
                 }
                 if (applyType === 'scrollable-container') {
-                    if(_.includes(SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST, key)) {
+                    if (_.includes(SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST, key)) {
                         return;
                     }
 

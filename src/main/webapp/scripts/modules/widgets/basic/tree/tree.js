@@ -10,85 +10,110 @@ WM.module('wm.widgets.basic')
         'Utils',
         'CONSTANTS',
 
-        function (PropertiesFactory, $rootScope, WidgetUtilService, $timeout, Utils, CONSTANTS) {
+        function (PropertiesFactory, $rs, WidgetUtilService, $timeout, Utils, CONSTANTS) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.tree', ['wm.base', 'wm.base.editors']),
                 notifyFor = {
-                    'scopedataset': true,
-                    'dataset': true,
-                    'treeicons': true,
-                    'nodelabel': true,
-                    'nodeicon': true,
-                    'nodechildren': true
+                    'scopedataset' : true,
+                    'dataset'      : true,
+                    'treeicons'    : true,
+                    'nodelabel'    : true,
+                    'nodeicon'     : true,
+                    'nodechildren' : true
                 },
                 defaultTreeIconClass = 'plus-minus',
                 ICON_CLASSES = {
                     'folder': {
-                        'expanded': 'glyphicon-folder-open',
+                        'expanded' : 'glyphicon-folder-open',
                         'collapsed': 'glyphicon-folder-close'
                     },
                     'circle-plus-minus': {
-                        'expanded': 'glyphicon-minus-sign',
+                        'expanded' : 'glyphicon-minus-sign',
                         'collapsed': 'glyphicon-plus-sign'
                     },
                     'chevron': {
-                        'expanded': 'glyphicon-chevron-down',
+                        'expanded' : 'glyphicon-chevron-down',
                         'collapsed': 'glyphicon-chevron-right'
                     },
                     'menu': {
-                        'expanded': 'glyphicon-menu-down',
+                        'expanded' : 'glyphicon-menu-down',
                         'collapsed': 'glyphicon-menu-right'
                     },
                     'triangle': {
-                        'expanded': 'glyphicon-triangle-bottom',
+                        'expanded' : 'glyphicon-triangle-bottom',
                         'collapsed': 'glyphicon-triangle-right'
                     },
                     'expand-collapse': {
-                        'expanded': 'glyphicon-collapse-down',
+                        'expanded' : 'glyphicon-collapse-down',
                         'collapsed': 'glyphicon-expand'
                     },
                     'plus-minus': {
-                        'expanded': 'glyphicon-minus',
+                        'expanded' : 'glyphicon-minus',
                         'collapsed': 'glyphicon-plus'
                     }
                 };
 
-            function constructNodes(scope, nodes, parent) {
+            function constructNodes($is, nodes, parent, levels, deep) {
 
-                var iconField = scope.nodeicon || 'icon',
-                    labelField = scope.nodelabel || 'label',
-                    childrenField = scope.nodechildren || 'children',
-                    $ul = WM.element('<ul></ul>'),
-                    collapsedIconClass = ICON_CLASSES[scope.treeicons || defaultTreeIconClass].collapsed;
+                var $ul           = WM.element('<ul></ul>'),
+                    iconField     = $is.nodeicon     || 'icon',
+                    labelField    = $is.nodelabel    || 'label',
+                    childrenField = $is.nodechildren || 'children',
+                    _iconClses    = ICON_CLASSES[$is.treeicons || defaultTreeIconClass],
+                    _expr         = CONSTANTS.isRunMode ? $is.datavalue : undefined,
+                    _iconCls,
+                    _cls;
+
+                _cls     = levels > 0 ? ' expanded ' : ' collapsed ';
+                _iconCls = _cls + (levels > 0 ? _iconClses.expanded : _iconClses.collapsed);
+
+                deep = deep || 0;
 
                 parent.append($ul);
-                nodes.forEach(function (node) {
-                    var $li = WM.element('<li></li>'),
-                        expandCollapseIcon,
-                        $iconNode = WM.element('<i></i>'),
-                        nodeLabel = node[labelField],
-                        nodeIcon = node[iconField],
-                        nodeChildren = node[childrenField];
+                nodes.forEach(function (node, idx) {
+                    var $li          = WM.element('<li></li>'),
+                        $iconNode    = WM.element('<i></i>'),
+                        nodeLabel    = node[labelField],
+                        nodeIcon     = node[iconField],
+                        nodeChildren = node[childrenField],
+                        expandCollapseIcon;
 
                     $li.data('nodedata', node)
                         .append($iconNode)
                         .append('<span class="title">' + nodeLabel + '</span>')
                         .appendTo($ul);
 
+
+                    // if datavalue(ie, expr) is provided select the tree node accordingly
+                    // if datavalue === 'FirstNode' -- select the FirstNode at level 0
+                    // if datavalue === 'LastNode' -- select the LastNode at level 0
+                    // if datavalue is a bind expression evaluate the expression for each node of the tree till the condition is satisfied.
+
+                    // Perform LastNode check only at level 0.(ie, deep = 0);
+                    if (!$is._selectNode && _expr) {
+                        if ((_expr === 'FirstNode' && idx === 0)
+                                || (!deep && _expr === 'LastNode' && idx === nodes.length - 1)
+                                || $is.$eval(_expr, node)
+                                ) {
+                            // save a reference of the node to be selected in `_selectNode`
+                            $is._selectNode = $li;
+                        }
+                    }
+
                     if (nodeIcon) {
                         $iconNode.addClass(nodeIcon);
                     }
 
                     if (nodeChildren && nodeChildren.length) { // parent node
-                        $li.addClass('parent-node collapsed');
-                        expandCollapseIcon = WM.element('<i class="glyphicon collapsed ' +  collapsedIconClass + '"></i>');
+                        $li.addClass('parent-node ' + _cls);
+                        expandCollapseIcon = WM.element('<i class="glyphicon ' + _iconCls  + ' "></i>');
                         if (nodeIcon) {
                             $iconNode.addClass(nodeIcon);
                         }
                         $li.prepend(expandCollapseIcon);
-                        if (!scope.widgetid) { // when the widget is in canvas render only the first level
-                            constructNodes(scope, nodeChildren, $li);
+                        if (!$is.widgetid) { // when the widget is in canvas render only the first level
+                            constructNodes($is, nodeChildren, $li, levels - 1, deep + 1);
                         }
                     } else {
                         if (!nodeIcon) {
@@ -99,7 +124,7 @@ WM.module('wm.widgets.basic')
                 });
             }
 
-            function getNodes(scope, newVal) {
+            function getNodes($is, newVal) {
                 var nodes = [];
                 if (WM.isString(newVal)) {
                     newVal = newVal.trim();
@@ -116,67 +141,107 @@ WM.module('wm.widgets.basic')
                     nodes = [newVal];
                 }
 
-                if (scope.widgetid) { // when the widget is inside canvas
-                    scope.keys = WM.isObject(nodes[0]) ? Object.keys(nodes[0]) : [];
+                if ($is.widgetid) { // when the widget is inside canvas
+                    $is.keys = WM.isObject(nodes[0]) ? Object.keys(nodes[0]) : [];
                     /*Changing the properties like labels,children and icons*/
-                    scope.widgetProps.nodelabel.options = scope.widgetProps.nodechildren.options = scope.widgetProps.nodeicon.options = [''].concat(scope.keys);
+                    $is.widgetProps.nodelabel.options = $is.widgetProps.nodechildren.options = $is.widgetProps.nodeicon.options = [''].concat($is.keys);
                 }
                 return nodes;
             }
 
-            function changeTreeIcons(element, newVal, oldVal) {
-                newVal = newVal || defaultTreeIconClass;
-                oldVal = oldVal || defaultTreeIconClass;
-                element.find('i.expanded').switchClass(ICON_CLASSES[oldVal].expanded, ICON_CLASSES[newVal].expanded);
-                element.find('i.collapsed').switchClass(ICON_CLASSES[oldVal].collapsed, ICON_CLASSES[newVal].collapsed);
+            function changeTreeIcons($el, nv, ov) {
+                nv = nv || defaultTreeIconClass;
+                ov = ov || defaultTreeIconClass;
+                $el.find('i.expanded').switchClass(ICON_CLASSES[ov].expanded, ICON_CLASSES[nv].expanded);
+                $el.find('i.collapsed').switchClass(ICON_CLASSES[ov].collapsed, ICON_CLASSES[nv].collapsed);
             }
 
-            function renderTree(element, scope) {
-                element.empty();
-                if (scope.nodes.length) {
-                    var docFrag = document.createDocumentFragment();
-                    constructNodes(scope, scope.nodes, WM.element(docFrag));
-                    element.append(docFrag);
+            function toggleExpandCollapseNode($is, $i, $li) {
+                var treeIcons = ICON_CLASSES[$is.treeicons || defaultTreeIconClass];
+
+                if ($i.hasClass('collapsed')) {
+                    $i.switchClass('collapsed ' + treeIcons.collapsed, 'expanded ' + treeIcons.expanded);
+                    $li.switchClass('collapsed').addClass('expanded');
+                } else if ($i.hasClass('expanded')) {
+                    $i.switchClass('expanded ' + treeIcons.expanded, 'collapsed ' + treeIcons.collapsed);
+                    $li.removeClass('expanded').addClass('collapsed');
                 }
             }
 
-            function propertyChangeHandler(scope, element, key, newVal, oldVal) {
+            function renderTree($el, $is, attrs) {
+                var levels = +attrs.levels || 0,
+                    docFrag,
+                    $li,
+                    data,
+                    path = '',
+                    fn;
+
+                $el.empty();
+
+                if (attrs.widgetid) {
+                    levels = 0;
+                }
+                if ($is.nodes.length) {
+                    docFrag = document.createDocumentFragment();
+                    constructNodes($is, $is.nodes, WM.element(docFrag), levels);
+                    $el.append(docFrag);
+                }
+
+                if ($is._selectNode) {
+                    $li = $is._selectNode;
+                    $li.addClass('selected');
+                    data = $li.data('nodedata');
+
+                    $li.parentsUntil($el, 'li.parent-node.collapsed')
+                        .each(function () {
+                            var $current = WM.element(this),
+                                $i       = $current.children('i.collapsed'),
+                                $title   = $current.children('.title');
+                            toggleExpandCollapseNode($is, $i, $current);
+
+                            path = '/' + $title.text() + path;
+                        });
+
+                    $is.selecteditem = Utils.getClonedObject(data);
+                    $is.selecteditem.path = path;
+
+                    fn = $is.onSelect({$event: undefined, $scope: $is, $item: data, $path: path});
+                    Utils.triggerFn(fn);
+                    $rs.$safeApply($is);
+                }
+            }
+
+            function propertyChangeHandler($is, $el, attrs, key, newVal, oldVal) {
                 switch (key) {
                 case 'scopedataset':
                 case 'dataset':
-                    scope.nodes = getNodes(scope, newVal.data || newVal);
-                    renderTree(element, scope);
+                    $is.nodes = getNodes($is, newVal.data || newVal);
+                    $is.renderTree($el, $is, attrs);
                     break;
                 case 'nodeicon':
                 case 'nodelabel':
                 case 'nodechildren':
-                    renderTree(element, scope);
+                    $is.renderTree($el, $is, attrs);
                     break;
                 case 'treeicons':
-                    changeTreeIcons(element, newVal, oldVal);
+                    changeTreeIcons($el, newVal, oldVal);
                     break;
                 }
             }
 
-            function bindEvents(scope, element) {
+            function bindEvents($is, element) {
 
                 element.on('click', function (evt) {
                     var target = WM.element(evt.target), li = target.closest('li'),
                         fn,
                         path = '',
-                        treeIcons = ICON_CLASSES[scope.treeicons || defaultTreeIconClass],
+
                         data;
-                    scope.selecteditem = {};
+                    $is.selecteditem = {};
                     evt.stopPropagation();
 
                     if (target.is('i')) {
-                        if (target.hasClass('collapsed')) {
-                            target.switchClass('collapsed ' + treeIcons.collapsed, 'expanded ' + treeIcons.expanded);
-                            li.switchClass('collapsed').addClass('expanded');
-                        } else if (target.hasClass('expanded')) {
-                            target.switchClass('expanded ' + treeIcons.expanded, 'collapsed ' + treeIcons.collapsed);
-                            li.removeClass('expanded').addClass('collapsed');
-                        }
+                        toggleExpandCollapseNode($is, target, li);
                     } else if (target.is('span.title')) {
                         element.find('.selected').removeClass('selected');
                         li.addClass('selected');
@@ -188,15 +253,34 @@ WM.module('wm.widgets.basic')
                                 path = '/' + current + path;
                             });
 
-                        scope.selecteditem = Utils.getClonedObject(data);
-                        scope.selecteditem.path = path;
+                        $is.selecteditem = Utils.getClonedObject(data);
+                        $is.selecteditem.path = path;
 
-                        fn = scope.onSelect({$event: evt, $scope: scope, $item: data, $path: path});
+                        fn = $is.onSelect({$event: evt, $scope: $is, $item: data, $path: path});
                         Utils.triggerFn(fn);
-                        $rootScope.$safeApply(scope);
+                        $rs.$safeApply($is);
                     }
                 });
+            }
 
+            function defineDatavalueGetterSetter($is, val) {
+                if (CONSTANTS.isStudioMode) {
+                    var DEFAULTS = ['', 'FirstNode', 'LastNode'];
+                    Object.defineProperty($is, 'datavalue', {
+                        'get': function () {
+                            return val;
+                        },
+                        'set': function (nv) {
+                            if (_.includes(DEFAULTS, nv)) {
+                                $is.binddatavalue = undefined;
+                                val = nv;
+                            } else {
+                                $is.binddatavalue = nv;
+                                val = undefined;
+                            }
+                        }
+                    });
+                }
             }
 
             return {
@@ -209,34 +293,39 @@ WM.module('wm.widgets.basic')
                 'replace': true,
                 'compile': function () {
                     return {
-                        'pre': function (iScope) {
+                        'pre': function ($is) {
                             if (CONSTANTS.isStudioMode) {
-                                iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                                $is.widgetProps = Utils.getClonedObject(widgetProps);
                             } else {
-                                iScope.widgetProps = widgetProps;
+                                $is.widgetProps = widgetProps;
                             }
+                            defineDatavalueGetterSetter($is);
                         },
-                        'post': function (scope, element, attrs) {
+                        'post': function ($is, $el, attrs) {
 
-                            if (!scope.widgetid) {
-                                bindEvents(scope, element);
+                            if (!$is.widgetid) {
+                                bindEvents($is, $el);
                             }
 
                             // wait till all the properties are set in the scope.
-                            renderTree = _.debounce(renderTree, 20);
+                            $is.renderTree = _.debounce(renderTree, 20);
 
-                            var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
-                            WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+                            var onPropertyChange = propertyChangeHandler.bind(undefined, $is, $el, attrs);
+                            WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
 
-                            if (!scope.widgetid && attrs.scopedataset) {
+                            if (attrs.datavalue && CONSTANTS.isRunMode) {
+                                $is.datavalue = attrs.datavalue.replace('bind:', '');
+                            }
+
+                            if (!$is.widgetid && attrs.scopedataset) {
                                 $timeout(function () {
-                                    scope.$watch('scopedataset', function (newVal) {
+                                    $is.$watch('scopedataset', function (newVal) {
                                         onPropertyChange('scopedataset', newVal);
                                     }, true);
                                 }, 0);
                             }
 
-                            WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                            WidgetUtilService.postWidgetCreate($is, $el, attrs);
                         }
                     };
                 }
@@ -276,12 +365,17 @@ WM.module('wm.widgets.basic')
  * @param {object=} dataset
  *                  Set this property to a variable to populate the list of values to display. <br>
  *                  This is a bindable property.
+ * @param {string=} datavalue
+ *                  Provided expression will be evaluated for each node of the tree and the first node which satisfies the given expression will be selected by default. <br>
+ *                  This is a bindable property.
  * @param {string=} nodelabel
  *                  This property from the dataset will be used to display label for the tree node.
  * @param {string=} nodeicon
  *                  This property from the dataset will be used to display icon for the tree node.
  * @param {string=} nodechildren
  *                  This property from the dataset will be used to display children for the tree node.
+ * @param {number=} levels
+ *                  This property sets levels of the tree to be expanded by default.
  * @param {boolean=} show
  *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the tree widget on the web page. <br>
@@ -294,7 +388,7 @@ WM.module('wm.widgets.basic')
     <example module="wmCore">
         <file name="index.html">
             <div data-ng-controller="Ctrl" class="wm-app">
-               <wm-tree scopedataset="nodes"></wm-tree>
+               <wm-tree scopedataset="nodes" levels="2" datavalue="label==='item2.1'"></wm-tree>
             </div>
         </file>
         <file name="script.js">

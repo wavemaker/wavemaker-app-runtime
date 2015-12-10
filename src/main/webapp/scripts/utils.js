@@ -213,24 +213,22 @@ WM.module('wm.utils', [])
             return label;
         }
 
-        /*Accepts an array or a string separated with symbol and returns pretiffied result*/
+        /*Accepts an array or a string separated with symbol and returns prettified result*/
         function prettifyLabels(names, separator) {
-            var modifiedNames = [],
+            var modifiedNames,
                 namesArray = [],
-                isArray = WM.isArray(names),
-                separator = separator || ',';
-            if(!isArray) {
+                isArray    = WM.isArray(names);
+            separator = separator || ',';
+
+            if (!isArray) {
                 namesArray = names.split(separator);
             }
 
-            WM.forEach(namesArray,function (name) {
-                modifiedNames.push(prettifyLabel(name));
-            });
+            modifiedNames = _.map(namesArray, prettifyLabel);
             if (isArray) {
                 return modifiedNames;
-            } else {
-                return modifiedNames.join(separator);
             }
+            return modifiedNames.join(separator);
         }
 
         /*function to get variable name bound to an element*/
@@ -1515,7 +1513,7 @@ WM.module('wm.utils', [])
          * @param object object/array to clone
          * @returns a clone of the passed object
          */
-        function getClonedObject (object) {
+        function getClonedObject(object) {
             return _.cloneDeep(object);
         }
 
@@ -1527,7 +1525,7 @@ WM.module('wm.utils', [])
         this.periodSeparate             = periodSeparate;
         this.spaceSeparate              = spaceSeparate;
         this.prettifyLabel              = prettifyLabel;
-        this.prettifyLabels              = prettifyLabels;
+        this.prettifyLabels             = prettifyLabels;
         this.getVariableName            = getVariableName;
         this.getImageUrl                = getImageUrl;
         this.getResourceUrl             = getResourceURL;
