@@ -940,8 +940,7 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts.listtemplate': {
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
-                        "class": {"type": "string", "show": false, "pattern": classRegex},
-                        "layout":  {"type": "list", "options": ["blank", "gridlayout", "inline", "media", "panel", "thumbnail"], "value": "panel"}
+                        "class": {"type": "string", "show": false, "pattern": classRegex}
                     },
                     'wm.layouts.mediatemplate': {
                         "width": {"type": "string", "pattern": dimensionRegex, "value": 100},
