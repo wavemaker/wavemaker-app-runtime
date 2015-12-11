@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
                         '<div class="drop-box" drag-files="onFileSelect($event,$files)">' +
                             '<i class="{{iconclass}}"/>' +
                             '<div class="message">' +
-                                '<label data-ng-bind="fileuploadtitle"></label>' +
+                                '<label data-ng-bind="caption"></label>' +
                                     '<form class="form-horizontal" name="{{multipleFileFormName}}">' +
                                         '<input class="file-input" type="file" name="files" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" multiple data-ng-disabled="disabled">' +
                                         '<a href="javascript:void(0);" class="app-anchor" data-ng-bind="fileuploadmessage"></a>' +
@@ -150,7 +150,8 @@ WM.module('wm.widgets.form')
                 'contenttype': true,
                 'service': true,
                 'operation': true,
-                'mode': true
+                'mode': true,
+                'multiple': true
             };
         return {
             restrict: 'E',
@@ -173,6 +174,7 @@ WM.module('wm.widgets.form')
 
                     post: function (scope, element, attrs) {
                         var handlers = [], services = [], isPrefabInsideProject = false,
+                            MODE_SELECT = 'Select', MODE_UPLOAD = 'Upload',
                             fetchServices = function (serviceId) {
                                 services = [];
                                 if (CONSTANTS.isStudioMode && isPrefabInsideProject) {
@@ -278,6 +280,12 @@ WM.module('wm.widgets.form')
                                     size = (Math.round(fileSize * 100 / FILESIZE_KB) / 100).toString() + 'KB';
                                 }
                                 return size;
+                            },
+                            defaultCaptions = {
+                                'MULTIPLE_UPLOAD': "Drop your files here to start uploading.",
+                                'MULTIPLE_SELECT': "Drop your files here.",
+                                'UPLOAD': 'Upload',
+                                'SELECT': 'Select'
                             },
                             wholeUploadContent = [],
                         /* function to call user-defined on-select fn*/
@@ -451,7 +459,7 @@ WM.module('wm.widgets.form')
                                     completeUrl += '?relativePath=' + scope.destination;
                                 }
                                 scope.status_messsage = 'Selected';
-                                scope.showStatusMessage = scope.mode === 'Select';
+                                scope.showStatusMessage = scope.mode === MODE_SELECT;
 
                                 if (window.FormData) {
                                     if (xhr !== undefined) {
@@ -479,7 +487,7 @@ WM.module('wm.widgets.form')
                                         scope.selectedFiles = selectedFiles;
                                     });
                                     /*Uploading the files only when mode is Upload*/
-                                    if (scope.mode === 'Select') {
+                                    if (scope.mode === MODE_SELECT) {
                                         return;
                                     }
                                     /* create ajax xmlHttp request */
@@ -503,7 +511,7 @@ WM.module('wm.widgets.form')
                                         formName: scope.multiple ? scope.multipleFileFormName : scope.singleFileFormName
                                     };
                                     /*Uploading the files only when mode is Upload*/
-                                    if (scope.mode === 'Select') {
+                                    if (scope.mode === MODE_SELECT) {
                                         return;
                                     }
                                     Utils.fileUploadFallback(uploadConfig, onSuccess, onFail);
@@ -556,6 +564,19 @@ WM.module('wm.widgets.form')
                                 scope.$root.$emit("create-service-variable", service, getServiceType(service), operation);
                                 /*Saving service and operation in markup*/
                                 $rootScope.$emit("set-markup-attr", scope.widgetid, {'service': service, 'operation': operation});
+                            },
+
+                            /*Overwrite the caption only if they are default*/
+                            getCaption = function (scope) {
+                                if (_.includes(defaultCaptions, scope.caption)) {
+                                    if (scope.mode === MODE_UPLOAD) {
+                                        return scope.multiple ? defaultCaptions.MULTIPLE_UPLOAD : defaultCaptions.UPLOAD;
+                                    }
+                                    if (scope.mode === MODE_SELECT) {
+                                        return scope.multiple ? defaultCaptions.MULTIPLE_SELECT : defaultCaptions.SELECT;
+                                    }
+                                }
+                                return scope.caption;
                             };
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -593,11 +614,8 @@ WM.module('wm.widgets.form')
                                 }
                                 break;
                             case 'mode':
-                                if (scope.multiple) {
-                                    scope.fileuploadtitle = scope.mode === 'Upload' ? 'Drop your files here to start uploading.' : 'Drop your files here.';
-                                } else {
-                                    scope.caption = scope.mode;
-                                }
+                            case 'multiple':
+                                scope.caption = getCaption(scope);
                                 break;
                             }
                         }
