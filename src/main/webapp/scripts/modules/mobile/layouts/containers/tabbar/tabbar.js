@@ -13,7 +13,7 @@ WM.module('wm.layouts.containers')
                                 '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +
                             '</a>' +
                         '</li>' +
-                        '<li class="menu-items dropdown" data-ng-show="tabItems.length > layout.max" data-ng-class="{\'dropup\' : position == \'bottom\'}" dropdown>' +
+                        '<li class="menu-items dropdown" data-ng-show="tabItems.length > layout.max" data-ng-class="{\'dropup\' : position == \'bottom\'}" uib-dropdown>' +
                             '<a uib-dropdown-toggle>' +
                                 '<i class="app-icon {{morebuttoniconclass}}"></i><label>{{morebuttonlabel}}</label>' +
                             '</a>' +
