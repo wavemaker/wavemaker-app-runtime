@@ -1251,28 +1251,16 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"}
                     },
                     "wm.popover": {
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
-                        "iconurl": {"type": "string", "bindable": "in-bound"},
-                        "iconwidth": {"type": "string", "pattern": dimensionRegex},
-                        "iconheight": {"type": "string", "pattern": dimensionRegex},
-                        "iconmargin": {"type": "string", "pattern": dimensionRegex},
-                        "caption": {"type": "string", "value": "Link", "bindable": "in-out-bound", "maxlength": 256},
-                        "badgevalue": {"type": "string", "bindable": "in-out-bound"},
-                        "tabindex": {"type": "string", "value": "0"},
-                        "whitespace": {"type": "list", "options": [" ", "normal", "nowrap", "pre", "pre-line", "pre-wrap"], "value": " "},
-                        "wordbreak": {"type": "list", "options": ["break-word", "normal"]},
-                        "misc": {"type": "string"},
-                        "opacity": {"type": "string", "widget": "slider"},
+                        "content": {"type": "list", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
+                        "hyperlink": {"type": "string", "value": "", "show": false},
+                        "target": {"type": "string", "value" : "", "show": false},
                         "popoverwidth" :  {"type": "string"},
                         "popoverheight" :  {"type": "string"},
                         "popoverarrow" :  {"type": "boolean", "value" : true},
                         "popoverautoclose": {"type": "boolean", "value" : true},
                         "popoverplacement": {"type": "list", "options": ["bottom", "left", "right", "top"], "value": "bottom"},
-                        "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
-                        "zindex": {"type": "string", "pattern": zindexRegex},
-                        "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'},
-                        "animation": {"type": "list", "options": animationOptions},
-                        "shortcutkey": {"type": "string"}
+                        "onShow": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onHide": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.prefabs": {
                         "margin": {"type": "string", "widget": "box"},
