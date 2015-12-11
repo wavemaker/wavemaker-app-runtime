@@ -22,16 +22,20 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.text', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard']),
             notifyFor = {
-                'type': true
+                'type': true,
+                'autocomplete': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, attrs, key, newVal) {
+        function propertyChangeHandler(scope, element, attrs, key, newVal) {
             switch (key) {
             case 'type':
                 scope.widgetProps.datavalue.type = (newVal === 'number' || newVal === 'date') ? newVal : 'string';
                 scope.widgetProps.accept.show = newVal === 'file';
                 scope.widgetProps.step.show = newVal === 'number';
+                break;
+            case 'autocomplete':
+                (newVal === true || newVal === 'true') ? element.removeAttr(key) : element.attr(key, 'off');
                 break;
             }
         }
@@ -79,7 +83,7 @@ WM.module('wm.widgets.form')
                     'post': function (scope, element, attrs) {
 
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, attrs), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
                         /*Called from form reset when users clicks on form reset*/
                         scope.reset = function () {

@@ -370,6 +370,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.text": {
                         "autofocus": {"type": "boolean"},
+                        "autocomplete": {"type": "boolean", "value": true},
                         "readonly": {"type": "boolean"},
                         "updateon": {"type": "list", "value": "blur", "widget": "updateon"},
                         "updatedelay": {"type": "number", "value": 0},
