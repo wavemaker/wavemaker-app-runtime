@@ -58,8 +58,9 @@ WM.module('wm.layouts.page')
         'WidgetUtilService',
         'CONSTANTS',
         '$compile',
+        '$rootScope',
 
-        function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $compile) {
+        function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $compile, $rootScope) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.template', []),
@@ -82,6 +83,7 @@ WM.module('wm.layouts.page')
                             if (CONSTANTS.isRunMode && !templateShowCaseRendered) {
                                 templateShowCaseRendered = true;
                                 $compile('<wm-template-showcase></wm-template-showcase>')(scope.$root);
+                                $rootScope.$emit('template-ready');
                             }
                         }
                     };
