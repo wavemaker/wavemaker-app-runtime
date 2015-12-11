@@ -373,7 +373,7 @@ WM.module('wm.widgets.base', [])
                         "readonly": {"type": "boolean"},
                         "updateon": {"type": "list", "value": "blur", "widget": "updateon"},
                         "updatedelay": {"type": "number", "value": 0},
-                        "type": {"type": "list", "options": ["color", "date", "datetime-local", "email", "file", "month", "number", "password", "search", "tel", "text", "time", "url", "week"], "value": "text"},
+                        "type": {"type": "list", "options": ["color", "date", "datetime-local", "email", "month", "number", "password", "search", "tel", "text", "time", "url", "week"], "value": "text"},
                         "accept": {"type": "datalist", "options": ["image/*", "audio/*", "video/*"], "show": false},
                         "datavalue": {"type": "string", value: "", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
