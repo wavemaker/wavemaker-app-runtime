@@ -550,6 +550,8 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "string", "value": "Message", "bindable": "in-out-bound", "maxlength": 256},
                         "onClose": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
+                        "width": {"type": "string", "pattern": dimensionRegex},
+                        "height": {"type": "string", "pattern": dimensionRegex},
                         "hideclose": {"type": "boolean", "value": false}
                     },
 
