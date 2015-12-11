@@ -1,4 +1,4 @@
-/*global WM */
+/*global WM, _ */
 /*jslint todo: true */
 /*Directive for search */
 
@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/form/searchlist.html',
             '<a>' +
                 '<img data-ng-src="{{match.model.wmImgSrc}}" data-ng-if="match.model.wmImgSrc" width="16">' +
-                '<span bind-html-unsafe="match.label | typeaheadHighlight:query"></span>' +
+                '<span ng-bind-html="match.label | uibTypeaheadHighlight:query"></span>' +
             '</a>'
             );
         $templateCache.put('template/widget/form/search.html',
@@ -32,7 +32,7 @@ WM.module('wm.widgets.basic')
                     '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}" ' +
                         'data-ng-model="query"' +
                         ' accesskey="{{shortcutkey}}"' +
-                        'uib-typeahead="item[displaylabel] for item in itemList | filter:{\'{{searchkey}}\':$viewValue} | limitTo:limit" ' +
+                        'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
@@ -53,6 +53,20 @@ WM.module('wm.widgets.basic')
             '</div>'
             );
     }])
+    .filter('_custom_search_filter', function () {
+        'use strict';
+        return function (entries, key, val) {
+
+            // filter the entries based on the $is.searchkey and the input
+            if (!key) {
+                return entries;
+            }
+
+            return _.filter(entries, function (entry) {
+                return _.contains(entry[key], val);
+            });
+        };
+    })
     .directive('wmSearch', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base']),
