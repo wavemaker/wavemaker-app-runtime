@@ -183,7 +183,7 @@ public class RestRuntimeService {
         if (!swaggerDocumentCache.containsKey(serviceId)) {
             InputStream stream = null;
             try {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiDocument.json");
+                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(serviceId + "_apiTarget.json");
                 Swagger swaggerDoc = JSONUtils.toObject(stream, Swagger.class);
                 swaggerDocumentCache.put(serviceId, swaggerDoc);
             } finally {
