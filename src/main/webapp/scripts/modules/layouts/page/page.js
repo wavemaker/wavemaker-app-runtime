@@ -37,6 +37,7 @@ WM.module('wm.layouts.page')
                             /* only expose the widgets of the active page to rootScope */
                             if (!scope.$parent.partialname && !scope.prefabname) {
                                 $rootScope.Widgets = scope.Widgets;
+                                $rootScope.$activePageEl = element;
                             }
                             if (scope.$parent.partialname) {
                                 /* get partial page container's scope */

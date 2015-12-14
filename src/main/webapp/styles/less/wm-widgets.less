@@ -294,57 +294,44 @@ html, body {
   }
 }
 
-.app-popover{
-    display : inline-block;
-    cursor : pointer;
-    .app-popover-link{
-        display : block;
+.app-popover.popover{
+    min-width: 50px;
+    min-height: 50px;
+    margin-left: -5px;
+    .popover-content {
+      width: 100%;
+      height: 100%;
+      .app-partial {
+        overflow: auto;
+      }
     }
-    >.popover{
-        display : none;
-        max-width : none !important;
-        min-width : 50px;
-        min-height : 50px;
-        padding: 0;
-        margin-left: -5px;
-        .popover-content {
-            width: 100%;
-            height: 100%;
-            .app-partial {
-              overflow: auto;
+    &.left,&.right{
+        >.arrow{
+            &.top{
+                top: 1em;
+                bottom: auto;
             }
-        }
-        .arrow {
-            margin : 0;
-        }
-        &.left,&.right{
-            .arrow{
-                &.top{
-                    top : 1em;
-                    bottom : auto;
-                }
-                &.bottom{
-                    top : auto;
-                    bottom : 1em;
-                }
-            }
-        }
-        &.top,&.bottom{
-            .arrow{
-                &.left{
-                    left : 2em;
-                    right : auto;
-                }
-                &.right{
-                    left : auto;
-                    right : 1em;
-                }
+            &.bottom{
+                top: auto;
+                bottom: 1em;
             }
         }
     }
-    .badge {
-      margin-left: 5px;
+    &.top,&.bottom{
+        >.arrow{
+            &.left{
+                left: 2em;
+                right: auto;
+            }
+            &.right{
+                left: auto;
+                right: 1em;
+            }
+        }
     }
+}
+.wm-app .app-popover.popover{
+  max-width : none;
 }
 /* popover class makes widget overlap dialog */
 .wm-app .popover {
