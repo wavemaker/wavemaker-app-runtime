@@ -12,18 +12,6 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova']
                 CONSTANTS.hasCordova = true;
                 $rootScope.$on('application-ready', function () {
                     AppAutoUpdateService.start();
-                    /* Set root url */
-                    Utils.fetchContent(
-                        'json',
-                        Utils.preventCachingOf('./config.json'),
-                        function (response) {
-                            if (!response.error) {
-                                $rootScope.project.deployedUrl = response.baseUrl;
-                            }
-                        },
-                        WM.noop,
-                        true
-                    );
                 });
             }
             if (CONSTANTS.isRunMode) {

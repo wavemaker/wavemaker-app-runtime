@@ -1,4 +1,4 @@
-/*global WM, wm*/
+/*global WM, wm, _*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -27,6 +27,7 @@ wm.modules.wmCommon.services.BaseService = [
         /*to store the failed function calls due to 401 error*/
             errorCallStack = [],
             localeObject,
+            serviceCallPatterns = [new RegExp("^services"), new RegExp("j_spring_security_check")],
         /*Function to log actions performed; using the wmLogger*/
             logAction = function (type, message, description) {
                 /*Return if wmLogger does not exist*/
@@ -228,14 +229,23 @@ wm.modules.wmCommon.services.BaseService = [
                 logAction("failure", "GOT_RESPONSE_FROM_SERVER", config.url + ' as ' + errMsg);
                 return error;
             },
-
+            /**
+             * Checks whether the given url is a service url or not.
+             *
+             * @param url
+             * @returns {boolean} return true, if url matches with at least one service call pattern.
+             */
+            isServiceCall = function (url) {
+                return _.some(serviceCallPatterns, function (p) {
+                    return p.test(url);
+                });
+            },
         /* wrapper for the $http method*/
             makeCall = function (config, successCallback, failureCallback) {
 
                 logAction("debug", "SEND_REQUEST_TO_SERVER", config.url);
 
-                var pattern = new RegExp("^services");
-                if (CONSTANTS.isRunMode && $rootScope.isMobileApplicationType && pattern.test(config.url)) {
+                if (CONSTANTS.isRunMode && $rootScope.isMobileApplicationType && isServiceCall(config.url)) {
                     config.url = $rootScope.project.deployedUrl + "/" + config.url;
                 }
 

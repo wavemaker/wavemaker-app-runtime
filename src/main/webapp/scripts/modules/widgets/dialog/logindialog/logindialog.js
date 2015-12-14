@@ -1,4 +1,4 @@
-/*global WM, wmCoreModule, wmDialog*/
+/*global WM, wmCoreModule, wmDialog, _*/
 /*Directive for login dialog */
 
 WM.module('wm.widgets.dialog')
@@ -95,11 +95,19 @@ WM.module('wm.widgets.dialog')
                                     username: element.find('[name="usernametext"]').val(),
                                     password: element.find('[name="passwordtext"]').val()
                                 }, function (response) {
+                                    var redirectUrl = response && response.url ? response.url : 'index.html';
+                                    if (CONSTANTS.hasCordova && _.includes(redirectUrl, '/')) {
+                                        /*
+                                         * when the application is running as a mobile application,
+                                         * use the local app files instead of server files.
+                                         */
+                                        redirectUrl = redirectUrl.substr(redirectUrl.lastIndexOf('/') + 1);
+                                    }
                                     scope.$root.isUserAuthenticated = true;
                                     element.trigger("success");
                                     /*setting the received redirect url for the logged-in user's landing page configuration to the
                                     * current scope to be propogated to the common login dialog success handler*/
-                                    scope.redirectUrl = response && response.url ? response.url : 'index.html';
+                                    scope.redirectUrl = redirectUrl;
                                     $window.location = scope.redirectUrl;
                                     scope.onSuccess({$event: event, $scope: scope});
                                     scope.$root.$emit("update-loggedin-user");

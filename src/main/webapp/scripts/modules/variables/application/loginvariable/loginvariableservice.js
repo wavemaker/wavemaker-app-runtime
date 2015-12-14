@@ -1,4 +1,4 @@
-/*global wm, WM*/
+/*global wm, WM, _*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -76,6 +76,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                     return;
                 }
                 variable.promise = SecurityService.appLogin(params, function (response) {
+                    var redirectUrl = response && response.url ? response.url : 'index.html';
                     if (CONSTANTS.isRunMode) {
                         $rootScope.isUserAuthenticated = true;
                         Utils.triggerFn(success);
@@ -87,7 +88,14 @@ wm.variables.services.LoginVariableService = ['Variables',
                         });
                     }
                     if (variable.useDefaultSuccessHandler) {
-                        $window.location = response && response.url ? response.url : 'index.html';
+                        if (CONSTANTS.hasCordova && _.includes(redirectUrl, '/')) {
+                            /*
+                             * when the application is running as a mobile application,
+                             * use the local app files instead of server files.
+                             */
+                            redirectUrl = redirectUrl.substr(redirectUrl.lastIndexOf('/') + 1);
+                        }
+                        $window.location = redirectUrl;
                     }
                 }, function () {
                     /* if in RUN mode, trigger error events associated with the variable */

@@ -7,7 +7,7 @@
  * The `ProjectService` provides the details about the project apis.
  */
 
-wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, $location) {
+wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, $location, Utils) {
     'use strict';
 
     function run(details, successCallback, failureCallback) {
@@ -44,6 +44,19 @@ wm.modules.wmCommon.services.ProjectService = function (BaseService, CONSTANTS, 
                 } else {
                     projectDeployedUrl = projectDeployedUrl.substr(5);
                 }
+            } else if (projectDeployedUrl.indexOf('file') !== -1) {
+                /* Set root url */
+                Utils.fetchContent(
+                    'json',
+                    Utils.preventCachingOf('./config.json'),
+                    function (response) {
+                        if (!response.error) {
+                            projectDeployedUrl = response.baseUrl;
+                        }
+                    },
+                    WM.noop,
+                    true
+                );
             }
 
             return projectDeployedUrl;
