@@ -176,7 +176,7 @@ Application
                     i18nService.setSelectedLocale(_dl);
                 }
                 /* Returns a promise that will be resolved when device is ready.*/
-                function isDeviceReady () {
+                function isDeviceReady() {
                     var d = $q.defer();
                     /*Only in case of deployed mobile apps, wait for deviceready event.*/
                     if (CONSTANTS.hasCordova) {
@@ -404,7 +404,7 @@ Application
 
                     AppManager.isDeviceReady()
                         .then(function () {
-                            return AppManager.loadCommonPage($s)
+                            return AppManager.loadCommonPage($s);
                         }).then(function () {
                             return AppManager.initAppVariables($s);
                         })
@@ -479,7 +479,7 @@ Application
                     });
                 }
                 AppManager.isDeviceReady().then(function () {
-                    $rs.$emit('application-ready')
+                    $rs.$emit('application-ready');
                 });
             }
         ]);
