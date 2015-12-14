@@ -116,6 +116,11 @@ WM.module('wm.utils', [])
                 'timestamp' : true,
                 'datetime'  : true
             },
+            dataSetWidgets = {
+                'select': true,
+                'checkboxset': true,
+                'radioset': true
+            },
             daysOptions = [{
                 'name': 'Sunday',
                 'value': '0'
@@ -1285,6 +1290,9 @@ WM.module('wm.utils', [])
         function getDateTimeTypes() {
             return dateTimeTypes;
         }
+        function getDataSetWidgets() {
+            return dataSetWidgets;
+        }
         /*Function to get days options*/
         function getDaysOptions() {
             return daysOptions;
@@ -1599,6 +1607,7 @@ WM.module('wm.utils', [])
         this.isFileUploadSupported      = isFileUploadSupported;
         this.processMarkup              = processMarkup;
         this.getDateTimeTypes           = getDateTimeTypes;
+        this.getDataSetWidgets          = getDataSetWidgets;
         this.getDaysOptions             = getDaysOptions;
         this.getDateTimeDefaultFormats  =  getDateTimeDefaultFormats;
         this.isValidDataSet             = isValidDataSet;

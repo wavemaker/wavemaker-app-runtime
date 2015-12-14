@@ -10,8 +10,11 @@ WM.module('wm.widgets.live')
     .service('LiveWidgetUtils', [
         'Utils',
         '$rootScope',
+        'FormWidgetUtils',
+        'PropertiesFactory',
+        '$compile',
 
-        function (Utils, $rs) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile) {
             'use strict';
             var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
                 eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
@@ -197,7 +200,7 @@ WM.module('wm.widgets.live')
             function getColumnDef(attrs) {
                 var columnDef = {},
                     widgetType = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0],
-                    excludeKeys = ['$attr', '$$element', 'name', 'initWidget', 'role', 'widgetid', 'wmResizable', 'wmWidgetDrag', 'value', 'dataset', 'extensions', 'filetype'];
+                    excludeKeys = ['$attr', '$$element', 'initWidget', 'role', 'wmResizable', 'wmWidgetDrag', 'value', 'dataset', 'extensions', 'filetype'];
                 /*Loop through the attrs keys and set it to columndef*/
                 _.each(attrs, function (value, key) {
                     /*Exclude special type of keys*/
@@ -206,7 +209,7 @@ WM.module('wm.widgets.live')
                     }
                 });
                 /*Handle special cases properties*/
-                columnDef.displayName = attrs.displayName || attrs.caption;
+                columnDef.displayname = attrs.displayname || attrs.caption;
                 columnDef.pcDisplay = WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === "1" || attrs.pcDisplay === "true") : true;
                 columnDef.mobileDisplay = WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === "1" || attrs.mobileDisplay === "true") : true;
                 columnDef.show = (attrs.show === '1' || attrs.show === 'true');
@@ -215,17 +218,8 @@ WM.module('wm.widgets.live')
                 columnDef.primaryKey = attrs.primaryKey === 'true' || attrs.primaryKey === true;
                 columnDef.readonly = attrs.readonly === 'true' || attrs.readonly === true;
                 columnDef.multiple = attrs.multiple === 'true' || attrs.multiple === true;
-                columnDef.defaultValue = attrs.defaultValue;
                 columnDef.class = attrs.class || '';
                 columnDef.required = attrs.required === 'true' || attrs.required === true;
-                /*Set the text type based on the widget*/
-                if (columnDef.widget === 'text') {
-                    columnDef.inputtype = attrs.inputtype || 'text';
-                } else if (columnDef.widget === 'number') {
-                    columnDef.inputtype = 'number';
-                } else if (columnDef.widget === 'password') {
-                    columnDef.inputtype = 'password';
-                }
                 return columnDef;
             }
             /**
@@ -291,7 +285,7 @@ WM.module('wm.widgets.live')
                     textTypes = ['text', 'password', 'textarea'],
                     excludeMaxValTypes = ['rating'],
                     evtTypes = getEventTypes(),
-                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'minPlaceholder', 'maxPlaceholder', 'readonly', 'inputtype'];
+                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype'];
                 Object.keys(fieldDef).forEach(function (field) {
                     if (_.includes(excludeProperties, field)) {
                         return;
@@ -310,7 +304,7 @@ WM.module('wm.widgets.live')
                             } else if (field === 'maxvalue') {
                                 fields += ' maxdate="{{formFields[' + index + '].' + field + '}}"';
                             }
-                        } else if (_.includes(textTypes, type) && field === 'maxvalue') {
+                        } else if (_.includes(textTypes, type) && field === 'maxvalue' && fieldDef.inputtype === 'text') {
                             fields += ' maxchars="{{formFields[' + index + '].' + field + '}}"';
                         } else if (_.includes(evtTypes, field)) {
                             fields += ' ' + Utils.hyphenate(field) + '="{{formFields[' + index + '].' + field + '}}"';
@@ -332,10 +326,10 @@ WM.module('wm.widgets.live')
                     updateModeCondition = isCustomWidget ? '' : ' show="{{isUpdateMode}}"';
                 additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
-                    fieldDef.minPlaceholder = fieldDef.minPlaceholder || minPlaceholderDefault;
+                    fieldDef.placeholder = fieldDef.placeholder || minPlaceholderDefault;
                     fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || maxPlaceholderDefault;
                     template = template +
-                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].minPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
+                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
                         '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.placeholder || defaultPlaceholder;
@@ -434,24 +428,20 @@ WM.module('wm.widgets.live')
              * @description
              * return template based on widgetType for liveFilter and liveForm.
              */
-            function getTemplate(fieldDef, index, liveType) {
+            function getTemplate(fieldDef, index) {
                 var template = '',
                     widgetType,
                     fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap();
-                if (liveType === 'form') {
                     //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
-                    if (fieldDef.readonly && fieldDef.generator === 'identity') {
-                        fieldDef.placeholder = fieldDef.placeholder || '';
-                    }
-                } else if (liveType === 'filter') {
-                    fieldDef.placeholder = fieldDef.minPlaceholder || '';
+                if (fieldDef.readonly && fieldDef.generator === 'identity') {
+                    fieldDef.placeholder = fieldDef.placeholder || '';
                 }
                 //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
                 widgetType = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
                 widgetType = widgetType.toLowerCase();
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
-                    '<wm-label class="' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3') + '" caption="{{formFields[' + index + '].displayName}}" hint="{{formFields[' + index + '].displayName}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
+                    '<wm-label class="' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3') + '" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-8' : 'col-sm-9') + '" {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
 
@@ -497,7 +487,7 @@ WM.module('wm.widgets.live')
                     template += getDateTimeTemplate(fieldDef, index);
                     break;
                 case 'rating':
-                    template += getRatingTemplate(fieldDef, index, liveType);
+                    template += getRatingTemplate(fieldDef, index);
                     break;
                 default:
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
@@ -560,7 +550,7 @@ WM.module('wm.widgets.live')
                     if (!_.includes(fieldNames, fieldObj.fieldName)) {
                         fieldNames.push(fieldObj.fieldName);
                         column = {
-                            'displayName': Utils.prettifyLabel(fieldObj.fieldName),
+                            'displayname': Utils.prettifyLabel(fieldObj.fieldName),
                             'show':         true,
                             'primaryKey':   fieldObj.isPrimaryKey,
                             'generator':    fieldObj.generator,
@@ -575,10 +565,10 @@ WM.module('wm.widgets.live')
                             'mobileDisplay'     :   true
                         };
                         if (fieldObj.defaultValue) {
-                            column.defaultValue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
+                            column.defaultvalue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
                         }
                         if (fieldObj.type === 'string' || fieldObj.type === 'character' || fieldObj.type === 'text' || fieldObj.type === 'blob' || fieldObj.type === 'clob') {
-                            column.maxvalue = fieldObj.length;
+                            column.maxchars = fieldObj.length;
                         }
                         if (fieldObj.isPrimaryKey) {
                             /*Store the primary key of data*/
@@ -730,6 +720,233 @@ WM.module('wm.widgets.live')
                     break;
                 }
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#fieldPropertyChangeHandler
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Define the property change handler for form and filter. This function will be triggered when there is a change in the widget property
+             *
+             * @param {object} scope scope of the field
+             * @param {object} element element of the field
+             * @param {object} attrs attributes of the field
+             * @param {string} key key which value is changed
+             * @param {string} newVal new value for the key
+             */
+            function fieldPropertyChangeHandler(scope, element, attrs, parentScope, index, key, newVal) {
+                if (key === 'active') {
+                    return;
+                }
+                var variable,
+                    eleScope = element.scope(),
+                    isDataSetWidgets = Utils.getDataSetWidgets(),
+                    template = '',
+                    compileField = function () {
+                        /*On changing of a property in studio mode, generate the template again so that change is reflected*/
+                        template = getTemplate(parentScope.formFields[index], index);
+                        element.html(template);
+                        $compile(element.contents())(parentScope);
+                    };
+                switch (key) {
+                case 'dataset':
+                    /*if studio-mode, then update the displayField & dataField in property panel for dataset widgets*/
+                    if (scope.widgetid && isDataSetWidgets[attrs.widget] && WM.isDefined(newVal) && newVal !== null) {
+                        //Get variable and properties map only on binddataset change
+                        if (scope.oldBindDataSet !== scope.binddataset) {
+                            if (!WM.isString(newVal)) {
+                                variable = Utils.getVariableName(scope, eleScope);
+                                newVal.propertiesMap = eleScope.Variables[variable].category === 'wm.ServiceVariable' ? undefined : eleScope.Variables[variable].propertiesMap;
+                            }
+                            scope.oldBindDataSet = scope.binddataset;
+                        }
+                        FormWidgetUtils.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
+                    }
+                    compileField();
+                    break;
+                default:
+                    compileField();
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getWidgetProps
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Get the respective widget properties for the widget
+             *
+             * @param {string} widgetType type of the widget
+             */
+            function getWidgetProps(widgetType) {
+                var widgetProps,
+                    baseProperties,
+                    extendedProperties,
+                    textWidgets = ['text', 'number', 'password'];
+                widgetType = widgetType.toLowerCase();
+                switch (widgetType) {
+                case 'textarea':
+                    baseProperties = 'wm.textarea';
+                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
+                    break;
+                case 'toggle':
+                case 'checkbox':
+                    baseProperties = 'wm.checkbox';
+                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    break;
+                case 'slider':
+                    baseProperties = 'wm.slider';
+                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.events.change'];
+                    break;
+                case 'richtext':
+                    baseProperties = 'wm.richtexteditor';
+                    extendedProperties = ['wm.base', 'wm.base.editors'];
+                    break;
+                case 'select':
+                    baseProperties = 'wm.select';
+                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.editors.dataseteditors', 'wm.base.events.keyboard'];
+                    break;
+                case 'checkboxset':
+                    baseProperties = 'wm.checkboxset';
+                    extendedProperties = ['wm.base', 'wm.booleaneditors'];
+                    break;
+                case 'radioset':
+                    baseProperties = 'wm.radioset';
+                    extendedProperties = ['wm.base', 'wm.booleaneditors'];
+                    break;
+                case 'date':
+                    baseProperties = 'wm.date';
+                    extendedProperties = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
+                    break;
+                case 'time':
+                    baseProperties = 'wm.time';
+                    extendedProperties = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
+                    break;
+                case 'datetime':
+                case 'timestamp':
+                    baseProperties = 'wm.datetime';
+                    extendedProperties = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
+                    break;
+                case 'rating':
+                    baseProperties = 'wm.rating';
+                    extendedProperties = ['wm.base', 'wm.base.editors'];
+                    break;
+                case 'upload':
+                    baseProperties = '';
+                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    break;
+                default:
+                    baseProperties = 'wm.text';
+                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
+                    break;
+                }
+                widgetProps = PropertiesFactory.getPropertiesOf(baseProperties, extendedProperties);
+                widgetProps.displayname =  {'type': "string", 'show': true};
+                if (_.includes(textWidgets, widgetType)) {
+                    /*In form and filter, type conflicts with data type. Change the type to input type.*/
+                    widgetProps.inputtype = WM.copy(widgetProps.type);
+                    delete widgetProps.type;
+                }
+                if (widgetType === 'upload') {
+                    widgetProps = WM.extend(widgetProps, {
+                        'readonly'   : {'type': 'boolean', 'show': true},
+                        'required'   : {'type': 'boolean', 'show': true},
+                        'filetype'   : {'type': 'datalist', 'options': ['image', 'audio', 'video'], 'show': true},
+                        'extensions' : {'type': 'string', 'show': true}
+                    });
+                }
+                /*Use default value instead of datavalue for fields*/
+                if (widgetProps.datavalue) {
+                    widgetProps.defaultvalue = WM.copy(widgetProps.datavalue);
+                    delete widgetProps.datavalue;
+                }
+                /*No support for scopedatavalue and scopedataset for fields yet*/
+                if (widgetProps.scopedatavalue) {
+                    delete widgetProps.scopedatavalue;
+                }
+                if (widgetProps.scopedataset) {
+                    delete widgetProps.scopedataset;
+                }
+                return widgetProps;
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#handleBackwardCompatibility
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * handle the backward compatibility for some of the field attributes
+             *
+             * @param {string} fieldType filter field/ form field
+             * @param {object} scope scope of the widget
+             * @param {object} attrs attributes of the widget
+             * @param {string} tElement template of the field
+             */
+            function handleBackwardCompatibility(fieldType, scope, attrs, tElement) {
+                var changeAttr = function (newAttr, oldAttr) {
+                    /*Function to change the attribute names*/
+                    scope[newAttr] = attrs[newAttr] = attrs[oldAttr];
+                    WM.element(tElement.context).attr(newAttr, scope[newAttr]);
+                    delete attrs[oldAttr];
+                };
+                /*Support for old projects*/
+                if (!attrs.defaultvalue && attrs.defaultValue) {
+                    changeAttr('defaultvalue', 'defaultValue');
+                }
+                if (!attrs.displayname && attrs.displayName) {
+                    changeAttr('displayname', 'displayName');
+                }
+                if (attrs.maxvalue && (attrs.inputtype === 'text' || attrs.inputtype === 'password' || attrs.widget === 'textarea')) {
+                    changeAttr('maxchars', 'maxvalue');
+                }
+                if (attrs.widget === 'date' || attrs.widget === 'datetime') {
+                    if (attrs.minvalue) {
+                        changeAttr('mindate', 'minvalue');
+                    }
+                    if (attrs.maxvalue) {
+                        changeAttr('maxdate', 'maxvalue');
+                    }
+                }
+                if (attrs.minPlaceholder && !attrs.placeholder && fieldType === 'wm-filter-field') {
+                    changeAttr('placeholder', 'minPlaceholder');
+                }
+
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#preProcessFields
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Get the respective widget properties for the widget
+             *
+             * @param {string} fieldType filter field/ form field
+             * @param {object} scope scope of the widget
+             * @param {object} attrs attributes of the widget
+             * @param {string} tElement template of the field
+             */
+            function preProcessFields(fieldType, scope, attrs, tElement) {
+                var inputtype;
+                scope.widgettype = fieldType;
+                attrs.widget = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0];
+                /*Based on the widget, get the input types*/
+                if (attrs.widget === 'text') {
+                    inputtype = attrs.inputtype || 'text';
+                } else if (attrs.widget === 'number') {
+                    inputtype = 'number';
+                } else if (attrs.widget === 'password') {
+                    inputtype = 'password';
+                }
+                scope.inputtype = attrs.inputtype = inputtype;
+                WM.element(tElement.context).attr('inputtype', inputtype);
+                handleBackwardCompatibility(fieldType, scope, attrs, tElement);
+               /*Get the respective widget properties*/
+                scope.widgetProps = getWidgetProps(attrs.widget);
+            }
             this.toggleActionMessage        = toggleActionMessage;
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
@@ -745,6 +962,8 @@ WM.module('wm.widgets.live')
             this.splitDimension             = splitDimension;
             this.mergeDimension             = mergeDimension;
             this.getFieldTypeWidgetTypesMap = getFieldTypeWidgetTypesMap;
+            this.fieldPropertyChangeHandler = fieldPropertyChangeHandler;
+            this.preProcessFields           = preProcessFields;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {

@@ -302,7 +302,7 @@ WM.module('wm.widgets.live')
                         _.each(columnObj, function (column, index) {
                             var colDef = {
                                 'field'             :   column.fieldName,
-                                'displayName'       :   Utils.prettifyLabel(column.fieldName),
+                                'displayname'       :   Utils.prettifyLabel(column.fieldName),
                                 'widget'            :   fieldTypeWidgetTypeMap[column.type][0],
                                 'isRange'           :   false,
                                 'filterOn'          :   column.fieldName,
@@ -334,7 +334,7 @@ WM.module('wm.widgets.live')
                             if (column.isRelated) {
                                 /* otherwise build object with required configuration */
                                 colDef.field = column.fieldName.charAt(0).toLowerCase() + column.fieldName.slice(1);
-                                colDef.displayName = colDef.field;
+                                colDef.displayname = colDef.field;
                                 colDef.isRelated = true;
                                 colDef.lookupType = column.relatedEntityName;
                                 colDef.lookupField = '';
@@ -623,16 +623,18 @@ WM.module('wm.widgets.live')
                 }
             };
         }])
-    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", "BindingManager", "LiveWidgetUtils", function ($compile, Utils, CONSTANTS, BindingManager, LiveWidgetUtils) {
+    .directive("wmFilterField", ["$compile", "Utils", "CONSTANTS", "BindingManager", "LiveWidgetUtils", "WidgetUtilService", function ($compile, Utils, CONSTANTS, BindingManager, LiveWidgetUtils, WidgetUtilService) {
         'use strict';
-
         return {
             "restrict": 'E',
-            "scope": true,
-            "template": '',
+            "scope": {},
+            "template": "<div init-widget data-role='filter-field'></div>",
             "replace": true,
-            "compile": function () {
+            "compile": function (tElement) {
                 return {
+                    "pre": function (scope, element, attrs) {
+                        LiveWidgetUtils.preProcessFields('wm-filter-field', scope, attrs, tElement);
+                    },
                     "post": function (scope, element, attrs) {
                         /*scope.$parent is defined when compiled with live filter scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
@@ -662,8 +664,6 @@ WM.module('wm.widgets.live')
                                 'isRelated'         : attrs.isRelated === "true" || attrs.isRelated === true,
                                 'lookupType'        : attrs.lookupType,
                                 'lookupField'       : attrs.lookupField,
-                                'minPlaceholder'    : attrs.minPlaceholder,
-                                'maxPlaceholder'    : attrs.maxPlaceholder,
                                 'relatedEntityName' : attrs.relatedEntityName
                             });
 
@@ -672,13 +672,13 @@ WM.module('wm.widgets.live')
                         //This is used to call base set and get methods on widgets
                         scope.FilterField.prototype.$is = parentIsolateScope;
                         /*Support for old projects which were using value for default value*/
-                        columnsDefProps.defaultValue = attrs.defaultValue || attrs.value;
+                        columnsDefProps.defaultvalue = attrs.defaultvalue || attrs.value;
                         /*Set the default value*/
-                        if (columnsDef.defaultValue) {
+                        if (columnsDef.defaultvalue) {
                             /*If the default value is bound variable, keep watch on the expression*/
-                            if (Utils.stringStartsWith(columnsDef.defaultValue, 'bind:') && CONSTANTS.isRunMode) {
-                                expr = columnsDef.defaultValue.replace('bind:', '');
-                                if (scope.Variables && !Utils.isEmptyObject(scope.Variables) && scope.$eval(expr)) {
+                            if (Utils.stringStartsWith(columnsDef.defaultvalue, 'bind:') && CONSTANTS.isRunMode) {
+                                expr = columnsDef.defaultvalue.replace('bind:', '');
+                                if (parentIsolateScope.Variables && !Utils.isEmptyObject(parentIsolateScope.Variables) && parentIsolateScope.$eval(expr)) {
                                     defaultVal = scope.$eval(expr);
                                     columnsDef.value = defaultVal;
                                     if (columnsDef.isRange) {
@@ -686,7 +686,7 @@ WM.module('wm.widgets.live')
                                         columnsDef.maxValue = defaultVal;
                                     }
                                 } else {
-                                    exprWatchHandler = BindingManager.register(scope, expr, function (newVal) {
+                                    exprWatchHandler = BindingManager.register(parentIsolateScope, expr, function (newVal) {
                                         parentIsolateScope.formFields[index].value = newVal;
                                         if (columnsDef.isRange) {
                                             parentIsolateScope.formFields[index].minValue = newVal;
@@ -697,7 +697,7 @@ WM.module('wm.widgets.live')
                                     }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                                 }
                             } else {
-                                defaultVal = columnsDef.defaultValue;
+                                defaultVal = columnsDef.defaultvalue;
                                 /*Assigning 'defaultVal' only in run mode as it can be evaluated only in run mode*/
                                 if (CONSTANTS.isRunMode) {
                                     defaultVal = LiveWidgetUtils.getDefaultValue(defaultVal, columnsDef.type);
@@ -735,6 +735,7 @@ WM.module('wm.widgets.live')
                                 columnsDef.dataset = attrs.dataset;
                             }
                         }
+                        scope.fieldDefConfig = columnsDef;
                         parentIsolateScope.formFields = parentIsolateScope.formFields || [];
                         parentIsolateScope.columnsDefCreated = true;
                         index = parentIsolateScope.formFields.push(columnsDef) - 1;
@@ -754,7 +755,7 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        template = LiveWidgetUtils.getTemplate(columnsDef, index, "filter");
+                        template = LiveWidgetUtils.getTemplate(columnsDef, index);
                         element.html(template);
                         $compile(element.contents())(parentIsolateScope);
 
@@ -771,6 +772,9 @@ WM.module('wm.widgets.live')
                         element.on('$destroy', function () {
                             _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnsDef));
                         });
+                        if (!CONSTANTS.isRunMode) {
+                            WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope, undefined);
+                        }
                     }
                 };
             }
