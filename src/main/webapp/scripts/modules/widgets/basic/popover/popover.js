@@ -54,8 +54,8 @@ WM.module('wm.widgets.basic')
         /* returns element dimensions' absolute value*/
         function getEleDimensions(ele) {
             return {
-                'width' : Math.abs(ele.width()),
-                'height' : Math.abs(ele.height())
+                'width' : Math.abs(ele.outerWidth()),
+                'height' : Math.abs(ele.outerHeight())
             };
         }
         /**
