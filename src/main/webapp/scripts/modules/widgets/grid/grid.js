@@ -1,4 +1,4 @@
-/*global WM, wmGrid, confirm, window, wm*/
+/*global WM, wmGrid, confirm, window, wm, _*/
 /*jslint sub: true */
 /*jslint todo: true */
 
@@ -593,6 +593,7 @@ WM.module('wm.widgets.grid')
                     }
                 },
                 currentSearch,
+                currentSort,
                 isBoundToVariable,
                 isBoundToWidget,
                 isBoundToLiveVariable,
@@ -824,6 +825,43 @@ WM.module('wm.widgets.grid')
                     }
                     $scope.onSort({$event: e, $data: $scope.serverData});
                 },
+                /*Returns data filtered using searchObj*/
+                getSearchResult = function (data, searchObj) {
+                    if (searchObj) {
+                        data = _.filter(data, function (obj) {
+                            return _.contains(obj[searchObj.field], searchObj.value);
+                        });
+                    }
+                    return data;
+                },
+                /*Returns data sorted using sortObj*/
+                getSortResult = function (data, sortObj) {
+                    if (sortObj) {
+                        data = _.sortByOrder(data, sortObj.field, sortObj.direction);
+                    }
+                    return data;
+                },
+                /*Function to handle both sort and search operations if bound to service/static variable*/
+                handleOperation = function (searchSortObj, e, type) {
+                    var data = WM.copy($scope.dataset);
+                    //Storing in global variables for further use
+                    //While sorting previously stored search obj(current search) is used.And viceversa
+                    if (type === 'search') {
+                        currentSearch = searchSortObj;
+                    } else {
+                        currentSort = searchSortObj;
+                    }
+                    /*Both the functions return same 'data' if arguments are undefined*/
+                    data = getSearchResult(data, currentSearch);
+                    data = getSortResult(data, currentSort);
+                    $scope.serverData = data;
+                    $scope.dataNavigator.dataset = data;
+                    setGridData($scope.serverData);
+                    if (type === 'sort') {
+                        //Calling 'onSort' event
+                        $scope.onSort({$event: e, $data: $scope.serverData});
+                    }
+                },
                 getCompiledTemplate = function (htm, row, colDef) {
                     var rowScope = $scope.$new(),
                         el = WM.element(htm);
@@ -884,6 +922,7 @@ WM.module('wm.widgets.grid')
                     } else {
                         $scope.datagridElement.datagrid('setStatus', 'ready');
                     }
+                    $scope.$root.$safeApply($scope);
                 },
                 deleteRecord = function (row, cancelRowDeleteCallback) {
                     if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
@@ -1512,6 +1551,10 @@ WM.module('wm.widgets.grid')
                                 $scope.primaryKey = variableObj.getPrimaryKey();
                             }
                             $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
+                        } else if (!Utils.isPageable($scope.dataset)) {
+                            /*Calling the specific search and sort handlers*/
+                            $scope.setDataGridOption('searchHandler', handleOperation);
+                            $scope.setDataGridOption('sortHandler', handleOperation);
                         }
                         /*if the grid is not bound to widgets*/
                     } else if ($scope.binddataset.indexOf('bind:Widgets') === -1) {
