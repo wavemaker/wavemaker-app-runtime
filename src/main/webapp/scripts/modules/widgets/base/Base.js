@@ -282,7 +282,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.rating": {
                         "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
-                        "readonly": {"type": "boolean", "value": false},
+                        "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},
                         "datavalue": {"type": "number", "value": "", "bindable": "in-out-bound"},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
