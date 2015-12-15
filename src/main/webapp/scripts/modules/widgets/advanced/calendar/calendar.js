@@ -130,14 +130,15 @@ WM.module('wm.widgets.advanced')
                         'post': function (scope, element, attrs) {
                             var handlers = [],
                                 headerOptions = Utils.getClonedObject(defaultHeaderOptions),
-                                uiCalScope;
+                                uiCalScope,
+                                oldData;
 
                             function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
                                 var fn = scope[method] || WM.noop;
-                                fn({$event: event, $delta: delta, $revertFunc: revertFunc, $jsEvent: jsEvent, $ui: ui, $view: view});
+                                fn({$event: jsEvent, $data: event, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
                             }
                             function eventClickProxy(event, jsEvent, view) {
-                                scope.onEventclick({$event: event, $jsEvent: jsEvent, $view: view});
+                                scope.onEventclick({$event: jsEvent, $data: event, $view: view});
                             }
                             function viewRenderProxy(view) {
                                 scope.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
@@ -145,11 +146,20 @@ WM.module('wm.widgets.advanced')
                             }
                             function eventRenderProxy(event, jsEvent, view) {
                                 /*unable to pass jsEvent in angular expression, hence ignoring*/
-                                scope.onEventrender({$event: event, jsEvent: {}, $view: view});
+                                scope.onEventrender({$event: {}, $data: event, $view: view});
                             }
                             function onSelectProxy(start, end, jsEvent, view) {
                                 scope.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
                                 scope.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view});
+                            }
+                            function onEventdropProxy(event, delta, revertFunc, jsEvent, ui, view) {
+                                scope.onEventdrop({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                            }
+                            function onEventresizeProxy(event, delta, revertFunc, jsEvent, ui, view) {
+                                scope.onEventresize({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                            }
+                            function onEventChangeStart(event, jsEvent, ui, view) {
+                                oldData = Utils.getClonedObject(event);
                             }
                             scope.calendarOptions = {
                                 calendar: {
@@ -157,8 +167,10 @@ WM.module('wm.widgets.advanced')
                                     editable: true,
                                     selectable: false,
                                     header: headerOptions,
-                                    eventDrop: eventProxy.bind(undefined, 'onEventdrop'),
-                                    eventResize: eventProxy.bind(undefined, 'onEventresize'),
+                                    eventDrop: onEventdropProxy,
+                                    eventResizeStart: onEventChangeStart,
+                                    eventDragStart: onEventChangeStart,
+                                    eventResize: onEventresizeProxy,
                                     eventClick: eventClickProxy,
                                     select: onSelectProxy,
                                     eventRender: eventRenderProxy,
