@@ -160,6 +160,7 @@ WM.module('wm.widgets.live')
                                     if (!value) {
                                         return undefined;
                                     }
+                                    value = Utils.getValidDateObject(value);
                                     /* Case: if the database type is oracle, for 'datetime' fields append native 'toDate' function in the query */
                                     if (widget === 'datetime' && isOracleDbSystem()) {
                                         formattedValue = $filter('date')(value, $scope.dateTimeFormats[widget + "_oracle"]);

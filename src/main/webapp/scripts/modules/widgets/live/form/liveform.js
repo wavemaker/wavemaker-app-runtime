@@ -494,11 +494,9 @@ WM.module('wm.widgets.live')
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
                         if (((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type])) {
-                            if (field.value && !isNaN(field.value)) {
-                                field.value = Number(field.value);
-                            }
+                            var dateTime = Utils.getValidDateObject(field.value);
                             if (field.outputformat && field.outputformat !== "timestamp") {
-                                dataObject[field.key] = $filter('date')(field.value, field.outputformat);
+                                dataObject[field.key] = $filter('date')(dateTime, field.outputformat);
                             } else {
                                 dataObject[field.key] = field.value;
                             }

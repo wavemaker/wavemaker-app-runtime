@@ -1524,6 +1524,22 @@ WM.module('wm.utils', [])
         function getClonedObject(object) {
             return _.cloneDeep(object);
         }
+        /*  This function returns date object. If val is undefined it returns invalid date */
+        function getValidDateObject(val) {
+            if (WM.isDate(val)) {
+                return val;
+            }
+            /*if the value is a timestamp string, convert it to a number*/
+            if (!isNaN(val)) {
+                val = parseInt(val, 10);
+            } else {
+                /*if the value is in HH:mm:ss format, it returns a wrong date. So append the date to the given value to get date*/
+                if (!(new Date(val).getTime())) {
+                    val = new Date().toDateString() + ' ' + val;
+                }
+            }
+            return new Date(val);
+        }
 
         // expose the methods on the service instance.
 
@@ -1624,4 +1640,5 @@ WM.module('wm.utils', [])
         this.getProjectResourcePath     = getProjectResourcePath;
         this.getVariableNameFromExpr    = getVariableNameFromExpr;
         this.getClonedObject            = getClonedObject;
+        this.getValidDateObject         = getValidDateObject;
     }]);

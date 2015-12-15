@@ -73,6 +73,7 @@ WM.module('wm.widgets.form')
         }
 
         function _onClick(scope, evt) {
+            evt.stopPropagation();
             if (scope.onClick) {
                 scope.onClick({$event: evt, $scope: scope});
             }
@@ -80,6 +81,7 @@ WM.module('wm.widgets.form')
 
         /*On click of date icon button, open the date picker popup*/
         function _onDateClick(scope, evt) {
+            evt.stopPropagation();
             scope.isDateOpen = !scope.isDateOpen;
             scope.isTimeOpen = false;
         }
