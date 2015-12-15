@@ -540,7 +540,8 @@ WM.module('wm.widgets.live')
             function translateVariableObject(rawObject, scope) {
                 var translatedObj = [],
                     columnArray = rawObject.propertiesMap.columns,
-                    fieldNames = [];
+                    fieldNames = [],
+                    widgetsMap = getFieldTypeWidgetTypesMap();
 
                 if (scope) {
                     scope.propertiesMap = rawObject.propertiesMap;
@@ -552,20 +553,21 @@ WM.module('wm.widgets.live')
                     if (!_.includes(fieldNames, fieldObj.fieldName)) {
                         fieldNames.push(fieldObj.fieldName);
                         column = {
-                            'displayname': Utils.prettifyLabel(fieldObj.fieldName),
-                            'show':         true,
-                            'primaryKey':   fieldObj.isPrimaryKey,
-                            'generator':    fieldObj.generator,
-                            'key':          fieldObj.fieldName,
-                            'value':        '',
-                            'type':         fieldObj.isRelated ? 'list' : fieldObj.fullyQualifiedType,
-                            'maxvalue':     '',
-                            'isRelated':    fieldObj.isRelated,
-                            'readonly':     fieldObj.isPrimaryKey,
-                            'required':     fieldObj.notNull === 'true' || fieldObj.notNull === true,
-                            'pcDisplay'         :   true,
-                            'mobileDisplay'     :   true
+                            'displayname'   : Utils.prettifyLabel(fieldObj.fieldName),
+                            'show'          : true,
+                            'primaryKey'    : fieldObj.isPrimaryKey,
+                            'generator'     : fieldObj.generator,
+                            'key'           : fieldObj.fieldName,
+                            'value'         : '',
+                            'type'          : fieldObj.isRelated ? 'list' : fieldObj.fullyQualifiedType,
+                            'maxvalue'      : '',
+                            'isRelated'     : fieldObj.isRelated,
+                            'readonly'      : fieldObj.isPrimaryKey,
+                            'required'      : fieldObj.notNull === 'true' || fieldObj.notNull === true,
+                            'pcDisplay'     : true,
+                            'mobileDisplay' : true
                         };
+                        column.widget = widgetsMap[column.type || 'custom'][0];
                         if (fieldObj.defaultValue) {
                             column.defaultvalue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
                         }
