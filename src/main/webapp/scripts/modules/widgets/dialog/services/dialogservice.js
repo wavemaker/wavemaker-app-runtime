@@ -196,7 +196,8 @@ WM.module('wm.widgets.dialog')
                 keyboard,
                 windowClass,
                 dialogCaption,
-                dialogContainer;
+                dialogContainer,
+                confirmDialog;
 
             /* id must be provided to open the dialog*/
             if ($uibModalInstances && $uibModalInstances[dialogId]) {
@@ -245,8 +246,8 @@ WM.module('wm.widgets.dialog')
              id to be used for closing the dialog by default close button in the dialog and support close if multiple dialogs are opened.
              controller value to be used later.
              */
-
-            dialogContainer.find('wm-confirmdialog').
+            confirmDialog = dialogContainer.find('wm-confirmdialog');
+            confirmDialog.
                 attr({
                     'controller': controller,
                     'dialogid': dialogId,
@@ -260,20 +261,20 @@ WM.module('wm.widgets.dialog')
                 });
 
             if (params.onOk) {
-                dialogContainer.find('wm-confirmdialog').attr('on-ok', params.onOk);
+                confirmDialog.attr('on-ok', params.onOk);
             }
             if (params.onCancel) {
-                dialogContainer.find('wm-confirmdialog').attr('on-cancel', params.onCancel);
+                confirmDialog.attr('on-cancel', params.onCancel);
             }
             if (params.onClose) {
-                dialogContainer.find('wm-confirmdialog').attr('on-close', params.onClose);
+                confirmDialog.attr('on-close', params.onClose);
             }
 
             if (params.okParams) {
-                dialogContainer.find('wm-confirmdialog').attr('ok-params', params.okParams);
+                confirmDialog.attr('ok-params', params.okParams);
             }
             if (params.cancelParams) {
-                dialogContainer.find('wm-confirmdialog').attr('cancel-params', params.cancelParams);
+                confirmDialog.attr('cancel-params', params.cancelParams);
             }
 
             content = dialogContainer.html();
