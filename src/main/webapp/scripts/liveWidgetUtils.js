@@ -285,7 +285,7 @@ WM.module('wm.widgets.live')
                     textTypes = ['text', 'password', 'textarea'],
                     excludeMaxValTypes = ['rating'],
                     evtTypes = getEventTypes(),
-                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype'];
+                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype'];
                 Object.keys(fieldDef).forEach(function (field) {
                     if (_.includes(excludeProperties, field)) {
                         return;
@@ -295,6 +295,8 @@ WM.module('wm.widgets.live')
                             fields += ' name="{{formFields[' + index + '].' + field + '}}"';
                         } else if (field === 'displayvalue') {
                             fields += ' displayexpression="{{formFields[' + index + '].' + field + '}}"';
+                        } else if (field === 'widgetid') {
+                            fields += ' widgetid="' + fieldDef.widgetid + '_' + fieldDef.name + '"';
                         } else if (field === 'permitted') {
                             fields += ' accept="{{formFields[' + index + '].' + field + '}}"';
                         } else if (_.includes(dateTypes, type) && (field === 'minvalue' || field === 'maxvalue')) {
@@ -442,7 +444,7 @@ WM.module('wm.widgets.live')
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
                     '<wm-label class="' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3') + '" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
-                    '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-8' : 'col-sm-9') + '" {{formFields[' + index + '].class}}">' +
+                    '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-8' : 'col-sm-9') + ' {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
 
                 switch (widgetType) {
