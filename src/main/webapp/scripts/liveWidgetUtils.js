@@ -788,7 +788,22 @@ WM.module('wm.widgets.live')
                 var widgetProps,
                     baseProperties,
                     extendedProperties,
-                    textWidgets = ['text', 'number', 'password'];
+                    textWidgets = ['text', 'number', 'password'],
+                    setDefaultValueProps = function () {
+                        var defaultProp;
+                        /*Use default value instead of datavalue for fields*/
+                        if (widgetType === 'radioset') {
+                            defaultProp = 'selectedvalue';
+                        } else if (widgetType === 'checkboxset') {
+                            defaultProp = 'selectedvalues';
+                        } else {
+                            defaultProp = 'datavalue';
+                        }
+                        if (widgetProps[defaultProp]) {
+                            widgetProps.defaultvalue = WM.copy(widgetProps[defaultProp]);
+                            delete widgetProps[defaultProp];
+                        }
+                    };
                 widgetType = widgetType.toLowerCase();
                 switch (widgetType) {
                 case 'textarea':
@@ -862,11 +877,7 @@ WM.module('wm.widgets.live')
                         'extensions' : {'type': 'string', 'show': true}
                     });
                 }
-                /*Use default value instead of datavalue for fields*/
-                if (widgetProps.datavalue) {
-                    widgetProps.defaultvalue = WM.copy(widgetProps.datavalue);
-                    delete widgetProps.datavalue;
-                }
+                setDefaultValueProps();
                 /*No support for scopedatavalue and scopedataset for fields yet*/
                 if (widgetProps.scopedatavalue) {
                     delete widgetProps.scopedatavalue;
