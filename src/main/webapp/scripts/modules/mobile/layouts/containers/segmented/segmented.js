@@ -6,13 +6,13 @@ WM.module('wm.layouts.containers')
         'use strict';
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentedcontrol.html',
             '<div class="app-segmented-control {{class}}" hm-swipe-left="goToNext()" hm-swipe-right="goToPrev();" init-widget data-ng-show="show" apply-styles="container">' +
-                '<div class="btn-group btn-group-justified">' +
-                    '<a class="btn btn-default" data-ng-repeat="content in contents" data-ng-class="{\'active btn-primary\' : $index == currentSelectedIndex}" data-ng-click="$event.stopPropagation(); showContent($index);">' +
-                       '<i class="app-icon" data-ng-class="content.iconclass"></i> {{content.caption}}' +
-                    '</a>' +
-                '</div>' +
                 '<div class="app-segments-container">' +
                     '<ul class="list-inline" wmtransclude></ul>' +
+                '</div>' +
+                '<div class="btn-group btn-group-justified">' +
+                    '<a class="btn btn-default" data-ng-repeat="content in contents" data-ng-class="{\'active btn-primary\' : $index == currentSelectedIndex}" data-ng-click="$event.stopPropagation(); showContent($index);">' +
+                        '<i class="app-icon" data-ng-class="content.iconclass"></i> {{content.caption}}' +
+                    '</a>' +
                 '</div>' +
             '</div>');
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentcontent.html',
