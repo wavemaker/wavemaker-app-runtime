@@ -479,9 +479,19 @@ WM.module('wm.widgets.live')
                 $scope.isInReqdFormat = function (data) {
                     return (WM.isArray(data) && data[0].key && data[0].type);
                 };
+                /*Function to get the default data object based on the operation type*/
+                function getDataObject() {
+                    if ($scope.operationType !== 'update') {
+                        return {};
+                    }
+                    if (WM.isDefined(prevDataObject) && !Utils.isEmptyObject(prevDataObject)) {
+                        return Utils.getClonedObject(prevDataObject);
+                    }
+                    return Utils.getClonedObject($scope.formdata || {});
+                }
                 /*construct the data object from the formFields*/
                 $scope.constructDataObject = function (formFields) {
-                    var dataObject = ($scope.operationType === 'update') ? Utils.getClonedObject(Utils.isEmptyObject(prevDataObject) ? $scope.formdata : prevDataObject) : {},
+                    var dataObject = getDataObject(),
                         formName = $scope.name,
                         isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
                         formData;
