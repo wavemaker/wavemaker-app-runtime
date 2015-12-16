@@ -24,7 +24,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/device/widget/form/time.html',
             '<input type="time" class="form-control app-textbox" role="input" data-ng-show="show" data-ng-model="_proxyModel" has-model init-widget data-ng-change="updateModel();_onChange({$event: $event, $scope: this})">'
             );
-    }]).directive('wmTime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter) {
+    }]).directive('wmTime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'Utils', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.time', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -71,22 +71,6 @@ WM.module('wm.widgets.form')
             if (scope.onClick) {
                 scope.onClick({$event: evt, $scope: scope});
             }
-        }
-        /*  This function returns date object. If val is undefined it returns invalid date */
-        function parseTime(val) {
-            if (WM.isDate(val)) {
-                return val;
-            }
-            /*if the value is a timestamp string, convert it to a number*/
-            if (!isNaN(val)) {
-                val = parseInt(val, 10);
-            } else {
-                /*if the value is in HH:mm:ss format, it returns a wrong date. So append the date to the given value to get date*/
-                if (!(new Date(val).getTime())) {
-                    val = new Date().toDateString() + ' ' + val;
-                }
-            }
-            return new Date(val);
         }
 
         return {
@@ -184,7 +168,7 @@ WM.module('wm.widgets.form')
                                 var dateTime;
                                 if (scope._nativeMode) {
                                     if (val) {
-                                        dateTime = parseTime(val);
+                                        dateTime = Utils.getValidDateObject(val);
                                         /*set the proxymodel and timestamp*/
                                         this._proxyModel = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
                                         this.timestamp = this._proxyModel.getTime();
@@ -194,7 +178,7 @@ WM.module('wm.widgets.form')
                                     return;
                                 }
                                 if (val) {
-                                    dateTime = parseTime(val);
+                                    dateTime = Utils.getValidDateObject(val);
                                     this._proxyModel = WM.isDate(dateTime) ? dateTime : undefined;
                                 } else {
                                     this._proxyModel = undefined;
