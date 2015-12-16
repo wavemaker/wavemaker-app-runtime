@@ -89,13 +89,23 @@ wm.variables.services.BasicVariableService = [
                     /* return the new dataSet */
                     return variable.dataSet;
                 },
-                removeItem: function (variable, index) {
+
+                /*'index' can be index value of the element in array or an object with property values which need to be removed*/
+                removeItem: function (variable, index, exactMatch) {
+                    var indexValue;
                     /* check for index sanity */
                     index = index !== undefined ? index : variable.dataSet.length - 1;
 
-                    /* set the value against the specified index */
-                    variable.dataSet.splice(index, 1);
-
+                    if (WM.isObject(index)) {
+                        indexValue = _.findIndex(variable.dataSet, index);
+                        /*When exactMatch property is set to true delete only when every property values are same*/
+                        if (indexValue > -1 && (!exactMatch || (exactMatch && WM.equals(variable.dataSet[indexValue], index)))) {
+                            variable.dataSet.splice(indexValue, 1);
+                        }
+                    } else {
+                        /* set the value against the specified index */
+                        variable.dataSet.splice(index, 1);
+                    }
                     /* return the new dataSet */
                     return variable.dataSet;
                 },
@@ -133,8 +143,8 @@ wm.variables.services.BasicVariableService = [
                 addItem: function (value, index) {
                     return methods.addItem(this, value, index);
                 },
-                removeItem: function (index) {
-                    return methods.removeItem(this, index);
+                removeItem: function (index, exactMatch) {
+                    return methods.removeItem(this, index, exactMatch);
                 },
                 clearData: function () {
                     return methods.clearData(this);
