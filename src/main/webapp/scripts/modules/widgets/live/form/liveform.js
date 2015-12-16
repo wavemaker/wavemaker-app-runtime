@@ -509,7 +509,9 @@ WM.module('wm.widgets.live')
                                 //}
                                 /*1. Append the uploaded script file.
                                  * 2. Append the connection properties.*/
-                                formData.append(field.key, document.forms[formName][field.key].files[0]);
+                                if ($scope.operationType !== 'delete') {
+                                    formData.append(field.key, document.forms[formName][field.key].files[0]);
+                                }
                             }
                         } else if (field.type === "list") {
                             if (field.value) {
