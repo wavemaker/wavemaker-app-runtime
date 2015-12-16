@@ -659,7 +659,6 @@ WM.module('wm.widgets.base', [])
                         "checkedvalue": {"type": "string"},
                         "uncheckedvalue": {"type": "string"},
                         "scopedatavalue": {"type": "string"},
-                        "startchecked": {"type": "boolean"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                         "shortcutkey": {"type": "string"}
                     },
@@ -1619,7 +1618,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "help", "properties": ["helptext"], "parent": "properties"},
-                {"name": "behavior", "properties": ["navigation", "pollinterval", "radiogroup", "viewgroup", "startchecked", "showweeks", "autofocus", "readonly", "messagelayout", "insertmessage", "updatemessage", "deletemessage", "errormessage", "ignoreparentreadonly", "readonlygrid",
+                {"name": "behavior", "properties": ["navigation", "pollinterval", "radiogroup", "viewgroup", "showweeks", "autofocus", "readonly", "messagelayout", "insertmessage", "updatemessage", "deletemessage", "errormessage", "ignoreparentreadonly", "readonlygrid",
                     "multiple", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible",
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "destination", "isdefaulttab", "isdefaultpane", "autocomplete", "nodatamessage", "confirmdelete", "loadingdatamsg", "showpreview", "defaultmode", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",

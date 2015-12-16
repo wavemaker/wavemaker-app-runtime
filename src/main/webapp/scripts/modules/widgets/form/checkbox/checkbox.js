@@ -33,21 +33,12 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkbox', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
             notifyFor = {
-                'startchecked': true,
                 'readonly': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
-            case 'startchecked':
-                newVal = newVal === true || newVal === 'true';
-                if (CONSTANTS.isStudioMode) {
-                    scope.datavalue = newVal ? (scope.checkedvalue || true) : false;
-                } else {
-                    scope.datavalue = newVal ? (scope.checkedvalue || true) : scope.datavalue;
-                }
-                break;
             case 'readonly':
                 scope.disabled = newVal;
                 break;
@@ -146,9 +137,6 @@ WM.module('wm.widgets.form')
  *                  This property defines the value of the checkbox widget when the widget is in the unchecked state.<br>
  * @param {boolean=} required
  *                   This property will be used to validate the state of the checkbox widget when used inside a form widget. <br>
- *                   Default value: `false`. <br>
- * @param {boolean=} startchecked
- *                   This property will be used to set the initial state of the checkbox widget. <br>
  *                   Default value: `false`. <br>
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
