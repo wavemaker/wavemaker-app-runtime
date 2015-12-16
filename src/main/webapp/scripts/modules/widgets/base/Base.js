@@ -400,8 +400,8 @@ WM.module('wm.widgets.base', [])
                         "changeOnkey": {"type": "boolean"},
 
                         /* Number properties */
-                        "minvalue": {"type": "number", "bindable": "in-bound"},
-                        "maxvalue": {"type": "number", "bindable": "in-bound"},
+                        "minvalue": {"type": "string", "bindable": "in-bound"},
+                        "maxvalue": {"type": "string", "bindable": "in-bound"},
                         "step": {"type": "number", "show": false},
                         "shortcutkey": {"type": "string"}
                     },

@@ -28,11 +28,29 @@ WM.module('wm.widgets.form')
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, attrs, key, newVal) {
+            var widgetProps = scope.widgetProps;
             switch (key) {
             case 'type':
-                scope.widgetProps.datavalue.type = (newVal === 'number' || newVal === 'date') ? newVal : 'string';
-                scope.widgetProps.accept.show = newVal === 'file';
-                scope.widgetProps.step.show = newVal === 'number';
+                widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = false;
+                widgetProps.placeholder.show = widgetProps.maxchars.show = widgetProps.updateon.show = widgetProps.updatedelay.show = true;
+                switch (newVal) {
+                case 'number':
+                    widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
+                    widgetProps.placeholder.show = widgetProps.maxchars.show = true;
+                    break;
+                case 'date':
+                case 'datetime-local':
+                case 'month':
+                case 'time':
+                case 'week':
+                    widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
+                    widgetProps.placeholder.show = widgetProps.maxchars.show = false;
+                    break;
+                case 'color':
+                    widgetProps.updateon.show = widgetProps.updatedelay.show = widgetProps.maxchars.show = false;
+                    widgetProps.placeholder.show = false;
+                    break;
+                }
                 break;
             case 'autocomplete':
                 (newVal === true || newVal === 'true') ? element.removeAttr(key) : element.attr(key, 'off');
