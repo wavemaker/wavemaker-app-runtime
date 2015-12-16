@@ -917,7 +917,9 @@ WM.module('wm.widgets.base', [])
                         "itemlabel": {"type": "list", "options": [""]},
                         "itemlink": {"type": "list", "options": [""]},
                         "itemchildren": {"type": "list", "options": [""]},
-                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor'}, {'label': 'Menu', 'widgettype': 'wm-menu'}, {'label': 'Popover', 'widgettype': 'wm-popover'}], "widget": "add-widget"}
+                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor'}, {'label': 'Menu', 'widgettype': 'wm-menu'}, {'label': 'Popover', 'widgettype': 'wm-popover'}], "widget": "add-widget"},
+                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
