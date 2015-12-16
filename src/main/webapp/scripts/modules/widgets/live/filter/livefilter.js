@@ -73,10 +73,10 @@ WM.module('wm.widgets.live')
                             //Added check for range field
                             if (!filterField.readonly && filterField.show) {
                                 if (filterField.isRange) {
-                                    filterField.minValue = '';
-                                    filterField.maxValue = '';
+                                    filterField.minValue = undefined;
+                                    filterField.maxValue = undefined;
                                 } else {
-                                    filterField.value = '';
+                                    filterField.value = undefined;
                                 }
                             }
                         });
@@ -205,8 +205,8 @@ WM.module('wm.widgets.live')
                                 case 'select':
                                 case 'radioset':
                                     if (filterField.type === "boolean") {
-                                        if (WM.isDefined(filterField._value) && !WM.isString(filterField._value)) {
-                                            fieldValue = filterField._value;
+                                        if (WM.isDefined(filterField._value) && filterField._value !== '') {
+                                            fieldValue = JSON.parse(filterField._value);
                                         }
                                         noQuotes = true;
                                     } else {
@@ -225,8 +225,8 @@ WM.module('wm.widgets.live')
                                     break;
                                 case 'checkbox':
                                 case 'toggle':
-                                    if (WM.isDefined(filterField._value) && !WM.isString(filterField._value)) {
-                                        fieldValue = filterField._value;
+                                    if (WM.isDefined(filterField._value) && filterField._value !== '') {
+                                        fieldValue = JSON.parse(filterField._value);
                                     }
                                     noQuotes = true;
                                     break;
