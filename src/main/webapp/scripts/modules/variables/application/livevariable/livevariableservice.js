@@ -226,7 +226,7 @@ wm.variables.services.$liveVariable = [
                                 "isPrimaryKey": isPrimaryKey,
                                 "notNull": !column.nullable,
                                 "length": column.length,
-                                "precision": column.precision,
+                                "scale": column.scale,
                                 "generator": column.generator,
                                 "isRelated": isForeignKey,
                                 "defaultValue": column.defaultValue

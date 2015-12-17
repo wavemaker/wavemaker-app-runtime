@@ -318,7 +318,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "sql_type": "big_decimal",
             "default_value": "0",
             "length": true,
-            "precision": true
+            "scale": true
         },
         "big_integer": {
             "sql_type": "big_integer",
@@ -361,13 +361,13 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "sql_type": "double",
             "default_value": "0",
             "length": true,
-            "precision": true
+            "scale": true
         },
         "float": {
             "sql_type": "float",
             "default_value": "0",
             "length": true,
-            "precision": true
+            "scale": true
         },
         "integer": {
             "sql_type": "integer",
