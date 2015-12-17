@@ -374,6 +374,11 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "default_value": "0",
             "length": true
         },
+        "long": {
+            "sql_type": "long",
+            "default_value": "0",
+            "length": true
+        },
         "string": {
             "sql_type": "string",
             "default_value": "null",
