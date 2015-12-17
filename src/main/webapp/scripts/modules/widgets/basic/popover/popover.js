@@ -178,10 +178,11 @@ WM.module('wm.widgets.basic')
          * Constructs Popover element and adds it to the top-level page.
          *
          * @param element element to which the popover has to be hooked.
-         * @param onAutoClose callback to invoke when popover closes automatically.
+         * @param onOpen  callback to invoke when popover is visible.
+         * @param onClose callback to invoke when popover closes automatically.
          * @constructor
          */
-        function Popover(element, onAutoClose) {
+        function Popover(element, onOpen, onClose) {
             var scope = element.isolateScope(),
                 popoverScope = createPopoverScope(element),
                 page = $rootScope.$activePageEl,
@@ -189,18 +190,29 @@ WM.module('wm.widgets.basic')
                 pageClickListener;
             page.append(popoverEle);
             popoverEle.show();
-            $timeout(function () {
+            /**
+             * When the page content is ready, copy the widgets and variables to the scope.
+             */
+            popoverScope.$on('on-pagecontainer-ready', function ($event) {
+                $event.stopPropagation();
                 var includedPageScope = popoverEle.find('[data-ng-controller]:first').scope();
                 scope.Widgets = includedPageScope.Widgets;
                 scope.Variables = includedPageScope.Variables;
+                Utils.triggerFn(onOpen);
+            });
+            /**
+             * Do calculations after the current digest cycle.
+             * This is to make sure that all the popover scope values are applied on to the dom.
+             */
+            $timeout(function () {
                 popoverEle.css(computePopoverPosition(element, popoverEle, popoverScope.popoverplacement));
                 popoverEle.removeClass('invisible');
                 shiftFocusToChild(popoverEle);
-            }, 100);
+            });
             if (popoverScope.popoverautoclose) {
                 pageClickListener = new ParentEventListener(page, popoverEle);
                 pageClickListener.on('click', function (event) {
-                    Utils.triggerFn(onAutoClose, event);
+                    Utils.triggerFn(onClose, event);
                 });
             }
             /**
@@ -237,6 +249,9 @@ WM.module('wm.widgets.basic')
                     },
                     'post': function (scope, element, attrs) {
                         var popover,
+                            onOpen = function (event) {
+                                Utils.triggerFn(scope.onShow, {'$event': event, '$scope' : scope});
+                            },
                             onClose = function (event) {
                                 scope.togglePopover(event);
                             };
@@ -255,9 +270,8 @@ WM.module('wm.widgets.basic')
                                     element.focus();
                                     Utils.triggerFn(scope.onHide, {'$event': event, '$scope': scope});
                                 } else {
-                                    popover = new Popover(element, onClose);
+                                    popover = new Popover(element, onOpen.bind(undefined, event), onClose);
                                     element.addClass('app-popover-open');
-                                    Utils.triggerFn(scope.onShow, {'$event': event, '$scope' : scope});
                                 }
                                 return false;
                             };

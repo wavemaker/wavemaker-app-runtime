@@ -99,6 +99,7 @@ WM.module('wm.widgets.base')
                         Utils.triggerFn(scope.onPagePartLoad);
                     }
                 }
+                scope.$emit('on-pagecontainer-ready');
             }
 
             /* This function handles the change in content property of the page-container */
