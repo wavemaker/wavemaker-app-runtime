@@ -283,7 +283,6 @@ WM.module('wm.widgets.live')
                 var fields = '',
                     dateTypes = ['date', 'datetime'],
                     textTypes = ['text', 'password', 'textarea'],
-                    excludeMaxValTypes = ['rating'],
                     evtTypes = getEventTypes(),
                     excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype'];
                 Object.keys(fieldDef).forEach(function (field) {
@@ -314,7 +313,7 @@ WM.module('wm.widgets.live')
                             fields += ' textalign="{{formFields[' + index + '].' + field + '}}"';
                         } else if (field === 'ngclass') {
                             fields += ' data-ng-class="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (!(_.includes(excludeMaxValTypes, type))) {
+                        } else {
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
                         }
                     }
