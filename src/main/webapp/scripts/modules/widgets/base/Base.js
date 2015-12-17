@@ -1169,7 +1169,7 @@ WM.module('wm.widgets.base', [])
                         "multiselect": {"type": "boolean"},
                         "radioselect": {"type": "boolean"},
                         "insertrow": {"type": "boolean", "bindable": "in-out-bound"},
-                        "readonlygrid": {"type": "boolean", "value": true},
+                        "readonlygrid": {"type": "boolean", "value": true, "show": false},
                         "showrecordcount": {"type": "boolean", "show": false},
                         "shownavigation": {"type": "boolean", "value": true},
                         "filternullrecords": {"type": "boolean", "value": true},
