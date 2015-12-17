@@ -27,7 +27,7 @@ WM.module('wm.widgets.form')
             '<input type="datetime-local" class="form-control app-textbox app-dateinput" data-ng-show="show" role="input" data-ng-model="_proxyModel" has-model step="any"' +
             ' init-widget data-ng-change="updateModel();_onChange({$event: $event, $scope: this});">'
             );
-    }]).directive('wmDatetime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'FormWidgetUtils', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils) {
+    }]).directive('wmDatetime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'FormWidgetUtils', '$document', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils, $document) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.datetime', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -82,15 +82,23 @@ WM.module('wm.widgets.form')
         /*On click of date icon button, open the date picker popup*/
         function _onDateClick(scope, evt) {
             evt.stopPropagation();
-            scope.isDateOpen = !scope.isDateOpen;
-            scope.isTimeOpen = false;
+            var dateOpen = scope.isDateOpen;
+            $timeout(function () {
+                WM.element(document).trigger('click');
+                scope.isDateOpen = !dateOpen;
+                scope.isTimeOpen = false;
+            });
         }
 
         /*On click of time icon button, open the time picker popup*/
         function _onTimeClick(scope, evt) {
             evt.stopPropagation();
-            scope.isTimeOpen = !scope.isTimeOpen;
-            scope.isDateOpen = false;
+            var TimeOpen = scope.isTimeOpen;
+            $timeout(function () {
+                WM.element(document).trigger('click');
+                scope.isTimeOpen = !TimeOpen;
+                scope.isDateOpen = false;
+            });
         }
 
         /* this function returns date object. If val is undefined it returns invalid date */
