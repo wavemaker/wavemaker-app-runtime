@@ -83,8 +83,8 @@ WM.module('wm.layouts.page')
                             if (CONSTANTS.isRunMode && !templateShowCaseRendered) {
                                 templateShowCaseRendered = true;
                                 $compile('<wm-template-showcase></wm-template-showcase>')(scope.$root);
-                                $rootScope.$emit('template-ready');
                             }
+                            $rootScope.$emit('template-ready');
                         }
                     };
                 }
