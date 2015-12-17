@@ -44,7 +44,7 @@ WM.module('wm.widgets.base', [])
             dimensionRegex = '(^$|^(auto|0)$|^[+-]?[0-9]+.?([0-9]+)?(em|ex|%|px|cm|mm|in|pt|pc|ch|rem|vh|vw|vmin|vmax)?$)',
             zindexRegex    = '(^$|auto|initial|inherit|^[0-9]+$)',
             maxRatingRegex = '^(?:10|[1-9])$|^bind.*$',
-            roles = ["Everyone"],
+            roles = [],
             dateOptions = [
                 {
                     "name" : "Date",
@@ -108,6 +108,7 @@ WM.module('wm.widgets.base', [])
             animationOptions = [" ", "bounce", "bounceIn", "bounceInDown", "bounceInLeft", "bounceInRight", "bounceInUp", "bounceOut", "bounceOutDown", "bounceOutLeft", "bounceOutRight", "bounceOutUp", "fadeIn", "fadeInDown", "fadeInDownBig", "fadeInLeft", "fadeInLeftBig", "fadeInRight", "fadeInRightBig", "fadeInUp", "fadeInUpBig", "fadeOut", "fadeOutDown", "fadeOutDownBig", "fadeOutLeft", "fadeOutLeftBig", "fadeOutRight", "fadeOutRightBig", "fadeOutUp", "fadeOutUpBig", "flash", "flipInX", "flipInY", "flipOutX", "flipOutY", "hinge", "lightSpeedIn", "lightSpeedOut", "pulse", "rollIn", "rollOut", "rotateIn", "rotateInDownLeft", "rotateInDownRight", "rotateInUpLeft", "rotateInUpRight", "rotateOut", "rotateOutDownLeft", "rotateOutDownRight", "rotateOutUpLeft", "rotateOutUpRight", "rubberBand", "shake", "slideInDown", "slideInLeft", "slideInRight", "slideInUp", "slideOutDown", "slideOutLeft", "slideOutRight", "slideOutUp", "swing", "tada", "wobble", "zoomIn", "zoomInDown", "zoomInLeft", "zoomInRight", "zoomInUp", "zoomOut", "zoomOutDown", "zoomOutLeft", "zoomOutRight", "zoomOutUp"],
             visibilityOptions = ["collapse", "hidden", "initial", "inherit", "visible"],
             displayOptions = ["block", "flex", "inherit", "initial", "inline", "inline-block", "inline-flex", "inline-table", "list-item", "run-in", "table", "table-caption", "table-cell", "table-column", "table-column-group", "table-header-group", "table-footer-group", "table-row", "table-row-group", "none"],
+            EVERYONE = "Everyone",
             result = {
                 "properties": {
                     "wm.base": {
@@ -115,7 +116,7 @@ WM.module('wm.widgets.base', [])
                         "hint": {"type": "string", "bindable": "in-bound"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "class": {"type": "string", "pattern": classRegex},
-                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
+                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": EVERYONE},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
                     },
 
@@ -334,7 +335,7 @@ WM.module('wm.widgets.base', [])
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "hint": {"type": "string", "bindable": "in-bound"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
-                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
+                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": EVERYONE},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Menu Item 1, Menu Item 2, Menu Item 3"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
@@ -867,14 +868,14 @@ WM.module('wm.widgets.base', [])
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                         "zindex": {"type": "string", "pattern": zindexRegex},
-                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"}
+                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": EVERYONE}
                     },
                     'wm.containers': {
                         "class": {"type": "string", "pattern": classRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
-                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
+                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": EVERYONE},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "visibility": {"type": "list", "options": visibilityOptions},
                         "display": {"type": "list", "options": displayOptions},
@@ -1350,7 +1351,7 @@ WM.module('wm.widgets.base', [])
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
-                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": "Everyone"},
+                        "accessroles": {"type": "accessrolesselect", "options": roles, "value": EVERYONE},
                         "pagesize": {"type": "number"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
@@ -1753,7 +1754,6 @@ WM.module('wm.widgets.base', [])
         function setRoles(pRoles) {
             /* reset the existing roles array (keeping the actual reference to the roles array)*/
             roles.length = 0;
-            roles.push("Everyone");
 
             /* push the provided roles into the existing roles */
             if (WM.isArray(pRoles)) {
@@ -1885,34 +1885,54 @@ WM.module('wm.widgets.base', [])
         "use strict";
         var directive = {};
 
+        function matchRoles(widgetRoles, userRoles) {
+            return widgetRoles.some(function (item) {
+                return _.includes(userRoles, item);
+            });
+        }
+
+        /*Decides whether the current logged in user has access to widget or not*/
+        function hasAccessToWidget(widgetRoles, userRoles) {
+            /* access the widget when 'Everyone' is chosen */
+            if (_.includes(widgetRoles, 'Everyone')) {
+                return true;
+            }
+
+            /* access the widget when 'Anonymous' is chosen and user is not authenticated */
+            if (_.includes(widgetRoles, 'Anonymous') && !$rootScope.isUserAuthenticated) {
+                return true;
+            }
+
+            /* access the widget when 'Only Authenticated Users' is chosen and user is authenticated */
+            if (_.includes(widgetRoles, 'Authenticated') && $rootScope.isUserAuthenticated) {
+                return true;
+            }
+
+            /* access the widget when widget role and logged in user role matches */
+            return matchRoles(widgetRoles, userRoles);
+        }
+
         /* the directive is required only in RUN mode and when security is enabled */
         if (CONSTANTS.isRunMode && $rootScope.isSecurityEnabled) {
             directive = {
                 "restrict": "A",
                 "priority": 10000,
                 "terminal": true,
-                "compile": function () {
-                    return {
-                        "pre": function (scope, element, attrs) {
-                            var userRoles = $rootScope.userRoles || [],
-                                widgetRoles = attrs.accessroles ? attrs.accessroles.split(",") : [],
-                                clonedElement,
-                                matchRoles = function (arr1, arr2) {
-                                    return arr1.some(function (item) {
-                                        return arr2.indexOf(item) !== -1;
-                                    });
-                                };
+                "link": {
+                    "pre": function (scope, element, attrs) {
+                        var userRoles = $rootScope.userRoles || [],
+                            widgetRoles = attrs.accessroles ? attrs.accessroles.split(",") : [],
+                            clonedElement;
 
-                            if (widgetRoles.length && widgetRoles.indexOf("Everyone") === -1 && !matchRoles(widgetRoles, userRoles)) {
-                                element.remove();
-                            } else {
-                                clonedElement = element.clone();
-                                clonedElement.removeAttr("accessroles");
-                                element.replaceWith(clonedElement);
-                                $compile(clonedElement)(scope);
-                            }
+                        if (hasAccessToWidget(widgetRoles, userRoles)) {
+                            clonedElement = element.clone();
+                            clonedElement.removeAttr("accessroles");
+                            element.replaceWith(clonedElement);
+                            $compile(clonedElement)(scope);
+                        } else {
+                            element.remove();
                         }
-                    };
+                    }
                 }
             };
         }

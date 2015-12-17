@@ -866,7 +866,7 @@ wm.plugins.security.services.SecurityService = [
 
             getUserRoles: function (successCallback, failureCallback) {
                 getLoggedInUser(function (loggedInUser) {
-                    Utils.triggerFn(successCallback, loggedInUser.userRoles);
+                    Utils.triggerFn(successCallback, loggedInUser.userRoles, loggedInUser.authenticated);
                 }, failureCallback);
             },
 

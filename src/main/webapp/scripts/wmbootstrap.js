@@ -140,8 +140,9 @@ Application
                         $rs.isSecurityEnabled = typeof isEnabled === 'boolean' ? isEnabled : false;
                         /* if security enabled, get the user roles and load page, else simply load page*/
                         if ($rs.isSecurityEnabled) {
-                            SecurityService.getUserRoles(function (roles) {
+                            SecurityService.getUserRoles(function (roles, isAuthenticated) {
                                 var dataset;
+                                $rs.isUserAuthenticated = isAuthenticated;
                                 if (WM.isArray(roles)) {
                                     $rs.userRoles = roles;
                                     if ($rs.Variables && $rs.Variables.loggedInUser) {
@@ -413,6 +414,12 @@ Application
                             AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
                             AppManager.updateLoggedInUser();
                         });
+                }
+
+                /*$rs.isSecurityEnabled is set to true only after user logs in. Before that we need to know whether security is enabled or not
+                * so when current page is login.html we assume that security is enabled*/
+                if (window.location.pathname.split('/').pop() === 'login.html') {
+                    $rs.isSecurityEnabled = true;
                 }
 
                 $rs.$on('update-loggedin-user', function () {
