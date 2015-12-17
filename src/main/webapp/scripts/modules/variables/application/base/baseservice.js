@@ -1325,7 +1325,16 @@ wm.variables.services.Variables = [
             'getAll': function () {
                 return self.variableCollection;
             },
-
+            /**
+             * @ngdoc method
+             * @name $Variables#getDuplicateVariables
+             * @methodOf wm.variables.$Variables
+             * @description
+             * Get array of duplicate variable names
+             */
+            'getDuplicateVariables': function () {
+                return _.intersection(_.keys(self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP]), _.keys(self.variableCollection[$rootScope.activePageName]));
+            },
             /**
              * @ngdoc method
              * @name $Variables#getStudioCopy
