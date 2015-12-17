@@ -128,7 +128,7 @@ WM.module('wm.widgets.base')
 
                             /* check for addToolBar*/
                             if (addToolBar) {
-                                el = '<button class="wm-included-page-heading button-primary" data-ng-click=openWorkspace("' + newVal + '"); title="edit ' + newVal + '"><i class="wm-icon edit"></i></button>';
+                                el = '<button class="wm-included-page-heading button-primary" data-ng-click=openWorkspace("' + newVal + '"); title="edit ' + newVal + '"><i class="wm-edit fa fa-pencil"></i></button>';
                             }
                         }
                         /*read the file content*/
