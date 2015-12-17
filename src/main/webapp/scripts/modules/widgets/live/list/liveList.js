@@ -481,6 +481,9 @@ WM.module('wm.widgets.live')
                 // evt handlers will be created by isolateScope. redefine them on $liScope.
                 WM.extend($liScope, {
                     'onClick'           : $is.onClick,
+                    'onDblclick'        : $is.onDblclick,
+                    'onTap'             : $is.onTap,
+                    'onDoubletap'       : $is.onDoubletap,
                     'onMouseenter'      : $is.onMouseenter,
                     'onMouseleave'      : $is.onMouseleave,
                     'onEnterkeypress'   : $is.onEnterkeypress,
@@ -550,7 +553,7 @@ WM.module('wm.widgets.live')
                 });
                 return selectedItems;
             }
-            function setupEvtHandlers($is, $el) {
+            function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
                     $hammerEl = new Hammer($el[0], {}),
                     selectCount = 0,
@@ -575,13 +578,33 @@ WM.module('wm.widgets.live')
                             if (!isActive) {
                                 $li.addClass('active');
                             }
-                            /*trigger $apply, as 'click' is out of angular-scope*/
-
-                            Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
+                            /*trigger $apply, as 'click' or 'tap' is out of angular-scope*/
+                            if (attrs.onClick) {
+                                Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
+                            }
+                            if (attrs.onTap) {
+                                Utils.triggerFn($liScope.onTap, {$event: evt, $scope: $liScope});
+                            }
                         }
                     }
                     $rs.$safeApply($is);
                 });
+
+                /*listen on to the dblclick event for the ul element & get li dblclicked of the live-list */
+                $el.on('dblclick.wmActive', 'ul', function (evt) {
+                    var $li = WM.element(evt.target).closest('li.app-list-item'),
+                        $liScope = $li && $li.scope();
+
+                    /*trigger $apply, as 'dblclick' or 'doubleTap' is out of angular-scope*/
+                    if (attrs.onDblclick) {
+                        Utils.triggerFn($liScope.onDblclick, {$event: evt, $scope: $liScope});
+                    }
+                    if (attrs.onDoubletap) {
+                        Utils.triggerFn($liScope.onDoubletap, {$event: evt, $scope: $liScope});
+                    }
+                    $rs.$safeApply($is);
+                });
+
                 $hammerEl.on('pressup', function (evt) {
                     if (!isMultiSelect) {
                         selectCount = 0;
@@ -635,7 +658,7 @@ WM.module('wm.widgets.live')
                         }, true);
                     }
 
-                    setupEvtHandlers($is, $el);
+                    setupEvtHandlers($is, $el, attrs);
                 }
                 /* register the property change handler */
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);
@@ -688,10 +711,13 @@ WM.module('wm.widgets.live')
                 directiveDefn.scope = {
                     'scopedataset'      : '=?',
                     'onClick'           : '&',
+                    'onDblclick'        : '&',
                     'onMouseenter'      : '&',
                     'onMouseleave'      : '&',
                     'onEnterkeypress'   : '&',
-                    'onSetrecord'       : '&'
+                    'onSetrecord'       : '&',
+                    'onTap'             : '&',
+                    'onDoubletap'       : '&'
                 };
             }
 
