@@ -6,7 +6,7 @@ WM.module('wm.layouts.containers')
         'use strict';
         $templateCache.put('template/layouts/containers/mobile/navbar.html',
                 '<header data-role="mobile-navbar" init-widget class="app-header app-mobile-navbar {{class}}" data-ng-show="show" apply-styles>' +
-                    '<nav class="navbar ng-show" ng-show="!showSearchbar">' +
+                    '<nav class="navbar ng-show" ng-show="!searchVisible">' +
                         '<div class="mobile-navbar-left">' +
                             '<ul class="nav navbar-nav navbar-left">' +
                                 '<li data-ng-if="showLeftnav" >' +
@@ -28,16 +28,16 @@ WM.module('wm.layouts.containers')
                             '<ul class="nav navbar-nav navbar-right">' +
                                 '<li wmtransclude></li>' +
                                 '<li data-ng-if="searchbutton">' +
-                                    '<a class="btn-search btn-transparent" type="button" data-ng-click="search();">' +
+                                    '<a class="btn-search btn-transparent" type="button" data-ng-click="showSearchBar();">' +
                                         '<i data-ng-class="searchbuttoniconclass"></i><span>{{searchbuttonlabel}}</span>' +
                                     '</a>' +
                                 '</li>' +
                             '</ul>' +
                         '</div>' +
                     '</nav>' +
-                    '<nav class="navbar searchbar ng-show" ng-show="showSearchbar">' +
+                    '<nav class="navbar searchbar ng-hide">' +
                             '<div class="search-container"><input type="search" data-ng-model="searchText" class="form-control" id="search" placeholder="{{searchplaceholder}}">' +
-                            '<i class="btn-close glyphicon glyphicon-remove" data-ng-click="close();"></i></div>' +
+                            '<i class="btn-close glyphicon glyphicon-remove" data-ng-click="hideSearchBar();"></i></div>' +
                     '</nav>' +
                 '</header>'
                 );
@@ -83,17 +83,24 @@ WM.module('wm.layouts.containers')
                                     NavigationService.goToPrevious();
                                 }
                             };
-                            scope.search = function () {
-                                scope.showSearchbar = true;
-                                $timeout(function () {
-                                    element.find('.searchInput').focus();
-                                }, undefined, false);
+                            scope.showSearchBar = function () {
+                                /**
+                                 * With ng-show attributes, input is not getting focused
+                                 * because of delay of digest cycle execution.
+                                 * So, using the dom manipulation to show and hide the element.
+                                 */
+                                var searchBar = element.find('.searchbar');
+                                searchBar.removeClass('ng-hide');
+                                searchBar.find('input:first').focus();
+                                scope.searchVisible = true;
                             };
-                            scope.close = function () {
+                            scope.hideSearchBar = function () {
                                 if (scope.searchText) {
                                     scope.searchText = '';
                                 } else {
-                                    scope.showSearchbar = false;
+                                    var searchBar = element.find('.searchbar');
+                                    searchBar.addClass('ng-hide');
+                                    scope.searchVisible = false;
                                 }
                             };
                             scope.$watch('searchText', function (newValue, oldValue) {
