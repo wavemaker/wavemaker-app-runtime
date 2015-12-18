@@ -194,34 +194,84 @@ wm.variables.services.Variables = [
                 }
             },
 
-            processVariablePostBindUpdate = function (nodeName, nodeVal, variable) {
+            processVariablePostBindUpdate = function (nodeName, nodeVal, variable, noUpdate) {
                 if (variable.category === "wm.LiveVariable") {
                     if (variable.operation === "read") {
                         variable.filterFields[nodeName] = {
                             'value': nodeVal
                         };
                         /* if auto-update set for the variable with read operation only, get its data */
-                        if (variable.autoUpdate && !WM.isUndefined(nodeVal)) {
+                        if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.update) && !noUpdate) {
                             variable.update();
                         }
                     } else {
                         variable.inputFields[nodeName] = nodeVal;
                         /* if auto-update set for the variable with read operation only, get its data */
-                        if (variable.autoUpdate && !WM.isUndefined(nodeVal)) {
-                            variable[variable.operation + 'Record']();
+                        if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable[variable.operation + 'Record']) && !noUpdate) {
+                            Utils.triggerFn(variable[variable.operation + 'Record']);
                         }
                     }
                 } else if (variable.category === "wm.ServiceVariable") {
-                    if (variable.autoUpdate && !WM.isUndefined(nodeVal)) {
+                    if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.update) && !noUpdate) {
                         variable.update();
                     }
                 } else if (variable.category === "wm.LoginVariable") {
-                    if (variable.autoUpdate && !WM.isUndefined(nodeVal)) {
+                    if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.login) && !noUpdate) {
                         variable.login();
                     }
                 }
             },
 
+            /**
+             * New Implementation (DataBinding Flat Structure with x-path targets)
+             * processes a dataBinding object, if bound to expression, watches over it, else assigns value to the expression
+             * @param obj dataBinding object
+             * @param scope scope of the variable
+             * @param root root node string (dataBinding for all variables, dataSet for static variable)
+             * @param variable variable object
+             */
+            processBindObject = function (obj, scope, root, variable) {
+                var target = obj.target,
+                    targetObj,
+                    targetNodeKey,
+                    rootNode = variable[root];
+
+                targetNodeKey = target.split(".").pop();
+                target = target.substr(0, target.lastIndexOf('.'));
+                if (obj.target === root) {
+                    targetObj = variable;
+                } else if (target) {
+                    targetObj = Utils.findValueOf(rootNode, target, true);
+                } else {
+                    targetObj = rootNode;
+                }
+                if (Utils.stringStartsWith(obj.value, "bind:")) {
+                    scope.$watch(obj.value.replace("bind:", ""), function (newVal, oldVal) {
+                        if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(targetObj[targetNodeKey])))) {
+                            return;
+                        }
+                        /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
+                        if (targetObj) {
+                            targetObj[targetNodeKey] = newVal;
+                            processVariablePostBindUpdate(targetNodeKey, newVal, variable);
+                        }
+                    });
+                } else if (WM.isDefined(obj.value)) {
+                    /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
+                    if (targetObj) {
+                        targetObj[targetNodeKey] = obj.value;
+                    }
+                }
+            },
+
+            /**
+             * Old Implementation (DataBinding Recursive Structure)
+             * processes a dataBinding object, if bound to expression, watches over it, else assigns value to the expression
+             * @param node binding node object
+             * @param parentNode parent object
+             * @param scope scope of the variable
+             * @param variable variable object
+             */
             processBindNode = function (node, parentNode, scope, variable) {
                 if (Utils.stringStartsWith(node.value, "bind:")) {
                     scope.$watch(node.value.replace("bind:", ""), function (newVal, oldVal) {
@@ -262,17 +312,30 @@ wm.variables.services.Variables = [
                 watchers[scope.$id][name].forEach(Utils.triggerFn);
 
                 /*
-                 * new implementation: dataBinding is an array of binding maps
+                 * new implementation: dataBinding is a flat array of binding objects with x-path targets
+                 * old implementation: dataBinding is a recursive map of binding objects
                  * old implementation: dataBinding is an object map
                  */
                 if (WM.isArray(variable.dataBinding)) {
-                    var bindMap = variable.dataBinding;
+                    var bindMap = variable.dataBinding,
+                        root = variable.category === "wm.Variable" ? "dataSet": "dataBinding";
                     variable.dataBinding = {};
-                    bindMap.forEach(function (node) {
-                        processBindNode(node, variable, scope, variable);
-                    });
+                    if (bindMap[0] && WM.isArray(bindMap[0].fields)) {
+                        /* old projects(without migration): dataBinding is a recursive map of binding objects */
+                        bindMap.forEach(function (node) {
+                            processBindNode(node, variable, scope, variable);
+                        });
+                    } else {
+                        /* new projects with flat bind map */
+                        bindMap.forEach(function (node) {
+                            processBindObject(node, scope, root, variable);
+                        });
+                    }
                 } else {
-                    /* loop over each variable-binding object to check for bindings */
+                    /*
+                     * oldest implementation: loop over each variable-binding object to check for bindings
+                     * NOTE: Notification Variables still follow this structure, can not be removed
+                     */
                     WM.forEach(variable.dataBinding, function (binding, param) {
                         if (typeof binding === 'object' && variable.category === 'wm.ServiceVariable') {
                             WM.forEach(binding, function (subParamBinding, subParam) {
@@ -869,10 +932,21 @@ wm.variables.services.Variables = [
                 variables[context] = contextVariables;
             },
 
-        /*
-         * filters the variable collection before pushing into the respective file
-         * removes the data not set by the user
-         */
+            /**
+             * loops through the binding objects in the provided array, removes the ones with no value
+             * @param bindings
+             */
+            cleanseBindings = function (bindings) {
+                _.remove(bindings, function (binding) {
+                    return (WM.isUndefined(binding.value) || binding.value === '')
+                });
+            },
+
+            /**
+             * filters the variable collection before pushing into the respective file
+             * removes the data not set by the user
+             * @param variables list of variables to filter
+             */
             filterVariables = function (variables) {
                 WM.forEach(variables, function (variable) {
                     WM.forEach(variable, function (propertyValue, propertyName) {
@@ -880,6 +954,8 @@ wm.variables.services.Variables = [
                             delete variable[propertyName];
                         }
                     });
+
+                    cleanseBindings(variable.dataBinding);
                 });
                 return variables;
             },
@@ -1708,7 +1784,6 @@ wm.variables.services.Variables = [
                     createdVariable.operationType = variableDetails.operationType;
                     createdVariable.serviceType = variableDetails.serviceType;
                     createdVariable.category = variableCategory;
-                    createdVariable.dataBinding[0].fields = [];
                     createdVariable.isDefault = true;
                     createdVariable.type = variableDetails.returnType;
 
@@ -1719,10 +1794,10 @@ wm.variables.services.Variables = [
                     delete createdVariable.name;
 
                     /* insert sample param values if provided */
-                    bindMapCollection = createdVariable.dataBinding[0].fields;
+                    bindMapCollection = createdVariable.dataBinding;
                     WM.forEach(variableDetails.sampleParamValues, function (val, key) {
                         bindMapCollection.push({
-                            "name": key,
+                            "target": key,
                             "value": val,
                             "type": "java.lang.String"
                         });

@@ -906,27 +906,53 @@ WM.module('wm.utils', [])
 
         /*
          * Util method to find the value of a key in the object
+         * if key not found and create is true, an object is created against that node
          * Examples:
          * var a = {
          *  b: {
          *      c : {
          *          d: 'test'
          *      }
+         *  }
          * }
          * Utils.findValue(a, 'b.c.d') --> 'test'
          * Utils.findValue(a, 'b.c') --> {d: 'test'}
          * Utils.findValue(a, 'e') --> undefined
+         * Utils.findValue(a, 'e', true) --> {} and a will become:
+         * {
+         *   b: {
+         *      c : {
+         *          d: 'test'
+         *      }
+         *  },
+         *  e: {
+         *  }
+         * }
          */
-        function findValueOf(obj, key) {
+        function findValueOf(obj, key, create) {
             if (!obj || !key) {
                 return;
             }
 
-            var parts = key.split('.');
+            var parts = key.split('.'),
+                part;
 
             /* iterate through the parts and find the value of obj[key] */
-            while (parts.length !== 0 && obj) {
-                obj = obj[parts.shift()];
+            while (parts.length !== 0) {
+                part = parts.shift();
+                if (!obj[part]) {
+                    if (create) {
+                        /* if object node not found and create flag is true, create a new object node an continue */
+                        obj[part] = {};
+                        obj = obj[part];
+                    } else {
+                        /* else stop looking further and return undefined */
+                        obj = obj[part];
+                        break;
+                    }
+                } else {
+                    obj = obj[part];
+                }
             }
 
             return obj;

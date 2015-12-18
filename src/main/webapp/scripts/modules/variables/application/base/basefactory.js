@@ -36,7 +36,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "editJson": {"type": "json"},
                     "isBound": {"type": "boolean"},
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
-                    "dataBinding": {"type": "list", "value": [{"name": "dataSet", "type": "object", "fields": [{"name": "dataValue", "type": "string"}]}], "hide": true},
+                    "dataBinding": {"type": "list", "value": [{"target": "dataValue", "type": "string"}], "hide": true},
                     "saveInPhonegap": {"type": "boolean", "value": false, "hide": true}
                 },
                 "wm.ServiceVariable": {
@@ -56,7 +56,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "transformationRequired": {"type": "boolean-labelfirst", "value": false},
                     "columnField": {"type": "list", "options": {}, "hide": true},
                     "dataField": {"type": "list", "options": {}, "hide": true},
-                    "dataBinding": {"type": "list", "value": [{"name": "dataBinding", "type": "object", "fields": []}], "hide": true},
+                    "dataBinding": {"type": "list", "value": [], "hide": true},
 
                     /* Events */
                     "onCanUpdate": {"type": "list", "options": variableEventOptions},
@@ -91,7 +91,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "operation": {"hide": true, "required": false},
                     "service": {"hide": true, "required": false},
                     "dataSet": {"value": {username: "", password: ""}},
-                    "dataBinding": {"type": "list", "value": [{"name": "dataBinding", "type": "object", "fields": [{"name": "username", "type": "string"}, {"name": "password", "type": "string"}]}], "hide": true},
+                    "dataBinding": {"type": "list", "value": [{"target": "username", "type": "string"}, {"target": "password", "type": "string"}], "hide": true},
                     "startUpdate": {"value": false},
                     "autoUpdate": {"value": false},
                     "useDefaultSuccessHandler": {"type": "boolean", "value": true}
