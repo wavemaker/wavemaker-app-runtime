@@ -1478,38 +1478,7 @@ WM.module('wm.utils', [])
          * @params: {scope} scope of the fucntion called. Used for eval
          */
         function getEvaluatedExprValue(object, expression, scope) {
-            var requiredFields = [], keys, relatedFieldKeys, dataObj, str = '';
-            keys = Object.keys(object);
-            keys.forEach(function (column) {
-                if (_.includes(expression, column)) {
-                    if (WM.isObject(object[column])) {
-                        dataObj = object[column];
-                        relatedFieldKeys = Object.keys(dataObj);
-                        relatedFieldKeys.forEach(function (field) {
-                            str = column + '.' + field;
-                            if (_.includes(expression, column)) {
-                                requiredFields.push({'field': str, 'value': dataObj[field]});
-                            }
-                        });
-                    } else {
-                        requiredFields.push({'field': column, 'value': object[column]});
-                    }
-                }
-            });
-
-            requiredFields.forEach(function (column) {
-                var regexExpr = new RegExp('\\b' + column.field + '\\b', 'g'),
-                    val = column.value;
-                if (WM.isString(val)) {
-                    val = '"' + val + '"';
-                }
-                expression = expression.replace(regexExpr, val);
-            });
-            try {
-                return scope.$eval(expression);
-            } catch (e) {
-                return expression;
-            }
+            return scope.$eval(expression, object);
         }
 
         //extend jQuery -- referred from jQuery-UI

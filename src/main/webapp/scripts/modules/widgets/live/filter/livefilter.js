@@ -335,7 +335,7 @@ WM.module('wm.widgets.live')
                             if (column.isRelated) {
                                 /* otherwise build object with required configuration */
                                 colDef.field = column.fieldName.charAt(0).toLowerCase() + column.fieldName.slice(1);
-                                colDef.displayname = colDef.field;
+                                colDef.displayname = Utils.prettifyLabel(colDef.field);
                                 colDef.isRelated = true;
                                 colDef.lookupType = column.relatedEntityName;
                                 colDef.lookupField = '';

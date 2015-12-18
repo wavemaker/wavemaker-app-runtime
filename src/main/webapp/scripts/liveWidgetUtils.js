@@ -549,7 +549,7 @@ WM.module('wm.widgets.live')
                 }
                 _.each(columnArray, function (fieldObj) {
                     var column;
-                    if (!_.includes(fieldNames, fieldObj.fieldName)) {
+                    if (!_.includes(fieldNames, fieldObj.fieldName) && !fieldObj.readonly) {
                         fieldNames.push(fieldObj.fieldName);
                         column = {
                             'displayname'   : Utils.prettifyLabel(fieldObj.fieldName),

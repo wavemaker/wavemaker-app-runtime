@@ -115,15 +115,6 @@ WM.module('wm.widgets.live')
                         $scope.isUpdateMode = WM.isDefined(updateMode) ? updateMode : true;
                     };
                 $scope.prevDataValues = {};
-                /*Function to check whether the key is a composite key or not.*/
-                $scope.isCompositeKey = function () {
-                    return !$scope.primaryKey || ($scope.primaryKey && (!$scope.primaryKey.length || $scope.primaryKey.length > 1));
-                };
-
-                /*Function to check whether the table associated with the live-variable bound to the live-form has a primary key or not.*/
-                $scope.isNoPrimaryKey = function () {
-                    return (!$scope.primaryKey || ($scope.primaryKey && !$scope.primaryKey.length));
-                };
                 $scope.findOperationType = function () {
                     var operation;
                     /*If OperationType is not set then based on the formdata object return the operation type,
@@ -473,6 +464,7 @@ WM.module('wm.widgets.live')
                 /*Sets the operationType to "delete" and calls the formSave function to handle the action*/
                 $scope.delete = function () {
                     $scope.operationType = "delete";
+                    prevDataObject = Utils.getClonedObject($scope.rowdata);
                     $scope.formSave();
                 };
                 /*Check if the data is in required format, i.e, if the field has a key and type*/
@@ -481,7 +473,7 @@ WM.module('wm.widgets.live')
                 };
                 /*Function to get the default data object based on the operation type*/
                 function getDataObject() {
-                    if ($scope.operationType !== 'update') {
+                    if ($scope.operationType === 'insert') {
                         return {};
                     }
                     if (WM.isDefined(prevDataObject) && !Utils.isEmptyObject(prevDataObject)) {
@@ -561,17 +553,6 @@ WM.module('wm.widgets.live')
                         .attr('disabled', false);
                 };
                 $scope.isUpdateMode = false;
-
-                /*Loop through the column definitions and get the primary key*/
-                $scope.getPrimaryKey = function (columnArray) {
-                    var primaryKey;
-                    WM.forEach(columnArray, function (column) {
-                        if (column.isPrimaryKey) {
-                            primaryKey = column.fieldName;
-                        }
-                    });
-                    return primaryKey;
-                };
                 /*Function to set the specified column as a primary key by adding it to the primary key array.*/
                 $scope.setPrimaryKey = function (columnName) {
                     /*Store the primary key of data*/
@@ -591,7 +572,8 @@ WM.module('wm.widgets.live')
                         if (isTimeType(formField)) {
                             formField.value = getValidTime(dataObj[formField.key]);
                         } else if (formField.type === "blob") {
-                            primaryKey = $scope.dataset.propertiesMap.primaryKeys.join();
+                            var primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
+                            primaryKey = primaryKeys.join();
                             href = (($scope.variableObj.prefabName !== "" &&  $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
                             href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + formField.key + '?' + Math.random();
                             formField.href = href;
@@ -604,14 +586,15 @@ WM.module('wm.widgets.live')
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
-                    var dataObj = $scope.rowdata, primaryKey, href;
+                    var dataObj = $scope.rowdata, primaryKey, href, primaryKeys;
                     if (!dataObj) {
                         return;
                     }
                     if (isTimeType(fieldDef)) {
                         fieldDef.value = getValidTime(dataObj[fieldDef.key]);
                     } else if (fieldDef.type === "blob") {
-                        primaryKey = $scope.dataset.propertiesMap.primaryKeys.join();
+                        primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
+                        primaryKey = primaryKeys.join();
                         href = 'services/' + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + fieldDef.key + '?' + Math.random();
                         fieldDef.href = href;
                     } else {
@@ -1055,22 +1038,6 @@ WM.module('wm.widgets.live')
                                     var primaryKeys = boundVariable.getRelatedTablePrimaryKeys(columnDef.key, {scope: elScope}),
                                         relatedFormField = parentIsolateScope.formFields[index];
                                     relatedFormField.datafield = 'All Fields';
-                                    /*if the field is a composite key, set the dataset from response id.*/
-                                    if (primaryKeys.length > 1) {
-                                        response.forEach(function (rowData) {
-                                            var tempData;
-                                            /*Check if the value corresponding to the key "id" is an object.*/
-                                            if (rowData && WM.isObject(rowData.id)) {
-                                                tempData = rowData.id;
-                                                delete rowData.id;
-                                                WM.extend(rowData, tempData);
-                                            }
-                                        });
-                                        relatedFormField.dataset = response;
-                                        /*Set the display field as first primary key*/
-                                        relatedFormField.displayfield = primaryKeys[0];
-                                        return;
-                                    }
                                     relatedFormField.dataset = response;
                                     if (primaryKeys.length > 0) {
                                         relatedFormField.displayfield = primaryKeys[0];

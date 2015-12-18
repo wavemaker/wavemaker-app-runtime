@@ -160,7 +160,13 @@ wm.variables.services.$liveVariable = [
                     var variableTable,
                         variableType,
                         tableNameToEntityNameMap = {},
-                        entityNameToTableNameMap = {};
+                        entityNameToTableNameMap = {},
+                        getSQLType = function (sqlType) {
+                            if (DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType]) {
+                                return DB_CONSTANTS.DATABASE_DATA_TYPES[DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType].sql_type].sql_type;
+                            }
+                            return sqlType;
+                        };
                     WM.forEach(database.tables, function (table) {
                         tableNameToEntityNameMap[table.name] = table.entityName;
                         entityNameToTableNameMap[table.entityName] = table.name;
@@ -180,57 +186,90 @@ wm.variables.services.$liveVariable = [
                         var tableName = table.name,
                             tablePackageName = database.packageName + "." + table.entityName,
                             primaryKeys = table.primaryKey.columns || [],
-                            foreignKeys = [];
-                        /*Find out the foreign keys from the relations*/
-                        _.each(table.relations, function (relation) {
-                            if (relation.primary) {
-                                _.each(relation.mappings, function (mapping) {
-                                    foreignKeys.push(mapping.sourceColumn);
-                                });
-                            }
-                        });
+                            foreignKeys = [],
+                            columnsAdded = [];
 
                         /*Add the "table-name" as a key to "tableDetails" and initialize "columnNames" and "relations".*/
                         tableDetails[tableName] = {};
                         tableDetails[tableName].columns = [];
-                        tableDetails[tableName].primaryKeys = [];
+                        tableDetails[tableName].primaryFields = [];
+                        packageDetails[tablePackageName].primaryFields = [];
                         packageDetails[tablePackageName] = packageDetails[tablePackageName] || {};
-                        packageDetails[tablePackageName].primaryKeys = [];
-
                         /*Check if the current table is same as the table associated with the variable.*/
                         if (tableName === variableType) {
                             setVariableProp(variable, writableVariable, "package", tablePackageName);
                             setVariableProp(variable, writableVariable, "tableName", table.name);
                             setVariableProp(variable, writableVariable, "tableType", WM.isDefined(table.type) ? table.type : "TABLE");
                         }
-
+                        /*Order the relations with priority as composite relations and one to one*/
+                        table.relations = _.sortBy(table.relations, function (relation) {
+                            return [relation.composite === false, relation.cardinality !== "OneToOne"];
+                        });
+                        /*Loop through the relations and insert the related columns*/
+                        WM.forEach(table.relations, function (relation) {
+                            if (relation.primary) {
+                                var sourceCols = _.map(relation.mappings, function (mapping) {
+                                        return mapping.sourceColumn;
+                                    }),
+                                    isPrimaryKey = _.intersection(sourceCols, primaryKeys).length > 0,
+                                    newColumn,
+                                    relatedCol,
+                                    sqlType;
+                                /*Find out the foreign keys from the relations*/
+                                foreignKeys = foreignKeys.concat(sourceCols);
+                                /*Find the related column*/
+                                relatedCol = _.find(table.columns, function (col) {
+                                    return col.name === sourceCols[0];
+                                });
+                                sqlType = getSQLType(relatedCol.sqlType);
+                                newColumn = {
+                                    'fieldName'          : relation.fieldName,
+                                    'type'               : sqlType,
+                                    'hibernateType'      : relatedCol.hibernateType,
+                                    'fullyQualifiedType' : sqlType,
+                                    'columnName'         : sourceCols.join(','),
+                                    'isPrimaryKey'       : isPrimaryKey,
+                                    'notNull'            : !relatedCol.nullable,
+                                    'length'             : relatedCol.length,
+                                    'scale'              : relatedCol.scale,
+                                    'generator'          : relatedCol.generator,
+                                    'isRelated'          : true,
+                                    'defaultValue'       : relatedCol.defaultValue
+                                };
+                                /*If the column is already part of other relation, add readonly flag so that the it is not shown in liveform*/
+                                if (_.intersection(columnsAdded, sourceCols).length) {
+                                    newColumn.readonly = true;
+                                }
+                                tableDetails[tableName].columns.push(newColumn);
+                                columnsAdded = columnsAdded.concat(sourceCols);
+                            }
+                        });
                         /*Loop through the table*/
                         WM.forEach(table.columns, function (column) {
-                            var sqlType = column.sqlType,
-                                isPrimaryKey = _.includes(primaryKeys, column.name),
-                                isForeignKey = _.includes(foreignKeys, column.name);
-                            if (DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType]) {
-                                sqlType = DB_CONSTANTS.DATABASE_DATA_TYPES[DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType].sql_type].sql_type;
+                            /*Columns names are present in primary keys. Map the respective field names*/
+                            if (_.include(table.primaryKey.columns, column.name)) {
+                                tableDetails[tableName].primaryFields.push(column.fieldName);
+                                packageDetails[tablePackageName].primaryFields.push(column.fieldName);
                             }
-
-                            if (isPrimaryKey && WM.element.inArray(column.fieldName, packageDetails[tablePackageName].primaryKeys) === -1) {
-                                tableDetails[tableName].primaryKeys.push(column.fieldName);
-                                packageDetails[tablePackageName].primaryKeys.push(column.fieldName);
+                            if (!_.includes(columnsAdded, column.name)) {
+                                var sqlType = getSQLType(column.sqlType),
+                                    isPrimaryKey = _.includes(primaryKeys, column.name),
+                                    isForeignKey = _.includes(foreignKeys, column.name);
+                                tableDetails[tableName].columns.push({
+                                    "fieldName": column.fieldName,
+                                    "type": sqlType,
+                                    "hibernateType": column.hibernateType,
+                                    "fullyQualifiedType": sqlType,
+                                    "columnName": column.name,
+                                    "isPrimaryKey": isPrimaryKey,
+                                    "notNull": !column.nullable,
+                                    "length": column.length,
+                                    "scale": column.scale,
+                                    "generator": column.generator,
+                                    "isRelated": isForeignKey,
+                                    "defaultValue": column.defaultValue
+                                });
                             }
-                            tableDetails[tableName].columns.push({
-                                "fieldName": column.fieldName,
-                                "type": sqlType,
-                                "hibernateType": column.hibernateType,
-                                "fullyQualifiedType": sqlType,
-                                "columnName": column.name,
-                                "isPrimaryKey": isPrimaryKey,
-                                "notNull": !column.nullable,
-                                "length": column.length,
-                                "scale": column.scale,
-                                "generator": column.generator,
-                                "isRelated": isForeignKey,
-                                "defaultValue": column.defaultValue
-                            });
                         });
 
                         WM.forEach(table.relations, function (relation) {
@@ -244,9 +283,9 @@ wm.variables.services.$liveVariable = [
                             /*Loop through the table's columns*/
                             WM.forEach(tableDetails[tableName].columns, function (column) {
 
-                                var fkColumnName = column.columnName;
+                                var fkColumnName = column.columnName.split(',');
                                 /*Check if the column is a foreign-key/related column and it is present in the "relatedColumns" of the current relation.*/
-                                if (column.isRelated && WM.element.inArray(fkColumnName, relatedColumns) !== -1) {
+                                if (column.isRelated && _.isEqual(relatedColumns, fkColumnName)) {
 
                                     /*Check if the current table is same as the table associated with the variable.*/
                                     if (tableName === variableType) {
@@ -293,7 +332,7 @@ wm.variables.services.$liveVariable = [
                             /*Since "columns" may contain a reference to itself, "copy" is being used.
                             * This is done because there is a "copy" done in Variables.store.*/
                             column.columns = Utils.getClonedObject(tableDetails[column.relatedTableName].columns);
-                            column.relatedFieldName = column.fieldName + "." + tableDetails[column.relatedTableName].primaryKeys[0];
+                            column.relatedFieldName = column.fieldName + "." + tableDetails[column.relatedTableName].primaryFields[0];
                             if ($rootScope.dataTypes[variable.package]) {
                                 columnDef = $rootScope.dataTypes[variable.package].fields[column.fieldName];
                                 column.isList = columnDef && columnDef.isList;
@@ -319,7 +358,6 @@ wm.variables.services.$liveVariable = [
                     orderByFields,
                     orderByOptions = '',
                     primaryKey = variable.getPrimaryKey(),
-                    hasCompositeKey = variable.isCompositeKey(primaryKey),
                     hasNoPrimaryKey = variable.isNoPrimaryKey(primaryKey);
                 /*get the filter fields from the variable*/
                 _.each(variable.filterFields, function (value, key) {
@@ -393,7 +431,7 @@ wm.variables.services.$liveVariable = [
                             });
 
                             /* check if the field is a composite key */
-                            if (hasCompositeKey && (hasNoPrimaryKey || primaryKey.indexOf(attributeName) !== -1)) {
+                            if ((hasNoPrimaryKey || primaryKey.indexOf(attributeName) !== -1)) {
                                 attributeName = "id." + attributeName;
                             }
 
@@ -678,7 +716,8 @@ wm.variables.services.$liveVariable = [
                     rowObject = options.row;
                 } else {
                     WM.forEach(variableDetails.inputFields, function (fieldValue, fieldName) {
-                        var fieldType;
+                        var fieldType,
+                            primaryKeys = variableDetails.propertiesMap.primaryFields || variableDetails.propertiesMap.primaryKeys;
                         if (WM.isDefined(fieldValue) && fieldValue !== "") {
                             /*For delete action, the inputFields need to be set in the request URL. Hence compositeId is set.
                              * For insert action inputFields need to be set in the request data. Hence rowObject is set.
@@ -687,7 +726,7 @@ wm.variables.services.$liveVariable = [
                                 compositeId = fieldValue;
                             }
                             if (action === "updateTableData") {
-                                variableDetails.propertiesMap.primaryKeys.forEach(function (key) {
+                                primaryKeys.forEach(function (key) {
                                     if (fieldName === key) {
                                         compositeId = fieldValue;
                                     }
@@ -709,27 +748,9 @@ wm.variables.services.$liveVariable = [
                 case 'insertMultiPartTableData':
                     primaryKey = variableDetails.getPrimaryKey();
                     /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
-                    if (variableDetails.isCompositeKey(primaryKey)) {
-                        if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                            formattedData.id = Utils.getClonedObject(rowObject);
-                            rowObject = {};
-                        } else {
-                            formattedData.id = {};
-                            primaryKey.forEach(function (key) {
-                                /*Check if the given column is a foreign key*/
-                                var field = _.find(variableDetails.propertiesMap.columns, function (col) {
-                                    return col.fieldName === key;
-                                }), isRelated;
-                                isRelated = field && field.isRelated;
-                                /*If field is a foreign key, insert the rowobject directly in to id*/
-                                if (isRelated) {
-                                    formattedData.id = rowObject[key];
-                                } else {
-                                    formattedData.id[key] = rowObject[key];
-                                }
-                                delete rowObject[key];
-                            });
-                        }
+                    if (variableDetails.isNoPrimaryKey(primaryKey)) {
+                        formattedData.id = Utils.getClonedObject(rowObject);
+                        rowObject = {};
                         rowObject.id = formattedData.id;
                     }
                     break;
@@ -748,11 +769,9 @@ wm.variables.services.$liveVariable = [
                             primaryKey.forEach(function (key) {
                                 compositeKeysData[key] = rowObject[key];
                                 prevCompositeKeysData[key] = prevData[key];
-                                delete rowObject[key];
                             });
                         }
-                        rowObject.id = compositeKeysData;
-                        options.row = rowObject;
+                        options.row = compositeKeysData;
                         options.compositeKeysData = prevCompositeKeysData;
                     } else {
                         primaryKey.forEach(function (key) {
@@ -865,6 +884,10 @@ wm.variables.services.$liveVariable = [
             methods = {
                 /*Function to get the primary key of the specified variable.*/
                 getPrimaryKey: function (variable) {
+                    if (variable.propertiesMap.primaryFields) {
+                        return variable.propertiesMap.primaryFields;
+                    }
+                    /*Old projects do not have primary fields. Get primary key from the columns*/
                     var primaryKey = [];
                     /*Loop through the propertiesMap and get the primary key column.*/
                     WM.element.each(variable.propertiesMap.columns, function (index, column) {
@@ -1101,7 +1124,7 @@ wm.variables.services.$liveVariable = [
                             "maxResults": options.maxResults || 100
                         },
                         relatedTable = _.find(variable.relatedTables, function (table) {
-                            return table.columnName === columnName;
+                            return table.relationName === columnName;
                         });
                     /* if orderBy properties is set, append it to the resultProperties */
                     if (variable.orderBy) {
@@ -1128,7 +1151,7 @@ wm.variables.services.$liveVariable = [
                     options = options || {};
                     options.scope = options.scope || $rootScope;
                     relatedTable = _.find(variable.relatedTables, function (table) {
-                        return table.columnName === columnName;
+                        return table.relationName === columnName;
                     });
                     relatedVariable = relatedTable && options.scope.Variables[relatedTable.watchOn];
                     primaryKeys = relatedVariable ? relatedVariable.getPrimaryKey() : [];
