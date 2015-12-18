@@ -1,4 +1,4 @@
-/*global $, window, angular*/
+/*global $, window, angular, moment, WM, _*/
 /*jslint todo: true*/
 /**
  * JQuery Datagrid widget.
@@ -377,13 +377,10 @@ $.widget('wm.datagrid', {
             ngClass = colDef.ngclass || '',
             htm = '<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"',
             colExpression = colDef.customExpression,
-            invalidExpression = false,
             ctId = row.pk + '-' + colId,
-            template,
             value,
             isCellCompiled = false,
-            columnValue,
-            dateTimeValue;
+            columnValue;
         if (colDef.field) {
             //setting the default value
             columnValue = row[colDef.field];
@@ -393,7 +390,6 @@ $.widget('wm.datagrid', {
             columnValue = value;
         }
         if (ngClass) {
-            htm += 'data-ng-class="' + ngClass + '" data-compiled-template="' + ctId + '" ';
             isCellCompiled = true;
         }
         /*constructing the expression based on the choosen format options*/
@@ -449,7 +445,7 @@ $.widget('wm.datagrid', {
                 /* 1. Show "null" values as null if filterNullRecords is true, else show empty string.
                 * 2. Show "undefined" values as empty string. */
                 if ((this.options.filterNullRecords && columnValue === null) ||
-                    this.Utils.isUndefined(columnValue)) {
+                        this.Utils.isUndefined(columnValue)) {
                     columnValue = '';
                 }
                 htm += 'title="' + columnValue + '">';
@@ -479,6 +475,14 @@ $.widget('wm.datagrid', {
             }
         }
         htm += '</td>';
+
+        if (ngClass) {
+            htm = $(htm).attr({
+                'data-ng-class': ngClass,
+                'data-compiled-template': ctId
+            })[0].outerHTML;
+        }
+
         if (isCellCompiled) {
             this.compiledCellTemplates[ctId] = this.options.getCompiledTemplate(htm, row, colDef) || '';
         }
@@ -509,8 +513,7 @@ $.widget('wm.datagrid', {
     /* Generates default column definitions from given data. */
     _generateCustomColDefs: function () {
         var colDefs = [],
-            generatedColDefs = {},
-            isObject = this.Utils.isObject;
+            generatedColDefs = {};
 
         function generateColumnDef(key) {
             if (!generatedColDefs[key]) {
@@ -524,7 +527,7 @@ $.widget('wm.datagrid', {
         }
 
         this.options.data.forEach(function (item) {
-            isObject(item) && Object.keys(item).forEach(generateColumnDef);
+            _.keys(item).forEach(generateColumnDef);
         });
 
         this.options.colDefs = colDefs;
@@ -668,7 +671,7 @@ $.widget('wm.datagrid', {
         if (this.options.allowAddNewRow) {
             $row = $(this._getRowTemplate(rowData));
             if (!this.preparedData.length) {
-                this.setStatus('ready', this.dataStatus['ready']);
+                this.setStatus('ready', this.dataStatus.ready);
             }
             this.gridElement.find('tbody').append($row);
             this.attachEventHandlers($row);
@@ -751,9 +754,11 @@ $.widget('wm.datagrid', {
             this._toggleSearch();
             break;
         case 'searchLabel':
-            this.gridSearch && this.gridSearch.find(
-                '[data-element="dgSearchLabel"]'
-            ).text(value);
+            if (this.gridSearch) {
+                this.gridSearch.find(
+                    '[data-element="dgSearchLabel"]'
+                ).text(value);
+            }
             break;
         case 'selectFirstRow':
             this.selectFirstRow(value);
@@ -763,14 +768,16 @@ $.widget('wm.datagrid', {
             break;
         case 'enableSort':
             if (!this.options.enableSort) {
-                this.gridHeader && this.removeSort();
+                if (this.gridHeader) {
+                    this.removeSort();
+                }
             } else {
                 this.refreshGrid();
             }
             break;
         case 'dataStates':
             if (this.dataStatus.state === 'nodata') {
-                this.setStatus('nodata', this.dataStatus['nodata']);
+                this.setStatus('nodata', this.dataStatus.nodata);
             }
             break;
         case 'multiselect': // Fallthrough
@@ -820,12 +827,12 @@ $.widget('wm.datagrid', {
         }
     },
 
-    _isCustomExpressionNonEditable: function(customTag) {
+    _isCustomExpressionNonEditable: function (customTag) {
         var $input = $(customTag);
         if (!customTag) {
             return false;
         }
-        else if ($input.attr('type') === 'checkbox') {
+        if ($input.attr('type') === 'checkbox') {
             return false;
         }
         return true;
@@ -910,9 +917,7 @@ $.widget('wm.datagrid', {
         e.stopPropagation();
         var rowId,
             rowData,
-            selected,
-            $radio,
-            $checkbox;
+            selected;
 
         $row = $row || $(e.target).closest('tr');
         rowId = $row.attr('data-row-id');
@@ -979,7 +984,7 @@ $.widget('wm.datagrid', {
             }
         }
     },
-    _getValue: function($el, fields) {
+    _getValue: function ($el) {
         var type = $el.attr('type'),
             text;
         if (type === 'checkbox') {
@@ -990,7 +995,7 @@ $.widget('wm.datagrid', {
         }
         return text;
     },
-    isDataModified: function($editableElements, rowData) {
+    isDataModified: function ($editableElements, rowData) {
         var isDataChanged = false,
             self = this;
         $editableElements.each(function () {
