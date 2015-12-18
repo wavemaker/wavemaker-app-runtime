@@ -128,8 +128,12 @@ WM.module('wm.widgets.form')
                     scope.displayfield = '';
                     scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': '', 'displayfield': ''});
                 }
-
-                scope.widgetProps.datafield.options = ['', ALLFIELDS].concat(variableKeys);
+                /* ALLFIELDS option is not shown for the rating widget */
+                if (scope.widgettype === 'wm-rating') {
+                    scope.widgetProps.datafield.options = [''].concat(variableKeys);
+                } else {
+                    scope.widgetProps.datafield.options = ['', ALLFIELDS].concat(variableKeys);
+                }
                 scope.widgetProps.displayfield.options = [''].concat(variableKeys);
             }
 
