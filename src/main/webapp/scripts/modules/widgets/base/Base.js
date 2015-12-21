@@ -402,7 +402,7 @@ WM.module('wm.widgets.base', [])
                         /* Number properties */
                         "minvalue": {"type": "string", "bindable": "in-bound"},
                         "maxvalue": {"type": "string", "bindable": "in-bound"},
-                        "step": {"type": "number", "show": false},
+                        "step": {"type": "number"},
                         "shortcutkey": {"type": "string"}
                     },
 

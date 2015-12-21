@@ -219,7 +219,7 @@ WM.module('wm.widgets.live')
                 columnDef.readonly = attrs.readonly === 'true' || attrs.readonly === true;
                 columnDef.multiple = attrs.multiple === 'true' || attrs.multiple === true;
                 columnDef.class = attrs.class || '';
-                columnDef.required = attrs.required === 'true' || attrs.required === true;
+                columnDef.required = attrs.required === 'true' || attrs.required === true || attrs.required === 'required';
                 return columnDef;
             }
             /**
