@@ -193,8 +193,8 @@ wm.variables.services.$liveVariable = [
                         tableDetails[tableName] = {};
                         tableDetails[tableName].columns = [];
                         tableDetails[tableName].primaryFields = [];
-                        packageDetails[tablePackageName].primaryFields = [];
                         packageDetails[tablePackageName] = packageDetails[tablePackageName] || {};
+                        packageDetails[tablePackageName].primaryFields = [];
                         /*Check if the current table is same as the table associated with the variable.*/
                         if (tableName === variableType) {
                             setVariableProp(variable, writableVariable, "package", tablePackageName);
