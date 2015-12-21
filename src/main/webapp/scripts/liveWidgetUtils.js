@@ -1099,7 +1099,7 @@ WM.module('wm.widgets.live')
 
         return {
             'restrict': 'A',
-            'likn': {
+            'link': {
                 'post': function ($is, $el) {
                     $is.addRow = function () {
                         $rs.$emit('wm-event', $is.name, 'create');
