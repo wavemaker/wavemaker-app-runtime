@@ -305,30 +305,30 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "PASSWORD": "{WM_CLOUD_MYSQL_PASSWORD}"
         }
     },
-    "IDENTITY_GENERATORS" : ['integer', 'short', 'big_integer'],
+    "IDENTITY_GENERATORS" : ['integer', 'short', 'long', 'big_integer'],
     "DATABASE_NUMERIC_DATA_TYPES": {
-        "big_decimal": "big_decimal",
+        "short": "short",
+        "integer": "integer",
+        "long" : "long",
         "big_integer": "big_integer",
-        "double": "double",
         "float": "float",
-        "integer": "integer"
+        "double": "double",
+        "big_decimal": "big_decimal"
     },
     "DATABASE_DATA_TYPES": {
         "big_decimal": {
             "sql_type": "big_decimal",
             "default_value": "0",
-            "length": true,
-            "scale": true
+            "precision": true
         },
         "big_integer": {
             "sql_type": "big_integer",
             "default_value": "0",
-            "length": true
+            "precision": true
         },
         "blob": {
             "sql_type": "blob",
-            "default_value": "null",
-            "length": true
+            "default_value": "null"
         },
         "boolean": {
             "sql_type": "boolean",
@@ -337,17 +337,15 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "byte": {
             "sql_type": "byte",
             "default_value": "null",
-            "length": true
+            "precision": true
         },
         "character": {
             "sql_type": "character",
-            "default_value": "null",
-            "length": true
+            "default_value": "null"
         },
         "clob": {
             "sql_type": "clob",
-            "default_value": "null",
-            "length": true
+            "default_value": "null"
         },
         "date": {
             "sql_type": "date",
@@ -360,24 +358,22 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "double": {
             "sql_type": "double",
             "default_value": "0",
-            "length": true,
-            "scale": true
+            "precision": true
         },
         "float": {
             "sql_type": "float",
             "default_value": "0",
-            "length": true,
-            "scale": true
+            "precision": true
         },
         "integer": {
             "sql_type": "integer",
             "default_value": "0",
-            "length": true
+            "precision": true
         },
         "long": {
             "sql_type": "long",
             "default_value": "0",
-            "length": true
+            "precision": true
         },
         "string": {
             "sql_type": "string",
@@ -387,12 +383,11 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "short": {
             "sql_type": "short",
             "default_value": "0",
-            "length": true
+            "precision": true
         },
         "text": {
             "sql_type": "text",
-            "default_value": "null",
-            "length": true
+            "default_value": "null"
         },
         "time": {
             "sql_type": "time",
