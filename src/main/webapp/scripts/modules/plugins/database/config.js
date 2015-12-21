@@ -440,7 +440,25 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "SELECT": "SELECT",
         "UPDATE": ["INSERT INTO", "UPDATE", "DELETE FROM"]
     },
-    "DDL_QUERY_INDICATORS": ["CREATE", "ALTER", "RENAME", "DROP"]
+    "DDL_QUERY_INDICATORS": ["CREATE", "ALTER", "RENAME", "DROP"],
+    "SERVER_SIDE_PROPERTIES": {
+        "CURRENT_DATE": {
+            "property": "Current Date",
+            "value": "CURRENT_DATE"
+        },
+        "CURRENT_TIME": {
+            "property": "Current Time",
+            "value": "CURRENT_TIME"
+        },
+        "CURRENT_USER_ID": {
+            "property": "Current Userid",
+            "value": "CURRENT_USER_ID"
+        },
+        "CURRENT_USER_NAME": {
+            "property": "Current Username",
+            "value": "CURRENT_USER_NAME"
+        }
+    }
 });
 
 /*Defining the config for the database plugins*/
