@@ -258,14 +258,19 @@ WM.module('wm.widgets.form')
                                     scope.chooseFilter = '';
                                 } else {
                                     var filters = [];
-                                    if (choosen.indexOf('image') > -1) {
+                                    switch (choosen) {
+                                    case 'image':
                                         filters.push('image/*');
-                                    }
-                                    if (choosen.indexOf('audio') > -1) {
+                                        break;
+                                    case 'audio':
                                         filters.push('audio/*');
-                                    }
-                                    if (choosen.indexOf('video') > -1) {
+                                        break;
+                                    case 'video':
                                         filters.push('video/*');
+                                        break;
+                                    default:
+                                        filters.push('.' + choosen);
+                                        break;
                                     }
                                     if (filters.length > 0) {
                                         scope.chooseFilter = filters.join();
