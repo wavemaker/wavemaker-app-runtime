@@ -1216,7 +1216,7 @@ WM.module('wm.widgets.base', [])
                         "service": {"type": "list", "widget": "list"},
                         "operation": {"type": "list", "widget": "list"},
                         "multiple": {"type": "boolean", "value": false},
-                        "contenttype": {"type": "list", "options": ["all", "audio", "image", "video"], "value": "all"},
+                        "contenttype": {"type": "list", "options": ["all", "audio", "image", "video"], "value": "all", "bindable": "in-bound"},
                         "fileuploadmessage": {"type": "string", "bindable": "in-out-bound", "value": "You can also browse for files"},
                         "tabindex": {"type": "string", "value": "0"},
                         "uploadedFiles": {"type": "array", "bindable": "in-out-bound"},
