@@ -40,18 +40,10 @@ import com.wavemaker.studio.common.util.TypeConversionUtils;
 public class WMQueryExecutorImpl implements WMQueryExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WMQueryExecutorImpl.class);
-    private static final long UNKNOWN_COUNT = -1L;
 
     private HibernateTemplate template;
 
-    public HibernateTemplate getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(HibernateTemplate template) {
-        this.template = template;
-    }
-
+    @Override
     public Page<Object> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable) {
         Session currentSession = template.getSessionFactory().getCurrentSession();
         Query namedQuery = currentSession.getNamedQuery(queryName);
@@ -193,5 +185,14 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         QueryHelper.setResultTransformer(hqlQuery);
         QueryHelper.configureParameters(hqlQuery, params);
         return hqlQuery;
+    }
+
+
+    public HibernateTemplate getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(HibernateTemplate template) {
+        this.template = template;
     }
 }

@@ -27,10 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
+import com.wavemaker.runtime.system.SystemPropertiesUnit;
+import com.wavemaker.studio.common.CommonConstants;
+
 public class QueryHelper {
 
     private static final String SELECT_COUNT = "select count(*) from (";
-    private static final String ALIAS=" ) wmTempTable";
+    private static final String ALIAS = " ) wmTempTable";
     private static final String FROM = " FROM ";
     private static final String FROM_HQL = "FROM ";//For a Select (*) hibernate query.
     private static final String SELECT_COUNT1 = "select count(*) ";
@@ -41,38 +44,48 @@ public class QueryHelper {
 
     public static void configureParameters(Query query, Map<String, Object> params) {
         String[] namedParameters = query.getNamedParameters();
-        if(namedParameters != null && namedParameters.length > 0) {
-            if(params == null || params.isEmpty())
-                throw new RuntimeException("Require input parameters such as: " + Arrays.asList(namedParameters));
-
+        if (namedParameters != null && namedParameters.length > 0) {
             for (String namedParameter : namedParameters) {
+                if (isSystemProperty(namedParameter)) {
+                    query.setParameter(namedParameter,SystemPropertiesUnit.valueOf(namedParameter).getValue());
+                    continue;
+                }
                 Object val = params.get(namedParameter);
-                if(val != null && val instanceof List)
-                    query.setParameterList(namedParameter, (List)val);
-                else
+                if (val != null && val instanceof List)
+                    query.setParameterList(namedParameter, (List) val);
+                else {
                     query.setParameter(namedParameter, val);
-
+                }
             }
         }
     }
 
+    private static boolean isSystemProperty(final String property) {
+        if (property.startsWith(CommonConstants.SYSTEM_PARAM_PREFIX)) {
+            try {
+                SystemPropertiesUnit systemPropertiesUnit = SystemPropertiesUnit.valueOf(property);
+                return true;
+            } catch (IllegalArgumentException e) {
+                //do nothing
+            }
+        }
+        return false;
+    }
+
 
     public static void setResultTransformer(Query query) {
-        if(query instanceof SQLQuery)
-        {
+        if (query instanceof SQLQuery) {
             query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
             return;
-        }
-        else
-        {
+        } else {
             String[] returnAliases = query.getReturnAliases();
-            if(returnAliases != null) {
-               LOGGER.debug("return aliases : {}" , Arrays.asList(returnAliases));
-             } else {
-               LOGGER.debug("return aliases is null" );
-           }
-        if(returnAliases != null)
-            query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+            if (returnAliases != null) {
+                LOGGER.debug("return aliases : {}", Arrays.asList(returnAliases));
+            } else {
+                LOGGER.debug("return aliases is null");
+            }
+            if (returnAliases != null)
+                query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         }
     }
 
@@ -82,27 +95,26 @@ public class QueryHelper {
     }
 
     private static Long getCountFromCountStringQuery(String queryStr, Map<String, Object> params, boolean isNative, HibernateTemplate template) {
-        try{
-        String strQuery = getCountQuery(queryStr, params, isNative);
-         if(strQuery == null){
-            return -1L;
-         }
-        Query query=null;
-        if(isNative)
-            query = template.getSessionFactory().getCurrentSession().createSQLQuery(strQuery);
-        else
-            query=template.getSessionFactory().getCurrentSession().createQuery(strQuery);
-        configureParameters(query, params);
-        Object result = query.uniqueResult();
-        long countVal = result == null ? 0 : ((Number)result).longValue();
-        return countVal;
-        }
-        catch(Exception ex)
-        {
+        try {
+            String strQuery = getCountQuery(queryStr, params, isNative);
+            if (strQuery == null) {
+                return -1L;
+            }
+            Query query = null;
+            if (isNative)
+                query = template.getSessionFactory().getCurrentSession().createSQLQuery(strQuery);
+            else
+                query = template.getSessionFactory().getCurrentSession().createQuery(strQuery);
+            configureParameters(query, params);
+            Object result = query.uniqueResult();
+            long countVal = result == null ? 0 : ((Number) result).longValue();
+            return countVal;
+        } catch (Exception ex) {
             LOGGER.error("Count query operation failed", ex);
             return -1L;
         }
     }
+
     private static String getCountQuery(String query, Map<String, Object> params, boolean isNative) {
         LOGGER.debug("Getting count query for query {} with params {}", query, params);
         query = query.trim();
@@ -124,7 +136,7 @@ public class QueryHelper {
             }
             String subQuery = query.substring(index, query.length());
             index = StringUtils.indexOfIgnoreCase(subQuery, ORDER_BY);
-            if(index >= 0){
+            if (index >= 0) {
                 subQuery = subQuery.substring(0, index);
             }
             return SELECT_COUNT1 + subQuery;
