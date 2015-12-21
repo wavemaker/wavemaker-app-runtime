@@ -261,6 +261,7 @@ wm.variables.services.Variables = [
                     if (targetObj) {
                         targetObj[targetNodeKey] = obj.value;
                     }
+                    processVariablePostBindUpdate(targetNodeKey, obj.value, variable, true);
                 }
             },
 
