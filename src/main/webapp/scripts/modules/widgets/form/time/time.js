@@ -10,14 +10,16 @@ WM.module('wm.widgets.form')
                 ' data-ng-model="_proxyModel"' + /* _proxyModel is a private variable inside this scope */
                 ' data-ng-show="show" ' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})" >' +
-                '<input class="form-control app-textbox" data-ng-model="_timeModel" accesskey="{{shortcutkey}}" uib-dropdown-toggle>' +
-                '<div uib-dropdown-menu>' +
-                    '<uib-timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian"></uib-timepicker>' +
+                '<input class="form-control app-textbox display-input" data-ng-model="_timeModel" accesskey="{{shortcutkey}}">' +
+                '<div uib-dropdown is-open="isOpen" class="dropdown">' +
+                    '<div uib-dropdown-menu>' +
+                        '<uib-timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian"></uib-timepicker>' +
+                    '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
-                '<span class="input-group-btn dropdown-toggle" uib-dropdown-toggle>' +
-                    '<button type="button" class="btn btn-default"><i class="glyphicon glyphicon-time"></i></button>' +
+                '<span class="input-group-btn dropdown-toggle">' +
+                    '<button type="button" class="btn btn-default btn-time"><i class="glyphicon glyphicon-time"></i></button>' +
                 '</span>' +
             '</div>'
             );
@@ -66,11 +68,17 @@ WM.module('wm.widgets.form')
 
         function _onClick(scope, evt) {
             evt.stopPropagation();
-            scope.isOpen = !scope.isOpen;
-
             if (scope.onClick) {
                 scope.onClick({$event: evt, $scope: scope});
             }
+        }
+        function _onTimeClick(scope, evt) {
+            evt.stopPropagation();
+            var timeOpen = scope.isOpen;
+            $timeout(function () {
+                WM.element(document).trigger('click');
+                scope.isOpen = !timeOpen;
+            });
         }
 
         return {
@@ -96,6 +104,8 @@ WM.module('wm.widgets.form')
                 if (!isWidgetInsideCanvas) {
 
                     template.attr('data-ng-click', '_onClick($event)');
+                    template.find('.btn-time').attr('data-ng-click', '_onTimeClick($event)');
+                    template.find('.display-input').attr('data-ng-click', '_onTimeClick($event)');
 
                     if (tAttrs.hasOwnProperty('onMouseenter')) {
                         template.attr('data-ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
@@ -137,6 +147,7 @@ WM.module('wm.widgets.form')
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         scope._onClick = _onClick.bind(undefined, scope);
+                        scope._onTimeClick = _onTimeClick.bind(undefined, scope);
 
                         /*update the model for device time*/
                         scope.updateModel = function () {
