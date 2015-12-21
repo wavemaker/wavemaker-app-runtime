@@ -154,7 +154,10 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "dataBinding": {"type": "object", "value": {}, "hide": true},
                     "service": {"type": "list", "options": []},
                     "operation": {"type": "list", "hide": true, "options": []},
+                    "autoUpdate": {"type": "boolean", "value": false, "hide": true},
                     "startUpdate": {"type": "boolean", "value": false, "hide": true},
+                    /** network status */
+                    "networkStatus": {"type": "boolean", "dataBinding": true, value: "bind:$root.networkStatus", "hide" : true},
                     /*calendar event options*/
                     "eventTitle": {"type": "string", "dataBinding": true, "hide" : true},
                     "eventNotes": {"type": "string", "dataBinding": true, "hide" : true},

@@ -171,8 +171,11 @@ wm.variables.services.Variables = [
                             if (variable.autoUpdate && !WM.isUndefined(newVal)) {
                                 variable.login();
                             }
-                        } else if(variable.category === "wm.DeviceVariable") {
+                        } else if (variable.category === "wm.DeviceVariable") {
                             variable[param] = newVal;
+                            if (variable.autoUpdate) {
+                                variable.invoke();
+                            }
                         }
                     }));
                 } else if (variable.category === "wm.LiveVariable") {

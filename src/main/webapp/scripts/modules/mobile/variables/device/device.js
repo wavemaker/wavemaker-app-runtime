@@ -1,6 +1,13 @@
-/*global wm, WM*/
-WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaVibration', '$cordovaDevice', '$cordovaAppVersion', function (DeviceVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaVibration, $cordovaDevice, $cordovaAppVersion) {
+/*global wm, WM, _*/
+WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cordovaGeolocation', '$cordovaVibration', '$cordovaDevice', '$cordovaAppVersion', '$rootScope', function (DeviceVariableService, $cordovaNetwork, $cordovaGeolocation, $cordovaVibration, $cordovaDevice, $cordovaAppVersion, $rootScope) {
     "use strict";
+    $rootScope.$on('$cordovaNetwork:online', function () {
+        $rootScope.networkStatus = true;
+    });
+
+    $rootScope.$on('$cordovaNetwork:offline', function () {
+        $rootScope.networkStatus = false;
+    });
 
     var operations = {
             getAppInfo: {
@@ -32,7 +39,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                     timestamp: 0
                 },
                 properties: ['startUpdate', 'geolocationHighAccuracy', 'geolocationMaximumAge', 'geolocationTimeout'],
-                invoke: function(variable, options, success, error) {
+                invoke: function (variable, options, success, error) {
                     var geoLocationOptions = {
                         maximumAge: variable.geolocationMaximumAge * 1000,
                         timeout: variable.geolocationTimeout * 1000,
@@ -57,16 +64,14 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
             },
             getDeviceInfo: {
                 model: {
-                    connectionType: 'NONE',
                     deviceModel: 'DEVICEMODEL',
                     os: 'DEVICEOS',
                     osVersion: 'X.X.X',
                     deviceUUID: 'DEVICEUUID'
                 },
                 properties: ['startUpdate'],
-                invoke: function(variable, options, success) {
+                invoke: function (variable, options, success) {
                     success({
-                        connectionType: $cordovaNetwork.getNetwork(),
                         deviceModel: $cordovaDevice.getModel(),
                         os: $cordovaDevice.getPlatform(),
                         osVersion: $cordovaDevice.getVersion(),
@@ -74,12 +79,27 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                     });
                 }
             },
+            getNetworkInfo: {
+                model: {
+                    connectionType: 'NONE',
+                    isOnline: true,
+                    isOffline: false
+                },
+                properties: ['autoUpdate', 'startUpdate', 'networkStatus'],
+                invoke: function (variable, options, success) {
+                    success({
+                        connectionType: $cordovaNetwork.getNetwork(),
+                        isOnline: $cordovaNetwork.isOnline(),
+                        isOffline: $cordovaNetwork.isOffline()
+                    });
+                }
+            },
             vibrate: {
                 properties: ['vibrationtime'],
-                invoke: function(variable) {
+                invoke: function (variable) {
                     var vibrationTimeOptions = {
                         time: variable.vibrationtime * 1000
-                        };
+                    };
                     $cordovaVibration.vibrate(vibrationTimeOptions.time);
                 }
             }
