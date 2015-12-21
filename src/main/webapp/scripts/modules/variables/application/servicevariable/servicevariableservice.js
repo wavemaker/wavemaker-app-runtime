@@ -45,6 +45,7 @@ wm.variables.services.$servicevariable = ['Variables',
             supportedOperations = WS_CONSTANTS.HTTP_METHODS.map(function (method) { return method.toLowerCase(); }),
             BASE_PATH_KEY = 'x-WM-BASE_PATH',
             RELATIVE_PATH_KEY = 'x-WM-RELATIVE_PATH',
+            CONTROLLER_KEY = 'x-WM-TAG',
             parameterTypeKey = 'in',
             AUTH_HDR_KEY = "Authorization",
             isPrimitiveType = function (type) {
@@ -495,7 +496,7 @@ wm.variables.services.$servicevariable = ['Variables',
             },
         /*function to create the service operation info in the variable object, to create the parameter info
         * for the selected operation of the service*/
-            getServiceOperationInfo = function (selectedOperation, selectedService, success, error, forceReload) {
+            getServiceOperationInfo = function (selectedOperation, selectedService, success, error, forceReload, controller) {
                 var operationInfo = {};
 
                 /*invoking a service to get the operations that a particular service has and it's
@@ -513,6 +514,10 @@ wm.variables.services.$servicevariable = ['Variables',
                             var opType = supportedOperations[j],
                                 operation = path[opType];
                             if (operation && operation.operationId === selectedOperation) {
+                                /* if controller is provided, check for controller match as well */
+                                if (controller && controller + "Controller" !== path[CONTROLLER_KEY]) {
+                                    continue;
+                                }
                                 operationInfo.httpMethod = opType;
                                 operationInfo.name = selectedOperation;
                                 operationInfo.relativePath = (path[BASE_PATH_KEY] || "") + path[RELATIVE_PATH_KEY];
