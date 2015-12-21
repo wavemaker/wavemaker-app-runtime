@@ -948,6 +948,9 @@ WM.module('wm.widgets.live')
                 var inputtype;
                 scope.widgettype = fieldType;
                 attrs.widget = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0];
+                /*Support for older projects, in which widget type was not stored*/
+                scope.widget = attrs.widget;
+                WM.element(tElement.context).attr('widget', scope.widget);
                 /*Based on the widget, get the input types*/
                 if (attrs.widget === 'text') {
                     inputtype = attrs.inputtype || 'text';
