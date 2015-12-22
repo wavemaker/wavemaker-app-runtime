@@ -986,7 +986,7 @@ WM.module('wm.widgets.live')
                         columnDef.isRelated = attrs.isRelated;
                         /*if the show property is set to false, set the required property to false (except for identity columns)
                          * This will prevent 'required field can not be focused' error*/
-                        if (CONSTANTS.isRunMode && columnDef.show === false && columnDef.generator !== 'identity') {
+                        if (CONSTANTS.isRunMode && columnDef.show === false) {
                             columnDef.required = false;
                         }
                         /*If defaultValue is set then assign it to the attribute*/
