@@ -736,16 +736,6 @@ wm.variables.services.$liveVariable = [
                 }
 
                 switch (action) {
-                case 'insertTableData':
-                case 'insertMultiPartTableData':
-                    primaryKey = variableDetails.getPrimaryKey();
-                    /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
-                    if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                        formattedData.id = Utils.getClonedObject(rowObject);
-                        rowObject = {};
-                        rowObject.id = formattedData.id;
-                    }
-                    break;
                 case 'updateTableData':
                 case 'updateMultiPartTableData':
                     prevData = options.prevData || {};
@@ -756,7 +746,6 @@ wm.variables.services.$liveVariable = [
                         if (variableDetails.isNoPrimaryKey(primaryKey)) {
                             prevCompositeKeysData = prevData;
                             compositeKeysData = rowObject;
-                            rowObject = {};
                         } else {
                             primaryKey.forEach(function (key) {
                                 compositeKeysData[key] = rowObject[key];
