@@ -90,6 +90,7 @@ WM.module('wm.widgets.base')
                     /*reset loaded partials, as they contain the htmlMarkup & variables*/
                     loadedPartials[partialName] = undefined;
                     iScope.toolbar = target.find('button.wm-included-page-heading').first();
+                    iScope.overlay = target.find('div.content-overlay').first();
                     $rootScope.$safeApply(iScope);
                 } else if (CONSTANTS.isRunMode) {
                     /* if the compilation of whole page along with partials happen in Async, then call the page-part-load fn
@@ -192,8 +193,10 @@ WM.module('wm.widgets.base')
                     }
                     if (newVal) {
                         iScope.toolbar.addClass('active');
+                        iScope.overlay.addClass('active');
                     } else {
                         iScope.toolbar.removeClass('active');
+                        iScope.overlay.removeClass('active');
                     }
                     break;
                 }
