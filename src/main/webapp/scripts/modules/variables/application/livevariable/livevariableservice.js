@@ -356,9 +356,7 @@ wm.variables.services.$liveVariable = [
                 var filterFields = [],
                     filterOptions = [],
                     orderByFields,
-                    orderByOptions = '',
-                    primaryKey = variable.getPrimaryKey(),
-                    hasNoPrimaryKey = variable.isNoPrimaryKey(primaryKey);
+                    orderByOptions = '';
                 /*get the filter fields from the variable*/
                 _.each(variable.filterFields, function (value, key) {
                     value.fieldName = key;
@@ -429,12 +427,6 @@ wm.variables.services.$liveVariable = [
                                     attributeName = column.relatedFieldName;
                                 }
                             });
-
-                            /* check if the field is a composite key */
-                            if ((hasNoPrimaryKey || primaryKey.indexOf(attributeName) !== -1)) {
-                                attributeName = "id." + attributeName;
-                            }
-
                             filterOptions.push({
                                 "attributeName": attributeName,
                                 "attributeValue": fieldValue,
