@@ -1916,7 +1916,8 @@ WM.module('wm.widgets.base', [])
             }
 
             /* access the widget when widget role and logged in user role matches */
-            return matchRoles(widgetRoles, userRoles);
+            /* TODO(Vineela): to remove isUserAuthenticated check and clean userRoles from $rs on logout */
+            return $rootScope.isUserAuthenticated && matchRoles(widgetRoles, userRoles);
         }
 
         /* the directive is required only in RUN mode and when security is enabled */
