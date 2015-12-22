@@ -739,13 +739,11 @@ WM.module('wm.widgets.live')
              * @param {string} newVal new value for the key
              */
             function fieldPropertyChangeHandler(scope, element, attrs, parentScope, index, key, newVal) {
-                if (key === 'active') {
-                    return;
-                }
                 var variable,
                     eleScope = element.scope(),
                     isDataSetWidgets = Utils.getDataSetWidgets(),
                     template = '',
+                    wdgtProperties = scope.widgetProps,
                     compileField = function () {
                         /*On changing of a property in studio mode, generate the template again so that change is reflected*/
                         template = getTemplate(parentScope.formFields[index], index);
@@ -767,6 +765,16 @@ WM.module('wm.widgets.live')
                         FormWidgetUtils.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
                     }
                     compileField();
+                    break;
+                case 'inputtype':
+                    FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, newVal);
+                    compileField();
+                    break;
+                case 'active':
+                    if (scope.widget === 'number' || scope.widget === 'password' || scope.widget === 'text') {
+                        FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, scope.inputtype);
+                        compileField();
+                    }
                     break;
                 default:
                     compileField();
