@@ -57,13 +57,6 @@ WM.module('wm.widgets.form')
                 }
             }
 
-            /**
-             * @ngdoc function
-             * @name wm.widgets.form.directive:wmRichtexteditor#getCursorPosition
-             *
-             * @description
-
-             */
             function getCursorPosition() {
                 var selection,
                     retObj;
