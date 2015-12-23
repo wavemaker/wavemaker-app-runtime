@@ -686,11 +686,10 @@ wm.variables.services.$liveVariable = [
                     projectID = $rootScope.project.id || $rootScope.projectName,
                     rowObject = {},
                     prevData,
-                    formattedData = {},
                     callBackScope,
                     variableEvents = VARIABLE_CONSTANTS.EVENTS,
                     promiseObj,
-                    primaryKey,
+                    primaryKey = variableDetails.getPrimaryKey(),
                     compositeKeysData = {},
                     prevCompositeKeysData = {},
                     id,
@@ -724,7 +723,7 @@ wm.variables.services.$liveVariable = [
                                     }
                                 });
                             }
-                            if (action !== "deleteTableData") {
+                            if (action !== "deleteTableData" || variableDetails.isCompositeKey(primaryKey)) {
                                 fieldType = getFieldType(fieldName, variableDetails);
                                 if (isDateTime[fieldType] && fieldType !== 'timestamp') {
                                     fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
@@ -739,17 +738,15 @@ wm.variables.services.$liveVariable = [
                 case 'updateTableData':
                 case 'updateMultiPartTableData':
                     prevData = options.prevData || {};
-                    primaryKey = variableDetails.getPrimaryKey();
-
                     /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
                     if (variableDetails.isCompositeKey(primaryKey)) {
                         if (variableDetails.isNoPrimaryKey(primaryKey)) {
-                            prevCompositeKeysData = prevData;
+                            prevCompositeKeysData = prevData || options.rowData || rowObject;
                             compositeKeysData = rowObject;
                         } else {
                             primaryKey.forEach(function (key) {
                                 compositeKeysData[key] = rowObject[key];
-                                prevCompositeKeysData[key] = prevData[key];
+                                prevCompositeKeysData[key] = prevData[key] || (options.rowData && options.rowData[key]) || rowObject[key];
                             });
                         }
                         options.row = compositeKeysData;
@@ -769,7 +766,6 @@ wm.variables.services.$liveVariable = [
 
                     break;
                 case 'deleteTableData':
-                    primaryKey = variableDetails.getPrimaryKey();
                     /*Construct the "requestData" based on whether the table associated with the live-variable has a composite key or not.*/
                     if (variableDetails.isCompositeKey(primaryKey)) {
                         if (variableDetails.isNoPrimaryKey(primaryKey)) {
@@ -808,6 +804,7 @@ wm.variables.services.$liveVariable = [
                     default:
                         break;
                     }
+                    compositeId = '';
                     /* Loop over the "compositeKeysData" and construct the "compositeId".*/
                     WM.forEach(options.compositeKeysData, function (paramValue, paramName) {
                         compositeId += paramName + "=" + encodeURIComponent(paramValue) + "&";
