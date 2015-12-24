@@ -666,18 +666,17 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                 },
                 setInput: function (variable, key, val) {
-                    var paramObj = {},
-                        targetObj = variable.dataBinding;
-                    if (WM.isObject(key)) {
-                        paramObj = key;
-                    } else {
-                        paramObj[key] = val;
+                    var targetObj = variable.dataBinding,
+                        keys,
+                        lastKey;
+                    if (key.indexOf('.') > -1) {
+                        keys = key.split('.');
+                        lastKey = keys.pop();
+                        /*Finding the object based on the key*/
+                        targetObj = Utils.findValueOf(targetObj, keys.join('.'), true);
+                        key = lastKey;
                     }
-
-                    WM.forEach(paramObj, function (paramVal, paramKey) {
-                        targetObj[paramKey] = paramVal;
-                    });
-
+                    targetObj[key] = val;
                     return variable.dataBinding;
                 }
             },
