@@ -161,7 +161,7 @@ wm.modules.wmCommon.services.NavigationService = [
             if ($window.location.pathname.split('/').pop() === 'index.html') {
                 return 'index.html';
             }
-            return './';
+            return '';
         }
 
         //listens for the event only once and destroys the listener.
