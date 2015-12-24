@@ -324,17 +324,18 @@ WM.module('wm.widgets.live')
             function getDefaultTemplate(widgetType, fieldDef, index, minPlaceholderDefault, maxPlaceholderDefault, defaultPlaceholder, additionalFields, isCustomWidget) {
                 var template = '',
                     widgetName = 'wm-' + widgetType,
-                    updateModeCondition = isCustomWidget ? '' : ' show="{{isUpdateMode}}"';
+                    updateModeCondition = isCustomWidget ? '' : ' show="{{isUpdateMode}}"',
+                    allowInvalidAttr = fieldDef.widget === 'number' ? ' allowinvalid=true ' : '';
                 additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
                     fieldDef.placeholder = fieldDef.placeholder || minPlaceholderDefault;
                     fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || maxPlaceholderDefault;
                     template = template +
-                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
-                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
+                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
+                        '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
                 } else {
                     fieldDef.placeholder = fieldDef.placeholder || defaultPlaceholder;
-                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + updateModeCondition + additionalFields + '></' +  widgetName + '>';
+                    template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '>';
                 }
                 return template;
             }
