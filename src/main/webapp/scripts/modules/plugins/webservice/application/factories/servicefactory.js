@@ -196,7 +196,9 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 var paramsKey,
                     isRestSupportedService = isRESTSupported(serviceObj.type),
                     definitions,
-                    securityDefinitions;
+                    securityDefinitions,
+                    schemaObject,
+                    typeArgumentsObject;
 
                 /*Empty the "operations" so that they are set based on the response.*/
                 serviceObj.operations = [];
@@ -227,8 +229,14 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         if ((operation.tags[0] === "QueryExecutionController" || operation.tags[0] === "ProcedureExecutionController") && dbOperationName !== "wm_custom" && dbOperationName !== "wm_custom_update") {
                             returnType = serviceObj.name + dbOperationName + "rtnType";
                         } else if (operation.responses && operation.responses['200'].schema) {
-                            returnType = getReturnType(operation.responses['200'].schema, definitions);
-                            isList = operation.responses['200'].schema.type && operation.responses['200'].schema.type === 'array';
+                            schemaObject = operation.responses['200'].schema;
+                            typeArgumentsObject = schemaObject["x-WM-TYPE_ARGUMENTS"];
+                            /*If the typeArguments is specified obtain the return type from it*/
+                            if (typeArgumentsObject && typeArgumentsObject[0]) {
+                                schemaObject = typeArgumentsObject[0];
+                            }
+                            returnType = getReturnType(schemaObject, definitions);
+                            isList = schemaObject.type && schemaObject.type === 'array';
                         } else {
                             returnType = "void";
                         }
