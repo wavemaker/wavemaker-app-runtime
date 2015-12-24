@@ -172,13 +172,37 @@ WM.module('wm.layouts.containers')
                 'replace'   : true,
                 'scope'     : {'scopedataset': '=?'},
                 'transclude': true,
-                'template'  : '<ul class="nav app-nav" data-ng-show="show" apply-styles="container" data-element-type="wmNav" wmtransclude init-widget ' +
-                                'data-ng-class="{\'nav-pills\': type == \'pills\',' +
-                                             '\'nav-tabs\': type == \'tabs\',' +
-                                             '\'navbar-nav\': type == \'navbar\',' +
-                                             '\'nav-stacked\': layout == \'stacked\',' +
-                                             '\'nav-justified\': layout == \'justified\'' +
-                                '}"></ul>',
+                'template'  : function (tEl, tAttrs) {
+                    var cls;
+                    if (CONSTANTS.isRunMode) {
+                        cls = 'class = "nav app-nav ';
+                        switch (tAttrs.type) {
+                        case 'pills':
+                            cls += 'nav-pills';
+                            break;
+                        case 'tabs':
+                            cls += 'nav-tabs';
+                            break;
+                        case 'navbar':
+                            cls += 'navbar-nav';
+                            break;
+                        }
+
+                        if (tAttrs.layout) {
+                            cls += ' nav-' + tAttrs.layout;
+                        }
+                        cls +=  '"';
+                    } else {
+                        cls = 'class="nav app-nav" data-ng-class="{\'nav-pills\': type === \'pills\',' +
+                                    '\'nav-tabs\': type === \'tabs\',' +
+                                    '\'navbar-nav\': type === \'navbar\',' +
+                                    '\'nav-stacked\': layout === \'stacked\',' +
+                                    '\'nav-justified\': layout === \'justified\'' +
+                                '}"';
+                    }
+
+                    return '<ul data-ng-show="show" apply-styles="container" data-element-type="wmNav" wmtransclude init-widget ' + cls + '></ul>';
+                },
                 'link'      : {
                     'pre': function ($is) {
                         if (CONSTANTS.isStudioMode) {
