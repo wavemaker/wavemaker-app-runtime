@@ -66,14 +66,16 @@ WM.module('wm.widgets.form')
                 var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
                     template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/form/text.html', tElement, tAttrs)),
                     updateon,
-                    debounce;
+                    debounce,
+                    allowInvalid;
 
                 if (!isWidgetInsideCanvas) {
 
                     updateon = tAttrs.updateon || 'blur';
                     debounce = tAttrs.updatedelay || 0;
+                    allowInvalid = tAttrs.allowinvalid === 'true';
 
-                    template.attr('ng-model-options', '{ updateOn:"' + updateon + '", debounce: ' + debounce + '}');
+                    template.attr('ng-model-options', '{ updateOn:"' + updateon + '", debounce: ' + debounce + ' ,allowInvalid: ' + allowInvalid + '}');
 
                     if (tAttrs.hasOwnProperty('maxchars')) {
                         template.attr('maxlength', '{{maxchars}}');
