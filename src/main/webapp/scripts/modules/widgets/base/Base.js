@@ -2277,6 +2277,10 @@ WM.module('wm.widgets.base', [])
                 var columns = [],
                     columnDefs,
                     properties;
+
+                if (WM.isString(dataset)) {
+                    return;
+                }
                 /*In case of live variable getting the properties map*/
                 if (dataset && propertiesMap) {
                     columns = Utils.fetchPropertiesMapColumns(propertiesMap);
