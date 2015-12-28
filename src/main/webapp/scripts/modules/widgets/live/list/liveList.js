@@ -273,7 +273,13 @@ WM.module('wm.widgets.live')
                         var items = $el.find('.list-group li.app-list-item:first-of-type');
                         if (items.length) {
                             $rs.$safeApply($is, function () {
-                                $timeout(function () {items.first().click(); }, 0, false);
+                                $timeout(function () {
+                                    var item = items.first();
+                                    /*If item has active class already, no need to click again*/
+                                    if (!item.hasClass('active')) {
+                                        item.click();
+                                    }
+                                }, 0, false);
                                 unbindWatcher();
                             });
                         }
