@@ -157,6 +157,9 @@ WM.module("wm.widgets.basic")
 
                                     maxResults = newVal.size;
                                     if (newVal.numberOfElements > 0) {
+                                        if (WM.isDefined(newVal.number)) { // number is page number received from backend
+                                            $scope.currentPage = newVal.number + 1;
+                                        }
                                         currentPage = $scope.currentPage || 1;
                                     } else {
                                         currentPage = 1;
