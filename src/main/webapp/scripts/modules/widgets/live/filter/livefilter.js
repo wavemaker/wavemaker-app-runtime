@@ -434,6 +434,7 @@ WM.module('wm.widgets.live')
                                     var query,
                                         tableName,
                                         columns,
+                                        aliasColumn,
                                         fieldColumn,
                                         widgetTypes = ['select', 'radioset', 'checkboxset'];
 
@@ -442,12 +443,13 @@ WM.module('wm.widgets.live')
                                         if (filterField.isRelated) {
                                             tableName = filterField.lookupType;
                                             columns = filterField.lookupField;
+                                            aliasColumn = columns.replace('.', '_');
                                             query = QueryBuilder.getQuery({
                                                 "tableName": tableName,
-                                                "columns": [" DISTINCT " + columns + " AS " + columns]
+                                                "columns": [" DISTINCT " + columns + " AS " + aliasColumn]
                                             });
-                                            filterField.datafield = columns;
-                                            filterField.displayfield = columns;
+                                            filterField.datafield = aliasColumn;
+                                            filterField.displayfield = aliasColumn;
                                         } else {
                                             query = QueryBuilder.getQuery({
                                                 "tableName": scope.result.propertiesMap.entityName,
@@ -482,7 +484,8 @@ WM.module('wm.widgets.live')
                                     var fieldsObj,
                                         buttonsObj,
                                         designerObj,
-                                        fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap();
+                                        fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap(),
+                                        elScope = element.scope();
                                     /*If properties map is populated and if columns are presented for filter construction*/
                                     if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                         if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
@@ -498,6 +501,7 @@ WM.module('wm.widgets.live')
                                                 }
                                             };
                                             scope.variableName = scope.binddataset.match(variableRegex)[1];
+                                            scope.variableObj = elScope.Variables && elScope.Variables[scope.variableName];
                                             /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
                                             scope.result.variableName = scope.variableName;
                                             scope.result.propertiesMap = newVal.propertiesMap;

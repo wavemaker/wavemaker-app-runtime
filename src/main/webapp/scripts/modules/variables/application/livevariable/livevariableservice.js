@@ -89,7 +89,43 @@ wm.variables.services.$liveVariable = [
                     formatData(rowData);
                 });
             },
-        /*Function to get the hibernateType of the specified field.*/
+            /*function to fetch the column list of a related field*/
+            getRelatedColumnsList = function (variable, fieldName) {
+                var relatedColumn,
+                    colArr = [],
+                    targetTables = [],
+                    getRelatedCols = function (columns, prefix) {
+                        var relatedCols,
+                            colName;
+                        columns.forEach(function (column) {
+                            var variableObject;
+                            /*If the column is related, find out the columns of the target table*/
+                            if (column.isRelated) {
+                                /*Keeping the target tables array to stop the circular reference problems*/
+                                if (!_.includes(targetTables, column.targetTable)) {
+                                    targetTables.push(column.targetTable);
+                                    variableObject = Variables.filterByVariableKeys({'liveSource' : variable.liveSource, 'tableName' : column.targetTable}, true)[0];
+                                    relatedCols = variableObject ? variableObject.propertiesMap.columns : [];
+                                    if (relatedCols && relatedCols.length) {
+                                        getRelatedCols(relatedCols, column.fieldName);
+                                    }
+                                }
+                            } else {
+                                colName = prefix ? (prefix + '.' + column.fieldName) : column.fieldName;
+                                colArr.push(colName);
+                            }
+                        });
+                    };
+                /*Find the related column from the variable properties map*/
+                relatedColumn = _.find(variable.propertiesMap.columns, function (col) {
+                    return col.fieldName === fieldName;
+                });
+                if (relatedColumn && relatedColumn.columns) {
+                    getRelatedCols(relatedColumn.columns);
+                }
+                return colArr;
+            },
+            /*Function to get the hibernateType of the specified field.*/
             getHibernateType = function (variable, fieldName) {
                 var columns = variable.propertiesMap.columns,
                     columnsCount = columns.length,
@@ -234,7 +270,8 @@ wm.variables.services.$liveVariable = [
                                     'scale'              : relatedCol.scale,
                                     'generator'          : relatedCol.generator,
                                     'isRelated'          : true,
-                                    'defaultValue'       : relatedCol.defaultValue
+                                    'defaultValue'       : relatedCol.defaultValue,
+                                    'targetTable'        : relation.targetTable
                                 };
                                 /*If the column is already part of other relation, add readonly flag so that the it is not shown in liveform*/
                                 if (_.intersection(columnsAdded, sourceCols).length) {
@@ -1275,7 +1312,17 @@ wm.variables.services.$liveVariable = [
 
         return {
             reset: reset,
-            processResponse: processResponse
+            processResponse: processResponse,
+            /**
+             * @ngdoc method
+             * @name $Variables#getRelatedColumnsList
+             * @methodOf wm.variables.$Variables
+             * @description
+             * function to fetch the column list of a the related field
+             * @param {object} variable variable
+             * @param {string} fieldName fieldName of the column
+             */
+            getRelatedColumnsList: getRelatedColumnsList
         };
     }
 ];
