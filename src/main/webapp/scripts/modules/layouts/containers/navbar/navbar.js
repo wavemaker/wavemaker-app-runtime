@@ -2,7 +2,7 @@
 /*Directive for Navbar*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmNavbar', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
+    .directive('wmNavbar', ['PropertiesFactory', 'WidgetUtilService', 'Utils', '$timeout', function (PropertiesFactory, WidgetUtilService, Utils, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navbar', ['wm.layouts']),
             notifyFor = {
@@ -16,6 +16,25 @@ WM.module('wm.layouts.containers')
                 break;
             }
         }
+        //Show without delay along with animation.
+        function toggleNavCollapse(element) {
+            element.toggleClass('in');
+        }
+        //Hide after animation with delay
+        function delayToggleNavCollapse(element) {
+            $timeout(function () {
+                toggleNavCollapse(element);
+            }, 500);
+        }
+        //Toggle collapse on toggle button click in mobile-view
+        function toggleCollapse(element) {
+            element.animate({ 'height': 'toggle'});
+            if (element.hasClass('in')) {
+                delayToggleNavCollapse(element);
+            } else {
+                toggleNavCollapse(element);
+            }
+        }
 
         return {
             'restrict': 'E',
@@ -27,7 +46,7 @@ WM.module('wm.layouts.containers')
                     '<div class="container-fluid">' +
                     /* Brand and toggle get grouped for better mobile display */
                         '<div class="navbar-header"> ' +
-                            '<button type="button" class="btn-transparent navbar-toggle collapsed" data-toggle="collapse" data-target="collapse-content" ng-click="navbarCollapsed = !navbarCollapsed">' +
+                            '<button type="button" class="btn-transparent navbar-toggle collapsed" data-toggle="collapse" ng-click="toggleCollapse()">' +
                                 '<span class="sr-only">Toggle navigation</span>' +
                                 '<i class="glyphicon glyphicon-option-vertical"></i>' +
                             '</button>' +
@@ -37,8 +56,7 @@ WM.module('wm.layouts.containers')
                             '</a>' +
                         '</div>' +
                         /* Collect the nav links, forms, and other content for toggling */
-                        '<div class="collapse navbar-collapse" id="collapse-content" wmtransclude ng-init="navbarCollapsed = true" uib-collapse="navbarCollapsed">' +
-                        '</div>' +
+                        '<div class="collapse navbar-collapse" id="collapse-content" wmtransclude></div>' +
                     '</div>' +
                 '</nav> ',
             'compile': function () {
@@ -49,9 +67,10 @@ WM.module('wm.layouts.containers')
                     },
 
                     'post': function (scope, element, attrs) {
-
+                        var collapseContent = element.children().find('> #collapse-content');
                         /* Register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                        scope.toggleCollapse = toggleCollapse.bind(undefined, collapseContent);
                         /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
                          * style declarations.*/
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
