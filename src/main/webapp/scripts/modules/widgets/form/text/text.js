@@ -18,7 +18,7 @@ WM.module('wm.widgets.form')
                 '</input>'
             );
     }])
-    .directive('wmText', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils) {
+    .directive('wmText', ['PropertiesFactory', 'WidgetUtilService', 'FormWidgetUtils', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, CONSTANTS, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.text', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard']),
             notifyFor = {
@@ -28,29 +28,10 @@ WM.module('wm.widgets.form')
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, attrs, key, newVal) {
-            var widgetProps = scope.widgetProps;
+            var wdgtProperties = scope.widgetProps;
             switch (key) {
             case 'type':
-                widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = false;
-                widgetProps.placeholder.show = widgetProps.maxchars.show = widgetProps.updateon.show = widgetProps.updatedelay.show = true;
-                switch (newVal) {
-                case 'number':
-                    widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
-                    widgetProps.placeholder.show = widgetProps.maxchars.show = true;
-                    break;
-                case 'date':
-                case 'datetime-local':
-                case 'month':
-                case 'time':
-                case 'week':
-                    widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
-                    widgetProps.placeholder.show = widgetProps.maxchars.show = false;
-                    break;
-                case 'color':
-                    widgetProps.updateon.show = widgetProps.updatedelay.show = widgetProps.maxchars.show = false;
-                    widgetProps.placeholder.show = false;
-                    break;
-                }
+                FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, newVal);
                 break;
             case 'autocomplete':
                 (newVal === true || newVal === 'true') ? element.removeAttr(key) : element.attr(key, 'off');

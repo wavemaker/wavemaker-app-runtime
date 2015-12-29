@@ -50,6 +50,40 @@ WM.module('wm.widgets.form')
                 /* return dataValue to be the default key */
                 return displayField;
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#setPropertiesTextWidget
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * Use this function to set the properties of the text widget based on the input type
+             *
+             * @param {object} widgetProps properties of the text widget
+             * @param {string} newVal new input type value of the widget
+             */
+            function setPropertiesTextWidget(widgetProps, newVal) {
+                widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = false;
+                widgetProps.placeholder.show = widgetProps.maxchars.show = widgetProps.updateon.show = widgetProps.updatedelay.show = true;
+                switch (newVal) {
+                case 'number':
+                    widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
+                    widgetProps.placeholder.show = widgetProps.maxchars.show = true;
+                    break;
+                case 'date':
+                case 'datetime-local':
+                case 'month':
+                case 'time':
+                case 'week':
+                    widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
+                    widgetProps.placeholder.show = widgetProps.maxchars.show = false;
+                    break;
+                case 'color':
+                    widgetProps.updateon.show = widgetProps.updatedelay.show = widgetProps.maxchars.show = false;
+                    widgetProps.placeholder.show = false;
+                    break;
+                }
+            }
 
             /**
              * @ngdoc function
@@ -495,6 +529,7 @@ WM.module('wm.widgets.form')
             }
 
             this.getDisplayField = getDisplayField;
+            this.setPropertiesTextWidget = setPropertiesTextWidget;
             this.createDataKeys = createDataKeys;
             this.updatePropertyPanelOptions = updatePropertyPanelOptions;
             this.getParsedDataSet = getParsedDataSet;
