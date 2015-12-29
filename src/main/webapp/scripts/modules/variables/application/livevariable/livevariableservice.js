@@ -1139,7 +1139,8 @@ wm.variables.services.$liveVariable = [
                             "maxResults": options.maxResults || 100
                         },
                         relatedTable = _.find(variable.relatedTables, function (table) {
-                            return table.relationName === columnName;
+                            /*Comparing column name to support the old projects*/
+                            return table.relationName === columnName || table.columnName === columnName;
                         });
                     /* if orderBy properties is set, append it to the resultProperties */
                     if (variable.orderBy) {
@@ -1166,7 +1167,8 @@ wm.variables.services.$liveVariable = [
                     options = options || {};
                     options.scope = options.scope || $rootScope;
                     relatedTable = _.find(variable.relatedTables, function (table) {
-                        return table.relationName === columnName;
+                        /*Comparing column name to support the old projects*/
+                        return table.relationName === columnName || table.columnName === columnName;
                     });
                     relatedVariable = relatedTable && options.scope.Variables[relatedTable.watchOn];
                     primaryKeys = relatedVariable ? relatedVariable.getPrimaryKey() : [];
