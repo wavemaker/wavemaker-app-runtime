@@ -232,6 +232,7 @@ WM.module('wm.widgets.grid')
                         iScope.Variables = elScope.Variables;
                         iScope.Widgets = elScope.Widgets;
                         iScope.columns = {};
+                        iScope.appLocale = $rootScope.appLocale;
 
                         Object.defineProperty(iScope, 'selecteditem', {
                             configurable: true
@@ -1941,7 +1942,7 @@ WM.module('wm.widgets.grid')
       </file>
   </example>
  */
-    .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', function ($parse, Utils, CONSTANTS) {
+    .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', 'BindingManager', function ($parse, Utils, CONSTANTS, BindingManager) {
         'use strict';
 
         return {
@@ -1961,7 +1962,10 @@ WM.module('wm.widgets.grid')
 
                         scope.ColumnDef.prototype = new wm.baseClasses.FieldDef();
 
-                        var textAlignment = attrs.textalignment || 'left',
+                        var index,
+                            exprWatchHandler,
+                            expr,
+                            textAlignment = attrs.textalignment || 'left',
                             backgroundColor = attrs.backgroundcolor || '',
                             textColor = attrs.textcolor || '',
                             width = attrs.width || '',
@@ -1972,7 +1976,6 @@ WM.module('wm.widgets.grid')
                             columnDef = new scope.ColumnDef(),
                             columnDefProps = {
                                 'field': attrs.binding,
-                                'displayName': attrs.caption,
                                 'pcDisplay': (attrs.pcdisplay === "1" || attrs.pcdisplay === "true"),
                                 'mobileDisplay': (attrs.mobiledisplay === "1" || attrs.mobiledisplay === "true"),
                                 'width': attrs.width || '*',
@@ -2017,7 +2020,18 @@ WM.module('wm.widgets.grid')
                                     break;
                                 }
                             };
-
+                        /*register a watch on caption to trigger whenever value changes*/
+                        if (attrs.caption) {
+                            if (Utils.stringStartsWith(attrs.caption, 'bind:') && CONSTANTS.isRunMode) {
+                                expr = attrs.caption.replace('bind:', '');
+                                exprWatchHandler = BindingManager.register(scope.$parent, expr, function (newVal) {
+                                    scope.$parent.fieldDefs[index].displayName = newVal;
+                                    scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.$parent.fieldDefs));
+                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
+                            } else {
+                                columnDefProps.displayName = attrs.caption;
+                            }
+                        }
                         //Will be used in ColumnDef prototype methods to re-render grid.
                         scope.ColumnDef.prototype.$is = scope.$parent;
 
@@ -2038,7 +2052,7 @@ WM.module('wm.widgets.grid')
                         }
                         columnDef.disableInlineEditing = attrs.disableInlineEditing === 'true';
                         /* push the fieldDef in the object meant to have all fields */
-                        scope.$parent.fullFieldDefs.push(columnDef);
+                        index = scope.$parent.fullFieldDefs.push(columnDef) - 1;
                         /* Backward compatibility for widgetType */
                         if (columnDef.widgetType && !columnDef.customExpression) {
                             updateCustomExpression(columnDef);
@@ -2067,10 +2081,15 @@ WM.module('wm.widgets.grid')
                                 return;
                             }
                         }
-
                         /* push the fieldDef in the object meant for actual display in the grid (this will be passed to ng-grid) */
                         scope.$parent.fieldDefs.push(columnDef);
                         element.remove();
+                        /*destroy watch handler on scope destroy*/
+                        scope.$on('$destroy', function () {
+                            if (exprWatchHandler) {
+                                exprWatchHandler();
+                            }
+                        });
                     }
                 };
             }
