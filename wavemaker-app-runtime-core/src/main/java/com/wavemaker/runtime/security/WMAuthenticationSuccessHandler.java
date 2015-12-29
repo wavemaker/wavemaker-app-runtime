@@ -84,6 +84,8 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                 } else {
                     redirectURL += "/index.html" + LAND_PAGE_PREPEND + "Main";//Redirecting to Main Page if no config available for the role or landingPage is blank
                 }
+            } else {
+                redirectURL += "/index.html" + LAND_PAGE_PREPEND + "Main";//Redirecting to Main Page if no config available for the role or landingPage is blank
             }
 
             String targetUrlParameter = getTargetUrlParameter();
