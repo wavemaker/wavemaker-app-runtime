@@ -222,6 +222,11 @@ wm.variables.services.Variables = [
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.login) && !noUpdate) {
                         variable.login();
                     }
+                } else if (variable.category === "wm.DeviceVariable") {
+                    variable[nodeName] = nodeVal;
+                    if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.invoke) && !noUpdate) {
+                        variable.invoke();
+                    }
                 }
             },
 

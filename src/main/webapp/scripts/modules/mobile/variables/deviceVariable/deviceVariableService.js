@@ -88,10 +88,12 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
                 return _.sortBy(_.keys(availableServices[serviceName]));
             },
             listAllProperties : function () {
-                var allProperties = [];
+                var allProperties = [],
+                    properties = [];
                 WM.forEach(availableServices, function (service) {
                     WM.forEach(service, function (api) {
-                        allProperties.push(api.properties);
+                        properties = _.pluck(_.reject(api.properties, {dataBinding: true}), 'target');
+                        allProperties.push(properties);
                     });
                 });
                 return _.chain(allProperties).flatten().uniq().value();

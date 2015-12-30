@@ -9,7 +9,10 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaContacts', func
                 displayName: '',
                 phoneNumbers: [{value : ''}]
             }],
-            properties : ['startUpdate', 'contactFilter'],
+            properties : [
+                {"target": "startUpdate", "type": "boolean", "value": ""},
+                {"target": "contactFilter", "type": "string", "value": "", "dataBinding": true}
+            ],
             invoke : function (variable, options, success) {
                 var findOptions = {
                         filter : variable.contactFilter,

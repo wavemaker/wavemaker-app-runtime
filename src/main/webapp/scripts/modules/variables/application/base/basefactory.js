@@ -115,29 +115,17 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "operation": {"type": "list", "options": {"goToPreviousPage": "goToPreviousPage", "gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage"},
-                    "pageName": {"type": "string", "required": true, "options": {}, "widgettype": "list"},
-                    "viewName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
-                    "tabName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
-                    "accordionName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
-                    "segmentName": {"type": "string", "options": {}, "widgettype": "list", "hide": true},
-                    "dataBinding": {"type": "string", "value": {}, "hide": true},
+                    "dataBinding": {"type": "string", "value": [], "hide": true},
                     "pageTransitions": {"type": "list", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": true}
                 },
                 "wm.NotificationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "operation": {"type": "list", "options": {"alert": "alert", "confirm": "confirm", "toast": "toast"}, "value": "alert"}, //"prompt", "warnOnce" to be added
-                    "text": {"type": "string"},
-                    "okButtonText": {"type": "string"},
-                    "alerttype": {"type": "list", "options": {"information": "information", "success": "success", "error": "error", "warning": "warning"}},
-                    "cancelButtonText": {"type": "string", "disabled": true, "hide": true},
                     "onCancel": {"type": "list", "options": variableEventOptions, "disabled": true, "hide": true},
                     "onClose": {"type": "list", "options": variableEventOptions},
                     "onOk": {"type": "list", "options": variableEventOptions},
-                    "duration": {"type": "list", "options": [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000], "hide": true},
-                    "class": {"type": "list", "options": {"Success": "Success", "Error": "Error", "Warning": "Warning", "Info": "Info", "Misc": "Misc"}, "hide": true},
-                    "toasterPosition": {"type": "list", "options": {"top left": "top left", "top center": "top center", "top right": "top right", "center left": "center left", "center center": "center center", "center right": "center right", "bottom left": "bottom left", "bottom center": "bottom center", "bottom right": "bottom right"}, "hide": true},
-                    "dataBinding": {"type": "string", "value": {}, "hide": true}
+                    "dataBinding": {"type": "string", "value": [], "hide": true}
                 },
                 "wm.TimerVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
@@ -151,43 +139,14 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
-                    "dataBinding": {"type": "object", "value": {}, "hide": true},
+                    "dataBinding": {"type": "object", "value": [], "hide": true},
                     "service": {"type": "list", "options": []},
                     "operation": {"type": "list", "hide": true, "options": []},
                     "autoUpdate": {"type": "boolean", "value": false, "hide": true},
                     "startUpdate": {"type": "boolean", "value": false, "hide": true},
-                    /** network status */
-                    "networkStatus": {"type": "boolean", "dataBinding": true, value: "bind:$root.networkStatus", "hide" : true},
-                    /*calendar event options*/
-                    "eventTitle": {"type": "string", "dataBinding": true, "hide" : true},
-                    "eventNotes": {"type": "string", "dataBinding": true, "hide" : true},
-                    "eventLocation": {"type": "string", "dataBinding": true, "hide" : true},
-                    "eventStart": {"type": "string", "dataBinding": true, "hide" : true},
-                    "eventEnd": {"type": "string", "dataBinding": true, "hide" : true},
-                    "recurringEvent": {"type": "boolean", "dataBinding": true, "hide" : true},
-                    "recurringEventFrequency": {"type": "string", "dataBinding": true, "hide" : true},
-                    /* capture picture options*/
-                    "imageQuality": {"type": "number", "value": 80, "hide" : true},
-                    "imageTargetWidth": {"type": "number", "hide" : true},
-                    "imageTargetHeight": {"type": "number", "hide" : true},
-                    "imageEncodingType": {"type": "list", "options": {"0" : "JPEG", "1" : "PNG"}, "value" : "0", "hide" : true},
-                    "allowImageEdit": {"type": "boolean", "value" : false, "hide" : true},
-                    "correctOrientation": {"type": "boolean", "value" : true, "hide" : true},
-                    "saveToPhotoAlbum": {"type": "boolean", "value" : false, "hide" : true},
-                    /* getGeoLocation options*/
-                    "geolocationHighAccuracy": {"type": "boolean", "value": true, "hide" : true},
-                    "geolocationMaximumAge": {"type": "number", "value": 3, "hide" : true},
-                    "geolocationTimeout": {"type": "number", "value": 5, "hide" : true},
-                    /* listContacts options */
-                    "contactFilter": {"type": "string", "dataBinding": true,  "value": "", "hide" : true},
-                    /* File Upload */
-                    "localFile": {"type": "string", "dataBinding": true,  "value": "", "hide" : true},
-                    "remoteFolder": {"type": "string", "dataBinding": true,  "value": "", "hide" : true},
                     /*events*/
                     "onSuccess": {"type": "list", "options": variableEventOptions},
-                    "onError": {"type": "list", "options": variableEventOptions},
-                    /*vibrate options*/
-                    "vibrationtime": {"type": "number", "value": 2, "hide" : true}
+                    "onError": {"type": "list", "options": variableEventOptions}
                 }
             },
 
@@ -207,7 +166,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties"},
                 /* properties under data tab */
-                {"name": "Inputs", "properties": ["text", "duration", "class", "toasterPosition", "okButtonText", "cancelButtonText", "alerttype", "dataBinding",
+                {"name": "Inputs", "properties": ["dataBinding",
                                 "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
                                 "imageTargetWidth", "imageTargetHeight", "imageQuality",  "imageEncodingType", "correctOrientation", "saveToPhotoAlbum", "allowImageEdit",
                                 "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",

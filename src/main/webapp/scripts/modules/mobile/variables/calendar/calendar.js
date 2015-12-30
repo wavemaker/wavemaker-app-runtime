@@ -15,7 +15,15 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
         defaultEndDate = new Date(new Date().getTime() + (3 * 30 * 24 * 60 * 60 * 1000)),   // 3 months later date
         operations = {
             createEvent: {
-                properties : ['eventTitle', 'eventNotes', 'eventLocation', 'eventStart', 'eventEnd'],
+                properties : [
+                    {"target": "eventTitle", "type": "string", "dataBinding": true},
+                    {"target": "eventNotes", "type": "string", "dataBinding": true},
+                    {"target": "eventLocation", "type": "string", "dataBinding": true},
+                    {"target": "eventStart", "type": "string", "dataBinding": true},
+                    {"target": "eventEnd", "type": "string", "dataBinding": true},
+                    {"target": "recurringEvent", "type": "boolean", "dataBinding": true},
+                    {"target": "recurringEventFrequency", "type": "string", "dataBinding": true}
+                ],
                 invoke : function (variable, options, success, error) {
                     var createEventOptions = {
                         title: variable.eventTitle,
@@ -28,7 +36,13 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
                 }
             },
             deleteEvent: {
-                properties : ['eventTitle', 'eventLocation', 'eventNotes', 'eventStart', 'eventEnd'],
+                properties : [
+                    {"target": "eventTitle", "type": "string", "dataBinding": true},
+                    {"target": "eventLocation", "type": "string", "dataBinding": true},
+                    {"target": "eventNotes", "type": "string", "dataBinding": true},
+                    {"target": "eventStart", "type": "string", "dataBinding": true},
+                    {"target": "eventEnd", "type": "string", "dataBinding": true}
+                ],
                 invoke : function (variable, options, success, error) {
                     var removeEventOptions = {
                         newTitle: variable.eventTitle,
@@ -42,7 +56,14 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
             },
             getEvents: {
                 model : [event],
-                properties : ['eventTitle', 'eventLocation', 'eventNotes', 'eventStart', 'eventEnd', 'startUpdate'],
+                properties : [
+                    {"target": "eventTitle", "type": "string", "dataBinding": true},
+                    {"target": "eventLocation", "type": "string", "dataBinding": true},
+                    {"target": "eventNotes", "type": "string", "dataBinding": true},
+                    {"target": "eventStart", "type": "string", "dataBinding": true},
+                    {"target": "eventEnd", "type": "string", "dataBinding": true},
+                    {"target": "startUpdate", "type": "boolean"}
+                ],
                 invoke : function (variable, options, success, error) {
                     var listEventOptions = {
                         title: variable.eventTitle,

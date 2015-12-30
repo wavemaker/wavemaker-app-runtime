@@ -7,7 +7,14 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cord
             model: {
                 imagePath: 'resources/images/imagelists/default-image.png'
             },
-            properties: ['allowImageEdit', 'imageQuality', 'imageEncodingType', 'correctOrientation', 'imageTargetWidth', 'imageTargetHeight'],
+            properties: [
+                {"target": "allowImageEdit", "type": "boolean", "value" : false, "dataBinding": true},
+                {"target": "imageQuality", "type": "number", "value": 80, "dataBinding": true},
+                {"target": "imageEncodingType", "type": "list", "options": {"0" : "JPEG", "1" : "PNG"}, "value" : "0", "dataBinding": true},
+                {"target": "correctOrientation", "type": "boolean", "value" : true, "dataBinding": true},
+                {"target": "imageTargetWidth", "type": "number", "dataBinding": true},
+                {"target": "imageTargetHeight", "type": "number", "dataBinding": true}
+            ],
             invoke: function(variable, options, success, error) {
                 var cameraOptions = {
                     quality           : variable.imageQuality,
