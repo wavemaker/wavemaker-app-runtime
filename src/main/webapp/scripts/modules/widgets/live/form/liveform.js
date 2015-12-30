@@ -654,6 +654,7 @@ WM.module('wm.widgets.live')
 
                         scope.Variables = elScope.Variables;
                         scope.Widgets = elScope.Widgets;
+                        scope.appLocale = $rootScope.appLocale;
                     },
                     post: function (scope, element, attrs, controller) {
                         scope.ctrl = controller;
