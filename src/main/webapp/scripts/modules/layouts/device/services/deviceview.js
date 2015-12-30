@@ -60,7 +60,7 @@ WM.module("wm.layouts.device")
              * functionalities of other controls like input[type="range"].
              * So, replaced the hammer Js handler with click event handler.
              */
-            WM.element(selector).on('click', handler);
+            WM.element(selector).off('click.deviewview').on('click.deviewview', handler);
         }
 
         /**
