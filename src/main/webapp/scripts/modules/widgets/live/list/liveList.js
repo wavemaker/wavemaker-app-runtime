@@ -486,19 +486,19 @@ WM.module('wm.widgets.live')
 
                 // evt handlers will be created by isolateScope. redefine them on $liScope.
                 WM.extend($liScope, {
-                    'onClick'           : $is.onClick,
-                    'onDblclick'        : $is.onDblclick,
-                    'onTap'             : $is.onTap,
-                    'onDoubletap'       : $is.onDoubletap,
-                    'onMouseenter'      : $is.onMouseenter,
-                    'onMouseleave'      : $is.onMouseleave,
-                    'onEnterkeypress'   : $is.onEnterkeypress,
-                    'onSetrecord'       : $is.onSetrecord,
-                    'itemclass'         : $is.itemclass,
-                    'itemsPerRowClass'  : getRowClass(attrs.itemsperrow),
-                    'addRow'            : $is.addRow,
-                    'updateRow'         : $is.updateRow,
-                    'deleteRow'         : $is.deleteRow
+                    'onClick'               : $is.onClick,
+                    'onDblclick'            : $is.onDblclick,
+                    'onTap'                 : $is.onTap,
+                    'onDoubletap'           : $is.onDoubletap,
+                    'onMouseenter'          : $is.onMouseenter,
+                    'onMouseleave'          : $is.onMouseleave,
+                    'onEnterkeypress'       : $is.onEnterkeypress,
+                    'onSetrecord'           : $is.onSetrecord,
+                    'itemclass'             : $is.itemclass,
+                    'itemsPerRowClass'      : getRowClass(attrs.itemsperrow),
+                    'addRow'                : $is.addRow,
+                    'updateRow'             : $is.updateRow,
+                    'deleteRow'             : $is.deleteRow
                 });
 
                 return $liScope;
@@ -575,9 +575,13 @@ WM.module('wm.widgets.live')
                         isActive = $li.hasClass('active');
                     if ($liScope) {
                         if (isMultiSelect) {
-                            $li.toggleClass('active');
-                            selectCount += (isActive ? -1 : 1);
-                            isMultiSelect = selectCount > 0;//Setting 'isMultiSelect' to false if no items are selected
+                            if (!$is.maxselection || selectCount < $is.maxselection || $li.hasClass("active")) {
+                                $li.toggleClass('active');
+                                selectCount += (isActive ? -1 : 1);
+                                isMultiSelect = selectCount > 0;//Setting 'isMultiSelect' to false if no items are selected
+                            } else {
+                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                            }
                         } else {
                             selectCount = 0;
                             $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
@@ -715,15 +719,16 @@ WM.module('wm.widgets.live')
             if (CONSTANTS.isRunMode) {
                 directiveDefn.controller = 'listController';
                 directiveDefn.scope = {
-                    'scopedataset'      : '=?',
-                    'onClick'           : '&',
-                    'onDblclick'        : '&',
-                    'onMouseenter'      : '&',
-                    'onMouseleave'      : '&',
-                    'onEnterkeypress'   : '&',
-                    'onSetrecord'       : '&',
-                    'onTap'             : '&',
-                    'onDoubletap'       : '&'
+                    'scopedataset'          : '=?',
+                    'onClick'               : '&',
+                    'onDblclick'            : '&',
+                    'onMouseenter'          : '&',
+                    'onMouseleave'          : '&',
+                    'onEnterkeypress'       : '&',
+                    'onSetrecord'           : '&',
+                    'onTap'                 : '&',
+                    'onDoubletap'           : '&',
+                    'onSelectionlimitexceed': '&'
                 };
             }
 
