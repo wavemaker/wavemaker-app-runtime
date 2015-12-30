@@ -245,19 +245,18 @@ WM.module('wm.widgets.live')
 
             /*Returns step attribute value based on input type*/
             function getStepValue(type) {
-                if (type === 'text') {
+                switch (type) {
+                case 'text':
                     return '';
-                }
-                if (type === 'float') {
+                case 'float':
+                case 'double':
+                case 'big_decimal':
                     return 0.01;
-                }
-                if (type === 'double') {
-                    return 0.001;
-                }
-                if (type === 'integer') {
+                case 'integer':
                     return 1;
+                default:
+                    return undefined;
                 }
-                return undefined;
             }
 
             function getCaptionByWidget(type, index) {
