@@ -15,11 +15,12 @@ wm.variables.services.Variables = [
     'BaseVariablePropertyFactory',
     "ProjectService",
     "FileService",
+    "VariableService",
     "CONSTANTS",
     "VARIABLE_CONSTANTS",
     "DialogService",
     "$timeout",
-    "Utils", function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils) {
+    "Utils", function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils) {
         "use strict";
 
         /*flag to determine app mode
@@ -81,6 +82,12 @@ wm.variables.services.Variables = [
             ],
             variableCategoryToNameMap = {},
             self = this,
+            /*Initializing a map to store all changes made to variables*/
+            CRUDMAP = {
+                CREATE : {},
+                UPDATE : {},
+                DELETE : {}
+            },
 
             returnObject,
 
@@ -221,6 +228,89 @@ wm.variables.services.Variables = [
                 } else if (variable.category === "wm.LoginVariable") {
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.login) && !noUpdate) {
                         variable.login();
+                    }
+                }
+            },
+            /*Function to remove duplicate values in crud map*/
+            uniquifyCrudMap = function () {
+                /*Collecting duplicate names among 'DELETE', 'CREATE' and 'UPDATE' arrays and removing them from 'UPDATE'*/
+                _.each(_.keys(CRUDMAP.UPDATE), function (context) {
+                    var duplicateVars = [];
+                    if (CRUDMAP.UPDATE[context].length && CRUDMAP.DELETE[context].length) {
+                        duplicateVars = _.union(duplicateVars, _.intersection(CRUDMAP.DELETE[context], CRUDMAP.UPDATE[context]));
+                    }
+                    if (CRUDMAP.UPDATE[context].length && CRUDMAP.CREATE[context].length) {
+                        duplicateVars = _.union(duplicateVars, _.intersection(CRUDMAP.CREATE[context], CRUDMAP.UPDATE[context]));
+                    }
+                    if (duplicateVars.length) {
+                        CRUDMAP.UPDATE[context] = _.xor(CRUDMAP.UPDATE[context], duplicateVars);
+                    }
+                });
+            },
+
+            /*Function to get array of required variable objects*/
+            getVariablesByNames = function (collection, namesArray) {
+                var tempCollection = [];
+                _.each(namesArray, function (name) {
+                    tempCollection.push(collection[name]);
+                });
+                return filterVariables(tempCollection);
+            },
+
+            /*Function to check if map is empty in provided context*/
+            isEmptyCrud = function (map, pageName) {
+                return !map.CREATE[pageName].length && !map.UPDATE[pageName].length && !map.DELETE[pageName].length
+            },
+
+            /*Function to call respective 'CRUD' service*/
+            executeCrudOp = function (collection, pageName, success, error) {
+                function handleSuccess(crudMapCopy, pageName, success) {
+                    if (isEmptyCrud(crudMapCopy, pageName)) {
+                        /*trigger fn*/
+                        Utils.triggerFn(success);
+                    }
+                }
+                if (isEmptyCrud(CRUDMAP, pageName)) {
+                    /*triggering success fn if map is empty*/
+                    Utils.triggerFn(success);
+                } else {
+                    var params = {
+                            projectId: $rootScope.project.id,
+                            pageName : pageName
+                        },
+                        crudMapCopy = Utils.getClonedObject(CRUDMAP);//Making a cloned copy of crud map and using it in services
+                    /*Making a call to add new variables*/
+                    if (crudMapCopy.CREATE[pageName].length) {
+                        CRUDMAP.CREATE[pageName] = [];//Emptying array in original map
+                        params.data = getVariablesByNames(collection, crudMapCopy.CREATE[pageName]);
+                        VariableService.add(params, function () {
+                            crudMapCopy.CREATE[pageName] = [];//Emptying array in cloned map
+                            handleSuccess(crudMapCopy, pageName, success);
+                        }, function (errMsg) {
+                            Utils.triggerFn(error, errMsg);
+                        });
+                    }
+                    /*Making a call to update variables*/
+                    if (crudMapCopy.UPDATE[pageName].length) {
+                        CRUDMAP.UPDATE[pageName] = [];//Emptying array in original map
+                        params.data = getVariablesByNames(collection, crudMapCopy.UPDATE[pageName]);
+                        VariableService.update(params, function () {
+                            crudMapCopy.UPDATE[pageName] = [];//Emptying array in cloned map
+                            handleSuccess(crudMapCopy, pageName, success);
+                        }, function (errMsg) {
+                            Utils.triggerFn(error, errMsg);
+                        });
+                    }
+                    /*Making a call to delete variables*/
+                    if (crudMapCopy.DELETE[pageName].length) {
+                        CRUDMAP.DELETE[pageName] = [];//Emptying array in original map
+                        params.deletedNames = crudMapCopy.DELETE[pageName].join(',');
+                        VariableService.delete(params, function () {
+                            crudMapCopy.DELETE[pageName] = [];//Emptying array in cloned map
+                            handleSuccess(crudMapCopy, pageName, success);
+                        }, function (errMsg) {
+                            Utils.triggerFn(error, errMsg);
+                        });
                     }
                 }
             },
@@ -490,19 +580,6 @@ wm.variables.services.Variables = [
                 }
             },
 
-            /* function to write contents on a file */
-            writeFile = function (params, success, error) {
-                FileService.write({
-                    projectID: $rootScope.project.id,
-                    path: params.path,
-                    content: (typeof params.content === 'object') ? JSON.stringify(params.content, null, '\t') : params.content
-                }, function () {
-                    Utils.triggerFn(success);
-                }, function () {
-                    Utils.triggerFn(error, $rootScope.locale["MESSAGE_ERROR_SAVE_FILE_DESC"]);
-                });
-            },
-
         /* function to set page variables for a specified page*/
             setPageVariables = function (pageName, pageVariables) {
                 /* check for existence */
@@ -513,34 +590,36 @@ wm.variables.services.Variables = [
 
             /* function to get page variables for a specified page*/
             getPageVariables = function (pageName, success, error) {
-                var params;
+                var requestParams;
+                if (!runMode) {
+                    /*Initializing map with pageName context*/
+                    CRUDMAP.CREATE[pageName] = [];
+                    CRUDMAP.DELETE[pageName] = [];
+                    CRUDMAP.UPDATE[pageName] = [];
+                }
                 /* check for existence */
                 if (self.variableCollection !== null && self.variableCollection[pageName]) {
                     Utils.triggerFn(success, self.variableCollection[pageName]);
                     return;
                 }
 
-                params = {
-                    path: "pages/" + pageName + "/" + pageName + ".variables.json"
-                };
-
-                /* if in STUDIO mode append the project ID to request params */
                 if (!runMode) {
-                    params.projectID = $rootScope.project.id;
+                    requestParams = {
+                        pageName : pageName,
+                        projectId : $rootScope.project.id
+                    };
+                    VariableService.get(requestParams, function (variables) {
+                        if (!WM.isObject(variables)) {
+                            variables = {};
+                        }
+
+                        setPageVariables(pageName, variables);
+                        Utils.triggerFn(success, variables);
+                    }, function (errMsg) {
+                        setPageVariables(pageName, undefined);
+                        Utils.triggerFn(error, errMsg);
+                    });
                 }
-
-                /*Method to read page level variables from the path specified*/
-                FileService.read(params, function (variables) {
-                    if (!WM.isObject(variables)) {
-                        variables = {};
-                    }
-
-                    setPageVariables(pageName, variables);
-                    Utils.triggerFn(success, variables);
-                }, function (errMsg) {
-                    setPageVariables(pageName, undefined);
-                    Utils.triggerFn(error, errMsg);
-                });
             },
 
         /* function to set page variables for a specified page*/
@@ -554,29 +633,45 @@ wm.variables.services.Variables = [
             /* function to get application variables */
             getAppVariables = function (success, error) {
                 /* check for existence */
+                if (!runMode) {
+                    /*Initializing map with 'APP' context*/
+                    CRUDMAP.CREATE[VARIABLE_CONSTANTS.OWNER.APP] = [];
+                    CRUDMAP.DELETE[VARIABLE_CONSTANTS.OWNER.APP] = [];
+                    CRUDMAP.UPDATE[VARIABLE_CONSTANTS.OWNER.APP] = [];
+                }
                 if (self.variableCollection !== null && self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP]) {
                     Utils.triggerFn(success, self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP]);
                     return;
                 }
 
-                var requestParams = {
-                    path: "app.variables.json"
-                };
-
-                /* if STUDIO mode, append project ID to request params */
+                var requestParams = {};
                 if (!runMode) {
-                    requestParams.projectID = $rootScope.project.id;
+                    requestParams = {
+                        pageName : VARIABLE_CONSTANTS.OWNER.APP,
+                        projectId : $rootScope.project.id
+                    };
+                    VariableService.get(requestParams, function (variables) {
+                        if (!WM.isObject(variables)) {
+                            variables = {};
+                        }
+                        Utils.triggerFn(success, variables, true);
+                    }, function (errMsg) {
+                        Utils.triggerFn(error, errMsg);
+                    });
+                } else {
+                    /* if in RUN mode append the path to requestParams and using file service */
+                    requestParams = {
+                        path: "app.variables.json"
+                    };
+                    FileService.read(requestParams, function (variables) {
+                        if (!WM.isObject(variables)) {
+                            variables = {};
+                        }
+                        Utils.triggerFn(success, variables, true);
+                    }, function (errMsg) {
+                        Utils.triggerFn(error, errMsg);
+                    });
                 }
-
-                /* call file service to read the variables file */
-                FileService.read(requestParams, function (variables) {
-                    if (!WM.isObject(variables)) {
-                        variables = {};
-                    }
-                    Utils.triggerFn(success, variables, true);
-                }, function (errMsg) {
-                    Utils.triggerFn(error, errMsg);
-                });
             },
 
             /* Extend each variable in the provided collection with all the properties of that type
@@ -762,6 +857,33 @@ wm.variables.services.Variables = [
                 return (variables[$rootScope.activePageName] && variables[$rootScope.activePageName][variableName]) || (variables[VARIABLE_CONSTANTS.OWNER.APP] && variables[VARIABLE_CONSTANTS.OWNER.APP][variableName]) || null;
             },
 
+            /*function to update a variable object*/
+            updateVariable = function (collectionName, newProperties) {
+                var varName = newProperties.name,
+                    updated = false,
+                    pageName = newProperties.owner === 'App' ? 'App' : $rootScope.activePageName,
+                    oldOwner = pageName === 'App' ? $rootScope.activePageName : 'App';
+                /* Condition: Checking for existence of the variable name, updating variable object*/
+                if (self.variableCollection[pageName][collectionName]) {
+                    self.variableCollection[pageName][varName] = newProperties;
+                    updated = true;
+                    if (!_.includes(CRUDMAP.UPDATE[pageName], varName)) {
+                        CRUDMAP.UPDATE[pageName].push(varName);
+                    }
+                    if (collectionName !== varName) {
+                        delete self.variableCollection[pageName][collectionName];
+                    }
+                } else if (self.variableCollection[oldOwner][collectionName]) {
+                    /*In case of owner change checking for variable existence in old scope and deleting*/
+                    self.variableCollection[pageName][varName] = newProperties;
+                    deleteVariable(varName, oldOwner);
+                    if (!_.includes(CRUDMAP.UPDATE[pageName], varName)) {
+                        CRUDMAP.UPDATE[pageName].push(varName);
+                    }
+                    updated = true;
+                }
+                return updated;
+            },
             /*function to get the type of the variable by its name*/
             getType = function (name) {
                 return getVariableByName(name) && getVariableByName(name).category;
@@ -800,19 +922,7 @@ wm.variables.services.Variables = [
            /* function to check if variable with specified name exists in the collection*/
             isExists = function (variableName, caseSensitive) {
                 var variables = self.variableCollection,
-                    arrOfVariables = [],
-                    item,
-                    iter = 0;
-                if (variables[VARIABLE_CONSTANTS.OWNER.APP]) {
-                    for (item in variables[VARIABLE_CONSTANTS.OWNER.APP]) {
-                        arrOfVariables[iter++] = item;
-                    }
-                }
-                if (variables[$rootScope.activePageName]) {
-                    for (item in variables[$rootScope.activePageName]) {
-                        arrOfVariables[iter++] = item;
-                    }
-                }
+                    arrOfVariables = _.union(_.keys(variables[VARIABLE_CONSTANTS.OWNER.APP]), _.keys(variables[$rootScope.activePageName]));
                 return Utils.isDuplicateName(arrOfVariables, variableName, caseSensitive);
             },
 
@@ -932,8 +1042,10 @@ wm.variables.services.Variables = [
                 return _.uniq(variableArray);
             },
             saveContextVariables = function (context, contextVariables) {
-                var variables = self.variableCollection;
-                variables[context] = contextVariables;
+                /*Updating variables using service*/
+                _.each(contextVariables, function (varObj, name) {
+                    updateVariable(name, varObj);
+                });
             },
 
             /**
@@ -984,12 +1096,12 @@ wm.variables.services.Variables = [
                 return variableObj;
             },
         /*function to store a variable to the collection*/
-            store = function (owner, name, variableObj, variableCollectionObject, isUpdate) {
+            store = function (owner, name, variableObj, isUpdate) {
                 /* sanity checking */
                 if (!variableObj) {
                     return;
                 }
-                var varCollectionObj = variableCollectionObject || self.variableCollection,
+                var varCollectionObj = self.variableCollection,
                     scope;
                 owner = owner || VARIABLE_CONSTANTS.OWNER.APP;
                 scope = pageScopeMap[owner];
@@ -1020,6 +1132,9 @@ wm.variables.services.Variables = [
 
                 if (isUpdate) {
                     call('getData', name, {scope: scope, skipFetchData: true});
+                }
+                if (!_.includes(CRUDMAP.CREATE[owner], name)) {
+                    CRUDMAP.CREATE[owner].push(name);/*Storing created variable name in map*/
                 }
             },
             initiateCallback = function (event, variable, callBackScope, response) {
@@ -1101,12 +1216,13 @@ wm.variables.services.Variables = [
 
             /*Function to delete the specified variable*/
             deleteVariable = function (name, pageName) {
-                var i, pageContext;
+                var i, pageContext, owner;
                 /*Check if pageName is specified*/
                 if (pageName) {
                     /*If "name" is specified, delete the specified variable from the page.
                     * Else, delete all the variables of that page.*/
-                    if (name) {
+                    if (name && !_.includes(CRUDMAP.DELETE[pageName], name)) {
+                        CRUDMAP.DELETE[pageName].push(name);
                         delete self.variableCollection[pageName][name];
                         /* if in studio mode remove the studio copy of variable*/
                         if (CONSTANTS.isStudioMode) {
@@ -1114,6 +1230,11 @@ wm.variables.services.Variables = [
                             delete self.studioCopy[pageName][name];
                         }
                     } else {
+                        _.each(self.variableCollection[pageName], function (variable) {
+                            if (!_.includes(CRUDMAP.DELETE[pageName], variable.name)) {
+                                CRUDMAP.DELETE[pageName].push(variable.name);
+                            }
+                        });
                         delete self.variableCollection[pageName];
                         /* if in studio mode remove the studio copy */
                         if (CONSTANTS.isStudioMode) {
@@ -1125,6 +1246,10 @@ wm.variables.services.Variables = [
                 /* Condition: Checking for existence of the variable name inside each category, deleting if found */
                 for (i in self.variableCollection) {
                     if (self.variableCollection.hasOwnProperty(i) && self.variableCollection[i].hasOwnProperty(name)) {
+                        owner = self.variableCollection[i][name].owner === VARIABLE_CONSTANTS.OWNER.APP ? VARIABLE_CONSTANTS.OWNER.APP : $rootScope.activePageName;
+                        if (!_.includes(CRUDMAP.DELETE[owner], name)) {
+                            CRUDMAP.DELETE[owner].push(name);
+                        }
                         delete self.variableCollection[i][name];
                         /* if in studio mode remove the studio copy of variable*/
                         if (CONSTANTS.isStudioMode && self.studioCopy[i]) {
@@ -1155,7 +1280,7 @@ wm.variables.services.Variables = [
                     varParamCounter,
                     currentVarParam,
                     filteredVariables = [],
-                    defaultContextArray = ["App", $rootScope.activePageName];
+                    defaultContextArray = [VARIABLE_CONSTANTS.OWNER.APP, $rootScope.activePageName];
 
                 if (variableParams.owner) {
                     variableOwner = (variableParams.owner === VARIABLE_CONSTANTS.OWNER.APP) ? VARIABLE_CONSTANTS.OWNER.APP : $rootScope.activePageName;
@@ -1304,6 +1429,7 @@ wm.variables.services.Variables = [
                     }
                     writableVariable.bindCount = variable.bindCount;
                     /*Set the "saveVariables" to true so that when "save"/"run" buttons are clicked, the variables could be saved into the file.*/
+                    updateVariable(writableVariable.name, writableVariable);
                     $rootScope.saveVariables = true;
                 }
             });
@@ -1374,18 +1500,10 @@ wm.variables.services.Variables = [
              * @methodOf wm.variables.$Variables
              * @description
              * Updates a variable instance based on the provided name
-             * @param {string} name name of the variable to be updated
+             * @param {string} collectionName existing name/old name name of the variable to be updated
+             * @param {object} newProperties properties of the variable to be updated
              */
-            'updateVariable': function (newProperties) {
-                var i;
-                /* Condition: Checking for existence of the variable name inside each category, updating value if found */
-                for (i in self.variableCollection) {
-                    if (self.variableCollection.hasOwnProperty(i) && self.variableCollection[i].hasOwnProperty(newProperties.name)) {
-                        self.variableCollection[i][newProperties.name] = newProperties;
-                    }
-                }
-                return false;
-            },
+            'updateVariable': updateVariable,
             /**
              * @ngdoc method
              * @name $Variables#delete
@@ -1445,26 +1563,16 @@ wm.variables.services.Variables = [
                 if (activePageName && updateValues) {
                     updateVariableValues(activePageName);
                 }
-
-                /* filter the variables and remove unset properties from it */
-                appVariables = filterVariables(appVariables);
-                pageVariables = filterVariables(pageVariables);
-
+                uniquifyCrudMap();/*To remove duplicate values*/
                 /* save app variables */
-                writeFile({path: "app.variables.json", content: appVariables}, function () {
+                executeCrudOp(appVariables, VARIABLE_CONSTANTS.OWNER.APP, function () {
                     if (activePageName) {
                         /* save page variables */
-                        writeFile({path: "../../../pages/" + activePageName + "/" + activePageName + ".variables.json", content: pageVariables}, function () {
-                            Utils.triggerFn(success);
-                        }, function (errMsg) {
-                            Utils.triggerFn(error, errMsg);
-                        });
+                        executeCrudOp(pageVariables, activePageName, success, error);
                     } else {
                         Utils.triggerFn(success);
                     }
-                }, function (errMsg) {
-                    Utils.triggerFn(error, errMsg);
-                });
+                }, error);
             },
 
             /**
@@ -1489,16 +1597,9 @@ wm.variables.services.Variables = [
                 if (updateValues) {
                     updateVariableValues(activePageName);
                 }
-
-                /* filter the variables and remove unset properties from it */
-                pageVariables = filterVariables(pageVariables);
-
+                uniquifyCrudMap();/*To remove duplicate values*/
                 /* save page variables */
-                writeFile({path: "pages/" + activePageName + "/" + activePageName + ".variables.json", content: pageVariables}, function () {
-                    Utils.triggerFn(success);
-                }, function (errMsg) {
-                    Utils.triggerFn(error, errMsg);
-                });
+                executeCrudOp(pageVariables, activePageName, success, error);
             },
 
             /**
@@ -1519,16 +1620,9 @@ wm.variables.services.Variables = [
                 if (updateValues) {
                     updateVariableValues();
                 }
-
-                /* filter the variables and remove unset properties from it */
-                appVariables = filterVariables(appVariables);
-
+                uniquifyCrudMap();/*To remove duplicate values*/
                 /* save app variables */
-                writeFile({path: "app.variables.json", content: appVariables}, function () {
-                    Utils.triggerFn(success);
-                }, function (errMsg) {
-                    Utils.triggerFn(error, errMsg);
-                });
+                executeCrudOp(appVariables, VARIABLE_CONSTANTS.OWNER.APP, success, error);
             },
 
             /**
@@ -1743,10 +1837,9 @@ wm.variables.services.Variables = [
 
                     /*adding a property to identify the database-type for the created live-variable*/
                     createdVariable.dbSystem = variableDetails.dbSystem;
-                    delete createdVariable.name;
 
                     /* Store the variable in proper category */
-                    store(variableOwner, variableName, createdVariable, null, true);
+                    store(variableOwner, variableName, createdVariable, true);
 
                     /*Update the tree with the newly added variable under the appropriate category(i.e., basic/service/live variables)*/
                     $rootScope.$emit("update-variables-tree", {name: variableName, category: variableCategory, properties: createdVariable});
@@ -1795,8 +1888,6 @@ wm.variables.services.Variables = [
                         createdVariable.wmServiceOperationInfo = variableDetails.wmServiceOperationInfo;
                     }
 
-                    delete createdVariable.name;
-
                     /* insert sample param values if provided */
                     bindMapCollection = createdVariable.dataBinding;
                     WM.forEach(variableDetails.sampleParamValues, function (val, key) {
@@ -1808,7 +1899,7 @@ wm.variables.services.Variables = [
                     });
 
                     /* Store the variable in proper category */
-                    store(variableOwner, variableName, createdVariable, null, true);
+                    store(variableOwner, variableName, createdVariable, true);
 
                     /*Update the tree with the newly added variable under the appropriate category(i.e., basic/service/live variables)*/
                     $rootScope.$emit("update-variables-tree", {name: variableName, category: variableCategory, properties: createdVariable});
