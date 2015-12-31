@@ -20,9 +20,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
                     {"target": "eventNotes", "type": "string", "dataBinding": true},
                     {"target": "eventLocation", "type": "string", "dataBinding": true},
                     {"target": "eventStart", "type": "string", "dataBinding": true},
-                    {"target": "eventEnd", "type": "string", "dataBinding": true},
-                    {"target": "recurringEvent", "type": "boolean", "dataBinding": true},
-                    {"target": "recurringEventFrequency", "type": "string", "dataBinding": true}
+                    {"target": "eventEnd", "type": "string", "dataBinding": true}
                 ],
                 invoke : function (variable, options, success, error) {
                     var createEventOptions = {
