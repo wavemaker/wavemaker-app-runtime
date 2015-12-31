@@ -229,8 +229,14 @@ wm.variables.services.Variables = [
                     if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.login) && !noUpdate) {
                         variable.login();
                     }
+                } else if (variable.category === "wm.DeviceVariable") {
+                    variable[nodeName] = nodeVal;
+                    if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.invoke) && !noUpdate) {
+                        variable.invoke();
+                    }
                 }
             },
+
             /*Function to remove duplicate values in crud map*/
             uniquifyCrudMap = function () {
                 /*Collecting duplicate names among 'DELETE', 'CREATE' and 'UPDATE' arrays and removing them from 'UPDATE'*/
@@ -311,11 +317,6 @@ wm.variables.services.Variables = [
                         }, function (errMsg) {
                             Utils.triggerFn(error, errMsg);
                         });
-                    }
-                } else if (variable.category === "wm.DeviceVariable") {
-                    variable[nodeName] = nodeVal;
-                    if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.invoke) && !noUpdate) {
-                        variable.invoke();
                     }
                 }
             },
