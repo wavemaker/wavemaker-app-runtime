@@ -183,11 +183,8 @@ wm.variables.services.$liveVariable = [
                 variable[propertyName] = propertyValue;
                 /*Check for sanity.
                 * writableVariable will be null in case of partial page variables.*/
-                if (writableVariable && !WM.equals(writableVariable[propertyName], propertyValue)) {
-                    /*Set the "saveVariables" to true so that when "save"/"run" buttons are clicked, the variables could be saved into the file.*/
-                    $rootScope.saveVariables = true;
+                if (writableVariable) {
                     writableVariable[propertyName] = propertyValue;
-                    Variables.updateVariable(writableVariable.name, writableVariable);
                 }
             },
         /*Function to fetch the meta data for the table.*/
@@ -384,6 +381,9 @@ wm.variables.services.$liveVariable = [
 
                     /*Set the propertiesMap property of the live-variable to correspond to the propertiesMap of the table*/
                     $rootScope.variables[variable.name].propertiesMap = variable.propertiesMap;
+
+                    /*Set the "saveVariables" to true so that when "save"/"run" buttons are clicked, the variables could be saved into the file.*/
+                    $rootScope.saveVariables = true;
 
                     Utils.triggerFn(callback, projectID, variable, options, success);
                 }, WM.noop);

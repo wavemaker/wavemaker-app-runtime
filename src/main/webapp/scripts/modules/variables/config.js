@@ -34,46 +34,4 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     PAGINATION_PARAMS: ["page", "size", "sort"]
 });
 
-wm.variables.constant('VARIABLE_SERVICE_URLS', {
-    VariableService : {
-        addAppVariables: {
-            url: 'services/projects/:projectId/variables',
-            method: 'POST'
-        },
-        addPageVariables: {
-            url: 'services/projects/:projectId/pages/:pageName/variables',
-            method: 'POST'
-        },
-        getAppVariables: {
-            url: 'services/projects/:projectId/variables',
-            method: 'GET'
-        },
-        getPageVariables: {
-            url: 'services/projects/:projectId/pages/:pageName/variables',
-            method: 'GET'
-        },
-        updateAppVariables: {
-            url: 'services/projects/:projectId/variables',
-            method: 'PUT'
-        },
-        updatePageVariables: {
-            url: 'services/projects/:projectId/pages/:pageName/variables',
-            method: 'PUT'
-        },
-        deleteAppVariables: {
-            url: 'services/projects/:projectId/variables?variableNames[]=:deletedNames',
-            method: 'DELETE'
-        },
-        deletePageVariables: {
-            url: 'services/projects/:projectId/pages/:pageName/variables?variableNames[]=:deletedNames',
-            method: 'DELETE'
-        }
-    }
-});
-wm.variables.config(function (BaseServiceManagerProvider, VARIABLE_SERVICE_URLS) {
-    'use strict';
-
-    BaseServiceManagerProvider.register(VARIABLE_SERVICE_URLS);
-});
-
 /*End of Module definition*/
