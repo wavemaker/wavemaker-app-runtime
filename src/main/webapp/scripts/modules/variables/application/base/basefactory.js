@@ -166,11 +166,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties"},
                 /* properties under data tab */
-                {"name": "Inputs", "properties": ["dataBinding",
-                                "eventTitle", "eventNotes", "eventLocation", "eventStart", "eventEnd", "recurringEvent", "recurringEventFrequency",
-                                "imageTargetWidth", "imageTargetHeight", "imageQuality",  "imageEncodingType", "correctOrientation", "saveToPhotoAlbum", "allowImageEdit",
-                                "geolocationMaximumAge", "geolocationTimeout", "geolocationHighAccuracy",
-                                "contactFilter", "localFile", "remoteFolder", "vibrationtime"], "parent": "data"},
+                {"name": "Inputs", "properties": ["dataBinding"], "parent": "data"},
                 {"name": "inputfields", "properties": ["dataSet", "dataBinding"], "parent": "data"},
                 {"name": "filterfields", "properties": ["dataSet"], "parent": "data"},
                 {"name": "bindings", "properties": [], "parent": "data"},
