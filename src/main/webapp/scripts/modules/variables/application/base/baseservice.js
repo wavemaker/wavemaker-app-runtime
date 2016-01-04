@@ -1076,7 +1076,7 @@ wm.variables.services.Variables = [
             filterVariables = function (variables) {
                 WM.forEach(variables, function (variable) {
                     WM.forEach(variable, function (propertyValue, propertyName) {
-                        if (propertyValue === "" || propertyValue === undefined) {
+                        if (propertyValue === "" || propertyValue === undefined || propertyName === "$$hashKey") {
                             delete variable[propertyName];
                         }
                     });
