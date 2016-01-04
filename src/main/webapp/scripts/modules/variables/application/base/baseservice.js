@@ -88,6 +88,7 @@ wm.variables.services.Variables = [
                 UPDATE : {},
                 DELETE : {}
             },
+            reloadRequired = [],
 
             returnObject,
 
@@ -118,13 +119,25 @@ wm.variables.services.Variables = [
                 });
             },
 
-        /*function to reset the services object for the project*/
-            resetVariables = function (newVariablesObject) {
-                self.variableCollection = newVariablesObject || self.variableCollection;
-                if (!newVariablesObject) {
-                    /*Initialize the variable name iterator to the default value.*/
-                    resetVariableNameIterator();
+        /*function to reload the variables of current context*/
+            reloadVariables = function (success, error) {
+                function handleSuccess() {
+                    /*Executing success if both app and current page variables are reloaded*/
+                    if (!_.includes(reloadRequired, $rootScope.activePageName) && !_.includes(reloadRequired, VARIABLE_CONSTANTS.OWNER.APP)) {
+                        Utils.triggerFn(success);
+                    }
                 }
+                self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP] = undefined;
+                reloadRequired = _.keys(self.variableCollection);
+                getAppVariables(function () {
+                    _.remove(reloadRequired, function (page) {
+                        return page === VARIABLE_CONSTANTS.OWNER.APP;
+                    });
+                    handleSuccess();
+                }, error);
+                getPageVariables($rootScope.activePageName, function () {
+                    handleSuccess();
+                }, error);
             },
 
             /* function to update binding of a field of a variable */
@@ -604,7 +617,7 @@ wm.variables.services.Variables = [
                     CRUDMAP.UPDATE[pageName] = [];
                 }
                 /* check for existence */
-                if (self.variableCollection !== null && self.variableCollection[pageName]) {
+                if (self.variableCollection !== null && self.variableCollection[pageName] && (reloadRequired && !_.includes(reloadRequired, pageName))) {
                     Utils.triggerFn(success, self.variableCollection[pageName]);
                     return;
                 }
@@ -615,6 +628,9 @@ wm.variables.services.Variables = [
                         projectId : $rootScope.project.id
                     };
                     VariableService.get(requestParams, function (variables) {
+                        _.remove(reloadRequired, function (page) {
+                            return page === pageName;
+                        });
                         if (!WM.isObject(variables)) {
                             variables = {};
                         }
@@ -1675,14 +1691,13 @@ wm.variables.services.Variables = [
 
             /**
              * @ngdoc method
-             * @name $Variables#resetVariables
+             * @name $Variables#reloadVariables
              * @methodOf wm.variables.$Variables
              * @description
-             * Reset the variable collection
-             * @param {object} newVariablesObject variables object
+             * Reload the variable collection`
              *
              */
-            'resetVariables': resetVariables,
+            'reloadVariables': reloadVariables,
 
             /**
              * @ngdoc method
