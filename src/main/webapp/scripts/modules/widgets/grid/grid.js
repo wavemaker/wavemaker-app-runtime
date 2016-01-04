@@ -1963,7 +1963,7 @@ WM.module('wm.widgets.grid')
                         scope.ColumnDef.prototype = new wm.baseClasses.FieldDef();
 
                         var index,
-                            exprWatchHandler,
+                            exprWatchHandlers = [],
                             expr,
                             textAlignment = attrs.textalignment || 'left',
                             backgroundColor = attrs.backgroundcolor || '',
@@ -1976,6 +1976,7 @@ WM.module('wm.widgets.grid')
                             columnDef = new scope.ColumnDef(),
                             columnDefProps = {
                                 'field': attrs.binding,
+                                'displayName': attrs.caption,
                                 'pcDisplay': (attrs.pcdisplay === "1" || attrs.pcdisplay === "true"),
                                 'mobileDisplay': (attrs.mobiledisplay === "1" || attrs.mobiledisplay === "true"),
                                 'width': attrs.width || '*',
@@ -2020,18 +2021,13 @@ WM.module('wm.widgets.grid')
                                     break;
                                 }
                             };
-                        /*register a watch on caption to trigger whenever value changes*/
-                        if (attrs.caption) {
-                            if (Utils.stringStartsWith(attrs.caption, 'bind:') && CONSTANTS.isRunMode) {
-                                expr = attrs.caption.replace('bind:', '');
-                                exprWatchHandler = BindingManager.register(scope.$parent, expr, function (newVal) {
-                                    scope.$parent.fieldDefs[index].displayName = newVal;
-                                    scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.$parent.fieldDefs));
-                                }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
-                            } else {
-                                columnDefProps.displayName = attrs.caption;
-                            }
+                        function watchProperty(property, expression) {
+                            exprWatchHandlers[property] = BindingManager.register(scope.$parent, expression, function (newVal) {
+                                scope.$parent.fieldDefs[index][property] = newVal;
+                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.$parent.fieldDefs));
+                            }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                         }
+
                         //Will be used in ColumnDef prototype methods to re-render grid.
                         scope.ColumnDef.prototype.$is = scope.$parent;
 
@@ -2067,7 +2063,14 @@ WM.module('wm.widgets.grid')
                                 scope.$root.$emit('save-workspace', undefined, true);
                             }
                         }
-
+                        /*check if any attribute has binding. put a watch for the attributes*/
+                        if (CONSTANTS.isRunMode) {
+                            _.each(columnDef, function (value, property) {
+                                if (Utils.stringStartsWith(value, 'bind:')) {
+                                    watchProperty(property, value.replace('bind:', ''));
+                                }
+                            });
+                        }
                         /* this condition will run for:
                          *  1. PC view in STUDIO mode
                          *  2. Mobile/tablet view in RUN mode
@@ -2086,9 +2089,7 @@ WM.module('wm.widgets.grid')
                         element.remove();
                         /*destroy watch handler on scope destroy*/
                         scope.$on('$destroy', function () {
-                            if (exprWatchHandler) {
-                                exprWatchHandler();
-                            }
+                            _.each(exprWatchHandlers, Utils.triggerFn);
                         });
                     }
                 };

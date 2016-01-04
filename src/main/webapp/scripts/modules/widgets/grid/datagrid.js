@@ -828,10 +828,15 @@ $.widget('wm.datagrid', {
     },
 
     _isCustomExpressionNonEditable: function (customTag) {
-        var $input = $(customTag);
+        var $input;
         if (!customTag) {
             return false;
         }
+        //Check if expression is provided for custom tag.
+        if (_.includes(customTag, '{{') && _.includes(customTag, '}}')) {
+            return true;
+        }
+        $input = $(customTag);
         if ($input.attr('type') === 'checkbox') {
             return false;
         }
