@@ -18,7 +18,8 @@ WM.module('wm.widgets.live')
             'use strict';
             var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
                 eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
-                allEventTypes = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup');
+                allEventTypes = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
+                defaultNgClassesConfig = {'className': '', 'condition': ''};
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#formatBooleanValue
@@ -973,6 +974,201 @@ WM.module('wm.widgets.live')
                /*Get the respective widget properties*/
                 scope.widgetProps = getWidgetProps(attrs.widget);
             }
+
+            function parseNgClasses(classExpression) {
+                var ngClasses = [],
+                    conditionalClasses;
+                defaultNgClassesConfig = {'className': '', 'condition': ''};
+                /* Return default config. */
+                if (!classExpression) {
+                    ngClasses.push(WM.copy(defaultNgClassesConfig));
+                    return ngClasses;
+                }
+                /* Remove curly brackets and get each expression. */
+                conditionalClasses = classExpression.substring(1, classExpression.length - 1).split(',');
+                /* Generate the config. */
+                _.each(conditionalClasses, function (conditionalClassConfig) {
+                    var conditionalExpression = conditionalClassConfig.split(':'),
+                        className = conditionalExpression[0].trim(),
+                        classCondition = conditionalExpression[1].trim(),
+                        classNameLen = className.length,
+                        config = WM.copy(defaultNgClassesConfig);
+                    /* Strip the single quotes from className. */
+                    if (className[0] === "'" && className[classNameLen - 1] === "'") {
+                        className = className.substring(1, classNameLen - 1);
+                    }
+                    config.className = className;
+                    config.condition = classCondition;
+                    ngClasses.push(config);
+                });
+                return ngClasses;
+            }
+
+            function generateNgClassExpression(conditionalClasses) {
+                var ngClassExpression = '';
+                _.each(conditionalClasses, function (config) {
+                    if (config.className && config.condition) {
+                        if (ngClassExpression.length) {
+                            ngClassExpression += ', ';
+                        }
+                        ngClassExpression += "'" + config.className + "':" + config.condition;
+                    }
+                });
+                return ngClassExpression.length ? '{' + ngClassExpression + '}' : ngClassExpression;
+            }
+
+            function setColumnCustomExpression(column) {
+                var widgetNgClassesExpression = generateNgClassExpression(column.widgetConfig.ngClasses);
+                switch (column.widgetType) {
+                case 'image':
+                    if (column.type === 'blob') {
+                        column.widgetConfig.src = "{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}";
+                        column.customExpression = '<img width="48px" class="" data-ng-src="' + column.widgetConfig.src + '"/>';
+                    } else {
+                        column.customExpression = '<img data-ng-src="' + column.widgetConfig.src + '" alt="' + column.widgetConfig.src + '" class="' + column.widgetConfig.class +
+                            '" data-ng-class="' + widgetNgClassesExpression + '"/>';
+                    }
+                    break;
+                case 'button':
+                    column.customExpression = '<wm-button caption="' + column.widgetConfig.title + '" show="true" class="' + column.widgetConfig.class + '" iconname="' +
+                        column.widgetConfig.icon + '" on-click="' + column.widgetConfig.action + '" data-ng-class="' + widgetNgClassesExpression + '"></wm-button>';
+                    break;
+                case 'checkbox':
+                    column.customExpression = '<input type="checkbox" ng-model="' + column.widgetConfig.model + '" ng-disabled="' + column.widgetConfig.disabled + '" ' +
+                        'class = "' + column.widgetConfig.class + '" data-ng-class="' + widgetNgClassesExpression + '">';
+                    break;
+                default:
+                    if (column.type === 'blob') {
+                        column.customExpression = '<a data-ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 glyphicon glyphicon-file"></i></a>';
+                    }
+                }
+            }
+
+            function setDefaultWidgetConfig(column) {
+                var widgetType = column.widgetType,
+                    field = column.field,
+                    val = column.widgetType === 'button' ? "{{row.getProperty('" + field + "') || 'Button'}}" : "{{row.getProperty('" + field + "')}}",
+                    defaultModel = "row." + field,
+                    widgetNgClasses = [Utils.getClonedObject(defaultNgClassesConfig)];
+                /* Not storing widget config, it is only on for UI display. Only customExpression will be saved. */
+                column.widgetConfig = {};
+                switch (widgetType) {
+                case 'image':
+                    column.widgetConfig = {
+                        'src': val,
+                        'class': '',
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                case 'button':
+                    column.widgetConfig = {
+                        'icon': '',
+                        'action': '',
+                        'title': val,
+                        'class': 'btn-sm btn-primary',
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                case 'checkbox':
+                    column.widgetConfig = {
+                        'model': defaultModel,
+                        'disabled': '{{colDef.readonly || !isGridEditMode}}',
+                        'class': '',
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                default:
+                    column.widgetConfig = {
+                        'src': val,
+                        'class': '',
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                }
+            }
+
+            function extractWidgetConfig(column) {
+                var customExpression = column.customExpression,
+                    widgetType = column.widgetType,
+                    widgetDisabled,
+                    widgetAction,
+                    widgetIcon,
+                    widgetTitle,
+                    widgetClass,
+                    widgetNgClasses,
+                    widgetSrc,
+                    widgetModel,
+                    el;
+                column.widgetConfig = {};
+                /* If custom expression does not contain any HTML tags, append span. */
+                if (!Utils.isValidHtml(customExpression)) {
+                    customExpression = '<span>' + customExpression + '</span>';
+                }
+                el = WM.element(customExpression);
+                widgetClass = el.attr('widget-class');
+                widgetNgClasses = parseNgClasses(el.attr('data-ng-class'));
+                switch (widgetType) {
+                case 'image':
+                    widgetSrc = el.attr('data-ng-src');
+                    column.widgetConfig = {
+                        'src': widgetSrc,
+                        'class': widgetClass,
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                case 'button':
+                    widgetIcon = el.attr('iconname');
+                    widgetTitle = el.attr('caption');
+                    widgetAction = el.attr('on-click');
+                    column.widgetConfig = {
+                        'icon': widgetIcon,
+                        'action': widgetAction,
+                        'title': widgetTitle,
+                        'class': widgetClass,
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                case 'checkbox':
+                    widgetModel = el.attr('ng-model');
+                    widgetDisabled = el.attr('ng-disabled');
+                    column.widgetConfig = {
+                        'model': widgetModel,
+                        'disabled': widgetDisabled,
+                        'class': widgetClass,
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                default:
+                    column.widgetConfig = {
+                        'src': '',
+                        'class': widgetClass,
+                        'ngClasses': widgetNgClasses
+                    };
+                    break;
+                }
+            }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#setColumnConfig
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Sets the column config for the selected field
+             *
+             * @param {object} column for which config needs to be set
+             */
+            function setColumnConfig(column) {
+                /* Not storing ngClasses, it is only on for UI display. Only ngClass expression will be saved. */
+                column.ngClasses = parseNgClasses(column.ngclass);
+                if (!column.customExpression) {
+                    setDefaultWidgetConfig(column);
+                    setColumnCustomExpression(column);
+                } else {
+                    extractWidgetConfig(column);
+                }
+            }
+
             this.toggleActionMessage        = toggleActionMessage;
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
@@ -990,6 +1186,7 @@ WM.module('wm.widgets.live')
             this.getFieldTypeWidgetTypesMap = getFieldTypeWidgetTypesMap;
             this.fieldPropertyChangeHandler = fieldPropertyChangeHandler;
             this.preProcessFields           = preProcessFields;
+            this.setColumnConfig            = setColumnConfig;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {
