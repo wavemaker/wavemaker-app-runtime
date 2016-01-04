@@ -687,6 +687,10 @@ wm.variables.services.Variables = [
                 /* extend the variables with all properties not found in the variable */
                 WM.forEach(variables, function (variable, name) {
                     variables[name] = WM.extend(BaseVariablePropertyFactory.getProperties(variable.category), variable);
+                    /* removing dataSet for live variable */
+                    if (!runMode && variable.category === "wm.LiveVariable") {
+                        variables[name].dataSet = {"dataValue": ""};
+                    }
                 });
 
                 return variables;
