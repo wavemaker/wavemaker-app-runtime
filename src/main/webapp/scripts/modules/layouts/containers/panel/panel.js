@@ -5,10 +5,10 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/panel.html',
-                '<div page-container init-widget class="app-panel panel" ng-class="[helpClass]" data-ng-show="show" apply-styles="shell" wm-navigable-element="true">' +
+                '<div page-container init-widget class="app-panel panel" data-ng-class="[helpClass, {\'fullscreen\':fullscreen}]" data-ng-show="show" apply-styles="shell" wm-navigable-element="true">' +
                     '<div class="panel-heading" data-ng-class="helpClass">' +
                         '<h3 class="panel-title">' +
-                            '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="togglePanel()">' +
+                            '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="expandCollapsePanel()">' +
                                 '<i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i>' +
                                 '<span class="heading">{{title}}</span>' +
                                 '<span class="description">{{description}}</span>' +
@@ -17,7 +17,8 @@ WM.module('wm.layouts.containers')
                                 '<span data-ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
                                 '<wm-menu scopedataset="actions" iconname="cog" data-ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel || displayfield}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                                 '<button type="button" class="app-icon panel-action glyphicon glyphicon-question-sign" title="{{::$root.appLocale.LABEL_HELP}}" data-ng-if="helptext" data-ng-click="toggleHelp()"></button>' +
-                                '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="togglePanel($event);"></button>' +
+                                '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
+                                '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="allowfullscreen" title="{{::$root.appLocale.LABEL_FULLSCREEN}}/{{::$root.appLocale.LABEL_EXITFULLSCREEN}}" data-ng-class="fullscreen ? \'glyphicon-resize-small\': \'glyphicon-fullscreen\'" data-ng-click="toggleFullScreen($event);"></button>' +
                                 '<button type="button" class="app-icon glyphicon panel-action glyphicon-remove" title="{{::$root.appLocale.LABEL_CLOSE}}" data-ng-if="closable" data-ng-click="closePanel();onClose({$event: $event, $scope: this})"></button>' +
                             '</div>' +
                         '</h3>' +
@@ -90,8 +91,8 @@ WM.module('wm.layouts.containers')
                         if (scope.expanded === undefined) {
                             scope.expanded = true;
                         }
-                        /* toggle the state of the panel */
-                        scope.togglePanel = function ($event) {
+                        /* Expand Collapse the panel */
+                        scope.expandCollapsePanel = function ($event) {
                             if (scope.collapsible && CONSTANTS.isRunMode) {
                                 if (scope.expanded) {
                                     if (scope.onCollapse) {
@@ -109,6 +110,23 @@ WM.module('wm.layouts.containers')
                                 }
                             }
                         };
+                        /* Toggle FullScreen the panel */
+                        scope.toggleFullScreen = function ($event) {
+                            if (scope.allowfullscreen && CONSTANTS.isRunMode) {
+                                if (scope.fullscreen) {
+                                    if (scope.onExitfullscreen) {
+                                        scope.onExitfullscreen({$event: $event, $scope: this});
+                                    }
+                                } else {
+                                    if (scope.onFullscreen) {
+                                        scope.onFullscreen({$event: $event, $scope: this});
+                                    }
+                                }
+                                /* flip the active flag */
+                                scope.fullscreen = !scope.fullscreen;
+                            }
+                        };
+
                         /* toggle the state of the panel */
                         scope.toggleHelp = function () {
                             if (scope.helptext && CONSTANTS.isRunMode) {
