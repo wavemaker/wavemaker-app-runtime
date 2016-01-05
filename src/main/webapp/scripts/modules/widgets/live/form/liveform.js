@@ -54,7 +54,8 @@ WM.module('wm.widgets.live')
                                 '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
                                     template.context.innerHTML +
                                 '</div>' +
-                            '</form>';
+                                '<div class="hidden-form-elements"></div>' +
+                        '</form>';
                 }
                 if (CONSTANTS.isRunMode && (attrs.formtype === 'dialog' || attrs.layout === 'dialog' || attrs.formlayout === 'dialog')) {
                     /*Generate a unique id for the dialog to avoid conflict with multiple dialogs.*/
@@ -67,6 +68,7 @@ WM.module('wm.widgets.live')
                                             '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-style="{height: height, overflow: height ? \'auto\': overflow, paddingTop: paddingtop + paddingunit,paddingRight: paddingright + paddingunit,paddingLeft: paddingleft + paddingunit,paddingBottom: paddingbottom + paddingunit}">' +
                                                 '<div class="form-content">' + template.context.innerHTML + '</div>' +
                                             '</div>' +
+                                            '<div class="hidden-form-elements"></div>' +
                                             '<div class="basic-btn-grp form-action modal-footer clearfix">' +
                                                 '<div class="action-content"></div>' +
                                             '</div>' +
@@ -85,6 +87,7 @@ WM.module('wm.widgets.live')
                                 '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
                                 template.context.innerHTML +
                             '</div>' +
+                            '<div class="hidden-form-elements"></div>' +
                             '<div class="basic-btn-grp form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
                         '</form>';
             },
@@ -780,6 +783,7 @@ WM.module('wm.widgets.live')
                                     /*If variable binding has been removed empty the form and the variableName*/
                                     if (CONSTANTS.isStudioMode) {
                                         element.find('.form-elements').empty();
+                                        element.find('.hidden-form-elements').empty();
                                     }
                                     scope.variableName = '';
                                     /*When initially a variable is bound to the live-form the form is constructed and the
@@ -852,6 +856,7 @@ WM.module('wm.widgets.live')
                                     scope.formFields = undefined;
                                     scope.buttonArray = undefined;
                                     element.find('.form-elements').empty();
+                                    element.find('.hidden-form-elements').empty();
                                     element.find('.basic-btn-grp').empty();
                                     scope.formConstructed = fromDesigner;
                                     /*If the event has been emitted after changes in the liveFormDesigner then empty the form and reconstruct*/
@@ -1096,10 +1101,14 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        template = LiveWidgetUtils.getTemplate(columnDef, index);
-                        element.html(template);
-                        $compile(element.contents())(parentIsolateScope);
-
+                        if (!CONSTANTS.isRunMode || columnDef.show) {
+                            template = LiveWidgetUtils.getTemplate(columnDef, index);
+                            element.html(template);
+                            $compile(element.contents())(parentIsolateScope);
+                        } else {
+                            template = LiveWidgetUtils.getHiddenTemplate(columnDef, index);
+                            element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentIsolateScope));
+                        }
                         parentIsolateScope.$on('$destroy', function () {
                             if (exprWatchHandler) {
                                 exprWatchHandler();

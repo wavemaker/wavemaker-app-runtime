@@ -11,6 +11,7 @@ WM.module('wm.widgets.live')
                         '<span class="form-header-text">{{title}}</span>' +
                     '</h3></div>' +
                 '<div data-identifier="filter-elements" class="panel-body" ng-transclude></div>' +
+                '<div class="hidden-filter-elements"></div>' +
                 '<div class="basic-btn-grp form-action panel-footer clearfix"></div>' +
                 '</form>'
             );
@@ -573,6 +574,7 @@ WM.module('wm.widgets.live')
                                     scope.buttonArray = undefined;
 
                                     element.find('[data-identifier="filter-elements"]').empty();
+                                    element.find('.hidden-filter-elements').empty();
                                     element.find('.basic-btn-grp').empty();
 
                                     /* if layout grid template found, simulate canvas dom addition of the elements */
@@ -743,9 +745,14 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         }
-                        template = LiveWidgetUtils.getTemplate(columnsDef, index);
-                        element.html(template);
-                        $compile(element.contents())(parentIsolateScope);
+                        if (!CONSTANTS.isRunMode || columnsDef.show) {
+                            template = LiveWidgetUtils.getTemplate(columnsDef, index);
+                            element.html(template);
+                            $compile(element.contents())(parentIsolateScope);
+                        } else {
+                            template = LiveWidgetUtils.getHiddenTemplate(columnsDef, index);
+                            element.closest('[data-identifier="livefilter"]').find('> .hidden-filter-elements').append($compile(template)(parentIsolateScope));
+                        }
 
                         parentIsolateScope.$on('$destroy', function () {
                             if (exprWatchHandler) {

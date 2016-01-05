@@ -460,7 +460,19 @@ WM.module('wm.widgets.live')
                 var additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" ';
                 return getDefaultTemplate('rating', fieldDef, index, '', '', '', additionalFields, true);
             }
-
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#getHiddenTemplate
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * returns the hidden template for liveFilter and liveForm.
+             */
+            function getHiddenTemplate(fieldDef, index) {
+                var additionalFields = 'type="hidden" ';
+                return getDefaultTemplate('text', fieldDef, index, '', '', '', additionalFields);
+            }
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getTemplate
@@ -1217,6 +1229,7 @@ WM.module('wm.widgets.live')
             this.getColumnDef               = getColumnDef;
             this.getButtonDef               = getButtonDef;
             this.getTemplate                = getTemplate;
+            this.getHiddenTemplate          = getHiddenTemplate;
             this.translateVariableObject    = translateVariableObject;
             this.getColumnCountByLayoutType = getColumnCountByLayoutType;
             this.getCustomFieldKey          = getCustomFieldKey;
