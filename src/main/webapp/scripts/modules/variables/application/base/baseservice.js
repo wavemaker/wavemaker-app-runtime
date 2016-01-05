@@ -271,7 +271,9 @@ wm.variables.services.Variables = [
             getVariablesByNames = function (collection, namesArray) {
                 var tempCollection = [];
                 _.each(namesArray, function (name) {
-                    tempCollection.push(collection[name]);
+                    if (collection[name]) {
+                        tempCollection.push(collection[name]);
+                    }
                 });
                 return filterVariables(tempCollection);
             },
@@ -903,8 +905,8 @@ wm.variables.services.Variables = [
                     /*In case of owner change checking for variable existence in old scope and deleting*/
                     self.variableCollection[pageName][varName] = newProperties;
                     deleteVariable(varName, oldOwner);
-                    if (!_.includes(CRUDMAP.UPDATE[pageName], varName)) {
-                        CRUDMAP.UPDATE[pageName].push(varName);
+                    if (!_.includes(CRUDMAP.CREATE[pageName], varName)) {
+                        CRUDMAP.CREATE[pageName].push(varName);
                     }
                     updated = true;
                 }
