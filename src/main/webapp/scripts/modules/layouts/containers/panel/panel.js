@@ -18,7 +18,7 @@ WM.module('wm.layouts.containers')
                                 '<wm-menu scopedataset="actions" iconname="cog" data-ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel || displayfield}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
                                 '<button type="button" class="app-icon panel-action glyphicon glyphicon-question-sign" title="{{::$root.appLocale.LABEL_HELP}}" data-ng-if="helptext" data-ng-click="toggleHelp()"></button>' +
                                 '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
-                                '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="allowfullscreen" title="{{::$root.appLocale.LABEL_FULLSCREEN}}/{{::$root.appLocale.LABEL_EXITFULLSCREEN}}" data-ng-class="fullscreen ? \'glyphicon-resize-small\': \'glyphicon-fullscreen\'" data-ng-click="toggleFullScreen($event);"></button>' +
+                                '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="enablefullscreen" title="{{::$root.appLocale.LABEL_FULLSCREEN}}/{{::$root.appLocale.LABEL_EXITFULLSCREEN}}" data-ng-class="fullscreen ? \'glyphicon-resize-small\': \'glyphicon-fullscreen\'" data-ng-click="toggleFullScreen($event);"></button>' +
                                 '<button type="button" class="app-icon glyphicon panel-action glyphicon-remove" title="{{::$root.appLocale.LABEL_CLOSE}}" data-ng-if="closable" data-ng-click="closePanel();onClose({$event: $event, $scope: this})"></button>' +
                             '</div>' +
                         '</h3>' +
@@ -112,7 +112,7 @@ WM.module('wm.layouts.containers')
                         };
                         /* Toggle FullScreen the panel */
                         scope.toggleFullScreen = function ($event) {
-                            if (scope.allowfullscreen && CONSTANTS.isRunMode) {
+                            if (scope.enablefullscreen && CONSTANTS.isRunMode) {
                                 if (scope.fullscreen) {
                                     if (scope.onExitfullscreen) {
                                         scope.onExitfullscreen({$event: $event, $scope: this});
@@ -214,6 +214,8 @@ WM.module('wm.layouts.containers')
  *                  Default value: `true`. <br>
  * @param {boolean=} collapsible
  *                  To enable control for collapsing/expanding the panel widget.
+ * @param {boolean=} enablefullscreen
+ *                  To enable fullscreen view for the panel widget
  * @param {boolean=} closable
  *                  To apply close button in the panel widget.
  * @param {string=} actions
@@ -262,7 +264,7 @@ WM.module('wm.layouts.containers')
     <example module="wmCore">
         <file name="index.html">
             <div data-ng-controller="Ctrl" class="wm-app">
-                <wm-panel class="panel-default" collapsible="true" showheader="true" width="400" height="200" backgroundcolor="#dad8d9" title="Personal Info">
+                <wm-panel class="panel-default" collapsible="true"  enablefullscreen="true" showheader="true" width="400" height="200" backgroundcolor="#dad8d9" title="Personal Info">
                     <wm-panel-footer>
                         <wm-container horizontalalign="right">
                             <wm-button class="btn-secondary" caption="Cancel" type="button"></wm-button>
