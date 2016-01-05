@@ -283,7 +283,12 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                 }
                             } else {
                                 if (param.type) {
-                                    typeRef = param.type;
+                                    if (param.type === "array") {
+                                        isList = true;
+                                        typeRef = param.items && param.items.type;
+                                    } else {
+                                        typeRef = param.type;
+                                    }
                                 } else {
                                     if (param.schema) {
                                         typeRef = getReturnType(param.schema, definitions);
