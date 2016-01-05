@@ -34,15 +34,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -263,6 +255,9 @@ public class WMObjectMapper extends ObjectMapper {
 
         WMObjectwriteMapper() {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            // we are handling self references using @JsonIgnoreProperties
+            configure(SerializationFeature.FAIL_ON_SELF_REFERENCES, false);
+
             WMHibernate4Module hibernate4Module = new WMHibernate4Module();
             hibernate4Module.disable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
             registerModule(hibernate4Module);
@@ -278,8 +273,8 @@ public class WMObjectMapper extends ObjectMapper {
 
     private static class WMPropertyNamingStrategy extends PropertyNamingStrategy {
 
-        private static final String[] POSSIBLE_GET_METHOD_START_NAMES = new String[] {"get", "is"};
-        private static final String[] POSSIBLE_SET_METHOD_START_NAMES = new String[] {"set"};
+        private static final String[] POSSIBLE_GET_METHOD_START_NAMES = {"get", "is"};
+        private static final String[] POSSIBLE_SET_METHOD_START_NAMES = {"set"};
 
         @Override
         public String nameForGetterMethod(MapperConfig<?> config, AnnotatedMethod method, String defaultName) {
@@ -293,11 +288,10 @@ public class WMObjectMapper extends ObjectMapper {
 
         private String getPossibleFieldName(AnnotatedMethod method, String defaultName, String[] possibleMethodStartNames) {
             String name = method.getName();
-            for (int i=0; i< possibleMethodStartNames.length; i++) {
-                String possibleStartName = possibleMethodStartNames[i];
+            for (String possibleStartName : possibleMethodStartNames) {
                 if (name.startsWith(possibleStartName)) {
                     String remPart = name.substring(possibleStartName.length());
-                    if (remPart.length() == 0) {
+                    if (remPart.isEmpty()) {
                         break;
                     }
                     char upper = remPart.charAt(0);
