@@ -665,7 +665,8 @@ WM.module('wm.widgets.form')
 
                         /* Checking if the selected file is valid for the choosen filter type */
                         scope.isValidFile = function (filename) {
-                            var isValid;
+                            var isValid,
+                                extensionName = getExtensionName(filename);
                             switch (scope.contenttype) {
                             case 'image':
                                 isValid = Utils.isImageFile(filename);
@@ -679,6 +680,11 @@ WM.module('wm.widgets.form')
                             case 'all':
                                 isValid = true;
                                 break;
+                            default:
+                                /*content type and the uploaded file extension should be same*/
+                                if (extensionName === scope.contenttype) {
+                                    isValid = true;
+                                }
                             }
                             return isValid;
                         };
