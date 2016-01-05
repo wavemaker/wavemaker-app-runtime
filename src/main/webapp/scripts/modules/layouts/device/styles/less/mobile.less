@@ -59,9 +59,12 @@
       width: 100%;
       position: fixed;
       z-index: 1010;
-      display: block;
+      display: table;
       top: 0;
       left: 0;
+      .app-header-container {
+        display:table-cell;
+      }
       .app-header-action {
         font-size: @app-mobile-nav-icon-size;
         text-decoration: none;
