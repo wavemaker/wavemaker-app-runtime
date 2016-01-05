@@ -502,6 +502,7 @@ WM.module('wm.widgets.live')
                                             };
                                             scope.variableName = scope.binddataset.match(variableRegex)[1];
                                             scope.variableObj = elScope.Variables && elScope.Variables[scope.variableName];
+                                            scope.variableType = scope.variableObj.category;
                                             /*Set the "variableName" along with the result so that the variable could be used by the data navigator during navigation.*/
                                             scope.result.variableName = scope.variableName;
                                             scope.result.propertiesMap = newVal.propertiesMap;
