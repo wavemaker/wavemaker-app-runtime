@@ -964,6 +964,7 @@ wm.plugins.security.services.SecurityService = [
                     }, failureCallback);
                 }
             },
+
             /**
              * @ngdoc function
              * @name wm.security.$SecurityService#testADConnection
@@ -978,7 +979,6 @@ wm.plugins.security.services.SecurityService = [
              * @param {function} successCallback to be called on success
              * @param {function} failureCallback to be called on failure
              */
-
             testADConnection: function (params, successCallback, failureCallback) {
                 BaseService.send({
                     target: 'Security',
@@ -989,6 +989,7 @@ wm.plugins.security.services.SecurityService = [
                     data: params.config
                 }, successCallback, failureCallback);
             },
+
             /**
              * @ngdoc function
              * @name wm.security.$SecurityService#setLoggedInUser
@@ -1000,9 +1001,28 @@ wm.plugins.security.services.SecurityService = [
              *
              * @param {object} user user object
              */
-
             setLoggedInUser: function (user) {
                 loggedInUser = user;
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#updateCachedRolesInfo
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * to update the roles info in cache
+             *
+             * @param {object} rolesConfig array of roles config objects
+             */
+            updateCachedRolesInfo: function (rolesConfig) {
+                /* sanity check */
+                if (!WM.isArray(rolesConfig) || !rolesConfig.length) {
+                    return;
+                }
+                _rolesConfig = rolesConfig;
+                _roles = _.pluck(rolesConfig, "name");
             }
         };
     }];
