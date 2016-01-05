@@ -367,8 +367,11 @@ WM.module('wm.widgets.live')
             function studioMode_onDataSetChange($is, doNotRemoveTemplate) {
                 var boundVariableName = Utils.getVariableName($is),
                     variable = getVariable($is, boundVariableName);
-                $is.variableName = variable.name;
-                $is.variableType = variable.category;
+                //Assign variable name and type on widget scope if variable is available.
+                if (variable) {
+                    $is.variableName = variable.name;
+                    $is.variableType = variable.category;
+                }
                 if ($is.oldbinddataset !== $is.binddataset && $is._isInitialized) {
                     if (!doNotRemoveTemplate) {
                         updateLiveListBindings($is, true);
