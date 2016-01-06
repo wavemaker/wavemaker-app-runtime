@@ -83,6 +83,11 @@ This mixin removes background from IE & all other browsers so that they are cons
 /*Color for all warning messages*/
 @app-warning-text-color: #FF0000;
 
+/*Color for all type of messages*/
+@wm-app-msg-success-color: #6A8969;
+@wm-app-msg-info-color: #479ED6;
+@wm-app-msg-error-color: #AF4565;
+@wm-app-msg-warning-color: #caad16;
 
 /*default values on html and body to show full screen*/
 html, body {
@@ -735,16 +740,16 @@ html, body {
 .app-alert-dialog {
   .app-dialog-message {
     &.text-error {
-      color: red;
+      color: @wm-app-msg-error-color;
     }
     &.text-information {
-      color: blue;
+      color: @wm-app-msg-info-color;
     }
     &.text-success {
-      color: green;
+      color: @wm-app-msg-success-color;
     }
     &.text-warning {
-      color: orange;
+      color: @wm-app-msg-warning-color;
     }
   }
 }
@@ -1042,37 +1047,24 @@ body.modal-open {
   .icon {
     display: inline-block;
     .width-height(16px, 16px);
-    .background-image('ui-icons.png', no-repeat, -20px, -205px);
     margin-right: 8px;
     vertical-align: top;
+    font-size: 16px;
+    &.success {
+      color: @wm-app-msg-success-color;
+    }
+    &.error {
+      color: @wm-app-msg-error-color;
+    }
+    &.info {
+      color: @wm-app-msg-info-color;
+    }
+    &.warning {
+      color: @wm-app-msg-warning-color;
+    }
   }
   span {
     vertical-align: text-top;
-  }
-  &.alert-danger {
-    .icon {
-      background-position: -20px -1450px;
-    }
-  }
-  &.alert-success {
-    .icon {
-      background-position: -20px -1410px;
-    }
-  }
-  &.alert-warning {
-    .icon {
-      background-position: -20px -1368px;
-    }
-  }
-  &.alert-info {
-    .icon {
-      background-position: -20px -1488px;
-    }
-  }
-  &.alert-loading {
-    .icon {
-      .background-image('@{wm-image-base-url}/spinner-small.gif', no-repeat, 0, 0);
-    }
   }
   .close {
     position: absolute;

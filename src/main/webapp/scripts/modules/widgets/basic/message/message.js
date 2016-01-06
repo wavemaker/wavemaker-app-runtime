@@ -12,13 +12,13 @@ WM.module('wm.widgets.basic')
                 '"alert-warning":messageType.isWarning, ' +
                 '"alert-info":messageType.isInfo, ' +
                 '"alert-info alert-loading":messageType.isLoading}\' ' +
-                '><i title="{{type}} Alert" class="icon"></i>' +
+                '><i title="{{type}} Alert" class="{{type}} icon {{messageIcon}}"></i>' +
                 '<span ng-bind-html="caption"></span>' +
                 '<button title="Close" class="btn-transparent close" data-ng-hide="hideclose">&times;</button>' +
             '</p>'
             );
     }])
-    .directive('wmMessage', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
+    .directive('wmMessage', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.message', ['wm.base']),
             notifyFor = {
@@ -29,7 +29,7 @@ WM.module('wm.widgets.basic')
         /*set caption, type & show properties */
         function setDataSet(dataset, scope) {
             if (!WM.isArray(dataset) && WM.isObject(dataset)) {
-                scope.caption = dataset.caption;
+                scope.caption = $sce.trustAs($sce.HTML, dataset.caption);
                 scope.type = dataset.type;
                 scope.show = dataset.show = true;
             } else {
@@ -45,24 +45,29 @@ WM.module('wm.widgets.basic')
                     scope.messageType = {
                         isSuccess: true
                     };
+                    scope.messageIcon = 'glyphicon glyphicon-ok-sign';
                 } else if (newVal === 'error') {
                     scope.messageType = {
                         isError: true
                     };
+                    scope.messageIcon = 'glyphicon glyphicon-remove-sign';
                 } else if (newVal === 'warning') {
                     scope.messageType = {
                         isWarning: true
                     };
+                    scope.messageIcon = 'glyphicon glyphicon-alert';
                 } else if (newVal === 'warn') {/*Fallback to support old projects with type as "warn"*/
                     scope.type = 'warning';
                 } else if (newVal === 'info') {
                     scope.messageType = {
                         isInfo: true
                     };
+                    scope.messageIcon = 'glyphicon glyphicon-info-sign';
                 } else if (newVal === 'loading') {
                     scope.messageType = {
                         isLoading: true
                     };
+                    scope.messageIcon = 'fa fa-spinner fa-spin';
                 }
                 break;
             case 'dataset':
