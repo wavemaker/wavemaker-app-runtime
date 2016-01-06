@@ -1422,6 +1422,7 @@ WM.module('wm.widgets.grid')
                     isBoundToSelectedItem,
                     isBoundToSelectedItemSubset,
                     isBoundToServiceVariableSelectedItem,
+                    isBoundToQueryServiceVariable,
                     isBoundToFilter,
                     columns;
                 $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
@@ -1433,6 +1434,7 @@ WM.module('wm.widgets.grid')
                 isBoundToLiveVariableRoot = undefined;
                 isBoundToServiceVariable = undefined;
                 isBoundToStaticVariable = undefined;
+                isBoundToQueryServiceVariable = undefined;
                 isBoundToFilter = undefined;
                 isBoundToServiceVariableSelectedItem = undefined;
                 $scope.gridVariable = '';
@@ -1543,6 +1545,7 @@ WM.module('wm.widgets.grid')
                             $scope.binddataset.indexOf('selecteditem') === -1;
                         isBoundToServiceVariable = $scope.variableType === 'wm.ServiceVariable';
                         isBoundToStaticVariable = $scope.variableType === 'wm.Variable';
+                        isBoundToQueryServiceVariable = isBoundToServiceVariable && (variableObj.serviceType === 'DataService');
 
                         if (isBoundToLiveVariable) {
                             $scope.setDataGridOption('searchHandler', searchGrid);
@@ -1565,8 +1568,8 @@ WM.module('wm.widgets.grid')
                 }
                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                 if (CONSTANTS.isStudioMode) {
-                    /* Make the 'pagesize' property readonly for live variable bindings.*/
-                    $scope.widgetProps.pagesize.disabled = isBoundToLiveVariable;
+                    /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
+                    $scope.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
                     /* In Studio, disabling readonlygrid property if bound to a service variable or view */
                     if (!($scope.binddataset && (isBoundToServiceVariable || isBoundToStaticVariable || isBoundToServiceVariableSelectedItem)) && !isBoundToView()) {
                         $scope.widgetProps.readonlygrid.disabled = false;

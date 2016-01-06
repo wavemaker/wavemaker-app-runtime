@@ -196,8 +196,10 @@ WM.module('wm.widgets.live')
 
             function handlePageSizeDisplay($is, variableObj) {
                 if (variableObj) {
-                    /*Make the "pageSize" property readonly so that no editing is possible.*/
-                    $is.widgetProps.pagesize.disabled = (variableObj.category === 'wm.LiveVariable');
+                    var isBoundToLiveVariable = (variableObj.category === 'wm.LiveVariable'),
+                        isBoundToQueryServiceVariable = (variableObj.category === 'wm.ServiceVariable') && (variableObj.serviceType === 'DataService');
+                    /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
+                    $is.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
                 }
             }
 
