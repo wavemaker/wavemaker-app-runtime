@@ -251,20 +251,18 @@ wm.variables.services.Variables = [
             },
 
             /*Function to remove duplicate values in crud map*/
-            uniquifyCrudMap = function () {
+            uniquifyCrudMap = function (context) {
                 /*Collecting duplicate names among 'DELETE', 'CREATE' and 'UPDATE' arrays and removing them from 'UPDATE'*/
-                _.each(_.keys(CRUDMAP.UPDATE), function (context) {
-                    var duplicateVars = [];
-                    if (CRUDMAP.UPDATE[context].length && CRUDMAP.DELETE[context].length) {
-                        duplicateVars = _.union(duplicateVars, _.intersection(CRUDMAP.DELETE[context], CRUDMAP.UPDATE[context]));
-                    }
-                    if (CRUDMAP.UPDATE[context].length && CRUDMAP.CREATE[context].length) {
-                        duplicateVars = _.union(duplicateVars, _.intersection(CRUDMAP.CREATE[context], CRUDMAP.UPDATE[context]));
-                    }
-                    if (duplicateVars.length) {
-                        CRUDMAP.UPDATE[context] = _.xor(CRUDMAP.UPDATE[context], duplicateVars);
-                    }
-                });
+                var duplicateVars = [];
+                if (CRUDMAP.UPDATE[context].length && CRUDMAP.DELETE[context].length) {
+                    duplicateVars = _.union(duplicateVars, _.intersection(CRUDMAP.DELETE[context], CRUDMAP.UPDATE[context]));
+                }
+                if (CRUDMAP.UPDATE[context].length && CRUDMAP.CREATE[context].length) {
+                    duplicateVars = _.union(duplicateVars, _.intersection(CRUDMAP.CREATE[context], CRUDMAP.UPDATE[context]));
+                }
+                if (duplicateVars.length) {
+                    CRUDMAP.UPDATE[context] = _.xor(CRUDMAP.UPDATE[context], duplicateVars);
+                }
             },
 
             /*Function to get array of required variable objects*/
@@ -291,6 +289,7 @@ wm.variables.services.Variables = [
                         Utils.triggerFn(success);
                     }
                 }
+                uniquifyCrudMap(pageName);
                 if (isEmptyCrud(CRUDMAP, pageName)) {
                     /*triggering success fn if map is empty*/
                     Utils.triggerFn(success);
@@ -1591,7 +1590,6 @@ wm.variables.services.Variables = [
                 if (activePageName && updateValues) {
                     updateVariableValues(activePageName);
                 }
-                uniquifyCrudMap();/*To remove duplicate values*/
                 /* save app variables */
                 executeCrudOp(appVariables, VARIABLE_CONSTANTS.OWNER.APP, function () {
                     if (activePageName) {
@@ -1625,7 +1623,6 @@ wm.variables.services.Variables = [
                 if (updateValues) {
                     updateVariableValues(activePageName);
                 }
-                uniquifyCrudMap();/*To remove duplicate values*/
                 /* save page variables */
                 executeCrudOp(pageVariables, activePageName, success, error);
             },
@@ -1648,7 +1645,6 @@ wm.variables.services.Variables = [
                 if (updateValues) {
                     updateVariableValues();
                 }
-                uniquifyCrudMap();/*To remove duplicate values*/
                 /* save app variables */
                 executeCrudOp(appVariables, VARIABLE_CONSTANTS.OWNER.APP, success, error);
             },
