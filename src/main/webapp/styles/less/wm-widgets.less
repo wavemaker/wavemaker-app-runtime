@@ -232,12 +232,43 @@ html, body {
   .dropdown-toggle {
     white-space: nowrap;
   }
+  &.open {
+    .dropdown-menu {
+      &.horizontal {
+        display: table;
+      }
+    }
+  }
   .dropdown-menu {
     z-index: 1040;
     width: 100%;
     &.dropinline-menu {
       position: relative;
       float: none;
+    }
+    &.horizontal {
+      padding-top: 0;
+      padding-bottom: 0;
+      &.pull-right {
+        left: -100%;
+      }
+      li {
+        display: table-cell;
+      }
+      //Sub menu position
+      .dropdown-submenu:hover {
+        > .dropdown-menu {
+          left: 0;
+          top: 100%;
+          display: table;
+          padding-top: 0;
+          padding-bottom: 0;
+          &.pull-right {
+            right: 0;
+            left: -100%;
+          }
+        }
+      }
     }
   }
   ul > li > a {

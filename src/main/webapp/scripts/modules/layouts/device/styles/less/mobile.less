@@ -207,15 +207,28 @@
           }
         }
       }
-      .app-menu{
+      .app-menu {
         width: 100%;
         .caret {
           position: absolute;
           right: 0.5em;
           top: 1em;
         }
+        &.open {
+          &.horizontal {
+            display: block;
+            ul.dropdown-submenu {
+              position: relative;
+            }
+          }
+        }
         ul.dropdown-menu, ul.dropdown-submenu {
           width: 100%;
+          &.horizontal {
+            li {
+              display: block;
+            }
+          }
         }
       }
 }

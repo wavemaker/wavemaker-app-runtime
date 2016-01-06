@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
                     '</button>' +
-                    '<wm-menu-dropdown items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
+                    '<wm-menu-dropdown menulayout="menulayout" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
@@ -22,11 +22,11 @@ WM.module('wm.widgets.form')
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
                     '</a>' +
-                    '<wm-menu-dropdown items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
+                    '<wm-menu-dropdown menulayout="menulayout" items="menuItems" linktarget="linktarget" menualign="menualign"/>' +
                 '</div>'
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',
-                '<ul ng-class="menualign" uib-dropdown-menu>' +
+                '<ul class="dropdown-menu {{menulayout}} {{menualign}}" uib-dropdown-menu>' +
                     '<wm-menu-dropdown-item data-ng-repeat="item in items" linktarget="linktarget" item="item" menualign="menualign"/>' +
                 '</ul>'
             );
@@ -49,6 +49,7 @@ WM.module('wm.widgets.form')
                 'scopedataset'  : true,
                 'dataset'       : true,
                 'menuposition'  : true,
+                'menualign'     : true,
                 'linktarget'    : true
             },
             POSITION = {
@@ -215,6 +216,7 @@ WM.module('wm.widgets.form')
             'scope': {
                 'items': '=',
                 'menualign': '=',
+                'menulayout': '=',
                 'linktarget': '='
             },
             'template': $templateCache.get('template/widget/form/menu/dropdown.html'),
