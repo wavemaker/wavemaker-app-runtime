@@ -9,7 +9,7 @@ WM.module('wm.widgets.live')
         $tc.put('template/widget/list.html',
                     '<div class="app-livelist panel" init-widget live-actions apply-styles="shell" data-ng-show="show">' +
                         '<div class="panel-heading" data-ng-if="title"><h4 class="panel-title">{{title}}</h4></div>' +
-                        '<ul data-identifier="list" class="clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
+                        '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
@@ -580,7 +580,7 @@ WM.module('wm.widgets.live')
                         isActive = $li.hasClass('active');
                     if ($liScope) {
                         if (isMultiSelect) {
-                            if (!$is.maxselection || selectCount < $is.maxselection || $li.hasClass("active")) {
+                            if (!$is.maxselection || selectCount < $is.maxselection || $li.hasClass('active')) {
                                 $li.toggleClass('active');
                                 selectCount += (isActive ? -1 : 1);
                                 isMultiSelect = selectCount > 0;//Setting 'isMultiSelect' to false if no items are selected
@@ -652,6 +652,38 @@ WM.module('wm.widgets.live')
                 defineProps($is, $el);
             }
 
+            function configureDnD($el, $is) {
+                var data;
+                $el.find('.app-livelist-container').sortable({
+                    'appendTo'    : '.app-livelist-container',
+                    'containment' : 'parent',
+                    'delay'       : 100,
+                    'opacity'     : 0.8,
+                    'start'       : function (evt, ui) {
+                        ui.placeholder.height(ui.item.height());
+                        WM.element(this).data('oldIndex', ui.item.index());
+                    },
+                    'update'      : function (evt, ui) {
+                        var newIndex,
+                            oldIndex,
+                            draggedItem,
+                            $dragEl;
+
+                        $dragEl     = WM.element(this);
+                        newIndex    = ui.item.index();
+                        oldIndex    = $dragEl.data('oldIndex');
+                        data        = data || Utils.getClonedObject($is.dataset.data);
+                        draggedItem = _.pullAt(data, oldIndex)[0];
+
+                        data.splice(newIndex, 0, draggedItem);
+                        Utils.triggerFn($is.onReorder, {$event: evt, $data: data });
+                        $dragEl.removeData('oldIndex');
+                    }
+                });
+                $el.find('.app-livelist-container').droppable({'accept': '.app-list-item'});
+
+            }
+
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate;
@@ -664,6 +696,10 @@ WM.module('wm.widgets.live')
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
                     $el.find('> [data-identifier=list]').prepend($liTemplate);
                     $compile($liTemplate)($liScope);
+
+                    if ($is.enablereorder) {
+                        configureDnD($el, $is);
+                    }
 
                     if (attrs.scopedataset) {
                         $is.$watch('scopedataset', function (nv) {
@@ -689,7 +725,7 @@ WM.module('wm.widgets.live')
                 });
                 // in the run mode navigation can not be changed dynamically
                 // process the navigation type before the dataset is set.
-                if (attrs.hasOwnProperty('shownavigation') && (attrs.shownavigation === "true")) {
+                if (attrs.hasOwnProperty('shownavigation') && (attrs.shownavigation === 'true')) {
                     // for legacy applications
                     $is.navigation = NAVIGATION.ADVANCED;
                 }
