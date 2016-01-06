@@ -246,8 +246,8 @@ WM.module('wm.widgets.form')
                         /*1 mb size in bytes*/
                             FILESIZE_KB = 1024,
                         /* 1 kb size bytes */
-                            MAXFILEUPLOAD_SIZE = 31457280,
-                            MAX_FILE_UPLOAD_FORMATTED_SIZE = '30MB',
+                            MAXFILEUPLOAD_SIZE = parseInt(scope.maxfilesize, 10) * FILESIZE_MB || 31457280,
+                            MAX_FILE_UPLOAD_FORMATTED_SIZE = (scope.maxfilesize || '30') + 'MB',
                             CONSTANT_FILE_SERVICE = 'FileService',
                             MULTIPART_FORM_DATA =  "multipart/form-data",
                             operations = [],
@@ -269,7 +269,7 @@ WM.module('wm.widgets.form')
                                         filters.push('video/*');
                                         break;
                                     default:
-                                        filters.push('.' + choosen);
+                                        filters.push(choosen);
                                         break;
                                     }
                                     if (filters.length > 0) {
