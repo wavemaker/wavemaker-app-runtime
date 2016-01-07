@@ -16,16 +16,15 @@
 package com.wavemaker.runtime.security;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -37,14 +36,14 @@ import com.wavemaker.studio.common.model.RoleConfig;
 
 public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
+    public static final String ROLE_PREFIX = "ROLE_";
+    public static final String MAIN_PAGE = "Main";
     private RequestCache requestCache = new HttpSessionRequestCache();
 
     public static final String LAND_PAGE_PREPEND = "#";
+    public static final String ROLE_BASED_URL_PREFIX = "/index.html" + LAND_PAGE_PREPEND;
 
     private Map<String, RoleConfig> roleMap;
-
-    @Autowired
-    private SecurityService securityService;
 
     public WMAuthenticationSuccessHandler() {
         super();
@@ -74,19 +73,7 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
                 redirectURL = savedRequest.getRedirectUrl();
             }
 
-            // getting user-defined roles from the roleMap and redirecting the user to the landing page..
-            final String[] userRoles = securityService.getUserRoles();
-            if (userRoles.length > 0) {
-                String role = userRoles[0];
-                RoleConfig roleConfig = roleMap.get(role);
-                if (roleConfig != null && org.apache.commons.lang3.StringUtils.isNotBlank(roleConfig.getLandingPage())) {
-                    redirectURL += "/index.html" + LAND_PAGE_PREPEND + roleConfig.getLandingPage();
-                } else {
-                    redirectURL += "/index.html" + LAND_PAGE_PREPEND + "Main";//Redirecting to Main Page if no config available for the role or landingPage is blank
-                }
-            } else {
-                redirectURL += "/index.html" + LAND_PAGE_PREPEND + "Main";//Redirecting to Main Page if no config available for the role or landingPage is blank
-            }
+            redirectURL = getRoleBasedLandingPageUrl(redirectURL, authentication);
 
             String targetUrlParameter = getTargetUrlParameter();
             if (isAlwaysUseDefaultTargetUrl() || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
@@ -118,6 +105,38 @@ public class WMAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
             response.getWriter().print(jsonContent);
             response.getWriter().flush();
         }
+    }
+
+    private String getRoleBasedLandingPageUrl(String redirectURL, Authentication authentication) {
+        final List<String> userRoles = getUserRoles(authentication.getAuthorities());
+        String roleBasedPage = null;
+        RoleConfig roleConfig = null;
+        // iterating over userroles to find at least one role configuration.
+        // Note : if it find at-least one role configuration then respective landing page will be redirected to user,else Main page will be redirected.
+        for (int i = 0; i < userRoles.size(); i++) {
+            String role = userRoles.get(i);
+            role = role.startsWith(ROLE_PREFIX) ? role.substring(ROLE_PREFIX.length()) : role;
+            roleConfig = roleMap.get(role);
+            if (roleConfig != null && org.apache.commons.lang3.StringUtils.isNotBlank(roleConfig.getLandingPage())) {
+               roleBasedPage = roleConfig.getLandingPage();
+               break;
+            }
+        }
+
+        if (roleBasedPage == null) {
+            roleBasedPage = MAIN_PAGE;
+        }
+
+        redirectURL += ROLE_BASED_URL_PREFIX + roleBasedPage;
+        return redirectURL;
+    }
+
+    private List<String> getUserRoles(final Collection<? extends GrantedAuthority> authorities) {
+        List<String> roles = new ArrayList<>();
+        for (GrantedAuthority a : authorities) {
+            roles.add(a.getAuthority());
+        }
+        return roles;
     }
 
     private boolean isAjaxRequest(HttpServletRequest request) {
