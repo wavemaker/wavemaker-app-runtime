@@ -885,11 +885,12 @@ wm.variables.services.Variables = [
             },
 
             /*function to update a variable object*/
-            updateVariable = function (collectionName, newProperties) {
+            updateVariable = function (collectionName, newProperties, isUpdate) {
                 var varName = newProperties.name,
                     updated = false,
                     pageName = newProperties.owner === 'App' ? 'App' : $rootScope.activePageName,
-                    oldOwner = pageName === 'App' ? $rootScope.activePageName : 'App';
+                    oldOwner = pageName === 'App' ? $rootScope.activePageName : 'App',
+                    scope = pageScopeMap[pageName];
                 /* Condition: Checking for existence of the variable name, updating variable object*/
                 if (self.variableCollection[pageName][collectionName]) {
                     self.variableCollection[pageName][varName] = newProperties;
@@ -908,6 +909,9 @@ wm.variables.services.Variables = [
                         CRUDMAP.CREATE[pageName].push(varName);
                     }
                     updated = true;
+                }
+                if (isUpdate) {
+                    call('getData', varName, {scope: scope, skipFetchData: true});
                 }
                 return updated;
             },
