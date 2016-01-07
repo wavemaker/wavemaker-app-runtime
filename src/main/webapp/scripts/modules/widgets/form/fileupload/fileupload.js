@@ -246,8 +246,8 @@ WM.module('wm.widgets.form')
                         /*1 mb size in bytes*/
                             FILESIZE_KB = 1024,
                         /* 1 kb size bytes */
-                            MAXFILEUPLOAD_SIZE = parseInt(scope.maxfilesize, 10) * FILESIZE_MB || 31457280,
-                            MAX_FILE_UPLOAD_FORMATTED_SIZE = (scope.maxfilesize || '30') + 'MB',
+                            MAXFILEUPLOAD_SIZE = parseInt(scope.maxfilesize, 10) * FILESIZE_MB || 2 * FILESIZE_MB,
+                            MAX_FILE_UPLOAD_FORMATTED_SIZE = (scope.maxfilesize || '2') + 'MB',
                             CONSTANT_FILE_SERVICE = 'FileService',
                             MULTIPART_FORM_DATA =  "multipart/form-data",
                             operations = [],
@@ -666,7 +666,12 @@ WM.module('wm.widgets.form')
                         /* Checking if the selected file is valid for the choosen filter type */
                         scope.isValidFile = function (filename) {
                             var isValid,
-                                extensionName = getExtensionName(filename);
+                                extensionName = getExtensionName(filename),
+                                contentTypes;
+                            if (!scope.contenttype) {
+                                return true;
+                            }
+                            contentTypes = scope.contenttype.split(',');
                             switch (scope.contenttype) {
                             case 'image':
                                 isValid = Utils.isImageFile(filename);
@@ -682,7 +687,7 @@ WM.module('wm.widgets.form')
                                 break;
                             default:
                                 /*content type and the uploaded file extension should be same*/
-                                if (extensionName === scope.contenttype) {
+                                if (_.includes(contentTypes, '.' + extensionName)) {
                                     isValid = true;
                                 }
                             }
