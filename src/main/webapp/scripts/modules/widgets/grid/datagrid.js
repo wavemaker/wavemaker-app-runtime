@@ -1490,8 +1490,7 @@ $.widget('wm.datagrid', {
         }
         var statusContainer =
                 '<div class="overlay" style="display: none;">' +
-                    '<div class="loading"></div>' +
-                    '<div class="status"></div>' +
+                    '<div class="status"><i class="fa fa-spinner fa-spin"></i><span class="message"></span></div>' +
                 '</div>',
             table =
                 '<div class="table-container table-responsive" style="height:' + this.options.height + ';">' +
@@ -1516,10 +1515,10 @@ $.widget('wm.datagrid', {
     },
 
     setStatus: function (state, message) {
-        var loadingIndicator = this.dataStatusContainer.find('.loading');
+        var loadingIndicator = this.dataStatusContainer.find('.fa');
         this.dataStatus.state = state;
         this.dataStatus.message = message || this.options.dataStates[state];
-        this.dataStatusContainer.find('.status').text(this.dataStatus.message);
+        this.dataStatusContainer.find('.message').text(this.dataStatus.message);
         if (state === 'loading') {
             loadingIndicator.show();
         } else {
