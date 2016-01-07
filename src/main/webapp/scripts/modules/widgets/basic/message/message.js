@@ -13,7 +13,7 @@ WM.module('wm.widgets.basic')
                 '"alert-info":messageType.isInfo, ' +
                 '"alert-info alert-loading":messageType.isLoading}\' ' +
                 '><i title="{{type}} Alert" class="{{type}} icon {{messageIcon}}"></i>' +
-                '<span ng-bind-html="caption"></span>' +
+                '<span ng-bind-html="messageContent"></span>' +
                 '<button title="Close" class="btn-transparent close" data-ng-hide="hideclose">&times;</button>' +
             '</p>'
             );
@@ -29,7 +29,7 @@ WM.module('wm.widgets.basic')
         /*set caption, type & show properties */
         function setDataSet(dataset, scope) {
             if (!WM.isArray(dataset) && WM.isObject(dataset)) {
-                scope.caption = $sce.trustAs($sce.HTML, dataset.caption);
+                scope.messageContent = $sce.trustAs($sce.HTML, dataset.caption);
                 scope.type = dataset.type;
                 scope.show = dataset.show = true;
             } else {
@@ -124,7 +124,7 @@ WM.module('wm.widgets.basic')
                                 scope.show = !scope.show;
                             } else {
                                 scope.show = showHide === 'show' ? true : (showHide === 'hide' ? false : showHide);
-                                scope.caption = caption || scope.caption;
+                                scope.messageContent = caption || scope.messageContent;
                                 scope.type = type || scope.type;
                             }
                         };
