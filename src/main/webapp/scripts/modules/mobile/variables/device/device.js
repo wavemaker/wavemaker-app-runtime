@@ -95,9 +95,9 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                     isOffline: false
                 },
                 properties: [
-                    {"target": "autoUpdate", "type": "boolean", "value": ""},
+                    {"target": "autoUpdate", "type": "boolean", "value": true},
                     {"target": "startUpdate", "type": "boolean", "value": ""},
-                    {"target": "networkStatus", "type": "boolean", value: "bind:$root.networkStatus", "dataBinding": true}
+                    {"target": "networkStatus", "type": "boolean", value: "bind:$root.networkStatus", "dataBinding": true, hide: true}
                 ],
                 invoke: function (variable, options, success) {
                     success({
