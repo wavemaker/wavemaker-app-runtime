@@ -582,7 +582,7 @@ WM.module('wm.widgets.live')
                         isActive = $li.hasClass('active');
                     if ($liScope) {
                         if (isMultiSelect) {
-                            if (!$is.maxselection || selectCount < $is.maxselection || $li.hasClass('active')) {
+                            if (!$is.selectionlimit || selectCount < $is.selectionlimit || $li.hasClass('active')) {
                                 $li.toggleClass('active');
                                 selectCount += (isActive ? -1 : 1);
                                 isMultiSelect = selectCount > 0;//Setting 'isMultiSelect' to false if no items are selected
@@ -683,7 +683,6 @@ WM.module('wm.widgets.live')
                     }
                 });
                 $el.find('.app-livelist-container').droppable({'accept': '.app-list-item'});
-
             }
 
             function postLinkFn($is, $el, attrs, listCtrl) {
