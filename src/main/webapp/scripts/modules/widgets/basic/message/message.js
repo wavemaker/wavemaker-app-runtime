@@ -23,7 +23,8 @@ WM.module('wm.widgets.basic')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.message', ['wm.base']),
             notifyFor = {
                 'type': true,
-                'dataset': true
+                'dataset': true,
+                'caption': true
             };
 
         /*set caption, type & show properties */
@@ -74,6 +75,9 @@ WM.module('wm.widgets.basic')
                 if (attrs.dataset) {
                     setDataSet(newVal, scope);
                 }
+                break;
+            case 'caption':
+                scope.messageContent = $sce.trustAsHtml(newVal);
                 break;
             }
         }
