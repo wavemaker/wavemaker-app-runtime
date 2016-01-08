@@ -368,7 +368,7 @@ wm.variables.services.Variables = [
                             targetObj[targetNodeKey] = newVal;
                             processVariablePostBindUpdate(targetNodeKey, newVal, variable);
                         }
-                    });
+                    }, true);
                 } else if (WM.isDefined(obj.value)) {
                     /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
                     if (targetObj) {
