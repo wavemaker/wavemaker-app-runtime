@@ -20,7 +20,8 @@ wm.variables.services.Variables = [
     "VARIABLE_CONSTANTS",
     "DialogService",
     "$timeout",
-    "Utils", function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils) {
+    "Utils",
+    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils) {
         "use strict";
 
         /*flag to determine app mode
@@ -80,6 +81,7 @@ wm.variables.services.Variables = [
                     "appOnly": true
                 }
             ],
+
             variableCategoryToNameMap = {},
             self = this,
             /*Initializing a map to store all changes made to variables*/
@@ -128,7 +130,7 @@ wm.variables.services.Variables = [
                     }
                 }
                 self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP] = undefined;
-                reloadRequired = _.keys(self.variableCollection);
+                reloadRequired = _.xor(_.keys(self.variableCollection), Utils.getService('PrefabManager').getAppPrefabNames());
                 getAppVariables(function () {
                     _.remove(reloadRequired, function (page) {
                         return page === VARIABLE_CONSTANTS.OWNER.APP;
