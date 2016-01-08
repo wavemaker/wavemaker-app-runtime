@@ -215,6 +215,23 @@ WM.module('wm.widgets.grid')
                 if (CONSTANTS.isStudioMode) {
                     window[tAttr.name + 'Controller'] = WM.noop;
                 }
+
+                function defineSelectedItemProp(scope, items) {
+                    Object.defineProperty(scope, 'selecteditem', {
+                        get: function () {
+                            // update the items with out changing the reference.
+                            items.length = 0;
+                            _.forEach(scope.datagridElement.datagrid('getSelectedRows'), function (item) {
+                                items.push(item);
+                            });
+                            if (items && items.length === 1) {
+                                return items[0];
+                            }
+                            return items;
+                        }
+                    });
+                }
+
                 return {
                     'pre': function (iScope, element) {
                         if (CONSTANTS.isStudioMode) {
@@ -500,15 +517,7 @@ WM.module('wm.widgets.grid')
                             }
                         }));
 
-                        Object.defineProperty(scope, 'selecteditem', {
-                            get: function () {
-                                var selectedRows = scope.datagridElement.datagrid('getSelectedRows');
-                                if (selectedRows && selectedRows.length === 1) {
-                                    return selectedRows[0];
-                                }
-                                return selectedRows;
-                            }
-                        });
+                        defineSelectedItemProp(scope, []);
 
                         if (CONSTANTS.isRunMode) {
                             handlers.push(scope.$watch('scopedataset', function (newVal) {

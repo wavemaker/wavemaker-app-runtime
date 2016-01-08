@@ -49,9 +49,9 @@ WM.module('wm.widgets.live')
         function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events']),
+            var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events']),
                 liTemplateWrapper_start = '<li data-ng-repeat="item in fieldDefs track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ',
-                liTemplateWrapper_end = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>',
+                liTemplateWrapper_end   = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>',
                 notifyFor = {
                     'dataset'        : true,
                     'height'         : true,
@@ -558,14 +558,15 @@ WM.module('wm.widgets.live')
                 return $tmpl;
             }
             /*Function to get data of all active elements*/
-            function getSelectedItems($el) {
-                var selectedItems = [];
+            function getSelectedItems($el, items) {
+                items.length = 0;
                 $el.find('li.active').each(function () {
                     var liScope = WM.element(this).scope();
-                    selectedItems.push(liScope.item);
+                    items.push(liScope.item);
                 });
-                return selectedItems;
+                return items;
             }
+
             function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
                     $hammerEl = new Hammer($el[0], {}),
@@ -685,6 +686,19 @@ WM.module('wm.widgets.live')
                 $el.find('.app-livelist-container').droppable({'accept': '.app-list-item'});
             }
 
+            function defineSelectedItemProp($is, $el, items) {
+                Object.defineProperty($is, 'selecteditem', {
+                    get: function () {
+                        //update the items with out changing the reference.
+                        items = getSelectedItems($el, items);
+                        if (items && items.length === 1) {
+                            return items[0];
+                        }
+                        return items;
+                    }
+                });
+            }
+
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate;
@@ -715,15 +729,8 @@ WM.module('wm.widgets.live')
                 /* register the property change handler */
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);
 
-                Object.defineProperty($is, 'selecteditem', {
-                    get: function () {
-                        var selectedRows = getSelectedItems($el);
-                        if (selectedRows && selectedRows.length === 1) {
-                            return selectedRows[0];
-                        }
-                        return selectedRows;
-                    }
-                });
+                defineSelectedItemProp($is, $el, []);
+
                 // in the run mode navigation can not be changed dynamically
                 // process the navigation type before the dataset is set.
                 if (attrs.hasOwnProperty('shownavigation') && (attrs.shownavigation === 'true')) {
