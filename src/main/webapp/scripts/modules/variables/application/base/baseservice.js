@@ -131,7 +131,8 @@ wm.variables.services.Variables = [
                 }
                 self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP] = undefined;
                 reloadRequired = _.xor(_.keys(self.variableCollection), Utils.getService('PrefabManager').getAppPrefabNames());
-                getAppVariables(function () {
+                getAppVariables(function (appVariables) {
+                    setAppVariables(appVariables);
                     _.remove(reloadRequired, function (page) {
                         return page === VARIABLE_CONSTANTS.OWNER.APP;
                     });
