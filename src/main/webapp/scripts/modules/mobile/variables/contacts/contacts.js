@@ -9,6 +9,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaContacts', func
                 displayName: '',
                 phoneNumbers: [{value : ''}]
             }],
+            requriedCordovaPlugins: ['CONTACTS'],
             properties : [
                 {"target": "startUpdate", "type": "boolean", "value": ""},
                 {"target": "contactFilter", "type": "string", "value": "", "dataBinding": true}

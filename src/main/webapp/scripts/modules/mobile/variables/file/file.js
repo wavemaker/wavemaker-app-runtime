@@ -14,6 +14,7 @@ WM.module('wm.variables').run(['$rootScope', 'DeviceVariableService', '$cordovaF
                 {"target": "localFile", "type": "string", "value": "", "dataBinding": true},
                 {"target": "remoteFolder", "type": "string", "value": "", "dataBinding": true}
             ],
+            requriedCordovaPlugins: ['FILE', 'FILETRANSFER'],
             invoke: function (variable, options, success, error) {
                 var serverUrl = $rootScope.project.deployedUrl + '/services/file/uploadFile?relativePath=' + variable.remoteFolder,
                     fileName = variable.localFile,
