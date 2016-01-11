@@ -1273,7 +1273,7 @@ WM.module('wm.utils', [])
                 'totalElements'   : 10,
                 'totalPages'      : 1
             };
-            return (WM.equals(Object.keys(pageable), Object.keys(obj).sort()));
+            return (WM.equals(_.keys(pageable), _.keys(obj).sort()));
         }
 
         /* returns true if HTML5 File API is available else false*/
