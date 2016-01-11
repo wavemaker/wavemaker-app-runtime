@@ -104,7 +104,7 @@
  </example>
  */
 WM.module('wm.widgets.grid')
-    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils) {
+    .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils, LiveWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.editors']),
             gridColumnMarkup = '',
@@ -418,14 +418,9 @@ WM.module('wm.widgets.grid')
                                 if (scope.insertrow) {
                                     // Add button definition to actions if it does not already exist.
                                     if (addNewRowButtonIndex === -1) {
-                                        scope.actions.unshift({
-                                            'key': 'addNewRow',
-                                            'displayName': 'New',
-                                            'iconclass': 'glyphicon glyphicon-plus',
-                                            'show': true,
-                                            'class': 'btn-primary',
-                                            'action': 'addNewRow()'
-                                        });
+                                        scope.actions.unshift(_.find(LiveWidgetUtils.getLiveWidgetButtons('GRID'), function (button) {
+                                            return button.key === 'addNewRow';
+                                        }));
                                     }
                                 } else {
                                     if (scope.actions.length && addNewRowButtonIndex !== -1) {

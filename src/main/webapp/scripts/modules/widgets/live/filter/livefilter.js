@@ -402,25 +402,7 @@ WM.module('wm.widgets.live')
 
                             var variableRegex = /^bind:Variables\.(.*)\.dataSet$/,
                                 handlers = [],
-                                defaultButtonsArray = [
-                                    {
-                                        key         :   'filter',
-                                        class       :   'btn-primary',
-                                        iconclass   :   'glyphicon glyphicon-filter',
-                                        action      :   'filter()',
-                                        displayName :   'Filter',
-                                        show        :   true,
-                                        type        :   'button'
-                                    },
-                                    {
-                                        key         :   'clear',
-                                        class       :   'btn',
-                                        iconclass   :   'glyphicon glyphicon-remove-circle',
-                                        action      :   'clearFilter()',
-                                        displayName :   'Clear',
-                                        show        :   true,
-                                        type        :   'button'
-                                    }];
+                                defaultButtonsArray = LiveWidgetUtils.getLiveWidgetButtons('LIVEFILTER');
                             scope.filterContainer = element;
                             scope.primaryKey = null;
 

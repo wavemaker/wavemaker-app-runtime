@@ -86,75 +86,115 @@ WM.module('wm.widgets.live')
 
             /**
              * @ngdoc function
-             * @name wm.widgets.live.LiveWidgetUtils#getFormButtons
+             * @name wm.widgets.live.LiveWidgetUtils#getLiveWidgetButtons
              * @methodOf wm.widgets.live.LiveWidgetUtils
              * @function
              *
              * @description
              * return the default button definitions of live form.
              */
-            function getFormButtons() {
-                return [
-                    {
-                        key         :    'reset',
-                        class       :    'form-reset btn-secondary',
-                        iconclass   :    'glyphicon glyphicon-refresh',
-                        action      :    'reset()',
-                        displayName :    'Reset',
-                        show        :    true,
-                        type        :    'button',
-                        updateMode  :    true
-                    },
-                    {
-                        key         :   'cancel',
-                        class       :   'form-cancel btn-secondary',
-                        iconclass   :   'glyphicon glyphicon-remove-circle',
-                        action      :   'cancel()',
-                        displayName :   'Cancel',
-                        show        :   true,
-                        type        :   'button',
-                        updateMode  :   true
-                    },
-                    {
-                        key         :   'save',
-                        class       :   'form-save btn-success',
-                        iconclass   :   $rs.isMobileApplicationType ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-save',
-                        action      :   '',
-                        displayName :   'Save',
-                        show        :   true,
-                        type        :   'submit',
-                        updateMode  :   true
-                    },
-                    {
-                        key         :   'delete',
-                        class       :   'form-delete btn-secondary',
-                        iconclass   :   'glyphicon glyphicon-remove',
-                        action      :   'delete()',
-                        displayName :   'Delete',
-                        show        :   true,
-                        type        :   'button',
-                        updateMode  :   false
-                    },
-                    {
-                        key         :   'edit',
-                        class       :   'form-update btn-secondary',
-                        iconclass   :   'glyphicon glyphicon-pencil',
-                        action      :   'edit()',
-                        displayName :   'Edit',
-                        show        :   true,
-                        type        :   'button',
-                        updateMode  :   false
-                    },
-                    {
-                        key         :   'new',
-                        class       :   'form-new btn-success',
-                        iconclass   :   'glyphicon glyphicon-plus',
-                        action      :   'new()',
-                        displayName :   'New',
-                        show        :   true,
-                        type        :   'button',
-                        updateMode  :   false
-                    }];
+            function getLiveWidgetButtons(widgetType) {
+                var defaultButtons;
+                switch (widgetType) {
+                case 'LIVEFORM':
+                    defaultButtons = [
+                        {
+                            key         :    'reset',
+                            class       :    'form-reset btn-secondary',
+                            iconclass   :    'glyphicon glyphicon-refresh',
+                            action      :    'reset()',
+                            displayName :    'Reset',
+                            show        :    true,
+                            type        :    'button',
+                            updateMode  :    true
+                        },
+                        {
+                            key         :   'cancel',
+                            class       :   'form-cancel btn-secondary',
+                            iconclass   :   'glyphicon glyphicon-remove-circle',
+                            action      :   'cancel()',
+                            displayName :   'Cancel',
+                            show        :   true,
+                            type        :   'button',
+                            updateMode  :   true
+                        },
+                        {
+                            key         :   'save',
+                            class       :   'form-save btn-success',
+                            iconclass   :   $rs.isMobileApplicationType ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-save',
+                            action      :   '',
+                            displayName :   'Save',
+                            show        :   true,
+                            type        :   'submit',
+                            updateMode  :   true
+                        },
+                        {
+                            key         :   'delete',
+                            class       :   'form-delete btn-secondary',
+                            iconclass   :   'glyphicon glyphicon-remove',
+                            action      :   'delete()',
+                            displayName :   'Delete',
+                            show        :   true,
+                            type        :   'button',
+                            updateMode  :   false
+                        },
+                        {
+                            key         :   'edit',
+                            class       :   'form-update btn-secondary',
+                            iconclass   :   'glyphicon glyphicon-pencil',
+                            action      :   'edit()',
+                            displayName :   'Edit',
+                            show        :   true,
+                            type        :   'button',
+                            updateMode  :   false
+                        },
+                        {
+                            key         :   'new',
+                            class       :   'form-new btn-success',
+                            iconclass   :   'glyphicon glyphicon-plus',
+                            action      :   'new()',
+                            displayName :   'New',
+                            show        :   true,
+                            type        :   'button',
+                            updateMode  :   false
+                        }
+                    ];
+                    break;
+                case 'LIVEFILTER':
+                    defaultButtons = [
+                        {
+                            key         :   'filter',
+                            class       :   'btn-primary',
+                            iconclass   :   'glyphicon glyphicon-filter',
+                            action      :   'filter()',
+                            displayName :   'Filter',
+                            show        :   true,
+                            type        :   'button'
+                        },
+                        {
+                            key         :   'clear',
+                            class       :   'btn',
+                            iconclass   :   'glyphicon glyphicon-remove-circle',
+                            action      :   'clearFilter()',
+                            displayName :   'Clear',
+                            show        :   true,
+                            type        :   'button'
+                        }];
+                    break;
+                case 'GRID':
+                    defaultButtons = [
+                        {
+                            'key': 'addNewRow',
+                            'displayName': 'New',
+                            'iconclass': 'glyphicon glyphicon-plus',
+                            'show': true,
+                            'class': 'btn-primary',
+                            'action': 'addNewRow()'
+                        }
+                    ];
+                    break;
+                }
+                return defaultButtons;
             }
             /**
              * @ngdoc function
@@ -1172,7 +1212,7 @@ WM.module('wm.widgets.live')
             this.toggleActionMessage        = toggleActionMessage;
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
-            this.getFormButtons             = getFormButtons;
+            this.getLiveWidgetButtons       = getLiveWidgetButtons;
             this.getCustomItems             = getCustomItems;
             this.getColumnDef               = getColumnDef;
             this.getButtonDef               = getButtonDef;

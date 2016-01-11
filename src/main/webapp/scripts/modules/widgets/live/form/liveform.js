@@ -754,7 +754,7 @@ WM.module('wm.widgets.live')
                                             }
                                         } else {
                                             /*Defining two buttons for default actions*/
-                                            scope.buttonArray = LiveWidgetUtils.getFormButtons().filter(function (button) {
+                                            scope.buttonArray = LiveWidgetUtils.getLiveWidgetButtons('LIVEFORM').filter(function (button) {
                                                 /* show only save button for liveform with page layout */
                                                 return scope.formlayout === 'page' ? button.key === 'save' : button.key === 'cancel' || button.key === 'save';
                                             });
