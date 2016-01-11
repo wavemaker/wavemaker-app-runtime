@@ -628,7 +628,7 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
                         "displayfield": {"type": "list", "options": [""], "value": ""},
-                        "displayexpression": {"type": "string"},
+                        "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "usekeys": {"type": "boolean"},
                         "selectedvalue": {"type": "string, object", "widget": "string", "value": "", "bindable": "in-bound"},
                         "itemclass": {"type": "string", "pattern": classRegex}
@@ -694,7 +694,7 @@ WM.module('wm.widgets.base', [])
                         "usekeys": {"type": "boolean"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
                         "displayfield": {"type": "list", "options": [""], "value": ""},
-                        "displayexpression": {"type": "string"},
+                        "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "selectedvalues": {"type": "string, object", "bindable": "in-bound", "widget": "string"},
                         "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "itemclass": {"type": "string", "pattern": classRegex}
