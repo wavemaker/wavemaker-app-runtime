@@ -197,8 +197,12 @@ WM.module('wm.widgets.form')
                         /*Watch on the model, to check or uncheck the values of checkboxset*/
                         scope.$watch('_model_', function () {
                             if (scope.dataKeys && scope.checkedValues) {
+                                var model = scope._model_;
+                                if (WM.isString(model) && model !== '') {
+                                    model = model.split(',');
+                                }
                                 _.forEach(scope.dataKeys, function (dataKey) {
-                                    scope.checkedValues[dataKey] = valueInModel(scope._model_, dataKey, scope.dataObject[dataKey]);
+                                    scope.checkedValues[dataKey] = valueInModel(model, dataKey, scope.dataObject[dataKey]);
                                 });
                             }
                         }, false);
