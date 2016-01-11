@@ -1111,6 +1111,10 @@ WM.module('wm.widgets.live')
                                 dataSetWatchHandler();
                             }
                         });
+                        // when the form-field element is removed, remove the corresponding entry from parentIScope.formFields
+                        element.on('$destroy', function () {
+                            _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnDef));
+                        });
                         if (!CONSTANTS.isRunMode) {
                             WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope, undefined);
                         }
