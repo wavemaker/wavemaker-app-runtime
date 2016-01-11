@@ -1309,7 +1309,7 @@ wm.variables.services.Variables = [
                     currentVariable,
                     variableOwner,
                     variableNames,
-                    varParamsArray = Object.keys(variableParams),
+                    varParamsArray = _.keys(variableParams),
                     index,
                     varParamCounter,
                     currentVarParam,
@@ -1322,7 +1322,7 @@ wm.variables.services.Variables = [
 
                 /*function to find the variables which match the all the keys in the object map provided*/
                 function findMatchingVariables(contextVariables, context) {
-                    variableNames = Object.keys(contextVariables);
+                    variableNames = _.keys(contextVariables);
 
                     /*iterating over the variables of a specific context, either app or page*/
                     for (index = 0; index < variableNames.length; index++) {
