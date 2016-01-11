@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -90,7 +91,8 @@ public class AppRuntimeController {
             public QueryResponse doInTransaction(TransactionStatus status) {
 
                 WMQueryExecutor queryExecutor = WMAppContext.getInstance().getSpringBean(queryExecutorBeanName);
-                Page<Object> pageResponse =  queryExecutor.executeCustomQuery(customQuery, null);
+                final PageRequest pageable = new PageRequest(0, 5, null);
+                Page<Object> pageResponse =  queryExecutor.executeCustomQuery(customQuery, pageable);
 
                 QueryResponse queryResponse = new QueryResponse();
                 queryResponse.setPages(pageResponse);
