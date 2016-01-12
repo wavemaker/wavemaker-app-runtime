@@ -1555,7 +1555,7 @@ WM.module('wm.widgets.grid')
                                 $scope.primaryKey = variableObj.getPrimaryKey();
                             }
                             $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
-                        } else if (!Utils.isPageable($scope.dataset)) {
+                        } else if (variableObj.serviceType !== 'DataService') {
                             /*Calling the specific search and sort handlers*/
                             $scope.setDataGridOption('searchHandler', handleOperation);
                             $scope.setDataGridOption('sortHandler', handleOperation);
