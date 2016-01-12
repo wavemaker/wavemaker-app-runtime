@@ -501,7 +501,7 @@ WM.module('wm.widgets.live')
                         if (((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type])) {
                             var dateTime = Utils.getValidDateObject(field.value);
                             if (field.outputformat === 'timestamp' || field.type === 'timestamp') {
-                                dataObject[field.key] = dateTime.getTime();
+                                dataObject[field.key] = field.value ? dateTime.getTime() : null;
                             } else if (field.outputformat) {
                                 dataObject[field.key] = $filter('date')(dateTime, field.outputformat);
                             } else {
