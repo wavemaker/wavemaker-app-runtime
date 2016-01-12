@@ -253,14 +253,12 @@ WM.module('wm.widgets.live')
                 columnDef.displayname = attrs.displayname || attrs.caption;
                 columnDef.pcDisplay = WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === "1" || attrs.pcDisplay === "true") : true;
                 columnDef.mobileDisplay = WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === "1" || attrs.mobileDisplay === "true") : true;
-                columnDef.show = (attrs.show === '1' || attrs.show === 'true');
                 columnDef.type = attrs.type || 'text';
                 columnDef.widget = widgetType; /*Widget type support for older projects*/
                 columnDef.primaryKey = attrs.primaryKey === 'true' || attrs.primaryKey === true;
-                columnDef.readonly = attrs.readonly === 'true' || attrs.readonly === true;
                 columnDef.multiple = attrs.multiple === 'true' || attrs.multiple === true;
                 columnDef.class = attrs.class || '';
-                columnDef.required = attrs.required === 'true' || attrs.required === true || attrs.required === 'required';
+                columnDef.required = attrs.required === 'required' || attrs.required;
                 return columnDef;
             }
             /**
@@ -821,6 +819,10 @@ WM.module('wm.widgets.live')
                     break;
                 case 'inputtype':
                     FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, newVal);
+                    compileField();
+                    break;
+                case 'required':
+                    parentScope.formFields[index][key] = newVal;
                     compileField();
                     break;
                 case 'active':
