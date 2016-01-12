@@ -279,7 +279,8 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string", "value": "0"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
-                        "shortcutkey": {"type": "string"}
+                        "shortcutkey": {"type": "string"},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "value": "btn-default", "options": ["btn-primary", "btn-info", "btn-danger", "btn-warning", "btn-success", "btn-lg", "btn-sm", "btn-xs", "btn-link"]}
                     },
                     "wm.rating": {
                         "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
@@ -325,7 +326,8 @@ WM.module('wm.widgets.base', [])
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.buttongroup": {
-                        "vertical": {"type": "boolean"}
+                        "vertical": {"type": "boolean"},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["btn-toolbar", "btn-group-justified", "btn-group-vertical", "btn-group-xs", "btn-group-sm", "btn-group-lg"]}
                     },
                     "wm.switch": {
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -347,7 +349,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Menu Item 1, Menu Item 2, Menu Item 3"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                         "menulayout": {"type": "list", "options": ["vertical", "horizontal"]},
-                        "menuclass": {"type": "string", "pattern": classRegex},
+                        "menuclass": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["btn-default", "btn-primary", "btn-info", "btn-danger", "btn-warning", "btn-success", "btn-lg", "btn-sm", "btn-xs", "btn-link"]},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "menuposition": {"type": "list", "options": ["", "down,right", "down,left", "up,right", "up,left", "inline"], "value": ""},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -720,7 +722,8 @@ WM.module('wm.widgets.base', [])
                         "caption": {"type": "date, string, number", "widget": "string", "value": "Label", "bindable": "in-out-bound", "maxlength": 256},
                         "required": {"type": "boolean"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
-                        "animation": {"type": "list", "options": animationOptions}
+                        "animation": {"type": "list", "options": animationOptions},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["label-default", "label-primary", "label-success", "label-info", "label-warning", "label-danger", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "text-hide", "h1", "h2", "h3", "h4", "h5", "h6", "lead", "badge"]}
                     },
 
                     "wm.picture": {
@@ -927,13 +930,15 @@ WM.module('wm.widgets.base', [])
                         "itemchildren": {"type": "list", "options": [""]},
                         "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor'}, {'label': 'Menu', 'widgettype': 'wm-menu'}, {'label': 'Popover', 'widgettype': 'wm-popover'}], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["nav-justified", "nav-tabs-justified"]}
                     },
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "title": {"type": "string", "bindable": "in-bound"},
-                        "imgsrc": {"type": "string", "bindable": "in-bound"}
+                        "imgsrc": {"type": "string", "bindable": "in-bound"},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["navbar-inverse", "navbar-header", "navbar-right", "navbar-left", "navbar-fixed-top", "navbar-fixed-bottom", "navbar-static-top"]}
                     },
                     'wm.layouts.mobile.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
