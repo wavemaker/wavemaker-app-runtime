@@ -154,6 +154,11 @@ WM.module('wm.layouts.page')
                         var handlers = [];
                         //check if the view is run mode then initialize the mobile behavior
                         if (CONSTANTS.isRunMode) {
+                            /* register session timeout handler */
+                            handlers.push($rootScope.$on("on-sessionTimeout", function () {
+                                Utils.triggerFn(scope.onSessionTimeout);
+                            }));
+
                             Utils.triggerFn(scope.onPageLoad);
                             element.on('$destroy', function () {
                                 /*destroy variables*/
@@ -247,6 +252,10 @@ WM.module('wm.layouts.page')
                         var handlers = [];
                         //check if the view is run mode then initialize the mobile behavior
                         if (CONSTANTS.isRunMode) {
+                            /* register session timeout handler */
+                            handlers.push($rootScope.$on("on-sessionTimeout", function () {
+                                Utils.triggerFn(scope.onSessionTimeout);
+                            }));
                             // trigger onPageReady method if it is defined in the controller of partial
                             if (scope.hasOwnProperty('onPageReady')) {
                                 Utils.triggerFn(scope.onPageReady);

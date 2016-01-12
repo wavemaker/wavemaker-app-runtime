@@ -357,6 +357,10 @@ wm.modules.wmCommon.services.BaseService = [
             handleSessionTimeOut = function () {
                 if (!isUnAuthorized) {
                     var dialogId = CONSTANTS.isStudioMode ? 'sessionTimeOutDialog' : 'CommonLoginDialog';
+                    if(!CONSTANTS.isStudioMode) {
+                        Utils.triggerFn($rootScope.onSessionTimeout);
+                        $rootScope.$emit("on-sessionTimeout");
+                    }
                     $rootScope.isStudioDisabled = false;
                     DialogService.closeAllDialogs();
                     DialogService.showDialog(dialogId, {
