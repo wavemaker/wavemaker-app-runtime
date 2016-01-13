@@ -41,7 +41,8 @@ WM.module('wm.utils', [])
                 ZIP_FILE: /\.zip$/i,
                 EXE_FILE: /\.exe$/i,
                 NO_QUOTES_ALLOWED: /^[^'|"]*$/,
-                VALID_HTML: /<[a-z][\s\S]*>/i
+                VALID_HTML: /<[a-z][\s\S]*>/i,
+                VALID_PASSWORD: /^[0-9a-zA-Z-_]+$/
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
@@ -729,6 +730,11 @@ WM.module('wm.utils', [])
         /* function to verify whether the email is valid or not*/
         function isValidEmail(email) {
             return REGEX.VALID_EMAIL.test(email);
+        }
+
+        /* function to verify whether the password is valid or not*/
+        function isValidPassword(text) {
+            return !!REGEX.VALID_PASSWORD.test(text);
         }
 
         /* fetch the column names and nested column names from the propertiesMap object */
@@ -1579,6 +1585,7 @@ WM.module('wm.utils', [])
         this.triggerFn                  = triggerFn;
         this.isEmptyObject              = isEmptyObject;
         this.isValidEmail               = isValidEmail;
+        this.isValidPassword            = isValidPassword;
         this.resetObjectWithEmptyValues = resetObjectWithEmptyValues;
         this.isImageFile                = isImageFile;
         this.isZipFile                  = isZipFile;
