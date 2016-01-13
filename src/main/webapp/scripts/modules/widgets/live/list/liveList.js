@@ -658,10 +658,13 @@ WM.module('wm.widgets.live')
             function configureDnD($el, $is) {
                 var data;
                 $el.find('.app-livelist-container').sortable({
-                    'appendTo'    : '.app-livelist-container',
-                    'containment' : 'parent',
+                    'appendTo'    : 'body',
+                    'containment' : '.app-livelist-container',
                     'delay'       : 100,
                     'opacity'     : 0.8,
+                    'helper'      : 'clone',
+                    'z-index'     : 100,
+                    'tolerance'   : 'pointer',
                     'start'       : function (evt, ui) {
                         ui.placeholder.height(ui.item.height());
                         WM.element(this).data('oldIndex', ui.item.index());
