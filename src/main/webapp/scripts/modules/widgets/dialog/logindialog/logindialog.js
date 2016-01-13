@@ -91,8 +91,9 @@ WM.module('wm.widgets.dialog')
                             /*function to be called in case of login*/
                             scope.doLogin = function (event) {
                                 scope.loginMessage = scope.$parent.loginMessage = null;
+                                var curUser = element.find('[name="usernametext"]').val();
                                 SecurityService.appLogin({
-                                    username: element.find('[name="usernametext"]').val(),
+                                    username: curUser,
                                     password: element.find('[name="passwordtext"]').val()
                                 }, function (response) {
                                     var redirectUrl = response && response.url ? response.url : 'index.html';
@@ -106,9 +107,12 @@ WM.module('wm.widgets.dialog')
                                     scope.$root.isUserAuthenticated = true;
                                     element.trigger("success");
                                     /*setting the received redirect url for the logged-in user's landing page configuration to the
-                                    * current scope to be propogated to the common login dialog success handler*/
+                                    * current scope to be propagated to the common login dialog success handler*/
                                     scope.redirectUrl = redirectUrl;
-                                    $window.location = scope.redirectUrl;
+                                    /* if a different user logs in than the last logged in user, redirect to his landing page */
+                                    if (SecurityService.getLastLoggedInUser() !== curUser) {
+                                        $window.location = scope.redirectUrl;
+                                    }
                                     scope.onSuccess({$event: event, $scope: scope});
                                     scope.$root.$emit("update-loggedin-user");
                                     BaseService.executeErrorCallStack();

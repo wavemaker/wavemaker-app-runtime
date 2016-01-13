@@ -20,6 +20,7 @@ wm.plugins.security.services.SecurityService = [
             _rolesConfig,
             _interceptUrls,
             _generalOptions,
+            _lastUser,
             loggedInUser,
             serviceOperationsMap = {},
         /*Function to get the details of the logged-in user in the Application/RUN mode.*/
@@ -32,6 +33,7 @@ wm.plugins.security.services.SecurityService = [
                         action: 'getLoggedInUser'
                     }, function (user) {
                         loggedInUser = user;
+                        _lastUser = loggedInUser;
                         Utils.triggerFn(successCallback, user);
                     }, function (error) {
                         Utils.triggerFn(failureCallback, error);
@@ -1002,6 +1004,7 @@ wm.plugins.security.services.SecurityService = [
              * @param {object} user user object
              */
             setLoggedInUser: function (user) {
+                _lastUser = loggedInUser;
                 loggedInUser = user;
             },
 
@@ -1023,6 +1026,21 @@ wm.plugins.security.services.SecurityService = [
                 }
                 _rolesConfig = rolesConfig;
                 _roles = _.pluck(rolesConfig, "name");
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#getLastLoggedInUser
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * returns the previous loggedInUser
+             *
+             * @param {object} rolesConfig array of roles config objects
+             */
+            getLastLoggedInUser: function () {
+                return _lastUser && _lastUser.userName;
             }
         };
     }];
