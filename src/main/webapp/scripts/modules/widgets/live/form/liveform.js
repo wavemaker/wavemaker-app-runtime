@@ -793,6 +793,7 @@ WM.module('wm.widgets.live')
                                 if (CONSTANTS.isStudioMode && gridObj && (!scope.formFieldCompiled || scope.newcolumns)) {
                                     scope.newcolumns = false;
                                     gridObj.bindDataSetChanged = true;
+                                    gridObj.widgettype = scope.widgettype;
                                     $rootScope.$emit('formFieldsDefs-modified', gridObj);
                                 }
                                 break;

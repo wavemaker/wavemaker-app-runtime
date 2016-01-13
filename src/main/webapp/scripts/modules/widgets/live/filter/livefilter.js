@@ -544,7 +544,8 @@ WM.module('wm.widgets.live')
                                             variableName: scope.variableName,
                                             scopeId: scope.$id,
                                             numColumns: scope.getActiveLayout(),
-                                            bindDataSetChanged: true
+                                            bindDataSetChanged: true,
+                                            widgettype: scope.widgettype
                                         };
                                         scope.$root.$emit('filterDefs-modified', designerObj);
                                     }
