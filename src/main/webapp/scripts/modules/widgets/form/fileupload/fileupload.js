@@ -1,4 +1,4 @@
-/*global WM,document,FormData,XMLHttpRequest*/
+/*global WM,document,FormData, _*/
 /*jslint sub: true */
 /*global window*/
 /*Directive for fileupload */
@@ -8,22 +8,26 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/fileupload.html',
                 '<div data-ng-show="show" class="app-fileupload" init-widget apply-styles="shell" role="input">' +
-                    '<div data-ng-show="multiple" class="app-multi-file-upload">' +
+                    /* drag and drop files UI in web */
+                    '<div data-ng-show="multiple" class="app-multi-file-upload" data-ng-if="!_isMobileType">' +
                         '<div class="drop-box" drag-files="onFileSelect($event,$files)">' +
                             '<i class="{{iconclass}}"/>' +
                             '<div class="message">' +
                                 '<label data-ng-bind="caption"></label>' +
-                                    '<form class="form-horizontal" name="{{multipleFileFormName}}">' +
+                                    '<form class="form-horizontal" name="{{scope.formName}}">' +
                                         '<input class="file-input" type="file" name="files" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" multiple data-ng-disabled="disabled">' +
                                         '<a href="javascript:void(0);" class="app-anchor" data-ng-bind="fileuploadmessage"></a>' +
                                     '</form>' +
                             '</div>' +
                         '</div>' +
                     '</div>' +
-                    '<div class="app-single-file-upload" data-ng-hide="multiple">' +
+                    /* single file upload in web and single , multiple file upload UI in mobile runmode*/
+                    '<div class="app-single-file-upload" data-ng-show="!multiple || _isMobileType" data-ng-if="!_isCordova">' +
                         '<div class="app-button-wrapper">' +
-                            '<form class="form-horizontal" name="{{singleFileFormName}}">' +
-                                '<input class="file-input" type="file"  name="files" on-file-select="uploadSingleFile($event, $files)" data-ng-attr-accept="{{chooseFilter}}" data-ng-disabled="disabled">' +
+                            '<form class="form-horizontal" name="{{scope.formName}}">' +
+                            /* support for file upload in Mobileapp in its runmode (Web) */
+                                '<input class="file-input" type="file" name="files" data-ng-if="multiple" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" data-ng-disabled="disabled" multiple>' +
+                                '<input class="file-input" type="file" name="files" data-ng-if="!multiple" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" data-ng-disabled="disabled">' +
                                 '<button class="app-button btn btn-default">' +
                                     '<i class="{{iconclass}}"></i> ' +
                                     '<span>{{caption}}</span>' +
@@ -32,23 +36,51 @@ WM.module('wm.widgets.form')
                         '</div>' +
                         '<div class="app-files-upload-status single"></div>' +
                     '</div>' +
-                    '<div class="app-files-upload-status multiple" data-ng-style="{height: height, overflow: overflow}" >' +
-                        '<div class="upload-status">' +
-                            '<label title="{{status_messsage}}" data-ng-bind="status_messsage" data-ng-show="showStatusMessage"></label>' +
-                            '<div class="progress" data-ng-show="showProgress"><div class="progress-bar progress-bar-info progress-bar-striped" data-ng-style="{width:progressWidth}"></div></div>' +
-                        '</div>' +
-                        '<div class="status" data-ng-repeat="file in uploadedFiles" data-ng-show="isValidFiles(uploadedFiles, \'Upload\')">' +
-                                '<div class="action"><span class="badge" data-ng-bind="file.extension"></span></div>' +
-                                '<div class="name" title="{{file.fileName}}" data-ng-bind="file.fileName"></div>' +
-                                '<div class="size" title="{{file.length}}" data-ng-if="file.length !== 0" data-ng-bind="file.length | suffix: \' bytes\'"></div>' +
-                                '<span class="state glyphicon" data-ng-class="{\'glyphicon-ok\' : file.status === \'success\', \'glyphicon-remove\' : file.status === \'Fail\'}"></span>' +
-                                '<span data-ng-show="{{file.state === \'success\'}}" title="{{file.errorMessage}}">{{file.errorMessage}}</span>' +
-                        '</div>' +
-                        '<div class="status" data-ng-repeat="file in selectedFiles" data-ng-show="isValidFiles(selectedFiles, \'Select\')">' +
-                            '<div class="name" title="{{file.name}}" data-ng-bind="file.name"></div>' +
-                        '</div>' +
-                        '<div class="action" data-ng-if="isAbortVisible"><button class="cancel glyphicon glyphicon-remove" title="Cancel" data-ng-click="abortUpload()"></button></div>' +
-                    '</div>' +
+                    /* support for file upload in Mobile Application (device) */
+                    '<button data-ng-if="_isCordova" class="app-button btn btn-default" data-ng-click="openFileSelector()" data-ng-disabled="disabled">' +
+                        '<i class="{{iconclass}}"></i> ' +
+                        '<span>{{caption}}</span>' +
+                    '</button>' +
+                    /* list of selectedfiles UI */
+                    '<ul class="list-group file-upload" data-ng-style="{height: height, overflow: overflow}" data-ng-if="selectedFiles.length > 0 && mode === \'Select\'" >' +
+                        '<li class="list-group-item file-upload-status container" data-ng-repeat="ft in selectedFiles" >' +
+                            '<div class="media upload-file-list">' +
+                                '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}"></div>' +
+                                '<div class="media-body media-middle file-details">' +
+                                    '<label class="upload-title">{{ft.name}}</label><br/>' +
+                                    '<span class="filesize" data-ng-if="ft.fileLength  !== 0">{{ft.size | filesize:0}}</span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</li>' +
+                    '</ul>' +
+                    /* list of uploadedfiles UI */
+                    '<ul class="list-group file-upload"  data-ng-style="{height: height, overflow: overflow}" data-ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
+                        '<li class="list-group-item file-upload-status container {{ft.status}}" data-ng-hide="ft.status === \'abort\'" data-ng-repeat="ft in fileTransfers | filter : {status : \'!abort\'}" >' +
+                            '<div class="media upload-file-list">' +
+                            '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}">' +
+                            '</div>' +
+                            '<div class="media-body media-middle file-details">' +
+                                '<div class="media file-detail">' +
+                                    '<div class="media-left uploaddetails">' +
+                                        '<label class="upload-title">{{ft.name}}</label><br/>' +
+                                        '<span class="filesize" data-ng-if="ft.fileLength  !== 0">{{ft.size | filesize:0}}</span>' +
+                                    '</div>' +
+                                    '<div class="media-body media-middle" data-ng-show="ft.status === \'inprogress\'">' +
+                                        '<div class="progress">' +
+                                        '<div class="progress-bar progress-bar-striped progress-bar-info" data-ng-style="{width: (ft.progress +\'%\')}"></div>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="media-right media-middle" data-ng-if="ft.status === \'inprogress\' || ft.status === \'queued\'">' +
+                                '<input class="btn btn-default abort-btn" type="button" value="Cancel" data-ng-click="abortUpload($event, ft)">' +
+                            '</div>' +
+                            '<div class="media-right media-middle status" data-ng-if="mode === \'Upload\'" data-ng-hide="ft.status === \'abort\' || ft.status === \'inprogress\'">' +
+                                '<span class="status-icon {{ft.status | stateClass }}"></span>' +
+                            '</div>' +
+                            '</div>' +
+                        '</li>' +
+                    '</ul>' +
                 '</div>');
     }])
     .directive('onFileSelect', ['$parse', '$timeout', function ($parse, $timeout) {
@@ -141,10 +173,10 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$compile', '$timeout', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'VARIABLE_CONSTANTS', '$servicevariable', 'CONSTANTS', 'DialogService', function (PropertiesFactory, $templateCache, WidgetUtilService, $compile, $timeout, wmToaster, Utils, Variables, ServiceFactory, $rootScope, VARIABLE_CONSTANTS, $servicevariable, CONSTANTS, DialogService) {
+    .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$compile', '$timeout', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'VARIABLE_CONSTANTS', '$servicevariable', 'CONSTANTS', 'DialogService', 'FileUploadService', 'FileSelectorService', function (PropertiesFactory, $templateCache, WidgetUtilService, $compile, $timeout, wmToaster, Utils, Variables, ServiceFactory, $rootScope, VARIABLE_CONSTANTS, $servicevariable, CONSTANTS, DialogService, FileUploadService, FileSelectorService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.fileupload', ['wm.base', 'wm.base.editors', 'wm.base.events.successerror']),
-            selectedUploadTypePath = 'resources',
+            selectedUploadTypePath,
             notifyFor = {
                 'uploadpath': true,
                 'contenttype': true,
@@ -152,7 +184,201 @@ WM.module('wm.widgets.form')
                 'operation': true,
                 'mode': true,
                 'multiple': true
-            };
+            },
+            MODE = {
+                'SELECT' : 'Select',
+                'UPLOAD' : 'Upload'
+            },
+            DEFAULT_CAPTIONS = {
+                'MULTIPLE_UPLOAD'   : "Drop your files here to start uploading.",
+                'MULTIPLE_SELECT'   : "Drop your files here.",
+                'UPLOAD'            : 'Upload',
+                'SELECT'            : 'Select'
+            },
+            FILESIZE_MB = 1048576;
+
+        /* this function returns the filter object depending on contenttype*/
+        function constructFileFilter(choosen) {
+            var filters = '';
+            switch (choosen) {
+            case 'all':
+                filters = '';
+                break;
+            case 'image':
+                filters = 'image/*';
+                break;
+            case 'audio':
+                filters = 'audio/*';
+                break;
+            case 'video':
+                filters = 'video/*';
+                break;
+            }
+            return filters;
+        }
+
+        /* this function returns the uploadUrl */
+        function constructUrl(uploadUriPrefix, service, operation, destination) {
+            var uploadUrl = '/file/uploadFile',
+                variableObject,
+                variableFilterData = {
+                    'service'   : service,
+                    'operation' : operation,
+                    'category'  : 'wm.ServiceVariable'
+                };
+            uploadUriPrefix = uploadUriPrefix || '';
+            destination     = destination ? '?relativePath=' + destination : '';
+            /*fetching the variable object with service, operation*/
+            variableObject = Variables.filterByVariableKeys(variableFilterData, true)[0];
+            if (variableObject) {
+                uploadUrl = variableObject.wmServiceOperationInfo.relativePath;
+            }
+            return uploadUriPrefix + uploadUrl + destination;
+        }
+
+        function getAllServices(onSuccess) {
+            ServiceFactory.getServicesWithType(function (response) {
+                Utils.triggerFn(onSuccess, _.map(response, 'name'));
+            });
+        }
+
+        /*emit event to workspace to create a service variable*/
+        function createVariable(widgetId, service, operation) {
+            var serviceType = ServiceFactory.getServiceObjectByName(service).type;
+            $rootScope.$emit("create-service-variable", service, serviceType, operation);
+            /*Saving service and operation in markup*/
+            $rootScope.$emit("set-markup-attr", widgetId, {'service': service, 'operation': operation});
+        }
+
+        /* function to call user-defined on-error fn*/
+        function onUploadError(scope, event) {
+            Utils.triggerFn(scope.onError, {'$event': event, '$scope': scope});
+            if (!scope.multiple) {
+                wmToaster.show('error',  'File upload failed');
+            }
+        }
+
+        /* upload progress callback , called when upload is progress */
+        function onUploadProgress(scope, event) {
+            Utils.triggerFn(scope.onProgress, {'$event': event, '$scope': scope});
+        }
+
+        /* when upload cancelled by user, this callback will be called */
+        function onUploadAbort(scope, event) {
+            Utils.triggerFn(scope.onAbort, {'$event': event, '$scope': scope});
+        }
+
+        /* this function returns the response on upload success */
+        function getSuccessResponse(event) {
+            var response;
+            if (event.target.status === 200) {
+                /* Checking for empty error String from server response*/
+                response = Utils.getValidJSON(event.target.response);
+                if (response && response.result && response.result.error) {
+                    /* Faking Internal Server Error (500) */
+                    event.target.status = 500;
+                    response = undefined;
+                }
+            }
+            return response;
+        }
+
+        /* upload success callback , called when upload is sucess */
+        function onUploadSuccess(scope, event) {
+            if (window.FormData) { // Check for IE9
+                var response = getSuccessResponse(event);
+                if (response) {
+                    scope.filename = _.map(response, 'fileName').join(scope.fileNameSeperator);
+                    scope.filepath = _.map(response, 'path').join(scope.fileNameSeperator);
+                    scope.uploadedFiles = response;
+                } else {
+                    onUploadError(scope, event);
+                    return;
+                }
+            }
+            Utils.triggerFn(scope.onSuccess, {'$event': event, '$scope': scope});
+            if (!scope.multiple) {
+                wmToaster.show('success', 'File Uploaded');
+            }
+        }
+
+        /* Checking if the selected file is valid for the choosen filter type */
+        function isValidFile(filename, contenttype, extensionName) {
+            var isValid,
+                contentTypes;
+            if (!contenttype) {
+                return true;
+            }
+            contentTypes = contenttype.split(',');
+            switch (contenttype) {
+            case 'image':
+                isValid = Utils.isImageFile(filename);
+                break;
+            case 'audio':
+                isValid = Utils.isAudioFile(filename);
+                break;
+            case 'video':
+                isValid = Utils.isVideoFile(filename);
+                break;
+            case 'all':
+                isValid = true;
+                break;
+            default:
+                /*content type and the uploaded file extension should be same*/
+                if (_.includes(contentTypes, '.' + extensionName)) {
+                    isValid = true;
+                }
+            }
+            return isValid;
+        }
+
+        /* this return the array of files which are having the file size not more than maxfilesize and filters based on contenttype */
+        function getValidFiles($files, scope) {
+            var validFiles = [],
+                MAXFILEUPLOAD_SIZE = parseInt(scope.maxfilesize, 10) * FILESIZE_MB || 2 * FILESIZE_MB,
+                MAX_FILE_UPLOAD_FORMATTED_SIZE = (scope.maxfilesize || '2') + 'MB';
+
+            _.forEach($files, function (file) {
+                /* check for the file content type before uploading */
+                if (!isValidFile(file.name, scope.contenttype, scope.getFileExtension(file.name))) {
+                    Utils.triggerFn(scope.onError);
+                    wmToaster.show('error', 'Expected a ' + scope.contenttype + ' file');
+                    return;
+                }
+                if (file.size > MAXFILEUPLOAD_SIZE) {
+                    Utils.triggerFn(scope.onError);
+                    wmToaster.show('error', 'FILE SIZE EXCEEDED LIMIT. MAX UPLOAD SIZE IS ' + MAX_FILE_UPLOAD_FORMATTED_SIZE);
+                    return;
+                }
+                validFiles.push(file);
+            });
+            return validFiles;
+        }
+
+        /* this function uploads the validfiles */
+        function uploadFiles($files, scope, uploadOptions) {
+            var uploadUrl = constructUrl(scope.uploadUrl, scope.service, scope.operation, scope.destination);
+            scope.fileTransfers = FileUploadService.upload($files, uploadUrl, uploadOptions);
+            _.map(scope.fileTransfers, function (ft) {
+                ft.then(onUploadSuccess.bind(undefined, scope),
+                    onUploadError.bind(undefined, scope),
+                    onUploadProgress.bind(undefined, scope));
+            });
+        }
+
+        /*Overwrite the caption only if they are default*/
+        function getCaption(caption, mode, isMultiple) {
+            if (_.includes(DEFAULT_CAPTIONS, caption)) {
+                if (mode === MODE.UPLOAD) {
+                    return isMultiple ? DEFAULT_CAPTIONS.MULTIPLE_UPLOAD : DEFAULT_CAPTIONS.UPLOAD;
+                }
+                if (mode === MODE.SELECT) {
+                    return isMultiple ? DEFAULT_CAPTIONS.MULTIPLE_SELECT : DEFAULT_CAPTIONS.SELECT;
+                }
+            }
+            return caption;
+        }
+
         return {
             restrict: 'E',
             replace: true,
@@ -169,44 +395,21 @@ WM.module('wm.widgets.form')
                     pre: function (scope) {
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
-
+                        scope._isMobileType = $rootScope.isMobileApplicationType;
+                        scope._isCordova = CONSTANTS.hasCordova;
                     },
 
                     post: function (scope, element, attrs) {
-                        var handlers = [], services = [], isPrefabInsideProject = false,
-                            MODE_SELECT = 'Select', MODE_UPLOAD = 'Upload',
-                            fetchServices = function (serviceId) {
-                                services = [];
-                                if (CONSTANTS.isStudioMode && isPrefabInsideProject) {
-                                    return;
-                                }
-                                /*fetching all the services*/
-                                ServiceFactory.getServicesWithType(function (response) {
-                                    WM.forEach(response, function (service) {
-                                        services.push(service.name);
-                                    });
-                                    /*Pushing the services and operation options into the widget properties*/
-                                    scope.widgetProps.service.options = services;
-                                    scope.service =  serviceId;
-                                });
-                            };
-                        handlers.push($rootScope.$on('update-fileupload', function (event, widgetId, serviceId) {
-                            if (scope.widgetid === widgetId) {
-                                fetchServices(serviceId);
-                            }
-                        }));
+                        /*if the fileupload widget is inside prefab, then widget id will not be present.*/
+                        var isStudioMode = CONSTANTS.isStudioMode && scope.widgetid,
+                            parentPrefabScope = element.closest('.app-prefab').isolateScope(),
+                            CONSTANT_FILE_SERVICE = 'FileService';
                         scope.uploadData = {
                             file: undefined,
                             uploadPath: undefined
                         };
+                        scope.formName = scope.name + (scope.multiple ? '-multiple-fileupload' : '-single-fileupload');
                         scope.chooseFilter = '';
-                        scope.singleFileFormName = scope.name + '-single-fileupload';
-                        scope.multipleFileFormName = scope.name + '-multiple-fileupload';
-                        scope.showStatusMessage = false;
-                        scope.progressWidth = '0%';
-                        scope.showProgress = false;
-                        scope.isAbortVisible = false;
-                        scope.isAborted = false;
                         scope.fileNameSeperator = ";";
                         scope.uploadedFiles = {
                             "fileName": "",
@@ -216,500 +419,117 @@ WM.module('wm.widgets.form')
                         };
                         scope.reset = function () {
                             scope.uploadedFiles = [];
-                            scope.status_messsage = '';
                         };
+                        scope.uploadUrl = parentPrefabScope ? ('prefabs/' + parentPrefabScope.prefabName) : 'services';
                         /*fetching the list of the services only in studio mode for properties panel*/
-                        if (CONSTANTS.isStudioMode && scope.service) {
-                            fetchServices(scope.service);
+                        if (isStudioMode) {
+                            getAllServices(function (services) {
+                                scope.widgetProps.service.options = services;
+                            });
+                            $rootScope.$on('update-fileupload', function (event, widgetId, serviceId) {
+                                if (scope.widgetid === widgetId) {
+                                    scope.service = serviceId;
+                                    getAllServices(function (services) {
+                                        scope.widgetProps.service.options = services;
+                                    });
+                                }
+                            });
                         }
-
-                        /*to set the upload url for the widget*/
-                        (function setUploadUrl() {
-                            var parentPrefab = element.closest('.app-prefab'),
-                                prefabScope,
-                                prefabName;
-                            /*Flag to decide whether the widget is wrapped in prefab and is in project*/
-                            if (CONSTANTS.isStudioMode && !scope.widgetid) {
-                                isPrefabInsideProject = true;
-                            }
-                            /*if the file upload is in a prefab, then get the prefab-name from the prefab's scope*/
-                            if (parentPrefab) {
-                                prefabScope = parentPrefab.isolateScope();
-                                prefabName = prefabScope ? prefabScope.prefabname : null;
-                            }
-                            /*set the upload-url*/
-                            scope.uploadUrl = prefabName ? ('prefabs/' + prefabName) : 'services';
-                        }());
-
-                        /* Chaange file accept filter when user changes */
-                        var FILESIZE_MB = 1048576,
-                        /*1 mb size in bytes*/
-                            FILESIZE_KB = 1024,
-                        /* 1 kb size bytes */
-                            MAXFILEUPLOAD_SIZE = parseInt(scope.maxfilesize, 10) * FILESIZE_MB || 2 * FILESIZE_MB,
-                            MAX_FILE_UPLOAD_FORMATTED_SIZE = (scope.maxfilesize || '2') + 'MB',
-                            CONSTANT_FILE_SERVICE = 'FileService',
-                            MULTIPART_FORM_DATA =  "multipart/form-data",
-                            operations = [],
-                            xhr,
-                            UPLOAD_LOCATION = '/src/main/webapp/',
-                            changeFilter = function (choosen) {
-                                if (choosen.indexOf('all') > -1) {
-                                    scope.chooseFilter = '';
-                                } else {
-                                    var filters = [];
-                                    switch (choosen) {
-                                    case 'image':
-                                        filters.push('image/*');
-                                        break;
-                                    case 'audio':
-                                        filters.push('audio/*');
-                                        break;
-                                    case 'video':
-                                        filters.push('video/*');
-                                        break;
-                                    default:
-                                        filters.push(choosen);
-                                        break;
-                                    }
-                                    if (filters.length > 0) {
-                                        scope.chooseFilter = filters.join();
-                                    }
-                                }
-                            },
-                            getFileSize = function (fileSize) {
-                                var size;
-                                if (fileSize > FILESIZE_MB) {
-                                    size = (Math.round(fileSize * 100 / FILESIZE_MB) / 100).toString() + 'MB';
-                                } else {
-                                    size = (Math.round(fileSize * 100 / FILESIZE_KB) / 100).toString() + 'KB';
-                                }
-                                return size;
-                            },
-                            defaultCaptions = {
-                                'MULTIPLE_UPLOAD': "Drop your files here to start uploading.",
-                                'MULTIPLE_SELECT': "Drop your files here.",
-                                'UPLOAD': 'Upload',
-                                'SELECT': 'Select'
-                            },
-                            wholeUploadContent = [],
-                        /* function to call user-defined on-select fn*/
-                            onFileSelect = function ($event, $files) {
-                                $timeout(function () {
-                                    scope.onSelect({
-                                        $event: WM.extend($event.$files || {}, $files),
-                                        $scope: scope
-                                    });
-                                });
-                            },
-
-                        /* this function handles different event callbacks */
-                            handleEvent = function (event, eventName, eventCallback, callbackParams) {
-                                if (eventName.indexOf('(') !== -1) {
-                                    eventCallback({
-                                        $event: event,
-                                        $scope: callbackParams
-                                    });
-                                } else {
-                                    if (eventName.indexOf('.show') > -1) {
-                                        DialogService.showDialog(eventName.slice(0, eventName.indexOf('.show')));
-                                        return;
-                                    }
-                                    if (eventName.indexOf('.hide') > -1) {
-                                        DialogService.hideDialog(eventName.slice(0, eventName.indexOf('.hide')));
-                                        return;
-                                    }
-                                    $rootScope.$emit('invoke-service', eventName, {scope: element.scope()});
-                                }
-                            },
-
-                        /* error callback when upload is failed */
-                            onFail = function (evt) {
-                                scope.$apply(function () {
-                                    handleEvent(evt, attrs.onError || "", scope.onError);
-                                    scope.isAbortVisible = false;
-                                    scope.status_messsage = 'Failed';
-                                    scope.showProgress = false;
-                                });
-                                if (scope.multiple === false) {
-                                    wmToaster.show('error',  'File upload failed');
-                                }
-                            },
-
-                            handleError = function (evt) {
-                                onFail(evt);
-                            },
-
-
-                        /* function to call user-defined on-error fn*/
-                            onError = function ($event, $file) {
-                                scope.onError({
-                                    $event: WM.extend($event.$files || {}, $file),
-                                    $scope: scope
-                                });
-                            },
-
-                            getExtensionName = function (name) {
-                                return name && (name.lastIndexOf('.') > -1 ? name.substring(name.lastIndexOf('.') + 1) : 'file');
-                            },
-
-                            onSuccess = function (evt) {
-                                scope.filename = '';
-                                scope.filepath = '';
-                                if (window.FormData) { // Check for IE9
-                                    var response,
-                                        name = '',
-                                        fileObject;
-                                    if (evt.target.status !== 200) {
-                                        handleError(evt);
-                                        return;
-                                    }
-                                    /* Checking for empty error String from server response*/
-                                    response = Utils.getValidJSON(evt.target.response);
-                                    if (!response) {
-                                        response = null;
-                                    }
-                                    if (response && response.result && response.result.error) {
-                                        evt.target.status = 500;
-                                        /* Faking Internal Server Error (500) */
-                                        handleError(evt);
-                                        return;
-                                    }
-                                    if (scope.multiple) {
-                                        WM.forEach(response, function (file, index) {
-                                            name = file.fileName;
-                                            scope.filename += name + ';';
-                                            file.extension = getExtensionName(name);
-                                            scope.filepath += file.path;
-                                            if (index !== response.length - 1) {
-                                                scope.filepath += ';';
-                                            }
-                                            file.status = file.success ? 'success' : 'fail';
-                                        });
-                                    } else {
-                                        fileObject = response[0];
-                                        name = fileObject.fileName;
-                                        fileObject.extension = getExtensionName(name);
-                                        scope.filename = fileObject.name;
-                                        scope.filepath = fileObject.path;
-                                        fileObject.status = fileObject.success ? 'success' : 'fail';
-                                    }
-                                    scope.uploadedFiles = response;
-                                }
-                                scope.$apply(function () {
-                                    scope.status_messsage = 'Complete';
-                                    scope.showProgress = false;
-                                    scope.isAbortVisible = false;
-                                    handleEvent(evt, attrs.onSuccess || "", scope.onSuccess, scope);
-                                });
-                                if (scope.multiple === false) {
-                                    wmToaster.show('success', 'File Uploaded');
-                                }
-                            },
-
-                        /* upload progress callback , called when upload is progress */
-                            onProgress = function (evt) {
-                                scope.$apply(function () {
-                                    handleEvent(evt, attrs.onProgress || "", scope.onProgress);
-                                    if (scope.isAbortVisible === false) {
-                                        scope.isAbortVisible = true;
-                                    }
-                                    scope.showStatusMessage = true;
-                                    scope.showProgress = true;
-                                    scope.progressWidth = Math.round(evt.loaded * 100 / evt.total) + '%';
-                                    scope.status_messsage = 'Uploading..';
-                                });
-                            },
-
-                            safeAbort = function (evt) {
-                                handleEvent(evt, attrs.onAbort || "", scope.onAbort);
-                                scope.isAbortVisible = false;
-                                scope.showStatusMessage = true;
-                                scope.showProgress = false;
-                                scope.status_messsage = 'Aborted';
-                            },
-
-                        /* when upload cancelled by user, this callback will be called */
-                            onAbort = function (evt) {
-                                if ($rootScope.$$phase || scope.$$phase) {
-                                    safeAbort(evt);
-                                } else {
-                                    scope.$apply(function () {
-                                        safeAbort(evt);
-                                    });
-                                }
-                            },
-
-                        /* will be triggered whenever file is chosen or dropped into dropbox */
-                            uploadContent = function (newVal) {
-                                var uploadConfig, fd,
-                                    uploadUrl,
-                                    variableObject,
-                                    completeUrl,
-                                    selectedFiles = [],
-                                    fileName;
-                                xhr = undefined;
-                                scope.uploadedFiles = [];
-                                /*fetching the variable object with service, operation*/
-                                variableObject = Variables.filterByVariableKeys({'service' : scope.service, 'operation' : scope.operation, 'category' : 'wm.ServiceVariable'}, true)[0];
-                                if (variableObject) {
-                                    uploadUrl = variableObject.wmServiceOperationInfo.relativePath;
-                                } else {
-                                    /*fallback for old projects when there is no associated variable*/
-                                    uploadUrl = '/file/uploadFile';
-                                }
-
-                                completeUrl = scope.uploadUrl + uploadUrl;
-                                if (scope.destination) {
-                                    completeUrl += '?relativePath=' + scope.destination;
-                                }
-                                scope.status_messsage = 'Selected';
-                                scope.showStatusMessage = scope.mode === MODE_SELECT;
-
-                                if (window.FormData) {
-                                    if (xhr !== undefined) {
-                                        return;
-                                    }
-                                    /* create formData */
-                                    fd = new FormData();
-                                    /* append file to form data */
-                                    if (WM.isArray(newVal)) {
-                                        WM.forEach(newVal, function (fileObject) {
-                                            if (fileObject.file && fileObject.uploadPath) {
-                                                fd.append('files', fileObject.file, fileObject.file.name);
-                                                selectedFiles.push(fileObject.file);
-                                            }
-                                        });
-                                    } else if (WM.isObject(newVal)) {
-                                        if (newVal.file && newVal.uploadPath) {
-                                            fd.append('files', newVal.file, newVal.file.name);
-                                            selectedFiles = [newVal.file];
-                                        }
-                                    }
-                                    /*Exposing the select files*/
-                                    scope.selectedFiles = undefined;
-                                    $timeout(function () {
-                                        scope.selectedFiles = selectedFiles;
-                                    });
-                                    /*Uploading the files only when mode is Upload*/
-                                    if (scope.mode === MODE_SELECT) {
-                                        return;
-                                    }
-                                    /* create ajax xmlHttp request */
-                                    xhr = new XMLHttpRequest();
-                                    /* create progress,success,error,aborted event handlers */
-                                    xhr.upload.addEventListener('progress', onProgress);
-                                    xhr.addEventListener('load', onSuccess, null);
-                                    xhr.addEventListener('error', onFail, null);
-                                    xhr.addEventListener('abort', onAbort, null);
-                                    xhr.open('POST', completeUrl);
-                                    xhr.send(fd);
-                                } else { // IE9 patch
-                                    fileName = newVal[0].file.split('\\').pop();
-                                    scope.uploadedFiles.push({
-                                        'fileName' : fileName,
-                                        'extension' : getExtensionName(fileName),
-                                        'length' : 0
-                                    });
-                                    uploadConfig = {
-                                        url: completeUrl,
-                                        formName: scope.multiple ? scope.multipleFileFormName : scope.singleFileFormName
-                                    };
-                                    /*Uploading the files only when mode is Upload*/
-                                    if (scope.mode === MODE_SELECT) {
-                                        return;
-                                    }
-                                    Utils.fileUploadFallback(uploadConfig, onSuccess, onFail);
-                                }
-                            },
-
-                        /* function to handle single and multiple file uploads*/
-                            uploadFile = function ($evt, $file, statusContainer, isLastFile) {
-                                var fileSize, uploadData = {};
-                                /* Checking if the selected file is valid for the choosen filter type */
-                                if (!scope.isValidFile($file.name)) {
-                                    onError($evt, $file);
-                                    wmToaster.show('error', 'Expected a ' + scope.contenttype + ' file');
-                                    return;
-                                }
-                                if ($file.size) {
-                                    fileSize = getFileSize($file.size);
-                                } else {
-                                    fileSize = '';
-                                }
-                                /* if file size exceeds limit , throw error message */
-                                if ($file.size > MAXFILEUPLOAD_SIZE) {
-                                    onError($evt, $file);
-                                    wmToaster.show('error', 'FILE SIZE EXCEEDED LIMIT. MAX UPLOAD SIZE IS ' + MAX_FILE_UPLOAD_FORMATTED_SIZE);
-                                    return;
-                                }
-
-                                /* to trigger upload directive upload method set the required fields of upload widget */
-                                $file.formattedSize = fileSize;
-                                uploadData = {
-                                    file: $file,
-                                    uploadPath: selectedUploadTypePath
-                                };
-
-                                /*pushing every content of the file into an array*/
-                                wholeUploadContent.push(uploadData);
-                                /*sending the request after we get the data of all files*/
-                                if (isLastFile) {
-                                    scope.uploadData = wholeUploadContent;
-                                    uploadContent(wholeUploadContent);
-                                }
-                            },
-
-                            getServiceType = function (service) {
-                                return ServiceFactory.getServiceObjectByName(service).type;
-                            },
-
-                            /*emit event to workspace to create a service variable*/
-                            createVariable = function (service, operation) {
-                                scope.$root.$emit("create-service-variable", service, getServiceType(service), operation);
-                                /*Saving service and operation in markup*/
-                                $rootScope.$emit("set-markup-attr", scope.widgetid, {'service': service, 'operation': operation});
-                            },
-
-                            /*Overwrite the caption only if they are default*/
-                            getCaption = function (scope) {
-                                if (_.includes(defaultCaptions, scope.caption)) {
-                                    if (scope.mode === MODE_UPLOAD) {
-                                        return scope.multiple ? defaultCaptions.MULTIPLE_UPLOAD : defaultCaptions.UPLOAD;
-                                    }
-                                    if (scope.mode === MODE_SELECT) {
-                                        return scope.multiple ? defaultCaptions.MULTIPLE_SELECT : defaultCaptions.SELECT;
-                                    }
-                                }
-                                return scope.caption;
+                        /* BOYINA: Need to check why we need this.
+                        scope.uploadData = _.map(files, function (f) {
+                            return {
+                                file: f,
+                                uploadPath: selectedUploadTypePath
                             };
-
-                        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-                        function propertyChangeHandler(key, newVal) {
-                            /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
-                            switch (key) {
-                            case 'uploadpath':
-                                scope.changeServerUploadPath(newVal);
-                                break;
-                            case 'contenttype':
-                                changeFilter(newVal);
-                                break;
-                            case 'service':
-                                /*Fetching the services only if the widget is not inside a prefab and in project*/
-                                if (CONSTANTS.isStudioMode && !isPrefabInsideProject) {
-                                    operations = [];
-                                    ServiceFactory.getServiceOperations(scope.service, function (response) {
-                                        WM.forEach(response, function (operation) {
-                                            operations.push(operation.name);
-                                        });
-                                        /*Pushing the operation options into the widget properties*/
-                                        scope.widgetProps.operation.options = operations;
-                                        if (scope.service === CONSTANT_FILE_SERVICE) {
-                                            scope.operation = 'uploadFile';
-                                        }
-                                    });
-                                }
-                                break;
-                            case 'operation':
-                                /*Fetching the services only if the widget is not inside a prefab and in project*/
-                                if (CONSTANTS.isStudioMode && !isPrefabInsideProject) {
-                                    if (scope.service && scope.operation) {
-                                        createVariable(scope.service, scope.operation);
-                                    }
-                                }
-                                break;
-                            case 'mode':
-                            case 'multiple':
-                                scope.caption = getCaption(scope);
-                                break;
-                            }
-                        }
-
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
-
-                        scope.fileUploadHandlers = {
-                            onSuccess : onSuccess,
-                            onProgress : onProgress,
-                            onError : onFail,
-                            onAbort : onAbort
-                        };
+                        });*/
 
                         /* change server path based on user option */
                         scope.changeServerUploadPath = function (path) {
                             selectedUploadTypePath = path;
                         };
 
-                        /* Abort upload when user clicked cancel upload */
-                        scope.abortUpload = function () {
-                            xhr.abort();
+                        /* this function aborts the file transfer */
+                        scope.abortUpload = function (event, ft) {
+                            ft.abort();
+                            onUploadAbort(scope, event);
+                        };
+
+                        //Need this only in mobile
+                        if (CONSTANTS.hasCordova) {
+                            scope.openFileSelector = function () {
+                                var uploadOptions = {formName: scope.formName};
+                                /* open the file selector */
+                                FileSelectorService.open({multiple: scope.multiple}, function (files) {
+                                    /* check if the files are having not more than maxfilesize */
+                                    files = getValidFiles(files, scope);
+
+                                    if (scope.mode === MODE.SELECT) {
+                                        scope.selectedFiles = files;
+                                        return;
+                                    }
+                                    uploadFiles(files, scope, uploadOptions);
+                                });
+                            };
+                        }
+                        /* this function returns the fileextension */
+                        scope.getFileExtension = function (fileName) {
+                            if (fileName && _.includes(fileName, '.')) {
+                                return fileName.substring(fileName.lastIndexOf('.') + 1);
+                            }
+                            return 'file';
                         };
 
                         /*this function to append upload status dom elements to widget */
                         scope.onFileSelect = function ($event, $files) {
-                            var last = false,
-                                filesCount = $files.length,
-                                index,
-                                statusEle;
-                            /*call on-select event-fn*/
-                            onFileSelect($event, $files);
-                            statusEle = element.find('.app-files-upload-status.multiple');
-                            wholeUploadContent = [];
-                            for (index = 0; index < filesCount; index += 1) {
-                                if (index === filesCount - 1) {
-                                    last = true;
+                            var uploadOptions = { formName : scope.formName};
+                            scope.onSelect({
+                                $event: WM.extend($event.$files || {}, $files),
+                                $scope: scope
+                            });
+                            $files = getValidFiles($files, scope);
+                            if (scope.mode === MODE.UPLOAD) {
+                                uploadFiles($files, scope, uploadOptions);
+                            } else {
+                                scope.selectedFiles = $files;
+                            }
+                        };
+
+                        /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+                        function propertyChangeHandler(key, newVal) {
+                            /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
+                            switch (key) {
+                            case 'uploadpath':
+                                //BOYINA: why do we need uploadpath
+                                scope.changeServerUploadPath(newVal);
+                                break;
+                            case 'contenttype':
+                                scope.chooseFilter = constructFileFilter(newVal);
+                                break;
+                            case 'service':
+                                if (isStudioMode) {
+                                    if (scope.service === CONSTANT_FILE_SERVICE) {
+                                        scope.operation = 'uploadFile';
+                                    }
+                                    ServiceFactory.getServiceOperations(scope.service, function (response) {
+                                        /*Pushing the operation options into the widget properties*/
+                                        scope.widgetProps.operation.options = _.map(response, 'name');
+                                    });
                                 }
-                                uploadFile($event, $files[index], statusEle, last);
-                            }
-                        };
-
-                        /* Checking if the selected file is valid for the choosen filter type */
-                        scope.isValidFile = function (filename) {
-                            var isValid,
-                                extensionName = getExtensionName(filename),
-                                contentTypes;
-                            if (!scope.contenttype) {
-                                return true;
-                            }
-                            contentTypes = scope.contenttype.split(',');
-                            switch (scope.contenttype) {
-                            case 'image':
-                                isValid = Utils.isImageFile(filename);
                                 break;
-                            case 'audio':
-                                isValid = Utils.isAudioFile(filename);
-                                break;
-                            case 'video':
-                                isValid = Utils.isVideoFile(filename);
-                                break;
-                            case 'all':
-                                isValid = true;
-                                break;
-                            default:
-                                /*content type and the uploaded file extension should be same*/
-                                if (_.includes(contentTypes, '.' + extensionName)) {
-                                    isValid = true;
+                            case 'operation':
+                                if (isStudioMode &&  scope.service && scope.operation) {
+                                    createVariable(scope.widgetid, scope.service, scope.operation);
                                 }
+                                break;
+                            case 'mode':
+                            case 'multiple':
+                                scope.formName = scope.name + (scope.multiple ? '-multiple-fileupload' : '-single-fileupload');
+                                scope.caption = getCaption(scope.caption, scope.mode, scope.multiple);
+                                break;
                             }
-                            return isValid;
-                        };
-
-                        /* Upload the single file using upload directive */
-                        scope.uploadSingleFile = function ($evt, $file) {
-                            if ($file.length) {
-                                /* to call on-select event-fn*/
-                                onFileSelect($evt, $file);
-                                /* Delete previous html node , when new file is uploading */
-                                var statusEle = element.find('.app-files-upload-status.single');
-                                statusEle.html('');
-                                wholeUploadContent = [];
-                                uploadFile($evt, $file[0], statusEle, true);
-                            }
-                        };
-
-                        scope.isValidFiles = function (files, mode) {
-                            return scope.mode === mode && WM.isArray(files) && files.length;
-                        };
+                        }
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
@@ -717,7 +537,77 @@ WM.module('wm.widgets.form')
             }
         };
 
-    }]);
+    }])
+    /* custom filter returns the filesize along with units */
+    .filter('filesize', ['wmToaster', 'Utils', function () {
+        'use strict';
+        var units = [
+            'bytes',
+            'KB',
+            'MB',
+            'GB',
+            'TB',
+            'PB'
+        ];
+
+        return function (bytes, precision) {
+            if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) {
+                return '?';
+            }
+            var unit = 0;
+            while (bytes >= 1024) {
+                bytes /= 1024;
+                unit++;
+            }
+            return bytes.toFixed(+precision) + ' ' + units[unit];
+        };
+    }])
+    /* custom filter returns the icons depending on file upload status*/
+    .filter('stateClass', function () {
+        'use strict';
+        var stateClassMap = {
+            'success'   : 'glyphicon glyphicon-ok-sign text-success',
+            'error'     : 'glyphicon glyphicon-remove-sign text-danger'
+        };
+        return function (state) {
+            return stateClassMap[state.toLowerCase()];
+        };
+    })
+    /* custom filter returns the fileicons depending on the fileextension */
+    .filter('fileIconClass', function () {
+        'use strict';
+        var fileClassMapping = {
+            'zip'       :   'fa-file-zip-o',
+            'pdf'       :   'fa-file-pdf-o',
+            'rar'       :   'fa-file-archive-o',
+            'txt'       :   'fa-file-text-o',
+            'ppt'       :   'fa-file-powerpoint-o',
+            'pot'       :   'fa-file-powerpoint-o',
+            'pps'       :   'fa-file-powerpoint-o',
+            'pptx'      :   'fa-file-powerpoint-o',
+            'potx'      :   'fa-file-powerpoint-o',
+            'ppsx'      :   'fa-file-powerpoint-o',
+            'mpg'       :   'fa-file-movie-o',
+            'mp4'       :   'fa-file-movie-o',
+            'mov'       :   'fa-file-movie-o',
+            'avi'       :   'fa-file-movie-o',
+            'mp3'       :   'fa-file-audio-o',
+            'docx'      :   'fa-file-word-o',
+            'js'        :   'fa-file-code-o',
+            'md'        :   'fa-file-code-o',
+            'html'      :   'fa-file-code-o',
+            'css'       :   'fa-file-code-o',
+            'xlsx'      :   'fa-file-excel-o',
+            'png'       :   'fa-file-image-o',
+            'jpg'       :   'fa-file-image-o',
+            'jpeg'      :   'fa-file-image-o',
+            'file'      :   'fa-file-o',
+            'default'   :   'fa-file-o'
+        };
+        return function (fileExtension) {
+            return 'fa ' + (fileClassMapping[fileExtension] || 'fa-file-o');
+        };
+    });
 /*Directive for FileUpload */
 /**
  * @ngdoc directive
