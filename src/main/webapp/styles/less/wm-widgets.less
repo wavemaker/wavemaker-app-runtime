@@ -1110,11 +1110,21 @@ If the height and width are not specified the video takes the height of the post
 .app-datanavigator {
   position: relative;
   overflow-y: auto;
-  .pagecount {
-    .input-group {
-      width: 8em;
-      padding: 0;
-      border: 0;
+  ul.pagination {
+    margin : 0;
+    & > li.pagecount > a {
+      width: 4em;
+      padding-left: 0;
+      padding-right: 0;
+      height: 100%;
+      .form-control {
+        height: inherit !important;
+        border: none;
+        box-shadow: none;
+        padding: 0 2px;
+        font-size: inherit !important;
+        background-color: transparent;
+      }
     }
   }
 }
@@ -1157,12 +1167,6 @@ If the height and width are not specified the video takes the height of the post
   > .panel-footer {
     .app-datagrid-actions {
       text-align: right;
-    }
-    .pagination {
-      margin: 0;
-      .form-control {
-        padding: 0 0 0 0.25em;
-      }
     }
   }
   .app-datagrid {
