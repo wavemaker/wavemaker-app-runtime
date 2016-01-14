@@ -57,6 +57,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "columnField": {"type": "list", "options": {}, "hide": true},
                     "dataField": {"type": "list", "options": {}, "hide": true},
                     "dataBinding": {"type": "list", "value": [], "hide": true},
+                    "spinnerContext": {"type": "list", "options": {"": "", "page": "page"}},
+                    "spinnerMessage": {"type": "string"},
 
                     /* Events */
                     "onCanUpdate": {"type": "list", "options": variableEventOptions},
@@ -165,6 +167,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
                 {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties"},
+                {"name": "spinner", "properties": ["spinnerContext", "spinnerMessage"], "parent": "properties"},
+
                 /* properties under data tab */
                 {"name": "Inputs", "properties": ["dataBinding"], "parent": "data"},
                 {"name": "inputfields", "properties": ["dataSet", "dataBinding"], "parent": "data"},

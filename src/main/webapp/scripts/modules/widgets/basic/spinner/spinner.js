@@ -8,16 +8,17 @@ WM.module('wm.widgets.basic')
             '<div class="app-spinner {{size}}" data-ng-show="show" init-widget title="{{hint}}" apply-styles>' +
                 '<div class="spinner-message">' +
                     '<span class="spinner-image" data-ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}"></span>' +
-                    '<span class="spinner-text" data-ng-bind="caption"></span>' +
+                    '<span class="spinner-text" ng-bind-html="messageContent"></span>' +
                 '</div>' +
             '</div>'
             );
-    }]).directive('wmSpinner', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'Utils', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, Utils) {
+    }]).directive('wmSpinner', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'Utils', '$sce', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, Utils, $sce) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.spinner', ['wm.base']),
             notifyFor = {
                 'image': true,
-                'backgroundimage': true
+                'backgroundimage': true,
+                'caption': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -28,6 +29,9 @@ WM.module('wm.widgets.basic')
                 break;
             case 'backgroundimage':
                 scope.backgroundimgsource = Utils.getBackGroundImageUrl(newVal);
+                break;
+            case 'caption':
+                scope.messageContent = $sce.trustAsHtml(newVal);
                 break;
             }
         }
