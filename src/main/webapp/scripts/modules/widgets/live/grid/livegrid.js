@@ -171,10 +171,10 @@ WM.module('wm.widgets.live')
                                         if (newForm) {
                                             /*if new form is to be shown after insert, skip the highlight of the row*/
                                             scope.grid.gridfirstrowselect = false;
-                                            scope.grid.initiateHighlightRow('last', response, scope.primaryKey, true);
+                                            scope.grid.initiateSelectItem('last', response, scope.primaryKey, true);
                                         } else {
                                             /*The new row would always be inserted at the end of all existing records. Hence navigate to the last page and highlight the inserted row.*/
-                                            scope.grid.initiateHighlightRow('last', response, scope.primaryKey);
+                                            scope.grid.initiateSelectItem('last', response, scope.primaryKey);
                                         }
                                         if (WM.isDefined(scope.grid.onRowinsert)) {
                                             scope.grid.onRowinsert(response);
@@ -184,9 +184,9 @@ WM.module('wm.widgets.live')
                                         /*The updated row would be found in the current page itself. Hence simply highlight the row in the current page.*/
                                         if (newForm) {
                                             scope.grid.gridfirstrowselect = false;
-                                            scope.grid.initiateHighlightRow('current', response, scope.primaryKey, true);
+                                            scope.grid.initiateSelectItem('current', response, scope.primaryKey, true);
                                         } else {
-                                            scope.grid.initiateHighlightRow('current', response, scope.primaryKey);
+                                            scope.grid.initiateSelectItem('current', response, scope.primaryKey);
                                         }
                                         break;
                                     case 'delete':

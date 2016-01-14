@@ -1165,6 +1165,8 @@ If the height and width are not specified the video takes the height of the post
 .app-grid {
   position: relative;
   height: auto;
+  display: table;
+  table-layout: fixed;
   .form-search {
     padding: 1em;
     .app-search-button {
@@ -1204,7 +1206,9 @@ If the height and width are not specified the video takes the height of the post
     .table-container {
       position: relative;
       min-height: 50px;
-      overflow: auto;
+      overflow: hidden;
+      overflow-x: hidden;
+      width: 100%;
     }
     .app-datagrid-cell {
       img {
@@ -1214,10 +1218,26 @@ If the height and width are not specified the video takes the height of the post
     .grid-col-small {
       width: 2.5em;
     }
+    .app-grid-header {
+      padding-right: 17px;
+      .app-grid-header-inner {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .app-grid-content {
+      overflow: auto;
+      overflow-y: scroll;
+      width: 100%;
+      height: 100%;
+    }
   }
   .table {
     table-layout: fixed;
     margin-bottom: 0 !important;
+    min-width: 100%;
     thead th {
       position: relative;
       .header-data {

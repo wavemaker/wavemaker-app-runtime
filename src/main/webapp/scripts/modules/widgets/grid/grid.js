@@ -228,6 +228,10 @@ WM.module('wm.widgets.grid')
                                 return items[0];
                             }
                             return items;
+                        },
+                        set: function (val) {
+                            /*Select the rows in the table based on the new selected items passed*/
+                            scope.datagridElement.datagrid('selectRows', val);
                         }
                     });
                 }
@@ -1000,7 +1004,7 @@ WM.module('wm.widgets.grid')
                                 $scope.datagridElement.datagrid('hideRowEditMode', row);
                             }
                             wmToaster.show('success', 'SUCCESS', 'Record added successfully');
-                            $scope.initiateHighlightRow('last', response, $scope.primaryKey);
+                            $scope.initiateSelectItem('last', response, $scope.primaryKey);
                             Utils.triggerFn(options.success, response);
                         }
                     }, function (error) {
@@ -1039,7 +1043,7 @@ WM.module('wm.widgets.grid')
                             }
                             $scope.operationType = "";
                             wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
-                            $scope.initiateHighlightRow('current', response, $scope.primaryKey);
+                            $scope.initiateSelectItem('current', response, $scope.primaryKey);
                             Utils.triggerFn(options.success, response);
                         }
                     }, function (error) {
@@ -1781,7 +1785,7 @@ WM.module('wm.widgets.grid')
                 }
             };
 
-            $scope.initiateHighlightRow = function (index, row, primaryKey, skipHighlightRow) {
+            $scope.initiateSelectItem = function (index, row, primaryKey, skipSelectItem) {
                 /*index === "last" indicates that an insert operation has been successfully performed and navigation to the last page is required.
                 * Hence increment the "dataSize" by 1.*/
                 if (index === 'last') {
@@ -1795,23 +1799,30 @@ WM.module('wm.widgets.grid')
                 $scope.dataNavigator.calculatePagingValues();
                 $scope.dataNavigator.navigatePage(index, null, true, function () {
                     /*$timeout is used so that by then $scope.dataset has the updated value.
-                    * Highlighting of the row is done in the callback of page navigation so that the row that needs to be highlighted actually exists in the grid.*/
-                    /*Do not highlight the row if skip highlight row is specified*/
-                    if (!skipHighlightRow) {
+                    * Selection of the item is done in the callback of page navigation so that the item that needs to be selected actually exists in the grid.*/
+                    /*Do not select the item if skip selection item is specified*/
+                    if (!skipSelectItem) {
                         $timeout(function () {
-                            $scope.highlightRow(row, $scope.dataset.data);
+                            $scope.selectItem(row, $scope.dataset.data);
                         }, null, false);
                     }
                 });
             };
 
-            /* highlight the given row */
-            $scope.highlightRow = function (result, data) {
+            $scope.selectItem = function (item, data) {
                 /* server is not updating immediately, so set the server data to success callback data */
                 if (data) {
                     $scope.serverData = data;
                 }
-                $scope.datagridElement.datagrid('selectRow', result, true);
+                $scope.datagridElement.datagrid('selectRow', item, true);
+            };
+
+            /** TODO deprecate this highlight the given row and use selectItem **/
+            $scope.highlightRow = $scope.selectItem;
+
+            /* deselect the given item*/
+            $scope.deselectItem = function (item) {
+                $scope.datagridElement.datagrid('deselectRow', item);
             };
 
             /* determines if the 'user-defined'(not default) columnDefs exists already for the grid */
@@ -1843,7 +1854,6 @@ WM.module('wm.widgets.grid')
                 $scope.addNewRow();
             };
 
-            $scope.selectRow = $scope.highlightRow;
 
             $scope.onRecordDelete = function () {
                 /*Check for sanity*/

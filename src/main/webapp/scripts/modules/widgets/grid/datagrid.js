@@ -33,7 +33,7 @@ $.widget('wm.datagrid', {
             'headerCell': 'app-datagrid-header-cell',
             'tableCell': 'app-datagrid-cell',
             'grid': '',
-            'gridDefault': 'table table-condensed',
+            'gridDefault': 'table',
             'gridBody': 'app-datagrid-body',
             'deleteRow': 'danger'
         },
@@ -248,7 +248,7 @@ $.widget('wm.datagrid', {
         htm += '</tr></thead>';
         cols += '</colgroup>';
 
-        return cols + htm;
+        return { 'colgroup' : cols, 'header' : htm };
     },
 
     /* Returns the seachbox template. */
@@ -693,6 +693,24 @@ $.widget('wm.datagrid', {
         });
         return selectedRowsData;
     },
+    /* Sets the selected rows in the table. */
+    selectRows: function (rows) {
+        var self = this;
+        /*Deselect all the previous selected rows in the table*/
+        self.gridBody.find('tr').each(function (index) {
+            if (self.preparedData[index].selected) {
+                $(this).trigger('click');
+            }
+        });
+        /*Select the given row. If rows is an array, loop through the array and set the row*/
+        if (_.isArray(rows)) {
+            _.forEach(rows, function (row) {
+                self.selectRow(row, true);
+            });
+        } else {
+            self.selectRow(rows, true);
+        }
+    },
 
     /* Returns the selected columns in the table. */
     getSelectedColumns: function () {
@@ -802,14 +820,14 @@ $.widget('wm.datagrid', {
     /* Toggles the table header visibility. */
     _toggleHeader: function () {
         // If header is not already rendered, render it first.
-        if (!this.gridElement.find('thead').length) {
+        if (!this.gridHeaderElement.find('thead th').length) {
             this._renderHeader();
         }
 
         if (this.options.showHeader) {
-            this.gridHeader.show();
+            this.gridHeaderElement.show();
         } else {
-            this.gridHeader.hide();
+            this.gridHeaderElement.hide();
         }
     },
 
@@ -866,6 +884,12 @@ $.widget('wm.datagrid', {
             }
             $row.trigger('click');
         }
+    },
+    /**
+     * deselect a row
+     */
+    deselectRow: function(row){
+        this.selectRow(row, false);
     },
 
     /* Toggles the table row selection. */
@@ -1417,9 +1441,10 @@ $.widget('wm.datagrid', {
 
     /* Renders the table header. */
     _renderHeader: function () {
-        var $htm = $(this._getHeaderTemplate()),
-            self = this;
-
+        var $colgroup = $(this._getHeaderTemplate().colgroup),
+            $header = $(this._getHeaderTemplate().header),
+            self = this,
+            cols;
         function toggleSelectAll(e) {
             var $table = $(e.target).closest('table'),
                 $checkboxes = $('tbody tr:visible td input:checkbox:not(:disabled)', $table),
@@ -1438,16 +1463,26 @@ $.widget('wm.datagrid', {
                 }
             });
         }
+        /**Append the colgroup to the header and the body.
+         * Colgroup is used to maintain the consistent widths between the header table and body table**/
+        this.gridHeaderElement.append($colgroup).append($header);
+        this.gridHeader = this.gridHeaderElement.find('thead');
+        cols = $colgroup.find('col');
+        /***setting the header col width based on the content width***/
+        this.gridHeaderElement.find('th').each(function(index) {
+            $(cols[index]).css('width', $(this).width());
+        });
+        /**As jquery references the colgroup, clone the colgroup and add it to the table body**/
+        this.gridElement.append($colgroup.clone());
+        /**Add event handler, to the select all checkbox on the header**/
+        $header.on('click', 'input:checkbox', toggleSelectAll);
 
-        this.gridElement.append($htm);
-        this.gridHeader = this.gridElement.find('thead');
-        $htm.on('click', 'input:checkbox', toggleSelectAll);
         if ($.isFunction(this.options.onHeaderClick)) {
             this.gridHeader.on('click', {'col': this.options.colDefs}, this.options.onHeaderClick);
         }
 
-        if (this.gridElement.length) {
-            this.gridElement.find('th[data-col-resizable]').resizable({
+        if (this.gridHeaderElement.length) {
+            this.gridHeaderElement.find('th[data-col-resizable]').resizable({
                 handles: 'e',
                 minWidth: 50,
                 // set COL width
@@ -1455,15 +1490,34 @@ $.widget('wm.datagrid', {
                  * then that column was not getting resized.*/
                 resize: function (evt, ui) {
                     var $colElement,
+                        $colHeaderElement,
                         $cellElements,
-                        colIndex = ui.helper.index() + 1;
+                        colIndex = ui.helper.index() + 1,
+                        originalWidth = self.gridHeaderElement.find('thead > tr > th:nth-child(' + colIndex + ')').width(),
+                        newWidth = ui.size.width,
+                        originalTableWidth,
+                        newTableWidth;
+                    $colHeaderElement = self.gridHeaderElement.find('colgroup > col:nth-child(' + colIndex + ')');
                     $colElement = self.gridElement.find('colgroup > col:nth-child(' + colIndex + ')');
                     $cellElements = self.gridElement.find('tr > td:nth-child(' + colIndex + ') > div');
-                    $colElement.width(ui.size.width);
-                    $cellElements.width(ui.size.width);
+                    $colElement.width(newWidth);
+                    $colHeaderElement.width(newWidth);
+                    $cellElements.width(newWidth);
                     // height must be set in order to prevent IE9 to set wrong height
                     $(this).css('height', 'auto');
+                    /*Adjust the table width only if the column width is increased*/
+                    if (newWidth > ui.originalSize.width) {
+                        /*Increase or decrease table width on resizing the column*/
+                        originalTableWidth = self.gridHeaderElement.width();
+                        newTableWidth = originalTableWidth + newWidth - originalWidth;
+                        self.gridHeaderElement.width(newTableWidth);
+                        self.gridElement.width(newTableWidth);
+                    }
                 }
+            });
+            /*On scroll of the content table, scroll the header*/
+            this.gridElement.parent().scroll(function() {
+                self.gridHeaderElement.parent().prop("scrollLeft", this.scrollLeft);
             });
         }
     },
@@ -1492,14 +1546,13 @@ $.widget('wm.datagrid', {
                 '<div class="overlay" style="display: none;">' +
                     '<div class="status"><i class="fa fa-spinner fa-spin"></i><span class="message"></span></div>' +
                 '</div>',
-            table =
-                '<div class="table-container table-responsive" style="height:' + this.options.height + ';">' +
-                    '<table class="' + this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid + '" id="table_' + this.tableId + '">' +
-                    '</table>' +
+            table = '<div class="table-container table-responsive"><div class="app-grid-header"><div class="app-grid-header-inner"><table class="' + this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid + '" id="table_header_' + this.tableId + '">' +
+                    '</table></div></div><div class="app-grid-content" style="height:' + this.options.height + ';"><table class="' + this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid + '" id="table_' + this.tableId + '">' +
+                    '</table></div>' +
                 '</div>';
         this.gridContainer = $(table);
-        this.gridElement = this.gridContainer.find('table');
-
+        this.gridElement = this.gridContainer.find('.app-grid-content table');
+        this.gridHeaderElement = this.gridContainer.find('.app-grid-header table');
         // Remove the grid table element.
         this.element.find('.table-container').remove();
         this.element.append(this.gridContainer);
