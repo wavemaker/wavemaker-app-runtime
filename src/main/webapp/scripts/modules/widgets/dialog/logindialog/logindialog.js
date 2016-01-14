@@ -68,7 +68,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmLogindialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "SecurityService", "BaseService", "Utils", "CONSTANTS", '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, SecurityService, BaseService, Utils, CONSTANTS, $window) {
+    }]).directive('wmLogindialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "SecurityService", "BaseService", "Utils", "CONSTANTS", '$window', 'Variables', function ($templateCache, PropertiesFactory, WidgetUtilService, SecurityService, BaseService, Utils, CONSTANTS, $window, Variables) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.logindialog", ["wm.base"]);
         return {
@@ -112,6 +112,7 @@ WM.module('wm.widgets.dialog')
                                     /* if a different user logs in than the last logged in user, redirect to his landing page */
                                     if (SecurityService.getLastLoggedInUser() !== curUser) {
                                         $window.location = scope.redirectUrl;
+                                        $window.location.reload();
                                     }
                                     scope.onSuccess({$event: event, $scope: scope});
                                     scope.$root.$emit("update-loggedin-user");
