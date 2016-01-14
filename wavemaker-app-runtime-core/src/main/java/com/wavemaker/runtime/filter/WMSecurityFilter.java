@@ -25,12 +25,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.DelegatingFilterProxy;
 
 import com.wavemaker.runtime.WMAppContext;
-import com.wavemaker.runtime.security.WMSecurityConfigStore;
+import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 
 /**
  * @author Uday Shankar
@@ -66,8 +65,8 @@ public class WMSecurityFilter extends DelegatingFilterProxy {
     private boolean isSecurityEnforced() {
         if (isSecurityEnforced == null) {
             try {
-                WMSecurityConfigStore wmSecurityConfigStore = WMAppContext.getInstance().getSpringBean(WMSecurityConfigStore.class);
-                isSecurityEnforced = wmSecurityConfigStore.isEnforceSecurity();
+                WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
+                isSecurityEnforced = wmAppSecurityConfig.isEnforceSecurity();
             } catch (NoSuchBeanDefinitionException e) {
                 isSecurityEnforced = false;
             }

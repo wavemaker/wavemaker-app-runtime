@@ -30,10 +30,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.wavemaker.runtime.WMAppContext;
+import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
+import com.wavemaker.runtime.security.model.SecurityInfo;
+import com.wavemaker.runtime.security.model.UserInfo;
+import com.wavemaker.studio.common.model.security.LoginConfig;
+import com.wavemaker.studio.common.model.security.RoleConfig;
 
 /**
  * The Security Service provides interfaces to access authentication and authorization information in the system.
- * 
+ *
  * @author Frankie Fu
  */
 @Service
@@ -56,13 +61,24 @@ public class SecurityService {
     public Boolean isSecurityEnabled() {
         if(securityEnabled == null) {
             try {
-                WMSecurityConfigStore wmSecurityConfigStore = WMAppContext.getInstance().getSpringBean(WMSecurityConfigStore.class);
-                securityEnabled = wmSecurityConfigStore.isEnforceSecurity();
+                WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
+                securityEnabled = wmAppSecurityConfig.isEnforceSecurity();
             } catch (NoSuchBeanDefinitionException e) {
                 securityEnabled = false;
             }
         }
         return securityEnabled;
+    }
+
+    public RoleConfig getLandingPageForRole(String role) {
+        WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(
+                WMAppSecurityConfig.class);
+        return wmAppSecurityConfig.getRoleMap().get(role);
+    }
+
+    public LoginConfig getLoginConfig() {
+        WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
+        return wmAppSecurityConfig.getLoginConfig();
     }
 
     /**
@@ -85,7 +101,7 @@ public class SecurityService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
             Object principal = authentication.getPrincipal();
-            if(principal instanceof WMUserDetails) {
+            if (principal instanceof WMUserDetails) {
                 return (WMUserDetails) principal;
             }
         }
@@ -101,14 +117,14 @@ public class SecurityService {
      */
     public WMCurrentUser getLoggedInUser() {
         WMCurrentUser wmCurrentUser = new WMCurrentUser();
-        if(isSecurityEnabled() && isAuthenticated()){
+        if (isSecurityEnabled() && isAuthenticated()) {
             wmCurrentUser.setAuthenticated(isAuthenticated());
             wmCurrentUser.setSecurityEnabled(isSecurityEnabled());
             wmCurrentUser.setUserId(getUserId());
             wmCurrentUser.setUserName(getUserName());
             wmCurrentUser.setTenantId(getTenantId());
             wmCurrentUser.setUserRoles(getUserRoles());
-            if(getWMUserDetails()!=null){
+            if (getWMUserDetails() != null) {
                 wmCurrentUser.setLoginTime(getWMUserDetails().getLoginTime());
             }
         } else {
@@ -129,7 +145,7 @@ public class SecurityService {
         if (wmUserDetails != null) {
             return wmUserDetails.getUsername();
         }
-        if(getAuthenticatedAuthentication()!=null){
+        if (getAuthenticatedAuthentication() != null) {
             return getAuthenticatedAuthentication().getName();
         }
         return null;
@@ -137,15 +153,15 @@ public class SecurityService {
 
     /**
      * Returns the user id of the principal in the current security context, otherwise, it returns name of the authenticated user..
-     * 
+     *
      * @return String value, which will contain userId.
      */
     public String getUserId() {
         WMUserDetails wmUserDetails = getWMUserDetails();
-        if(wmUserDetails != null){
+        if (wmUserDetails != null) {
             return wmUserDetails.getUserId();
         }
-        if(getAuthenticatedAuthentication()!=null){
+        if (getAuthenticatedAuthentication() != null) {
             return getAuthenticatedAuthentication().getName();
         }
         return null;
@@ -153,7 +169,7 @@ public class SecurityService {
 
     /**
      * If authentication is null then it returns empty String array. If not then it will retrieve the authority and process the roleName in the spring format before returning and then return.
-     * 
+     *
      * @return String array with roles or empty depending on authentication object.
      */
     public String[] getUserRoles() {
@@ -161,7 +177,7 @@ public class SecurityService {
         if (authentication == null) {
             return new String[0];
         }
-        Collection<? extends GrantedAuthority>  authorities = authentication.getAuthorities(); 
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         List<String> roleNames = new ArrayList<String>();
         for (GrantedAuthority authority : authorities) {
             String roleName = authority.getAuthority();
@@ -231,7 +247,7 @@ public class SecurityService {
      */
     public long getLoginTime() {
         WMUserDetails wmUserDetails = getWMUserDetails();
-        if(wmUserDetails != null)
+        if (wmUserDetails != null)
             return wmUserDetails.getLoginTime();
         return 0L;
     }
@@ -244,4 +260,26 @@ public class SecurityService {
         this.roles = roles;
     }
 
+    public SecurityInfo getSecurityInfo() {
+
+        final boolean authenticated = isAuthenticated();
+        UserInfo userInfo = null;
+        if (authenticated) {
+            userInfo = new UserInfo();
+            userInfo.setUserId(getUserId());
+            userInfo.setUserName(getUserName());
+            final String[] userRoles = getUserRoles();
+            userInfo.setUserRoles(userRoles);
+            if (userRoles.length > 0) {
+                userInfo.setLandingPage(getLandingPageForRole(userRoles[0]).getLandingPage());
+            }
+        }
+
+        SecurityInfo securityInfo = new SecurityInfo();
+        securityInfo.setAuthenticated(authenticated);
+        securityInfo.setSecurityEnabled(isSecurityEnabled());
+        securityInfo.setLoginConfig(getLoginConfig());
+        securityInfo.setUserInfo(userInfo);
+        return securityInfo;
+    }
 }
