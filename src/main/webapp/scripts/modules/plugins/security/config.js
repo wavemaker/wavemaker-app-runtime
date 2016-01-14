@@ -127,10 +127,6 @@ wm.plugins.security.constant('SECURITY_URLS', {
             url: "services/projects/:projectID/securityservice/providers/customauth",
             method: "GET"
         },
-        getServiceOperations: {
-            url: "services/projects/:projectId/services/:serviceId/servicedef",
-            method: "GET"
-        },
         testADConnection: {
             url: "services/projects/:projectID/securityservice/providers/ad/testconnection",
             method: "POST"

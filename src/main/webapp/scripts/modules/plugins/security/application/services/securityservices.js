@@ -936,36 +936,6 @@ wm.plugins.security.services.SecurityService = [
                     data: params.config
                 }, successCallback, failureCallback);
             },
-            /**
-             * @ngdoc function
-             * @name wm.security.$SecurityService#getServiceOperations
-             * @methodOf wm.security.$SecurityService
-             * @function
-             *
-             * @description
-             * get the operations provided by the service
-             *
-             * @param {object} params to be used for getting the service operations
-             * @param {function} successCallback to be called on success
-             * @param {function} failureCallback to be called on failure
-             */
-            getServiceOperations: function (params, successCallback, failureCallback, forceReload) {
-                /*checking if the operations for the service are already present*/
-                if (serviceOperationsMap[params.urlParams.serviceId] && !forceReload) {
-                    /*if operations are already present, return the cached response*/
-                    Utils.triggerFn(successCallback, serviceOperationsMap[params.urlParams.serviceId]);
-                } else {
-                    /*if operations are not present, invoke the service and retrieve the operations*/
-                    BaseService.send({
-                        target: 'Security',
-                        action: 'getServiceOperations',
-                        urlParams: params.urlParams
-                    }, function (response) {
-                        serviceOperationsMap[params.urlParams.serviceId] = response;
-                        Utils.triggerFn(successCallback, response);
-                    }, failureCallback);
-                }
-            },
 
             /**
              * @ngdoc function
