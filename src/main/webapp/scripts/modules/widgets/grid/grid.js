@@ -368,6 +368,8 @@ WM.module('wm.widgets.grid')
                                 if (CONSTANTS.isStudioMode) {
                                     scope.widgetProps.confirmdelete.show = newVal;
                                     scope.widgetProps.deletemessage.show = newVal;
+                                    scope.widgetProps.confirmdelete.showindesigner = newVal;
+                                    scope.widgetProps.deletemessage.showindesigner = newVal;
                                 }
                                 break;
                             case 'updaterow':
@@ -384,6 +386,7 @@ WM.module('wm.widgets.grid')
                                 scope.setDataGridOption('enableSearch', newVal);
                                 if (CONSTANTS.isStudioMode) {
                                     scope.widgetProps.searchlabel.show = newVal;
+                                    scope.widgetProps.searchlabel.showindesigner = newVal;
                                 }
                                 break;
                             case 'searchlabel':
@@ -392,6 +395,8 @@ WM.module('wm.widgets.grid')
                             case 'multiselect':
                                 if (CONSTANTS.isStudioMode && newVal) {
                                     scope.radioselect = false;
+                                    scope.widgetProps.radioselect.show = false;
+                                    scope.widgetProps.radioselect.showindesigner = false;
                                     scope.$root.$emit('set-markup-attr', scope.widgetid, {'radioselect': false});
                                 }
                                 scope.setDataGridOption('multiselect', newVal);
@@ -399,6 +404,8 @@ WM.module('wm.widgets.grid')
                             case 'radioselect':
                                 if (CONSTANTS.isStudioMode && newVal) {
                                     scope.multiselect = false;
+                                    scope.widgetProps.multiselect.show = false;
+                                    scope.widgetProps.multiselect.showindesigner = false;
                                     scope.$root.$emit('set-markup-attr', scope.widgetid, {'multiselect': false});
                                 }
                                 scope.setDataGridOption('showRadioColumn', newVal);
@@ -473,6 +480,9 @@ WM.module('wm.widgets.grid')
                                     scope.widgetProps.deleterow.show = !newVal;
                                     scope.widgetProps.updaterow.show = !newVal;
                                     scope.widgetProps.insertrow.show = !newVal;
+                                    scope.widgetProps.deleterow.showindesigner = !newVal;
+                                    scope.widgetProps.updaterow.showindesigner = !newVal;
+                                    scope.widgetProps.insertrow.showindesigner = !newVal;
                                 }
                                 break;
                             case 'gridclass':
