@@ -1470,7 +1470,7 @@ $.widget('wm.datagrid', {
         cols = $colgroup.find('col');
         /***setting the header col width based on the content width***/
         this.gridHeaderElement.find('th').each(function(index) {
-            $(cols[index]).css('width', $(this).width());
+            $(cols[index]).css('width', $(this).outerWidth());
         });
         /**As jquery references the colgroup, clone the colgroup and add it to the table body**/
         this.gridElement.append($colgroup.clone());
