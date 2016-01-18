@@ -698,8 +698,42 @@ WM.module('wm.widgets.live')
                             return items[0];
                         }
                         return items;
+                    },
+                    set: function (items) {
+                        $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
+                        if (_.isArray(items)) {
+                            _.forEach(items, function (item) {
+                                $is.selectItem(item);
+                            });
+                        } else {
+                            $is.selectItem(items);
+                        }
                     }
                 });
+            }
+            /*Based on the given item, find the index of the list item*/
+            function getItemIndex(listItems, item) {
+                var matchIndex;
+                listItems.each(function (index) {
+                    var $li = WM.element(this),
+                        liScope = $li.scope();
+                    if (_.isEqual(liScope.item, item)) {
+                        matchIndex = index;
+                        return false;
+                    }
+                });
+                return matchIndex;
+            }
+            /*Select or delselect the live list item*/
+            function toggleSelectedItem($el, item, isSelect) {
+                var listItems = $el.find('.list-group li.app-list-item'),
+                    itemIndex = WM.isNumber(item) ? item : getItemIndex(listItems, item),
+                    $li = WM.element(listItems[itemIndex]);
+                if (isSelect) {
+                    $li.addClass('active');
+                } else {
+                    $li.removeClass('active');
+                }
             }
 
             function postLinkFn($is, $el, attrs, listCtrl) {
@@ -733,6 +767,14 @@ WM.module('wm.widgets.live')
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);
 
                 defineSelectedItemProp($is, $el, []);
+                /* Select the given item*/
+                $is.selectItem = function (item) {
+                    toggleSelectedItem($el, item, true);
+                };
+                /* deselect the given item*/
+                $is.deselectItem = function (item) {
+                    toggleSelectedItem($el, item, false);
+                };
 
                 // in the run mode navigation can not be changed dynamically
                 // process the navigation type before the dataset is set.
