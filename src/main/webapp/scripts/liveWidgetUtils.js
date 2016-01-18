@@ -13,8 +13,9 @@ WM.module('wm.widgets.live')
         'FormWidgetUtils',
         'PropertiesFactory',
         '$compile',
+        '$liveVariable',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable) {
             'use strict';
             var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
                 eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
@@ -1224,6 +1225,62 @@ WM.module('wm.widgets.live')
                     extractWidgetConfig(column);
                 }
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.live.LiveWidgetUtils#fetchPropertiesMapColumns
+             * @methodOf wm.widgets.live.LiveWidgetUtils
+             * @function
+             *
+             * @description
+             * Returns columns and sets related data for provided propertiesMap
+             *
+             * @param {object} propertiesMap from which columns are retrieved
+             * @param {object} relatedData for live filter dataset
+             * @param {object} variableObj to which filter is binded
+             *
+             */
+            function fetchPropertiesMapColumns(propertiesMap, relatedData, variableObj) {
+                var columns = {}, columnName, data = {}, primaryKey;
+                /* iterated trough the propertiesMap columns of all levels and build object with columns having required configuration*/
+                _.each(propertiesMap.columns, function (val) {
+                    /* if the object is nested type repeat the above process for that nested object through recursively */
+                    if (val.isRelated) {
+                        if (val.isList) {
+                            return;
+                        }
+                        data.relatedData = data.relatedData || {};
+                        var relatedTableColumns = $liveVariable.getRelatedColumnsList(variableObj, val.fieldName),
+                            columnNameTypeMap = {};
+                        _.each(val.columns, function (column) {
+                            if (column.isPrimaryKey) {
+                                primaryKey = column.fieldName;
+                            }
+                            columnNameTypeMap[column.fieldName] = column.type;
+                        });
+                        data.relatedData[val.relatedEntityName] = {
+                            columns: relatedTableColumns,
+                            primaryKey: primaryKey,
+                            columnNameTypeMap: columnNameTypeMap
+                        };
+
+                        /* otherwise build object with required configuration */
+                        columnName = val.fieldName.charAt(0).toLowerCase() + val.fieldName.slice(1);
+                        columns[columnName] = {};
+                        columns[columnName].isRelated = val.isRelated === 'true' || val.isRelated === true;
+                        columns[columnName].relatedEntityName = val.relatedEntityName;
+                    } else {
+                        /* otherwise build object with required configuration */
+                        columnName = val.fieldName;
+                        columns[columnName] = {};
+                    }
+                    columns[columnName].type = val.type;
+                    columns[columnName].isPrimaryKey = val.isPrimaryKey;
+                    columns[columnName].generator = val.generator;
+                });
+                relatedData = data.relatedData;
+                data.columns = columns;
+                return columns;
+            }
 
             this.toggleActionMessage        = toggleActionMessage;
             this.getEventTypes              = getEventTypes;
@@ -1244,6 +1301,7 @@ WM.module('wm.widgets.live')
             this.fieldPropertyChangeHandler = fieldPropertyChangeHandler;
             this.preProcessFields           = preProcessFields;
             this.setColumnConfig            = setColumnConfig;
+            this.fetchPropertiesMapColumns  = fetchPropertiesMapColumns;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {
