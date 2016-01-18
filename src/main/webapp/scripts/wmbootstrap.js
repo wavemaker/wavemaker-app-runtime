@@ -334,6 +334,7 @@ Application
             'SecurityService',
             'Variables',
             'CONSTANTS',
+            'wmSpinner',
 
             //do not remove the below lines
             'BasicVariableService',
@@ -345,7 +346,7 @@ Application
             'LogoutVariableService',
             'TimerVariableService',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner) {
                 'use strict';
 
                 var projectID = ProjectService.getId(), /*ProjectID will always be at the same index in the URL*/
@@ -487,6 +488,18 @@ Application
                 }
                 AppManager.isDeviceReady().then(function () {
                     $rs.$emit('application-ready');
+                });
+                /* This is used to show and hide the spinner when service is in flight */
+                $rs.$on('toggle-variable-state', function (event, variableName, active) {
+                    var variable = Variables.getVariableByName(variableName);
+                    if (variable && !_.isEmpty(_.trim(variable.spinnerContext))) {
+
+                        if (active) {
+                            variable._spinnerId = wmSpinner.show(variable.spinnerMessage);
+                        } else {
+                            wmSpinner.hide(variable._spinnerId);
+                        }
+                    }
                 });
             }
         ]);
