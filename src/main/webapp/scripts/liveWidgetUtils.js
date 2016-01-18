@@ -254,7 +254,6 @@ WM.module('wm.widgets.live')
                 columnDef.displayname = attrs.displayname || attrs.caption;
                 columnDef.pcDisplay = WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === "1" || attrs.pcDisplay === "true") : true;
                 columnDef.mobileDisplay = WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === "1" || attrs.mobileDisplay === "true") : true;
-                columnDef.show = attrs.show === '1' || attrs.show === 'true' || attrs.show;
                 columnDef.type = attrs.type || 'text';
                 columnDef.widget = widgetType; /*Widget type support for older projects*/
                 columnDef.primaryKey = attrs.primaryKey === 'true' || attrs.primaryKey === true;
@@ -262,6 +261,11 @@ WM.module('wm.widgets.live')
                 columnDef.multiple = attrs.multiple === 'true' || attrs.multiple === true;
                 columnDef.class = attrs.class || '';
                 columnDef.required = attrs.required === 'required' || attrs.required;
+                if (attrs.show === 'false') {
+                    columnDef.show = false;
+                } else {
+                    columnDef.show = attrs.show === '1' || attrs.show === 'true' || attrs.show;
+                }
                 return columnDef;
             }
             /**
