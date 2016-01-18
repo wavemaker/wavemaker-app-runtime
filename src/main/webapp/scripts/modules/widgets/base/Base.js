@@ -1136,7 +1136,6 @@ WM.module('wm.widgets.base', [])
                         "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left"},
                         "enctype": {"type": "list", "options": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]},
                         "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left"},
-                        "layout": {"type": "list", "options": ["inline", "One Column", "Two Column", "Three Column", "Four Column"], "value": "One Column"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}

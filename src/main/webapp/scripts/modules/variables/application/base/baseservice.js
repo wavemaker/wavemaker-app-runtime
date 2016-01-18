@@ -123,9 +123,13 @@ wm.variables.services.Variables = [
 
         /*function to reload the variables of current context*/
             reloadVariables = function (success, error) {
+
+                var pageVariablesLoaded = false,
+                    appVariablesLoaded  = false;
+
                 function handleSuccess() {
                     /*Executing success if both app and current page variables are reloaded*/
-                    if (!_.includes(reloadRequired, $rootScope.activePageName) && !_.includes(reloadRequired, VARIABLE_CONSTANTS.OWNER.APP)) {
+                    if (pageVariablesLoaded && appVariablesLoaded) {
                         Utils.triggerFn(success);
                     }
                 }
@@ -133,14 +137,18 @@ wm.variables.services.Variables = [
                 reloadRequired = _.xor(_.keys(self.variableCollection), Utils.getService('PrefabManager').getAppPrefabNames());
                 getAppVariables(function (appVariables) {
                     setAppVariables(appVariables);
-                    _.remove(reloadRequired, function (page) {
-                        return page === VARIABLE_CONSTANTS.OWNER.APP;
-                    });
+                    appVariablesLoaded = true;
                     handleSuccess();
                 }, error);
-                getPageVariables($rootScope.activePageName, function () {
-                    handleSuccess();
-                }, error);
+
+                if ($rootScope.activePageName) {
+                    getPageVariables($rootScope.activePageName, function () {
+                        pageVariablesLoaded = true;
+                        handleSuccess();
+                    }, error);
+                } else {
+                    pageVariablesLoaded = true;
+                }
             },
 
             /* function to update binding of a field of a variable */
@@ -1156,12 +1164,14 @@ wm.variables.services.Variables = [
 
                 /* if app level variable make it available in the active page scope */
                 if (owner === VARIABLE_CONSTANTS.OWNER.APP) {
-                    Object.defineProperty(pageScopeMap[$rootScope.activePageName].Variables, name, {
-                        configurable: true,
-                        get: function () {
-                            return varCollectionObj[scope.$id][name];
-                        }
-                    });
+                    if ($rootScope.activePageName) {
+                        Object.defineProperty(pageScopeMap[$rootScope.activePageName].Variables, name, {
+                            configurable: true,
+                            get: function () {
+                                return varCollectionObj[scope.$id][name];
+                            }
+                        });
+                    }
                 }
 
                 if (isUpdate) {

@@ -125,12 +125,6 @@ WM.module('wm.layouts.containers')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
-                        scope.layoutObj = {
-                            'One Column': 1,
-                            'Two Column': 2,
-                            'Three Column': 3,
-                            'Four Column': 4
-                        };
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
@@ -170,8 +164,6 @@ WM.module('wm.layouts.containers')
  *                  Width of the form.
  * @param {string=} height
  *                  Height of the form.
- * @param {string=} layout
- *                  Defines the layout of the form.
  * @param {string=} method
  *                  Defines the method to be used for submission of the form to the server [GET, POST].
  * @param {string=} action
