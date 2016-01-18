@@ -940,6 +940,10 @@ WM.module('wm.utils', [])
                 return;
             }
 
+            if (!WM.isObject(obj)) {
+                return obj;
+            }
+
             var parts = key.split('.'),
                 part;
 
