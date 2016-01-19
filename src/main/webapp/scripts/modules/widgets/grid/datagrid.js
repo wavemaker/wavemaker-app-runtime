@@ -18,7 +18,7 @@ $.widget('wm.datagrid', {
         enableSort: true,
         enableSearch: false,
         height: 100,
-        showHeader: false,
+        showHeader: true,
         selectFirstRow: false,
         allowAddNewRow: true,
         allowDeleteRow: true,
@@ -1470,7 +1470,9 @@ $.widget('wm.datagrid', {
         cols = $colgroup.find('col');
         /***setting the header col width based on the content width***/
         this.gridHeaderElement.find('th').each(function(index) {
-            $(cols[index]).css('width', $(this).outerWidth());
+            var $header = $(this),
+                width = $header.hasClass('grid-col-small') ? 30 : $header.width(); //Keep width as 30 for checkbox and radio column
+            $(cols[index]).css('width', width);
         });
         /**As jquery references the colgroup, clone the colgroup and add it to the table body**/
         this.gridElement.append($colgroup.clone());
@@ -1594,7 +1596,9 @@ $.widget('wm.datagrid', {
             value = value + 'px';
         }
         this.options[key] = value;
-        this.gridContainer.css(key, this.options[key]);
+        if (key === 'height') {
+            this.gridContainer.find('.app-grid-content').css(key, value);
+        }
     },
 
     _destroy: function () {

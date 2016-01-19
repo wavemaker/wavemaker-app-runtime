@@ -265,7 +265,8 @@ WM.module('wm.widgets.grid')
                                 'multiselect'       : 'multiselect',
                                 'radioselect'       : 'showRadioColumn',
                                 'filternullrecords' : 'filterNullRecords',
-                                'enablesort'        : 'enableSort'
+                                'enablesort'        : 'enableSort',
+                                'showheader'        : 'showHeader'
                             },
                             handlers = [],
                             gridController;
@@ -365,6 +366,7 @@ WM.module('wm.widgets.grid')
                                     scope.gridOptions[value] = (attrValue === "true" || attrValue === true);
                                 }
                             });
+                            scope.renderOperationColumns();
                         }
                         scope.datagridElement.datagrid(scope.gridOptions);
 
@@ -382,9 +384,9 @@ WM.module('wm.widgets.grid')
                                 scope.setDataGridOption('selectFirstRow', newVal);
                                 break;
                             case 'deleterow':
-                                scope.renderOperationColumns();
-                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
                                 if (CONSTANTS.isStudioMode) {
+                                    scope.renderOperationColumns();
+                                    scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
                                     scope.widgetProps.confirmdelete.show = newVal;
                                     scope.widgetProps.deletemessage.show = newVal;
                                     scope.widgetProps.confirmdelete.showindesigner = newVal;
@@ -392,14 +394,18 @@ WM.module('wm.widgets.grid')
                                 }
                                 break;
                             case 'updaterow':
-                                scope.renderOperationColumns();
-                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
+                                if (CONSTANTS.isStudioMode) {
+                                    scope.renderOperationColumns();
+                                    scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
+                                }
                                 break;
                             case 'dataset':
                                 scope.watchVariableDataSet(newVal, element);
                                 break;
                             case 'showheader':
-                                scope.setDataGridOption('showHeader', newVal);
+                                if (CONSTANTS.isStudioMode) {
+                                    scope.setDataGridOption('showHeader', newVal);
+                                }
                                 break;
                             case 'gridsearch':
                                 scope.setDataGridOption('enableSearch', newVal);
