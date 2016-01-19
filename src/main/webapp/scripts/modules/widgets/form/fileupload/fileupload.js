@@ -335,8 +335,8 @@ WM.module('wm.widgets.form')
         /* this return the array of files which are having the file size not more than maxfilesize and filters based on contenttype */
         function getValidFiles($files, scope) {
             var validFiles = [],
-                MAXFILEUPLOAD_SIZE = parseInt(scope.maxfilesize, 10) * FILESIZE_MB || 2 * FILESIZE_MB,
-                MAX_FILE_UPLOAD_FORMATTED_SIZE = (scope.maxfilesize || '2') + 'MB';
+                MAXFILEUPLOAD_SIZE = parseInt(scope.maxfilesize, 10) * FILESIZE_MB || FILESIZE_MB,
+                MAX_FILE_UPLOAD_FORMATTED_SIZE = (scope.maxfilesize || '1') + 'MB';
 
             _.forEach($files, function (file) {
                 /* check for the file content type before uploading */
@@ -347,7 +347,7 @@ WM.module('wm.widgets.form')
                 }
                 if (file.size > MAXFILEUPLOAD_SIZE) {
                     Utils.triggerFn(scope.onError);
-                    wmToaster.show('error', 'FILE SIZE EXCEEDED LIMIT. MAX UPLOAD SIZE IS ' + MAX_FILE_UPLOAD_FORMATTED_SIZE);
+                    wmToaster.show('error', 'File size exceeded limit. Max upload size is ' + MAX_FILE_UPLOAD_FORMATTED_SIZE);
                     return;
                 }
                 validFiles.push(file);
