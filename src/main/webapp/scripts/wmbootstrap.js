@@ -84,12 +84,46 @@ Application
                     prevRoute = $location.path();
                 }
 
+                function handleSessionTimeout(page, onSuccess, onError) {
+                    var sessionTimeoutConfig,
+                        sessionTimeoutMethod,
+                        loginConfig,
+                        loginMethod;
+                    SecurityService.getConfig(function(config) {
+                        /* if no user found, 401 was thrown for first time login */
+                        if (config.userInfo.userName) {
+                            sessionTimeoutConfig = config.login.sessionTimeout || {'type': 'DIALOG'};
+                            sessionTimeoutMethod = sessionTimeoutConfig.type.toUpperCase();
+                            if (sessionTimeoutMethod === 'DIALOG') {
+                                if (page) {
+                                    BaseService.pushToErrorCallStack(null, function () {
+                                        _load(page, onSuccess, onError);
+                                    }, WM.noop);
+                                }
+                                BaseService.handleSessionTimeOut();
+                            } else if (sessionTimeoutMethod === 'PAGE') {
+                                if (!page) {
+                                    page = $location.path().replace('/', '');
+                                }
+                                $location.path(sessionTimeoutConfig.pageName);
+                                $location.search('redirectTo', page);
+                            }
+                        } else {
+                            loginConfig = config.login;
+                            loginMethod = loginConfig.type.toUpperCase();
+                            if (loginMethod === 'DIALOG') {
+                                BaseService.handleSessionTimeOut();
+                                /* Through loginDialog, user will be redirected to respective landing page as it is a first time login */
+                            } else if (loginMethod === 'PAGE') {
+                                $location.path(loginConfig.pageName);
+                            }
+                        }
+                    });
+                }
+
                 function defaultPageLoadErrorHandler(pageName, onSuccess, onError, jqxhr) {
                     if (jqxhr.status === 401 && !jqxhr.headers('X-WM-Login-ErrorMessage')) {
-                        BaseService.pushToErrorCallStack(null, function () {
-                            _load(pageName, onSuccess, onError);
-                        }, WM.noop);
-                        BaseService.handleSessionTimeOut();
+                        handleSessionTimeout(pageName, onSuccess, onError);
                     } else if (jqxhr.status === 403) {
                         /*in-case of 403 forbidden error*/
                         /*TODO: remove prevRoute variable when 403 page is implemented */
@@ -263,6 +297,34 @@ Application
                     cache = $cacheFactory('APP_PAGES');
                 }
 
+                function loadSecurityConfig() {
+                    var deferred = $q.defer(),
+                        page;
+
+                    SecurityService.getConfig(function (config) {
+                        $rs.securityConfig = config;
+                        if (config.securityEnabled) {
+                            if (config.authenticated) {
+                                page = config.userInfo.homePage;
+                            } else {
+                                page = config.homePage;
+                            }
+                        } else {
+                            page = config.homePage;
+                        }
+                        if ($location.path() === '/') {
+                            $location.path(page);
+                        }
+
+                        deferred.resolve();
+                    }, function () {
+                        $rs.securityConfig = {};
+                        deferred.resolve();
+                    });
+
+                    return deferred.promise;
+                }
+
                 $rs.$on('app-logout-success', clearPagesCache);
 
                 this.loadPage               = loadPage;
@@ -274,6 +336,8 @@ Application
                 this.updateLoggedInUser     = updateLoggedInUser;
                 this.getPreparedPageContent = getPreparedPageContent;
                 this.isDeviceReady          = isDeviceReady;
+                this.loadSecurityConfig     = loadSecurityConfig;
+                this.handleSessionTimeOut   = handleSessionTimeout;
             }
         ])
     .config(
@@ -282,44 +346,27 @@ Application
             function ($routeProvider) {
                 'use strict';
 
-                var routeConfig = {
-                    'template': '<div>Loading Page Content...</div>',
+                var initText = '<div>Loading Page Content...</div>',
+                    routeConfig = {
+                    'template': initText,
                     'resolve': {
-                        'pageContent': function (AppManager, $route) {
-                            var pageName = $route.current.params.name;
-                            return AppManager.loadPage(pageName);
+                        'securityConfig': function (AppManager) {
+                            return AppManager.loadSecurityConfig();
                         }
                     }
-                },
-                    route = '/:name';
+                };
 
-                function isLoginPage() {
-                    return window.location.pathname.split('/').pop() === 'login.html';
-                }
-
-                if (isLoginPage()) {
-                    $routeProvider
-                        .when('/:name', routeConfig) // load the given configured login page.
-                        .otherwise({redirectTo: 'Login'}); // load the default login page
-                } else {
-
-                    WM.extend(routeConfig.resolve, {
-                        'userRoles': function (AppManager) {
-                            return AppManager.loadUserRoles();
-                        }
+                $routeProvider
+                    .when('/', routeConfig)
+                    .when('/:name', {
+                        'template': initText,
+                        'resolve': WM.extend({
+                            'pageContent': function (AppManager, $route) {
+                                var pageName = $route.current.params.name;
+                                return AppManager.loadPage(pageName);
+                            }
+                        }, routeConfig.resolve)
                     });
-
-                    /* loop to append parameters to default "/:name", allowing to create max. of 6 parameters*/
-                    $routeProvider
-                        .when(route, routeConfig) // when page name is provided
-                        .when('/Common', {redirectTo: 'Main'}) // when pageName is Common
-                        .otherwise({redirectTo: 'Main'});
-
-                    _.range(1, 7).forEach(function (idx) {
-                        route = route + '/:param' + idx;
-                        $routeProvider.when(route, routeConfig);
-                    });
-                }
             }
         ]
     )
@@ -378,7 +425,26 @@ Application
                     }
                 });
 
-                /*create the project object*/
+                AppManager.isDeviceReady()
+                    .then(function () {
+                        return AppManager.loadCommonPage($s);
+                    }).then(function () {
+                        if ($rs.isApplicationType) {
+                            /* load the common contents, when user is authenticated and common contents not loaded yet */
+                            SecurityService.getConfig(function (config) {
+                                if (!config.securityEnabled || config.authenticated) {
+                                    AppManager.initAppVariables($s)
+                                        .then(function (appVariables) {
+                                            var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
+                                            AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
+                                            AppManager.updateLoggedInUser();
+                                        });
+                                }
+                            });
+                        }
+                    });
+
+                        /*create the project object*/
                 $rs.project = {
                     'id'          : projectID,
                     'activeTheme' : appProperties.activeTheme,
@@ -403,22 +469,6 @@ Application
                     );
                 }
 
-                /* load the common contents */
-                if ($rs.isApplicationType && Utils.getCurrentPage() !== 'login.html') {
-
-                    AppManager.isDeviceReady()
-                        .then(function () {
-                            return AppManager.loadCommonPage($s);
-                        }).then(function () {
-                            return AppManager.initAppVariables($s);
-                        })
-                        .then(function (appVariables) {
-                            var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
-                            AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
-                            AppManager.updateLoggedInUser();
-                        });
-                }
-
                 /*$rs.isSecurityEnabled is set to true only after user logs in. Before that we need to know whether security is enabled or not
                 * so when current page is login.html we assume that security is enabled*/
                 if (window.location.pathname.split('/').pop() === 'login.html') {
@@ -426,7 +476,7 @@ Application
                 }
 
                 $rs.$on('update-loggedin-user', function () {
-                    SecurityService.setLoggedInUser(null);
+                    SecurityService.setConfig(null);
                     AppManager.updateLoggedInUser(true);
                 });
 

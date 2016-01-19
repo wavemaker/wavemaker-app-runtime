@@ -111,8 +111,7 @@ WM.module('wm.widgets.dialog')
                                     scope.redirectUrl = redirectUrl;
                                     /* if a different user logs in than the last logged in user, redirect to his landing page */
                                     if (SecurityService.getLastLoggedInUser() !== curUser) {
-                                        $window.location = scope.redirectUrl;
-                                        $window.location.reload();
+                                        $window.location = $window.location.pathname;
                                     }
                                     scope.onSuccess({$event: event, $scope: scope});
                                     scope.$root.$emit("update-loggedin-user");

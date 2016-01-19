@@ -21,7 +21,8 @@ wm.variables.services.LoginVariableService = ['Variables',
     '$rootScope',
     'VARIABLE_CONSTANTS',
     'CONSTANTS',
-    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $rootScope, VARIABLE_CONSTANTS, CONSTANTS) {
+    '$location',
+    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $rootScope, VARIABLE_CONSTANTS, CONSTANTS, $location) {
         "use strict";
 
         var methods, loginVariableObj, initiateCallback;
@@ -95,8 +96,18 @@ wm.variables.services.LoginVariableService = ['Variables',
                              */
                             redirectUrl = redirectUrl.substr(redirectUrl.lastIndexOf('/') + 1);
                         }
-                        $window.location = redirectUrl;
+                        var redirectPage = $location.search().redirectTo;
+                        if (redirectPage && WM.isString(redirectPage) && SecurityService.getLastLoggedInUser() === params.username) {
+                            $location.url(redirectPage);
+                        } else {
+                            $window.location = $window.location.pathname;
+                        }
                     }
+                    /*
+                     * IN CASE OF NOT USING DEFAULT-SUCCESS-HANDLER the new securityConfig are expected
+                     * If they are fetched on login response, they can be simply updated
+                     * Else a fresh call need to update the same
+                     */
                 }, function () {
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {

@@ -18,10 +18,11 @@ wm.variables.services.LogoutVariableService = ['Variables',
     'SecurityService',
     'Utils',
     '$window',
+    '$location',
     'CONSTANTS',
     'VARIABLE_CONSTANTS',
     '$rootScope',
-    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, CONSTANTS, VARIABLE_CONSTANTS, $rootScope) {
+    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $location, CONSTANTS, VARIABLE_CONSTANTS, $rootScope) {
         "use strict";
 
         var methods, logoutVariableObj, initiateCallback;
@@ -34,8 +35,8 @@ wm.variables.services.LogoutVariableService = ['Variables',
                 var variableOwner = variable.owner,
                     variableEvents = VARIABLE_CONSTANTS.EVENTS,
                     callBackScope,
-                    performLogout,
-                    logoutErrorMessage = "No authenticated user to logout.";
+                    logoutErrorMessage = "No authenticated user to logout.",
+                    handleError;
 
                 /* get the callback scope for the variable based on its owner */
                 if (variableOwner === "App") {
@@ -49,49 +50,44 @@ wm.variables.services.LogoutVariableService = ['Variables',
                     }
                 }
 
-                performLogout = $rootScope.isUserAuthenticated;
-
-                if (performLogout) {
-                    var currentPage = $window.location.hash;
-                    variable.promise = SecurityService.appLogout(function () {
-                        $rootScope.isUserAuthenticated = false;
-                        Utils.triggerFn(success);
-                        if (variable.useDefaultSuccessHandler) {
-                            /*If the re-directing page is other than the login page changing the window location details*/
-                            if (!variable.redirectTo || variable.redirectTo === 'Login' || variable.redirectTo === 'login.html') {
-                                $window.location = 'login.html';
-                            } else {
-                                $window.location.hash = '#/' + (variable.redirectTo === "index.html" ? "Main" : variable.redirectTo);
-                                /*If the current page and logout redirecting page is same then refresh the window*/
-                                if (currentPage === $window.location.hash) {
-                                    $window.location.reload();
-                                }
-                            }
-                        } else {
-                            if (CONSTANTS.isRunMode) {
-                                WM.forEach(variableEvents, function (event) {
-                                    if (event !== "onError") {
-                                        initiateCallback(event, variable, callBackScope);
-                                    }
-                                });
-                            }
-                        }
-                        /* clear the logged in user variable */
-                        $rootScope.$emit("update-loggedin-user");
-                    }, function () {
-                        /* if in RUN mode, trigger error events associated with the variable */
-                        if (CONSTANTS.isRunMode) {
-                            initiateCallback("onError", variable, callBackScope);
-                        }
-                        Utils.triggerFn(error);
-                    });
-                } else {
+                handleError = function (msg) {
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
-                        initiateCallback("onError", variable, callBackScope, logoutErrorMessage);
+                        initiateCallback("onError", variable, callBackScope, msg);
                     }
-                    Utils.triggerFn(error, logoutErrorMessage);
-                }
+                    Utils.triggerFn(error, msg);
+                };
+
+                SecurityService.isAuthenticated(function (isAuthenticated) {
+                    if (isAuthenticated) {
+                        variable.promise = SecurityService.appLogout(function () {
+                            $rootScope.isUserAuthenticated = false;
+                            Utils.triggerFn(success);
+                            if (variable.useDefaultSuccessHandler) {
+                                var redirectPage = variable.redirectTo;
+                                if (!redirectPage || redirectPage === "login.html") {
+                                    redirectPage = "";
+                                }
+                                $location.url(redirectPage);
+                                $window.location.reload();
+                            } else {
+                                if (CONSTANTS.isRunMode) {
+                                    WM.forEach(variableEvents, function (event) {
+                                        if (event !== "onError") {
+                                            initiateCallback(event, variable, callBackScope);
+                                        }
+                                    });
+                                }
+                            }
+                            /* clear the logged in user variable */
+                            $rootScope.$emit("update-loggedin-user");
+                        }, handleError);
+                    } else {
+                        handleError();
+                    }
+                }, function () {
+                    handleError(logoutErrorMessage);
+                });
             },
             cancel: function (variable) {
                 /* process only if current variable is actually active */

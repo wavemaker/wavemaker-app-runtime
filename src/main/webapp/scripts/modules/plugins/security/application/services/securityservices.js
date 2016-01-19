@@ -1,4 +1,4 @@
-/*global WM, wm, _*/
+/*global WM, wm, _, _WM_APP_PROPERTIES*/
 /*jslint todo: true */
 /*jslint nomen: true*/
 /**
@@ -11,8 +11,9 @@
 wm.plugins.security.services.SecurityService = [
     "BaseService",
     "Utils",
+    "$rootScope",
 
-    function (BaseService, Utils) {
+    function (BaseService, Utils, $rs) {
         'use strict';
 
         /* to store general options & roles */
@@ -21,23 +22,52 @@ wm.plugins.security.services.SecurityService = [
             _interceptUrls,
             _generalOptions,
             _lastUser,
+            _config,
             loggedInUser,
             serviceOperationsMap = {},
+            getConfig = function (successCallback, failureCallback) {
+                if (!_config) {
+                    BaseService.send({
+                        target: 'Security',
+                        action: 'getConfig'
+                    }, function (config) {
+                        /* TEMP CODE */
+                        config.homePage = _WM_APP_PROPERTIES.homePage;
+                        config.userInfo.homePage = config.userInfo.landingPage;
+                        /* TEMP CODE */
+                        _config = config;
+                        loggedInUser = config.userInfo;
+                        _lastUser = loggedInUser;
+                        Utils.triggerFn(successCallback, _config);
+                    }, function (error) {
+                        if ($rs.isMobileApplicationType) {
+                            _config = {
+                                "securityEnabled": false,
+                                "authenticated": false,
+                                "homePage": _WM_APP_PROPERTIES.homePage,
+                                "userInfo": null,
+                                "login": null
+                            };
+                            Utils.triggerFn(successCallback, _config);
+                        } else {
+                            Utils.triggerFn(failureCallback, error);
+                        }
+                    });
+                } else {
+                    Utils.triggerFn(successCallback, _config);
+                }
+            },
+            setConfig = function (config) {
+                _lastUser = loggedInUser;
+                _config = config;
+                loggedInUser = config && config.userInfo;
+            },
         /*Function to get the details of the logged-in user in the Application/RUN mode.*/
             getLoggedInUser = function (successCallback, failureCallback) {
                 /*If the details of the logged-in user have already been fetched, trigger the success callback.
                 * Else, make a call to the service to fetch details and then trigger the callback.*/
                 if (!loggedInUser) {
-                    BaseService.send({
-                        target: 'Security',
-                        action: 'getLoggedInUser'
-                    }, function (user) {
-                        loggedInUser = user;
-                        _lastUser = loggedInUser;
-                        Utils.triggerFn(successCallback, user);
-                    }, function (error) {
-                        Utils.triggerFn(failureCallback, error);
-                    });
+                    getConfig(successCallback, failureCallback);
                 } else {
                     Utils.triggerFn(successCallback, loggedInUser);
                 }
@@ -791,8 +821,8 @@ wm.plugins.security.services.SecurityService = [
              */
 
             isAuthenticated: function (successCallback, failureCallback) {
-                getLoggedInUser(function (loggedInUser) {
-                    Utils.triggerFn(successCallback, loggedInUser.authenticated);
+                getConfig(function (config) {
+                    Utils.triggerFn(successCallback, config.authenticated);
                 }, failureCallback);
             },
 
@@ -867,8 +897,8 @@ wm.plugins.security.services.SecurityService = [
              */
 
             getUserRoles: function (successCallback, failureCallback) {
-                getLoggedInUser(function (loggedInUser) {
-                    Utils.triggerFn(successCallback, loggedInUser.userRoles, loggedInUser.authenticated);
+                getConfig(function (config) {
+                    Utils.triggerFn(successCallback, config.userInfo.userRoles, config.authenticated);
                 }, failureCallback);
             },
 
@@ -886,8 +916,8 @@ wm.plugins.security.services.SecurityService = [
              */
 
             isSecurityEnabled: function (successCallback, failureCallback) {
-                getLoggedInUser(function (loggedInUser) {
-                    Utils.triggerFn(successCallback, loggedInUser.securityEnabled);
+                getConfig(function (loggedInUser) {
+                    Utils.triggerFn(successCallback, config.securityEnabled);
                 }, failureCallback);
             },
             /**
@@ -1011,6 +1041,32 @@ wm.plugins.security.services.SecurityService = [
              */
             getLastLoggedInUser: function () {
                 return _lastUser && _lastUser.userName;
-            }
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#getConfig
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * to update the roles info in cache
+             *
+             * @param {object} rolesConfig array of roles config objects
+             */
+            getConfig: getConfig,
+
+            /**
+             * @ngdoc function
+             * @name wm.security.$SecurityService#setConfig
+             * @methodOf wm.security.$SecurityService
+             * @function
+             *
+             * @description
+             * to update the roles info in cache
+             *
+             * @param {object} rolesConfig array of roles config objects
+             */
+            setConfig: setConfig
         };
     }];

@@ -175,11 +175,16 @@ wm.modules.wmCommon.services.BaseService = [
             },
 
             failureHandler = function (config, successCallback, failureCallback, error) {
-                var errTitle, errMsg, errorDetails;
+                var errTitle, errMsg, errorDetails, appManager;
                 /*if user is unauthorized, then show login dialog*/
                 if (error.status === 401 && !error.headers('X-WM-Login-ErrorMessage')) {
                     pushToErrorCallStack(config, successCallback, failureCallback);
-                    handleSessionTimeOut();
+                    if (CONSTANTS.isRunMode) {
+                        appManager = Utils.getService("AppManager");
+                        appManager.handleSessionTimeOut();
+                    } else {
+                        handleSessionTimeOut();
+                    }
                     return;
                 }
                 isUnAuthorized = false;
