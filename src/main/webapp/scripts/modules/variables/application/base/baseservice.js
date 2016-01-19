@@ -175,7 +175,7 @@ wm.variables.services.Variables = [
                                 variable.dataBinding[param] = newVal;
                             }
                             /* if auto-update set for the variable, get its data */
-                            if (variable.autoUpdate && !WM.isUndefined(newVal)) {
+                            if (variable.autoUpdate && !WM.isUndefined(newVal) && WM.isFunction(variable.update)) {
                                 variable.update();
                             }
                         } else if (variable.category === "wm.LiveVariable") {
@@ -184,7 +184,7 @@ wm.variables.services.Variables = [
                                     'value': newVal
                                 };
                                 /* if auto-update set for the variable with read operation only, get its data */
-                                if (variable.autoUpdate && !WM.isUndefined(newVal)) {
+                                if (variable.autoUpdate && !WM.isUndefined(newVal) && WM.isFunction(variable.update)) {
                                     variable.update();
                                 }
                             } else {
@@ -538,7 +538,9 @@ wm.variables.services.Variables = [
                         if (!runMode || variable.startUpdate) {
                             /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
                             $timeout(function () {
-                                variable.update();
+                                if (WM.isFunction(variable.update)) {
+                                    variable.update();
+                                }
                             }, null, false);
                         }
                     } else if (variable.category === "wm.LiveVariable") {
@@ -557,7 +559,9 @@ wm.variables.services.Variables = [
                             } else {
                                 /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
                                 $timeout(function () {
-                                    variable.update();
+                                    if (WM.isFunction(variable.update)) {
+                                        variable.update();
+                                    }
                                 }, null, false);
                             }
                         } else if (!runMode) {
@@ -568,7 +572,9 @@ wm.variables.services.Variables = [
                              */
                             $timeout(function () {
                                 /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                                variable.update({skipFetchData: true});
+                                if (WM.isFunction(variable.update)) {
+                                    variable.update({skipFetchData: true});
+                                }
                             }, null, false);
                         }
                     } else if (variable.category === "wm.LoginVariable") {
@@ -1462,7 +1468,9 @@ wm.variables.services.Variables = [
                         if (!variable.startUpdate) {
                             variable.bindCount = ((variable.bindCount || 0) + (bindCount || 1));
                             writableVariable.startUpdate = variable.startUpdate = true;
-                            variable.update();
+                            if (WM.isFunction(variable.update)) {
+                                variable.update();
+                            }
                         }
                     } else {
                         variable.bindCount -= 1;
