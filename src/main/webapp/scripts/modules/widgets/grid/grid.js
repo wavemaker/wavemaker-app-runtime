@@ -260,6 +260,15 @@ WM.module('wm.widgets.grid')
                         });
                     },
                     'post': function (scope, element, attrs) {
+                        var runModeInitialProperties = {
+                                'showrowindex'      : 'showRowIndex',
+                                'multiselect'       : 'multiselect',
+                                'radioselect'       : 'showRadioColumn',
+                                'filternullrecords' : 'filterNullRecords',
+                                'enablesort'        : 'enableSort'
+                            },
+                            handlers = [],
+                            gridController;
                         /****condition for old property name for grid title*****/
                         if (attrs.gridcaption && !attrs.title) {
                             scope.title = scope.gridcaption;
@@ -269,7 +278,6 @@ WM.module('wm.widgets.grid')
                         scope.gridColumnCount = gridColumnCount;
                         scope.displayAllFields = attrs.displayall === '';
                         scope.datagridElement = element.find('.app-datagrid');
-                        var handlers = [], gridController;
 
                         scope.isPartOfLiveGrid = element.closest('.app-livegrid').length > 0;
 
@@ -347,6 +355,17 @@ WM.module('wm.widgets.grid')
                             scope.columns[column.field] = column;
                         });
 
+                        if (CONSTANTS.isRunMode) {
+                            /**runModeInitialProperties are not triggered in property change handler in run mode.
+                             * So, set these grid options based on the attribute values.
+                             * This is done to prevent re-rendering of the grid for a property change in run mode**/
+                            _.each(runModeInitialProperties, function (value, key) {
+                                var attrValue = attrs[key];
+                                if (WM.isDefined(attrValue)) {
+                                    scope.gridOptions[value] = (attrValue === "true" || attrValue === true);
+                                }
+                            });
+                        }
                         scope.datagridElement.datagrid(scope.gridOptions);
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -393,28 +412,36 @@ WM.module('wm.widgets.grid')
                                 scope.setDataGridOption('searchLabel', newVal);
                                 break;
                             case 'multiselect':
-                                if (CONSTANTS.isStudioMode && newVal) {
-                                    scope.radioselect = false;
-                                    scope.widgetProps.radioselect.show = false;
-                                    scope.widgetProps.radioselect.showindesigner = false;
-                                    scope.$root.$emit('set-markup-attr', scope.widgetid, {'radioselect': false});
+                                if (CONSTANTS.isStudioMode) {
+                                    if (newVal) {
+                                        scope.radioselect = false;
+                                        scope.widgetProps.radioselect.show = false;
+                                        scope.widgetProps.radioselect.showindesigner = false;
+                                        scope.$root.$emit('set-markup-attr', scope.widgetid, {'radioselect': false});
+                                    }
+                                    scope.setDataGridOption('multiselect', newVal);
                                 }
-                                scope.setDataGridOption('multiselect', newVal);
                                 break;
                             case 'radioselect':
-                                if (CONSTANTS.isStudioMode && newVal) {
-                                    scope.multiselect = false;
-                                    scope.widgetProps.multiselect.show = false;
-                                    scope.widgetProps.multiselect.showindesigner = false;
-                                    scope.$root.$emit('set-markup-attr', scope.widgetid, {'multiselect': false});
+                                if (CONSTANTS.isStudioMode) {
+                                    if (newVal) {
+                                        scope.multiselect = false;
+                                        scope.widgetProps.multiselect.show = false;
+                                        scope.widgetProps.multiselect.showindesigner = false;
+                                        scope.$root.$emit('set-markup-attr', scope.widgetid, {'multiselect': false});
+                                    }
+                                    scope.setDataGridOption('showRadioColumn', newVal);
                                 }
-                                scope.setDataGridOption('showRadioColumn', newVal);
                                 break;
                             case 'showrowindex':
-                                scope.setDataGridOption('showRowIndex', newVal);
+                                if (CONSTANTS.isStudioMode) {
+                                    scope.setDataGridOption('showRowIndex', newVal);
+                                }
                                 break;
                             case 'enablesort':
-                                scope.setDataGridOption('enableSort', newVal);
+                                if (CONSTANTS.isStudioMode) {
+                                    scope.setDataGridOption('enableSort', newVal);
+                                }
                                 break;
                             case 'shownavigation':
                                 scope.enablePageNavigation();
@@ -495,7 +522,9 @@ WM.module('wm.widgets.grid')
                                 scope.datagridElement.datagrid('option', 'dataStates.loading', newVal);
                                 break;
                             case 'filternullrecords':
-                                scope.datagridElement.datagrid('option', 'filterNullRecords', newVal);
+                                if (CONSTANTS.isStudioMode) {
+                                    scope.datagridElement.datagrid('option', 'filterNullRecords', newVal);
+                                }
                                 break;
                             case 'allowinlineedit':
                                 if (!newVal || newVal === 'false') {
