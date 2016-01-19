@@ -92,7 +92,7 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
                     properties = [];
                 WM.forEach(availableServices, function (service) {
                     WM.forEach(service, function (api) {
-                        properties = _.pluck(_.reject(api.properties, {dataBinding: true}), 'target');
+                        properties = _.map(_.reject(api.properties, {dataBinding: true}), 'target');
                         allProperties.push(properties);
                     });
                 });

@@ -1,4 +1,4 @@
-/*global WM, wm*/
+/*global WM, wm, _*/
 /*jslint todo: true */
 /*jslint nomen: true*/
 /**
@@ -995,7 +995,7 @@ wm.plugins.security.services.SecurityService = [
                     return;
                 }
                 _rolesConfig = rolesConfig;
-                _roles = _.pluck(rolesConfig, "name");
+                _roles = _.map(rolesConfig, "name");
             },
 
             /**

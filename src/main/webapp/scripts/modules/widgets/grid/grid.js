@@ -885,7 +885,7 @@ WM.module('wm.widgets.grid')
                 /*Returns data sorted using sortObj*/
                 getSortResult = function (data, sortObj) {
                     if (sortObj) {
-                        data = _.sortByOrder(data, sortObj.field, sortObj.direction);
+                        data = _.orderBy(data, sortObj.field, sortObj.direction);
                     }
                     return data;
                 },

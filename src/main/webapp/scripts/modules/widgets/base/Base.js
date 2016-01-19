@@ -2675,7 +2675,7 @@ WM.module('wm.widgets.base', [])
 
                 if (keys.length) {
                     //reset obj;
-                    resetObj = _.object(keys, _.range(keys.length).map(function () { return ''; }));
+                    resetObj = _.zipObject(keys, _.range(keys.length).map(function () { return ''; }));
                     $el.css(resetObj);
                     $el.css(obj);
                 }

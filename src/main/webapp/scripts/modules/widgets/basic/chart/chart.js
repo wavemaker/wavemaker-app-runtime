@@ -608,7 +608,7 @@ WM.module('wm.widgets.basic')
                 input: [[10, 20], [20, 30], [30, 40]];
                 min x: 10
             */
-            xValues.min = _.min(datum.values, function (dataObject) {
+            xValues.min = _.minBy(datum.values, function (dataObject) {
                 return (dataObject.x || dataObject[0]);
             });
             /*
@@ -620,7 +620,7 @@ WM.module('wm.widgets.basic')
                 input: [[10, 20], [20, 30], [30, 40]];
                 max x: 30
              */
-            xValues.max = _.max(datum.values, function (dataObject) {
+            xValues.max = _.maxBy(datum.values, function (dataObject) {
                 return (dataObject.x || dataObject[0]);
             });
             return xValues;
@@ -650,14 +650,14 @@ WM.module('wm.widgets.basic')
              */
 
             _.forEach(datum, function (data) {
-                minValues.push(_.min(data.values, function (dataObject) { return dataObject.y || dataObject[1]; }));
-                maxValues.push(_.max(data.values, function (dataObject) { return dataObject.y || dataObject[1]; }));
+                minValues.push(_.minBy(data.values, function (dataObject) { return dataObject.y || dataObject[1]; }));
+                maxValues.push(_.maxBy(data.values, function (dataObject) { return dataObject.y || dataObject[1]; }));
             });
             /*Gets the least and highest values among all the min and max values of respective series of data*/
-            yValues.min = _.min(minValues, function (dataObject) {
+            yValues.min = _.minBy(minValues, function (dataObject) {
                 return dataObject.y || dataObject[1];
             });
-            yValues.max = _.max(maxValues, function (dataObject) {
+            yValues.max = _.maxBy(maxValues, function (dataObject) {
                 return dataObject.y || dataObject[1];
             });
             return yValues;

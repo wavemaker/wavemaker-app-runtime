@@ -287,7 +287,7 @@ wm.variables.services.$liveVariable = [
                         /*Loop through the table*/
                         WM.forEach(table.columns, function (column) {
                             /*Columns names are present in primary keys. Map the respective field names*/
-                            if (_.include(table.primaryKey.columns, column.name)) {
+                            if (_.includes(table.primaryKey.columns, column.name)) {
                                 tableDetails[tableName].primaryFields.push(column.fieldName);
                                 packageDetails[tablePackageName].primaryFields.push(column.fieldName);
                             }
