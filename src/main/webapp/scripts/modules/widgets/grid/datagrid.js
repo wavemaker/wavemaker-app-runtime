@@ -255,7 +255,7 @@ $.widget('wm.datagrid', {
     _getSearchTemplate: function () {
         var htm,
             sel = '<select name="wm-datagrid" data-element="dgFilterValue" ' +
-                'class="form-control app-select input-sm">' +
+                'class="form-control app-select">' +
                 '<option value="" selected>Select Column</option>',
             searchLabel = (this.Utils.isDefined(this.options.searchLabel) &&
                 this.options.searchLabel.length) ? this.options.searchLabel : 'Search:';
@@ -272,7 +272,7 @@ $.widget('wm.datagrid', {
             '<form class="form-search form-inline" onsubmit="return false;"><div class="form-group">' +
                 '<label class="control-label app-label" data-element="dgSearchLabel">' +
                     searchLabel + ' </label>' + sel +
-                '</div><div class="input-append input-group input-group-sm">' +
+                '</div><div class="input-append input-group">' +
                     '<input type="text" data-element="dgSearchText" class="form-control app-textbox" value="" placeholder="Search" style="display: inline-block;"/>' +
                     '<span class="input-group-addon"><button type="button" data-element="dgSearchButton" class="app-search-button" title="Search">' +
                         '<i class="glyphicon glyphicon-search"></i>' +
@@ -809,6 +809,7 @@ $.widget('wm.datagrid', {
             var gridClass = this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid;
             // Set grid class on table.
             this.gridElement.attr('class', gridClass);
+            this.gridHeaderElement.attr('class', gridClass);
             break;
         }
     },

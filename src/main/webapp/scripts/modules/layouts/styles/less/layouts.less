@@ -358,6 +358,9 @@ body {
   .app-form, .app-liveform, .app-device-liveform, .app-livefilter {
     position: relative;
     border-collapse: separate;
+    > .panel-body {
+        padding: 4px;
+    }
     .app-label {
         overflow-x: hidden;
         text-overflow: ellipsis;
@@ -445,6 +448,10 @@ body {
     height: 100%;
   }
 
+  .hidden-form-elements {
+    width: 1px;
+    height: 1px;
+  }
   }
 
   .app-device-liveform {

@@ -182,7 +182,7 @@ WM.module('wm.widgets.grid')
                             '</wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions pull-right" data-ng-if="actions">' +
-                            '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="btn-sm {{btn.class}}" iconclass="{{btn.iconclass}}"' +
+                            '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}"' +
                                 'iconname="{{btn.icon}}" on-click="{{btn.action}}"></wm-button>' +
                         '</div>' +
                     '</div></div>';
@@ -2079,7 +2079,7 @@ WM.module('wm.widgets.grid')
                                     break;
                                 case 'button':
                                     widgetTitle = val || '';
-                                    column.customExpression = '<wm-button caption="' + widgetTitle + '" show="true" class="btn-sm btn-primary"></wm-button>';
+                                    column.customExpression = '<wm-button caption="' + widgetTitle + '" show="true" class="btn-primary"></wm-button>';
                                     break;
                                 }
                             };

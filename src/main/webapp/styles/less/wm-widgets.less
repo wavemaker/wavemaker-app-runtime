@@ -1164,7 +1164,7 @@ If the height and width are not specified the video takes the height of the post
     margin-right: 1em;
   }
   .control-label {
-    margin-top: 0 !important;
+    padding-right: 1em;
   }
   }
 
@@ -1359,12 +1359,6 @@ If the height and width are not specified the video takes the height of the post
   }
 }
 
-.app-liveform, .app-device-liveform {
-  .hidden-form-elements {
-    width: 1px;
-    height: 1px;
-  }
-}
 .app-livefilter {
   .hidden-filter-elements {
     width: 1px;
@@ -1778,7 +1772,7 @@ If the height and width are not specified the video takes the height of the post
   .tab-content {
     height: 90%;
     max-width: 100%;
-    .calc('height', ~"calc(100% - 1.4em - 22px)");/***dont remove for changed font sizes**/
+    .calc('height', ~"calc(100% - 2.5em)");/***dont remove for changed font sizes**/
     background-color: @app-tabs-bg-color;
     position: relative;
     overflow: auto;
