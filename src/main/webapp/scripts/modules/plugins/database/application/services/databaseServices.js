@@ -304,6 +304,49 @@ wm.plugins.database.services.DatabaseService = [
 
             /**
              * @ngdoc function
+             * @name wm.database.$DatabaseService#listTables
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to load all the tables.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            listTables: function (params, successCallback, failureCallback) {
+                BaseService.execute({
+                    target: "Database",
+                    action: "listTables",
+                    data: {
+                        "serviceId": params.serviceId,
+                        "packageName": params.packageName,
+                        "username": params.username,
+                        "password": params.password,
+                        "url": params.url,
+                        "schemaFilter": '%',
+                        "tableFilter": null,
+                        "driverClass": params.driverClass,
+                        "dialect": params.dialect,
+                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
+                        "impersonateUser": false,
+                        "dbType": params.dbType,
+                        "host": params.host,
+                        "port": params.port,
+                        "dbName": params.dbName
+                    },
+                    urlParams: {
+                        "projectID": params.projectID
+                    }
+                }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
              * @name wm.database.$DatabaseService#loadModelInfo
              * @methodOf wm.database.$DatabaseService
              * @function

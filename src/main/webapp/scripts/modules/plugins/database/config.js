@@ -38,6 +38,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/database/loadModelInfo",
             method: "POST"
         },
+        listTables: {
+            url: "services/projects/:projectID/database/listTables",
+            method: "POST"
+        },
 
         /*DataModel related services*/
         getAllDataModels: {
