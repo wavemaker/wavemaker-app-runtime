@@ -267,7 +267,8 @@ WM.module('wm.widgets.form')
                                 } else {
                                     dateTime = parseDateTime(val);
                                     if (dateTime.getTime()) {
-                                        this._proxyModel = this._dateModel = this._timeModel = dateTime.getTime();
+                                        this._proxyModel = this._timeModel = dateTime.getTime();
+                                        this._dateModel  = new Date(this._proxyModel);
                                     } else {
                                         this._proxyModel = this._dateModel = this._timeModel = undefined;
                                     }

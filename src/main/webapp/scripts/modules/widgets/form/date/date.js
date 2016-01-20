@@ -188,7 +188,7 @@ WM.module('wm.widgets.form')
                                         this._proxyModel = undefined;
                                     }
                                 } else {
-                                    this._proxyModel = getTimeStamp(val);
+                                    this._proxyModel = new Date(getTimeStamp(val));
                                 }
                             }
                         });

@@ -63,7 +63,7 @@ WM.module('wm.widgets.basic')
             }
 
             return _.filter(entries, function (entry) {
-                return _.contains(entry[key], val);
+                return _.includes(entry[key], val);
             });
         };
     })

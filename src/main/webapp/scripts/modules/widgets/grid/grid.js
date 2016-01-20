@@ -883,7 +883,7 @@ WM.module('wm.widgets.grid')
                 getSearchResult = function (data, searchObj) {
                     if (searchObj) {
                         data = _.filter(data, function (obj) {
-                            return _.contains(obj[searchObj.field], searchObj.value);
+                            return _.includes(obj[searchObj.field], searchObj.value);
                         });
                     }
                     return data;
