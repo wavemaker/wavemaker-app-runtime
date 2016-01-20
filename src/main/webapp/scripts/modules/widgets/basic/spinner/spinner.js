@@ -1,14 +1,14 @@
-/*global WM, */
+/*global WM, _ */
 /*Directive for spinner*/
 
 WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/spinner.html',
-            '<div class="app-spinner {{size}}" data-ng-show="show" init-widget title="{{hint}}" apply-styles>' +
+            '<div class="app-spinner {{size}}" ng-show="show" init-widget title="{{hint}}" apply-styles>' +
                 '<div class="spinner-message">' +
-                    '<span class="spinner-image" data-ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}"></span>' +
-                    '<span class="spinner-text" ng-bind-html="messageContent"></span>' +
+                    '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-show="show" ng-style="{\'font-size\' : iconsize}" ></i>' +
+                    '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent" ></span>' +
                 '</div>' +
             '</div>'
             );
@@ -18,7 +18,9 @@ WM.module('wm.widgets.basic')
             notifyFor = {
                 'image': true,
                 'backgroundimage': true,
-                'caption': true
+                'caption': true,
+                'iconclass': true,
+                'animation': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -32,6 +34,17 @@ WM.module('wm.widgets.basic')
                 break;
             case 'caption':
                 scope.messageContent = $sce.trustAsHtml(newVal);
+                break;
+            case 'iconclass':
+                scope.iconclass = scope.iconclass || 'fa fa-spinner fa-spin';
+                break;
+            case 'animation':
+                // if animation class is spin then add fa-spin class
+                if (newVal === 'spin') {
+                    scope.iconclass = scope.iconclass + ' fa-spin';
+                } else if (!_.includes(scope.iconclass, 'fa-spinner')) {
+                    scope.iconclass = _.replace(scope.iconclass, 'fa-spin', '');
+                }
                 break;
             }
         }
@@ -51,6 +64,8 @@ WM.module('wm.widgets.basic')
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        scope.iconclass = scope.iconclass || 'fa fa-spinner';
 
                         if (!scope.widgetid) {
                             scope.$on('$destroy', $rootScope.$on('toggle-variable-state', function (event, variableName, show) {
