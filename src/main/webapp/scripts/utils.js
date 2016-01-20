@@ -941,10 +941,13 @@ WM.module('wm.utils', [])
             }
 
             if (!WM.isObject(obj)) {
-                return obj;
+                obj = getValidJSON(obj);
+                if (!obj) {
+                    return obj;
+                }
             }
 
-            var parts = key.split('.'),
+            var tempObj, parts = key.split('.'),
                 part;
 
             /* iterate through the parts and find the value of obj[key] */
@@ -961,7 +964,25 @@ WM.module('wm.utils', [])
                         break;
                     }
                 } else {
-                    obj = obj[part];
+                    tempObj = obj[part];
+                    if (!WM.isObject(tempObj)) {
+                        tempObj = getValidJSON(tempObj);
+                        if (!tempObj) {
+                            if (create) {
+                                tempObj = {};
+                                obj[part] = tempObj;
+                                obj = tempObj;
+                            } else {
+                                obj = undefined;
+                                break;
+                            }
+                        } else {
+                            obj[part] = tempObj;
+                            obj = tempObj;
+                        }
+                    } else {
+                        obj = tempObj;
+                    }
                 }
             }
 
