@@ -16,11 +16,15 @@
 package com.wavemaker.runtime.security;
 
 import java.io.IOException;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.wavemaker.runtime.WMObjectMapper;
+import com.wavemaker.studio.common.core.web.rest.ErrorResponse;
+import com.wavemaker.studio.common.core.web.rest.ErrorResponses;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -31,9 +35,19 @@ public class WMAuthenticationFailureHandler implements AuthenticationFailureHand
 
 	@Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        String msg = "Authentication Failed: " + exception.getMessage();
+        String exceptionMessage = exception.getMessage();
+        String msg = "Authentication Failed: " + exceptionMessage;
         response.setHeader("X-WM-Login-ErrorMessage", msg);
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, msg);
+        Map<String, Object> errorMap = new HashMap(1);
+        ErrorResponse errorResponse = new ErrorResponse();
+		errorResponse.setMessageKey("AUTHENTICATION_FAILED");
+		errorResponse.setParameters(Arrays.asList(exceptionMessage));
+        List<ErrorResponse> errorResponseList = new ArrayList<>(1);
+        errorResponseList.add(errorResponse);
+        errorMap.put("errors", new ErrorResponses(errorResponseList));
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write(WMObjectMapper.getInstance().writeValueAsString(errorMap));
     }
 }
 
