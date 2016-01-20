@@ -711,6 +711,21 @@ $.widget('wm.datagrid', {
             self.selectRow(rows, true);
         }
     },
+    /*Set the default widths for the colgroup*/
+    setColGroupWidths : function () {
+        if (this.options.showHeader) {
+            var headerCols = this.gridHeaderElement.find('col'),
+                bodyCols = this.gridElement.find('col');
+            this.gridHeaderElement.find('th').each(function (index) {
+                /***setting the header col width based on the content width***/
+                var $header = $(this),
+                    width = $header.hasClass('grid-col-small') ? 30 : $header.width(); //Keep width as 30 for checkbox and radio column
+                width = width > 0 ? width : 100; //Sanity check to prevent width being less than zero
+                $(headerCols[index]).css('width', width);
+                $(bodyCols[index]).css('width', width);
+            });
+        }
+    },
 
     /* Returns the selected columns in the table. */
     getSelectedColumns: function () {
@@ -1466,16 +1481,9 @@ $.widget('wm.datagrid', {
         /**Append the colgroup to the header and the body.
          * Colgroup is used to maintain the consistent widths between the header table and body table**/
         this.gridHeaderElement.append($colgroup).append($header);
-        this.gridHeader = this.gridHeaderElement.find('thead');
-        cols = $colgroup.find('col');
-        /***setting the header col width based on the content width***/
-        this.gridHeaderElement.find('th').each(function(index) {
-            var $header = $(this),
-                width = $header.hasClass('grid-col-small') ? 30 : $header.width(); //Keep width as 30 for checkbox and radio column
-            $(cols[index]).css('width', width);
-        });
         /**As jquery references the colgroup, clone the colgroup and add it to the table body**/
         this.gridElement.append($colgroup.clone());
+        this.gridHeader = this.gridHeaderElement.find('thead');
         /**Add event handler, to the select all checkbox on the header**/
         $header.on('click', 'input:checkbox', toggleSelectAll);
 

@@ -591,6 +591,8 @@ WM.module('wm.widgets.grid')
                         $timeout(function () {
                             scope.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                            /*Set the default widths for the colgroup after rendering the grid*/
+                            scope.datagridElement.datagrid('setColGroupWidths');
                         }, 0, false);
 
                         //Will be called after setting grid column property.
