@@ -327,7 +327,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.buttongroup": {
                         "vertical": {"type": "boolean"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["btn-toolbar", "btn-group-justified", "btn-group-vertical"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-toolbar", "btn-group-vertical"]}
                     },
                     "wm.switch": {
                         "width": {"type": "string", "pattern": dimensionRegex},
