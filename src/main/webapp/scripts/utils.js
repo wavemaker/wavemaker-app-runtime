@@ -936,55 +936,49 @@ WM.module('wm.utils', [])
          * }
          */
         function findValueOf(obj, key, create) {
+
             if (!obj || !key) {
                 return;
             }
 
-            if (!WM.isObject(obj)) {
-                obj = getValidJSON(obj);
-                if (!obj) {
-                    return obj;
-                }
+            if (!create) {
+                return _.get(obj, key);
             }
 
-            var tempObj, parts = key.split('.'),
-                part;
+            var parts = key.split('.'),
+                keys  = [],
+                skipProcessing;
 
-            /* iterate through the parts and find the value of obj[key] */
-            while (parts.length !== 0) {
-                part = parts.shift();
-                if (!obj[part]) {
-                    if (create) {
-                        /* if object node not found and create flag is true, create a new object node an continue */
-                        obj[part] = {};
-                        obj = obj[part];
-                    } else {
-                        /* else stop looking further and return undefined */
-                        obj = obj[part];
-                        break;
-                    }
-                } else {
-                    tempObj = obj[part];
-                    if (!WM.isObject(tempObj)) {
-                        tempObj = getValidJSON(tempObj);
-                        if (!tempObj) {
-                            if (create) {
-                                tempObj = {};
-                                obj[part] = tempObj;
-                                obj = tempObj;
-                            } else {
-                                obj = undefined;
-                                break;
-                            }
-                        } else {
-                            obj[part] = tempObj;
-                            obj = tempObj;
-                        }
-                    } else {
-                        obj = tempObj;
+            _.forEach(parts, function (part) {
+                if (!parts.length) { // if the part of a key is not valid, skip the processing.
+                    skipProcessing = true;
+                    return false;
+                }
+
+                var subParts = part.match(/\w+/g),
+                    subPart;
+
+                while (subParts.length) {
+                    subPart = subParts.shift();
+                    keys.push({'key': subPart, 'value': subParts.length ? [] : {}}); // determine whether to create an array or an object
+                }
+            });
+
+            if (skipProcessing) {
+                return undefined;
+            }
+
+            _.forEach(keys, function (_key) {
+                var tempObj = obj[_key.key];
+                if (!WM.isObject(tempObj)) {
+                    tempObj = getValidJSON(tempObj);
+                    if (!tempObj) {
+                        tempObj = _key.value;
                     }
                 }
-            }
+                obj[_key.key] = tempObj;
+                obj           = tempObj;
+            });
 
             return obj;
         }
@@ -1001,7 +995,7 @@ WM.module('wm.utils', [])
             }
 
             return template.replace(REGEX.REPLACE_PATTERN, function (match, key) {
-                return findValueOf(map, key);
+                return _.get(map, key);
             });
         }
 
