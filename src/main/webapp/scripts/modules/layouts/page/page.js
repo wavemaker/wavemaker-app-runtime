@@ -49,8 +49,8 @@ WM.module('wm.layouts.page')
                                 }
                             }
 
-                            if (($routeParams.name === $rootScope.activePageName) && attrs.pagetitle) {
-                                document.title = attrs.pagetitle;
+                            if ($routeParams.name === $rootScope.activePageName) {
+                                document.title = attrs.pagetitle || $rootScope.activePageName + ' - ' + $rootScope.projectName;
                             }
                         }
 

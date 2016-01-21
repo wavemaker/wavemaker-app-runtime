@@ -353,6 +353,8 @@ Application
                     appProperties = Utils.getClonedObject(_WM_APP_PROPERTIES),
                     pageReadyDeregister;
 
+                $rs.projectName          = appProperties.name;
+
                 $rs.isPrefabType         = appProperties.type === 'PREFAB';
                 $rs.isApplicationType    = appProperties.type === 'APPLICATION';
                 $rs.isTemplateBundleType = appProperties.type === 'TEMPLATEBUNDLE';
