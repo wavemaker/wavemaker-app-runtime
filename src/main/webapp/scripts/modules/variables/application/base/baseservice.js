@@ -88,7 +88,8 @@ wm.variables.services.Variables = [
             CRUDMAP = {
                 CREATE : {},
                 UPDATE : {},
-                DELETE : {}
+                DELETE : {},
+                MOVE   : {}
             },
             reloadRequired = [],
 
@@ -133,7 +134,6 @@ wm.variables.services.Variables = [
                         Utils.triggerFn(success);
                     }
                 }
-                self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP] = undefined;
                 reloadRequired = _.xor(_.keys(self.variableCollection), Utils.getService('PrefabManager').getAppPrefabNames());
                 getAppVariables(function (appVariables) {
                     setAppVariables(appVariables);
@@ -260,48 +260,32 @@ wm.variables.services.Variables = [
                     }
                 }
             },
-
-            /*Function to remove duplicate values in crud map*/
-            uniquifyCrudMap = function (context) {
-                /*Collecting duplicate names among 'DELETE', 'CREATE' and 'UPDATE' arrays and removing them from 'UPDATE'*/
-                var duplicateVars = [];
-                if (CRUDMAP.UPDATE[context].length && CRUDMAP.DELETE[context].length) {
-                    duplicateVars = _.union(duplicateVars, _.intersection(CRUDMAP.DELETE[context], CRUDMAP.UPDATE[context]));
-                }
-                if (CRUDMAP.UPDATE[context].length && CRUDMAP.CREATE[context].length) {
-                    duplicateVars = _.union(duplicateVars, _.intersection(CRUDMAP.CREATE[context], CRUDMAP.UPDATE[context]));
-                }
-                if (duplicateVars.length) {
-                    CRUDMAP.UPDATE[context] = _.xor(CRUDMAP.UPDATE[context], duplicateVars);
-                }
-            },
-
             /*Function to get array of required variable objects*/
-            getVariablesByNames = function (collection, namesArray) {
-                var tempCollection = [];
+            getVariablesByNames = function (pageName, namesArray) {
+                var tempCollection = [],
+                    collection = self.variableCollection[pageName];
                 _.each(namesArray, function (name) {
                     if (collection[name]) {
                         tempCollection.push(collection[name]);
                     }
                 });
-                return filterVariables(tempCollection);
+                return filterVariables(Utils.getClonedObject(tempCollection));
             },
 
             /*Function to check if map is empty in provided context*/
-            isEmptyCrud = function (map, pageName) {
-                return !map.CREATE[pageName].length && !map.UPDATE[pageName].length && !map.DELETE[pageName].length
+            isCrudEmpty = function (map, pageName) {
+                return !map.CREATE[pageName].length && !map.UPDATE[pageName].length && !map.DELETE[pageName].length && !map.MOVE[pageName].length;
             },
 
             /*Function to call respective 'CRUD' service*/
-            executeCrudOp = function (collection, pageName, success, error) {
-                function handleSuccess(crudMapCopy, pageName, success) {
-                    if (isEmptyCrud(crudMapCopy, pageName)) {
+            executeCrudOp = function (pageName, success, error) {
+                function handleSuccess(crudMapCopy, pageName) {
+                    if (isCrudEmpty(crudMapCopy, pageName)) {
                         /*trigger fn*/
                         Utils.triggerFn(success);
                     }
                 }
-                uniquifyCrudMap(pageName);
-                if (isEmptyCrud(CRUDMAP, pageName)) {
+                if (isCrudEmpty(CRUDMAP, pageName)) {
                     /*triggering success fn if map is empty*/
                     Utils.triggerFn(success);
                 } else {
@@ -309,25 +293,28 @@ wm.variables.services.Variables = [
                             projectId: $rootScope.project.id,
                             pageName : pageName
                         },
-                        crudMapCopy = Utils.getClonedObject(CRUDMAP);//Making a cloned copy of crud map and using it in services
-                    /*Making a call to add new variables*/
-                    if (crudMapCopy.CREATE[pageName].length) {
-                        CRUDMAP.CREATE[pageName] = [];//Emptying array in original map
-                        params.data = getVariablesByNames(collection, crudMapCopy.CREATE[pageName]);
-                        VariableService.add(params, function () {
-                            crudMapCopy.CREATE[pageName] = [];//Emptying array in cloned map
-                            handleSuccess(crudMapCopy, pageName, success);
-                        }, function (errMsg) {
-                            Utils.triggerFn(error, errMsg);
-                        });
-                    }
-                    /*Making a call to update variables*/
-                    if (crudMapCopy.UPDATE[pageName].length) {
-                        CRUDMAP.UPDATE[pageName] = [];//Emptying array in original map
-                        params.data = getVariablesByNames(collection, crudMapCopy.UPDATE[pageName]);
-                        VariableService.update(params, function () {
-                            crudMapCopy.UPDATE[pageName] = [];//Emptying array in cloned map
-                            handleSuccess(crudMapCopy, pageName, success);
+                        crudMapCopy = Utils.getClonedObject(CRUDMAP),//Making a cloned copy of crud map and using it in services
+                        opTypes = ['CREATE', 'UPDATE'];
+                    _.each(opTypes, function (op) {
+                        if (crudMapCopy[op][pageName].length) {
+                            CRUDMAP[op][pageName] = [];//Emptying array in original map
+                            params.data = getVariablesByNames(pageName, crudMapCopy[op][pageName]);
+                            VariableService[op.toLowerCase()](params, function () {
+                                crudMapCopy[op][pageName] = [];//Emptying array in cloned map
+                                handleSuccess(crudMapCopy, pageName);
+                            }, function (errMsg) {
+                                Utils.triggerFn(error, errMsg);
+                            });
+                        }
+                    });
+                    /*Making a call to move variables*/
+                    if (crudMapCopy.MOVE[pageName].length) {
+                        params.toPage = pageName === VARIABLE_CONSTANTS.OWNER.APP ? $rootScope.activePageName : VARIABLE_CONSTANTS.OWNER.APP;
+                        CRUDMAP.MOVE[pageName] = [];//Emptying array in original map
+                        params.data = getVariablesByNames(params.toPage, crudMapCopy.MOVE[pageName]);
+                        VariableService.move(params, function () {
+                            crudMapCopy.MOVE[pageName] = [];//Emptying array in cloned map
+                            handleSuccess(crudMapCopy, pageName);
                         }, function (errMsg) {
                             Utils.triggerFn(error, errMsg);
                         });
@@ -338,7 +325,7 @@ wm.variables.services.Variables = [
                         params.deletedNames = crudMapCopy.DELETE[pageName].join(',');
                         VariableService.delete(params, function () {
                             crudMapCopy.DELETE[pageName] = [];//Emptying array in cloned map
-                            handleSuccess(crudMapCopy, pageName, success);
+                            handleSuccess(crudMapCopy, pageName);
                         }, function (errMsg) {
                             Utils.triggerFn(error, errMsg);
                         });
@@ -633,6 +620,7 @@ wm.variables.services.Variables = [
                     CRUDMAP.CREATE[pageName] = [];
                     CRUDMAP.DELETE[pageName] = [];
                     CRUDMAP.UPDATE[pageName] = [];
+                    CRUDMAP.MOVE[pageName] = [];
                 }
                 /* check for existence */
                 if (self.variableCollection !== null && self.variableCollection[pageName] && (reloadRequired && !_.includes(reloadRequired, pageName))) {
@@ -678,8 +666,9 @@ wm.variables.services.Variables = [
                     CRUDMAP.CREATE[VARIABLE_CONSTANTS.OWNER.APP] = [];
                     CRUDMAP.DELETE[VARIABLE_CONSTANTS.OWNER.APP] = [];
                     CRUDMAP.UPDATE[VARIABLE_CONSTANTS.OWNER.APP] = [];
+                    CRUDMAP.MOVE[VARIABLE_CONSTANTS.OWNER.APP] = [];
                 }
-                if (self.variableCollection !== null && self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP]) {
+                if (self.variableCollection !== null && self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP] && (reloadRequired && !_.includes(reloadRequired, 'App'))) {
                     Utils.triggerFn(success, self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP]);
                     return;
                 }
@@ -694,6 +683,9 @@ wm.variables.services.Variables = [
                         if (!WM.isObject(variables)) {
                             variables = {};
                         }
+                        _.remove(reloadRequired, function (page) {
+                            return page === 'App';
+                        });
                         Utils.triggerFn(success, variables, true);
                     }, function (errMsg) {
                         Utils.triggerFn(error, errMsg);
@@ -902,33 +894,35 @@ wm.variables.services.Variables = [
             },
 
             /*function to update a variable object*/
-            updateVariable = function (collectionName, newProperties, isUpdate) {
-                var varName = newProperties.name,
+            updateVariable = function (variableName, newProperties, isUpdate) {
+                var newName = newProperties.name,
                     updated = false,
                     pageName = newProperties.owner === 'App' ? 'App' : $rootScope.activePageName,
                     oldOwner = pageName === 'App' ? $rootScope.activePageName : 'App',
                     scope = pageScopeMap[pageName];
                 /* Condition: Checking for existence of the variable name, updating variable object*/
-                if (self.variableCollection[pageName][collectionName]) {
-                    self.variableCollection[pageName][varName] = newProperties;
+                if (self.variableCollection[pageName][variableName]) {
+                    self.variableCollection[pageName][newName] = newProperties;
                     updated = true;
-                    if (!_.includes(CRUDMAP.UPDATE[pageName], varName)) {
-                        CRUDMAP.UPDATE[pageName].push(varName);
+                    if (!_.includes(CRUDMAP.UPDATE[pageName], newName)) {
+                        CRUDMAP.UPDATE[pageName].push(newName);
                     }
-                    if (collectionName !== varName) {
-                        delete self.variableCollection[pageName][collectionName];
+                    if (variableName !== newName) {
+                        delete self.variableCollection[pageName][variableName];
+                        reloadRequired.push(pageName);
                     }
-                } else if (self.variableCollection[oldOwner][collectionName]) {
+                } else if (self.variableCollection[oldOwner][variableName]) {
                     /*In case of owner change checking for variable existence in old scope and deleting*/
-                    self.variableCollection[pageName][varName] = newProperties;
-                    deleteVariable(varName, oldOwner);
-                    if (!_.includes(CRUDMAP.CREATE[pageName], varName)) {
-                        CRUDMAP.CREATE[pageName].push(varName);
+                    self.variableCollection[pageName][newName] = newProperties;
+                    /*Removing those variable from old scope*/
+                    delete self.variableCollection[oldOwner][variableName];
+                    if (!_.includes(CRUDMAP.MOVE[oldOwner], variableName)) {
+                        CRUDMAP.MOVE[oldOwner].push(variableName);
                     }
                     updated = true;
                 }
                 if (isUpdate) {
-                    call('getData', varName, {scope: scope, skipFetchData: true});
+                    call('getData', newName, {scope: scope, skipFetchData: true});
                 }
                 return updated;
             },
@@ -1552,7 +1546,7 @@ wm.variables.services.Variables = [
              * @methodOf wm.variables.$Variables
              * @description
              * Updates a variable instance based on the provided name
-             * @param {string} collectionName existing name/old name name of the variable to be updated
+             * @param {string} variableName existing name/old name name of the variable to be updated
              * @param {object} newProperties properties of the variable to be updated
              */
             'updateVariable': updateVariable,
@@ -1609,19 +1603,24 @@ wm.variables.services.Variables = [
              *
              */
             'saveVariables': function (activePageName, success, error, updateValues) {
-                var variables = self.variableCollection,
-                    appVariables = Utils.getClonedObject(variables[VARIABLE_CONSTANTS.OWNER.APP]),
-                    pageVariables = Utils.getClonedObject(variables[activePageName]);
                 if (activePageName && updateValues) {
                     updateVariableValues(activePageName);
                 }
-                /* save app variables */
-                executeCrudOp(appVariables, VARIABLE_CONSTANTS.OWNER.APP, function () {
-                    if (activePageName) {
-                        /* save page variables */
-                        executeCrudOp(pageVariables, activePageName, success, error);
+                function onSuccess() {
+                    if (_.includes(reloadRequired, 'App')) {
+                        reloadVariables(success, error);
+                    } else if (_.includes(reloadRequired, activePageName)) {
+                        getPageVariables(activePageName, success, error);
                     } else {
                         Utils.triggerFn(success);
+                    }
+                }                /* save app variables */
+                executeCrudOp(VARIABLE_CONSTANTS.OWNER.APP, function () {
+                    if (activePageName) {
+                        /* save page variables */
+                        executeCrudOp(activePageName, onSuccess, error);
+                    } else {
+                        onSuccess();
                     }
                 }, error);
             },
@@ -1643,13 +1642,18 @@ wm.variables.services.Variables = [
                 if (!activePageName) {
                     return;
                 }
-                var variables = self.variableCollection,
-                    pageVariables = Utils.getClonedObject(variables[activePageName]);
                 if (updateValues) {
                     updateVariableValues(activePageName);
                 }
+                function onSuccess() {
+                    if (_.includes(reloadRequired, activePageName)) {
+                        getPageVariables(activePageName, success, error);
+                    } else {
+                        Utils.triggerFn(success);
+                    }
+                }
                 /* save page variables */
-                executeCrudOp(pageVariables, activePageName, success, error);
+                executeCrudOp(activePageName, onSuccess, error);
             },
 
             /**
@@ -1664,14 +1668,19 @@ wm.variables.services.Variables = [
              *
              */
             'saveAppVariables': function (success, error, updateValues) {
-                var variables = self.variableCollection,
-                    appVariables = Utils.getClonedObject(variables[VARIABLE_CONSTANTS.OWNER.APP]);
 
                 if (updateValues) {
                     updateVariableValues();
                 }
+                function onSuccess() {
+                    if (_.includes(reloadRequired, 'App')) {
+                        reloadVariables(success, error);
+                    } else {
+                        Utils.triggerFn(success);
+                    }
+                }
                 /* save app variables */
-                executeCrudOp(appVariables, VARIABLE_CONSTANTS.OWNER.APP, success, error);
+                executeCrudOp(VARIABLE_CONSTANTS.OWNER.APP, onSuccess, error);
             },
 
             /**

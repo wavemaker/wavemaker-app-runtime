@@ -67,6 +67,14 @@ wm.variables.constant('VARIABLE_SERVICE_URLS', {
         deletePageVariables: {
             url: 'services/projects/:projectId/pages/:pageName/variables?variableNames[]=:deletedNames',
             method: 'DELETE'
+        },
+        moveAppVariables: {
+            url: 'services/projects/:projectId/variables/move?pageName=:toPage',
+            method: 'POST'
+        },
+        movePageVariables: {
+            url: 'services/projects/:projectId/pages/:pageName/variables/move',
+            method: 'POST'
         }
     }
 });

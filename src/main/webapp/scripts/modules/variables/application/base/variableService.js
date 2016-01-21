@@ -11,18 +11,18 @@ wm.variables.services.VariableService = function (BaseService) {
     return {
         /**
          * @ngdoc function
-         * @name wm.variables.$VariableService#add
+         * @name wm.variables.$VariableService#create
          * @methodOf wm.variables.$VariableService
          * @function
          *
          * @description
-         * Takes array of variable objects
+         * Takes array of variable objects to be created
          *
          * @param {object} params object containing parameters for the request (else throws an error message)
          * @param {function} successCallback to be called on success
          * @param {function} failureCallback to be called on failure
          */
-        add: function (params, successCallback, failureCallback) {
+        create: function (params, successCallback, failureCallback) {
             BaseService.send({
                 target: 'VariableService',
                 action: params.pageName === 'App' ? 'addAppVariables' : 'addPageVariables',
@@ -57,7 +57,7 @@ wm.variables.services.VariableService = function (BaseService) {
          * @function
          *
          * @description
-         * Takes array of updated variable objects
+         * Takes array of variable objects to be updated
          *
          * @param {object} params object containing parameters for the request (else throws an error message)
          * @param {function} successCallback to be called on success
@@ -73,12 +73,33 @@ wm.variables.services.VariableService = function (BaseService) {
         },
         /**
          * @ngdoc function
+         * @name wm.variables.$VariableService#move
+         * @methodOf wm.variables.$VariableService
+         * @function
+         *
+         * @description
+         * Takes array of variable objects to be moved
+         *
+         * @param {object} params object containing parameters for the request (else throws an error message)
+         * @param {function} successCallback to be called on success
+         * @param {function} failureCallback to be called on failure
+         */
+        move: function (params, successCallback, failureCallback) {
+            BaseService.send({
+                target: 'VariableService',
+                action: params.pageName === 'App' ? 'moveAppVariables' : 'movePageVariables',
+                urlParams: params,
+                data: params.data
+            }, successCallback, failureCallback);
+        },
+        /**
+         * @ngdoc function
          * @name wm.variables.$VariableService#delete
          * @methodOf wm.variables.$VariableService
          * @function
          *
          * @description
-         * Takes array of variable names
+         * Takes array of variable names to be deleted
          *
          * @param {object} params object containing parameters for the request (else throws an error message)
          * @param {function} successCallback to be called on success
