@@ -131,7 +131,8 @@ WM.module('wm.widgets.grid')
                 'nodatamessage': true,
                 'loadingdatamsg': true,
                 'filternullrecords': true,
-                'allowinlineedit': true
+                'allowinlineedit': true,
+                'spacing': true
             },
             getObjectIndexInArray = function (key, value, arr) {
                 var index = -1, i;
@@ -178,7 +179,7 @@ WM.module('wm.widgets.grid')
                     '<div class="app-datagrid"></div>' +
                     '<div class="panel-footer clearfix" ng-show="shownavigation || actions.length">' +
                         '<div class="app-datagrid-paginator pull-left">' +
-                            '<wm-datanavigator show="{{show && shownavigation}}" showrecordcount="{{show && showrecordcount}}">' +
+                            '<wm-datanavigator show="{{show && shownavigation}}" data-ng-class="navigationClass" showrecordcount="{{show && showrecordcount}}">' +
                             '</wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions pull-right" data-ng-if="actions">' +
@@ -545,6 +546,14 @@ WM.module('wm.widgets.grid')
                                         'multiselect': true,
                                         'allowAddNewRow': true
                                     });
+                                }
+                                break;
+                            case 'spacing':
+                                scope.datagridElement.datagrid('option', 'spacing', newVal);
+                                if (newVal === 'condensed') {
+                                    scope.navigationClass = 'pagination-sm';
+                                } else {
+                                    scope.navigationClass = '';
                                 }
                                 break;
                             }
