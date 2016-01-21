@@ -509,9 +509,39 @@ $.widget('wm.datagrid', {
         return htm;
     },
 
-    _getEditableTemplate: function (colDef) {
-        var textboxTemplate = '<input class="editable form-control app-textbox" type="text" value=""/>';
-        return this.Utils.isDefined(colDef.customExpression) ? colDef.customExpression : textboxTemplate;
+    _getEditableTemplate: function (colDef, cellText) {
+        if (this.Utils.isDefined(colDef.customExpression)) {
+            return colDef.customExpression;
+        }
+        if (!colDef.widget) {
+            return '<input class="editable form-control app-textbox" type="text" value=""/>';
+        }
+        var template;
+        switch (colDef.widget) {
+        case 'select':
+            cellText = cellText || '';
+            template =  '<wm-select datavalue="' + cellText + '" dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '"></wm-select>';
+            break;
+        case 'date':
+            template = '<wm-date datavalue="' + cellText + '"></wm-date>';
+            break;
+        case 'time':
+            template = '<wm-time datavalue="' + cellText + '"></wm-time>';
+            break;
+        case 'datetime':
+            template = '<wm-datetime datavalue="' + cellText + '" outputformat="yyyy-MM-ddTHH:mm:ss"></wm-datetime>';
+            break;
+        case 'checkbox':
+            template = '<wm-checkbox datavalue="' + cellText + '" height="10px"></wm-checkbox>';
+            break;
+        case 'number':
+            template = '<wm-text type="number" datavalue="' + cellText + '"></wm-text>';
+            break;
+        default:
+            template = '<wm-text datavalue="' + cellText + '"></wm-text>';
+            break;
+        }
+        return this.options.compileTemplateInGridScope(template);
     },
 
     /* Prepares the grid header data by adding custom column definitions if needed. */
@@ -693,9 +723,9 @@ $.widget('wm.datagrid', {
             if (!this.preparedData.length) {
                 this.setStatus('ready', this.dataStatus.ready);
             }
-            this.gridElement.find('tbody').append($row);
+            this.gridElement.find('tbody.app-datagrid-body').append($row);
             this.attachEventHandlers($row);
-            $row.find('.edit-row-button').trigger('click', {action: 'edit'});
+            $row.find('.edit-row-button').trigger('click', {operation: 'new'});
             this.updateSelectAllCheckboxState();
         }
     },
@@ -1094,7 +1124,7 @@ $.widget('wm.datagrid', {
         return isDataChanged;
     },
     /* Toggles the edit state of a row. */
-    toggleEditRow: function (e) {
+    toggleEditRow: function (e, options) {
         e.stopPropagation();
         var $row = $(e.target).closest('tr'),
             $originalElements = $row.find('td'),
@@ -1129,12 +1159,18 @@ $.widget('wm.datagrid', {
                     $input,
                     customExp,
                     originalTemplate,
-                    compiledTemplate;
+                    compiledTemplate,
+                    value;
                 if (!(colDef.readonly || self._isCustomExpressionNonEditable(colDef.customExpression) || colDef.disableInlineEditing)) {
-                    editableTemplate = self._getEditableTemplate(colDef);
+                    if (options && options.operation === 'new') {
+                        value = colDef.defaultvalue;
+                    } else {
+                        value = cellText;
+                    }
+                    editableTemplate = self._getEditableTemplate(colDef, value);
                     // TODO: Use some other selector. Input will fail for other types.
                     if (!(colDef.customExpression || colDef.formatpattern)) {
-                        $el.addClass('cell-editing').html(editableTemplate).data('originalText', cellText);
+                        $el.addClass('cell-editing').html(editableTemplate).data('originalText', value);
                         $el.find('input').val(cellText);
                     } else {
                         if (colDef.formatpattern) {
@@ -1181,7 +1217,10 @@ $.widget('wm.datagrid', {
                             fields = colDef.field.split('.'),
                             $ie = $el.find('input'),
                             text = self._getValue($ie, fields);
-                        if (colDef.type === 'timestamp') {
+                        if (colDef.widget) {
+                            text = $el.children().isolateScope().datavalue;
+                        }
+                        if (colDef.type === 'timestamp' && (!colDef.widget || colDef.widget === 'text')) {
                             text = parseInt(text);
                         }
                         if (fields.length === 1) {

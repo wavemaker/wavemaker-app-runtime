@@ -938,6 +938,11 @@ WM.module('wm.widgets.grid')
                     rowScope.columnValue = row[colDef.field];
                     return $compile(el)(rowScope);
                 },
+                /*Compile the templates in the grid scope*/
+                compileTemplateInGridScope = function (htm) {
+                    var el = WM.element(htm);
+                    return $compile(el)($scope);
+                },
             /* Check whether it is non-empty row. */
                 isEmptyRecord = function (record) {
                     var properties = Object.keys(record),
@@ -1297,6 +1302,9 @@ WM.module('wm.widgets.grid')
                 },
                 getCompiledTemplate: function (htm, row, colDef) {
                     return getCompiledTemplate(htm, row, colDef);
+                },
+                compileTemplateInGridScope: function (htm) {
+                    return compileTemplateInGridScope(htm);
                 },
                 setGridEditMode: function (val) {
                     $scope.isGridEditMode = val;
@@ -2071,7 +2079,12 @@ WM.module('wm.widgets.grid')
                                 'fractionsize': attrs.fractionsize,
                                 'suffix': attrs.suffix,
                                 'prefix': attrs.prefix,
-                                'accessroles': attrs.accessroles || ''
+                                'accessroles': attrs.accessroles || '',
+                                'widget': attrs.widget,
+                                'dataset': attrs.dataset,
+                                'datafield': attrs.datafield,
+                                'displayfield': attrs.displayfield,
+                                'defaultvalue': attrs.defaultvalue
                             },
                             updateCustomExpression = function (column) {
                                 var widgetType = column.widgetType,
@@ -2139,7 +2152,7 @@ WM.module('wm.widgets.grid')
                         /*check if any attribute has binding. put a watch for the attributes*/
                         if (CONSTANTS.isRunMode) {
                             _.each(columnDef, function (value, property) {
-                                if (Utils.stringStartsWith(value, 'bind:')) {
+                                if (Utils.stringStartsWith(value, 'bind:') && property !== 'dataset' && property !== 'defaultvalue') {
                                     watchProperty(property, value.replace('bind:', ''));
                                 }
                             });
