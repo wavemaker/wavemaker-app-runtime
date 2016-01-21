@@ -33,7 +33,9 @@ wm.plugins.security.services.SecurityService = [
                     }, function (config) {
                         /* TEMP CODE */
                         config.homePage = _WM_APP_PROPERTIES.homePage;
-                        config.userInfo.homePage = config.userInfo.landingPage;
+                        if (config.userInfo) {
+                            config.userInfo.homePage = config.userInfo.landingPage;
+                        }
                         /* TEMP CODE */
                         _config = config;
                         loggedInUser = config.userInfo;
