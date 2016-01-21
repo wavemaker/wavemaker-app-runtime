@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.security.WMCurrentUser;
+import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.studio.common.util.WMUtils;
 import com.wavemaker.studio.common.wrapper.BooleanWrapper;
 import com.wavemaker.studio.common.wrapper.IntegerWrapper;
@@ -75,7 +76,7 @@ public class SecurityController {
 
     @RequestMapping(value = "/user/tenantid", method = RequestMethod.GET)
     @ApiOperation(value = "Returns tenant-id for the logged-in user.")
-    public IntegerWrapper getTenantId(){
+    public IntegerWrapper getTenantId() {
         return WMUtils.wrapInteger(securityService.getTenantId());
     }
 
@@ -94,5 +95,11 @@ public class SecurityController {
     @ApiOperation(value = "Logout the current user from the application.")
     public void logout() {
         securityService.logout();
+    }
+
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
+    @ApiOperation(value = "returns security information")
+    public SecurityInfo getSecurityInfo() {
+        return securityService.getSecurityInfo();
     }
 }
