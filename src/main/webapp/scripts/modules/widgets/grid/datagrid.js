@@ -509,7 +509,7 @@ $.widget('wm.datagrid', {
         return htm;
     },
 
-    _getEditableTemplate: function (colDef, cellText) {
+    _getEditableTemplate: function ($el, colDef, cellText) {
         if (this.Utils.isDefined(colDef.customExpression)) {
             return colDef.customExpression;
         }
@@ -523,12 +523,15 @@ $.widget('wm.datagrid', {
             template =  '<wm-select datavalue="' + cellText + '" dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '"></wm-select>';
             break;
         case 'date':
+            $el.addClass('datetime-wrapper');
             template = '<wm-date datavalue="' + cellText + '"></wm-date>';
             break;
         case 'time':
+            $el.addClass('datetime-wrapper');
             template = '<wm-time datavalue="' + cellText + '"></wm-time>';
             break;
         case 'datetime':
+            $el.addClass('datetime-wrapper');
             template = '<wm-datetime datavalue="' + cellText + '" outputformat="yyyy-MM-ddTHH:mm:ss"></wm-datetime>';
             break;
         case 'checkbox':
@@ -1167,7 +1170,7 @@ $.widget('wm.datagrid', {
                     } else {
                         value = cellText;
                     }
-                    editableTemplate = self._getEditableTemplate(colDef, value);
+                    editableTemplate = self._getEditableTemplate($el, colDef, value);
                     // TODO: Use some other selector. Input will fail for other types.
                     if (!(colDef.customExpression || colDef.formatpattern)) {
                         $el.addClass('cell-editing').html(editableTemplate).data('originalText', value);
@@ -1217,6 +1220,7 @@ $.widget('wm.datagrid', {
                             fields = colDef.field.split('.'),
                             $ie = $el.find('input'),
                             text = self._getValue($ie, fields);
+                        $el.removeClass('datetime-wrapper');
                         if (colDef.widget) {
                             text = $el.children().isolateScope().datavalue;
                         }
@@ -1283,6 +1287,7 @@ $.widget('wm.datagrid', {
                 value = $el.data('originalValue'),
                 originalValue,
                 template;
+            $el.removeClass('datetime-wrapper');
             if (!value) {
                 $el.text($el.data('originalText'));
             } else {
