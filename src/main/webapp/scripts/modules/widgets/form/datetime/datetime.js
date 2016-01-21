@@ -12,7 +12,7 @@ WM.module('wm.widgets.form')
                     ' uib-datepicker-popup min-date=mindate max-date=maxdate is-open="isDateOpen" show-weeks="{{showweeks}}">' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
-                        '<uib-timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" data-ng-change="selectTime($event)"></uib-timepicker>' +
+                        '<uib-timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" data-ng-change="selectTime($event)"></uib-timepicker>' +
                     '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
@@ -35,7 +35,8 @@ WM.module('wm.widgets.form')
                 'disabled': true,
                 'autofocus': true,
                 'timestamp': true,
-                'excludedates': true
+                'excludedates': true,
+                'datepattern': true
             };
 
         if ($rs.isMobileApplicationType) {
@@ -44,6 +45,35 @@ WM.module('wm.widgets.form')
             widgetProps.ismeridian.show = false;
             widgetProps.hourstep.show = false;
             widgetProps.minutestep.show = false;
+        }
+
+        function _formatDateTime(scope) {
+            var date,
+                time,
+                dateString,
+                timeString,
+                value;
+            if (scope._timeModel || scope._dateModel) {
+                time = scope._timeModel ? new Date(scope._timeModel) : new Date();
+                date = scope._dateModel ? new Date(scope._dateModel) : new Date();
+                dateString = $filter('date')(date, 'yyyy-MM-dd');
+                timeString = $filter('date')(time, 'HH:mm:ss');
+                value = moment(dateString + ' ' + timeString).valueOf();
+                scope.timestamp = value;
+                if (scope.datepattern && scope.datepattern !== 'timestamp') {
+                    scope._displayModel = $filter('date')(value, scope.datepattern);
+                } else {
+                    scope._displayModel = value;
+                }
+                if (scope.outputformat && scope.outputformat !== 'timestamp') {
+                    scope._proxyModel = $filter('date')(value, scope.outputformat);
+                } else {
+                    scope._proxyModel = value;
+                }
+            } else {
+                scope._displayModel = undefined;
+                scope._proxyModel = undefined;
+            }
         }
 
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
@@ -68,6 +98,11 @@ WM.module('wm.widgets.form')
                 break;
             case 'excludedates':
                 scope.proxyExcludeDates = FormWidgetUtils.getProxyExcludeDates(newVal);
+                break;
+            case 'datepattern':
+                scope.showseconds = _.includes(newVal, 'ss')
+                scope.ismeridian  = _.includes(newVal, 'hh')
+                _formatDateTime(scope);
                 break;
             }
         }
@@ -173,38 +208,19 @@ WM.module('wm.widgets.form')
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
-                        scope.formatDateTime =  function () {
-                            var date,
-                                time,
-                                dateString,
-                                timeString,
-                                value;
-                            if (scope._timeModel || scope._dateModel) {
-                                time = scope._timeModel ? new Date(scope._timeModel) : new Date();
-                                date = scope._dateModel ? new Date(scope._dateModel) : new Date();
-                                dateString = $filter('date')(date, 'yyyy-MM-dd');
-                                timeString = $filter('date')(time, 'HH:mm:ss');
-                                value = moment(dateString + ' ' + timeString).valueOf();
-                                this.timestamp = value;
-                                if (scope.datepattern && scope.datepattern !== 'timestamp') {
-                                    scope._displayModel = $filter('date')(value, scope.datepattern);
-                                } else {
-                                    scope._displayModel = value;
-                                }
-                                if (scope.outputformat && scope.outputformat !== 'timestamp') {
-                                    scope._proxyModel = $filter('date')(value, scope.outputformat);
-                                } else {
-                                    scope._proxyModel = value;
-                                }
-                            } else {
-                                scope._displayModel = undefined;
-                                scope._proxyModel = undefined;
-                            }
-                        };
-
+                        scope.formatDateTime = _formatDateTime.bind(undefined, scope);
                         scope._onClick = _onClick.bind(undefined, scope);
                         scope._onDateClick = _onDateClick.bind(undefined, scope);
                         scope._onTimeClick = _onTimeClick.bind(undefined, scope);
+
+                        /*
+                         * Backward compatibility for ismeridian property which is deprecated.
+                         * if ismeridian is false then time is set as 24hr clock format.
+                         */
+                        if (attrs.ismeridian === 'false' && !attrs.datepattern) {
+                            scope.datepattern = scope.datepattern.replace('hh', 'HH').replace(' a', '');
+                        }
+
                         /*On selection of a date, open the time picker popup*/
                         scope.selectDate = function (event) {
                             if (scope.isDateOpen) {
