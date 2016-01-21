@@ -91,7 +91,7 @@ Application
                         loginMethod;
                     SecurityService.getConfig(function(config) {
                         /* if no user found, 401 was thrown for first time login */
-                        if (config.userInfo.userName) {
+                        if (config.userInfo && config.userInfo.userName) {
                             sessionTimeoutConfig = config.login.sessionTimeout || {'type': 'DIALOG'};
                             sessionTimeoutMethod = sessionTimeoutConfig.type.toUpperCase();
                             if (sessionTimeoutMethod === 'DIALOG') {
