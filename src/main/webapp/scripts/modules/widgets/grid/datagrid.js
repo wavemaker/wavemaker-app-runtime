@@ -173,7 +173,27 @@ $.widget('wm.datagrid', {
         var sortInfo = this.options.sortInfo;
         return field === sortInfo.field ? sortInfo.direction : '';
     },
-
+    /*Based on the spacing property, add or remove classes*/
+    _toggleSpacingClasses: function (value) {
+        switch (value) {
+        case 'normal':
+            this.gridElement.removeClass('table-condensed');
+            this.gridHeaderElement.removeClass('table-condensed');
+            if (this.gridSearch) {
+                this.gridSearch.find('select').removeClass('input-sm');
+                this.gridSearch.find('.input-group').removeClass('input-group-sm');
+            }
+            break;
+        case 'condensed':
+            this.gridElement.addClass('table-condensed');
+            this.gridHeaderElement.addClass('table-condensed');
+            if (this.gridSearch) {
+                this.gridSearch.find('select').addClass('input-sm');
+                this.gridSearch.find('.input-group').addClass('input-group-sm');
+            }
+            break;
+        }
+    },
     /* Returns the table header template. */
     _getHeaderTemplate: function () {
 
@@ -825,6 +845,12 @@ $.widget('wm.datagrid', {
             // Set grid class on table.
             this.gridElement.attr('class', gridClass);
             this.gridHeaderElement.attr('class', gridClass);
+            if (this.options.spacing === 'condensed') {
+                this._toggleSpacingClasses('condensed');
+            }
+            break;
+        case 'spacing':
+            this._toggleSpacingClasses(value);
             break;
         }
     },
@@ -1574,6 +1600,9 @@ $.widget('wm.datagrid', {
         }
         if (this.options.enableSearch) {
             this._renderSearch();
+        }
+        if (this.options.spacing === 'condensed') {
+            this._toggleSpacingClasses('condensed');
         }
         this._renderGrid();
     },

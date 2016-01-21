@@ -1213,6 +1213,7 @@ WM.module('wm.widgets.base', [])
                         "deletemessage": {"type": "string", "value": "Record deleted successfully", "bindable": "in-out-bound", "show": false, "showindesigner": false},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "title": {"type": "string", "bindable": "in-bound"},
+                        "spacing": {"type": "list", "options": ["normal", "condensed"], "value": "normal"},
 
                         /* Events */
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1233,8 +1234,7 @@ WM.module('wm.widgets.base', [])
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         /* Styles */
-                        "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex},
-                        "class": {"type": "string", "pattern": classRegex},
+                        "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "class-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
                         "tabindex": {"type": "string", "value": "0"}
                     },
                     'wm.livegrid': {
@@ -1648,7 +1648,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
                 {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
-                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "advancedsettings"], "parent": "properties"},
+                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings"], "parent": "properties"},
                 {"name": "layout", "properties": ["width", "height", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild", "gridsearch", "searchlabel"], "parent": "properties"},
                 {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
