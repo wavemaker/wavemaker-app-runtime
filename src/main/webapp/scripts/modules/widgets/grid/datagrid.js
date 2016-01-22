@@ -510,41 +510,41 @@ $.widget('wm.datagrid', {
     },
 
     _getEditableTemplate: function ($el, colDef, cellText) {
+        if (colDef.editWidgetType) {
+            var template;
+            switch (colDef.editWidgetType) {
+            case 'select':
+                cellText = cellText || '';
+                template =  '<wm-select datavalue="' + cellText + '" dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '"></wm-select>';
+                break;
+            case 'date':
+                $el.addClass('datetime-wrapper');
+                template = '<wm-date datavalue="' + cellText + '"></wm-date>';
+                break;
+            case 'time':
+                $el.addClass('datetime-wrapper');
+                template = '<wm-time datavalue="' + cellText + '"></wm-time>';
+                break;
+            case 'datetime':
+                $el.addClass('datetime-wrapper');
+                template = '<wm-datetime datavalue="' + cellText + '" outputformat="yyyy-MM-ddTHH:mm:ss"></wm-datetime>';
+                break;
+            case 'checkbox':
+                template = '<wm-checkbox datavalue="' + cellText + '" height="10px"></wm-checkbox>';
+                break;
+            case 'number':
+                template = '<wm-text type="number" datavalue="' + cellText + '"></wm-text>';
+                break;
+            default:
+                template = '<wm-text datavalue="' + cellText + '"></wm-text>';
+                break;
+            }
+            return this.options.compileTemplateInGridScope(template);
+        }
         if (this.Utils.isDefined(colDef.customExpression)) {
             return colDef.customExpression;
         }
-        if (!colDef.widget) {
-            return '<input class="editable form-control app-textbox" type="text" value=""/>';
-        }
-        var template;
-        switch (colDef.widget) {
-        case 'select':
-            cellText = cellText || '';
-            template =  '<wm-select datavalue="' + cellText + '" dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '"></wm-select>';
-            break;
-        case 'date':
-            $el.addClass('datetime-wrapper');
-            template = '<wm-date datavalue="' + cellText + '"></wm-date>';
-            break;
-        case 'time':
-            $el.addClass('datetime-wrapper');
-            template = '<wm-time datavalue="' + cellText + '"></wm-time>';
-            break;
-        case 'datetime':
-            $el.addClass('datetime-wrapper');
-            template = '<wm-datetime datavalue="' + cellText + '" outputformat="yyyy-MM-ddTHH:mm:ss"></wm-datetime>';
-            break;
-        case 'checkbox':
-            template = '<wm-checkbox datavalue="' + cellText + '" height="10px"></wm-checkbox>';
-            break;
-        case 'number':
-            template = '<wm-text type="number" datavalue="' + cellText + '"></wm-text>';
-            break;
-        default:
-            template = '<wm-text datavalue="' + cellText + '"></wm-text>';
-            break;
-        }
-        return this.options.compileTemplateInGridScope(template);
+        return '<input class="editable form-control app-textbox" type="text" value=""/>';
     },
 
     /* Prepares the grid header data by adding custom column definitions if needed. */
@@ -1164,7 +1164,7 @@ $.widget('wm.datagrid', {
                     originalTemplate,
                     compiledTemplate,
                     value;
-                if (!(colDef.readonly || self._isCustomExpressionNonEditable(colDef.customExpression) || colDef.disableInlineEditing)) {
+                if (!(colDef.readonly || (self._isCustomExpressionNonEditable(colDef.customExpression) && !colDef.editWidgetType) || colDef.disableInlineEditing)) {
                     if (options && options.operation === 'new') {
                         value = colDef.defaultvalue;
                     } else {
@@ -1185,8 +1185,13 @@ $.widget('wm.datagrid', {
                             customExp = colDef.customExpression;
                             originalTemplate = customExp;
                             compiledTemplate = self.options.getCompiledTemplate(customExp, rowData, colDef);
-                            $el.addClass('cell-editing editable-expression').html(compiledTemplate).data(
+                            $el.addClass('cell-editing editable-expression').data(
                                 'originalValue', {'template': originalTemplate, 'rowData': angular.copy(rowData), 'colDef': colDef});
+                            if (colDef.editWidgetType) {
+                                $el.html(editableTemplate);
+                            } else {
+                                $el.html(compiledTemplate);
+                            }
                         }
                     }
                 }
@@ -1221,10 +1226,10 @@ $.widget('wm.datagrid', {
                             $ie = $el.find('input'),
                             text = self._getValue($ie, fields);
                         $el.removeClass('datetime-wrapper');
-                        if (colDef.widget) {
+                        if (colDef.editWidgetType) {
                             text = $el.children().isolateScope().datavalue;
                         }
-                        if (colDef.type === 'timestamp' && (!colDef.widget || colDef.widget === 'text')) {
+                        if (colDef.type === 'timestamp' && (!colDef.editWidgetType || colDef.editWidgetType === 'text')) {
                             text = parseInt(text);
                         }
                         if (fields.length === 1) {
@@ -1282,6 +1287,7 @@ $.widget('wm.datagrid', {
         }
     },
     cancelEdit: function($editableElements) {
+        var self = this;
         $editableElements.each(function () {
             var $el = $(this),
                 value = $el.data('originalValue'),
@@ -1305,7 +1311,8 @@ $.widget('wm.datagrid', {
         var $editableElements = $row.find('td.cell-editing'),
             $editButton = $row.find('.edit-row-button'),
             $cancelButton = $row.find('.cancel-edit-row-button'),
-            $saveButton = $row.find('.save-edit-row-button');
+            $saveButton = $row.find('.save-edit-row-button'),
+            self = this;
         $editableElements.each(function () {
             var $el = $(this),
                 value = $el.data('originalValue'),

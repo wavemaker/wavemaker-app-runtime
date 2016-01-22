@@ -2080,7 +2080,7 @@ WM.module('wm.widgets.grid')
                                 'suffix': attrs.suffix,
                                 'prefix': attrs.prefix,
                                 'accessroles': attrs.accessroles || '',
-                                'widget': attrs.widget,
+                                'editWidgetType': attrs.editWidgetType,
                                 'dataset': attrs.dataset,
                                 'datafield': attrs.datafield,
                                 'displayfield': attrs.displayfield,
