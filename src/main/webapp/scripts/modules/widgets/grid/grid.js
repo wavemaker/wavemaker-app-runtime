@@ -927,15 +927,27 @@ WM.module('wm.widgets.grid')
                         $scope.onSort({$event: e, $data: $scope.serverData});
                     }
                 },
-                getCompiledTemplate = function (htm, row, colDef) {
+                getCompiledTemplate = function (htm, row, colDef, refreshImg) {
                     var rowScope = $scope.$new(),
-                        el = WM.element(htm);
+                        el = WM.element(htm),
+                        ngSrc,
+                        imageEl;
                     rowScope.row = row;
                     rowScope.row.getProperty = function (field) {
                         return row[field];
                     };
                     rowScope.colDef = colDef;
                     rowScope.columnValue = row[colDef.field];
+                    if (refreshImg && colDef.widgetType === 'image') {
+                        ngSrc = el.attr('data-ng-src');  //As url will be same but image changes in the backend after edit operation, add timestamp to src to force refresh the image
+                        if (ngSrc) {
+                            imageEl = el;
+                        } else {
+                            imageEl = el.find('img');  //If src is not present, check for the image tag inside
+                            ngSrc = imageEl.attr('data-ng-src');
+                        }
+                        imageEl.attr('data-ng-src', ngSrc.concat('?_ts=' + new Date().getTime())); //Add the current timestamp to the src to force refresh the image.
+                    }
                     return $compile(el)(rowScope);
                 },
                 /*Compile the templates in the grid scope*/
@@ -1276,20 +1288,20 @@ WM.module('wm.widgets.grid')
                 onRowDelete: function (rowData, cancelRowDeleteCallback, e) {
                     deleteRecord(rowData, cancelRowDeleteCallback);
                 },
-                onRowInsert: function (rowData, e) {
-                    insertRecord({"row": rowData, event: e});
+                onRowInsert: function (rowData, e, multipartData) {
+                    insertRecord({'row': rowData, 'multipartData': multipartData, event: e});
                 },
                 beforeRowUpdate: function (rowData, e, eventName) {
                     /*TODO: Check why widgetid is undefined here.*/
                     $scope.$emit('update-row', $scope.widgetid, rowData, eventName);
                     $scope.prevData = Utils.getClonedObject(rowData);
                     $rootScope.$safeApply($scope);
-                    $rootScope.$emit("wm-event", $scope.widgetid, "update");
+                    $rootScope.$emit('wm-event', $scope.widgetid, 'update');
                     /*TODO: Bind this event.*/
 //                    $scope.beforeRowupdate({$data: rowData, $event: e});
                 },
-                afterRowUpdate: function (rowData, e) {
-                    updateRecord({"row": rowData, "prevData": $scope.prevData, "event": e});
+                afterRowUpdate: function (rowData, e, multipartData) {
+                    updateRecord({'row': rowData, 'prevData': $scope.prevData, 'event': e, 'multipartData': multipartData});
                 },
                 onSetRecord: function (rowData, e) {
                     $scope.onSetrecord({$data: rowData, $event: e});
@@ -1300,8 +1312,8 @@ WM.module('wm.widgets.grid')
                     'field': '',
                     'direction': ''
                 },
-                getCompiledTemplate: function (htm, row, colDef) {
-                    return getCompiledTemplate(htm, row, colDef);
+                getCompiledTemplate: function (htm, row, colDef, refreshImg) {
+                    return getCompiledTemplate(htm, row, colDef, refreshImg);
                 },
                 compileTemplateInGridScope: function (htm) {
                     return compileTemplateInGridScope(htm);

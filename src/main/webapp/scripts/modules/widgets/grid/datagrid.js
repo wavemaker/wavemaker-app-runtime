@@ -504,14 +504,15 @@ $.widget('wm.datagrid', {
         }
 
         if (isCellCompiled) {
-            this.compiledCellTemplates[ctId] = this.options.getCompiledTemplate(htm, row, colDef) || '';
+            this.compiledCellTemplates[ctId] = this.options.getCompiledTemplate(htm, row, colDef, true) || '';
         }
         return htm;
     },
 
-    _getEditableTemplate: function ($el, colDef, cellText) {
+    _getEditableTemplate: function ($el, colDef, cellText, rowId) {
         if (colDef.editWidgetType) {
-            var template;
+            var template,
+                formName;
             switch (colDef.editWidgetType) {
             case 'select':
                 cellText = cellText || '';
@@ -538,6 +539,11 @@ $.widget('wm.datagrid', {
             case 'textarea':
                 cellText = cellText || '';
                 template = '<wm-textarea datavalue="' + cellText + '"></wm-textarea>';
+                break;
+            case 'upload':
+                formName = colDef.field + '_' + rowId;
+                $el.attr('form-name', formName);
+                template = '<form name="' + formName + '"><input class="file-upload" type="file" name="' + colDef.field + '"/></form>';
                 break;
             default:
                 template = '<wm-text datavalue="' + cellText + '"></wm-text>';
@@ -1174,7 +1180,7 @@ $.widget('wm.datagrid', {
                     } else {
                         value = cellText;
                     }
-                    editableTemplate = self._getEditableTemplate($el, colDef, value);
+                    editableTemplate = self._getEditableTemplate($el, colDef, value, rowId);
                     // TODO: Use some other selector. Input will fail for other types.
                     if (!(colDef.customExpression || colDef.formatpattern)) {
                         $el.addClass('cell-editing').html(editableTemplate).data('originalText', value);
@@ -1188,7 +1194,7 @@ $.widget('wm.datagrid', {
                         } else if (colDef.customExpression) {
                             customExp = colDef.customExpression;
                             originalTemplate = customExp;
-                            compiledTemplate = self.options.getCompiledTemplate(customExp, rowData, colDef);
+                            compiledTemplate = self.options.getCompiledTemplate(customExp, rowData, colDef, true);
                             $el.addClass('cell-editing editable-expression').data(
                                 'originalValue', {'template': originalTemplate, 'rowData': angular.copy(rowData), 'colDef': colDef});
                             if (colDef.editWidgetType) {
@@ -1213,6 +1219,13 @@ $.widget('wm.datagrid', {
             $editableElements = $row.find('td.cell-editing');
             isNewRow = rowId >= this.preparedData.length;
             if (e.data.action === 'save') {
+                var isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
+                    formData,
+                    multipartData = false;
+                if (isFormDataSupported) {
+                    /* Angular does not bind file values so using native object to send files */
+                    formData = new FormData();
+                }
                 if ($.isFunction(this.options.onSetRecord)) {
                     this.options.onSetRecord(rowData, e);
                 }
@@ -1230,14 +1243,21 @@ $.widget('wm.datagrid', {
                             $ie = $el.find('input'),
                             text = self._getValue($ie, fields);
                         $el.removeClass('datetime-wrapper');
-                        if (colDef.editWidgetType) {
+                        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
                             text = $el.children().isolateScope().datavalue;
                         }
                         if (colDef.type === 'timestamp' && (!colDef.editWidgetType || colDef.editWidgetType === 'text')) {
                             text = parseInt(text);
                         }
                         if (fields.length === 1) {
-                            rowData[colDef.field] = text;
+                            if (colDef.editWidgetType === 'upload') {
+                                if (isFormDataSupported) {
+                                    multipartData = true;
+                                    formData.append(colDef.field, document.forms[$el.attr('form-name')][colDef.field].files[0]);
+                                }
+                            } else {
+                                rowData[colDef.field] = text;
+                            }
                         } else if (!isNewRow && fields[0] in rowData) {
                             var d = rowData[fields[0]];
                             for (var k = 1; k < fields.length - 1; k++) {
@@ -1258,11 +1278,17 @@ $.widget('wm.datagrid', {
                             }
                             x[fields[k]] = text;
                         }
-                    });
+                    })
+                    if (multipartData) {
+                        formData.append('wm_data_json', new Blob([JSON.stringify(rowData)], {
+                            type: 'application/json'
+                        }));
+                        rowData = formData;
+                    }
                     if (isNewRow) {
-                        this.options.onRowInsert(rowData, e);
+                        this.options.onRowInsert(rowData, e, multipartData);
                     } else {
-                        this.options.afterRowUpdate(rowData, e);
+                        this.options.afterRowUpdate(rowData, e, multipartData);
                     }
                 } else {
                     this.cancelEdit($editableElements);
@@ -1327,7 +1353,7 @@ $.widget('wm.datagrid', {
             } else {
                 originalValue = value;
                 if (originalValue.template) {
-                    template = self.options.getCompiledTemplate(originalValue.template, originalValue.rowData, originalValue.colDef);
+                    template = self.options.getCompiledTemplate(originalValue.template, originalValue.rowData, originalValue.colDef, true);
                     $el.html(template);
                 } else {
                     $el.html(originalValue);
