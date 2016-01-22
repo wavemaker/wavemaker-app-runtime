@@ -428,11 +428,11 @@ Application
                     }
                 });
 
-                AppManager.isDeviceReady()
-                    .then(function () {
-                        return AppManager.loadCommonPage($s);
-                    }).then(function () {
-                        if ($rs.isApplicationType) {
+                if ($rs.isApplicationType) {
+                    AppManager.isDeviceReady()
+                        .then(function () {
+                            return AppManager.loadCommonPage($s);
+                        }).then(function () {
                             /* load the common contents, when user is authenticated and common contents not loaded yet */
                             SecurityService.getConfig(function (config) {
                                 if (!config.securityEnabled || config.authenticated) {
@@ -444,10 +444,10 @@ Application
                                         });
                                 }
                             });
-                        }
-                    });
+                        });
+                }
 
-                        /*create the project object*/
+                /*create the project object*/
                 $rs.project = {
                     'id'          : projectID,
                     'activeTheme' : appProperties.activeTheme,
