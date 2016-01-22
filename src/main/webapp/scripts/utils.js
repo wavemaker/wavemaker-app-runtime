@@ -1277,12 +1277,19 @@ WM.module('wm.utils', [])
 
         function getCookieByName(name) {
             var cookiesArray = document.cookie.split('; '),
-                cookies = {};
-            cookiesArray.forEach(function (cookie) {
-                var cookieArray = cookie.split('=');
-                cookies[cookieArray[0]] = cookieArray[1];
-            });
-            return cookies[name];
+                cookies      = {};
+
+            if (_.some(cookiesArray, function (cookie) {
+                    var cookieArray         = cookie.split('=');
+                    cookies[cookieArray[0]] = cookieArray[1];
+
+                    if (cookieArray[0] === name) { // break the loop when the required cookie is found
+                        return true;
+                    }
+
+                })) {
+                return decodeURIComponent(cookies[name]);
+            }
         }
 
         /*Function to check whether the specified object is a pageable object or not.*/
@@ -1615,7 +1622,7 @@ WM.module('wm.utils', [])
             return {
                 'type'      : variableType,
                 'category'  : variableCategory,
-                'evtVal'            : evtVal
+                'evtVal'    : evtVal
             };
         }
         // expose the methods on the service instance.

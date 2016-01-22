@@ -202,8 +202,11 @@ Application
 
                 /* initialize the i18nService */
                 function initI18nService(supportedLocale, defaultLocale) {
-                    var _sl = supportedLocale,
-                        _dl = defaultLocale || 'en';
+                    var _acceptLang = (Utils.getCookieByName('X-Accept-Language') || '').split(','),
+                        _sl         = supportedLocale,
+                        _dl;
+
+                    _dl = _.intersection(_acceptLang, _sl)[0] || defaultLocale || 'en';
 
                     // if the supportedLocale is not available set it to defaultLocale
                     _sl = _sl || [_dl];

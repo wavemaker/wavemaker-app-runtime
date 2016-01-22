@@ -23,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpHeaders;
@@ -41,8 +42,16 @@ public class LanguagePreferenceFilter extends GenericFilterBean {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         String header = httpServletRequest.getHeader(HttpHeaders.ACCEPT_LANGUAGE);
-        if(StringUtils.isNotEmpty(header))
-            httpServletResponse.addCookie(new Cookie("X-" + HttpHeaders.ACCEPT_LANGUAGE, header));
+
+        if(StringUtils.isNotEmpty(header)) {
+
+            if(header.contains(";")) {
+                header = header.split(";")[0];
+            }
+
+            httpServletResponse.addCookie(new Cookie("X-" + HttpHeaders.ACCEPT_LANGUAGE, URLEncoder.encode(header, "UTF-8")));
+        }
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }
