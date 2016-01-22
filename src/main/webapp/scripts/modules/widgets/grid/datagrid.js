@@ -535,6 +535,10 @@ $.widget('wm.datagrid', {
             case 'number':
                 template = '<wm-text type="number" datavalue="' + cellText + '"></wm-text>';
                 break;
+            case 'textarea':
+                cellText = cellText || '';
+                template = '<wm-textarea datavalue="' + cellText + '"></wm-textarea>';
+                break;
             default:
                 template = '<wm-text datavalue="' + cellText + '"></wm-text>';
                 break;
