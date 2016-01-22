@@ -89,7 +89,7 @@ Application
                         sessionTimeoutMethod,
                         loginConfig,
                         loginMethod;
-                    SecurityService.getConfig(function(config) {
+                    SecurityService.getConfig(function (config) {
                         /* if no user found, 401 was thrown for first time login */
                         if (config.userInfo && config.userInfo.userName) {
                             sessionTimeoutConfig = config.login.sessionTimeout || {'type': 'DIALOG'};
@@ -304,26 +304,30 @@ Application
                     var deferred = $q.defer(),
                         page;
 
-                    SecurityService.getConfig(function (config) {
-                        $rs.securityConfig = config;
-                        if (config.securityEnabled) {
-                            if (config.authenticated) {
-                                page = config.userInfo.homePage;
+                    if (!$rs.isApplicationType) {
+                        deferred.resolve();
+                    } else {
+                        SecurityService.getConfig(function (config) {
+                            $rs.securityConfig = config;
+                            if (config.securityEnabled) {
+                                if (config.authenticated) {
+                                    page = config.userInfo.homePage;
+                                } else {
+                                    page = config.homePage;
+                                }
                             } else {
                                 page = config.homePage;
                             }
-                        } else {
-                            page = config.homePage;
-                        }
-                        if ($location.path() === '/') {
-                            $location.path(page);
-                        }
+                            if ($location.path() === '/') {
+                                $location.path(page);
+                            }
 
-                        deferred.resolve();
-                    }, function () {
-                        $rs.securityConfig = {};
-                        deferred.resolve();
-                    });
+                            deferred.resolve();
+                        }, function () {
+                            $rs.securityConfig = {};
+                            deferred.resolve();
+                        });
+                    }
 
                     return deferred.promise;
                 }
@@ -351,13 +355,13 @@ Application
 
                 var initText = '<div>Loading Page Content...</div>',
                     routeConfig = {
-                    'template': initText,
-                    'resolve': {
-                        'securityConfig': function (AppManager) {
-                            return AppManager.loadSecurityConfig();
+                        'template': initText,
+                        'resolve': {
+                            'securityConfig': function (AppManager) {
+                                return AppManager.loadSecurityConfig();
+                            }
                         }
-                    }
-                };
+                    };
 
                 $routeProvider
                     .when('/', routeConfig)
