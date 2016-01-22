@@ -403,7 +403,7 @@ WM.module('wm.widgets.live')
             function getFileUploadTemplate(fieldDef, index) {
                 var template = '';
                 if (fieldDef.filetype === 'image') {
-                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value || formFields[' + index + '].href"><img height="2em" class="glyphicon glyphicon-file" src="{{formFields[' + index + '].href}}"/></a>';
+                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value || formFields[' + index + '].href"><img style="height:2em" class="glyphicon glyphicon-file" src="{{formFields[' + index + '].href}}"/></a>';
                 } else {
                     template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value !== null"><i class="glyphicon glyphicon-file"></i></a>';
                 }
