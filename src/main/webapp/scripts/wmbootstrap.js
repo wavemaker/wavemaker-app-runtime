@@ -167,39 +167,6 @@ Application
                     return (cache.get(pageName) || {})[type];
                 }
 
-                function loadUserRoles() {
-                    var deferred = $q.defer();
-
-                    SecurityService.isSecurityEnabled(function (isEnabled) {
-                        $rs.isSecurityEnabled = typeof isEnabled === 'boolean' ? isEnabled : false;
-                        /* if security enabled, get the user roles and load page, else simply load page*/
-                        if ($rs.isSecurityEnabled) {
-                            SecurityService.getUserRoles(function (roles, isAuthenticated) {
-                                var dataset;
-                                $rs.isUserAuthenticated = isAuthenticated;
-                                if (WM.isArray(roles)) {
-                                    $rs.userRoles = roles;
-                                    if ($rs.Variables && $rs.Variables.loggedInUser) {
-                                        dataset = $rs.Variables.loggedInUser.dataSet;
-                                        dataset.roles = roles;
-                                        dataset.isSecurityEnabled = true;
-                                    }
-                                }
-                                deferred.resolve();
-                            }, function () {
-                                deferred.resolve();
-                            });
-                        } else {
-                            deferred.resolve();
-                        }
-                    }, function () {
-                        $rs.isSecurityEnabled = false;
-                        deferred.resolve();
-                    });
-
-                    return deferred.promise;
-                }
-
                 /* initialize the i18nService */
                 function initI18nService(supportedLocale, defaultLocale) {
                     var _acceptLang = (Utils.getCookieByName('X-Accept-Language') || '').split(','),
@@ -308,10 +275,11 @@ Application
                         deferred.resolve();
                     } else {
                         SecurityService.getConfig(function (config) {
-                            $rs.securityConfig = config;
                             if (config.securityEnabled) {
+                                $rs.isSecurityEnabled = config.securityEnabled;
                                 if (config.authenticated) {
                                     page = config.userInfo.homePage;
+                                    $rs.userRoles = config.userInfo.userRoles;
                                 } else {
                                     page = config.homePage;
                                 }
@@ -321,10 +289,8 @@ Application
                             if ($location.path() === '/') {
                                 $location.path(page);
                             }
-
                             deferred.resolve();
                         }, function () {
-                            $rs.securityConfig = {};
                             deferred.resolve();
                         });
                     }
@@ -335,7 +301,6 @@ Application
                 $rs.$on('app-logout-success', clearPagesCache);
 
                 this.loadPage               = loadPage;
-                this.loadUserRoles          = loadUserRoles;
                 this.getPageContent         = getPageContent;
                 this.loadCommonPage         = loadCommonPage;
                 this.initI18nService        = initI18nService;
@@ -407,12 +372,25 @@ Application
                     appProperties = Utils.getClonedObject(_WM_APP_PROPERTIES),
                     pageReadyDeregister;
 
-                $rs.projectName          = appProperties.name;
+                $rs.projectName             = appProperties.name;
+                $rs.isPrefabType            = appProperties.type === 'PREFAB';
+                $rs.isApplicationType       = appProperties.type === 'APPLICATION';
+                $rs.isTemplateBundleType    = appProperties.type === 'TEMPLATEBUNDLE';
+                $rs.project = {
+                                'id'          : projectID,
+                                'activeTheme' : appProperties.activeTheme,
+                                'deployedUrl' : ProjectService.getDeployedUrl()
+                              };
+                $rs.changeLocale = function ($is) {
+                    i18nService.setSelectedLocale($is.datavalue);
+                };
 
-                $rs.isPrefabType         = appProperties.type === 'PREFAB';
-                $rs.isApplicationType    = appProperties.type === 'APPLICATION';
-                $rs.isTemplateBundleType = appProperties.type === 'TEMPLATEBUNDLE';
-
+                /*
+                 * Route Change Handler, for every page
+                 * Page content is fetched here and provided to the template for rendering
+                 * Page Variables are also set and made available for registration
+                 * For Prefabs: localization resources are loaded
+                 */
                 $rs.$on('$routeChangeSuccess', function (evt, $route) {
                     var pageName = $route.params.name,
                         pageVars,
@@ -432,13 +410,19 @@ Application
                     }
                 });
 
+                /*
+                 * Following content loaded only application type projects, not template bundles, prefabs
+                 * - Common Page
+                 * - App Variables
+                 * - Localization Resource
+                 */
                 if ($rs.isApplicationType) {
                     AppManager.isDeviceReady()
                         .then(function () {
                             return AppManager.loadCommonPage($s);
                         }).then(function () {
-                            /* load the common contents, when user is authenticated and common contents not loaded yet */
                             SecurityService.getConfig(function (config) {
+                                /* if user us authenticated, load app variables and localozation resource */
                                 if (!config.securityEnabled || config.authenticated) {
                                     AppManager.initAppVariables($s)
                                         .then(function (appVariables) {
@@ -451,17 +435,7 @@ Application
                         });
                 }
 
-                /*create the project object*/
-                $rs.project = {
-                    'id'          : projectID,
-                    'activeTheme' : appProperties.activeTheme,
-                    'deployedUrl' : ProjectService.getDeployedUrl()
-                };
-
-                $rs.changeLocale = function ($is) {
-                    i18nService.setSelectedLocale($is.datavalue);
-                };
-
+                /* load prefab configurations */
                 if ($rs.isPrefabType) {
                     Utils.fetchContent(
                         'json',
@@ -476,10 +450,11 @@ Application
                     );
                 }
 
-                /*$rs.isSecurityEnabled is set to true only after user logs in. Before that we need to know whether security is enabled or not
-                * so when current page is login.html we assume that security is enabled*/
-                if (window.location.pathname.split('/').pop() === 'login.html') {
-                    $rs.isSecurityEnabled = true;
+                if (CONSTANTS.hasCordova) {
+                    pageReadyDeregister = $rs.$on('page-ready', function () {
+                        navigator.splashscreen.hide();
+                        pageReadyDeregister();
+                    });
                 }
 
                 $rs.$on('update-loggedin-user', function () {
@@ -539,16 +514,11 @@ Application
                     }
                 });
 
-                if (CONSTANTS.hasCordova) {
-                    pageReadyDeregister = $rs.$on('page-ready', function () {
-                        navigator.splashscreen.hide();
-                        pageReadyDeregister();
-                    });
-                }
                 AppManager.isDeviceReady().then(function () {
                     $rs.$emit('application-ready');
                 });
-                /* This is used to show and hide the spinner when service is in flight */
+
+                /* This is used to show and hide the spinner when variable is in-flight */
                 $rs.$on('toggle-variable-state', function (event, variableName, active) {
                     var variable = Variables.getVariableByName(variableName);
                     if (variable && !_.isEmpty(_.trim(variable.spinnerContext))) {
