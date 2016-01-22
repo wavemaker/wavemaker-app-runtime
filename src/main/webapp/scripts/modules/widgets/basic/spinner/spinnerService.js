@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM,_ */
 /**
  * @ngdoc service
  * @name wm.widgets.basic.wmSpinner
