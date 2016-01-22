@@ -1,4 +1,4 @@
-/*global WM,moment */
+/*global WM,moment _ */
 /*Directive for time */
 
 WM.module('wm.widgets.form')
@@ -13,7 +13,7 @@ WM.module('wm.widgets.form')
                 '<input class="form-control app-textbox display-input" data-ng-model="_timeModel" accesskey="{{shortcutkey}}">' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
-                        '<uib-timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian"></uib-timepicker>' +
+                        '<uib-timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds"></uib-timepicker>' +
                     '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
@@ -33,7 +33,8 @@ WM.module('wm.widgets.form')
                 'readonly': true,
                 'disabled': true,
                 'autofocus': true,
-                'timestamp': true
+                'timestamp': true,
+                'timepattern': true
             };
 
         if ($rs.isMobileApplicationType) {
@@ -41,6 +42,14 @@ WM.module('wm.widgets.form')
             widgetProps.ismeridian.show = false;
             widgetProps.hourstep.show = false;
             widgetProps.minutestep.show = false;
+        }
+
+        function setTimeModel(scope) {
+            if (scope.timepattern === 'timestamp') {
+                scope._timeModel = scope._proxyModel && scope._proxyModel.getTime();
+            } else {
+                scope._timeModel = $filter('date')(scope._proxyModel, scope.timepattern);
+            }
         }
 
         function propertyChangeHandler(scope, element, key, newVal, oldVal) {
@@ -62,6 +71,11 @@ WM.module('wm.widgets.form')
                 if (newVal != oldVal) {
                     scope._model_ = newVal;
                 }
+                break;
+            case 'timepattern':
+                scope.showseconds = _.includes(newVal, 'ss');
+                scope.ismeridian  = _.includes(newVal, 'hh');
+                setTimeModel(scope);
                 break;
             }
         }
@@ -128,11 +142,12 @@ WM.module('wm.widgets.form')
             },
             compile: function () {
                 return {
-                    pre: function (scope) {
+                    pre: function (scope, element, attrs) {
                         scope.widgetProps = widgetProps;
                         if ($rs.isMobileApplicationType) {
                             scope._nativeMode = true;
                         }
+
                     },
                     post: function (scope, element, attrs) {
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
@@ -145,6 +160,13 @@ WM.module('wm.widgets.form')
                             scope._model_ = '';
                         };
 
+                        /*
+                         * Backward compatibility for ismeridian property which is deprecated.
+                         * if ismeridian is false then time is set as 24hr clock format.
+                         */
+                        if (attrs.ismeridian === 'false' && !attrs.timepattern) {
+                            scope.timepattern = scope.timepattern.replace('hh', 'HH').replace(' a', '');
+                        }
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         scope._onClick = _onClick.bind(undefined, scope);
                         scope._onTimeClick = _onTimeClick.bind(undefined, scope);
@@ -194,7 +216,7 @@ WM.module('wm.widgets.form')
                                 } else {
                                     this._proxyModel = undefined;
                                 }
-                                this._timeModel = $filter('date')(this._proxyModel, "hh:mm a");
+                                setTimeModel(scope);
                             }
                         });
 
