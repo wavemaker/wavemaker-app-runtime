@@ -904,7 +904,7 @@ wm.variables.services.Variables = [
                 if (self.variableCollection[pageName][variableName]) {
                     self.variableCollection[pageName][newName] = newProperties;
                     updated = true;
-                    if (!_.includes(CRUDMAP.UPDATE[pageName], newName)) {
+                    if (!_.includes(CRUDMAP.UPDATE[pageName], newName) && !_.includes(CRUDMAP.CREATE[pageName], newName)) {
                         CRUDMAP.UPDATE[pageName].push(newName);
                     }
                     if (variableName !== newName) {
