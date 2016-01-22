@@ -84,24 +84,37 @@ Application
                     prevRoute = $location.path();
                 }
 
+                /**
+                 * Handles the app when a XHR request returns 401 response
+                 * If no user was logged in before 401 occurred, First time Login is simulated
+                 * Else, a session timeout has occurred and the same is simulated
+                 * @param page  if provided, represents the page name for which XHR request returned 401, on re-login
+                 *              if not provided, a service request returned 401
+                 * @param onSuccess success handler
+                 * @param onError error handler
+                 */
                 function handleSessionTimeout(page, onSuccess, onError) {
                     var sessionTimeoutConfig,
                         sessionTimeoutMethod,
                         loginConfig,
-                        loginMethod;
+                        loginMethod,
+                        LOGIN_METHOD = {
+                            "DIALOG": 'DIALOG',
+                            "PAGE": 'PAGE'
+                        };
                     SecurityService.getConfig(function (config) {
                         /* if no user found, 401 was thrown for first time login */
                         if (config.userInfo && config.userInfo.userName) {
-                            sessionTimeoutConfig = config.login.sessionTimeout || {'type': 'DIALOG'};
+                            sessionTimeoutConfig = config.login.sessionTimeout || {'type': LOGIN_METHOD.DIALOG};
                             sessionTimeoutMethod = sessionTimeoutConfig.type.toUpperCase();
-                            if (sessionTimeoutMethod === 'DIALOG') {
+                            if (sessionTimeoutMethod === LOGIN_METHOD.DIALOG) {
                                 if (page) {
                                     BaseService.pushToErrorCallStack(null, function () {
                                         _load(page, onSuccess, onError);
                                     }, WM.noop);
                                 }
                                 BaseService.handleSessionTimeOut();
-                            } else if (sessionTimeoutMethod === 'PAGE') {
+                            } else if (sessionTimeoutMethod === LOGIN_METHOD.PAGE) {
                                 if (!page) {
                                     page = $location.path().replace('/', '');
                                 }
@@ -111,10 +124,10 @@ Application
                         } else {
                             loginConfig = config.login;
                             loginMethod = loginConfig.type.toUpperCase();
-                            if (loginMethod === 'DIALOG') {
+                            if (loginMethod === LOGIN_METHOD.DIALOG) {
                                 BaseService.handleSessionTimeOut();
                                 /* Through loginDialog, user will be redirected to respective landing page as it is a first time login */
-                            } else if (loginMethod === 'PAGE') {
+                            } else if (loginMethod === LOGIN_METHOD.PAGE) {
                                 $location.path(loginConfig.pageName);
                             }
                         }
@@ -211,38 +224,41 @@ Application
                     return deferred.promise;
                 }
 
-                function updateLoggedInUser(checkVariable) {
-                    var loggedInUser = $rs.Variables && $rs.Variables.loggedInUser;
+                /**
+                 * Updates the loggedInUser Static Variable with current logged in user's details
+                 * if security disabled, user not authenticated, it is reset.
+                 */
+                function updateLoggedInUserVariable() {
+                    var loggedInUser = $rs.Variables && $rs.Variables.loggedInUser && $rs.Variables.loggedInUser.dataSet;
 
-                    if (checkVariable && !loggedInUser) {
+                    /* sanity check */
+                    if (!loggedInUser) {
                         return;
                     }
 
-                    /* get the userAuthenticated status */
-                    SecurityService.isAuthenticated(function (isAuthenticated) {
-                        /* set this flag to be used by the logout variable service */
-                        $rs.isUserAuthenticated = typeof isAuthenticated === 'boolean' ? isAuthenticated : false;
-                        /* if logged-in user variable present, get user info and persist */
-                        if ($rs.isUserAuthenticated && loggedInUser) {
-                            /* TODO: merge the userInfo service calls into a single call */
-                            loggedInUser.dataSet.isAuthenticated = $rs.isUserAuthenticated;
-                            loggedInUser.dataSet.roles = $rs.userRoles;
-                            SecurityService.getUserName(function (name) {
-                                loggedInUser.dataSet.name = name;
-                            });
-                            SecurityService.getUserId(function (id) {
-                                loggedInUser.dataSet.id = id;
-                            });
-                            SecurityService.getTenantId(function (tenantId) {
-                                loggedInUser.dataSet.tenantId = tenantId;
-                            });
-                        } else if (loggedInUser) {
-                            loggedInUser.dataSet.isAuthenticated = false;
-                            loggedInUser.dataSet.roles = [];
-                            loggedInUser.dataSet.name = '';
-                            loggedInUser.dataSet.id = '';
-                            loggedInUser.dataSet.tenantId = '';
+                    // local function to clear the loggedInUser details.
+                    function clearLoggedInUser () {
+                        loggedInUser.isAuthenticated = false;
+                        loggedInUser.roles = [];
+                        loggedInUser.name = undefined;
+                        loggedInUser.id = undefined;
+                        loggedInUser.tenantId = undefined;
+                    }
+
+                    SecurityService.getConfig(function (config) {
+                        if (config.securityEnabled) {
+                            if (config.authenticated) {
+                                loggedInUser.isAuthenticated = config.authenticated;
+                                loggedInUser.roles = config.userInfo.userRoles;
+                                loggedInUser.name = config.userInfo.userName;
+                                loggedInUser.id = config.userInfo.userId;
+                                loggedInUser.tenantId = config.userInfo.tenantId;
+                                return;
+                            }
                         }
+                        clearLoggedInUser();
+                    }, function () {
+                        clearLoggedInUser();
                     });
                 }
 
@@ -275,8 +291,9 @@ Application
                         deferred.resolve();
                     } else {
                         SecurityService.getConfig(function (config) {
+                            $rs.isSecurityEnabled = config.securityEnabled;
+                            $rs.isUserAuthenticated = config.authenticated;
                             if (config.securityEnabled) {
-                                $rs.isSecurityEnabled = config.securityEnabled;
                                 if (config.authenticated) {
                                     page = config.userInfo.homePage;
                                     $rs.userRoles = config.userInfo.userRoles;
@@ -305,7 +322,7 @@ Application
                 this.loadCommonPage         = loadCommonPage;
                 this.initI18nService        = initI18nService;
                 this.initAppVariables       = initAppVariables;
-                this.updateLoggedInUser     = updateLoggedInUser;
+                this.updateLoggedInUserVariable     = updateLoggedInUserVariable;
                 this.getPreparedPageContent = getPreparedPageContent;
                 this.isDeviceReady          = isDeviceReady;
                 this.loadSecurityConfig     = loadSecurityConfig;
@@ -428,7 +445,7 @@ Application
                                         .then(function (appVariables) {
                                             var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
                                             AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
-                                            AppManager.updateLoggedInUser();
+                                            AppManager.updateLoggedInUserVariable();
                                         });
                                 }
                             });
@@ -459,7 +476,7 @@ Application
 
                 $rs.$on('update-loggedin-user', function () {
                     SecurityService.setConfig(null);
-                    AppManager.updateLoggedInUser(true);
+                    AppManager.updateLoggedInUserVariable();
                 });
 
                 /*function to invoke a service during run time*/
