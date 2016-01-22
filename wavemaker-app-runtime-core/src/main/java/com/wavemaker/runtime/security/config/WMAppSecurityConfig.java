@@ -18,6 +18,7 @@ package com.wavemaker.runtime.security.config;
 import java.util.Map;
 
 import com.wavemaker.studio.common.model.security.LoginConfig;
+import com.wavemaker.studio.common.model.security.RememberMeConfig;
 import com.wavemaker.studio.common.model.security.RoleConfig;
 
 /**
@@ -33,6 +34,8 @@ public class WMAppSecurityConfig {
     private LoginConfig loginConfig;
 
     private Map<String, RoleConfig> roleMap;
+
+    private RememberMeConfig rememberMeConfig;
 
     public boolean isEnforceSecurity() {
         return enforceSecurity;
@@ -58,12 +61,21 @@ public class WMAppSecurityConfig {
         this.loginConfig = loginConfig;
     }
 
+    public RememberMeConfig getRememberMeConfig() {
+        return rememberMeConfig;
+    }
+
+    public void setRememberMeConfig(final RememberMeConfig rememberMeConfig) {
+        this.rememberMeConfig = rememberMeConfig;
+    }
+
     @Override
     public String toString() {
         return "WMAppSecurityConfig{" +
                 "enforceSecurity=" + enforceSecurity +
-                ", login=" + loginConfig +
+                ", loginConfig=" + loginConfig +
                 ", roleMap=" + roleMap +
+                ", rememberMe=" + rememberMeConfig +
                 '}';
     }
 }
