@@ -78,6 +78,8 @@
 
     <bean id="cacheControlFilter" class="com.wavemaker.runtime.web.filter.CacheControlFilter"/>
 
+    <bean id="languagePreferenceFilter" class="com.wavemaker.runtime.web.filter.LanguagePreferenceFilter"/>
+
     <bean id="handlerExceptionResolver" class="com.wavemaker.runtime.exception.resolver.ApplicationRestServiceExceptionResolver"/>
 
     <bean id="multipartResolver"
