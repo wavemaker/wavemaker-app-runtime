@@ -506,7 +506,7 @@ WM.module('wm.widgets.grid')
                                             'updaterow': scope.updaterow,
                                             'deleterow': scope.deleterow
                                         });
-                                        $rootScope.$emit('save-workspace', undefined, true);
+                                        $rootScope.$emit('save-workspace', true);
                                     }
                                     readOnlyGridAttrUpdated = undefined;
                                 }
@@ -2158,7 +2158,7 @@ WM.module('wm.widgets.grid')
                                     fieldDefs: scope.$parent.fullFieldDefs
                                 };
                                 scope.$root.$emit('grid-defs-modified', config);
-                                scope.$root.$emit('save-workspace', undefined, true);
+                                scope.$root.$emit('save-workspace', true);
                             }
                         }
                         /*check if any attribute has binding. put a watch for the attributes*/

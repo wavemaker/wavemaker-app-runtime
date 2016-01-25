@@ -9,7 +9,7 @@ WM.module("wm.widgets.basic")
                 '<ul class="pagination {{class}}" data-ng-if="navcontrols === \'Advanced\'">' +
                     '<li data-ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" data-ng-click="navigatePage(\'first\', $event)"><i class="glyphicon glyphicon-fast-backward"></i></a></li>' +
                     '<li data-ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" data-ng-click="navigatePage(\'prev\', $event)"><i class="glyphicon glyphicon-step-backward"></i></a></li>' +
-                    '<li class="pagecount disabled"><a><input title="Current Page" type="number" data-ng-disabled="isDisableCurrent" data-ng-model="currentPage" data-ng-keydown="navigatePage(\'index\', $event)" class="form-control" /></a></li>' +
+                    '<li class="pagecount disabled"><a><input title="Current Page" type="number" data-ng-disabled="isDisableCurrent" data-ng-model="dn.currentPage" ng-model-options="{updateOn: \'change blur\'}" data-ng-change="onModelChange($event)" class="form-control" /></a></li>' +
                     '<li class="disabled"><a data-ng-hide="isDisableCount"> of {{pageCount}}</a></li>' +
                     '<li data-ng-class="{\'disabled\':isDisableNext}"><a title="Go Next" name="next" href="javascript:void(0);" aria-label="Next" data-ng-click="navigatePage(\'next\', $event)"><i class="glyphicon glyphicon-step-forward"></i></a></li>' +
                     '<li data-ng-class="{\'disabled\':isDisableLast}"><a title="Go to End" name="last" href="javascript:void(0);" aria-label="Last" data-ng-click="navigatePage(\'last\', $event)"><i class="glyphicon glyphicon-fast-forward"></i></a></li>' +
@@ -55,18 +55,18 @@ WM.module("wm.widgets.basic")
                 /*Function to reset the paging values to default.*/
                 $scope.resetPageNavigation = function () {
                     $scope.pageCount = 0;
-                    $scope.currentPage = 1;
+                    $scope.dn.currentPage = 1;
                     $scope.dataSize = 0;
                 };
 
                 /*Function to calculate the paging values.*/
                 $scope.calculatePagingValues = function (pageCount) {
                     $scope.pageCount = WM.isDefined(pageCount) ? pageCount : (($scope.dataSize > $scope.maxResults) ? (Math.ceil($scope.dataSize / $scope.maxResults)) : ($scope.dataSize < 0 ? 0 : 1));
-                    $scope.currentPage = $scope.currentPage || 1;
+                    $scope.dn.currentPage = $scope.dn.currentPage || 1;
                 };
 
                 $scope.isPagingValuesComputed = function () {
-                    return (WM.isDefined($scope.maxResults) && WM.isDefined($scope.dataSize) && WM.isDefined($scope.currentPage) && WM.isDefined($scope.pageCount));
+                    return (WM.isDefined($scope.maxResults) && WM.isDefined($scope.dataSize) && WM.isDefined($scope.dn.currentPage) && WM.isDefined($scope.pageCount));
                 };
 
                 /*Function to set default values to the paging parameters*/
@@ -74,13 +74,13 @@ WM.module("wm.widgets.basic")
                     /*If neither "dataSize" nor "maxResults" is set, then set default values to the paging parameters.*/
                     if (!dataSize && !maxResults) {
                         $scope.pageCount = 1;
-                        $scope.currentPage = 1;
+                        $scope.dn.currentPage = 1;
                         $scope.maxResults = dataSize;
                         $scope.dataSize = dataSize;
                     } else { /*Else, set the specified values and recalculate paging parameters.*/
                         $scope.maxResults = maxResults || $scope.maxResults;
                         $scope.dataSize = WM.isDefined(dataSize) ? dataSize : $scope.dataSize;
-                        $scope.currentPage = currentPage || $scope.currentPage;
+                        $scope.dn.currentPage = currentPage || $scope.dn.currentPage;
                         $scope.calculatePagingValues(pageCount);
                     }
                 };
@@ -107,8 +107,8 @@ WM.module("wm.widgets.basic")
 
                 /*Function to disable navigation based on the current and total pages.*/
                 $scope.disableNavigation = function () {
-                    var isCurrentPageFirst = ($scope.currentPage === 1),
-                        isCurrentPageLast = ($scope.currentPage === $scope.pageCount);
+                    var isCurrentPageFirst = ($scope.dn.currentPage === 1),
+                        isCurrentPageLast = ($scope.dn.currentPage === $scope.pageCount);
                     $scope.isDisableFirst = $scope.isDisablePrevious = isCurrentPageFirst;
                     $scope.isDisableNext = $scope.isDisableLast = isCurrentPageLast;
                     $scope.isDisableCurrent = isCurrentPageFirst && isCurrentPageLast;
@@ -159,9 +159,9 @@ WM.module("wm.widgets.basic")
                                     maxResults = newVal.size;
                                     if (newVal.numberOfElements > 0) {
                                         if (WM.isDefined(newVal.number)) { // number is page number received from backend
-                                            $scope.currentPage = newVal.number + 1;
+                                            $scope.dn.currentPage = newVal.number + 1;
                                         }
-                                        currentPage = $scope.currentPage || 1;
+                                        currentPage = $scope.dn.currentPage || 1;
                                     } else {
                                         currentPage = 1;
                                     }
@@ -189,7 +189,7 @@ WM.module("wm.widgets.basic")
                                 $scope.setDefaultPagingValues(dataSize, maxResults, currentPage);
                                 $scope.disableNavigation();
 
-                                startIndex = ($scope.currentPage - 1) * $scope.maxResults;
+                                startIndex = ($scope.dn.currentPage - 1) * $scope.maxResults;
                                 data =  WM.isArray(newVal) ? newVal.slice(startIndex, startIndex + $scope.maxResults) : newVal;
                                 $scope.result = data;
                             }
@@ -202,17 +202,17 @@ WM.module("wm.widgets.basic")
 
                 /*Function to check if the current page is the first page*/
                 $scope.isFirstPage = function () {
-                    return ($scope.currentPage === 1 || !$scope.currentPage);
+                    return ($scope.dn.currentPage === 1 || !$scope.dn.currentPage);
                 };
                 /*Function to check if the current page is the last page*/
                 $scope.isLastPage = function () {
-                    return ($scope.currentPage === $scope.pageCount);
+                    return ($scope.dn.currentPage === $scope.pageCount);
                 };
 
                 /*Function to navigate to the last page*/
                 $scope.goToLastPage = function (isRefresh, event, callback) {
                     if (!$scope.isLastPage()) {
-                        $scope.currentPage = $scope.pageCount;
+                        $scope.dn.currentPage = $scope.pageCount;
                         $scope.goToPage(event, callback);
                     } else if (isRefresh) {
                         $scope.goToPage(event, callback);
@@ -222,7 +222,7 @@ WM.module("wm.widgets.basic")
                 /*Function to navigate to the first page*/
                 $scope.goToFirstPage = function (isRefresh, event, callback) {
                     if (!$scope.isFirstPage()) {
-                        $scope.currentPage = 1;
+                        $scope.dn.currentPage = 1;
                         $scope.goToPage(event, callback);
                     } else if (isRefresh) {
                         $scope.goToPage(event, callback);
@@ -231,7 +231,7 @@ WM.module("wm.widgets.basic")
 
                 /*Function to navigate to the current page*/
                 $scope.goToPage = function (event, callback) {
-                    $scope.firstRow = ($scope.currentPage - 1) * $scope.maxResults;
+                    $scope.firstRow = ($scope.dn.currentPage - 1) * $scope.maxResults;
                     $scope.getPageData(event, callback);
                 };
 
@@ -252,14 +252,14 @@ WM.module("wm.widgets.basic")
                     if (CONSTANTS.isRunMode && $scope.isBoundToFilter && $scope.widgetName) {
                         widgets = $scope.navigatorElement.scope().Widgets || {};
                         widgetScope = widgets[$scope.widgetName];
-                        widgetScope.applyFilter({"page": $scope.currentPage});
+                        widgetScope.applyFilter({"page": $scope.dn.currentPage});
                         return;
                     }
                     if ($scope.isVariableHasPaging()) {
                         if (variable && variable.category === "wm.LiveVariable") {
                             /*Invoke the function to get the data corresponding to the specific page.*/
                             variable.update({
-                                "page": $scope.currentPage,
+                                "page": $scope.dn.currentPage,
                                 "filterFields": $scope.filterFields,
                                 'orderBy': $scope.sortOptions,
                                 "matchMode": 'anywhere',
@@ -281,12 +281,12 @@ WM.module("wm.widgets.basic")
                                 /*Invoke the "onPageDataReady" function.*/
                                 $scope.onPageDataReady(event, data, callback);
                             }, function (error) {
-                                wmToaster.show("error", "ERROR", "Unable to get data of page -" + $scope.currentPage + ":" + error);
+                                wmToaster.show("error", "ERROR", "Unable to get data of page -" + $scope.dn.currentPage + ":" + error);
                             });
                         } else if (Utils.isPageable($scope.dataset)) {
                             /*Invoke the function to get the data corresponding to the specific page.*/
                             variable.update({
-                                "page": $scope.currentPage,
+                                "page": $scope.dn.currentPage,
                                 "filterFields": $scope.filterFields,
                                 "orderBy": $scope.sortOptions,
                                 "matchMode": 'anywhere',
@@ -297,7 +297,7 @@ WM.module("wm.widgets.basic")
                             }, WM.noop);
                         }
                     } else {
-                        startIndex = ($scope.currentPage - 1) * $scope.maxResults;
+                        startIndex = ($scope.dn.currentPage - 1) * $scope.maxResults;
                         data = WM.isArray($scope.dataset) ?
                             $scope.dataset.slice(startIndex, startIndex + $scope.maxResults) : $scope.dataset;
                         $scope.result = data;
@@ -309,9 +309,9 @@ WM.module("wm.widgets.basic")
                     /*Trigger the event handler if exists.
                      * Check in the dataNavigator scope and also in the parent (i.e., grid/live-list) scope.*/
                     if ($scope.onSetrecord) {
-                        $scope.onSetrecord({$event: event, $scope: this, $data: data, $index: $scope.currentPage});
+                        $scope.onSetrecord({$event: event, $scope: this, $data: data, $index: $scope.dn.currentPage});
                     } else if ($scope.$parent.onSetrecord) {
-                        $scope.$parent.onSetrecord({$event: event, $scope: this, $data: data, $index: $scope.currentPage});
+                        $scope.$parent.onSetrecord({$event: event, $scope: this, $data: data, $index: $scope.dn.currentPage});
                     }
                 };
                 /*Function to validate the page input.
@@ -319,28 +319,35 @@ WM.module("wm.widgets.basic")
                  In case of valid input, return true.*/
                 $scope.validateCurrentPage = function (event, callback) {
                     /*If the value entered is not a valid number, then navigate to the first page.*/
-                    if (isNaN($scope.currentPage)) {
+                    if (isNaN($scope.dn.currentPage)) {
                         $scope.goToFirstPage(undefined, event, callback);
                         return false;
                     }
                     /*If the value entered is less than 0, then navigate to the first page.*/
-                    if ($scope.currentPage < 0) {
+                    if ($scope.dn.currentPage < 0) {
                         $scope.goToFirstPage(undefined, event, callback);
                         return false;
                     }
                     /*If the value entered is greater than the last page number, then navigate to the last page.*/
-                    if ($scope.pageCount && ($scope.currentPage > $scope.pageCount)) {
+                    if ($scope.pageCount && ($scope.dn.currentPage > $scope.pageCount)) {
                         $scope.goToLastPage(undefined, event, callback);
                         return false;
                     }
                     return true;
                 };
 
+                $scope.onModelChange = function (event) {
+                    if (!$scope.validateCurrentPage(event)) {
+                        return;
+                    }
+                    $scope.goToPage(event);
+                };
+
                 /*Function to navigate to the respective pages.*/
                 $scope.navigatePage = function (index, event, isRefresh, callback) {
 
                     /*Convert the current page to a valid page number.*/
-                    $scope.currentPage = parseInt($scope.currentPage, 10);
+                    $scope.dn.currentPage = parseInt($scope.dn.currentPage, 10);
 
                     switch (index) {
                     case "first":
@@ -352,7 +359,7 @@ WM.module("wm.widgets.basic")
                             return;
                         }
                         /*Decrement the current page by 1.*/
-                        $scope.currentPage -= 1;
+                        $scope.dn.currentPage -= 1;
                         break;
                     case "next":
                         /*Return if already on the last page.*/
@@ -360,30 +367,11 @@ WM.module("wm.widgets.basic")
                             return;
                         }
                         /*Increment the current page by 1.*/
-                        $scope.currentPage += 1;
+                        $scope.dn.currentPage += 1;
                         break;
                     case "last":
                         $scope.goToLastPage(isRefresh, event, callback);
                         return;
-                    case "index":
-
-                        var _action = Utils.getActionFromKey(event);
-                        /*Check if the enter key has been pressed.*/
-                        if (_action === "ENTER") {
-                            /*Trigger the event handler if exists.
-                             * Check in the dataNavigator scope and also in the parent (i.e., grid/live-list) scope.*/
-                            if ($scope.onEnterkeypress) {
-                                $scope.onEnterkeypress();
-                            } else if ($scope.$parent.onEnterkeypress) {
-                                $scope.$parent.onEnterkeypress();
-                            }
-                            if (!$scope.validateCurrentPage(event, callback)) {
-                                return;
-                            }
-                        } else {
-                            return;
-                        }
-                        break;
                     default:
                         break;
                     }
@@ -403,6 +391,9 @@ WM.module("wm.widgets.basic")
                         scope.navcontrols = 'Advanced';
                     },
                     'post': function (scope, element, attrs) {
+
+                        scope.dn = {}; //dataNavigator
+
                         scope.navigatorElement = element;
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);

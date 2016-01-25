@@ -232,9 +232,11 @@ WM.module('wm.prefabs')
                                 return function () {
                                     // register the prefab and reload the page
                                     doRegistration(prefabName, function () {
-                                        $rootScope.$emit('save-workspace', function () {
-                                            window.location.reload();
-                                        });
+                                        Utils.getService('StudioActions')
+                                            .saveProject()
+                                            .then(function () {
+                                                window.location.reload();
+                                            });
                                     });
                                 };
                             },
