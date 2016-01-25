@@ -1212,6 +1212,7 @@ $.widget('wm.datagrid', {
             $cancelButton.removeClass('hidden');
             $saveButton.removeClass('hidden');
             $editableElements = $row.find('td.cell-editing');
+            $($editableElements).find('input').focus();
             $editableElements.on('click', function (e) {
                 e.stopPropagation();
             });
