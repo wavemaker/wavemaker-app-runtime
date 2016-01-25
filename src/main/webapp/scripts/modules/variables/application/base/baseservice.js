@@ -916,8 +916,8 @@ wm.variables.services.Variables = [
                     self.variableCollection[pageName][newName] = newProperties;
                     /*Removing those variable from old scope*/
                     delete self.variableCollection[oldOwner][variableName];
-                    if (!_.includes(CRUDMAP.MOVE[oldOwner], variableName)) {
-                        CRUDMAP.MOVE[oldOwner].push(variableName);
+                    if (!_.includes(CRUDMAP.MOVE[oldOwner], newName)) {
+                        CRUDMAP.MOVE[oldOwner].push(newName);
                     }
                     updated = true;
                 }
