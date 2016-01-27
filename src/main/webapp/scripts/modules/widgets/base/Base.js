@@ -641,7 +641,7 @@ WM.module('wm.widgets.base', [])
                         "displayfield": {"type": "list", "options": [""], "value": ""},
                         "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "usekeys": {"type": "boolean"},
-                        "selectedvalue": {"type": "string, object", "widget": "string", "value": "", "bindable": "in-bound"}
+                        "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "value": "", "bindable": "in-bound"}
                     },
                     "wm.colorpicker": {
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
@@ -716,7 +716,7 @@ WM.module('wm.widgets.base', [])
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},
-                        "datavalue": {"type": "string", "bindable": "in-out-bound"},
+                        "datavalue": {"type": "string, number, boolean, date, time, object", "bindable": "in-out-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "allownone": {"type": "boolean"},
