@@ -15,10 +15,7 @@
  */
 package com.wavemaker.runtime.data.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -40,7 +37,7 @@ public class Procedure {
     private String description = null;
     private boolean returnsSingleResult = false;
     private List<ProcedureParam> procedureParams = new ArrayList<>();
-    private Map<String,String> returnTypeMetadata = new HashMap<>();
+    private Map<String,String> returnTypeMetadata = new LinkedHashMap<>();
 
 
     public Procedure(Procedure procedure) {
