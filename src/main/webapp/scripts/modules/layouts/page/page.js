@@ -123,11 +123,6 @@ WM.module('wm.layouts.page')
                         Variables.getPageVariables(pageName, function (variables) {
                             Variables.register(pageName, variables, true, variableScope);
 
-                            /* update variables tree in studio */
-                            if (CONSTANTS.isStudioMode && !scope.prefabname) {
-                                $rootScope.$emit('update-variables-tree');
-                            }
-
                             /* expose partial page's Variabes to its container's scope (to be visible to parent) */
                             if (containerScope) {
                                 containerScope.Variables = scope.Variables;

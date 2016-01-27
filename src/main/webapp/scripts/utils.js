@@ -1710,7 +1710,7 @@ WM.module('wm.utils', [])
         this.getDateTimeTypes           = getDateTimeTypes;
         this.getDataSetWidgets          = getDataSetWidgets;
         this.getDaysOptions             = getDaysOptions;
-        this.getDateTimeDefaultFormats  =  getDateTimeDefaultFormats;
+        this.getDateTimeDefaultFormats  = getDateTimeDefaultFormats;
         this.isValidDataSet             = isValidDataSet;
         this.parseCombinedPageContent   = parseCombinedPageContent;
         this.extractType                = extractType;
