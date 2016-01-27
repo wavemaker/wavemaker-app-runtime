@@ -208,12 +208,22 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     securityDefinitions = swagger.securityDefinitions;
                 }
 
+                function getFormatFromMap (format)  {
+                    var MAP = {
+                        "int32": "integer",
+                        "int64": "long"
+                    };
+
+                    return MAP[format] || format;
+                }
+
                 /*loop through the operations to append them to the respective service object*/
                 WM.forEach(operations, function (operation) {
                     /*variable to determine if the fetched operation already exists*/
                     var operationObject = {},
                         isList,
                         typeRef,
+                        format,
                         returnObj,
                         returnType,
                         dbOperationName,
@@ -288,20 +298,24 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                         typeRef = param.items && param.items.type;
                                     } else {
                                         typeRef = param.type;
+                                        format = param.format;
                                     }
                                 } else {
                                     if (param.schema) {
                                         typeRef = getReturnType(param.schema, definitions);
+                                        format = param.schema.format;
                                     } else if (param.items) {
                                         typeRef = getReturnType(param.items, definitions);
                                     }
                                 }
                             }
+                            format =    getFormatFromMap(format);
 
                             /* push the param info into operation object */
                             operationObject.parameter.push({
                                 name: param.name,
                                 typeRef: typeRef,
+                                format: format,
                                 isList: isList,
                                 parameterType: param[parameterTypeKey]
                             });
