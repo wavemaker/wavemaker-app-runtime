@@ -1558,7 +1558,6 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "showrecordcount": {"type": "boolean", "value": false},
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
-                        "onEnterKeyPress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["pagination-sm", "pagination-lg"]}

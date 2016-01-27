@@ -44,7 +44,6 @@ WM.module("wm.widgets.basic")
         return {
             'restrict': 'E',
             'scope': {
-                'onEnterKeyPress': '&',
                 'onSetrecord': '&'
             },
             'replace': true,
@@ -299,7 +298,7 @@ WM.module("wm.widgets.basic")
                     } else {
                         startIndex = ($scope.dn.currentPage - 1) * $scope.maxResults;
                         data = WM.isArray($scope.dataset) ?
-                            $scope.dataset.slice(startIndex, startIndex + $scope.maxResults) : $scope.dataset;
+                                $scope.dataset.slice(startIndex, startIndex + $scope.maxResults) : $scope.dataset;
                         $scope.result = data;
                         $scope.onPageDataReady(event, data, callback);
                     }
