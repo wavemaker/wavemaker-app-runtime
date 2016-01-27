@@ -1102,13 +1102,15 @@ wm.variables.services.Variables = [
 
             /**
              * filters the variable collection before pushing into the respective file
-             * removes the data not set by the user
+             * removes the properties not set by the user
+             * removes properties internally used by wm-dev team (starting with '_')
+             * removes dataBindings with empty value
              * @param variables list of variables to filter
              */
             filterVariables = function (variables) {
                 WM.forEach(variables, function (variable) {
                     WM.forEach(variable, function (propertyValue, propertyName) {
-                        if (propertyValue === "" || propertyValue === undefined || propertyName === "$$hashKey") {
+                        if (propertyValue === "" || propertyValue === undefined || (Utils.stringStartsWith(propertyName, '_') && propertyName !== '_id') || propertyName === "$$hashKey") {
                             delete variable[propertyName];
                         }
                     });

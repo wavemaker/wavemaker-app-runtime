@@ -72,7 +72,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         if (!variable.isList) {
                             parentNode['value'] = '';
                         }
-                        variable.buildTreeFromDataSet = true;
+                        variable._buildTreeFromDataSet = true;
                         return;
                     }
                     typeChain = typeChain || "";
@@ -475,6 +475,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
                             variable.type = variable.type || typeRef;
                             variable.isList = response.isList;
+                            variable._format = response.returnFormat;
                             /* prepare sample data-structure for the service */
                             prepareServiceModel(variable.type, serviceModel, fieldValue, variable);
 

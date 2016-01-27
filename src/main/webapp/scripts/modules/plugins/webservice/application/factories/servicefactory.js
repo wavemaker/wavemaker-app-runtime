@@ -226,6 +226,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         format,
                         returnObj,
                         returnType,
+                        returnFormat,
                         dbOperationName,
                         isDbServiceOp = function (type) {
                             return type === "hqlquery" || type === "nativequery" || type === "procedure";
@@ -246,10 +247,12 @@ wm.plugins.webServices.factories.ServiceFactory = [
                                 schemaObject = typeArgumentsObject[0];
                             }
                             returnType = getReturnType(schemaObject, definitions);
+                            returnFormat = schemaObject.format;
                             isList = schemaObject.type && schemaObject.type === 'array';
                         } else {
                             returnType = "void";
                         }
+                        returnFormat = getFormatFromMap(returnFormat);
                     }
 
                     /* special case for pageable return type */
@@ -271,6 +274,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         parameter: undefined,
                         isList: isList,
                         return: returnObj,
+                        returnFormat: returnFormat,
                         controller: operation.tags && operation.tags[0]
                     };
                     serviceObj.operations.push(operationObject);
