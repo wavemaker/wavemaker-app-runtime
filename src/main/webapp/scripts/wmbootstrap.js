@@ -286,6 +286,7 @@ Application
                         page;
 
                     if (!$rs.isApplicationType) {
+                        $location.path(_WM_APP_PROPERTIES.homePage);
                         deferred.resolve();
                     } else {
                         SecurityService.getConfig(function (config) {
