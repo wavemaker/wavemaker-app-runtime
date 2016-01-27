@@ -22,7 +22,8 @@ wm.variables.services.LoginVariableService = ['Variables',
     'VARIABLE_CONSTANTS',
     'CONSTANTS',
     '$location',
-    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $rootScope, VARIABLE_CONSTANTS, CONSTANTS, $location) {
+    'BaseService',
+    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $rootScope, VARIABLE_CONSTANTS, CONSTANTS, $location, BaseService) {
         "use strict";
 
         var methods, loginVariableObj, initiateCallback;
@@ -98,6 +99,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                         }
                         var redirectPage = $location.search().redirectTo;
                         if (redirectPage && WM.isString(redirectPage) && SecurityService.getLastLoggedInUser() === params.username) {
+                            BaseService.executeErrorCallStack();
                             $location.url(redirectPage);
                         } else {
                             $window.location = $window.location.pathname;
