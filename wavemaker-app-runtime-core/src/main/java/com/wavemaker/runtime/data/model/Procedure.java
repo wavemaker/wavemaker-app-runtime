@@ -16,7 +16,9 @@
 package com.wavemaker.runtime.data.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -38,6 +40,7 @@ public class Procedure {
     private String description = null;
     private boolean returnsSingleResult = false;
     private List<ProcedureParam> procedureParams = new ArrayList<>();
+    private Map<String,String> returnTypeMetadata = new HashMap<>();
 
 
     public Procedure(Procedure procedure) {
@@ -48,6 +51,7 @@ public class Procedure {
         this.returnsSingleResult = procedure.isReturnsSingleResult();
         this.procedureParams = procedure.getProcedureParams();
         this.outputType = procedure.getOutputType();
+        this.returnTypeMetadata = procedure.getReturnTypeMetadata();
     }
 
     public Procedure() {
@@ -109,5 +113,13 @@ public class Procedure {
 
     public void setOutputType(String outputType) {
         this.outputType = outputType;
+    }
+
+    public Map<String, String> getReturnTypeMetadata() {
+        return returnTypeMetadata;
+    }
+
+    public void setReturnTypeMetadata(final Map<String, String> returnTypeMetadata) {
+        this.returnTypeMetadata = returnTypeMetadata;
     }
 }
