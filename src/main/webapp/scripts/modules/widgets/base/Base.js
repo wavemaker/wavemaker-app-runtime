@@ -729,6 +729,15 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-lg", "input-sm"]}
                     },
 
+                    "wm.marquee": {
+                        "height": {"type": "string", "pattern": dimensionRegex},
+                        "width": {"type": "string", "pattern": dimensionRegex},
+                        "direction": {"type": "list", "options": ["up", "down", "left", "right"]},
+                        "behavior": {"type": "list", "options": ["scroll", "slide", "alternate"]},
+                        "scrolldelay": {"type": "number"},
+                        "scrollamount": {"type": "number"}
+                    },
+
                     "wm.label": {
                         "caption": {"type": "date, string, number", "widget": "string", "value": "Label", "bindable": "in-out-bound", "maxlength": 256},
                         "required": {"type": "boolean"},
@@ -1665,7 +1674,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
                 {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "help", "properties": ["helptext"], "parent": "properties"},
-                {"name": "behavior", "properties": ["defaultmode", "navigation", "pollinterval", "radiogroup", "viewgroup", "showweeks", "autofocus", "readonly", "ignoreparentreadonly", "readonlygrid",
+                {"name": "behavior", "properties": ["defaultmode", "navigation", "pollinterval", "radiogroup", "viewgroup", "showweeks", "autofocus", "readonly", "ignoreparentreadonly", "readonlygrid", "scrolldelay", "scrollamount", "direction",
                     "multiple", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "destination", "maxfilesize", "isdefaulttab", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
