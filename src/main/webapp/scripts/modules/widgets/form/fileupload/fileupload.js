@@ -197,26 +197,6 @@ WM.module('wm.widgets.form')
             },
             FILESIZE_MB = 1048576;
 
-        /* this function returns the filter object depending on contenttype*/
-        function constructFileFilter(choosen) {
-            var filters = '';
-            switch (choosen) {
-            case 'all':
-                filters = '';
-                break;
-            case 'image':
-                filters = 'image/*';
-                break;
-            case 'audio':
-                filters = 'audio/*';
-                break;
-            case 'video':
-                filters = 'video/*';
-                break;
-            }
-            return filters;
-        }
-
         /* this function returns the uploadUrl */
         function constructUrl(uploadUriPrefix, service, operation, destination) {
             var uploadUrl = '/file/uploadFile',
@@ -503,7 +483,7 @@ WM.module('wm.widgets.form')
                                 scope.changeServerUploadPath(newVal);
                                 break;
                             case 'contenttype':
-                                scope.chooseFilter = constructFileFilter(newVal);
+                                scope.chooseFilter = newVal.split(" ").join(",");
                                 break;
                             case 'service':
                                 if (isStudioMode) {

@@ -281,7 +281,7 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "value": "btn-default", "options": ["btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-link", "btn-transparent", "jumbotron"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-link", "btn-transparent", "jumbotron"]}
                     },
                     "wm.rating": {
                         "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
@@ -328,7 +328,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.buttongroup": {
                         "vertical": {"type": "boolean"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-toolbar", "btn-group-vertical"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-toolbar", "btn-group-vertical"]}
                     },
                     "wm.switch": {
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -350,7 +350,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Menu Item 1, Menu Item 2, Menu Item 3"},
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
                         "menulayout": {"type": "list", "options": ["vertical", "horizontal"]},
-                        "menuclass": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["btn-default", "btn-primary", "btn-info", "btn-danger", "btn-warning", "btn-success", "btn-lg", "btn-sm", "btn-xs", "btn-link", "btn-transparent", "jumbotron"]},
+                        "menuclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["btn-default", "btn-primary", "btn-info", "btn-danger", "btn-warning", "btn-success", "btn-lg", "btn-sm", "btn-xs", "btn-link", "btn-transparent", "jumbotron"]},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "menuposition": {"type": "list", "options": ["", "down,right", "down,left", "up,right", "up,left", "inline"], "value": ""},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -371,7 +371,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "object, array", "bindable": "in-bound", "widget": "string", "value": "node1, node2, node3"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["folder", "plus-minus", "circle-plus-minus", "chevron", "menu", "triangle", "expand-collapse"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["folder", "plus-minus", "circle-plus-minus", "chevron", "menu", "triangle", "expand-collapse"]},
                         "nodelabel": {"type": "list", "widget": "list"},
                         "nodeicon": {"type": "list", "widget": "list"},
                         "nodechildren": {"type": "list", "widget": "list"},
@@ -390,7 +390,7 @@ WM.module('wm.widgets.base', [])
                         "accept": {"type": "datalist", "options": ["image/*", "audio/*", "video/*"], "show": false},
                         "datavalue": {"type": "string", value: "", "bindable": "in-out-bound"},
                         "scopedatavalue": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-lg", "input-sm"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]},
 
                         /* Properties: Validation */
                         "regexp": {"type": "string", "value": ".*"},
@@ -445,7 +445,7 @@ WM.module('wm.widgets.base', [])
                         "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                         "zindex": {"type": "string", "pattern": zindexRegex},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-group-sm", "input-group-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
                     },
                     "wm.base.datetime": {
                         "datavalue": {"type": "string", "bindable": "in-out-bound"},
@@ -503,7 +503,7 @@ WM.module('wm.widgets.base', [])
                         "excludedates": {"type": "datetime, timestamp, date, array, string", "bindable": "in-bound", "widget": "string", "hint": "yyyy-MM-dd"},
                         "tabindex": {"type": "string", "value": "0"},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-group-sm", "input-group-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
                     },
                     "wm.calendar": {
                         "backgroundcolor": {"type": "string", "widget": "color"},
@@ -524,7 +524,7 @@ WM.module('wm.widgets.base', [])
                         "onEventclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["h1", "h2", "h3", "h4", "h5", "h6", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "lead"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["h1", "h2", "h3", "h4", "h5", "h6", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "lead"]}
                     },
                     "wm.time": {
                         "placeholder": {"type": "string", "value": "Select time"},
@@ -540,7 +540,7 @@ WM.module('wm.widgets.base', [])
                         "timestamp": {"type": "time, date, string, number", "widget": "string", "show": "false", "bindable": "out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-group-sm", "input-group-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
                     },
                     "wm.datetime": {
                         "placeholder": {"type": "string", "value": "Select date time"},
@@ -562,7 +562,7 @@ WM.module('wm.widgets.base', [])
                         "excludedates": {"type": "datetime, timestamp, date, array, string", "bindable": "in-bound", "widget": "string", "hint": "yyyy-MM-dd"},
                         "tabindex": {"type": "string", "value": "0"},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-group-sm", "input-group-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
                     },
                     "wm.message": {
                         "type": {"type": "string", "options": ["error", "info", "loading", "success", "warning"], "value": "success", "bindable": "in-out-bound", "widget": "list"},
@@ -621,8 +621,8 @@ WM.module('wm.widgets.base', [])
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "layout":  {"type": "list", "options": ["", "inline", "stacked"]},
-                        "itemclass": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["list-group", "media-list"]},
-                        "listclass": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["list-group-item", "media"]},
+                        "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "media-list"]},
+                        "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"]},
                         /* ---- events ---- */
 
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -651,7 +651,7 @@ WM.module('wm.widgets.base', [])
                         "placeholder": {"type": "string", "value": "Select Color"},
                         "tabindex": {"type": "string", "value": "0"},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-group-sm", "input-group-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
                     },
 
                     "wm.inputcolorpicker": {
@@ -687,8 +687,8 @@ WM.module('wm.widgets.base', [])
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "layout":  {"type": "list", "options": ["", "inline", "stacked"]},
-                        "itemclass": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["list-group", "media-list"]},
-                        "listclass": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["list-group-item", "media"]},
+                        "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "media-list"]},
+                        "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"]},
 
                         /* ---- events ---- */
 
@@ -726,7 +726,7 @@ WM.module('wm.widgets.base', [])
                         "multiple": {"type": "boolean", "value": false},
                         "placeholder": {"type": "string", "value": ""},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-lg", "input-sm"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]}
                     },
 
                     "wm.label": {
@@ -734,7 +734,7 @@ WM.module('wm.widgets.base', [])
                         "required": {"type": "boolean"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": [ "h1", "h2", "h3", "h4", "h5", "h6", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "label-default", "label-primary", "label-success", "label-info", "label-warning", "label-danger", "lead", "badge"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": [ "h1", "h2", "h3", "h4", "h5", "h6", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "label-default", "label-primary", "label-success", "label-info", "label-warning", "label-danger", "lead", "badge"]}
                     },
 
                     "wm.picture": {
@@ -745,7 +745,7 @@ WM.module('wm.widgets.base', [])
                         "shape":  {"type": "list", "options": ["", "rounded", "circle", "thumbnail"]},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["img-responsive"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["img-responsive"]}
                     },
 
                     "wm.textarea": {
@@ -758,7 +758,7 @@ WM.module('wm.widgets.base', [])
                         "updateon": {"type": "list", "value": "blur", "widget": "updateon"},
                         "updatedelay": {"type": "number", "value": 0},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-lg", "input-sm"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-lg", "input-sm"]}
                     },
 
                     "wm.basicdialog": {
@@ -923,7 +923,7 @@ WM.module('wm.widgets.base', [])
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "layout":  {"type": "list", "options": ["inline", "vertical"], "value": "vertical"},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
                     },
                     'wm.layouts.breadcrumb': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -948,14 +948,14 @@ WM.module('wm.widgets.base', [])
                         "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor'}, {'label': 'Menu', 'widgettype': 'wm-menu'}, {'label': 'Popover', 'widgettype': 'wm-popover'}], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["nav-justified", "nav-tabs-justified"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]}
                     },
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "imgsrc": {"type": "string", "bindable": "in-bound"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["navbar-inverse", "navbar-header", "navbar-right", "navbar-left", "navbar-fixed-top", "navbar-fixed-bottom", "navbar-static-top"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["navbar-inverse", "navbar-header", "navbar-right", "navbar-left", "navbar-fixed-top", "navbar-fixed-bottom", "navbar-static-top"]}
                     },
                     'wm.layouts.mobile.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1037,7 +1037,7 @@ WM.module('wm.widgets.base', [])
                         "onExitfullscreen": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onActionsclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "value": "panel-default", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "panel-default", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     'wm.layouts.container': {
                         "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
@@ -1057,7 +1057,7 @@ WM.module('wm.widgets.base', [])
                         "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
                     },
                     'wm.layouts.tile': {
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -1079,7 +1079,7 @@ WM.module('wm.widgets.base', [])
                         "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
                     },
                     'wm.layouts.footer': {
                         "height": {"type": "string", "pattern": dimensionRegex}
@@ -1142,7 +1142,7 @@ WM.module('wm.widgets.base', [])
                         "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     'wm.layouts.liveform': {
                         "title": {"type": "string",  "bindable": "in-bound"},
@@ -1236,7 +1236,7 @@ WM.module('wm.widgets.base', [])
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         /* Styles */
-                        "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "class-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
+                        "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "list-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
                         "tabindex": {"type": "string", "value": "0"}
                     },
                     'wm.livegrid': {
@@ -1246,7 +1246,7 @@ WM.module('wm.widgets.base', [])
                         "service": {"type": "list", "widget": "list"},
                         "operation": {"type": "list", "widget": "list"},
                         "multiple": {"type": "boolean", "value": false},
-                        "contenttype": {"type": "list", "options": ["all", "audio", "image", "video"], "value": "all", "bindable": "in-bound"},
+                        "contenttype": {"type": "list", "widget" : "list-picker", "options": ["image/*", "audio/*", "video/*", ".txt", ".zip", ".rar", ".js", ".json", ".xls", ".xlsx", ".pdf", ".csv", ".xml", ".doc", ".docx", ".log", ".rtf", ".bmp", ".gif", ".jpe", ".jpg", ".jpeg", ".tif", ".tiff", ".pbm", ".png", ".ico", "mp3", ".ogg", ".webm", ".wma", ".3gp", ".wav", "mp4", ".ogg", ".webm", ".wmv", ".mpeg", ".mpg", ".avi"]},
                         "fileuploadmessage": {"type": "string", "bindable": "in-out-bound", "value": "You can also browse for files"},
                         "tabindex": {"type": "string", "value": "0"},
                         "uploadedFiles": {"type": "array", "bindable": "in-out-bound"},
@@ -1289,7 +1289,7 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline'},
                         "animation": {"type": "list", "options": animationOptions},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["h1", "h2", "h3", "h4", "h5", "h6", "btn-primary", "btn-success", "btn-info", "btn-warning", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-link", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "lead", "badge"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["h1", "h2", "h3", "h4", "h5", "h6", "btn-primary", "btn-success", "btn-info", "btn-warning", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-link", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "lead", "badge"]}
                     },
                     "wm.popover": {
                         "content": {"type": "list", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
@@ -1326,7 +1326,7 @@ WM.module('wm.widgets.base', [])
                     "wm.accordionpane": {
                         "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     "wm.accordionheader": {
                         "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
@@ -1403,8 +1403,8 @@ WM.module('wm.widgets.base', [])
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "itemclass": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["list-group", "media-list"]},
-                        "listclass": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["list-group-item", "media"]},
+                        "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "media-list"]},
+                        "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"]},
                         "navigation": {"type": "list", "options": ["None", "Basic", "Advanced", "Scroll"], "value": "None"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"}
@@ -1453,7 +1453,7 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "width": {"type": "string", "value": '100%', "pattern": dimensionRegex},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["input-group-sm", "input-group-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]}
                     },
                     "wm.chart": {
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},
@@ -1560,7 +1560,7 @@ WM.module('wm.widgets.base', [])
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "class-picker", "options": ["pagination-sm", "pagination-lg"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg"]}
                     },
                     "wm.login": {
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
