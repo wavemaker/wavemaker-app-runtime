@@ -85,7 +85,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         /* if the field is of type list and variable is not a service variable, skip it.
                          * skipping as it is resulting in endless recursive loop for DataServices
                          */
-                        if ((!field.isList || variable.serviceType === SERVICE_TYPE_SOAP || variable.serviceType === SERVICE_TYPE_FEED || variable.serviceType === SERVICE_TYPE_REST)) {
+                        if ((!field.isList || variable.serviceType === SERVICE_TYPE_SOAP || variable.serviceType === SERVICE_TYPE_FEED || variable.serviceType === SERVICE_TYPE_REST || variable.serviceType === SERVICE_TYPE_JAVA)) {
                             if (modelTypes[field.type] && modelTypes[field.type].fields) {
                                 parentNode[fieldName] = field.isList ? [{}] : {};
                                 prepareServiceModel(field.type, field.isList ? parentNode[fieldName][0] : parentNode[fieldName], '', variable, typeChain);
