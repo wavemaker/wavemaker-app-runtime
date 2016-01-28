@@ -42,7 +42,7 @@ WM.module('wm.utils', [])
                 EXE_FILE: /\.exe$/i,
                 NO_QUOTES_ALLOWED: /^[^'|"]*$/,
                 VALID_HTML: /<[a-z][\s\S]*>/i,
-                VALID_PASSWORD: /^[0-9a-zA-Z-_]+$/
+                VALID_PASSWORD: /^[0-9a-zA-Z-_.@&*!#$%]+$/
             },
             NUMBER_TYPES = ['int', 'integer', 'float', 'double', 'short', 'byte', 'big_integer', 'big_decimal'],
             SYSTEM_FOLDER_PATHS = {
