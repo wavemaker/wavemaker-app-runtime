@@ -110,8 +110,8 @@ WM.module('wm.layouts.containers')
                         /* toggle the state of the pane */
                         scope.togglePane = function () {
                             /* flip the active flag */
-                            scope.active = !scope.active;
-                            if (scope.active) {
+                            var flag = !scope.active;
+                            if (flag) {
                                 /* some widgets like charts needs to be redrawn when a accordion pane becomes active for the first time */
                                 element.find('.ng-isolate-scope')
                                     .each(function () {
@@ -122,11 +122,12 @@ WM.module('wm.layouts.containers')
                                 /* trigger the onExpand call back */
                                 scope.onExpand();
                                 panesCtrl.closeOthers(scope);
-                                scope.active = true;
                             } else {
                                 /* trigger the onCollapse callback */
                                 scope.onCollapse();
                             }
+
+                            scope.active = flag;
                         };
 
                         /* Expose the method `expand` on pane. Triggering this method will expand the pane. */
