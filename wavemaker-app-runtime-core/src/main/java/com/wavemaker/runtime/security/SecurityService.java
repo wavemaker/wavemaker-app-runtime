@@ -261,7 +261,6 @@ public class SecurityService {
     }
 
     public SecurityInfo getSecurityInfo() {
-
         final boolean authenticated = isAuthenticated();
         UserInfo userInfo = null;
         if (authenticated) {
@@ -271,7 +270,10 @@ public class SecurityService {
             final String[] userRoles = getUserRoles();
             userInfo.setUserRoles(userRoles);
             if (userRoles.length > 0) {
-                userInfo.setLandingPage(getLandingPageForRole(userRoles[0]).getLandingPage());
+                final RoleConfig landingPageForRole = getLandingPageForRole(userRoles[0]);
+                if(landingPageForRole != null){
+                    userInfo.setLandingPage(landingPageForRole.getLandingPage());
+                }
             }
         }
 
