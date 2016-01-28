@@ -94,7 +94,8 @@ This mixin removes background from IE & all other browsers so that they are cons
 }
 
 /*------ Spinner variables ------*/
-@wm-app-spinner-bg-color: #eeeeee;
+@wm-app-spinner-bg-color: rgba(0,0,0,.15);
+@wm-app-spinner-msg-bg-color: #eeeeee;
 @wm-app-spinner-border-color: #dddddd;
 
 /*default values on html and body to show full screen*/
@@ -190,11 +191,12 @@ html, body {
   left: 0;
   z-index: 1050;
   text-align: center;
+  background-color: @wm-app-spinner-bg-color;
   .spinner-message {
     position: relative;
     top: 40%;
     padding: 0.5em;
-    background-color: @wm-app-spinner-bg-color;
+    background-color: @wm-app-spinner-msg-bg-color;
     border: 2px @wm-app-spinner-border-color solid;
     display: inline-table;
     border-collapse:separate;
