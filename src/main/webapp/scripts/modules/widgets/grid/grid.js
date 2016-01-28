@@ -1768,6 +1768,7 @@ WM.module('wm.widgets.grid')
                     properties,
                     columns,
                     gridObj;
+
                 $scope.fieldDefs = [];
                 /* if properties map is existed then fetch the column configuration for all nested levels using util function */
                 if (propertiesMap) {
@@ -1833,6 +1834,10 @@ WM.module('wm.widgets.grid')
                             }
                         }
                         columnDef.disableInlineEditing = columns[columnDef.field].disableInlineEditing;
+                    }
+                    //For readonly grid each field should be checked on readonly
+                    if ($scope.readonlygrid) {
+                        columnDef.readonly = true;
                     }
                 });
 
