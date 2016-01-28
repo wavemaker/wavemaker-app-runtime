@@ -1333,8 +1333,6 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordionpane": {
-                        "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     "wm.accordionheader": {
@@ -1344,7 +1342,9 @@ WM.module('wm.widgets.base', [])
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "isdefaultpane": {"type": "boolean", "bindable": "in-bound"}
+                        "isdefaultpane": {"type": "boolean", "bindable": "in-bound"},
+                        "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
 
                     "wm.richtexteditor": {
@@ -1370,15 +1370,15 @@ WM.module('wm.widgets.base', [])
                         "heading": {"type": "string", "bindable": "in-bound"}
                     },
                     "wm.tabpane": {
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "disabled": {"type": "boolean", "bindable": "in-bound"}
                     },
                     "wm.tabheader": {
                         "heading": {"type": "string", "value": "Tab Title", "bindable": "in-bound"},
                         "paneicon": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "pattern": classRegex},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
-                        "tabindex": {"type": "string", "value": "0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.carousel" : {
                         "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},

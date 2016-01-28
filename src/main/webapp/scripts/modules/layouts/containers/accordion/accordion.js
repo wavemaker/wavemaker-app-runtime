@@ -25,7 +25,7 @@ WM.module('wm.layouts.containers')
                 '</div>'
             );
     }])
-    .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', function ($templateCache, WidgetUtilService, PropertiesFactory) {
+    .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordion', ['wm.base',  'wm.containers']);
@@ -52,7 +52,7 @@ WM.module('wm.layouts.containers')
                         WM.forEach(this.panes, function (pane) {
                             if (pane.active) {
                                 /* trigger the onCollapse method on the pane which is about to be collapsed */
-                                pane.onCollapse();
+                                Utils.triggerFn(pane.onCollapse);
                             }
                             /* update the `active` flag of the pane */
                             pane.active = false;
@@ -76,7 +76,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils) {
+    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', '$parse', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, $parse) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base']);
@@ -84,17 +84,27 @@ WM.module('wm.layouts.containers')
         return {
             'restrict': 'E',
             'replace': true,
-            'scope': {
-                'onExpand': '&',
-                'onCollapse': '&'
-            },
+            'scope': {},
             'transclude': true,
             'template': $templateCache.get('template/layout/container/accordion-pane.html'),
             'require': '^wmAccordion',
-            'controller': function ($scope) {
+            'controller': function ($scope, $element) {
                 /* returns the scope of the accordion pane. accordion-header and accordion-content uses this */
                 this.getPaneScope = function () {
                     return $scope;
+                };
+
+                this.registerCallback = function (name, value) {
+                    if (!name || !value) {
+                        return;
+                    }
+
+                    var fn = $parse(value);
+                    $scope[name] = function (locals) {
+                        locals = locals || {};
+                        locals.$scope = $scope;
+                        return fn($element.scope(), locals);
+                    };
                 };
             },
             'compile': function () {
@@ -120,11 +130,11 @@ WM.module('wm.layouts.containers')
                                 // when accordionContent is set to display external page, triggering $lazyLoad on expand of the accordion pane will render the content.
                                 Utils.triggerFn(scope.accordionContent.$lazyLoad);
                                 /* trigger the onExpand call back */
-                                scope.onExpand();
+                                Utils.triggerFn(scope.onExpand);
                                 panesCtrl.closeOthers(scope);
                             } else {
                                 /* trigger the onCollapse callback */
-                                scope.onCollapse();
+                                Utils.triggerFn(scope.onCollapse);
                             }
 
                             scope.active = flag;
@@ -150,7 +160,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmAccordionheader', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', '$compile', function ($templateCache, WidgetUtilService, PropertiesFactory, $compile) {
+    .directive('wmAccordionheader', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', '$compile', 'CONSTANTS', function ($templateCache, WidgetUtilService, PropertiesFactory, $compile, CONSTANTS) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionheader', ['wm.base', 'wm.layouts']);
@@ -183,6 +193,16 @@ WM.module('wm.layouts.containers')
                         }
                         scope.pane = paneCtrl.getPaneScope();
                         scope.pane.isdefaultpane = scope.isdefaultpane;
+
+                        if (CONSTANTS.isRunMode) {
+                            if (attrs.onExpand) {
+                                paneCtrl.registerCallback('onExpand', attrs.onExpand);
+                            }
+
+                            if (attrs.onCollapse) {
+                                paneCtrl.registerCallback('onCollapse', attrs.onCollapse);
+                            }
+                        }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }

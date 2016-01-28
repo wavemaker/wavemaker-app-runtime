@@ -91,7 +91,7 @@ WM.module('wm.layouts.containers')
                         i,
                         tabs = $scope.tabs;
                     if (_tab) {
-                        _tab.onDeselect();
+                        Utils.triggerFn(_tab.onDeselect);
                         _tab.isActive = false;
                     }
                     $scope.activeTab = tab;
@@ -104,7 +104,7 @@ WM.module('wm.layouts.containers')
                     }
 
                     if (!skipOnSelect) {
-                        tab.onSelect();
+                        Utils.triggerFn(tab.onSelect);
                     }
 
                     if (tab) {
@@ -295,16 +295,12 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS) {
+    .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$parse', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $parse) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base']);
         return {
             'restrict': 'E',
-            'scope': {
-                'onSelect': '&',
-                'onDeselect': '&',
-                'onClose': '&'
-            },
+            'scope': {},
             'replace': true,
             'require': '^wmTabs', /* require the controller of the parent directive. i.e, wmTabs */
             'transclude': true,
@@ -329,6 +325,19 @@ WM.module('wm.layouts.containers')
                     $scope.tabContent = scope;
                     /* return the scope of tabpane, so that content will be able to listen to the properties on this */
                     return $scope;
+                };
+
+                this.registerCallback = function (name, value) {
+                    if (!name || !value) {
+                        return;
+                    }
+
+                    var fn = $parse(value);
+                    $scope[name] = function (locals) {
+                        locals = locals || {};
+                        locals.$scope = $scope;
+                        return fn($element.scope(), locals);
+                    };
                 };
             },
             'compile': function () {
@@ -487,6 +496,16 @@ WM.module('wm.layouts.containers')
                                     $opt.remove();
                                 }
                             });
+                        }
+
+                        if (CONSTANTS.isRunMode) {
+                            if (attrs.onSelect) {
+                                ctrl.registerCallback('onSelect', attrs.onSelect);
+                            }
+
+                            if (attrs.onDeselect) {
+                                ctrl.registerCallback('onDeselect', attrs.onDeselect);
+                            }
                         }
 
                         /* initialize the widget */

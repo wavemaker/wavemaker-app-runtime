@@ -273,6 +273,10 @@ WM.module('wm.widgets.base')
                             attrNameInCamelCase = _.camelCase(attrName);
                             fn = $parse(attrs[attrNameInCamelCase]);
                             $is[attrNameInCamelCase] = function (locals) {
+                                locals = locals || {};
+                                if (!locals.$scope) {
+                                    locals.$scope = $is;
+                                }
                                 return fn($s, locals);
                             };
                         }
