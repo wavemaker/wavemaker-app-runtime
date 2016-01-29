@@ -660,6 +660,10 @@ WM.module('wm.widgets.live')
 
                         WM.extend(columnsDef, columnsDefProps);
                         columnsDef.key = columnsDef.field;
+                        /*Set below properties on the scope, as post widget create is not called for this directive */
+                        scope.required = columnsDef.required;
+                        scope.readonly = columnsDef.readonly;
+                        scope.disabled = columnsDef.disabled;
                         //This is used to call base set and get methods on widgets
                         scope.FilterField.prototype.$is = parentIsolateScope;
                         /*Support for old projects which were using value for default value*/

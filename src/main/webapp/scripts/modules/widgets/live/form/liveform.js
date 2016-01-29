@@ -996,6 +996,11 @@ WM.module('wm.widgets.live')
                         if (CONSTANTS.isRunMode && columnDef.show === false) {
                             columnDef.required = false;
                         }
+                        /*Set below properties on the scope, as post widget create is not called for this directive */
+                        scope.required = columnDef.required;
+                        scope.readonly = columnDef.readonly;
+                        scope.disabled = columnDef.disabled;
+
                         /*If defaultValue is set then assign it to the attribute*/
                         if (attrs.defaultvalue) {
                             if (Utils.stringStartsWith(attrs.defaultvalue, 'bind:') && CONSTANTS.isRunMode) {
