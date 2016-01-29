@@ -329,7 +329,7 @@ wm.plugins.database.services.DatabaseService = [
                         "username": params.username,
                         "password": params.password,
                         "url": params.url,
-                        "schemaFilter": '%',
+                        "schemaFilter": params.schemaFilter.replace(/ /g, ''),
                         "tableFilter": null,
                         "driverClass": params.driverClass,
                         "dialect": params.dialect,
