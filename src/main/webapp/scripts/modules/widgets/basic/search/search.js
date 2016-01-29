@@ -29,14 +29,14 @@ WM.module('wm.widgets.basic')
                     ' wordBreak: wordbreak, ' +
                     ' zIndex: zindex' +
                 ' }">' +
-                    '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}" ' +
+                    '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                         'data-ng-model="query"' +
                         ' accesskey="{{shortcutkey}}"' +
                         'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
-                    '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfStrings\'" type="text" class="app-textbox form-control" placeholder="{{placeholder}}"' +
+                    '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfStrings\'" type="text" class="app-textbox form-control list-of-strings" placeholder="{{placeholder}}"' +
                         'data-ng-model="query"' +
                         ' accesskey="{{shortcutkey}}"' +
                         'uib-typeahead="item for item in itemList | filter:$viewValue | limitTo:limit" ' +
@@ -50,6 +50,26 @@ WM.module('wm.widgets.basic')
                         '></button>' +
                     '</form>' +
                 '</span>' +
+            '</div>'
+            );
+        // this template is specify to search widget in mobile-navbar
+        $templateCache.put('template/widget/form/navsearch.html',
+            '<div class="app-mobile-search" init-widget has-model>' +
+                '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
+                    'data-ng-model="query"' +
+                    ' accesskey="{{shortcutkey}}"' +
+                    'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue | limitTo:limit" ' +
+                    'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
+                    'typeahead-template-url="template/widget/form/searchlist.html"' +
+                '>' +
+                '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfStrings\'" type="text" class="form-control list-of-strings" placeholder="{{placeholder}}"' +
+                    'data-ng-model="query"' +
+                    ' accesskey="{{shortcutkey}}"' +
+                    'uib-typeahead="item for item in itemList | filter:$viewValue | limitTo:limit" ' +
+                    'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
+                    'typeahead-template-url="template/widget/form/searchlist.html"' +
+                '>' +
+                '<i class="btn-close glyphicon glyphicon-remove" data-ng-show="showClosebtn" data-ng-click="clearText();"></i>' +
             '</div>'
             );
     }])
@@ -67,7 +87,7 @@ WM.module('wm.widgets.basic')
             });
         };
     })
-    .directive('wmSearch', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'CONSTANTS', 'Utils', function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS, Utils) {
+    .directive('wmSearch', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', '$timeout', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base']),
             dataSetRegEx = new RegExp(/scopedataset\./ig),
@@ -76,55 +96,56 @@ WM.module('wm.widgets.basic')
                 'displaylabel': true,
                 'dataset': true,
                 'displayimagesrc': true,
-                "active": true
+                'active': true
             };
 
-        /* to filter & set the dataset property of the search widget */
+        // to filter & set the dataset property of the search widget
         function setDataSet(data, scope) {
-            /*sanity check for data availability*/
+            // sanity check for data availability
             if (!data) {
-                /*checking if dataSetType is available or not*/
+                // checking if dataSetType is available or not
                 if (!scope.dataSetType && !scope.binddataset) {
                     scope.dataSetType = 'listOfStrings';
                 } else if (scope.binddataset) {
                     scope.dataSetType = 'listOfObjects';
                 }
-                /*checking if itemList is available or not*/
+
+                // checking if itemList is available or not
                 if (!scope.itemList) {
                     scope.itemList = [];
                 }
                 return;
             }
-            /*check for run-mode*/
+
             if (CONSTANTS.isRunMode) {
-                /* get the variable-data w.r.t the variable type */
+                // get the variable-data w.r.t the variable type
                 data = (data && data.data) || data;
-                /*set data-set*/
+                // set data-set
                 var dataSet = Utils.getClonedObject(data);
-                /*if data-set is an array, show the 'listOfObjects' mode*/
+                // if data-set is an array, show the 'listOfObjects' mode
                 if (WM.isArray(dataSet)) {
-                    /*check if dataSet contains list of objects, then switch to 'listOfObjects', else display 'default'*/
+                    // check if dataSet contains list of objects, then switch to 'listOfObjects', else display 'default'
                     if (WM.isObject(dataSet[0])) {
                         scope.dataSetType = 'listOfObjects';
                         WM.forEach(dataSet, function (eachItem, index) {
-                            /*convert display-label-value to string, as ui.typeahead expects only strings*/
+                            // convert display-label-value to string, as ui.typeahead expects only strings
                             dataSet[index][scope.displaylabel] = eachItem[scope.displaylabel] && eachItem[scope.displaylabel].toString();
-                            /*to save all the image urls*/
+                            // to save all the image urls
                             dataSet[index].wmImgSrc = eachItem[scope.displayimagesrc];
                         });
                     } else {
                         scope.dataSetType = 'listOfStrings';
-                        /*convert all the values in the array to strings*/
+                        // convert all the values in the array to strings
                         WM.forEach(dataSet, function (val, index) {
                             dataSet[index] = val.toString();
                         });
                     }
 
-                    /*set the itemList*/
+                    // set the itemList
                     scope.itemList = dataSet;
 
                 } else if (WM.isString(dataSet) && dataSet.trim()) {
-                    /*make the string an array, for ex. => if dataSet is 1,2,3 then make it [1,2,3] */
+                    // make the string an array, for ex. => if dataSet is 1,2,3 then make it [1,2,3]
                     setDataSet(dataSet.split(','), scope);
                 } else if (WM.isObject(dataSet)) {
                     setDataSet(Object.keys(dataSet).join(','), scope);
@@ -132,18 +153,16 @@ WM.module('wm.widgets.basic')
             }
         }
 
-        /*
-         * update search-key, display-label in the property panel
-         */
+        // update search-key, display-label in the property panel
         function updatePropertyPanelOptions(dataset, scope) {
             var variableKeys = [];
-            /* on binding of data*/
+            // on binding of data
             if (dataset) {
                 dataset = dataset[0] || dataset;
                 variableKeys = WM.isObject(dataset) && !WM.isArray(dataset) ? Object.keys(dataset || {}) : [];
             }
 
-            /* re-initialize the property values */
+            // re-initialize the property values
             if (scope.newcolumns) {
                 scope.newcolumns = false;
                 scope.searchkey = '';
@@ -152,10 +171,66 @@ WM.module('wm.widgets.basic')
                 scope.$root.$emit("set-markup-attr", scope.widgetid, {'searchkey': scope.searchkey, 'datafield': scope.datafield, 'displaylabel': scope.displaylabel});
             }
 
-            /* assign all the keys to the options of the search widget */
+            // assign all the keys to the options of the search widget
             scope.widgetProps.searchkey.options = scope.widgetProps.displaylabel.options = scope.widgetProps.displayimagesrc.options = [''].concat(variableKeys);
             scope.widgetProps.datafield.options = ['All Fields'].concat(variableKeys);
         }
+
+        // onkeyup show the close icon.
+        function onKeyUp(scope, element) {
+            var inputVal = element.find('input').val();
+
+            scope.$evalAsync(function () {
+                scope.showClosebtn = (inputVal !== '');
+            });
+        }
+
+        // this function updates the search widgets query if datavalue is set.
+        function updateQuery(scope, element) {
+            if (scope.datavalue) {
+                var ctrl, newVal;
+
+                $timeout(function () {
+                    var deregister = scope.$watch(function () {
+                        var $ele;
+                        if (scope.dataSetType === 'listOfObjects') {
+                            $ele = element.find('input.list-of-objs');
+                        } else {
+                            $ele = element.find('input.list-of-strings');
+                        }
+                        ctrl = $ele.controller('uibTypeahead');
+                        if (ctrl) {
+                            deregister(); // deregister the watch.
+
+                            newVal = scope.datavalue;
+                            // set the query based on datavalue
+                            if (WM.isString(newVal)) {
+                                scope.query = scope.datavalue;
+                            } else if (WM.isObject(newVal)) {
+                                if (scope.searchkey) {
+                                    scope.query = newVal[scope.searchkey] || '';
+                                }
+                            }
+                            // show the close icon if query is set by default
+                            if (scope.query.length > 0) {
+                                scope.showClosebtn = true;
+                            }
+
+                        }
+                    });
+                });
+            }
+        }
+
+        // depending on the dataSetType the default query is updated.
+        function setupDataSetTypeListner(scope, element) {
+            scope._datasetTypeListener = scope.$watch('dataSetType', function () {
+                if (scope.datavalue) {
+                    updateQuery(scope, element);
+                }
+            });
+        }
+
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
@@ -167,19 +242,19 @@ WM.module('wm.widgets.basic')
                 scope.displaylabel = newVal && newVal.replace(dataSetRegEx, '');
                 break;
             case 'dataset':
-                /*if studio-mode, then update the search-key, display-label in property panel*/
+                // if studio-mode, then update the search-key, display-label in property panel
                 if (scope.widgetid) {
                     updatePropertyPanelOptions((newVal && newVal.data) || newVal, scope);
                 }
-                /* set the datatSet of the widget*/
+                // set the datatSet of the widget
                 setDataSet(newVal, scope);
                 break;
             case 'displayimagesrc':
                 scope.displayimagesrc = newVal;
                 break;
             case 'active':
-                /*listening on 'active' property, as losing the properties during page switch*/
-                /*if studio-mode, then update the displayField & dataField in property panel*/
+                /*listening on 'active' property, as losing the properties during page switch
+                if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && newVal) {
                     updatePropertyPanelOptions((scope.dataset && scope.dataset.data) || scope.dataset, scope);
                 }
@@ -194,7 +269,16 @@ WM.module('wm.widgets.basic')
                 'scopedataset': '=?',
                 'onSubmit': '&'
             },
-            'template': $templateCache.get('template/widget/form/search.html'),
+            'template': function (tElement, tAttrs) {
+                var template, url = '';
+                if (tAttrs.navsearchbar) {
+                    url = 'template/widget/form/navsearch.html';
+                } else {
+                    url = 'template/widget/form/search.html';
+                }
+                template = WM.element(WidgetUtilService.getPreparedTemplate(url, tElement, tAttrs));
+                return template[0].outerHTML;
+            },
             'compile': function () {
                 return {
                     'pre': function (scope) {
@@ -202,37 +286,51 @@ WM.module('wm.widgets.basic')
                     },
                     'post': function (scope, element, attrs) {
 
-                        /* In Studio mode aways display the input box */
+                        // In Studio mode aways display the input box
                         if (CONSTANTS.isStudioMode) {
                             scope.dataSetType = "listOfStrings";
                         }
 
-                        /* register the property change handler */
+                        // register the property change handler
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
-                        /* on-select of type-ahead element, call the user-defined submit fn*/
+                        // on-select of type-ahead element, call the user-defined submit fn
                         scope.onTypeAheadSelect = function ($event, $item, $model, $label) {
                             $event = $event || {};
-                            /* 'wmImgSrc' attr is found for the item select, then delete it */
+                            // 'wmImgSrc' attr is found for the item select, then delete it
                             if ($item && $item.wmImgSrc) {
                                 $item = Utils.getClonedObject($item);
                                 delete $item.wmImgSrc;
                             }
-                            /* add the selected object to the event.data and send to the user */
+                            // add the selected object to the event.data and send to the user
                             $event.data = {'item': $item, 'model': $model, 'label': $label, 'query': element.find('input').val()};
 
-                            /* set selected item on widget's exposed property */
+                            // set selected item on widget's exposed property
                             scope.datavalue = (scope.datafield && scope.datafield !== 'All Fields') ? $item[scope.datafield] : $item;
 
-                            /* call user 'onSubmit' fn */
+                            // call user 'onSubmit' fn
                             scope.onSubmit({$event: $event, $scope: scope});
                         };
 
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching model attribute to the data for the search element.*/
+                        /* fields defined in scope: {} MUST be watched explicitly
+                            watching model attribute to the data for the search element.*/
                         scope.$watch('scopedataset', function (newVal) {
                             setDataSet(newVal, scope);
                         });
+
+                        // this functions clears the input value
+                        scope.clearText = function () {
+                            element.find('input').val('');
+                            scope.showClosebtn = false;
+                        };
+
+                        // set the searchquery if the datavalue exists.
+                        if (CONSTANTS.isRunMode) {
+                            // keyup event to enable/ disable close icon of the search input.
+                            element.bind('keyup', onKeyUp.bind(undefined, scope, element));
+
+                            setupDataSetTypeListner(scope, element);
+                        }
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }

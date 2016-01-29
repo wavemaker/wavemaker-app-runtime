@@ -258,45 +258,70 @@
     }
     /* navbar with searchbar */
     &.searchbar {
-      padding: 7pt 4pt 0 4pt;
+      .cancelbtn {
+        padding-top: 8px;
+      }
       .search-container {
         position: relative;
-        border-bottom: 1px solid @app-mobile-nav-searchinput-border;
-        height: unit((@app-mobile-nav-height - 12) , pt);
         ::-webkit-input-placeholder { color: inherit; }
         ::-moz-placeholder { color: inherit; } /* firefox 19+ */
         :-ms-input-placeholder { color: inherit; } /* ie */
         input:-moz-placeholder { color: inherit; }
 
-        .form-control {
-          width : 100%;
-          background-color: transparent;
-          border: 0;
-          padding: 5pt 18pt 0 22pt;
-          color: inherit;
-          font-size: inherit;
-          height: auto;
-          box-shadow: none;
+        &.mobile-navbar-right {
+          padding-right: 1em;
+          float: left;
+        }
+        .app-mobile-search {
+          width: 100%;
+          display: inline-block;
+          position: absolute;
+          margin-left: 2px;
+          top: 5pt;
+          border-bottom: 1px solid @app-mobile-nav-searchinput-border;
+
+          .form-control {
+            width : 100%;
+            background-color: transparent;
+            border: 0;
+            padding: 5pt 18pt 0 22pt;
+            color: inherit;
+            font-size: inherit;
+            height: auto;
+            box-shadow: none;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+
+          .dropdown-menu {
+            width: 100%;
+          }
+          .btn-close {
+            position: absolute;
+            padding: 6pt;
+            right: 0;
+          }
+
+          &:before {
+            content: "\f002";
+            font-family: FontAwesome;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: inherit;
+            /*--adjust as necessary--*/
+            position: absolute;
+            top: 6pt;
+            left: 6pt;
+            font-size: unit((@app-mobile-nav-icon-size - 4) , pt) ;
+          }
         }
 
-        .btn-close {
-          position: absolute;
-          right:0;
-          padding: 6pt;
-          font-size: unit((@app-mobile-nav-icon-size - 4) , pt) ;
-        }
-
-        &:before {
-          content: "\f002";
-          font-family: FontAwesome;
-          font-style: normal;
-          font-weight: normal;
-          text-decoration: inherit;
-        /*--adjust as necessary--*/
-          position: absolute;
-          top: 6pt;
-          left: 6pt;
-          font-size: unit((@app-mobile-nav-icon-size - 4) , pt) ;
+        .btn-cancel {
+          float: right;
+          margin-top: 3px;
+          margin-right: 5px;
+          padding: 8px;
+          text-align: end;
         }
       }
     }
