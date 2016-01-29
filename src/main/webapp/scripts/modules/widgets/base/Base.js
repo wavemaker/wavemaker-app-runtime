@@ -1342,7 +1342,9 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordionpane": {
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
+                        "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
                     },
                     "wm.accordionheader": {
                         "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
@@ -1379,7 +1381,9 @@ WM.module('wm.widgets.base', [])
                         "heading": {"type": "string", "bindable": "in-bound"}
                     },
                     "wm.tabpane": {
-                        "disabled": {"type": "boolean", "bindable": "in-bound"}
+                        "disabled": {"type": "boolean", "bindable": "in-bound"},
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
                     },
                     "wm.tabheader": {
                         "heading": {"type": "string", "value": "Tab Title", "bindable": "in-bound"},
