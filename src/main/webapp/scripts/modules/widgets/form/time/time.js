@@ -38,8 +38,6 @@ WM.module('wm.widgets.form')
             };
 
         if ($rs.isMobileApplicationType) {
-            /*date pattern is not supported for native date widget*/
-            widgetProps.ismeridian.show = false;
             widgetProps.hourstep.show = false;
             widgetProps.minutestep.show = false;
         }
