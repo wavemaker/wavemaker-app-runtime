@@ -42,7 +42,11 @@ WM.module('wm.widgets.form')
                 if ((!selectedValues || selectedValues.length === 0) && !WM.isDefined(scope._model_)) {
                     scope._model_ = [];
                 } else if (WM.isDefined(scope._model_)) {
-                    scope._model_ = WM.isArray(scope._model_) ? scope._model_ : [scope._model_];
+                    if (WM.isString(scope._model_)) {
+                        scope._model_ = scope._model_.split(',');
+                    } else if (!WM.isArray(scope._model_)) {
+                        scope._model_ = [scope._model_];
+                    }
                 } else {
                     scope._model_ = [];
                 }
