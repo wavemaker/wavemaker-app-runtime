@@ -174,7 +174,8 @@ wm.variables.services.$servicevariable = ['Variables',
 
             /* function to process error response from a service */
             processErrorResponse = function (errMsg, variable, callBackScope, error) {
-                initiateCallback("onError", variable, callBackScope, errMsg);
+                // EVENT: ON_ERROR
+                initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, errMsg);
 
                 /* trigger error callback */
                 Utils.triggerFn(error, errMsg);
@@ -183,53 +184,56 @@ wm.variables.services.$servicevariable = ['Variables',
                     /* process next requests in the queue */
                     variableActive[variable.activeScope.$id][variable.name] = false;
                     processRequestQueue(variable, requestQueue[variable.activeScope.$id], getDataInRun);
+
+                    // EVENT: ON_CAN_UPDATE
+                    initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
                 }
             },
 
             /* function to process success response from a service */
             processSuccessResponse = function (response, variable, callBackScope, options, success, error) {
-                var variableEvents = VARIABLE_CONSTANTS.EVENTS;
+                var newDataSet;
 
                 /* if RestService check statusCode for error, else check 'error' field in response */
                 if (response && response.error) {
                     processErrorResponse(response, variable, callBackScope, error);
-                } else {
-                    /* if dataTransformation enabled, transform the data */
-                    if (variable.transformationColumns) {
-                        response = transformData(response, variable);
-                    }
-                    /* trigger success events associated with the variable */
-                    WM.forEach(variableEvents, function (event) {
-                        if (event !== "onError") {
-                            /*handling onBeforeUpdate event of service-variable to manipulate the data before the data is updated in
-                             * the variable dataset*/
-                            if (event === "onBeforeUpdate") {
-                                /*obtaining the returned data and setting it to the variable dataset*/
-                                var newDataSet = initiateCallback(event, variable, callBackScope, response);
-                                if (newDataSet) {
-                                    /*setting newDataSet as the response to servicevariable onBeforeUpdate*/
-                                    response = newDataSet;
-                                }
-                            } else {
-                                initiateCallback(event, variable, callBackScope, response);
-                            }
-                        }
-                    });
-
-                    /* update the dataset against the variable, if response is non-object, insert the response in 'value' field of dataSet */
-                    if (!options.forceRunMode) {
-                        variable.dataSet = (!WM.isObject(response)) ? {'value': response} : response;
-                    }
-
-                    /* trigger success callback */
-                    Utils.triggerFn(success, response);
-
-                    if (CONSTANTS.isRunMode) {
-                        /* process next requests in the queue */
-                        variableActive[variable.activeScope.$id][variable.name] = false;
-                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], getDataInRun);
-                    }
+                    return;
                 }
+
+                /* if dataTransformation enabled, transform the data */
+                if (variable.transformationColumns) {
+                    response = transformData(response, variable);
+                }
+
+                // EVENT: ON_PREPARE_SETDATA
+                newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, response);
+                if (newDataSet) {
+                    //setting newDataSet as the response to service variable onPrepareSetData
+                    response = newDataSet;
+                }
+
+                // EVENT: ON_RESULT
+                initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
+
+                // EVENT: ON_SUCCESS
+                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, response);
+
+                /* update the dataset against the variable, if response is non-object, insert the response in 'value' field of dataSet */
+                if (!options.forceRunMode) {
+                    variable.dataSet = (!WM.isObject(response)) ? {'value': response} : response;
+                }
+
+                /* trigger success callback */
+                Utils.triggerFn(success, response);
+
+                if (CONSTANTS.isRunMode) {
+                    /* process next requests in the queue */
+                    variableActive[variable.activeScope.$id][variable.name] = false;
+                    processRequestQueue(variable, requestQueue[variable.activeScope.$id], getDataInRun);
+                }
+
+                // EVENT: ON_CAN_UPDATE
+                initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
             },
         /*function to create the params to invoke the java service. creating the params and the corresponding
         * url to invoke based on the type of the parameter*/
@@ -427,6 +431,10 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 /* make the variable active */
                 if (CONSTANTS.isRunMode) {
+                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, params);
+                    if (preventCall === false) {
+                        return;
+                    }
                     variableActive[variable.activeScope.$id][variable.name] = true;
                 }
 

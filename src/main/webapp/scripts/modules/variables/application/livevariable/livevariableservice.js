@@ -495,12 +495,14 @@ wm.variables.services.$liveVariable = [
                     dbOperation,
                     callBackScope,
                     variableOwner = variable.owner,
-                    variableEvents = VARIABLE_CONSTANTS.EVENTS,
                     promiseObj,
+                    preventCall,
+                    newDataSet,
                     handleError = function (response) {
                         /* If in Run mode, initiate error callback for the variable */
                         if (CONSTANTS.isRunMode) {
-                            initiateCallback("onError", variable, callBackScope, response);
+                            // EVENT: ON_ERROR
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, response);
                         }
 
                         /* update the dataSet against the variable */
@@ -518,6 +520,16 @@ wm.variables.services.$liveVariable = [
                     };
 
                 tableOptions = prepareTableOptions(variable, options);
+
+                if (CONSTANTS.isRunMode) {
+                    preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, tableOptions);
+                    if (preventCall === false) {
+                        variableActive[variable.activeScope.$id][variable.name] = false;
+                        processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
+                        $rootScope.$emit('toggle-variable-state', variable.name, false);
+                        return;
+                    }
+                }
 
                 dbOperation = (tableOptions.filter && tableOptions.filter.length) ? "searchTableData" : "readTableData";
                 /* if it is a prefab variable (used in a normal project), modify the url */
@@ -558,22 +570,17 @@ wm.variables.services.$liveVariable = [
                     }
 
                     if (CONSTANTS.isRunMode) {
-                        /* trigger success events associated with the variable */
-                        WM.forEach(variableEvents, function (event) {
-                            if (event !== "onError") {
-                                /*handling onBeforeUpdate event of liveVariable to manipulate the data before the data is updated in
-                                 * the variable dataSet*/
-                                if (event === "onBeforeUpdate") {
-                                    /*obtaining the returned data and setting it to the variable dataSet*/
-                                    var newDataSet = initiateCallback(event, variable, callBackScope, response.content);
-                                    if (newDataSet) {
-                                        $rootScope.variables[variable.name].data = newDataSet;
-                                    }
-                                } else {
-                                    initiateCallback(event, variable, callBackScope, response.content);
-                                }
-                            }
-                        });
+                        newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, response.content);
+                        if (newDataSet) {
+                            //setting newDataSet as the response to service variable onPrepareSetData
+                            $rootScope.variables[variable.name].data = newDataSet;
+                        }
+
+                        // EVENT: ON_RESULT
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, $rootScope.variables[variable.name].data);
+
+                        // EVENT: ON_SUCCESS
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, $rootScope.variables[variable.name].data);
                     }
                     /* update the dataSet against the variable */
                     updateVariableDataset(variable, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
@@ -724,7 +731,6 @@ wm.variables.services.$liveVariable = [
                     rowObject = {},
                     prevData,
                     callBackScope,
-                    variableEvents = VARIABLE_CONSTANTS.EVENTS,
                     promiseObj,
                     primaryKey = variableDetails.getPrimaryKey(),
                     compositeKeysData = {},
@@ -855,6 +861,18 @@ wm.variables.services.$liveVariable = [
                 if (WM.element.isEmptyObject(rowObject) && action === "deleteTableData") {
                     rowObject = undefined;
                 }
+
+                // EVENT: ON _BEFORE_UPDATE
+                if (CONSTANTS.isRunMode) {
+                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, rowObject);
+                    if (preventCall === false) {
+                        variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
+                        processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData);
+                        $rootScope.$emit('toggle-variable-state', variableDetails.name, false);
+                        return;
+                    }
+                }
+
                 promiseObj = DatabaseService[action]({
                     "projectID": projectID,
                     "service": variableDetails.prefabName ? "" : "services",
@@ -868,25 +886,24 @@ wm.variables.services.$liveVariable = [
                     if (response && response.error) {
                         /* If in RUN mode trigger error events associated with the variable */
                         if (CONSTANTS.isRunMode) {
-                            initiateCallback("onError", variableDetails, callBackScope, response.error);
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response.error);
                         }
                         /* trigger error callback */
                         Utils.triggerFn(error, response.error);
                     } else {
                         if (CONSTANTS.isRunMode) {
-                            /* trigger success events associated with the variable */
-                            WM.forEach(variableEvents, function (event) {
-                                if (event !== "onError") {
-                                    initiateCallback(event, variableDetails, callBackScope, response);
-                                }
-                            });
+                            // EVENT: ON_RESULT
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
+
+                            // EVENT: ON_SUCCESS
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, callBackScope, response);
                         }
                         Utils.triggerFn(success, response);
                     }
                 }, function (response) {
                     /* If in RUN mode trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
-                        initiateCallback("onError", variableDetails, callBackScope, response);
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
                     }
                     Utils.triggerFn(error, response);
                 });
