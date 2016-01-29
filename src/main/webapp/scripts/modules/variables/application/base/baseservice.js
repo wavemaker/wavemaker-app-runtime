@@ -1185,13 +1185,14 @@ wm.variables.services.Variables = [
             },
             initiateCallback = function (event, variable, callBackScope, response) {
                 /*checking if event is available and variable has event property and variable event property bound to function*/
-                var eventValues = variable[event];
+                var eventValues = variable[event],
+                    retVal;
                 callBackScope = variable.activeScope;
                 if (eventValues) {
                     _.forEach(eventValues.split(';'), function (eventValue) {
                         /* if event value is javascript, call the function defined in the callback scope of the variable */
                         if (eventValue === 'Javascript') {
-                            return Utils.triggerFn(callBackScope[variable.name + event], variable, response);
+                            retVal = Utils.triggerFn(callBackScope[variable.name + event], variable, response);
                         }
                         if (_.includes(eventValue, '.show')) {
                             DialogService.showDialog(eventValue.slice(0, eventValue.indexOf('.show')));
@@ -1202,7 +1203,7 @@ wm.variables.services.Variables = [
                             return;
                         }
                         if (_.includes(eventValue, '(')) {
-                            return Utils.triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], variable, response);
+                            retVal = Utils.triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], variable, response);
                         }
 
                         /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
@@ -1212,6 +1213,7 @@ wm.variables.services.Variables = [
                         }, null, false);
                     });
                 }
+                return retVal;
             },
 
             /* unloads the variables from the specified namespace */
