@@ -347,13 +347,13 @@ WM.module('wm.widgets.form')
         }
 
         /*Overwrite the caption only if they are default*/
-        function getCaption(caption, mode, isMultiple) {
+        function getCaption(caption, mode, isMultiple, isMobileType) {
             if (_.includes(DEFAULT_CAPTIONS, caption)) {
                 if (mode === MODE.UPLOAD) {
-                    return isMultiple ? DEFAULT_CAPTIONS.MULTIPLE_UPLOAD : DEFAULT_CAPTIONS.UPLOAD;
+                    return isMultiple && !isMobileType ? DEFAULT_CAPTIONS.MULTIPLE_UPLOAD : DEFAULT_CAPTIONS.UPLOAD;
                 }
                 if (mode === MODE.SELECT) {
-                    return isMultiple ? DEFAULT_CAPTIONS.MULTIPLE_SELECT : DEFAULT_CAPTIONS.SELECT;
+                    return isMultiple && !isMobileType ? DEFAULT_CAPTIONS.MULTIPLE_SELECT : DEFAULT_CAPTIONS.SELECT;
                 }
             }
             return caption;
@@ -504,7 +504,7 @@ WM.module('wm.widgets.form')
                             case 'mode':
                             case 'multiple':
                                 scope.formName = scope.name + (scope.multiple ? '-multiple-fileupload' : '-single-fileupload');
-                                scope.caption = getCaption(scope.caption, scope.mode, scope.multiple);
+                                scope.caption = getCaption(scope.caption, scope.mode, scope.multiple, scope._isMobileType);
                                 break;
                             }
                         }
