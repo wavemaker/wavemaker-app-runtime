@@ -1605,7 +1605,7 @@ wm.variables.services.Variables = [
              *
              */
             'saveVariables': function (activePageName, success, error, updateValues) {
-                if (activePageName && updateValues) {
+                if (updateValues) {
                     updateVariableValues(activePageName);
                 }
                 function onSuccess() {
