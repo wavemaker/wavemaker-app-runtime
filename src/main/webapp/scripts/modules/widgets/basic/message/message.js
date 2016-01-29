@@ -14,7 +14,7 @@ WM.module('wm.widgets.basic')
                 '"alert-info alert-loading":messageType.isLoading}\' ' +
                 '><i title="{{type}} Alert" class="{{type}} icon {{messageIcon}}"></i>' +
                 '<span ng-bind-html="messageContent"></span>' +
-                '<button title="Close" class="btn-transparent close" data-ng-hide="hideclose">&times;</button>' +
+                '<button title="Close" type="button" class="btn-transparent close" data-ng-hide="hideclose">&times;</button>' +
             '</p>'
             );
     }])
