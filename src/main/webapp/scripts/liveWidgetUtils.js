@@ -257,15 +257,12 @@ WM.module('wm.widgets.live')
                 columnDef.type = attrs.type || 'text';
                 columnDef.widget = widgetType; /*Widget type support for older projects*/
                 columnDef.primaryKey = attrs.primaryKey === 'true' || attrs.primaryKey === true;
-                columnDef.readonly = attrs.readonly === 'true' || attrs.readonly;
+                columnDef.readonly = attrs.readonly === 'false' ? false : (attrs.readonly === 'readonly' || attrs.readonly === 'true' || attrs.readonly);
                 columnDef.multiple = attrs.multiple === 'true' || attrs.multiple === true;
                 columnDef.class = attrs.class || '';
-                columnDef.required = attrs.required === 'required' || attrs.required;
-                if (attrs.show === 'false') {
-                    columnDef.show = false;
-                } else {
-                    columnDef.show = attrs.show === '1' || attrs.show === 'true' || attrs.show;
-                }
+                columnDef.required = attrs.required === 'false' ? false : (attrs.required === 'required' || attrs.required === 'true' || attrs.required);
+                columnDef.show = attrs.show === 'false' ? false : (attrs.show === '1' || attrs.show === 'true' || attrs.show);
+                columnDef.disabled = attrs.disabled === 'false' ? false : (attrs.disabled === 'disabled' || attrs.disabled === 'true' || attrs.disabled);
                 return columnDef;
             }
             /**
