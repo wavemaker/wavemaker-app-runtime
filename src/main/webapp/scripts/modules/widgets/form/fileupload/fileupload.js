@@ -290,24 +290,31 @@ WM.module('wm.widgets.form')
                 return true;
             }
             contentTypes = contenttype.split(',');
-            switch (contenttype) {
-            case 'image':
+
+            if (_.includes(contentTypes, 'image/*')) {
                 isValid = Utils.isImageFile(filename);
-                break;
-            case 'audio':
-                isValid = Utils.isAudioFile(filename);
-                break;
-            case 'video':
-                isValid = Utils.isVideoFile(filename);
-                break;
-            case 'all':
-                isValid = true;
-                break;
-            default:
-                /*content type and the uploaded file extension should be same*/
-                if (_.includes(contentTypes, '.' + extensionName)) {
-                    isValid = true;
+                /*If one of the content type chosen is image/* and user uploads image it is valid file*/
+                if (isValid) {
+                    return isValid;
                 }
+            }
+            if (_.includes(contentTypes, 'audio/*')) {
+                isValid = Utils.isAudioFile(filename);
+                /*If one of the content type chosen is audio/* and user uploads audio it is valid file*/
+                if (isValid) {
+                    return isValid;
+                }
+            }
+            if (_.includes(contentTypes, 'video/*')) {
+                isValid = Utils.isVideoFile(filename);
+                /*If one of the content type chosen is video/* and user uploads video it is valid file*/
+                if (isValid) {
+                    return isValid;
+                }
+            }
+            /*content type and the uploaded file extension should be same*/
+            if (_.includes(contentTypes, '.' + extensionName)) {
+                isValid = true;
             }
             return isValid;
         }
@@ -320,7 +327,7 @@ WM.module('wm.widgets.form')
 
             _.forEach($files, function (file) {
                 /* check for the file content type before uploading */
-                if (!isValidFile(file.name, scope.contenttype, scope.getFileExtension(file.name))) {
+                if (!isValidFile(file.name, scope.chooseFilter, scope.getFileExtension(file.name))) {
                     Utils.triggerFn(scope.onError);
                     wmToaster.show('error', 'Expected a ' + scope.contenttype + ' file');
                     return;
@@ -487,7 +494,7 @@ WM.module('wm.widgets.form')
                                 break;
                             case 'service':
                                 if (isStudioMode) {
-                                    if (scope.service === CONSTANT_FILE_SERVICE) {
+                                    if (scope.service === CONSTANT_FILE_SERVICE && !scope.operation) {
                                         scope.operation = 'uploadFile';
                                     }
                                     ServiceFactory.getServiceOperations(scope.service, function (response) {
