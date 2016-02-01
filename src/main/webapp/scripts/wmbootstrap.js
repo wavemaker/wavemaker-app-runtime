@@ -296,7 +296,7 @@ Application
                             $rs.isUserAuthenticated = config.authenticated;
                             if (config.securityEnabled) {
                                 if (config.authenticated) {
-                                    page = config.userInfo.homePage;
+                                    page = config.userInfo.homePage || _WM_APP_PROPERTIES.homePage;
                                     $rs.userRoles = config.userInfo.userRoles;
                                 } else {
                                     page = config.homePage;
