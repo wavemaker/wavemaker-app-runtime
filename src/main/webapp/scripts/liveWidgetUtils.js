@@ -314,7 +314,7 @@ WM.module('wm.widgets.live')
                 } else if (type === 'date') {
                     caption += ' | date:formFields[' + index + '].datepattern';
                 } else if (type === 'select') {
-                    caption =  'formFields[' + index + '].isRelated ? getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayvalue || formFields[' + index + '].displayfield) : formFields[' + index + '].value';
+                    caption =  'formFields[' + index + '].isRelated ? getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield) : formFields[' + index + '].value';
                 } else if (type === 'rating') {
                     caption = '';
                 }
@@ -334,8 +334,6 @@ WM.module('wm.widgets.live')
                     if (fieldDef[field]) {
                         if (field === 'key' || field === 'field') {
                             fields += ' name="{{formFields[' + index + '].' + field + '}}"';
-                        } else if (field === 'displayvalue') {
-                            fields += ' displayexpression="{{formFields[' + index + '].' + field + '}}"';
                         } else if (field === 'widgetid') {
                             fields += ' widgetid="' + fieldDef.widgetid + '_' + fieldDef.name + '"';
                         } else if (field === 'permitted') {
@@ -995,7 +993,9 @@ WM.module('wm.widgets.live')
                 if (attrs.minPlaceholder && !attrs.placeholder && fieldType === 'wm-filter-field') {
                     changeAttr('placeholder', 'minPlaceholder');
                 }
-
+                if (!attrs.displayexpression && attrs.displayvalue) {
+                    changeAttr('displayexpression', 'displayvalue');
+                }
             }
             /**
              * @ngdoc function
