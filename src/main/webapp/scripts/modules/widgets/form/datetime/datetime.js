@@ -27,7 +27,7 @@ WM.module('wm.widgets.form')
             '<input type="datetime-local" class="form-control app-textbox app-dateinput" data-ng-show="show" role="input" data-ng-model="_proxyModel" has-model step="any"' +
             ' init-widget data-ng-change="updateModel();_onChange({$event: $event, $scope: this});">'
             );
-    }]).directive('wmDatetime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'FormWidgetUtils', '$document', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils, $document) {
+    }]).directive('wmDatetime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'FormWidgetUtils', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.datetime', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -42,7 +42,6 @@ WM.module('wm.widgets.form')
         if ($rs.isMobileApplicationType) {
             /*date pattern is not supported for native date widget*/
             widgetProps.datepattern.show = false;
-            widgetProps.ismeridian.show = false;
             widgetProps.hourstep.show = false;
             widgetProps.minutestep.show = false;
         }
@@ -100,8 +99,8 @@ WM.module('wm.widgets.form')
                 scope.proxyExcludeDates = FormWidgetUtils.getProxyExcludeDates(newVal);
                 break;
             case 'datepattern':
-                scope.showseconds = _.includes(newVal, 'ss')
-                scope.ismeridian  = _.includes(newVal, 'hh')
+                scope.showseconds = _.includes(newVal, 'ss');
+                scope.ismeridian  = _.includes(newVal, 'hh');
                 _formatDateTime(scope);
                 break;
             }
