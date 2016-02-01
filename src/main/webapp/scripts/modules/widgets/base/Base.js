@@ -1692,7 +1692,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "validation", "properties": ["required", "regexp", "mindate", "maxdate", "excludedays", "excludedates", "novalidate", "maxchars"], "parent": "properties"},
                 {"name": "help", "properties": ["helptext"], "parent": "properties"},
                 {"name": "behavior", "properties": ["defaultview", "defaultmode", "navigation", "pollinterval", "radiogroup", "viewgroup", "showweeks", "autofocus", "readonly", "ignoreparentreadonly", "readonlygrid", "scrolldelay", "scrollamount", "direction",
-                    "multiple", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "enablefullscreen",
+                    "multiple", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "destination", "maxfilesize", "isdefaulttab", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
