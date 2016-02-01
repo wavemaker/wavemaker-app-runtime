@@ -1309,7 +1309,9 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["h1", "h2", "h3", "h4", "h5", "h6", "btn-primary", "btn-success", "btn-info", "btn-warning", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-link", "text-left", "text-right", "text-center", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "lead", "badge"]}
                     },
                     "wm.popover": {
+                        "contentsource": {"type": "list", "options": ['inline', 'partial'], value: "partial"},
                         "content": {"type": "list", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
+                        "inlinecontent": {"type": "string", "widget": "textarea"},
                         "hyperlink": {"type": "string", "value": "", "show": false},
                         "target": {"type": "string", "value" : "", "show": false},
                         "popoverwidth" :  {"type": "string"},
@@ -1317,6 +1319,7 @@ WM.module('wm.widgets.base', [])
                         "popoverarrow" :  {"type": "boolean", "value" : true},
                         "popoverautoclose": {"type": "boolean", "value" : true},
                         "popoverplacement": {"type": "list", "options": ["bottom", "left", "right", "top"], "value": "bottom"},
+                        "title": {"type": "string", "bindable": "in-bound"},
                         "onShow": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onHide": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
@@ -1677,7 +1680,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "image", "properties": ["image", "imagewidth", "imageheight"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
-                {"name": "content", "properties": ["content", "url"], "parent": "properties"},
+                {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
                 {"name": "display", "properties": ["picturesource", "modal", "vertical"], "parent": "properties"},
                 {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},

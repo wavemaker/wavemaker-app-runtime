@@ -9,6 +9,7 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/basic/popover.html',
                 '<div class="app-popover popover invisible {{class}} {{popoverplacement}}" data-ng-style="{width : popoverwidth, height : popoverheight}">' +
                     '<div class="arrow" data-ng-show="popoverarrow"></div>' +
+                    '<h3 class="popover-title" data-ng-if="title">{{title}}</h3>' +
                     '<wm-container class="popover-content" content="{{content}}"></wm-container>' +
                 '</div>');
     }])
@@ -19,7 +20,8 @@ WM.module('wm.widgets.basic')
             notifyFor = {
                 'iconclass': true,
                 'iconurl': true,
-                'caption': true
+                'caption': true,
+                'contentsource': CONSTANTS.isStudioMode
             },
             popoverProperties = PropertiesFactory.getPropertiesOf('wm.popover');
 
@@ -28,6 +30,17 @@ WM.module('wm.widgets.basic')
             switch (key) {
             case 'iconposition':
                 element.attr('icon-position', newVal);
+                break;
+            case 'contentsource':
+                //check for 2 option inline || partial
+                if ( newVal === 'inline' ) {
+                    scope.widgetProps.inlinecontent.show = true;
+                    scope.widgetProps.content.show = false;
+                } else {
+                    scope.widgetProps.content.show = true;
+                    scope.widgetProps.inlinecontent.show = false;
+                }
+
                 break;
             case 'iconclass':
                 /*showing icon when iconurl is not set*/
@@ -182,7 +195,7 @@ WM.module('wm.widgets.basic')
          * @param onClose callback to invoke when popover closes automatically.
          * @constructor
          */
-        function Popover(element, onOpen, onClose) {
+        function Popover(element, transcludeFn, isInlineContent, onOpen, onClose) {
             var scope = element.isolateScope(),
                 popoverScope = createPopoverScope(element),
                 page = $rootScope.$activePageEl,
@@ -190,16 +203,23 @@ WM.module('wm.widgets.basic')
                 pageClickListener;
             page.append(popoverEle);
             popoverEle.show();
-            /**
-             * When the page content is ready, copy the widgets and variables to the scope.
-             */
-            popoverScope.$on('on-pagecontainer-ready', function ($event) {
-                $event.stopPropagation();
-                var includedPageScope = popoverEle.find('[data-ng-controller]:first').scope();
-                scope.Widgets = includedPageScope.Widgets;
-                scope.Variables = includedPageScope.Variables;
-                Utils.triggerFn(onOpen);
-            });
+            //check if inline content
+            if (isInlineContent) {
+                transcludeFn(element.scope(), function (clone) {
+                    popoverEle.find('> .popover-content').append(clone);
+                });
+            } else {
+                /**
+                 * When the page content is ready, copy the widgets and variables to the scope.
+                 */
+                popoverScope.$on('on-pagecontainer-ready', function ($event) {
+                    $event.stopPropagation();
+                    var includedPageScope = popoverEle.find('[data-ng-controller]:first').scope();
+                    scope.Widgets = includedPageScope.Widgets;
+                    scope.Variables = includedPageScope.Variables;
+                    Utils.triggerFn(onOpen);
+                });
+           }
             /**
              * Do calculations after the current digest cycle.
              * This is to make sure that all the popover scope values are applied on to the dom.
@@ -241,14 +261,15 @@ WM.module('wm.widgets.basic')
                 template.addClass('app-popover-anchor');
                 return template[0].outerHTML;
             },
-            'compile': function () {
+            'compile': function (tElement) {
                 return {
                     'pre': function (scope) {
                         scope.showicon = !scope.iconurl;
-                        scope.widgetProps = widgetProps;
+                        scope.widgetProps = Utils.getClonedObject(widgetProps);
                     },
-                    'post': function (scope, element, attrs) {
+                    'post': function (scope, element, attrs, nullCtrl, transcludeFn) {
                         var popover,
+                            isInlineContent = (attrs.contentsource === 'inline'),
                             onOpen = function (event) {
                                 Utils.triggerFn(scope.onShow, {'$event': event, '$scope' : scope});
                             },
@@ -270,12 +291,17 @@ WM.module('wm.widgets.basic')
                                     element.focus();
                                     Utils.triggerFn(scope.onHide, {'$event': event, '$scope': scope});
                                 } else {
-                                    popover = new Popover(element, onOpen.bind(undefined, event), onClose);
+                                    popover = new Popover(element, transcludeFn, isInlineContent, onOpen.bind(undefined, event), onClose);
                                     element.addClass('app-popover-open');
                                 }
                                 return false;
                             };
+
+                        } else {
+                            /* if content is provided as an attribute, give it preference */
+                            scope.inlinecontent = tElement.context.innerHTML;
                         }
+
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
