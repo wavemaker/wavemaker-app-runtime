@@ -150,7 +150,7 @@ WM.module('wm.widgets.base')
 
                         //override the functions
                         if (overrideFlg) {
-                            attrs[evtName]  = fn;
+                            attrs['_' + evtName]  = fn;
                             getParentMethod = $parse(fn);
                             $is[evtName] = function (locals) {
                                 locals = locals || {};
