@@ -501,6 +501,8 @@ wm.variables.services.$liveVariable = [
                     handleError = function (response) {
                         /* If in Run mode, initiate error callback for the variable */
                         if (CONSTANTS.isRunMode) {
+                            // EVENT: ON_RESULT
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
                             // EVENT: ON_ERROR
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, response);
                         }
@@ -522,6 +524,7 @@ wm.variables.services.$liveVariable = [
                 tableOptions = prepareTableOptions(variable, options);
 
                 if (CONSTANTS.isRunMode) {
+                    // EVENT: ON_BEFORE_UPDATE
                     preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, tableOptions);
                     if (preventCall === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
@@ -570,17 +573,18 @@ wm.variables.services.$liveVariable = [
                     }
 
                     if (CONSTANTS.isRunMode) {
-                        newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, response.content);
-                        if (newDataSet) {
-                            //setting newDataSet as the response to service variable onPrepareSetData
-                            $rootScope.variables[variable.name].data = newDataSet;
-                        }
-
                         // EVENT: ON_RESULT
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, $rootScope.variables[variable.name].data);
 
                         // EVENT: ON_SUCCESS
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, $rootScope.variables[variable.name].data);
+
+                        // EVENT: ON_PREPARESETDATA
+                        newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, response.content);
+                        if (newDataSet) {
+                            //setting newDataSet as the response to service variable onPrepareSetData
+                            $rootScope.variables[variable.name].data = newDataSet;
+                        }
                     }
                     /* update the dataSet against the variable */
                     updateVariableDataset(variable, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
@@ -903,6 +907,9 @@ wm.variables.services.$liveVariable = [
                 }, function (response) {
                     /* If in RUN mode trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
+                        // EVENT: ON_RESULT
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
+                        // EVENT: ON_ERROR
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
                     }
                     Utils.triggerFn(error, response);

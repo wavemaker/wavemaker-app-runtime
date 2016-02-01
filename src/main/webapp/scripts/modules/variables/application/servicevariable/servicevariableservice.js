@@ -200,6 +200,12 @@ wm.variables.services.$servicevariable = ['Variables',
                     return;
                 }
 
+                // EVENT: ON_RESULT
+                initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
+
+                // EVENT: ON_SUCCESS
+                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, response);
+
                 /* if dataTransformation enabled, transform the data */
                 if (variable.transformationColumns) {
                     response = transformData(response, variable);
@@ -207,16 +213,10 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 // EVENT: ON_PREPARE_SETDATA
                 newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, response);
-                if (newDataSet) {
+                if (WM.isDefined(newDataSet)) {
                     //setting newDataSet as the response to service variable onPrepareSetData
                     response = newDataSet;
                 }
-
-                // EVENT: ON_RESULT
-                initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
-
-                // EVENT: ON_SUCCESS
-                initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, response);
 
                 /* update the dataset against the variable, if response is non-object, insert the response in 'value' field of dataSet */
                 if (!options.forceRunMode) {
