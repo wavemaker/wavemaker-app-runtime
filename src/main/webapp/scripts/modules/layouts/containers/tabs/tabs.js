@@ -500,11 +500,11 @@ WM.module('wm.layouts.containers')
 
                         if (CONSTANTS.isRunMode) {
                             if (attrs.onSelect) {
-                                ctrl.registerCallback('onSelect', attrs.onSelect);
+                                ctrl.registerCallback('onSelect', attrs._onSelect || attrs.onSelect);
                             }
 
                             if (attrs.onDeselect) {
-                                ctrl.registerCallback('onDeselect', attrs.onDeselect);
+                                ctrl.registerCallback('onDeselect', attrs._onDeselect || attrs.onDeselect);
                             }
                         }
 
