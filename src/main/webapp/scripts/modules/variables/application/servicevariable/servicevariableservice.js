@@ -183,6 +183,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (CONSTANTS.isRunMode) {
                     /* process next requests in the queue */
                     variableActive[variable.activeScope.$id][variable.name] = false;
+                    variable.canUpdate = true;
                     processRequestQueue(variable, requestQueue[variable.activeScope.$id], getDataInRun);
 
                     // EVENT: ON_CAN_UPDATE
@@ -229,6 +230,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (CONSTANTS.isRunMode) {
                     /* process next requests in the queue */
                     variableActive[variable.activeScope.$id][variable.name] = false;
+                    variable.canUpdate = true;
                     processRequestQueue(variable, requestQueue[variable.activeScope.$id], getDataInRun);
                 }
 
@@ -370,6 +372,28 @@ wm.variables.services.$servicevariable = ['Variables',
                     callBackScope,
                     methodInfo;
 
+                /* get the callback scope for the variable based on its owner */
+                if (variableOwner === "App") {
+                    /* TODO: to look for a better option to get App/Page the controller's scope */
+                    callBackScope = $rootScope || {};
+                } else {
+                    if (variable.prefabName) {
+                        callBackScope = options.scope || {};
+                    } else {
+                        callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
+                    }
+                }
+
+                // EVENT: ON_BEFORE_UPDATE
+                if (CONSTANTS.isRunMode) {
+                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, variable.dataBinding);
+                    if (preventCall === false) {
+                        return;
+                    }
+                    variableActive[variable.activeScope.$id][variable.name] = true;
+                    variable.canUpdate = false;
+                }
+
                 /* loop over the parameters required for the variable and push them request dataParams */
                 WM.forEach(variable.dataBinding, function (param) {
                     dataParams.push(param);
@@ -427,15 +451,6 @@ wm.variables.services.$servicevariable = ['Variables',
                     } else {
                         callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
                     }
-                }
-
-                /* make the variable active */
-                if (CONSTANTS.isRunMode) {
-                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, params);
-                    if (preventCall === false) {
-                        return;
-                    }
-                    variableActive[variable.activeScope.$id][variable.name] = true;
                 }
 
                 /* if the service produces octet/stream, replicate file download through form submit */

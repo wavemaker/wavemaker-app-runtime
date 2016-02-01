@@ -505,6 +505,7 @@ wm.variables.services.$liveVariable = [
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
                             // EVENT: ON_ERROR
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, response);
+                            variable.canUpdate = true;
                         }
 
                         /* update the dataSet against the variable */
@@ -521,18 +522,19 @@ wm.variables.services.$liveVariable = [
                         }
                     };
 
-                tableOptions = prepareTableOptions(variable, options);
-
                 if (CONSTANTS.isRunMode) {
                     // EVENT: ON_BEFORE_UPDATE
-                    preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, tableOptions);
+                    preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, variable.filterFields);
                     if (preventCall === false) {
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                         $rootScope.$emit('toggle-variable-state', variable.name, false);
                         return;
                     }
+                    variable.canUpdate = false;
                 }
+
+                tableOptions = prepareTableOptions(variable, options);
 
                 dbOperation = (tableOptions.filter && tableOptions.filter.length) ? "searchTableData" : "readTableData";
                 /* if it is a prefab variable (used in a normal project), modify the url */
@@ -594,6 +596,7 @@ wm.variables.services.$liveVariable = [
 
                     /* process next requests in the queue */
                     if (CONSTANTS.isRunMode) {
+                        variable.canUpdate = true;
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                     }
@@ -750,6 +753,18 @@ wm.variables.services.$liveVariable = [
                     callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
                 }
 
+                // EVENT: ON _BEFORE_UPDATE
+                if (CONSTANTS.isRunMode) {
+                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, variableDetails.inputFields);
+                    if (preventCall === false) {
+                        variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
+                        processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData);
+                        $rootScope.$emit('toggle-variable-state', variableDetails.name, false);
+                        return;
+                    }
+                    variableDetails.canUpdate = false;
+                }
+
                 if (options.row) {
                     rowObject = options.row;
                 } else {
@@ -866,17 +881,6 @@ wm.variables.services.$liveVariable = [
                     rowObject = undefined;
                 }
 
-                // EVENT: ON _BEFORE_UPDATE
-                if (CONSTANTS.isRunMode) {
-                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, rowObject);
-                    if (preventCall === false) {
-                        variableActive[variableDetails.activeScope.$id][variableDetails.name] = false;
-                        processRequestQueue(variableDetails, requestQueue[variableDetails.activeScope.$id], deployProjectAndFetchData);
-                        $rootScope.$emit('toggle-variable-state', variableDetails.name, false);
-                        return;
-                    }
-                }
-
                 promiseObj = DatabaseService[action]({
                     "projectID": projectID,
                     "service": variableDetails.prefabName ? "" : "services",
@@ -890,7 +894,11 @@ wm.variables.services.$liveVariable = [
                     if (response && response.error) {
                         /* If in RUN mode trigger error events associated with the variable */
                         if (CONSTANTS.isRunMode) {
+                            // EVENT: ON_RESULT
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
+                            // EVENT: ON_ERROR
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response.error);
+                            variableDetails.canUpdate = true;
                         }
                         /* trigger error callback */
                         Utils.triggerFn(error, response.error);
@@ -898,9 +906,9 @@ wm.variables.services.$liveVariable = [
                         if (CONSTANTS.isRunMode) {
                             // EVENT: ON_RESULT
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
-
                             // EVENT: ON_SUCCESS
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, callBackScope, response);
+                            variableDetails.canUpdate = true;
                         }
                         Utils.triggerFn(success, response);
                     }
@@ -911,6 +919,7 @@ wm.variables.services.$liveVariable = [
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
                         // EVENT: ON_ERROR
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
+                        variableDetails.canUpdate = true;
                     }
                     Utils.triggerFn(error, response);
                 });

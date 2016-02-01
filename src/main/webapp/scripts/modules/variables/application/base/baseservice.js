@@ -522,6 +522,9 @@ wm.variables.services.Variables = [
                             }
                         }
                     } else if (variable.category === "wm.ServiceVariable") {
+                        if (runMode) {
+                            variable.canUpdate = true;
+                        }
                         if (!runMode || variable.startUpdate) {
                             /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
                             $timeout(function () {
@@ -531,6 +534,9 @@ wm.variables.services.Variables = [
                             }, null, false);
                         }
                     } else if (variable.category === "wm.LiveVariable") {
+                        if (runMode) {
+                            variable.canUpdate = true;
+                        }
                         $rootScope.variables[name] = $rootScope.variables[name] || {};
                         if (variable.startUpdate) {
                             /*
