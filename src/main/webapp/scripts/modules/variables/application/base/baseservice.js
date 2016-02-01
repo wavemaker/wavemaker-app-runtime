@@ -1175,12 +1175,11 @@ wm.variables.services.Variables = [
                         });
                     }
                 }
-
-                if (isUpdate) {
-                    call('getData', name, {scope: scope, skipFetchData: true});
-                }
                 if (!_.includes(CRUDMAP.CREATE[owner], name)) {
                     CRUDMAP.CREATE[owner].push(name);/*Storing created variable name in map*/
+                }
+                if (isUpdate) {
+                    call('getData', name, {scope: scope, skipFetchData: true});
                 }
             },
             initiateCallback = function (event, variable, callBackScope, response) {
