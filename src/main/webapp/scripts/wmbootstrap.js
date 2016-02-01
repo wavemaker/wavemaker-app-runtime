@@ -441,15 +441,15 @@ Application
                             return AppManager.loadCommonPage($s);
                         }).then(function () {
                             SecurityService.getConfig(function (config) {
-                                // if user us authenticated, load app variables and localozation resource
-                                if (!config.securityEnabled || config.authenticated) {
-                                    AppManager.initAppVariables($s)
-                                        .then(function (appVariables) {
-                                            var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
-                                            AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
+                                AppManager.initAppVariables($s)
+                                    .then(function (appVariables) {
+                                        var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
+                                        AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
+                                        // if user us authenticated, update user details in loggedInUser variable
+                                        if (config.authenticated) {
                                             AppManager.updateLoggedInUserVariable();
-                                        });
-                                }
+                                        }
+                                    });
                             });
                         });
                 }
