@@ -524,8 +524,7 @@ WM.module('wm.widgets.base', [])
                         "onEventresize": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onEventrender": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["h1", "h2", "h3", "h4", "h5", "h6", "text-muted", "text-primary", "text-success", "text-info", "text-warning", "text-danger", "lead"]}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.time": {
                         "placeholder": {"type": "string", "value": "Select time"},
