@@ -186,7 +186,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     processRequestQueue(variable, requestQueue[variable.activeScope.$id], getDataInRun);
 
                     // EVENT: ON_CAN_UPDATE
-                    initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
+                    initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, error);
                 }
             },
 
