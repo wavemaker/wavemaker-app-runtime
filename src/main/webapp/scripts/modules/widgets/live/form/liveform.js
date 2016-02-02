@@ -31,7 +31,9 @@ WM.module('wm.widgets.live')
                 }
                 return undefined;
             },
-            dateTimeFormats = Utils.getDateTimeDefaultFormats();
+            dateTimeFormats = Utils.getDateTimeDefaultFormats(),
+            pageTemplate,
+            defaultTemplate;
 
         return {
             restrict: 'E',
@@ -45,9 +47,8 @@ WM.module('wm.widgets.live')
             require: '?^wmLivegrid',
             template: function (template, attrs) {
                 /*render the template with mobile-navbar if formlayout is page*/
-                if (CONSTANTS.isRunMode && attrs.formlayout === 'page') {
-                    return '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-device-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
-                                '<wm-mobile-navbar title="{{title}}">' +
+                pageTemplate = '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-device-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
+                                '<wm-mobile-navbar title="{{title}}" on-backbtnclick="onBackbtnclick({$event: $event, $scope: this})">' +
                                     '<wm-button type="{{btn.type}}" class="btn-transparent btn-default" data-ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
                                 '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
@@ -56,7 +57,23 @@ WM.module('wm.widgets.live')
                                 '</div>' +
                                 '<div class="hidden-form-elements"></div>' +
                         '</form>';
-                }
+
+                defaultTemplate = '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
+                                    '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
+                                    '<div class="form-header panel-heading" data-ng-show="!isLayoutDialog" data-ng-if="title">' +
+                                        '<h3 class="panel-title">' +
+                                            '<i data-ng-if="iconclass" class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
+                                            '<span class="form-header-text">{{title}}</span>' +
+                                        '</h3>' +
+                                    '</div>' +
+                                    '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
+                                        '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
+                                        template.context.innerHTML +
+                                    '</div>' +
+                                    '<div class="hidden-form-elements"></div>' +
+                                    '<div class="basic-btn-grp form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
+                                '</form>';
+
                 if (CONSTANTS.isRunMode && (attrs.formtype === 'dialog' || attrs.layout === 'dialog' || attrs.formlayout === 'dialog')) {
                     /*Generate a unique id for the dialog to avoid conflict with multiple dialogs.*/
                     attrs.dialogid = 'liveformdialog-' + attrs.name + '-' + Utils.generateGUId();
@@ -77,19 +94,10 @@ WM.module('wm.widgets.live')
                                 '</wm-dialog>' +
                             '</div>';
                 }
-                return '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
-                            '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
-                            '<div class="form-header panel-heading" data-ng-show="!isLayoutDialog" data-ng-if="title"><h3 class="panel-title">' +
-                                '<i data-ng-if="iconclass" class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
-                                '<span class="form-header-text">{{title}}</span>' +
-                            '</h3></div>' +
-                            '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
-                                '<wm-message data-ng-if=(messagelayout==="Inline") scopedataset="statusMessage" hideclose="false"></wm-message>' +
-                                template.context.innerHTML +
-                            '</div>' +
-                            '<div class="hidden-form-elements"></div>' +
-                            '<div class="basic-btn-grp form-action panel-footer clearfix" data-ng-hide="isLayoutDialog"></div>' +
-                        '</form>';
+                if (attrs.formlayout === 'page') {
+                    return pageTemplate;
+                }
+                return defaultTemplate;
             },
             controller: function ($scope, DialogService) {
                 $scope.__compileWithIScope = true;
@@ -648,6 +656,7 @@ WM.module('wm.widgets.live')
                         /*enable the fromlayout for device*/
                         if ($rootScope.isMobileApplicationType && CONSTANTS.isStudioMode) {
                             scope.widgetProps.formlayout.show = true;
+                            scope.widgetProps.formlayout.showindesigner = true;
                         }
 
                         if (attrs.formlayout === 'dialog') {
@@ -842,6 +851,10 @@ WM.module('wm.widgets.live')
                             case "formlayout":
                                 scope.isLayoutDialog = newVal === 'dialog';
                                 element.toggleClass('liveform-dialog', scope.isLayoutDialog);
+                                // show backbtn event for page formlayout
+                                if (CONSTANTS.isStudioMode) {
+                                    scope.widgetProps.onBackbtnclick.show = (newVal === 'page');
+                                }
                                 break;
                             }
                         }
@@ -852,6 +865,23 @@ WM.module('wm.widgets.live')
                         if (scope.widgetid) {
                             /* event emitted on building new markup from canvasDom */
                             handlers.push($rootScope.$on('compile-form-fields', function (event, scopeId, markup, newVal, fromDesigner) {
+
+                                if ($rootScope.isMobileApplicationType && CONSTANTS.isStudioMode) {
+                                    if (scope.formlayout === 'page') {
+                                        // recompile the pageTemplate.
+                                        element.html(pageTemplate);
+                                        scope.buttonArray = undefined;
+                                        $compile(element.contents())(scope);
+                                        element.addClass('app-device-liveform');
+                                    } else {
+                                        // recompile the default template
+                                        element.html(defaultTemplate);
+                                        element.find('.basic-btn-grp').empty();
+                                        $compile(element.contents())(scope);
+                                        element.removeClass('app-device-liveform');
+                                    }
+                                }
+
                                 /* as multiple form directives will be listening to the event, apply field-definitions only for current form */
                                 if (scope.$id === scopeId) {
                                     scope.formFields = undefined;

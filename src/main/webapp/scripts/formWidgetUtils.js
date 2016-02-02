@@ -65,10 +65,12 @@ WM.module('wm.widgets.form')
             function setPropertiesTextWidget(widgetProps, newVal) {
                 widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = false;
                 widgetProps.placeholder.show = widgetProps.maxchars.show = widgetProps.updateon.show = widgetProps.updatedelay.show = true;
+                widgetProps.datavalue.type = 'string';
                 switch (newVal) {
                 case 'number':
                     widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
                     widgetProps.placeholder.show = widgetProps.maxchars.show = true;
+                    widgetProps.datavalue.type = 'number';
                     break;
                 case 'date':
                 case 'datetime-local':
