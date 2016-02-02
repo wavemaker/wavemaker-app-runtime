@@ -63,14 +63,14 @@ WM.module('wm.widgets.form')
              * @param {string} newVal new input type value of the widget
              */
             function setPropertiesTextWidget(widgetProps, newVal) {
+                var datavalueObj = widgetProps.datavalue || widgetProps.defaultvalue;
                 widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = false;
                 widgetProps.placeholder.show = widgetProps.maxchars.show = widgetProps.updateon.show = widgetProps.updatedelay.show = true;
-                widgetProps.datavalue.type = 'string';
+                datavalueObj.type = (newVal === 'number' || newVal === 'date') ? newVal : 'string';
                 switch (newVal) {
                 case 'number':
                     widgetProps.step.show = widgetProps.minvalue.show = widgetProps.maxvalue.show = true;
                     widgetProps.placeholder.show = widgetProps.maxchars.show = true;
-                    widgetProps.datavalue.type = 'number';
                     break;
                 case 'date':
                 case 'datetime-local':
