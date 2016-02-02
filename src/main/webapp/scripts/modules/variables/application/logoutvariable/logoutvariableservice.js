@@ -65,7 +65,7 @@ wm.variables.services.LogoutVariableService = ['Variables',
                             Utils.triggerFn(success);
                             if (variable.useDefaultSuccessHandler) {
                                 var redirectPage = variable.redirectTo;
-                                if (!redirectPage || redirectPage === "login.html") {
+                                if (!redirectPage || redirectPage === "login.html" || redirectPage === "index.html") {
                                     redirectPage = "";
                                 }
                                 $location.url(redirectPage);
