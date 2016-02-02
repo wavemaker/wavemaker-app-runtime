@@ -407,7 +407,7 @@ WM.module('wm.widgets.form')
                         scope.reset = function () {
                             scope.uploadedFiles = [];
                         };
-                        scope.uploadUrl = parentPrefabScope ? ('prefabs/' + parentPrefabScope.prefabName) : 'services';
+                        scope.uploadUrl = (parentPrefabScope && parentPrefabScope.prefabname) ? ('prefabs/' + parentPrefabScope.prefabname) : 'services';
                         /*fetching the list of the services only in studio mode for properties panel*/
                         if (isStudioMode) {
                             getAllServices(function (services) {
