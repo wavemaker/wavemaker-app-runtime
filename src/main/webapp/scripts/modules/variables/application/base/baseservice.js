@@ -131,6 +131,7 @@ wm.variables.services.Variables = [
                 function handleSuccess() {
                     /*Executing success if both app and current page variables are reloaded*/
                     if (pageVariablesLoaded && appVariablesLoaded) {
+                        updateVariableValues($rootScope.activePageName);
                         Utils.triggerFn(success);
                     }
                 }
