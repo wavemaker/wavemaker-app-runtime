@@ -258,33 +258,36 @@
     }
     /* navbar with searchbar */
     &.searchbar {
-      .cancelbtn {
-        padding-top: 8px;
+      .mobile-navbar-left{
+        display: table-cell;
+        width: auto;
       }
-      .search-container {
+      .mobile-navbar-right {
+        display: none;//for default android
+        width: auto;
+      }
+      .mobile-navbar-center {
+        display: table-cell;
         position: relative;
+        width: 82%;
+        max-width: 82%;
         ::-webkit-input-placeholder { color: inherit; }
         ::-moz-placeholder { color: inherit; } /* firefox 19+ */
         :-ms-input-placeholder { color: inherit; } /* ie */
         input:-moz-placeholder { color: inherit; }
-
-        &.mobile-navbar-right {
-          padding-right: 1em;
-          float: left;
-        }
         .app-mobile-search {
           width: 100%;
           display: inline-block;
           position: absolute;
           margin-left: 2px;
           top: 5pt;
+          left: 5pt;
           border-bottom: 1px solid @app-mobile-nav-searchinput-border;
-
           .form-control {
             width : 100%;
             background-color: transparent;
             border: 0;
-            padding: 5pt 18pt 0 22pt;
+            padding: 5pt 18pt 5pt 22pt;
             color: inherit;
             font-size: inherit;
             height: auto;
@@ -314,14 +317,6 @@
             left: 6pt;
             font-size: unit((@app-mobile-nav-icon-size - 4) , pt) ;
           }
-        }
-
-        .btn-cancel {
-          float: right;
-          margin-top: 3px;
-          margin-right: 5px;
-          padding: 8px;
-          text-align: end;
         }
       }
     }
