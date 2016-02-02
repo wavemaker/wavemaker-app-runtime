@@ -505,7 +505,9 @@ wm.variables.services.$liveVariable = [
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, response);
                             // EVENT: ON_ERROR
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variable, callBackScope, response);
+                            // EVENT: ON_CAN_UPDATE
                             variable.canUpdate = true;
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
                         }
 
                         /* update the dataSet against the variable */
@@ -577,16 +579,17 @@ wm.variables.services.$liveVariable = [
                     if (CONSTANTS.isRunMode) {
                         // EVENT: ON_RESULT
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, $rootScope.variables[variable.name].data);
-
                         // EVENT: ON_SUCCESS
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, $rootScope.variables[variable.name].data);
-
                         // EVENT: ON_PREPARESETDATA
-                        newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, response.content);
+                        newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, $rootScope.variables[variable.name].data);
                         if (newDataSet) {
                             //setting newDataSet as the response to service variable onPrepareSetData
                             $rootScope.variables[variable.name].data = newDataSet;
                         }
+                        // EVENT: ON_CAN_UPDATE
+                        variable.canUpdate = true;
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, $rootScope.variables[variable.name].data);
                     }
                     /* update the dataSet against the variable */
                     updateVariableDataset(variable, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
@@ -596,7 +599,6 @@ wm.variables.services.$liveVariable = [
 
                     /* process next requests in the queue */
                     if (CONSTANTS.isRunMode) {
-                        variable.canUpdate = true;
                         variableActive[variable.activeScope.$id][variable.name] = false;
                         processRequestQueue(variable, requestQueue[variable.activeScope.$id], deployProjectAndFetchData);
                     }
@@ -898,7 +900,9 @@ wm.variables.services.$liveVariable = [
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
                             // EVENT: ON_ERROR
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response.error);
+                            // EVENT: ON_CAN_UPDATE
                             variableDetails.canUpdate = true;
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response.error);
                         }
                         /* trigger error callback */
                         Utils.triggerFn(error, response.error);
@@ -908,7 +912,9 @@ wm.variables.services.$liveVariable = [
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
                             // EVENT: ON_SUCCESS
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, callBackScope, response);
+                            // EVENT: ON_CAN_UPDATE
                             variableDetails.canUpdate = true;
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
                         }
                         Utils.triggerFn(success, response);
                     }
@@ -919,7 +925,9 @@ wm.variables.services.$liveVariable = [
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
                         // EVENT: ON_ERROR
                         initiateCallback(VARIABLE_CONSTANTS.EVENT.ERROR, variableDetails, callBackScope, response);
+                        // EVENT: ON_CAN_UPDATE
                         variableDetails.canUpdate = true;
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
                     }
                     Utils.triggerFn(error, response);
                 });
