@@ -465,6 +465,14 @@ wm.variables.services.Variables = [
              * context refers to the namespace for the variables collection, like 'app'/page/partial/prefab
              */
             updateContextVariables = function (context, scope) {
+                var triggerStartUpdate = true;
+                function validateStartUpdateTrigger(variable) {
+                    function isBound(binding) {
+                        return Utils.stringStartsWith(binding.value, "bind:")
+                    }
+
+                    return !(variable.autoUpdate === true && _.some(variable.dataBinding, isBound));
+                }
                 $rootScope.variables = $rootScope.variables || {};
                 self.studioCopy[context] = {};
 
@@ -496,11 +504,11 @@ wm.variables.services.Variables = [
 
                     if (runMode) {
                         variable.activeScope = scope;
+                        triggerStartUpdate = validateStartUpdateTrigger(variable);
                     } else {
                         /* this copy is used by binding dialog in STUDIO mode */
                         self.studioCopy[context][name] = variable;
                     }
-
 
                     /* update variable bindings */
                     updateVariableBinding(variable, name, scope);
@@ -526,7 +534,7 @@ wm.variables.services.Variables = [
                         if (runMode) {
                             variable.canUpdate = true;
                         }
-                        if (!runMode || variable.startUpdate) {
+                        if (!runMode || (variable.startUpdate && triggerStartUpdate)) {
                             /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
                             $timeout(function () {
                                 if (WM.isFunction(variable.update)) {
@@ -546,10 +554,12 @@ wm.variables.services.Variables = [
                             * So, getData is called in STUDIO mode for liva variables with all types of operations
                             */
                             if (runMode && variable.operation !== 'read') {
-                                /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                                $timeout(function () {
-                                    variable[variable.operation + 'Record']();
-                                }, null, false);
+                                if (triggerStartUpdate) {
+                                    /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
+                                    $timeout(function () {
+                                        variable[variable.operation + 'Record']();
+                                    }, null, false);
+                                }
                             } else {
                                 /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
                                 $timeout(function () {
@@ -572,7 +582,7 @@ wm.variables.services.Variables = [
                             }, null, false);
                         }
                     } else if (variable.category === "wm.LoginVariable") {
-                        if (runMode && variable.startUpdate) {
+                        if (runMode && variable.startUpdate && triggerStartUpdate) {
                             /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
                             $timeout(function () {
                                 variable.login();
