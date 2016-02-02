@@ -946,7 +946,9 @@ WM.module('wm.widgets.grid')
                             imageEl = el.find('img');  //If src is not present, check for the image tag inside
                             ngSrc = imageEl.attr('data-ng-src');
                         }
-                        imageEl.attr('data-ng-src', ngSrc.concat('?_ts=' + new Date().getTime())); //Add the current timestamp to the src to force refresh the image.
+                        if (ngSrc) {
+                            imageEl.attr('data-ng-src', ngSrc.concat('?_ts=' + new Date().getTime())); //Add the current timestamp to the src to force refresh the image.
+                        }
                     }
                     return $compile(el)(rowScope);
                 },

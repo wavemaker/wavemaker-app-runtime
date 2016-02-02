@@ -1163,7 +1163,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.liveform': {
                         "title": {"type": "string",  "bindable": "in-bound"},
-                        "formlayout": {"type": "list", "options": ["inline", "page"], "value": "inline", "show" : false},
+                        "formlayout": {"type": "switch", "options":  [{"label": "INLINE", "value": "inline"}, {"label": "PAGE", "value": "page"}], "value": "inline", "show" : false, "displayfield": "label", "datafield": "value"},
                         "autocomplete": {"type": "boolean", "value": true, "showindesigner": true},
                         "captionsize": {"type": "string", "value": "", "showindesigner": true},
                         "captionalign": {"type": "string", "options": ["left", "center", "right"], "value": "left", "showindesigner": true, "widget": "icons_radio"},
@@ -1191,7 +1191,9 @@ WM.module('wm.widgets.base', [])
                         "onResult": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value": "0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        // property specific to mobile with formlayout page
+                        "onBackbtnclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
                     },
                     "wm.layouts.segmentedcontrol" : {
                         "onBeforeSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
