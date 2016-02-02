@@ -37,20 +37,24 @@ WM.module('wm.layouts.containers')
                     '</div>' +
                 '</nav>' +
                 '<nav class="navbar searchbar" ng-if="showSearchbar">' +
-                    '<div class="mobile-navbar-left nav-searchbar backbtn">' +
+                    '<div class="mobile-navbar-left">' +
                         '<ul class="nav navbar-nav navbar-left">' +
                             '<li>' +
                                 '<a class="btn-back" type="button" ng-click="goBacktoPreviousView($event)">' +
-                                    '<i ng-class="backbuttoniconclass"></i><span>{{backbuttonlabel}}</span>' +
+                                    '<i ng-class="backbuttoniconclass"></i>' +
                                 '</a>' +
                             '</li>' +
                         '</ul>' +
                     '</div>' +
-                    '<div class="mobile-navbar-center search-container ">' +
+                    '<div class="mobile-navbar-center search-container">' +
                         '<wm-search query="{{query}}" scopedataset="_dataset" searchkey="{{searchkey}}" displaylabel="{{displaylabel}}" displayimagesrc="{{displayimagesrc}}" datavalue="{{datavalue}}" on-submit="onSubmission($event)" placeholder="{{searchplaceholder}}" navsearchbar="true"></wm-search>' +
                     '</div>' +
-                    '<div class="mobile-navbar-right cancelbtn">' +
-                        '<wm-button class="btn-cancel" caption="Cancel" on-click="goBacktoPreviousView($event)"></wm-button>' +
+                    '<div class="mobile-navbar-right">' +
+                        '<ul class="nav navbar-nav navbar-right">' +
+                        '<li>' +
+                        '<a class="btn-cancel btn-transparent" type="button" ng-click="goBacktoPreviousView($event);"> Cancel </a>' +
+                        '</li>' +
+                        '</ul>' +
                     '</div>' +
                 '</nav>' +
             '</header>'
