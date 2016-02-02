@@ -64,7 +64,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "onCanUpdate": {"type": "list", "options": variableEventOptions},
                     "onBeforeUpdate": {"type": "list", "options": variableEventOptions},
                     "onResult": {"type": "list", "options": variableEventOptions},
-                    "onPrepareSetData": {"type": "list", "options": variableEventOptions},
+                    "onBeforeDatasetReady": {"type": "list", "options": variableEventOptions},
                     "onSuccess": {"type": "list", "options": variableEventOptions},
                     "onError": {"type": "list", "options": variableEventOptions}
                 },
@@ -178,7 +178,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "dataTransformation", "properties": ["transformationRequired", "columnField", "dataField"], "parent": "data"},
 
                 /* properties under events tab */
-                {"properties": ["onCanUpdate", "onBeforeUpdate", "onResult", "onSuccess", "onError", "onPrepareSetData", "onOk", "onCancel", "onClose", "onTimerFire"], "parent": "events"}
+                {"properties": ["onCanUpdate", "onBeforeUpdate", "onResult", "onSuccess", "onError", "onBeforeDatasetReady", "onOk", "onCancel", "onClose", "onTimerFire"], "parent": "events"}
             ]
         };
         properties = result.properties;
