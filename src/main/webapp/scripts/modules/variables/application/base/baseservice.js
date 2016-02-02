@@ -29,6 +29,7 @@ wm.variables.services.Variables = [
          false: STUDIO mode
          */
         var runMode = CONSTANTS.isRunMode,
+            MAIN_PAGE = 'Main',
             variableConfig = [
                 {
                     "collectionType": "call",
@@ -914,7 +915,7 @@ wm.variables.services.Variables = [
             updateVariable = function (variableName, newProperties, isUpdate) {
                 var newName = newProperties.name,
                     updated = false,
-                    pageName = newProperties.owner === 'App' ? 'App' : $rootScope.activePageName,
+                    pageName = newProperties.owner === 'App' ? 'App' : ($rootScope.isPrefabTemplate ? MAIN_PAGE : $rootScope.activePageName),
                     oldOwner = pageName === 'App' ? $rootScope.activePageName : 'App',
                     scope = pageScopeMap[pageName];
                 /* Condition: Checking for existence of the variable name, updating variable object*/
@@ -1164,7 +1165,7 @@ wm.variables.services.Variables = [
                 }
                 var varCollectionObj = self.variableCollection,
                     scope;
-                owner = owner || VARIABLE_CONSTANTS.OWNER.APP;
+                owner = $rootScope.isPrefabTemplate ? MAIN_PAGE : (owner || VARIABLE_CONSTANTS.OWNER.APP);
                 scope = pageScopeMap[owner];
 
                 /* Condition: If type does not exist yet, then create one */
@@ -1623,6 +1624,10 @@ wm.variables.services.Variables = [
              *
              */
             'saveVariables': function (activePageName, success, error, updateValues) {
+                /*activePage will not be there while in java service and db workspace*/
+                if ($rootScope.isPrefabTemplate) {
+                    activePageName = MAIN_PAGE;
+                }
                 if (updateValues) {
                     updateVariableValues(activePageName);
                 }
