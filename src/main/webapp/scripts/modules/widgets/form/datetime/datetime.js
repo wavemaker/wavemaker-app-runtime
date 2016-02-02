@@ -1,4 +1,4 @@
-/*global WM, moment, _ */
+/*global WM, moment, _, document */
 /*Directive for datetime */
 
 WM.module('wm.widgets.form')
@@ -24,8 +24,14 @@ WM.module('wm.widgets.form')
             '</div>'
             );
         $templateCache.put('template/device/widget/form/datetime.html',
-            '<input type="datetime-local" class="form-control app-textbox app-dateinput" data-ng-show="show" role="input" data-ng-model="_proxyModel" has-model step="any"' +
-            ' init-widget data-ng-change="updateModel();_onChange({$event: $event, $scope: this});">'
+            '<input type="datetime-local" class="form-control app-textbox app-dateinput" init-widget has-model role="input"' +
+            ' step="any" ' +
+            ' data-ng-model="_proxyModel" ' +
+            ' data-ng-show="show" ' +
+            ' data-ng-readonly="readonly" ' +
+            ' data-ng-required="required" ' +
+            ' data-ng-disabled="disabled" ' +
+            ' data-ng-change="updateModel();_onChange({$event: $event, $scope: this});"> '
             );
     }]).directive('wmDatetime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'FormWidgetUtils', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils) {
         'use strict';

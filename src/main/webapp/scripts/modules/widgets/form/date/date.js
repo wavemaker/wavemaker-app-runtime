@@ -25,8 +25,14 @@ WM.module('wm.widgets.form')
             '</div>'
             );
         $templateCache.put('template/device/widget/form/date.html',
-            '<input type="date" class="form-control app-textbox app-dateinput"  role="input" data-ng-model="_proxyModel" has-model step="any" data-ng-show="show"' +
-            ' init-widget data-ng-change="updateModel();_onChange({$event: $event, $scope: this});">'
+            '<input type="date" class="form-control app-textbox app-dateinput" init-widget has-model role="input"' +
+            ' step="any" ' +
+            ' data-ng-model="_proxyModel" ' +
+            ' data-ng-show="show" ' +
+            ' data-ng-readonly="readonly" ' +
+            ' data-ng-required="required" ' +
+            ' data-ng-disabled="disabled" ' +
+            ' data-ng-change="updateModel();_onChange({$event: $event, $scope: this});"> '
             );
     }])
     .directive('wmDate', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', '$filter', 'FormWidgetUtils', function ($rs, PropertiesFactory, WidgetUtilService, $templateCache, $filter, FormWidgetUtils) {
