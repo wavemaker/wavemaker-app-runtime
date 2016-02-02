@@ -1,4 +1,4 @@
-/*global WM,moment _ */
+/*global WM,moment, _, document */
 /*Directive for time */
 
 WM.module('wm.widgets.form')
@@ -24,7 +24,13 @@ WM.module('wm.widgets.form')
             '</div>'
             );
         $templateCache.put('template/device/widget/form/time.html',
-            '<input type="time" class="form-control app-textbox" role="input" data-ng-show="show" data-ng-model="_proxyModel" has-model init-widget data-ng-change="updateModel();_onChange({$event: $event, $scope: this})">'
+            '<input type="time" class="form-control app-textbox" init-widget has-model role="input"' +
+            ' data-ng-model="_proxyModel" ' +
+            ' data-ng-show="show" ' +
+            ' data-ng-readonly="readonly" ' +
+            ' data-ng-required="required" ' +
+            ' data-ng-disabled="disabled" ' +
+            ' data-ng-change="updateModel();_onChange({$event: $event, $scope: this})"> '
             );
     }]).directive('wmTime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'Utils', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, Utils) {
         'use strict';
@@ -140,7 +146,7 @@ WM.module('wm.widgets.form')
             },
             compile: function () {
                 return {
-                    pre: function (scope, element, attrs) {
+                    pre: function (scope) {
                         scope.widgetProps = widgetProps;
                         if ($rs.isMobileApplicationType) {
                             scope._nativeMode = true;
