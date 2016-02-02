@@ -196,11 +196,11 @@ WM.module('wm.layouts.containers')
 
                         if (CONSTANTS.isRunMode) {
                             if (attrs.onExpand) {
-                                paneCtrl.registerCallback('onExpand', attrs.onExpand);
+                                paneCtrl.registerCallback('onExpand', attrs._onExpand || attrs.onExpand);
                             }
 
                             if (attrs.onCollapse) {
-                                paneCtrl.registerCallback('onCollapse', attrs.onCollapse);
+                                paneCtrl.registerCallback('onCollapse', attrs._onCollapse || attrs.onCollapse);
                             }
                         }
 
