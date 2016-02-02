@@ -7,7 +7,7 @@ WM.module('wm.layouts.containers')
 
         $tc.put('template/layouts/containers/mobile/navbar.html',
             '<header data-role="mobile-navbar" init-widget class="app-header app-mobile-navbar {{class}}" ng-show="show" apply-styles>' +
-                '<nav class="navbar ng-show" ng-if="!showSearchbar">' +
+                '<nav class="navbar" ng-show="!showSearchbar">' +
                     '<div class="mobile-navbar-left">' +
                         '<ul class="nav navbar-nav navbar-left">' +
                             '<li ng-if="showLeftnav" >' +

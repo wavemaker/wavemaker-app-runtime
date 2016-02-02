@@ -33,7 +33,7 @@ WM.module('wm.widgets.basic')
                 break;
             case 'contentsource':
                 //check for 2 option inline || partial
-                if ( newVal === 'inline' ) {
+                if (newVal === 'inline') {
                     scope.widgetProps.inlinecontent.show = true;
                     scope.widgetProps.content.show = false;
                 } else {
@@ -219,7 +219,7 @@ WM.module('wm.widgets.basic')
                     scope.Variables = includedPageScope.Variables;
                     Utils.triggerFn(onOpen);
                 });
-           }
+            }
             /**
              * Do calculations after the current digest cycle.
              * This is to make sure that all the popover scope values are applied on to the dom.
@@ -345,6 +345,12 @@ WM.module('wm.widgets.basic')
  *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the popover on the web page. <br>
  *                  Default value: `true`. <br>
+ * @param {string=} contentsource
+ *                  Content source for the popover. <br>
+ *                  Possible values are `partial` and `inline`. <br>
+ *                  Default value: `partial`.
+ * @param {string=} title
+ *                  Title for the popover.
  * @param {string=} popoverplacement
  *                  This property defines the position of the popover <br>
  *                  Possible values are 'top', 'bottom', 'left', and 'right'. <br>
@@ -378,17 +384,40 @@ WM.module('wm.widgets.basic')
         <file name="index.html">
             <div data-ng-controller="Ctrl" class="wm-app">
                 <br>
-                <wm-popover caption="Click here to see the popover"
-                    content="dropdownMenu"
-                    popoverwidth="500"
-                    popoverheight="200"
-                    popoverautoclose="true"
-                    popoverplacement="bottom"
-                    popoverarrow="true"></wm-popover>
+                <wm-page ng-controller="WM.noop">
+                    <wm-popover caption="Click here to see the popover including the content from a partial"
+                        content="dropdownMenu"
+                        popoverwidth="300"
+                        popoverheight="200"
+                        popoverautoclose="true"
+                        popoverplacement="bottom"
+                        popoverarrow="true"
+                        title="Popover Title"
+                        contentsource="partial">
+                    </wm-popover>
+
+                    <br/><br/>
+                    <wm-popover caption="Click here to see the inline content popover"
+                        popoverwidth="300"
+                        popoverheight="200"
+                        popoverautoclose="true"
+                        popoverplacement="bottom"
+                        popoverarrow="true"
+                        title="Popover Title"
+                        contentsource="inline">
+                        <wm-label caption="I am inline popover"></wm-label>
+                    </wm-popover>
+                </wm-page>
+
             </div>
         </file>
         <file name="script.js">
             function Ctrl($scope) {}
+        </file>
+        <file name="style.css">
+            .wm-app, .app-page {
+                position: static !important; // these are required only for the documentation example
+            }
         </file>
     </example>
  */
