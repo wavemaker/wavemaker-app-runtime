@@ -543,7 +543,7 @@ Application
                     if (variable && !_.isEmpty(_.trim(variable.spinnerContext))) {
 
                         if (active) {
-                            variable._spinnerId = wmSpinner.show(variable.spinnerMessage);
+                            variable._spinnerId = wmSpinner.show(variable.spinnerMessage, variable._id);
                         } else {
                             wmSpinner.hide(variable._spinnerId);
                         }

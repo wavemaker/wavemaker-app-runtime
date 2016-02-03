@@ -27,18 +27,20 @@ WM.module('wm.widgets.basic').
              * @methodOf  wm.widgets.basic.wmSpinner
              * @description
              * Increments the spinner counter and Shows a spinner on the page.
-             * @param {string} message for the spinner
+             * @param {string} message for the spinner.
+             * @param {id} optional id for the spinner. If not provided, service will generate the id.
              * @returns {number} spinnerId, this id needs to be passed while calling the hide method.
              */
 
-            'show' : function (message) {
+            'show' : function (message, id) {
                 var spinnerScope = getAppSpinnerScope();
 
-                spinnerMap[++spinnerId] = _.trim(message);
+                id = id || ++spinnerId;
+                spinnerMap[id] = _.trim(message);
                 spinnerScope.caption = _.without(_.values(spinnerMap), '', undefined).join('<br/>');
                 spinnerScope.show = true;
 
-                return spinnerId;
+                return id;
             },
 
             /**
