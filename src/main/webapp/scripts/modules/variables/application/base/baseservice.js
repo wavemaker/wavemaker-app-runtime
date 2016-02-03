@@ -1329,7 +1329,7 @@ wm.variables.services.Variables = [
                             delete self.studioCopy[i][name];
                         }
                         /*if the context is a page and not a scope id, return the page context*/
-                        if (ProjectService.getPages().indexOf(i) > -1) {
+                        if (ProjectService.getPageNames().indexOf(i) > -1) {
                             pageContext = i;
                         }
                     }
