@@ -22,13 +22,16 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -233,6 +236,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 return FloatType.INSTANCE.fromString(attributeValue.toString());
             case INTEGER:
                 return IntegerType.INSTANCE.fromString(attributeValue.toString());
+            case LONG:
+                return LongType.INSTANCE.fromString(attributeValue.toString());
             case LOCALE:
                 return LocaleType.INSTANCE.fromString(attributeValue.toString());
             case TIMEZONE:

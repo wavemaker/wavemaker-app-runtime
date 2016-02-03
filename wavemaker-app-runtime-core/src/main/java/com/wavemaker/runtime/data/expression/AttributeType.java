@@ -33,6 +33,7 @@ public enum AttributeType {
     DOUBLE,
     FLOAT,
     INTEGER,
+    LONG,
     LOCALE,
     STRING,
     SHORT,
