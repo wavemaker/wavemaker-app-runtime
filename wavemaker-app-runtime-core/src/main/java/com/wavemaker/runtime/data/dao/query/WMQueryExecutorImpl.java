@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.dao.util.QueryHelper;
@@ -44,18 +46,22 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
     private HibernateTemplate template;
 
     @Override
-    public Page<Object> executeNamedQuery(String queryName, Map<String, Object> params, Pageable pageable) {
-        Session currentSession = template.getSessionFactory().getCurrentSession();
-        Query namedQuery = currentSession.getNamedQuery(queryName);
-        QueryHelper.setResultTransformer(namedQuery);
-        QueryHelper.configureParameters(namedQuery, params);
-        if (pageable != null) {
-            namedQuery.setFirstResult(pageable.getOffset());
-            namedQuery.setMaxResults(pageable.getPageSize());
-            Long count = QueryHelper.getQueryResultCount(namedQuery.getQueryString(), params, namedQuery instanceof SQLQuery, template);
-            return new WMPageImpl(namedQuery.list(), pageable, count);
-        } else
-            return new WMPageImpl(namedQuery.list());
+    public Page<Object> executeNamedQuery(final String queryName, final Map<String, Object> params, final Pageable pageable) {
+        return template.execute(new HibernateCallback<Page<Object>>() {
+            @Override
+            public Page<Object> doInHibernate(Session session) throws HibernateException {
+                Query namedQuery = session.getNamedQuery(queryName);
+                QueryHelper.setResultTransformer(namedQuery);
+                QueryHelper.configureParameters(namedQuery, params);
+                if (pageable != null) {
+                    namedQuery.setFirstResult(pageable.getOffset());
+                    namedQuery.setMaxResults(pageable.getPageSize());
+                    Long count = QueryHelper.getQueryResultCount(namedQuery.getQueryString(), params, namedQuery instanceof SQLQuery, template);
+                    return new WMPageImpl(namedQuery.list(), pageable, count);
+                } else
+                    return new WMPageImpl(namedQuery.list());
+            }
+        });
     }
 
     @Override
@@ -68,6 +74,110 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         } else {
             return executeHQLQuery(customQuery.getQueryStr(), params, pageable);
         }
+    }
+
+    @Override
+    public int executeNamedQueryForUpdate(final String queryName, final Map<String, Object> params) {
+
+        return template.execute(new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                Query namedQuery = session.getNamedQuery(queryName);
+                QueryHelper.setResultTransformer(namedQuery);
+                QueryHelper.configureParameters(namedQuery, params);
+                return namedQuery.executeUpdate();
+            }
+        });
+
+    }
+
+    @Override
+    public int executeCustomQueryForUpdate(final CustomQuery customQuery) {
+
+        return template.execute(new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                Map<String, Object> params = new HashMap<String, Object>();
+
+                List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
+                if (customQueryParams != null && !customQueryParams.isEmpty())
+                    for (CustomQueryParam customQueryParam : customQueryParams) {
+                        Object paramValue = validateAndPrepareObject(customQueryParam);
+                        params.put(customQueryParam.getParamName(), paramValue);
+                    }
+
+                Query query = null;
+                if (customQuery.isNativeSql()) {
+                    query = createNativeQuery(customQuery.getQueryStr(), params);
+                } else {
+                    query = createHQLQuery(customQuery.getQueryStr(), params);
+                }
+                return query.executeUpdate();
+            }
+        });
+
+    }
+
+    protected Page<Object> executeNativeQuery(final String queryString, final Map<String, Object> params, final Pageable pageable) {
+
+        return template.execute(new HibernateCallback<Page<Object>>() {
+            @Override
+            public Page<Object> doInHibernate(final Session session) throws HibernateException {
+                SQLQuery sqlQuery = createNativeQuery(queryString, params);
+
+                if (pageable != null) {
+                    Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
+                    sqlQuery.setFirstResult(pageable.getOffset());
+                    sqlQuery.setMaxResults(pageable.getPageSize());
+                    return new WMPageImpl(sqlQuery.list(), pageable, count);
+                } else
+                    return new WMPageImpl(sqlQuery.list());
+            }
+        });
+    }
+
+    protected Page<Object> executeHQLQuery(final String queryString, final Map<String, Object> params, final Pageable pageable) {
+
+        return template.execute(new HibernateCallback<Page<Object>>() {
+            public Page<Object> doInHibernate(Session session) throws HibernateException {
+                Query hqlQuery = createHQLQuery(queryString, params);
+
+                if (pageable != null) {
+                    Long count = QueryHelper.getQueryResultCount(queryString, params, false, template);
+                    hqlQuery.setFirstResult(pageable.getOffset());
+                    hqlQuery.setMaxResults(pageable.getPageSize());
+                    return new WMPageImpl(hqlQuery.list(), pageable, count);
+                } else
+                    return new WMPageImpl(hqlQuery.list());
+            }
+        });
+    }
+
+    public HibernateTemplate getTemplate() {
+        return template;
+    }
+
+
+    public void setTemplate(HibernateTemplate template) {
+        this.template = template;
+    }
+
+    private SQLQuery createNativeQuery(String queryString, Map<String, Object> params) {
+        Session currentSession = template.getSessionFactory().getCurrentSession();
+
+        SQLQuery sqlQuery = currentSession.createSQLQuery(queryString);
+        QueryHelper.setResultTransformer(sqlQuery);
+        QueryHelper.configureParameters(sqlQuery, params);
+        return sqlQuery;
+    }
+
+    private Query createHQLQuery(String queryString, Map<String, Object> params) {
+        Session currentSession = template.getSessionFactory().getCurrentSession();
+
+        Query hqlQuery = currentSession.createQuery(queryString);
+        QueryHelper.setResultTransformer(hqlQuery);
+        QueryHelper.configureParameters(hqlQuery, params);
+        return hqlQuery;
     }
 
     private void prepareParams(Map<String, Object> params, CustomQuery customQuery) {
@@ -86,7 +196,6 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
                 params.put(customQueryParam.getParamName(), paramValue);
             }
         }
-
     }
 
     private Object validateAndPrepareObject(CustomQueryParam customQueryParam) {
@@ -113,86 +222,5 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             throw new WMRuntimeException(MessageResource.CLASS_NOT_FOUND, ex, paramType);
         }
         return paramValue;
-    }
-
-    @Override
-    public int executeNamedQueryForUpdate(String queryName, Map<String, Object> params) {
-        Session currentSession = template.getSessionFactory().getCurrentSession();
-
-        Query namedQuery = currentSession.getNamedQuery(queryName);
-        QueryHelper.setResultTransformer(namedQuery);
-        QueryHelper.configureParameters(namedQuery, params);
-        return namedQuery.executeUpdate();
-    }
-
-    @Override
-    public int executeCustomQueryForUpdate(CustomQuery customQuery) {
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        List<CustomQueryParam> customQueryParams = customQuery.getQueryParams();
-        if (customQueryParams != null && !customQueryParams.isEmpty())
-            for (CustomQueryParam customQueryParam : customQueryParams) {
-                Object paramValue = validateAndPrepareObject(customQueryParam);
-                params.put(customQueryParam.getParamName(), paramValue);
-            }
-
-        Query query = null;
-        if (customQuery.isNativeSql()) {
-            query = createNativeQuery(customQuery.getQueryStr(), params);
-        } else {
-            query = createHQLQuery(customQuery.getQueryStr(), params);
-        }
-        return query.executeUpdate();
-    }
-
-    protected Page<Object> executeNativeQuery(String queryString, Map<String, Object> params, Pageable pageable) {
-        SQLQuery sqlQuery = createNativeQuery(queryString, params);
-
-        if (pageable != null) {
-            Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
-            sqlQuery.setFirstResult(pageable.getOffset());
-            sqlQuery.setMaxResults(pageable.getPageSize());
-            return new WMPageImpl(sqlQuery.list(), pageable, count);
-        } else
-            return new WMPageImpl(sqlQuery.list());
-    }
-
-    private SQLQuery createNativeQuery(String queryString, Map<String, Object> params) {
-        Session currentSession = template.getSessionFactory().getCurrentSession();
-
-        SQLQuery sqlQuery = currentSession.createSQLQuery(queryString);
-        QueryHelper.setResultTransformer(sqlQuery);
-        QueryHelper.configureParameters(sqlQuery, params);
-        return sqlQuery;
-    }
-
-    protected Page<Object> executeHQLQuery(String queryString, Map<String, Object> params, Pageable pageable) {
-        Query hqlQuery = createHQLQuery(queryString, params);
-
-        if (pageable != null) {
-            Long count = QueryHelper.getQueryResultCount(queryString, params, false, template);
-            hqlQuery.setFirstResult(pageable.getOffset());
-            hqlQuery.setMaxResults(pageable.getPageSize());
-            return new WMPageImpl(hqlQuery.list(), pageable, count);
-        } else
-            return new WMPageImpl(hqlQuery.list());
-    }
-
-    private Query createHQLQuery(String queryString, Map<String, Object> params) {
-        Session currentSession = template.getSessionFactory().getCurrentSession();
-
-        Query hqlQuery = currentSession.createQuery(queryString);
-        QueryHelper.setResultTransformer(hqlQuery);
-        QueryHelper.configureParameters(hqlQuery, params);
-        return hqlQuery;
-    }
-
-
-    public HibernateTemplate getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(HibernateTemplate template) {
-        this.template = template;
     }
 }
