@@ -151,7 +151,7 @@ WM.module('wm.widgets.form')
             if (!isNaN(val)) {
                 val = parseInt(val, 10);
             }
-            return new Date(val);
+            return new Date(moment(val).valueOf());
         }
 
         return {
@@ -286,10 +286,14 @@ WM.module('wm.widgets.form')
                                         this._proxyModel = undefined;
                                     }
                                 } else {
-                                    dateTime = parseDateTime(val);
-                                    if (dateTime.getTime()) {
-                                        this._proxyModel = this._timeModel = dateTime.getTime();
-                                        this._dateModel  = new Date(this._proxyModel);
+                                    if (val) {
+                                        dateTime = parseDateTime(val);
+                                        if (dateTime.getTime()) {
+                                            this._proxyModel = this._timeModel = dateTime.getTime();
+                                            this._dateModel  = new Date(this._proxyModel);
+                                        } else {
+                                            this._proxyModel = this._dateModel = this._timeModel = undefined;
+                                        }
                                     } else {
                                         this._proxyModel = this._dateModel = this._timeModel = undefined;
                                     }
