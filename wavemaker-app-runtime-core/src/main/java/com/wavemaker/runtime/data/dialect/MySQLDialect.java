@@ -34,8 +34,10 @@ public class MySQLDialect extends MySQL5Dialect {
         registerFunction("uuid", new NoArgSQLFunction("uuid", StringType.INSTANCE));
 
         //as hibernate timestamp is mapping to sql datetime in mysql,So forcing hibernate timestamp to map sql timestamp.
-        registerColumnType( Types.TIMESTAMP, "timestamp" );
-        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime" );
+        registerColumnType(Types.TIMESTAMP, "timestamp");
+        registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime");
+
+        registerHibernateType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime");
     }
 
 }
