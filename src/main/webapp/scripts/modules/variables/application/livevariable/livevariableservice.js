@@ -31,7 +31,8 @@ wm.variables.services.$liveVariable = [
     "DB_CONSTANTS",
     "wmToaster",
     "$filter",
-    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster, $filter) {
+    "ServiceFactory",
+    function ($rootScope, DatabaseService, Variables, BaseVariablePropertyFactory, CONSTANTS, Utils, VARIABLE_CONSTANTS, ProjectService, DB_CONSTANTS, wmToaster, $filter, ServiceFactory) {
         "use strict";
 
         /*Set a flag based on whether the project is deployed or not.
@@ -969,14 +970,7 @@ wm.variables.services.$liveVariable = [
                     var variableName = variable.name,
                         writableVariable,
                         projectID = $rootScope.project.id || $rootScope.projectName;
-
-                    /*Check for sanity of the "variable".
-                     * Studio Mode: Also, invoke the service to get the data of the variable only if the "liveSource" still exists in the project's databases.
-                     * If the database has been deleted from the project, then prevent sending of the request.
-                     * Run Mode: Invoke the service to get the variable data.*/
-                    if (!Utils.isEmptyObject(variable) &&
-                            ((CONSTANTS.isStudioMode && WM.element.inArray(variable.liveSource, $rootScope.databaseNames) !== -1) ||
-                            CONSTANTS.isRunMode || variable.prefabName)) {
+                    function execute() {
                         /* put the variable name into the variable object */
                         variable.name = variableName;
 
@@ -1021,6 +1015,20 @@ wm.variables.services.$liveVariable = [
                         if (!options.skipFetchData) {
                             deployProjectAndFetchData(variable, options, success, error);
                         }
+                    }
+                    /*Check for sanity of the "variable".
+                     * Studio Mode: Also, invoke the service to get the data of the variable only if the "liveSource" still exists in the project's databases.
+                     * If the database has been deleted from the project, then prevent sending of the request.
+                     * Run Mode: Invoke the service to get the variable data.*/
+                    if (!Utils.isEmptyObject(variable) && (CONSTANTS.isRunMode || variable.prefabName)) {
+                        execute();
+                    } else if (CONSTANTS.isStudioMode && !Utils.isEmptyObject(variable)) {
+                        ServiceFactory.getServicesWithType(function (services) {
+                            /*Checking for existence of variable's live source in databases available*/
+                            if (_.find(services, {'name': variable.liveSource, 'type' : "DataService"})) {
+                                execute();
+                            }
+                        });
                     }
                 },
             /*Function to update the data associated with the related tables of the live variable*/
