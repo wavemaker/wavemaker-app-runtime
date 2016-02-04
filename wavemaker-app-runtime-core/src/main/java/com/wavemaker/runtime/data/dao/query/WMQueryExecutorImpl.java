@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
@@ -51,12 +52,16 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             @Override
             public Page<Object> doInHibernate(Session session) throws HibernateException {
                 Query namedQuery = session.getNamedQuery(queryName);
+                final boolean isNative = namedQuery instanceof SQLQuery;
+                if (isNative) {
+                    namedQuery = createNativeQuery(namedQuery.getQueryString(), pageable.getSort(), params);
+                }
                 QueryHelper.setResultTransformer(namedQuery);
                 QueryHelper.configureParameters(namedQuery, params);
                 if (pageable != null) {
                     namedQuery.setFirstResult(pageable.getOffset());
                     namedQuery.setMaxResults(pageable.getPageSize());
-                    Long count = QueryHelper.getQueryResultCount(namedQuery.getQueryString(), params, namedQuery instanceof SQLQuery, template);
+                    Long count = QueryHelper.getQueryResultCount(namedQuery.getQueryString(), params, isNative, template);
                     return new WMPageImpl(namedQuery.list(), pageable, count);
                 } else
                     return new WMPageImpl(namedQuery.list());
@@ -123,7 +128,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         return template.execute(new HibernateCallback<Page<Object>>() {
             @Override
             public Page<Object> doInHibernate(final Session session) throws HibernateException {
-                SQLQuery sqlQuery = createNativeQuery(queryString, params);
+                SQLQuery sqlQuery = createNativeQuery(queryString, pageable.getSort(), params);
 
                 if (pageable != null) {
                     Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
@@ -169,6 +174,11 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         QueryHelper.setResultTransformer(sqlQuery);
         QueryHelper.configureParameters(sqlQuery, params);
         return sqlQuery;
+    }
+
+    private SQLQuery createNativeQuery(String queryString, Sort sort, Map<String, Object> params) {
+        String orderedQuery = QueryHelper.arrangeForSort(queryString, sort, true);
+        return createNativeQuery(orderedQuery, params);
     }
 
     private Query createHQLQuery(String queryString, Map<String, Object> params) {
