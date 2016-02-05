@@ -335,11 +335,14 @@ WM.module('wm.utils', [])
         }
 
         /*helper function for prepareFieldDefs*/
-        function pushFieldDef(dataObject, columnDefObj, namePrefix, propObj, noModifyTitle) {
+        function pushFieldDef(dataObject, columnDefObj, namePrefix, options) {
             /*loop over the fields in the dataObject to process them*/
             var modifiedTitle;
+            if (!options) {
+                options = {};
+            }
             WM.forEach(dataObject, function (value, title) {
-                if (noModifyTitle) {
+                if (options.noModifyTitle) {
                     modifiedTitle = title;
                 } else {
                     if (WM.isString(title)) {
@@ -356,39 +359,41 @@ WM.module('wm.utils', [])
                     }
                 }
                 title = namePrefix ? namePrefix + '.' + title : title;
-                var defObj = propObj.setBindingField ? {'displayName': modifiedTitle, 'field': title} : {'displayName': modifiedTitle};
+                var defObj = options.setBindingField ? {'displayName': modifiedTitle, 'field': title} : {'displayName': modifiedTitle};
                 /*if field is a leaf node, push it in the columnDefs*/
                 if (!WM.isObject(value) || (WM.isArray(value) && !value[0])) {
                     /*if the column counter has reached upperBound return*/
-                    if (propObj.columnCount === propObj.upperBound) {
+                    if (options.upperBound && options.columnCount === options.upperBound) {
                         return;
                     }
-                    columnDefObj.push(defObj);
-
+                    columnDefObj.terminals.push(defObj);
                     /*increment the column counter*/
-                    propObj.columnCount += 1;
+                    options.columnCount += 1;
                 } else {
                     /*else field is an object, process it recursively*/
                     /* if parent node to be included, include it */
-                    if (propObj.includeParentNode && propObj.columnCount !== propObj.upperBound) {
-                        columnDefObj.push(defObj);
+                    if (options.columnCount !== options.upperBound) {
+                        columnDefObj.objects.push(defObj);
                     }
 
                     /* if field is an array node, process its first child */
                     if (WM.isArray(value) && value[0]) {
-                        pushFieldDef(value[0], columnDefObj, title + '[0]', propObj);
+                        pushFieldDef(value[0], columnDefObj, title + '[0]', options);
                     } else {
-                        pushFieldDef(value, columnDefObj, title, propObj);
+                        pushFieldDef(value, columnDefObj, title, options);
                     }
                 }
             });
         }
 
         /*function to prepare column definition objects from the data provided*/
-        function prepareFieldDefs(data, columnUpperBound, includeParentNode, noModifyTitle) {
+        function prepareFieldDefs(data, options) {
             var defaultDefs = false,
                 dataObject,
-                columnDef = [],
+                columnDef = {
+                    'objects' : [],
+                    'terminals' : []
+                },
                 defaultData = [
                     {'column1': '', 'column2': '', 'column3': '', 'column4': '', 'column5': ''}
                 ];
@@ -399,10 +404,25 @@ WM.module('wm.utils', [])
             } else if (_.isEqual(data, defaultData)) {
                 defaultDefs = true;
             }
-
-            dataObject = WM.isArray(data) ? data[0] : [data];
+            if (!options) {
+                options = {};
+            }
+            options.setBindingField = true;
+            options.columnCount = 0;
+            dataObject = WM.isArray(data) ? data[0] : data;
             /*first of the many data objects from grid data*/
-            pushFieldDef(dataObject, columnDef, '', {'upperBound': columnUpperBound, 'columnCount': 0, includeParentNode: includeParentNode, setBindingField: !defaultDefs}, noModifyTitle);
+            pushFieldDef(dataObject, columnDef, '', options);
+            if (!options || (options && !options.filter)) {
+                return columnDef.terminals;
+            }
+            switch (options.filter) {
+            case 'all':
+                return columnDef;
+            case 'objects':
+                return columnDef.objects;
+            case 'terminals':
+                return columnDef.terminals;
+            }
             return columnDef;
         }
 
@@ -741,11 +761,23 @@ WM.module('wm.utils', [])
             return !!REGEX.VALID_PASSWORD.test(text);
         }
 
+        function getPropertyNode(prop) {
+            return {
+                'type'                : prop.type,
+                'isPrimaryKey'        : prop.isPrimaryKey,
+                'generator'           : prop.generator,
+                'disableInlineEditing': prop.disableInlineEditing,
+                'isRelatedPk'         : prop.isRelatedPk
+            };
+        }
+
+
         /* fetch the column names and nested column names from the propertiesMap object */
-        function fetchPropertiesMapColumns(propertiesMap, namePrefix) {
-            var columns = {}, relatedColumnsArr = [];
+        function fetchPropertiesMapColumns(propertiesMap, namePrefix, options) {
+            var objects = {}, relatedColumnsArr = [], terminals = {}, info;
+
             /* iterated trough the propertiesMap columns of all levels and build object with columns having required configuration*/
-            WM.forEach(propertiesMap.columns, function (val) {
+            _.forEach(propertiesMap.columns, function (val) {
                 /* if the object is nested type repeat the above process for that nested object through recursively */
                 if (val.isRelated) {
                     if (!val.isPrimaryKey) {
@@ -758,17 +790,11 @@ WM.module('wm.utils', [])
                 } else {
                     /* otherwise build object with required configuration */
                     var columnName = namePrefix ? namePrefix + '.' + val.fieldName : val.fieldName;
-                    columns[columnName] = {
-                        'type'                : val.type,
-                        'isPrimaryKey'        : val.isPrimaryKey,
-                        'generator'           : val.generator,
-                        'disableInlineEditing': val.disableInlineEditing,
-                        'isRelatedPk'         : val.isRelatedPk
-                    };
+                    terminals[columnName] = getPropertyNode(val);
                 }
             });
-            WM.forEach(relatedColumnsArr, function (val) {
-                WM.forEach(val.columns, function (col) {
+            _.forEach(relatedColumnsArr, function (val) {
+                _.forEach(val.columns, function (col) {
                     if (!col.isPrimaryKey) {
                         col.disableInlineEditing = 'true';
                     } else {
@@ -777,10 +803,40 @@ WM.module('wm.utils', [])
                         }
                     }
                 });
-                WM.extend(columns, fetchPropertiesMapColumns(val, val.fieldName));
+
+                var columnName = namePrefix ? namePrefix + '.' + val.fieldName : val.fieldName;
+                objects[columnName] = getPropertyNode(val);
+                info = fetchPropertiesMapColumns(val, val.fieldName, options);
+
+                if (!options || (options && !options.filter)) {
+                    WM.extend(terminals, info);
+                } else {
+                    switch (options.filter) {
+                    case 'all':
+                        WM.extend(terminals, info.terminals);
+                        WM.extend(objects, info.objects);
+                        break;
+                    case 'objects':
+                        WM.extend(objects, info);
+                        break;
+                    case 'terminals':
+                        WM.extend(terminals, info);
+                        break;
+                    }
+                }
             });
 
-            return columns;
+            if (!options || (options && !options.filter)) {
+                return terminals;
+            }
+            switch (options.filter) {
+            case 'all':
+                return {'objects': objects, 'terminals': terminals};
+            case 'objects':
+                return objects;
+            case 'terminals':
+                return terminals;
+            }
         }
 
         /*set empty values to all properties of  given object */

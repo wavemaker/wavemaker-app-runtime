@@ -200,8 +200,8 @@ WM.module('wm.widgets.base', [])
                     "wm.base.editors.dataseteditors": {
                         "startupdate": {"type": "boolean"},
                         "scopedataset": {"type": "list", "options": []},
-                        "datafield": {"type": "list", "options": ["All Fields"]},
-                        "displayfield": {"type": "list", "options": [""]},
+                        "datafield": {"type": "list", "options": ["All Fields"], "datasetfilter" : "terminals", "allfields" : true},
+                        "displayfield": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "displaytype": {"type": "list", "options": ["Currency", "Date", "Number", "Text", "Time"]}
                     },
@@ -296,8 +296,8 @@ WM.module('wm.widgets.base', [])
                         "iconcolor": {"type": "string", "widget": "color"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "datafield": {"type": "list", "options": [""], "value": ""},
-                        "displayfield": {"type": "list", "options": [""]},
+                        "datafield": {"type": "list", "options": [""], "value": "", "datasetfilter" : "terminals"},
+                        "displayfield": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "showcaptions": {"type": "boolean", "value": true}
                     },
@@ -336,8 +336,8 @@ WM.module('wm.widgets.base', [])
                         "scopedatavalue": {"type": "string"},
                         "dataset": {"type": "array, string", "bindable": "in-bound", "widget": "string", "value": "yes, no, maybe"},
                         "scopedataset": {"type": "string"},
-                        "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
-                        "displayfield": {"type": "list", "options": [""], "value": ""},
+                        "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
+                        "displayfield": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
                         "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.menu": {
@@ -360,10 +360,10 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.menu.dataProps": {
-                        "itemlabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
-                        "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
-                        "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
-                        "itemchildren": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"}
+                        "itemlabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "itemchildren": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "objects"}
                     },
 
                     "wm.tree": {
@@ -373,9 +373,9 @@ WM.module('wm.widgets.base', [])
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "class": {"type": "string"},
                         "treeicons": {"type": "list", "widget": "list", "options": ["folder", "plus-minus", "circle-plus-minus", "chevron", "menu", "triangle", "expand-collapse"]},
-                        "nodelabel": {"type": "list", "widget": "list"},
-                        "nodeicon": {"type": "list", "widget": "list"},
-                        "nodechildren": {"type": "list", "widget": "list"},
+                        "nodelabel": {"type": "list", "widget": "list", "datasetfilter" : "terminals"},
+                        "nodeicon": {"type": "list", "widget": "list", "datasetfilter" : "terminals"},
+                        "nodechildren": {"type": "list", "widget": "list", "datasetfilter" : "objects"},
                         "tabindex": {"type": "string", "value": "0"},
                         "levels": {"type": "number", "value": 0, "min": "0", "max": "10", "step": "1"},
                         "datavalue": {"type": "string", "bindable": "in-bound", "ignoreGetterSetters": true, "widget": "tree-datavalue"}
@@ -635,10 +635,6 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string", "bindable": "in-out-bound", "show": false},
                         "scopedatavalue": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
-                        "scopedataset": {"type": "string"},
-                        "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
-                        "displayfield": {"type": "list", "options": [""], "value": ""},
-                        "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "usekeys": {"type": "boolean"},
                         "required": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "value": "", "bindable": "in-bound"}
@@ -703,11 +699,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string, array", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "scopedatavalue": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
-                        "scopedataset": {"type": "string"},
                         "usekeys": {"type": "boolean"},
-                        "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
-                        "displayfield": {"type": "list", "options": [""], "value": ""},
-                        "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "selectedvalues": {"type": "string, object", "bindable": "in-bound", "widget": "string"},
                         "onReady": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
@@ -940,10 +932,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "scopedataset": {"type": "string"},
-                        "itemicon": {"type": "list", "options": [""]},
-                        "itemlabel": {"type": "list", "options": [""]},
-                        "itemlink": {"type": "list", "options": [""]}
+                        "scopedataset": {"type": "string"}
                     },
                     'wm.layouts.nav': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -952,10 +941,10 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "type":  {"type": "list", "options": ["navbar", "pills", "tabs"]},
-                        "itemicon": {"type": "list", "options": [""]},
-                        "itemlabel": {"type": "list", "options": [""]},
-                        "itemlink": {"type": "list", "options": [""]},
-                        "itemchildren": {"type": "list", "options": [""]},
+                        "itemicon": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
+                        "itemlabel": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
+                        "itemlink": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
+                        "itemchildren": {"type": "list", "options": [""], "datasetfilter" : "objects"},
                         "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'glyphicon glyphicon-file', 'type': 'anchor'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'glyphicon glyphicon-file'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'glyphicon glyphicon-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'glyphicon glyphicon-file'} } }], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -987,10 +976,10 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string, object", "widget": "string", "bindable": "in-out-bound"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "searchkey": {"type": "list", "options": [""]},
-                        "displaylabel": {"type": "list", "options": [""]},
-                        "displayimagesrc": {"type": "list", "options": [""]},
-                        "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
+                        "searchkey": {"type": "list", "options": [""], "datasetfilter": "terminals"},
+                        "displaylabel": {"type": "list", "options": [""], "datasetfilter": "terminals"},
+                        "displayimagesrc": {"type": "list", "options": [""], "datasetfilter": "terminals"},
+                        "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "defaultview": {"type": "selectByObject", "options": [{"label": "action-view", "value": "actionview"}, {"label": "search-view", "value": "searchview"}], "value": "actionview", "displayfield": "label", "datafield": "value" },
                         "query": {"type": "string", "bindable": "in-out-bound", "value": ""},
                         "addchild": {"hidelabel": true, "options": [{"label": "Anchor", "widgettype": "wm-anchor", "defaults": {"iconclass": "fa fa-plus", "caption": ""}}, {"label": "Menu", "widgettype": "wm-menu", "defaults": {"iconclass": "fa fa-plus", "type": "anchor", "caption": ""}}, {"label": "Popover", "widgettype": "wm-popover", "defaults": {"iconclass": "fa fa-plus", "caption": ""}}, {"label": "Button", "widgettype": "wm-button", "defaults": {"iconclass": "fa fa-plus", "class": "navbar-btn btn-primary", "caption": ""}}], "widget": "add-widget"}
@@ -1419,9 +1408,9 @@ WM.module('wm.widgets.base', [])
                         "morebuttonlabel":  {"type": "string", "value": "more"}
                     },
                     "wm.tabbar.dataProps": {
-                        "itemlabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
-                        "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
-                        "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"}
+                        "itemlabel": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "itemlink": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "itemicon": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"}
                     },
                     "wm.livelist": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
@@ -1451,8 +1440,8 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "thumbnailurl": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
-                        "mediaurl": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
+                        "thumbnailurl": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals"},
+                        "mediaurl": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals"},
                         "layout": {"type": "list", "options": ["Single-row", "Multi-row"], "value": "Single-row"},
                         "tabindex": {"type": "string", "value": "0"}
                     },
@@ -1484,10 +1473,10 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string, object", "widget": "string", "bindable": "in-out-bound"},
                         "scopedataset": {"type": "string"},
                         "query": {"type": "string", "bindable": "out-bound"},
-                        "searchkey": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound"},
-                        "displaylabel": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
-                        "displayimagesrc": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression"},
-                        "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
+                        "searchkey": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "datasetfilter" : "terminals"},
+                        "displaylabel": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "displayimagesrc": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
+                        "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "limit": {"type": "number", "value": 5},
                         "placeholder": {"type": "string", "value": "Search"},
@@ -2116,41 +2105,6 @@ WM.module('wm.widgets.base', [])
                 element.removeAttr(attrsToBeRemoved);
             }
 
-            function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
-                var variableKeys = [],
-                    wp = scope.widgetProps;
-
-                wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = [];
-                if (wp.itemchildren) {
-                    wp.itemchildren.options = [];
-                }
-
-                /* re-initialize the property values */
-                if (scope.newcolumns) {
-                    scope.newcolumns = false;
-                    scope.itemlabel = scope.itemicon = scope.itemlink = scope.itemchildren = '';
-                    $rootScope.$emit('set-markup-attr', scope.widgetid, {'itemlabel': scope.itemlabel, 'itemicon': scope.itemicon, 'itemlink': scope.itemlink, 'itemchildren': scope.itemchildren});
-                }
-
-                if (WM.isString(dataset)) {
-                    return;
-                }
-
-                /* on binding of data*/
-                if (WM.isArray(dataset)) {
-                    dataset = dataset[0] || dataset;
-                    variableKeys = extractDataSetFields(dataset, propertiesMap) || [];
-                }
-                /*removing keys of null and object type*/
-                variableKeys = variableKeys.filter(function (variableKey) {
-                    return (dataset[variableKey] !== null) && !WM.isObject(dataset[variableKey]);
-                });
-                wp.itemlabel.options = wp.itemicon.options = wp.itemlink.options = [''].concat(variableKeys);
-                if (wp.itemchildren) {
-                    wp.itemchildren.options = [''].concat(variableKeys);
-                }
-            }
-
             function onScopeValueChangeProxy(scope, element, attrs, key, newVal, oldVal) {
 
                 if (key === "placeholder" || key === "type") {
@@ -2371,29 +2325,54 @@ WM.module('wm.widgets.base', [])
             }
 
             /*Function that returns all the internal object keys in the bound dataset*/
-            function extractDataSetFields(dataset, propertiesMap, sort) {
+            function extractDataSetFields(dataset, propertiesMap, options) {
                 var columns = [],
                     columnDefs,
-                    properties;
+                    properties,
+                    keys = {'terminals' : {}, 'objects' : {}},
+                    filterOptions;
 
                 if (WM.isString(dataset)) {
                     return;
                 }
+                if (!options) {
+                    options = {};
+                }
+                filterOptions = WM.copy(options);
                 /*In case of live variable getting the properties map*/
                 if (dataset && propertiesMap) {
-                    columns = Utils.fetchPropertiesMapColumns(propertiesMap);
-                    properties = [Utils.resetObjectWithEmptyValues(columns)];
-                    columns = Object.keys(properties[0]);
+                    columns = Utils.fetchPropertiesMapColumns(propertiesMap, null, {'filter' : 'all'});
+                    properties = [Utils.resetObjectWithEmptyValues(columns.objects)];
+                    keys.objects = Object.keys(properties[0]);
+                    properties = [Utils.resetObjectWithEmptyValues(columns.terminals)];
+                    keys.terminals = Object.keys(properties[0]);
                 } else {
-                    columnDefs = Utils.prepareFieldDefs(dataset, null, false, true);
-                    columnDefs.forEach(function (columnDef) {
-                        columns.push(columnDef.field);
+                    filterOptions.noModifyTitle = true;
+                    keys = {'terminals' : [], 'objects' : []};
+                    filterOptions.filter = 'all';
+                    columnDefs = Utils.prepareFieldDefs(dataset, filterOptions);
+                    columnDefs.objects.forEach(function (columnDef) {
+                        keys.objects.push(columnDef.field);
+                    });
+                    columnDefs.terminals.forEach(function (columnDef) {
+                        keys.terminals.push(columnDef.field);
                     });
                 }
-                if (sort) {
-                    columns = columns.sort();
+                if (options.sort) {
+                    keys.objects = keys.objects.sort();
+                    keys.terminals = keys.terminals.sort();
                 }
-                return columns;
+                if (!options || (options && !options.filter)) {
+                    return keys.terminals;
+                }
+                switch (options.filter) {
+                case 'all':
+                    return keys;
+                case 'objects':
+                    return keys.objects;
+                case 'terminals':
+                    return keys.terminals;
+                }
             }
 
             function addEventAttributes($template, tAttrs, customEventsMap) {
@@ -2496,6 +2475,78 @@ WM.module('wm.widgets.base', [])
                 }
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#updatePropertyPanelOptions
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to update datafield, display field in the property panel
+             *
+             * @param {object} dataset data set of the widget
+             * @param {object} propertiesMap properties map of the data set
+             * @param {object} scope isolate scope of the widget
+             * @param {boolean} removeNull removeNull determines to remove the null values or not from the keys
+             */
+            function updatePropertyPanelOptions(dataset, propertiesMap, scope, removeNull) {
+                var keys,
+                    allKeys = [],
+                    filter,
+                    ALLFIELDS = ['All Fields'];
+                /* on binding of data*/
+                if (dataset && WM.isObject(dataset)) {
+                    dataset = dataset[0] || dataset;
+                    keys = extractDataSetFields(dataset, propertiesMap, {'filter' : 'all'}) || [];
+                }
+
+                /*removing null values from the variableKeys*/
+                if (removeNull && keys) {
+                    _.forEach(keys.objects, function (variableKey, index) {
+                        if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
+                            keys.objects.splice(index, 1);
+                        }
+                    });
+                    _.forEach(keys.terminals, function (variableKey, index) {
+                        if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
+                            keys.terminals.splice(index, 1);
+                        }
+                    });
+                }
+
+                /* re-initialize the property values */
+                if (scope.newcolumns) {
+                    scope.newcolumns = false;
+                    scope.datafield = ALLFIELDS;
+                    scope.displayfield = '';
+                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': ALLFIELDS, 'displayfield': ''});
+                }
+                if (keys) {
+                    allKeys = _.union(keys.objects, keys.terminals);
+                    _.forEach(scope.widgetProps, function (prop) {
+                        filter = prop.datasetfilter;
+                        if (filter) {
+                            switch (filter) {
+                            case 'all':
+                                prop.options = allKeys;
+                                break;
+                            case 'objects':
+                                prop.options = keys.objects;
+                                break;
+                            case 'terminals':
+                                prop.options = keys.terminals;
+                                break;
+                            }
+                            if (prop.allfields) {
+                                prop.options = ALLFIELDS.concat(prop.options);
+                            }
+                            prop.options = [''].concat(prop.options);
+                        }
+                    });
+                }
+                return keys;
+            }
+
             return {
 
                 /**
@@ -2523,8 +2574,6 @@ WM.module('wm.widgets.base', [])
                 injectModelUpdater: injectModelUpdater,
 
                 onScopeValueChangeProxy: onScopeValueChangeProxy,
-
-                updatePropertyPanelOptions: updatePropertyPanelOptions,
 
                 extractDataSetFields: extractDataSetFields,
 
@@ -2583,7 +2632,9 @@ WM.module('wm.widgets.base', [])
                  * Based on the bind display expression or display expression or display name,
                  * data is extracted and formatted from the passed option object
                  */
-                getEvaluatedData: getEvaluatedData
+                getEvaluatedData: getEvaluatedData,
+
+                updatePropertyPanelOptions: updatePropertyPanelOptions
             };
         }])
     .directive('applyStyles', [
