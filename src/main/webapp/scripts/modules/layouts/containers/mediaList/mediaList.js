@@ -83,19 +83,6 @@ WM.module('wm.layouts.containers')
                 return $templateCache.get('template/widget/medialist.html');
             }
 
-            function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
-                var variableKeys = [],
-                    wp = scope.widgetProps;
-                if (WM.isObject(dataset)) {
-                    variableKeys = WidgetUtilService.extractDataSetFields(dataset, propertiesMap);
-                    /*removing keys of null and object type*/
-                    variableKeys = variableKeys.filter(function (variableKey) {
-                        return (dataset[variableKey] !== null) && !WM.isObject(dataset[variableKey]);
-                    });
-                }
-                wp.thumbnailurl.options = wp.mediaurl.options = [''].concat(variableKeys);
-            }
-
             /** With given data, creates media list items*/
             function updateFieldDefs($is, $el, data) {
                 $is.fieldDefs = data;
@@ -158,7 +145,7 @@ WM.module('wm.layouts.containers')
                 if (key === 'dataset') {
                     onDataChange($is, $el, nv);
                     if (CONSTANTS.isStudioMode) {
-                        updatePropertyPanelOptions(nv, nv.propertiesMap, $is);
+                        WidgetUtilService.updatePropertyPanelOptions(nv, nv.propertiesMap, $is);
                     }
                 }
             }

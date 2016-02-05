@@ -15,8 +15,9 @@ WM.module('wm.widgets.live')
         '$compile',
         '$liveVariable',
         'CONSTANTS',
+        'WidgetUtilService',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService) {
             'use strict';
             var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
                 eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
@@ -832,7 +833,7 @@ WM.module('wm.widgets.live')
                             }
                             scope.oldBindDataSet = scope.binddataset;
                         }
-                        FormWidgetUtils.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
+                        WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
                     }
                     compileField();
                     break;

@@ -4,7 +4,7 @@
 WM.module('wm.layouts.containers')
     .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$timeout', function (PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.layouts']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.layouts', 'wm.tabbar.dataProps']),
             notifyFor = {
                 'dataset': true,
                 'scopedataset': true,
@@ -52,6 +52,7 @@ WM.module('wm.layouts.containers')
                 if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
                     WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, scope);
                 }
+                break;
             case 'itemicon':
             case 'itemlabel':
             case 'itemlink':

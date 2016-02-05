@@ -233,7 +233,7 @@ WM.module('wm.widgets.advanced')
         function scopeDatasetWatcher(scope, element) {
             /*if studio-mode, then update the displayField & dataField in property panel*/
             if (scope.widgetid) {
-                FormWidgetUtils.updatePropertyPanelOptions(scope.scopedataset, scope, false);
+                WidgetUtilService.updatePropertyPanelOptions(scope.scopedataset, scope, false);
             }
             createRatingOptions(scope.scopedataset, scope, element);
         }
@@ -244,7 +244,7 @@ WM.module('wm.widgets.advanced')
             switch (key) {
             case 'dataset':
                 if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
-                    FormWidgetUtils.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
+                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
                 }
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (WM.isDefined(newVal) && newVal !== null) {

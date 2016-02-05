@@ -27,21 +27,6 @@ WM.module('wm.layouts.containers')
                 };
 
             function getNodes($is, nv) {
-                var nodes = [];
-                if (WM.isString(nv)) {
-                    nv = _.trim(nv);
-                    if (nv) {
-                        nodes = nv.split(',').map(function (item) {
-                            return {
-                                'label': _.trim(item)
-                            };
-                        });
-                    }
-                } else if (WM.isArray(nv)) {
-                    nodes = nv;
-                } else if (WM.isObject(nv)) {
-                    nodes = [nv];
-                }
                 /* re-initialize the property values */
                 if ($is.newcolumns) {
                     $is.newcolumns   = false;
@@ -57,12 +42,10 @@ WM.module('wm.layouts.containers')
                         'itemlink'    : $is.itemlink
                     });
                 }
-                if ($is.widgetid) { // when the widget is inside canvas
-                    $is.keys = _.keys(nodes[0]);
-                    /*Changing the properties like labels,children and icons*/
-                    $is.widgetProps.itemlabel.options = $is.widgetProps.itemchildren.options = $is.widgetProps.itemicon.options = $is.widgetProps.itemlink.options = $is.keys;
+                if ($is.widgetid && nv) { // when the widget is inside canvas
+                    $is.keys = WidgetUtilService.updatePropertyPanelOptions(nv.data || nv, nv.propertiesMap, $is);
                 }
-                return nodes;
+                return $is.keys;
             }
             function constructNav($el, $is) {
                 $el.empty();

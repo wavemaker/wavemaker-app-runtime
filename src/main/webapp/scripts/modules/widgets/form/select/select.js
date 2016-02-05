@@ -203,7 +203,7 @@ WM.module('wm.widgets.form')
                         }
                         scope.oldBindDataSet = scope.binddataset;
                     }
-                    FormWidgetUtils.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
+                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
                 }
                 /*creating options for the select element, whenever the property value changes*/
                 createSelectOptions(scope.dataset, scope, element);
@@ -215,7 +215,7 @@ WM.module('wm.widgets.form')
                 /*listening on 'active' property, as losing the properties during page switch*/
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && scope.dataset && newVal) {
-                    FormWidgetUtils.updatePropertyPanelOptions(scope.dataset.data || scope.dataset, scope.dataset.propertiesMap, scope, false);
+                    WidgetUtilService.updatePropertyPanelOptions(scope.dataset.data || scope.dataset, scope.dataset.propertiesMap, scope, false);
                 }
                 break;
             }
@@ -253,7 +253,7 @@ WM.module('wm.widgets.form')
         function scopeDatasetWatcher(scope, element) {
             /*if studio-mode, then update the displayField & dataField in property panel*/
             if (scope.widgetid) {
-                FormWidgetUtils.updatePropertyPanelOptions(scope.scopedataset, scope, false);
+                WidgetUtilService.updatePropertyPanelOptions(scope.scopedataset, scope, false);
             }
             createSelectOptions(scope.scopedataset, scope, element);
         }

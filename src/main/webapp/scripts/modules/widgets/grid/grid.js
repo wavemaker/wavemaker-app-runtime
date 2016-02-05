@@ -1821,7 +1821,8 @@ WM.module('wm.widgets.grid')
                 var defaultFieldDefs,
                     properties,
                     columns,
-                    gridObj;
+                    gridObj,
+                    options = {};
 
                 $scope.fieldDefs = [];
                 /* if properties map is existed then fetch the column configuration for all nested levels using util function */
@@ -1831,8 +1832,9 @@ WM.module('wm.widgets.grid')
                 } else {
                     properties = data;
                 }
+                options.columnUpperBound = $scope.displayAllFields ? -1 : 10;
                 /*call utility function to prepare fieldDefs for grid against given data (A MAX OF 10 COLUMNS ONLY)*/
-                defaultFieldDefs = Utils.prepareFieldDefs(properties, $scope.displayAllFields ? -1 : 10);
+                defaultFieldDefs = Utils.prepareFieldDefs(properties, options);
                 /*append additional properties*/
                 WM.forEach(defaultFieldDefs, function (columnDef) {
                     columnDef.pcDisplay = true;

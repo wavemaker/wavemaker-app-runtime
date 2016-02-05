@@ -160,12 +160,6 @@ WM.module('wm.widgets.basic')
 
         // update search-key, display-label in the property panel
         function updatePropertyPanelOptions(dataset, scope) {
-            var variableKeys = [];
-            // on binding of data
-            if (dataset) {
-                dataset = dataset[0] || dataset;
-                variableKeys = WM.isObject(dataset) && !WM.isArray(dataset) ? Object.keys(dataset || {}) : [];
-            }
 
             // re-initialize the property values
             if (scope.newcolumns) {
@@ -177,8 +171,9 @@ WM.module('wm.widgets.basic')
             }
 
             // assign all the keys to the options of the search widget
-            scope.widgetProps.searchkey.options = scope.widgetProps.displaylabel.options = scope.widgetProps.displayimagesrc.options = [''].concat(variableKeys);
-            scope.widgetProps.datafield.options = ['All Fields'].concat(variableKeys);
+            if (dataset) {
+                WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, scope);
+            }
         }
 
         // update the query and datavalue before submit.
@@ -264,7 +259,7 @@ WM.module('wm.widgets.basic')
             case 'dataset':
                 // if studio-mode, then update the search-key, display-label in property panel
                 if (scope.widgetid) {
-                    updatePropertyPanelOptions((newVal && newVal.data) || newVal, scope);
+                    updatePropertyPanelOptions(newVal, scope);
                 }
                 // set the datatSet of the widget
                 setDataSet(newVal, scope);
@@ -273,7 +268,7 @@ WM.module('wm.widgets.basic')
                 /*listening on 'active' property, as losing the properties during page switch
                 if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && newVal) {
-                    updatePropertyPanelOptions((scope.dataset && scope.dataset.data) || scope.dataset, scope);
+                    updatePropertyPanelOptions(scope.dataset, scope);
                 }
                 break;
             }

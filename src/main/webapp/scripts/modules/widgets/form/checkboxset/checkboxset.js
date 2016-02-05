@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
     }])
     .directive('wmCheckboxset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkboxset', ['wm.base', 'wm.booleaneditors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkboxset', ['wm.base', 'wm.booleaneditors', 'wm.base.editors.dataseteditors']),
             notifyFor = {
                 'dataset'       : true,
                 'displayfield'  : true,
@@ -119,7 +119,7 @@ WM.module('wm.widgets.form')
             case 'dataset':
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && WM.isDefined(newVal) && newVal !== null) {
-                    FormWidgetUtils.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, true);
+                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, true);
                 }
                 /*Displaying no data message when bound to service variable in studio mode*/
                 if (isBoundToServiceVariable && CONSTANTS.isStudioMode) {

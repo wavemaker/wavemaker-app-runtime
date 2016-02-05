@@ -37,19 +37,7 @@ WM.module('wm.widgets.form')
                 NONE = 0;
 
             function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
-                var variableKeys = [];
-                /* on binding of data*/
-                if (dataset && WM.isObject(dataset)) {
-                    dataset = dataset[0] || dataset;
-                    variableKeys = WidgetUtilService.extractDataSetFields(dataset, propertiesMap) || [];
-                }
-
-                /*removing null values from the variableKeys*/
-                WM.forEach(variableKeys, function (variableKey, index) {
-                    if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
-                        variableKeys.splice(index, 1);
-                    }
-                });
+                WidgetUtilService.updatePropertyPanelOptions(dataset, propertiesMap, scope);
 
                 /* re-initialize the property values */
                 if (scope.newcolumns) {
@@ -58,9 +46,6 @@ WM.module('wm.widgets.form')
                     scope.displayfield = '';
                     scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': scope.datafield, 'displayfield': scope.displayfield});
                 }
-
-                scope.widgetProps.datafield.options = ['', 'All Fields'].concat(variableKeys);
-                scope.widgetProps.displayfield.options = [''].concat(variableKeys);
             }
 
             function trim(str) {

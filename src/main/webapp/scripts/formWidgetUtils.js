@@ -126,52 +126,6 @@ WM.module('wm.widgets.form')
                 }
             }
 
-            /**
-             * @ngdoc function
-             * @name wm.widgets.form.FormWidgetUtils#updatePropertyPanelOptions
-             * @methodOf wm.widgets.form.FormWidgetUtils
-             * @function
-             *
-             * @description
-             * function to update datafield, display field in the property panel
-             *
-             * @param {object} dataset data set of the widget
-             * @param {object} propertiesMap properties map of the data set
-             * @param {object} scope isolate scope of the widget
-             * @param {boolean} removeNull removeNull determines to remove the null values or not from the keys
-             */
-            function updatePropertyPanelOptions(dataset, propertiesMap, scope, removeNull) {
-                var variableKeys = [];
-                /* on binding of data*/
-                if (dataset && WM.isObject(dataset)) {
-                    dataset = dataset[0] || dataset;
-                    variableKeys = WidgetUtilService.extractDataSetFields(dataset, propertiesMap) || [];
-                }
-
-                /*removing null values from the variableKeys*/
-                if (removeNull) {
-                    _.forEach(variableKeys, function (variableKey, index) {
-                        if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
-                            variableKeys.splice(index, 1);
-                        }
-                    });
-                }
-
-                /* re-initialize the property values */
-                if (scope.newcolumns) {
-                    scope.newcolumns = false;
-                    scope.datafield = ALLFIELDS;
-                    scope.displayfield = '';
-                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': ALLFIELDS, 'displayfield': ''});
-                }
-                /* ALLFIELDS option is not shown for the rating widget */
-                if (scope.widgettype === 'wm-rating') {
-                    scope.widgetProps.datafield.options = [''].concat(variableKeys);
-                } else {
-                    scope.widgetProps.datafield.options = ['', ALLFIELDS].concat(variableKeys);
-                }
-                scope.widgetProps.displayfield.options = [''].concat(variableKeys);
-            }
 
             /**
              * @ngdoc function
@@ -549,7 +503,6 @@ WM.module('wm.widgets.form')
             this.getDisplayField                = getDisplayField;
             this.setPropertiesTextWidget        = setPropertiesTextWidget;
             this.createDataKeys                 = createDataKeys;
-            this.updatePropertyPanelOptions     = updatePropertyPanelOptions;
             this.getParsedDataSet               = getParsedDataSet;
             this.getModelValue                  = getModelValue;
             this.getRadiosetCheckboxsetTemplate = getRadiosetCheckboxsetTemplate;

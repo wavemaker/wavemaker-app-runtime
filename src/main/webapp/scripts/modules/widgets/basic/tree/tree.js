@@ -140,12 +140,6 @@ WM.module('wm.widgets.basic')
                 } else if (WM.isObject(newVal)) {
                     nodes = [newVal];
                 }
-
-                if ($is.widgetid) { // when the widget is inside canvas
-                    $is.keys = WM.isObject(nodes[0]) ? Object.keys(nodes[0]) : [];
-                    /*Changing the properties like labels,children and icons*/
-                    $is.widgetProps.nodelabel.options = $is.widgetProps.nodechildren.options = $is.widgetProps.nodeicon.options = [''].concat($is.keys);
-                }
                 return nodes;
             }
 
@@ -215,6 +209,9 @@ WM.module('wm.widgets.basic')
                 switch (key) {
                 case 'scopedataset':
                 case 'dataset':
+                    if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
+                        WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, $is);
+                    }
                     $is.nodes = getNodes($is, newVal.data || newVal);
                     $is.renderTree($el, $is, attrs);
                     break;

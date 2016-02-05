@@ -101,9 +101,10 @@ WM.module('wm.layouts.containers')
                     $is.$root.$emit('set-markup-attr', $is.widgetid, {'searchkey': $is.searchkey, 'datafield': $is.datafield, 'displaylabel': $is.displaylabel});
                 }
 
+                WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, $is);
                 // assign all the keys to the options of the search widget
-                wp.searchkey.options = wp.displaylabel.options = wp.displayimagesrc.options = [''].concat(variableKeys);
-                wp.datafield.options = ['All Fields'].concat(variableKeys);
+              /*  wp.searchkey.options = wp.displaylabel.options = wp.displayimagesrc.options = [''].concat(variableKeys);
+                wp.datafield.options = ['All Fields'].concat(variableKeys);*/
             }
 
             // update the query and datavalue before submit.

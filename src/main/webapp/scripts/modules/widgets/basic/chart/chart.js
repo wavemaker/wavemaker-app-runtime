@@ -1794,7 +1794,7 @@ WM.module('wm.widgets.basic')
                 variableObj = elScope.Variables && elScope.Variables[variableName];
                 /*setting the flag for the live variable in the scope for the checks*/
                 scope.isLiveVariable = variableObj && variableObj.category === 'wm.LiveVariable';
-                scope.axisoptions = WidgetUtilService.extractDataSetFields(scope.dataset, scope.dataset.propertiesMap, true);
+                scope.axisoptions = WidgetUtilService.extractDataSetFields(scope.dataset, scope.dataset.propertiesMap, {'sort' : true});
 
                 /*If binded to a live variable feed options to the aggregation and group by*/
                 if (scope.isLiveVariable && CONSTANTS.isStudioMode) {

@@ -555,7 +555,7 @@ WM.module('wm.widgets.live')
                         }
 
                         // set the groupby options
-                        wp.groupby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, true);
+                        wp.groupby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
 
                         // show the match property
                         if ($is.groupby && nv.propertiesMap) {
@@ -573,7 +573,7 @@ WM.module('wm.widgets.live')
                                 }
                             }
                             if ($is.groupby) {
-                                wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, false);
+                                wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, {'sort' : false});
                             }
                         }
                         if (!wp.match.show) {
