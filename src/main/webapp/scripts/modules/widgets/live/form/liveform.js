@@ -171,11 +171,14 @@ WM.module('wm.widgets.live')
                 /*Function to show the message on top of the dialog or to display the toaster
                  * type can be error or success*/
                 $scope.toggleMessage = function (show, msg, type) {
+                    var template;
                     if (show && msg) {
                         if ($scope.messagelayout === 'Inline') {
-                            $scope.statusMessage = {'caption': msg || '', type: type};
+                            template = (type === 'error' && $scope.errormessage) ? ($scope.errormessage + '<span class="toast-title"> CAUSE: </span><span>' + msg + '</span>') : msg;
+                            $scope.statusMessage = {'caption': template || '', type: type};
                         } else {
-                            wmToaster.show(type, type.toUpperCase(), msg);
+                            template = (type === 'error' && $scope.errormessage) ? ($scope.errormessage + '<div class="toast-title">CAUSE</div><p>' + msg + '</p>') : msg;
+                            wmToaster.show(type, type.toUpperCase(), template, undefined, 'trustedHtml');
                         }
                     } else {
                         $scope.statusMessage = null;
@@ -246,7 +249,7 @@ WM.module('wm.widgets.live')
                                 /*Display appropriate error message in case of error.*/
                                 if (response.error) {
                                     /*disable readonly and show the appropriate error*/
-                                    $scope.toggleMessage(true, $scope.errormessage, 'error');
+                                    $scope.toggleMessage(true, response.error, 'error');
                                     onResult(response, false, event);
                                 } else {
                                     $scope.toggleMessage(true, $scope.updatemessage, 'success');
@@ -264,7 +267,7 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                             }, function (error) {
-                                $scope.toggleMessage(true, $scope.errormessage, 'error');
+                                $scope.toggleMessage(true, error, 'error');
                                 onResult(error, false, event);
                             });
                         }
@@ -281,7 +284,7 @@ WM.module('wm.widgets.live')
                             variable.insertRecord(requestData, function (response) {
                                 /*Display appropriate error message in case of error.*/
                                 if (response.error) {
-                                    $scope.toggleMessage(true, $scope.errormessage, 'error');
+                                    $scope.toggleMessage(true, response.error, 'error');
                                     onResult(response, false, event);
                                 } else {
                                     $scope.toggleMessage(true, $scope.insertmessage, 'success');
@@ -300,7 +303,7 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                             }, function (error) {
-                                $scope.toggleMessage(true, $scope.errormessage, 'error');
+                                $scope.toggleMessage(true, error, 'error');
                                 onResult(error, false, event);
                             });
                         }
@@ -316,7 +319,7 @@ WM.module('wm.widgets.live')
                             /* check the response whether the data successfully deleted or not , if any error occurred show the
                              * corresponding error , other wise remove the row from grid */
                             if (success && success.error) {
-                                $scope.toggleMessage(true, $scope.errormessage, 'error');
+                                $scope.toggleMessage(true, success.error, 'error');
                                 onResult(success, false);
                                 return;
                             }
@@ -334,7 +337,7 @@ WM.module('wm.widgets.live')
                             }
 
                         }, function (error) {
-                            $scope.toggleMessage(true, $scope.errormessage, 'error');
+                            $scope.toggleMessage(true, error, 'error');
                             onResult(error, false);
                         });
                         break;

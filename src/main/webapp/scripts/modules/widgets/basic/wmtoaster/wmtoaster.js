@@ -4,7 +4,7 @@
 WM.module('wm.widgets.basic')
     .service('wmToaster', ['toaster', function (toaster) {
         'use strict';
-        var _showToaster = function (type, title, desc, timeout) {
+        var _showToaster = function (type, title, desc, timeout, bodyOutputType) {
             /*pop the toaster only if either title or description are defined*/
             if (title || desc) {
                 /*hide all previous toasters*/
@@ -19,7 +19,7 @@ WM.module('wm.widgets.basic')
                     }
                 }
 
-                toaster.pop(type, title, desc, timeout);
+                toaster.pop(type, title, desc, timeout, bodyOutputType);
             }
         };
 
@@ -103,8 +103,8 @@ WM.module('wm.widgets.basic')
              * @param {string} desc of the notification
              * @param {string} timeout of the notification
              */
-            show: function (type, title, desc, timeout) {
-                _showToaster(type, title, desc, timeout);
+            show: function (type, title, desc, timeout, bodyOutputType) {
+                _showToaster(type, title, desc, timeout, bodyOutputType);
             },
 
             /**
