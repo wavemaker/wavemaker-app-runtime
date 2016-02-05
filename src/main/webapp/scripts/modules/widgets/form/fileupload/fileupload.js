@@ -57,27 +57,27 @@ WM.module('wm.widgets.form')
                     '<ul class="list-group file-upload"  data-ng-style="{height: height, overflow: overflow}" data-ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
                         '<li class="list-group-item file-upload-status container {{ft.status}}" data-ng-hide="ft.status === \'abort\'" data-ng-repeat="ft in fileTransfers | filter : {status : \'!abort\'}" >' +
                             '<div class="media upload-file-list">' +
-                            '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}">' +
-                            '</div>' +
-                            '<div class="media-body media-middle file-details">' +
-                                '<div class="media file-detail">' +
-                                    '<div class="media-left uploaddetails">' +
-                                        '<label class="upload-title">{{ft.name}}</label><br/>' +
-                                        '<span class="filesize" data-ng-if="ft.fileLength  !== 0">{{ft.size | filesize:0}}</span>' +
-                                    '</div>' +
-                                    '<div class="media-body media-middle" data-ng-show="ft.status === \'inprogress\'">' +
-                                        '<div class="progress">' +
-                                        '<div class="progress-bar progress-bar-striped progress-bar-info" data-ng-style="{width: (ft.progress +\'%\')}"></div>' +
+                                '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}">' +
+                                '</div>' +
+                                '<div class="media-body media-middle file-details">' +
+                                    '<div class="file-detail">' +
+                                        '<p class="uploaddetails">' +
+                                            '<label class="upload-title col-xs-8">{{ft.name}}</label>' +
+                                            '<span class="text-muted filesize" data-ng-if="ft.fileLength  !== 0">{{ft.size | filesize:0}}</span>' +
+                                        '</p>' +
+                                        '<div class="progress" data-ng-show="ft.status === \'inprogress\'">' +
+                                            '<div class="progress-bar progress-bar-striped progress-bar-info" data-ng-style="{width: (ft.progress +\'%\')}"></div>' +
                                         '</div>' +
                                     '</div>' +
                                 '</div>' +
-                            '</div>' +
-                            '<div class="media-right media-middle" data-ng-if="ft.status === \'inprogress\' || ft.status === \'queued\'">' +
-                                '<input class="btn btn-default abort-btn" type="button" value="Cancel" data-ng-click="abortUpload($event, ft)">' +
-                            '</div>' +
-                            '<div class="media-right media-middle status" data-ng-if="mode === \'Upload\'" data-ng-hide="ft.status === \'abort\' || ft.status === \'inprogress\'">' +
-                                '<span class="status-icon {{ft.status | stateClass }}"></span>' +
-                            '</div>' +
+                                '<div class="media-right media-middle" data-ng-if="ft.status === \'inprogress\' || ft.status === \'queued\'">' +
+                                    '<a class="btn btn-transparent" type="button" ng-click="abortUpload($event, ft)">' +
+                                        '<i class="fa fa-remove"></i>' +
+                                    '</a>' +
+                                '</div>' +
+                                '<div class="media-right media-middle status" data-ng-if="mode === \'Upload\'" data-ng-hide="ft.status === \'abort\' || ft.status === \'inprogress\'">' +
+                                    '<span class="status-icon {{ft.status | stateClass }}"></span>' +
+                                '</div>' +
                             '</div>' +
                         '</li>' +
                     '</ul>' +
