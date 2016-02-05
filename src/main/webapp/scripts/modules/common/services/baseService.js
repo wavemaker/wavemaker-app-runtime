@@ -138,7 +138,7 @@ wm.modules.wmCommon.services.BaseService = [
                 localeObject = localeObject || getLocaleObject();
                 /*Check for local resources and code in the resource */
                 if (!localeObject || !localeObject[errorDetails.messageKey]) {
-                    errMsg = errorDetails.message || "";
+                    errMsg = errorDetails.message || (errorDetails.parameters && errorDetails.parameters[0]) || "";
                     return errMsg;
                 }
 
@@ -212,8 +212,8 @@ wm.modules.wmCommon.services.BaseService = [
                         errorDetails = error.data.errors;
                         /* If errors is not an array and contains error */
                         if (errorDetails.error) {
-                            errorDetails.error.forEach(function (errorDetails) {
-                                errMsg += parseError(errorDetails) + "\n";
+                            errorDetails.error.forEach(function (errorDetails, i) {
+                                errMsg += parseError(errorDetails) + (i > 0 ? "\n" : "");
                             });
                         }
                     }

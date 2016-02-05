@@ -1203,7 +1203,8 @@ wm.variables.services.Variables = [
             initiateCallback = function (event, variable, callBackScope, response) {
                 /*checking if event is available and variable has event property and variable event property bound to function*/
                 var eventValues = variable[event],
-                    retVal;
+                    retVal,
+                    errorVariable;
                 callBackScope = variable.activeScope;
                 if (eventValues) {
                     _.forEach(eventValues.split(';'), function (eventValue) {
@@ -1229,6 +1230,13 @@ wm.variables.services.Variables = [
                             $rootScope.$safeApply(callBackScope);
                         }, null, false);
                     });
+                } else if (event === VARIABLE_CONSTANTS.EVENT.ERROR) {
+                    /* in case of error, if no event assigned, handle through default notification variable */
+                    errorVariable = getVariableByName(VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION);
+                    if (errorVariable) {
+                        response = errorVariable.getMessage() || response;
+                        $rootScope.$emit("invoke-service", VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION, {scope: callBackScope, message: response});
+                    }
                 }
                 return retVal;
             },

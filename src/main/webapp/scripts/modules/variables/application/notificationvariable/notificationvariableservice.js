@@ -27,11 +27,11 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
 
 
                 if (operation === 'toast') {
-                    var type = variable.dataBinding.class.toLowerCase(),
-                        body = variable.dataBinding.text,
+                    var type = (options.class || variable.dataBinding.class || "info").toLowerCase(),
+                        body = options.message || variable.dataBinding.text,
                         timeout = parseInt(variable.dataBinding.duration),
-                        positionClass = "toast-" + variable.dataBinding.toasterPosition.replace(" ", "-");
-                    toasterOptions.position = positionClass || 'toast-bottom-right';
+                        positionClass = "toast-" + (options.position || variable.dataBinding.toasterPosition || 'bottom right').replace(' ', '-');
+                    toasterOptions.position = positionClass;
                     wmToaster.show(type, "", body, timeout);
                 } else {
                     /* get the callback scope for the variable based on its owner */
@@ -160,8 +160,9 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
             }
         },
         basicVariableObj = {
-            notify: function () {
-                methods.notify(this, {scope: this.activeScope});
+            notify: function (options) {
+                options.scope = this.activeScope;
+                methods.notify(this, options);
             },
             getOperation: function () {
                 return methods.getOperation(this, {scope: this.activeScope});

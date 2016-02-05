@@ -43,7 +43,10 @@ wm.variables.constant('VARIABLE_CONSTANTS', {
     SERVICE_TYPE_SECURITY: "SecurityServiceType",
     SERVICE_NAME_FEED: "FeedService",
     REST_SUPPORTED_SERVICES: ["JavaService", "SoapService", "FeedService", "RestService", "SecurityServiceType", "DataService"],
-    PAGINATION_PARAMS: ["page", "size", "sort"]
+    PAGINATION_PARAMS: ["page", "size", "sort"],
+    DEFAULT_VAR: {
+        "NOTIFICATION": "appNotification"
+    }
 });
 
 wm.variables.constant('VARIABLE_SERVICE_URLS', {
