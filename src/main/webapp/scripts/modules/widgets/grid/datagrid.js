@@ -782,8 +782,8 @@ $.widget('wm.datagrid', {
             this.gridHeaderElement.find('th').each(function (index) {
                 /***setting the header col width based on the content width***/
                 var $header = $(this),
-                    width = $header.hasClass('grid-col-small') ? 30 : $header.width(); //Keep width as 30 for checkbox and radio column
-                width = width > 0 ? width : 100; //Sanity check to prevent width being less than zero
+                    width = $header.width();
+                width = $header.hasClass('grid-col-small') ? 30 : (width > 50 ? width : 50); //Keep width as 30 for checkbox and radio; columnSanity check to prevent width being too small
                 $(headerCols[index]).css('width', width);
                 $(bodyCols[index]).css('width', width);
             });
