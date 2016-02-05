@@ -197,7 +197,9 @@ WM.module('wm.widgets.form')
                     if (scope.oldBindDataSet !== scope.binddataset) {
                         if (!WM.isString(newVal)) {
                             variable = Utils.getVariableName(scope, eleScope);
-                            newVal.propertiesMap = eleScope.Variables[variable].category === 'wm.ServiceVariable' ? undefined : eleScope.Variables[variable].propertiesMap;
+                            if (eleScope.Variables[variable].category === 'wm.LiveVariable') {
+                                newVal.propertiesMap = eleScope.Variables[variable].propertiesMap;
+                            }
                         }
                         scope.oldBindDataSet = scope.binddataset;
                     }
