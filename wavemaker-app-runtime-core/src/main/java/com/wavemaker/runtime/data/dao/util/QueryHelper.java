@@ -16,6 +16,7 @@
 package com.wavemaker.runtime.data.dao.util;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.hibernate.Session;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
@@ -38,6 +40,7 @@ public class QueryHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryHelper.class);
 
     private static final String COUNT_QUERY_TEMPLATE = "select count(*) from ({0}) wmTempTable";
+    private static final String ORDER_BY_QUERY_TEMPLATE = "select * from ({0}) ";
     private static final String SELECT_COUNT1 = "select count(*) ";
 
     private static final String FROM = " FROM ";
@@ -45,6 +48,8 @@ public class QueryHelper {
 
     private static final String GROUP_BY = " group by ";
     private static final String ORDER_BY = " order by ";
+    public static final String EMPTY_SPACE_DELIMITER_FOR_QUERY = " ";
+    public static final String ORDER_PROPERTY_SEPARATOR = ",";
 
     public static void configureParameters(Query query, Map<String, Object> params) {
         String[] namedParameters = query.getNamedParameters();
@@ -80,7 +85,27 @@ public class QueryHelper {
         return false;
     }
 
-
+    public static String arrangeForSort(String queryStr, Sort sort, boolean isNative) {
+        if (isNative && sort != null) {
+            final Iterator<Sort.Order> iterator = sort.iterator();
+            StringBuffer queryWithOrderBy = new StringBuffer(ORDER_BY_QUERY_TEMPLATE.replace("{0}", queryStr));
+            int count = 0;
+            while (iterator.hasNext()) {
+                Sort.Order order = iterator.next();
+                if (StringUtils.isNotBlank(order.getProperty())) {
+                    if (count == 0) {
+                        queryWithOrderBy.append(ORDER_BY);
+                    } else {
+                        queryWithOrderBy.append(ORDER_PROPERTY_SEPARATOR);
+                    }
+                    queryWithOrderBy.append(order.getProperty() + EMPTY_SPACE_DELIMITER_FOR_QUERY + order.getDirection().name());
+                    count++;
+                }
+            }
+            return queryWithOrderBy.toString();
+        }
+        return queryStr;
+    }
     public static void setResultTransformer(Query query) {
         if (query instanceof SQLQuery) {
             query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -135,7 +160,7 @@ public class QueryHelper {
             int index = StringUtils.indexOfIgnoreCase(query, GROUP_BY);
             if (index == -1) { //we generate count query if there is no group by in it..
                 index = StringUtils.indexOfIgnoreCase(query, FROM_HQL);
-                if(index == 0) {
+                if (index == 0) {
                     countQuery = SELECT_COUNT1 + query;
                 } else {
                     index = StringUtils.indexOfIgnoreCase(query, FROM);
@@ -154,6 +179,7 @@ public class QueryHelper {
     }
 
     private static long maxCount() {
-        return (long)Integer.MAX_VALUE;
+        return (long) Integer.MAX_VALUE;
     }
+
 }
