@@ -1,4 +1,4 @@
-/*global WM, wm, window, document, navigator, Image, location, console, _, $*/
+/*global WM, wm, window, document, navigator, Image, location, console, _, $, moment*/
 /*jslint todo: true */
 
 /**
@@ -1566,7 +1566,7 @@ WM.module('wm.utils', [])
                     val = new Date().toDateString() + ' ' + val;
                 }
             }
-            return new Date(val);
+            return new Date(moment(val).valueOf());
         }
 
         /**

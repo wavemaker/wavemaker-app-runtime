@@ -1,4 +1,4 @@
-/*global WM, _ */
+/*global WM, _, moment */
 /*Directive for date */
 
 WM.module('wm.widgets.form')
@@ -81,7 +81,7 @@ WM.module('wm.widgets.form')
                     if (!isNaN(val)) {
                         val = parseInt(val, 10);
                     }
-                    epoch = new Date(val).getTime();
+                    epoch = moment(val).valueOf();
                     epoch = isNaN(epoch) ? undefined : epoch;
                 }
             }
@@ -185,11 +185,13 @@ WM.module('wm.widgets.form')
                                 return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
                             },
                             set: function (val) {
+                                var timestamp;
                                 if (scope._nativeMode) {
                                     if (val) {
                                         /*set the proxymodel and timestamp if val exists*/
-                                        this._proxyModel = new Date(val);
-                                        this.timestamp = getTimeStamp(this._proxyModel);
+                                        timestamp = getTimeStamp(val);
+                                        this._proxyModel = new Date(timestamp);
+                                        this.timestamp = timestamp;
                                     } else {
                                         this._proxyModel = undefined;
                                     }
