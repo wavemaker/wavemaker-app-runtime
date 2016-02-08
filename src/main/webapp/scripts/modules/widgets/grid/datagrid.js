@@ -15,6 +15,7 @@ $.widget('wm.datagrid', {
             'field': '',
             'direction': ''
         },
+        isMobile: false,
         enableSort: true,
         enableSearch: false,
         height: 100,
@@ -1587,12 +1588,18 @@ $.widget('wm.datagrid', {
                 }
             });
         }
-        /**Append the colgroup to the header and the body.
-         * Colgroup is used to maintain the consistent widths between the header table and body table**/
-        this.gridHeaderElement.append($colgroup).append($header);
-        /**As jquery references the colgroup, clone the colgroup and add it to the table body**/
-        this.gridElement.append($colgroup.clone());
-        this.gridHeader = this.gridHeaderElement.find('thead');
+        /*For mobile view, append header to the main table only*/
+        if (this.options.isMobile) {
+            this.gridElement.append($header);
+            this.gridHeader = this.gridElement.find('thead');
+        } else {
+            /**Append the colgroup to the header and the body.
+             * Colgroup is used to maintain the consistent widths between the header table and body table**/
+            this.gridHeaderElement.append($colgroup).append($header);
+            /**As jquery references the colgroup, clone the colgroup and add it to the table body**/
+            this.gridElement.append($colgroup.clone());
+            this.gridHeader = this.gridHeaderElement.find('thead');
+        }
         /**Add event handler, to the select all checkbox on the header**/
         $header.on('click', 'input:checkbox', toggleSelectAll);
 
@@ -1600,7 +1607,7 @@ $.widget('wm.datagrid', {
             this.gridHeader.on('click', {'col': this.options.colDefs}, this.options.onHeaderClick);
         }
 
-        if (this.gridHeaderElement.length) {
+        if (!this.options.isMobile && this.gridHeaderElement.length) {
             this.gridHeaderElement.find('th[data-col-resizable]').resizable({
                 handles: 'e',
                 minWidth: 50,

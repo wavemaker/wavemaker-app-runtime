@@ -367,6 +367,8 @@ WM.module('wm.widgets.grid')
                                     scope.gridOptions[value] = (attrValue === "true" || attrValue === true);
                                 }
                             });
+                            /*Set isMobile value on the datagrid*/
+                            scope.gridOptions.isMobile = Utils.isMobile();
                             scope.renderOperationColumns();
                         }
                         scope.datagridElement.datagrid(scope.gridOptions);
