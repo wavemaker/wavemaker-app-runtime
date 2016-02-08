@@ -692,15 +692,24 @@ wm.variables.services.$servicevariable = ['Variables',
                 setInput: function (variable, key, val) {
                     var targetObj = variable.dataBinding,
                         keys,
-                        lastKey;
-                    if (key.indexOf('.') > -1) {
+                        lastKey,
+                        paramObj = {};
+                    if (WM.isObject(key)) {
+                        paramObj = key;
+                    } else if (key.indexOf('.') > -1) {
                         keys = key.split('.');
                         lastKey = keys.pop();
                         /*Finding the object based on the key*/
                         targetObj = Utils.findValueOf(targetObj, keys.join('.'), true);
                         key = lastKey;
+                        paramObj[key] = val;
+                    } else {
+                        paramObj[key] = val;
                     }
-                    targetObj[key] = val;
+
+                    WM.forEach(paramObj, function (paramVal, paramKey) {
+                        targetObj[paramKey] = paramVal
+                    });
                     return variable.dataBinding;
                 }
             },
