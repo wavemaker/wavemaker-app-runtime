@@ -38,7 +38,7 @@ public class CdnFileController extends AbstractController {
         reqPath = reqPath.replaceAll("%20", " ");
         if (!"".equals(request.getContextPath())) {
             // trim off the context path
-            reqPath = reqPath.substring(reqPath.indexOf('/', 1));
+            reqPath = reqPath.substring(request.getContextPath().length());
         }
         reqPath = reqPath.substring(CDN_URL_PATTERN.length());
         return new ModelAndView(new InternalResourceView("/" + reqPath));
