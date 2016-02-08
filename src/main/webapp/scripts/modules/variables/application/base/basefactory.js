@@ -1,4 +1,4 @@
-/*global WM, wm*/
+/*global WM, wm, _*/
 /*jslint todo: true */
 /*jslint sub: true */
 
@@ -14,7 +14,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
     function (WIDGET_CONSTANTS, Utils) {
 
         "use strict";
-        var variableEventOptions = {}, /*A copy of the variable to preserve the actual value.*/
+        var variableEventOptions = [], /*A copy of the variable to preserve the actual value.*/
             result,
             properties,
             propertyGroups,
@@ -22,8 +22,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$';
 
         /* make events compatible to select widget options */
-        WM.forEach(Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
-            variableEventOptions[event] = event;
+        _.forEach(Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
+            variableEventOptions.push({'name': event, 'type': 'Default'});
         });
 
         result = {

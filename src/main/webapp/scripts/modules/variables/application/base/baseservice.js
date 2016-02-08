@@ -1072,30 +1072,25 @@ wm.variables.services.Variables = [
             },
 
         /*function to retrieve service and live variables from the collection, other than the variable name provided.*/
-            retrieveEventCallbackVariables = function (variableName) {
-                var key, variableArray = [], index, contextVariables, currentVariable, varCollection = self.variableCollection;
+            retrieveEventCallbackVariables = function (variableName, namesOnly) {
+                var variableArray = [],
+                    varCollection = self.variableCollection,
+                    contextsVariables = [varCollection[VARIABLE_CONSTANTS.OWNER.APP], varCollection[$rootScope.activePageName]];
+
+                if ($rootScope.isPrefabTemplate) {
+                    contextsVariables = [varCollection.Main];
+                }
                 /*iterating over variable collection*/
-                for (key in varCollection) {
-                    contextVariables = varCollection[key];
-                    /*iterating over the context variables (App or Page) to get variables*/
-                    for (index in contextVariables) {
-                        currentVariable = contextVariables[index];
-                        /*checking if variable to be excluded is provided.*/
-                        if (variableName) {
+                _.forEach(contextsVariables, function (variables) {
+                    _.forEach(variables, function (curVariable, curVariableName) {
+                        if (isEventCallbackVariable(curVariable.category)) {
                             /*checking if current variable name is not equal to the variable name provided.*/
-                            if (index !== variableName &&
-                                    (isEventCallbackVariable(currentVariable.category))) {
-                                variableArray.push(index);
-                            }
-                        } else {
-                            /*if variable name not provided, return array containing all service and live variables.*/
-                            if (isEventCallbackVariable(currentVariable.category)) {
-                                variableArray.push(index);
+                            if (!variableName || curVariableName !== variableName) {
+                                variableArray.push(namesOnly ? curVariableName : {name: curVariableName, type: curVariable.category});
                             }
                         }
-
-                    }
-                }
+                    });
+                });
                 return _.uniq(variableArray);
             },
             saveContextVariables = function (context, contextVariables) {
