@@ -2044,7 +2044,7 @@ WM.module('wm.widgets.grid')
       </file>
   </example>
  */
-    .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', 'BindingManager', function ($parse, Utils, CONSTANTS, BindingManager) {
+    .directive('wmGridColumn', ['$parse', 'Utils', 'CONSTANTS', 'BindingManager', 'LiveWidgetUtils', function ($parse, Utils, CONSTANTS, BindingManager, LiveWidgetUtils) {
         'use strict';
 
         return {
@@ -2108,25 +2108,7 @@ WM.module('wm.widgets.grid')
                                 'defaultvalue': attrs.defaultvalue
                             },
                             updateCustomExpression = function (column) {
-                                var widgetType = column.widgetType,
-                                    field = column.field,
-                                    val = widgetType === 'button' ? "{{row.getProperty('" + field + "') || 'Button'}}" : "{{row.getProperty('" + field + "')}}",
-                                    widgetTitle;
-                                if (!widgetType) {
-                                    return;
-                                }
-                                switch (widgetType) {
-                                case 'image':
-                                    if (column.type === 'blob') {
-                                        column.customExpression = '<img width="48px" class="wm-icon wm-icon24 glyphicon glyphicon-file" data-ng-src="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"/>';
-                                    }
-                                    column.customExpression = '<img data-ng-src="' + val + '" alt="' + val + '"/>';
-                                    break;
-                                case 'button':
-                                    widgetTitle = val || '';
-                                    column.customExpression = '<wm-button caption="' + widgetTitle + '" show="true" class="btn-primary"></wm-button>';
-                                    break;
-                                }
+                                LiveWidgetUtils.setColumnConfig(column);
                             };
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(scope.$parent, expression, function (newVal) {
