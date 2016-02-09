@@ -33,7 +33,10 @@ var Application =
         ]);
 
 Application
-    .constant('CONSTANTS', {'isRunMode': true})
+    .constant('CONSTANTS', {
+        'isRunMode'     : true,
+        'INT_MAX_VALUE' : 2147483647
+    })
     .service('PrefabService', WM.noop) // dummy service to avoid exceptions in run mode
     .config(
         [
