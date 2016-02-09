@@ -382,9 +382,6 @@ wm.variables.services.$liveVariable = [
 
                     setVariableProp(variable, writableVariable, "propertiesMap", tableDetails[variableType]);
 
-                    /*Set the propertiesMap property of the live-variable to correspond to the propertiesMap of the table*/
-                    $rootScope.variables[variable.name].propertiesMap = variable.propertiesMap;
-
                     Utils.triggerFn(callback, projectID, variable, options, success);
                 }, WM.noop);
             },
@@ -498,6 +495,7 @@ wm.variables.services.$liveVariable = [
                     promiseObj,
                     preventCall,
                     newDataSet,
+                    dataObj = {},
                     handleError = function (response) {
                         /* If in Run mode, initiate error callback for the variable */
                         if (CONSTANTS.isRunMode) {
@@ -511,7 +509,7 @@ wm.variables.services.$liveVariable = [
                         }
 
                         /* update the dataSet against the variable */
-                        updateVariableDataset(variable, [], variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
+                        updateVariableDataset(variable, [], variable.propertiesMap);
 
                         /* If callback function is provided, send the data to the callback.
                          * The same callback if triggered in case of error also. The error-handling is done in grid.js*/
@@ -560,9 +558,8 @@ wm.variables.services.$liveVariable = [
 
                     processResponse(response.content);
 
-                    /* Also, set the data property of the variable to correspond to the table-data*/
-                    $rootScope.variables[variable.name].data = response.content;
-                    $rootScope.variables[variable.name].pagingOptions = {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults};
+                    dataObj.data = response.content;
+                    dataObj.pagingOptions = {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults};
 
                     /* get the callback scope for the variable based on its owner */
                     if (variableOwner === "App") {
@@ -578,24 +575,24 @@ wm.variables.services.$liveVariable = [
 
                     if (CONSTANTS.isRunMode) {
                         // EVENT: ON_RESULT
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, $rootScope.variables[variable.name].data);
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, dataObj.data);
                         // EVENT: ON_SUCCESS
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, $rootScope.variables[variable.name].data);
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, dataObj.data);
                         // EVENT: ON_PREPARESETDATA
-                        newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, $rootScope.variables[variable.name].data);
+                        newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, dataObj.data);
                         if (newDataSet) {
                             //setting newDataSet as the response to service variable onPrepareSetData
-                            $rootScope.variables[variable.name].data = newDataSet;
+                            dataObj.data = newDataSet;
                         }
                         // EVENT: ON_CAN_UPDATE
                         variable.canUpdate = true;
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, $rootScope.variables[variable.name].data);
+                        initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
                     }
                     /* update the dataSet against the variable */
-                    updateVariableDataset(variable, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
+                    updateVariableDataset(variable, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
 
                     /* if callback function is provided, send the data to the callback */
-                    Utils.triggerFn(success, $rootScope.variables[variable.name].data, variable.propertiesMap, $rootScope.variables[variable.name].pagingOptions);
+                    Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
 
                     /* process next requests in the queue */
                     if (CONSTANTS.isRunMode) {
@@ -991,9 +988,6 @@ wm.variables.services.$liveVariable = [
                             variableActive[variable.activeScope.$id][variableName] = true;
                         }
 
-                        /*Set a variable in the rootScope (specific to the project) )with the name of the live-variable*/
-                        $rootScope.variables = $rootScope.variables || {};
-                        $rootScope.variables[variable.name] = $rootScope.variables[variable.name] || {};
 
                         /*In the "Studio" mode, the entity meta data is read, the properties are updated in the variable;
                          * so that the variables.json file is updated on "save".
@@ -1008,7 +1002,7 @@ wm.variables.services.$liveVariable = [
                                 /*For variables of all operations, update the dataSet with the "propertiesMap" only.*/
                                 updateVariableDataset(variable, {}, variable.propertiesMap, {});
                                 /* if callback function is provided, send the data to the callback */
-                                Utils.triggerFn(success, $rootScope.variables[variable.name].data, variable.propertiesMap, {}, {"dataSize": null, "maxResults": variable.maxResults});
+                                Utils.triggerFn(success, [], variable.propertiesMap, {}, {"dataSize": null, "maxResults": variable.maxResults});
                             });
                         }
                         /*In the Run mode, for variables of insert/update/delete type operation, update the dataSet with the "propertiesMap" only.*/

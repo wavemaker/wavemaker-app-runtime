@@ -474,7 +474,6 @@ wm.variables.services.Variables = [
 
                     return !(variable.autoUpdate === true && _.some(variable.dataBinding, isBound));
                 }
-                $rootScope.variables = $rootScope.variables || {};
                 self.studioCopy[context] = {};
 
                 scope = scope || pageScopeMap[context] || {};
@@ -516,7 +515,6 @@ wm.variables.services.Variables = [
 
                     /*iterating over the collection to update the variables appropriately.*/
                     if (variable.category === "wm.Variable") {
-                        $rootScope.variables[name] = variable.dataSet.dataValue;
                         /*
                          * Case: a LIST type static variable having only one object
                          * and the object has all fields empty, remove that object
@@ -547,7 +545,6 @@ wm.variables.services.Variables = [
                         if (runMode) {
                             variable.canUpdate = true;
                         }
-                        $rootScope.variables[name] = $rootScope.variables[name] || {};
                         if (variable.startUpdate) {
                             /*
                             * For variable with operation other than 'read', call respective method in RUN mode
@@ -1465,11 +1462,6 @@ wm.variables.services.Variables = [
                 id: ProjectService.getId()
             };
         }
-        /*
-         * This object stores the variables (name, value) pairs
-         * so that widgets can access those
-         */
-        $rootScope.variables = $rootScope.variables || {};
 
         initVariableNameMap();
 
