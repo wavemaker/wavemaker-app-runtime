@@ -1150,10 +1150,12 @@ WM.module('wm.widgets.base', [])
                         "marginbottom": {"type": "string", "pattern": numberRegex},
                         "marginright": {"type": "string", "pattern": numberRegex},
                         "marginleft": {"type": "string", "pattern": numberRegex},
-                        "method": {"type": "list", "options": ["get", "post"]},
+                        "method": {"type": "list", "options": ["post", "put", "delete"]},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "captionsize": {"type": "string"},
+                        "formdata": {"type": "object", "show": false, "bindable": "out-bound", "widget": "string"},
+                        "postmessage": {"type": "string", "value": "Data posted successfully", "bindable": "in-out-bound"},
                         "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left"},
                         "enctype": {"type": "list", "options": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"]},
                         "captionposition": {"type": "list", "options": ["left", "right", "top"], "value": "left"},
@@ -1708,7 +1710,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "selection", "properties": ["selectionmode"], "parent": "properties"},
                 {"name": "operations", "properties": ["insertrow", "deleterow", "updaterow", "submitbutton", "resetbutton"], "parent": "properties"},
                 {"name": "navigation", "properties": ["shownavigation", "showrecordcount"], "parent": "properties"},
-                {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg"], "parent": "properties"},
+                {"name": "message", "properties": ["messagelayout", "errormessage", "insertmessage", "updatemessage", "confirmdelete", "deletemessage", "nodatamessage", "loadingdatamsg", "postmessage"], "parent": "properties"},
                 {"properties": [ "class", "menuclass", "listclass", "itemclass", "gridclass",  "theme", "customcolors"], "parent": "styles"},
                 {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontweight", "fontstyle", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
                 {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
@@ -2798,7 +2800,8 @@ WM.module('wm.widgets.base', [])
                             "wm-barcodescanner",
                             "wm-mobile-navbar ",
                             "wm-chart",
-                            "wm-view"
+                            "wm-view",
+                            "wm-form"
                             ];
                     } else if (types === 'page-container-widgets') {
                         types = [

@@ -1,4 +1,4 @@
-/*global WM*/
+/*global WM, _*/
 
 WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
@@ -7,7 +7,10 @@ WM.module('wm.layouts.containers')
                 '<form role="form" data-ng-show="show" init-widget class="panel app-form" ng-class="[captionAlignClass, captionPositionClass, formClassName]"' +
                 ' autocomplete="autocomplete" apply-styles="shell"' +
                 ' ><div class="panel-heading" data-ng-if="title"><h4 class="form-header panel-title">{{title}}</h4></div>' +
-                    '<div class="form-body panel-body"  apply-styles="inner-shell" wmtransclude></div>' +
+                    '<div class="form-body panel-body" apply-styles="inner-shell">' +
+                        '<wm-message scopedataset="statusMessage"></wm-message>' +
+                        '<div wmtransclude></div>' +
+                    '</div>' +
                     '</form>'
             );
     }])
@@ -91,19 +94,60 @@ WM.module('wm.layouts.containers')
         }
 
         function bindEvents(scope, element) {
+            var params,
+                formData = {},
+                formVariable,
+                fieldTarget,
+                formWidget;
             element.on('submit', function (event) {
-                if (scope.onSubmit) {
-                    /*SerializeArray method doesn't give type file inputs, handle them separately and add them to the array*/
-                    var fileTypeInputs = element.find('[type=file]'),
-                        serializedArray = element.serializeArray(),
-                        files;
-                    if (fileTypeInputs.length > 0) {
-                        WM.forEach(fileTypeInputs, function (input) {
-                            files = input.files;
-                            serializedArray.push({name: input.name, value: files});
+                formVariable = element.scope().Variables[scope.formvariable];
+                if (scope.onSubmit || formVariable) {
+                    //Get all form fields and prepare form data as key value pairs
+                    _.forEach(scope.formFields, function (field) {
+                        fieldTarget = field.target.split('.');
+                        if (fieldTarget.length === 1) {
+                            formData[field.name] = field.value;
+                        } else {
+                            if (formVariable.category === 'wm.Variable') {
+                                formData[fieldTarget[1]] = field.value;
+                            } else {
+                                formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
+                                formData[fieldTarget[0]][fieldTarget[1]] = field.value;
+                            }
+                        }
+                    });
+                    //Form fields wont't contain grid widgets get those using attribute and add to form data
+                    element.find('[isFormField="true"]').each(function () {
+                        formWidget = WM.element(this).isolateScope();
+                        fieldTarget = formWidget.name.split('.');
+                        if (fieldTarget.length === 1) {
+                            formData[formWidget.name] = formWidget.dataset;
+                        } else {
+                            formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
+                            formData[fieldTarget[0]][fieldTarget[1]] = formWidget.dataset;
+                        }
+                    });
+                    params = {$event: event, $scope: scope, $formData: scope.formdata};
+                    //If on submit is there execute it and if it returns true do service variable invoke else return
+                    if (scope.onSubmit && scope.onSubmit(params) === false) {
+                        return;
+                    }
+                    scope.formdata = formData;
+                    //If its a service variable call setInput and assign form data and invoke the service
+                    if (formVariable.category === 'wm.ServiceVariable') {
+                        formVariable.setInput(formData);
+                        formVariable.update({}, function () {
+                            scope.statusMessage = {
+                                'type'   : 'success',
+                                'caption': scope.postmessage
+                            };
+                        }, function (errMsg) {
+                            scope.statusMessage = {
+                                'type'   : 'error',
+                                'caption': errMsg
+                            };
                         });
                     }
-                    return scope.onSubmit({$event: event, $scope: scope, $formData: serializedArray});
                 }
             });
             /*clear the file uploader in the form*/
@@ -125,6 +169,7 @@ WM.module('wm.layouts.containers')
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
+                        scope.statusMessage = undefined;
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
@@ -132,7 +177,7 @@ WM.module('wm.layouts.containers')
                             bindEvents(scope, element);
                             scope.resetForm = resetForm.bind(undefined, element);
                         }
-
+                        scope.formFields = element.scope().formFields;
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
