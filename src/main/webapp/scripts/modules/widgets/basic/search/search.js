@@ -176,9 +176,30 @@ WM.module('wm.widgets.basic')
             scope.widgetProps.datafield.options = ['All Fields'].concat(variableKeys);
         }
 
+        // update the query and datavalue before submit.
+        function onsearchSubmit($is) {
+            if ($is.onSearch) {
+                $is.onSearch({$scope: $is});
+            }
+        }
+
         // onkeyup show the close icon.
-        function onKeyUp(scope, element) {
-            var inputVal = element.find('input').val();
+        function onKeyUp(scope, element, event) {
+            var $navbarElScope,
+                _action,
+                inputVal = element.find('input').val();
+
+            if (element.hasClass('app-mobile-search')) {
+                //update query on the input val change
+                $navbarElScope = element.closest('[data-role="mobile-navbar"]').isolateScope();
+                $navbarElScope.query = inputVal;
+                scope.query = inputVal;
+
+                _action = Utils.getActionFromKey(event);
+                if (_action === 'ENTER') {
+                    onsearchSubmit($navbarElScope, element);
+                }
+            }
 
             scope.$evalAsync(function () {
                 scope.showClosebtn = (inputVal !== '');
