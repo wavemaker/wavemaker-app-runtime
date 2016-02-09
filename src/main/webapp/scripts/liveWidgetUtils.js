@@ -1240,7 +1240,7 @@ WM.module('wm.widgets.live')
              * @param {object} variableObj to which filter is binded
              *
              */
-            function fetchPropertiesMapColumns(propertiesMap, relatedData, variableObj) {
+            function fetchPropertiesMapColumns(propertiesMap, variableObj) {
                 var columns = {}, columnName, data = {}, primaryKey;
                 /* iterated trough the propertiesMap columns of all levels and build object with columns having required configuration*/
                 _.each(propertiesMap.columns, function (val) {
@@ -1269,6 +1269,7 @@ WM.module('wm.widgets.live')
                         columns[columnName] = {};
                         columns[columnName].isRelated = val.isRelated === 'true' || val.isRelated === true;
                         columns[columnName].relatedEntityName = val.relatedEntityName;
+                        columns[columnName].relatedPrimaryKey = primaryKey;
                     } else {
                         /* otherwise build object with required configuration */
                         columnName = val.fieldName;
@@ -1278,9 +1279,10 @@ WM.module('wm.widgets.live')
                     columns[columnName].isPrimaryKey = val.isPrimaryKey;
                     columns[columnName].generator = val.generator;
                 });
-                relatedData = data.relatedData;
-                data.columns = columns;
-                return columns;
+                return {
+                    'columns'     : columns,
+                    'relatedData' : data.relatedData
+                };
             }
 
             this.toggleActionMessage        = toggleActionMessage;
