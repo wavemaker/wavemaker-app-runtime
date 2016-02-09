@@ -86,11 +86,11 @@ WM.module("wm.widgets.basic")
 
                 /*Function to check the dataSize and manipulate the navigator accordingly.*/
                 $scope.checkDataSize = function (dataSize) {
-                    /*If the dataSize is -1, then the total number of records is not known.
+                    /*If the dataSize is -1 or Integer.MAX_VALUE( which is 2147483647), then the total number of records is not known.
                      * Hence,
                      * 1. Hide the "Total Record Count".
                      * 2. Disable the "GoToLastPage" link as the page number of the last page is not known.*/
-                    if (dataSize === -1) {
+                    if (dataSize === -1 || dataSize === CONSTANTS.INT_MAX_VALUE) {
                         /*
                          * TODO: to remove the 'prevshowrecordcount' and handle the dataSize = -1 case
                          */
