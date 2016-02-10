@@ -136,7 +136,7 @@ wm.variables.services.Variables = [
                         Utils.triggerFn(success);
                     }
                 }
-                reloadRequired = _.xor(_.keys(self.variableCollection), Utils.getService('PrefabManager').getAppPrefabNames());
+                reloadRequired.push(VARIABLE_CONSTANTS.OWNER.APP, $rootScope.activePageName);
                 getAppVariables(function (appVariables) {
                     setAppVariables(appVariables);
                     appVariablesLoaded = true;
