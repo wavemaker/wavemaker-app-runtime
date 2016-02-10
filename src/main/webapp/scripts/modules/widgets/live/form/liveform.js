@@ -235,7 +235,7 @@ WM.module('wm.widgets.live')
                     /*Based on the operationType decide the action*/
                     switch ($scope.operationType) {
                     case "update":
-                        requestData.rowData = $scope.rowdata;
+                        requestData.rowData = $scope.rowdata || $scope.formdata;
                         requestData.prevData = prevData;
                         if ($scope.subscribedWidget) {
                             $scope.subscribedWidget.call("update", requestData, function () {
@@ -588,11 +588,13 @@ WM.module('wm.widgets.live')
                         if (isTimeType(formField)) {
                             formField.value = getValidTime(dataObj[formField.key]);
                         } else if (formField.type === "blob") {
-                            var primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
-                            primaryKey = primaryKeys.join();
-                            href = (($scope.variableObj.prefabName !== "" &&  $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
-                            href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + formField.key + '?' + Math.random();
-                            formField.href = href;
+                            if ($scope.dataset.propertiesMap) {
+                                var primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
+                                primaryKey = primaryKeys.join();
+                                href = (($scope.variableObj.prefabName !== "" && $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
+                                href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + formField.key + '?' + Math.random();
+                                formField.href = href;
+                            }
                             formField.value = dataObj[formField.key];
                         } else {
                             formField.value = dataObj[formField.key];
