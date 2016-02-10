@@ -97,13 +97,6 @@ WM.module('wm.prefabs')
                 );
             }
 
-            function getAppPrefabNames() {
-                if (appPrefabNamePropertiesMap === undefined) {
-                    listAppPrefabs();
-                }
-                return _.keys(appPrefabNamePropertiesMap);
-            }
-
             /*
              * Get the config.json of application prefab in synchronous way and trigger the callback with the response.
              */
@@ -611,16 +604,7 @@ WM.module('wm.prefabs')
                  * @param {success} success callback
                  * @param {error} error callback
                  */
-                setConfig: setConfig,
-
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#getAppPrefabNames
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will return array of prefab names included in app
-                 */
-                getAppPrefabNames: getAppPrefabNames
+                setConfig: setConfig
             };
         }
     ]);
