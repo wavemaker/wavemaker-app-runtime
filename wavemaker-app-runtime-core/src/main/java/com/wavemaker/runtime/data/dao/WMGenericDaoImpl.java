@@ -15,6 +15,7 @@
  */
 package com.wavemaker.runtime.data.dao;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.Date;
@@ -22,28 +23,22 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import javax.annotation.PostConstruct;
-
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.orm.hibernate4.HibernateCallback;
-import org.springframework.orm.hibernate4.HibernateTemplate;
 
 import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
 import com.wavemaker.studio.common.ser.WMDateDeSerializer;
 import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.*;
+import org.hibernate.type.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.orm.hibernate4.HibernateCallback;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
@@ -126,6 +121,26 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                     criterion = Restrictions.eq(attributeName, attributeValue);
                 }
                 break;
+            case NOT_EQUALS:
+                criterion = Restrictions.ne(attributeName, attributeValue);
+                break;
+            case BETWEEN:
+                if (attributeValue instanceof Collection) {
+                    Collection collection = (Collection) attributeValue;
+                    if(collection.size() != 2)
+                        throw new IllegalArgumentException("Between expression should have a collection/array of values with just two entries.");
+
+                    criterion = Restrictions.between(attributeName, collection.iterator().next(), collection.iterator().next());
+                } else if (attributeValue.getClass().isArray()) {
+                    Object[] array = (Object[]) attributeValue;
+                    if(array.length != 2)
+                        throw new IllegalArgumentException("Between expression should have a array/array of values with just two entries.");
+
+                    criterion = Restrictions.between(attributeName, array[0], array[1]);
+                } else {
+                    throw new IllegalArgumentException("Between expression should have a collection/array of values with just two entries.");
+                }
+                break;
             case STARTING_WITH:
                 criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.START);
                 break;
@@ -134,6 +149,18 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 break;
             case CONTAINING:
                 criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.ANYWHERE);
+                break;
+            case LESS_THAN:
+                criterion = Restrictions.lt(attributeName, attributeValue);
+                break;
+            case LESS_THAN_OR_EQUALS:
+                criterion = Restrictions.le(attributeName, attributeValue);
+                break;
+            case GREATER_THAN:
+                criterion = Restrictions.gt(attributeName, attributeValue);
+                break;
+            case GREATER_THAN_OR_EQUALS:
+                criterion = Restrictions.ge(attributeName, attributeValue);
                 break;
             default:
                 throw new RuntimeException("Unhandled filter condition: " + queryFilter.getFilterCondition());
