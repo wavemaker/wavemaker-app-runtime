@@ -168,7 +168,7 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
                 fileTransfers.push(uploadWithAjax(file, url, options));
             });
         } else {
-            fileTransfers = _.forEach(files, function (file) {
+            _.forEach(files, function (file) {
                 fileTransfers.push(uploadWithIframe(file, url, options));
             });
         }
