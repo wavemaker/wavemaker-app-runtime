@@ -162,7 +162,7 @@ WM.module('wm.widgets.form')
                     scope.newcolumns = false;
                     scope.datafield = ALLFIELDS;
                     scope.displayfield = '';
-                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': '', 'displayfield': ''});
+                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': ALLFIELDS, 'displayfield': ''});
                 }
                 /* ALLFIELDS option is not shown for the rating widget */
                 if (scope.widgettype === 'wm-rating') {
