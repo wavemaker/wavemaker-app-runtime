@@ -192,6 +192,15 @@ html, body {
   z-index: 1050;
   text-align: center;
   background-color: @wm-app-spinner-bg-color;
+  &.app-page-switch {
+    .spinner-image {
+      color: #888;
+    }
+    .spinner-message {
+      background-color: transparent;
+      border: transparent;
+    }
+  }
   .spinner-message {
     position: relative;
     top: 40%;

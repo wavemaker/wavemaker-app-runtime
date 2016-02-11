@@ -384,6 +384,7 @@ Application
             'Variables',
             'CONSTANTS',
             'wmSpinner',
+            '$timeout',
 
             //do not remove the below lines
             'BasicVariableService',
@@ -395,11 +396,11 @@ Application
             'LogoutVariableService',
             'TimerVariableService',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, $timeout) {
                 'use strict';
 
-                var projectID = ProjectService.getId(), // ProjectID will always be at the same index in the URL
-                    appProperties = Utils.getClonedObject(_WM_APP_PROPERTIES),
+                var projectID      = ProjectService.getId(), // ProjectID will always be at the same index in the URL
+                    appProperties  = Utils.getClonedObject(_WM_APP_PROPERTIES),
                     pageReadyDeregister;
 
                 $rs.projectName             = appProperties.name;
@@ -441,6 +442,16 @@ Application
                             AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
                         }
                     }
+
+                    // hide the app-spinner
+                    $timeout(function () {
+                        wmSpinner.hide('globalSpinner');
+                    }, 30);
+                });
+
+                // show the app-spinner on route change start
+                $rs.$on('$routeChangeStart', function () {
+                    wmSpinner.show('', 'globalSpinner', 'app-page-switch');
                 });
 
                 /*

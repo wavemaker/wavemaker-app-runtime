@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/spinner.html',
-            '<div class="app-spinner {{size}}" ng-show="show" init-widget title="{{hint}}" apply-styles>' +
+            '<div class="app-spinner {{size}} {{spinnerclass}}" ng-show="show" init-widget title="{{hint}}" apply-styles>' +
                 '<div class="spinner-message">' +
                     '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-show="show" ng-style="{\'font-size\' : iconsize}" ></i>' +
                     '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent" ></span>' +
