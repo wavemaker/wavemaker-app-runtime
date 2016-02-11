@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,6 +35,8 @@ import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.security.config.WMAppSecurityConfig;
 import com.wavemaker.runtime.security.model.SecurityInfo;
 import com.wavemaker.runtime.security.model.UserInfo;
+import com.wavemaker.runtime.security.token.Token;
+import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
 import com.wavemaker.studio.common.model.security.LoginConfig;
 import com.wavemaker.studio.common.model.security.RoleConfig;
 
@@ -50,6 +54,8 @@ public class SecurityService {
     private List<String> roles;
     private Boolean securityEnabled;
 
+    private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
+
     public SecurityService() {
     }
 
@@ -59,7 +65,7 @@ public class SecurityService {
      * @return true if the security is enabled; otherwise, false.
      */
     public Boolean isSecurityEnabled() {
-        if(securityEnabled == null) {
+        if (securityEnabled == null) {
             try {
                 WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
                 securityEnabled = wmAppSecurityConfig.isEnforceSecurity();
@@ -138,6 +144,7 @@ public class SecurityService {
      * If the {@link org.springframework.security.core.userdetails.UserDetails} obtained from authentication is an instance of {@link WMUserDetails},then user's long name is returned from WMUserDetails,
      * else returns the username from authentication Object.
      * Second case happens when services like ldap are used to authenticate
+     *
      * @return The user name.
      */
     public String getUserName() {
@@ -271,7 +278,7 @@ public class SecurityService {
             userInfo.setUserRoles(userRoles);
             if (userRoles.length > 0) {
                 final RoleConfig landingPageForRole = getLandingPageForRole(userRoles[0]);
-                if(landingPageForRole != null){
+                if (landingPageForRole != null) {
                     userInfo.setLandingPage(landingPageForRole.getLandingPage());
                 }
             }
@@ -283,5 +290,25 @@ public class SecurityService {
         securityInfo.setLoginConfig(getLoginConfig());
         securityInfo.setUserInfo(userInfo);
         return securityInfo;
+    }
+
+    public Token generateUserAccessToken() {
+        Authentication authentication = getAuthenticatedAuthentication();
+        if (authentication != null) {
+            return getWmTokenBasedAuthenticationService().generateToken(authentication);
+        }
+        throw new AuthenticationCredentialsNotFoundException("Require authentication to generate access token");
+    }
+
+
+    public WMTokenBasedAuthenticationService getWmTokenBasedAuthenticationService() {
+        if (wmTokenBasedAuthenticationService == null) {
+            try {
+                wmTokenBasedAuthenticationService = WMAppContext.getInstance().getSpringBean(WMTokenBasedAuthenticationService.class);
+            } catch (NoSuchBeanDefinitionException e) {
+                throw new AuthenticationServiceException("Security is not enabled");
+            }
+        }
+        return wmTokenBasedAuthenticationService;
     }
 }
