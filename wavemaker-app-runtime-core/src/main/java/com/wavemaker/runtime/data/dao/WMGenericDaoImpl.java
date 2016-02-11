@@ -130,7 +130,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                     if(collection.size() != 2)
                         throw new IllegalArgumentException("Between expression should have a collection/array of values with just two entries.");
 
-                    criterion = Restrictions.between(attributeName, collection.iterator().next(), collection.iterator().next());
+                    Iterator iterator = collection.iterator();
+                    criterion = Restrictions.between(attributeName, iterator.next(), iterator.next());
                 } else if (attributeValue.getClass().isArray()) {
                     Object[] array = (Object[]) attributeValue;
                     if(array.length != 2)
