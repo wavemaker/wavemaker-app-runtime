@@ -709,7 +709,7 @@ WM.module('wm.widgets.base')
 
                     /*In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped*/
                     /*So for procedures the watch expression will not have content in it*/
-                    if(variableObject && variableObject.serviceSubType !== 'procedure' && variableObject.category !== "wm.Variable") {
+                    if(variableObject && variableObject.serviceSubType !== 'procedure' && variableObject.category !== 'wm.Variable') {
                         watchExpr = watchExpr.replace('.dataSet[$i]', '.dataSet.content[$i]');
                     }
                     watchInfo = getUpdatedWatchExpr(watchExpr, acceptsArray, allowPageable, listenerFn);

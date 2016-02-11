@@ -48,8 +48,8 @@ Application
                 'use strict';
 
                 Application.$controller = $controllerProvider.register;
-                Application.$directive = $compileProvider.directive;
-                Application.$filter = $filterProvider.register;
+                Application.$directive  = $compileProvider.directive;
+                Application.$filter     = $filterProvider.register;
 
                 $httpProvider.useApplyAsync(true);
                 $controllerProvider.allowGlobals();
@@ -201,9 +201,7 @@ Application
                     var d = $q.defer();
                     // Only in case of deployed mobile apps, wait for deviceready event.
                     if (CONSTANTS.hasCordova) {
-                        $document.one('deviceready', function () {
-                            d.resolve();
-                        });
+                        $document.one('deviceready', d.resolve);
                     } else {
                         d.resolve();
                     }
@@ -343,7 +341,20 @@ Application
                         'resolve' : {
                             'securityConfig': function (AppManager) {
                                 return AppManager.loadSecurityConfig();
-                            }
+                            },
+                            // make sure that the app Variables are loaded before processing the page content
+                            'appVariables': ['$q', '$rootScope', function ($q, $rs) {
+                                var deferred = $q.defer();
+
+                                // for the prefab/template bundle type do not wait for the app variables.
+                                if ($rs.isApplicationType) {
+                                    $rs.$watch(':: Variables', deferred.resolve);
+                                } else {
+                                    deferred.resolve();
+                                }
+
+                                return deferred.promise;
+                            }]
                         }
                     };
 
