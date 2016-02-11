@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wavemaker.runtime.security.SecurityService;
 import com.wavemaker.runtime.security.WMCurrentUser;
 import com.wavemaker.runtime.security.model.SecurityInfo;
+import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.studio.common.util.WMUtils;
 import com.wavemaker.studio.common.wrapper.BooleanWrapper;
 import com.wavemaker.studio.common.wrapper.IntegerWrapper;
@@ -101,5 +102,11 @@ public class SecurityController {
     @ApiOperation(value = "returns security information")
     public SecurityInfo getSecurityInfo() {
         return securityService.getSecurityInfo();
+    }
+
+    @RequestMapping(value = "/token", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns access token for current logged in user")
+    public Token getAccessToken() {
+        return securityService.generateUserAccessToken();
     }
 }
