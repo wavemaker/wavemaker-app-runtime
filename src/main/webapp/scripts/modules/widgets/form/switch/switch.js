@@ -195,6 +195,9 @@ WM.module('wm.widgets.form')
                             };
 
                             scope.selectOpt = function ($event, $index) {
+
+                                $event.preventDefault();
+
                                 if (scope.disabled) {
                                     return;
                                 }
