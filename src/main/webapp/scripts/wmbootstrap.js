@@ -335,7 +335,7 @@ Application
             function ($routeProvider) {
                 'use strict';
 
-                var initText    = '<div>Loading Page Content...</div>',
+                var initText    = '<div></div>',
                     routeConfig = {
                         'template': initText,
                         'resolve' : {
@@ -446,7 +446,7 @@ Application
                     // hide the app-spinner
                     $timeout(function () {
                         wmSpinner.hide('globalSpinner');
-                    }, 30);
+                    }, 20);
                 });
 
                 // show the app-spinner on route change start
