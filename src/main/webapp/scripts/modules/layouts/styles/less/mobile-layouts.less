@@ -220,7 +220,7 @@
         text-align: right;
         .dropdown {
           background-color: inherit;
-          > .app-button {
+          > .app-button, > a {
             background-color: transparent;
             font-size: inherit;
             padding: 0 5pt;
@@ -228,12 +228,15 @@
             color: inherit;
             border: 0;
           }
-        }
-        .dropdown-menu {
-          position: absolute;
-          background-color: #fff;
-          right: 0;
-          left: auto;
+          .dropdown-menu {
+            position: absolute;
+            background-color: inherit;
+            right: 0;
+            left: auto;
+            >li >a {
+              color: inherit;
+            }
+          }
         }
       }
       > li {

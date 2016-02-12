@@ -953,7 +953,7 @@ WM.module('wm.widgets.base', [])
                         "itemlabel": {"type": "list", "options": [""]},
                         "itemlink": {"type": "list", "options": [""]},
                         "itemchildren": {"type": "list", "options": [""]},
-                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor'}, {'label': 'Menu', 'widgettype': 'wm-menu'}, {'label': 'Popover', 'widgettype': 'wm-popover'}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'glyphicon glyphicon-file', 'type': 'anchor'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'glyphicon glyphicon-file'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'glyphicon glyphicon-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'glyphicon glyphicon-file'} } }], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]}
@@ -989,7 +989,8 @@ WM.module('wm.widgets.base', [])
                         "displayimagesrc": {"type": "list", "options": [""]},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
                         "defaultview": {"type": "selectByObject", "options": [{"label": "action-view", "value": "actionview"}, {"label": "search-view", "value": "searchview"}], "value": "actionview", "displayfield": "label", "datafield": "value" },
-                        "query": {"type": "string", "bindable": "in-out-bound", "value": ""}
+                        "query": {"type": "string", "bindable": "in-out-bound", "value": ""},
+                        "addchild": {"hidelabel": true,"options":[{"label":"Anchor", "widgettype": "wm-anchor", "defaults": {"iconclass": "fa fa-plus", "caption": ""}}, {"label": "Menu", "widgettype": "wm-menu", "defaults": {"iconclass": "fa fa-plus", "type": "anchor", "caption": ""}}, {"label": "Popover", "widgettype": "wm-popover", "defaults": {"iconclass": "fa fa-plus", "caption": ""}}, {"label": "Button", "widgettype": "wm-button", "defaults": {"iconclass": "fa fa-plus", "class": "navbar-btn btn-primary", "caption": ""}}],"widget":"add-widget"}
                     },
                     'wm.layouts.listtemplate': {
                         "height": {"type": "string", "pattern": dimensionRegex},
