@@ -19,7 +19,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
             properties,
             propertyGroups,
             variableMap,
-            variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$';
+            variableRegex = '^[a-zA-Z_][A-Za-z0-9_-]+$',
+            matchModes = Utils.getMatchModes();
 
         /* make events compatible to select widget options */
         _.forEach(Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
@@ -79,7 +80,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "maxResults": {"disabled": false, "hide": false},
                     "designMaxResults": {"disabled": false, "hide": false},
                     "ignoreCase": {"type": "boolean", "value": false},
-                    "matchMode": {"type": "list", "options": {"start": "start", "end": "end", "anywhere": "anywhere", "exact": "exact"}, "value": "start"},
+                    "matchMode": {"type": "list", "options": matchModes, "value": "start"},
                     "orderBy": {"type": "string", "placeholder": "e.g: 'field1,asc&field2,desc'"},
                     "autoUpdate": {"value": true},
                     "startUpdate": {"value": false},

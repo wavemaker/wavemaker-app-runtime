@@ -58,11 +58,19 @@ wm.variables.services.$liveVariable = [
             },
         /*Function to convert values of date time types into default formats*/
             getDateInDefaultFormat = function (value, type) {
-                var epoch = moment(value).valueOf();
-                if (type === 'time' && !epoch) {
-                    epoch = moment(new Date().toDateString() + ' ' + value).valueOf();
+                var formatDate = function (dateValue) {
+                    var epoch = moment(dateValue).valueOf();
+                    if (type === 'time' && !epoch) {
+                        epoch = moment(new Date().toDateString() + ' ' + dateValue).valueOf();
+                    }
+                    return dateValue && $filter('date')(epoch, dateTimeFormats[type]);
+                };
+                if (WM.isArray(value)) {
+                    return _.map(value, function (val) {
+                        return formatDate(val);
+                    });
                 }
-                return value && $filter('date')(epoch, dateTimeFormats[type]);
+                return formatDate(value);
             },
         /* Function to process the response data if it contains composite keys. */
             processResponse = function (responseData) {
@@ -391,17 +399,22 @@ wm.variables.services.$liveVariable = [
                 var filterFields = [],
                     filterOptions = [],
                     orderByFields,
-                    orderByOptions = '';
+                    orderByOptions = '',
+                    getFieldType = function (options) {
+                        return options.type || getHibernateType(variable, options.fieldName) || getSqlType(variable, options.fieldName) || 'integer';
+                    };
                 /*get the filter fields from the variable*/
                 _.each(variable.filterFields, function (value, key) {
                     value.fieldName = key;
-                    value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];
+                    if (getFieldType(value) === 'string') {
+                        value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];
+                    }
                     filterFields.push(value);
                 });
                 /*get the filter fields from the options*/
                 _.each(options.filterFields, function (value, key) {
                     value.fieldName = key;
-                    value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[options.matchMode];
+                    value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[value.matchMode || options.matchMode];
                     filterFields.push(value);
                 });
                 if (variable.operation === 'read') {
@@ -409,7 +422,7 @@ wm.variables.services.$liveVariable = [
                         var attributeName,
                             fieldName = fieldOptions.fieldName,
                             fieldValue = fieldOptions.value,
-                            fieldType = fieldOptions.type || getHibernateType(variable, fieldName) || getSqlType(variable, fieldName) || "integer",
+                            fieldType = getFieldType(fieldOptions),
                             filterCondition = fieldOptions.filterCondition;
                         /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
                         if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
@@ -418,12 +431,14 @@ wm.variables.services.$liveVariable = [
                                     filterOptions.push(fieldName + "." + subFieldName + "=" + subFieldValue);
                                 }
                             });
-                        } else if (fieldValue) {
+                        } else if (WM.isDefined(fieldValue)) {
                             /*Based on the sqlType of the field, format the value & set the filter condition.*/
                             switch (fieldType) {
                             case "integer":
-                                fieldValue = parseInt(fieldValue, 10);
-                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
+                                    return parseInt(value, 10);
+                                }) : parseInt(fieldValue, 10);
+                                filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "big_decimal":
                             case "big_integer":
@@ -434,16 +449,18 @@ wm.variables.services.$liveVariable = [
                             case "short":
                             case "byte":
                             case "time":
-                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "date":
                             case "datetime":
                                 fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
-                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "timestamp":
-                                fieldValue = new Date(fieldValue).getTime();
-                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
+                                    return moment(value).valueOf();
+                                }) : moment(fieldValue).valueOf();
+                                filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
                                 break;
                             case "string":
                                 if (WM.isArray(fieldValue)) {
@@ -546,7 +563,7 @@ wm.variables.services.$liveVariable = [
                     "dataModelName": variable.liveSource,
                     "entityName": variable.type,
                     "page": options.page || 1,
-                    "size": CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20),
+                    "size": options.pagesize || (CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20)),
                     "sort": tableOptions.sort,
                     "data": tableOptions.filter,
                     "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl
@@ -562,36 +579,37 @@ wm.variables.services.$liveVariable = [
                     dataObj.data = response.content;
                     dataObj.pagingOptions = {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults};
 
-                    /* get the callback scope for the variable based on its owner */
-                    if (variableOwner === "App") {
-                        /* TODO: to look for a better option to get App/Page the controller's scope */
-                        callBackScope = $rootScope || {};
-                    } else {
-                        if (variable.prefabName) {
-                            callBackScope = options.scope || {};
+                    if (!options.skipDataSetUpdate) {
+                        /* get the callback scope for the variable based on its owner */
+                        if (variableOwner === "App") {
+                            /* TODO: to look for a better option to get App/Page the controller's scope */
+                            callBackScope = $rootScope || {};
                         } else {
-                            callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
+                            if (variable.prefabName) {
+                                callBackScope = options.scope || {};
+                            } else {
+                                callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
+                            }
                         }
-                    }
 
-                    if (CONSTANTS.isRunMode) {
-                        // EVENT: ON_RESULT
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, dataObj.data);
-                        // EVENT: ON_SUCCESS
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, dataObj.data);
-                        // EVENT: ON_PREPARESETDATA
-                        newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, dataObj.data);
-                        if (newDataSet) {
-                            //setting newDataSet as the response to service variable onPrepareSetData
-                            dataObj.data = newDataSet;
+                        if (CONSTANTS.isRunMode) {
+                            // EVENT: ON_RESULT
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variable, callBackScope, dataObj.data);
+                            // EVENT: ON_SUCCESS
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variable, callBackScope, dataObj.data);
+                            // EVENT: ON_PREPARESETDATA
+                            newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variable, callBackScope, dataObj.data);
+                            if (newDataSet) {
+                                //setting newDataSet as the response to service variable onPrepareSetData
+                                dataObj.data = newDataSet;
+                            }
+                            // EVENT: ON_CAN_UPDATE
+                            variable.canUpdate = true;
+                            initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
                         }
-                        // EVENT: ON_CAN_UPDATE
-                        variable.canUpdate = true;
-                        initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
+                        /* update the dataSet against the variable */
+                        updateVariableDataset(variable, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
                     }
-                    /* update the dataSet against the variable */
-                    updateVariableDataset(variable, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
-
                     /* if callback function is provided, send the data to the callback */
                     Utils.triggerFn(success, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);
 

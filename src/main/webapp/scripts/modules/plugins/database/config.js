@@ -418,10 +418,16 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "sequence": "sequence"
     },
     "DATABASE_MATCH_MODES": {
-        "start": "STARTING_WITH",
-        "end": "ENDING_WITH",
-        "anywhere": "CONTAINING",
-        "exact": "EQUALS"
+        "start"            : "STARTING_WITH",
+        "end"              : "ENDING_WITH",
+        "anywhere"         : "CONTAINING",
+        "exact"            : "EQUALS",
+        "notequals"        : "NOT_EQUALS",
+        "between"          : "BETWEEN",
+        "lessthan"         : "LESS_THAN",
+        "lessthanequal"    : "LESS_THAN_OR_EQUALS",
+        "greaterthan"      : "GREATER_THAN",
+        "greaterthanequal" : "GREATER_THAN_OR_EQUALS"
     },
     "ACTIONS": {
         "CREATE": "CREATE",

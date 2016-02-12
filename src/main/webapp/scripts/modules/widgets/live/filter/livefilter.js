@@ -93,17 +93,16 @@ WM.module('wm.widgets.live')
                     };
 
                     $scope.filter = function (options) {
-                        var formFields = [],
-                            query,
+                        var formFields = {},
                             variable = $scope.Variables[$scope.variableName],
                             page = 1,
                             orderBy,
-                            ORACLE_DB_SYSTEM = 'oracle',
-                            DB_SYS_KEY = 'dbSystem',
                             isValid,
                             dataModel = {},
-                            isOracleDbSystem = function () {
-                                return variable && variable[DB_SYS_KEY] && variable[DB_SYS_KEY].toLowerCase() === ORACLE_DB_SYSTEM;
+                            MATCH_MODES = {
+                                'BETWEEN' : 'between',
+                                'GREATER' : 'greaterthanequal',
+                                'LESSER'  : 'lessthanequal'
                             };
                         options = options || {};
                         page = options.page || page;
@@ -143,73 +142,47 @@ WM.module('wm.widgets.live')
                                 }
                             });
                         } catch (err) {
-                            if (err.message === "Abort") {
+                            if (err.message === 'Abort') {
                                 return;
                             }
                         }
                         /* Construct the formFields Variable to send it to the queryBuilder */
                         WM.forEach($scope.formFields, function (filterField) {
                             var fieldValue,
-                                noQuotes = false,
+                                matchMode,
                                 minValue = filterField._minValue,
                                 maxvalue = filterField._maxValue,
-                                colName = variable.getModifiedFieldName(filterField.field),
-                                minQuery,
-                                maxQuery,
-                                getFormattedDateTime = function (value, widget) {
-                                    var formattedValue;
-                                    if (!value) {
-                                        return undefined;
-                                    }
-                                    value = Utils.getValidDateObject(value);
-                                    /* Case: if the database type is oracle, for 'datetime' fields append native 'toDate' function in the query */
-                                    if (widget === 'datetime' && isOracleDbSystem()) {
-                                        formattedValue = $filter('date')(value, $scope.dateTimeFormats[widget + "_oracle"]);
-                                        formattedValue = "to_date('" + formattedValue + "', 'YYYY-MM-DD HH24:MI:SS')";
-                                        noQuotes = true;
-                                    } else {
-                                        formattedValue = $filter('date')(value, $scope.dateTimeFormats[widget]);
-                                    }
-                                    return formattedValue;
-                                };
+                                colName = variable.getModifiedFieldName(filterField.field);
                             /* if field is part of a related entity, column name will be 'entity.fieldName' */
                             if (filterField.isRelated) {
                                 colName += '.' + filterField.lookupField;
                             }
                             if (filterField.isRange) {
-                                if ($scope.isDateTime[filterField.widget]) {
-                                    minValue = getFormattedDateTime(minValue, filterField.widget);
-                                    maxvalue = getFormattedDateTime(maxvalue, filterField.widget);
-                                }
-                                if (noQuotes) {
-                                    minQuery = "(" + minValue + "<=" + colName;
-                                    maxQuery = colName + "<=" + maxvalue + ")";
-                                } else {
-                                    minQuery = "('" + minValue + "'<=" + colName;
-                                    maxQuery = colName + "<='" + maxvalue + "')";
-                                }
+                                /*Based on the min and max values, decide the matchmode condition*/
                                 if (minValue && maxvalue) {
-                                    formFields.push({
-                                        clause:  minQuery + " AND " + maxQuery
-                                    });
+                                    fieldValue = [minValue, maxvalue];
+                                    matchMode = MATCH_MODES.BETWEEN;
                                 } else if (minValue) {
-                                    formFields.push({
-                                        clause: minQuery + ")"
-                                    });
+                                    fieldValue = minValue;
+                                    matchMode = MATCH_MODES.GREATER;
                                 } else if (maxvalue) {
-                                    formFields.push({
-                                        clause: "(" + maxQuery
-                                    });
+                                    fieldValue = maxvalue;
+                                    matchMode = MATCH_MODES.LESSER;
+                                }
+                                if (WM.isDefined(fieldValue)) {
+                                    formFields[colName] = {
+                                        'value': fieldValue,
+                                        'matchMode': matchMode
+                                    };
                                 }
                             } else {
                                 switch (filterField.widget) {
                                 case 'select':
                                 case 'radioset':
-                                    if (filterField.type === "boolean") {
+                                    if (filterField.type === 'boolean') {
                                         if (WM.isDefined(filterField._value) && filterField._value !== '') {
                                             fieldValue = JSON.parse(filterField._value);
                                         }
-                                        noQuotes = true;
                                     } else {
                                         fieldValue = filterField._value;
                                     }
@@ -219,68 +192,48 @@ WM.module('wm.widgets.live')
                                         fieldValue = filterField._value;
                                     }
                                     break;
-                                case 'date':
-                                case 'time':
-                                case 'datetime':
-                                    fieldValue = getFormattedDateTime(filterField._value, filterField.widget);
-                                    break;
                                 case 'checkbox':
                                 case 'toggle':
                                     if (WM.isDefined(filterField._value) && filterField._value !== '') {
                                         fieldValue = JSON.parse(filterField._value);
                                     }
-                                    noQuotes = true;
                                     break;
                                 default:
                                     fieldValue = filterField._value;
                                     break;
                                 }
                                 if (WM.isDefined(fieldValue) && fieldValue !== '' && fieldValue !== null) {
-                                    formFields.push({
-                                        column: colName,
-                                        value: fieldValue,
-                                        noQuotes: noQuotes
-                                    });
+                                    formFields[colName] = {
+                                        'value': fieldValue
+                                    };
+                                    if (filterField.type === 'string') { //Only for string types, custom match modes are enabled
+                                        formFields[colName].matchMode = filterField.matchmode || variable.matchMode;
+                                    }
                                 }
                             }
                         });
 
-                        query = QueryBuilder.getQuery({
-                            "tableName": $scope.result.propertiesMap.entityName,
-                            "filterFields": formFields,
-                            "orderby": orderBy
-                        });
-
-                        /* Sending size = variable.maxResults because the number of records
-                         * should be fetched according to the page size of the widget bound
-                         * to result of livefilter. */
-                        QueryBuilder.executeQuery({
-                            "databaseName": variable.liveSource,
-                            "query": query,
-                            "page": page,
-                            "size": $scope.pagesize || 20,
-                            "nativeSql": false,
-                            "prefabName": variable.prefabName
-                        }, function (data) {
+                        variable.update({
+                            'filterFields'       : formFields,
+                            'orderBy'            : orderBy,
+                            'page'               : page,
+                            'pagesize'           : $scope.pagesize || 20,
+                            'skipDataSetUpdate' : true //dont update the actual variable dataset
+                        }, function (data, propertiesMap, pageOptions) {
                             if (data.error) {
                                 /*disable readonly and show the appropriate error*/
                                 wmToaster.show('error', 'ERROR', (data.error));
                                 onResult(data, false);
                             } else {
-                                var tempObj = {};
                                 /*Set the response in "result" so that all widgets bound to "result" of the live-filter are updated.*/
-                                $scope.result.data = data.content;
+                                $scope.result.data = data;
                                 /*Create an object as required by the formFields for live-variable so that all further calls to getData take place properly.
                                  * This is used by widgets such as dataNavigator.*/
-                                WM.forEach(formFields, function (filterField) {
-                                    tempObj[filterField.column] = {};
-                                    tempObj[filterField.column].value = filterField.value;
-                                });
-                                $scope.result.formFields = tempObj;
+                                $scope.result.formFields = Utils.getClonedObject(formFields);
                                 /*Set the paging options also in the result so that it could be used by the dataNavigator.
                                  * "currentPage" is set to "1" because each time the filter is applied, the dataNavigator should display results from the 1st page.*/
                                 $scope.result.pagingOptions = {
-                                    "dataSize": data.totalElements,
+                                    "dataSize": pageOptions.dataSize,
                                     "maxResults": $scope.pagesize || 20,
                                     "currentPage": page
                                 };

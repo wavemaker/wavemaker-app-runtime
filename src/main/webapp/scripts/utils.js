@@ -1625,6 +1625,14 @@ WM.module('wm.utils', [])
                 'evtVal'    : evtVal
             };
         }
+        function getMatchModes() {
+            return {
+                'start'    : 'start',
+                'end'      : 'end',
+                'anywhere' : 'anywhere',
+                'exact'    : 'exact'
+            };
+        }
         // expose the methods on the service instance.
 
         this.camelCase                  = WM.element.camelCase;
@@ -1727,4 +1735,5 @@ WM.module('wm.utils', [])
         this.getClonedObject            = getClonedObject;
         this.getValidDateObject         = getValidDateObject;
         this.getVariableDetails         = getVariableDetails;
+        this.getMatchModes              = getMatchModes;
     }]);
