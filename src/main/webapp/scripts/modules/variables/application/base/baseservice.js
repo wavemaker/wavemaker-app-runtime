@@ -1919,7 +1919,7 @@ wm.variables.services.Variables = [
                     store(variableOwner, variableName, createdVariable, true);
 
                     /*Update the tree with the newly added variable under the appropriate category(i.e., basic/service/live variables)*/
-                    $rootScope.$emit("update-variables-tree", {name: variableName, category: variableCategory, properties: createdVariable});
+                    $rootScope.$emit("update-variables-tree", createdVariable);
                 } else {
                     variableName = defaultName;
                 }
@@ -1979,7 +1979,7 @@ wm.variables.services.Variables = [
                     store(variableOwner, variableName, createdVariable, true);
 
                     /*Update the tree with the newly added variable under the appropriate category(i.e., basic/service/live variables)*/
-                    $rootScope.$emit("update-variables-tree", {name: variableName, category: variableCategory, properties: createdVariable});
+                    $rootScope.$emit("update-variables-tree", createdVariable);
                 } else {
                     variableName = defaultName;
                 }
