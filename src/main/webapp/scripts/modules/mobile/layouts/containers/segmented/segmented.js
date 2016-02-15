@@ -98,7 +98,7 @@ WM.module('wm.layouts.containers')
                                 },
                                 $segmentsCtr = $element.find(".app-segments-container"),
                                 $segment = $element.find(".app-segments-container > ul > li:nth-child(" + (index + 1) + ")"),
-                                scrollPos = $segmentsCtr.scrollLeft(),
+                                scrollPos = 0,
                                 left = $segment.position().left;
                             $scope.currentSelectedIndex = index;
                             $scope.onBeforesegmentchange(eventData);
