@@ -42,6 +42,11 @@
         function decode(s) {
             // convert to string
             s = "" + s;
+
+            if (window.atob) {
+                return window.atob(s);
+            }
+
             var pads, i, b10;
             var imax = s.length;
             if (imax == 0) {
@@ -93,6 +98,10 @@
         function encode(s) {
             if (arguments.length != 1) {
                 throw "SyntaxError: Not enough arguments";
+            }
+
+            if (window.btoa) {
+                return window.btoa(s);
             }
 
             var i, b10;
