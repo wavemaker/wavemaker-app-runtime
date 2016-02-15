@@ -309,6 +309,56 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "PASSWORD": "{WM_CLOUD_MYSQL_PASSWORD}"
         }
     },
+    "PERMISSIONS": {
+        "HSQLDB": {
+            "CREATE": false,
+            "UPDATE": false,
+            "DELETE": false,
+            "READ"  : true
+        },
+        "MySQL-Cloud": {
+            "CREATE": true,
+            "UPDATE": true,
+            "DELETE": true,
+            "READ"  : true
+        },
+        "MySQL": {
+            "CREATE": true,
+            "UPDATE": true,
+            "DELETE": true,
+            "READ"  : true
+        },
+        "DB2": {
+            "CREATE": false,
+            "UPDATE": false,
+            "DELETE": false,
+            "READ"  : true
+        },
+        "PostgreSQL":  {
+            "CREATE": true,
+            "UPDATE": true,
+            "DELETE": true,
+            "READ"  : true
+        },
+        "Oracle" : {
+            "CREATE": true,
+            "UPDATE": true,
+            "DELETE": true,
+            "READ"  : true
+        },
+        "SQLServer" : {
+            "CREATE": true,
+            "UPDATE": true,
+            "DELETE": true,
+            "READ"  : true
+        },
+        "Other": {
+            "CREATE": false,
+            "UPDATE": false,
+            "DELETE": false,
+            "READ"  : true
+        }
+    },
     "IDENTITY_GENERATORS" : ['integer', 'short', 'long', 'big_integer'],
     "DATABASE_NUMERIC_DATA_TYPES": {
         "short": "short",
