@@ -103,6 +103,7 @@ wm.variables.services.LogoutVariableService = ['Variables',
 
         logoutVariableObj = {
             logout: function (options, success, error) {
+                options = options || {};
                 options.scope = options.scope || this.activeScope;
                 methods.logout(this, options, function () {
                     onLogoutSuccess();
