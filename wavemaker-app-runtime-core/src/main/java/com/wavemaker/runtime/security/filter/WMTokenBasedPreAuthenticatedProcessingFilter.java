@@ -90,7 +90,9 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
         if (requiresAuthentication((HttpServletRequest) request)) {
             String token = getTokenFromReq((HttpServletRequest) request);
-            doAuthenticate(token, (HttpServletRequest) request, (HttpServletResponse) response);
+            if (token != null) {
+                doAuthenticate(token, (HttpServletRequest) request, (HttpServletResponse) response);
+            }
         }
 
         chain.doFilter(request, response);
