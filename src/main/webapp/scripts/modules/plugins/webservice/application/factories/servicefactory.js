@@ -239,16 +239,21 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         /* special case for user created query/procedure operations, actual type info is not given by swagger */
                         if ((operation.tags[0] === "QueryExecutionController" || operation.tags[0] === "ProcedureExecutionController") && dbOperationName !== "wm_custom" && dbOperationName !== "wm_custom_update") {
                             returnType = serviceObj.name + dbOperationName + "rtnType";
+                            schemaObject = operation.responses['200'].schema;
+                            isList = schemaObject.$ref === "#/definitions/Page";
                         } else if (operation.responses && operation.responses['200'].schema) {
                             schemaObject = operation.responses['200'].schema;
                             typeArgumentsObject = schemaObject["x-WM-TYPE_ARGUMENTS"];
+                            isList = schemaObject.$ref === "#/definitions/Page";
                             /*If the typeArguments is specified obtain the return type from it*/
                             if (typeArgumentsObject && typeArgumentsObject[0]) {
                                 schemaObject = typeArgumentsObject[0];
                             }
                             returnType = getReturnType(schemaObject, definitions);
                             returnFormat = schemaObject.format;
-                            isList = schemaObject.type && schemaObject.type === 'array';
+                            if (!isList) {
+                                isList = schemaObject.type && schemaObject.type === 'array';
+                            }
                         } else {
                             returnType = "void";
                         }

@@ -701,6 +701,10 @@ WM.module('wm.widgets.base')
                     variableName = watchExpr.split('.')[1],
                     variableObject = variableName && scope.Variables && scope.Variables[variableName];
 
+                function isPageable(variable) {
+                    return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === "DataService" && variable.controller !== "ProcedureExecution") || variable.category === "wm.LiveVariable");
+                }
+
                 if (isArrayTypeExpr(watchExpr)) {
                     if (CONSTANTS.isStudioMode) {
                         listenerFn();
@@ -709,7 +713,7 @@ WM.module('wm.widgets.base')
 
                     /*In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped*/
                     /*So for procedures the watch expression will not have content in it*/
-                    if(variableObject && variableObject.serviceSubType !== 'procedure' && variableObject.category !== 'wm.Variable') {
+                    if(variableObject && isPageable(variableObject)) {
                         watchExpr = watchExpr.replace('.dataSet[$i]', '.dataSet.content[$i]');
                     }
                     watchInfo = getUpdatedWatchExpr(watchExpr, acceptsArray, allowPageable, listenerFn);
