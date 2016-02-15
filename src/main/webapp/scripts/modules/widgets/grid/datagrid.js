@@ -709,6 +709,7 @@ $.widget('wm.datagrid', {
         this._prepareHeaderData();
         this._prepareData();
         this._render();
+        this.setColGroupWidths();
     },
 
     refreshGrid: function () {
@@ -1571,8 +1572,7 @@ $.widget('wm.datagrid', {
             self = this,
             cols;
         function toggleSelectAll(e) {
-            var $table = $(e.target).closest('table'),
-                $checkboxes = $('tbody tr:visible td input:checkbox:not(:disabled)', $table),
+            var $checkboxes = $('tbody tr:visible td input:checkbox:not(:disabled)', self.gridElement),
                 checked = this.checked;
             $checkboxes.prop('checked', checked);
             $checkboxes.each(function () {

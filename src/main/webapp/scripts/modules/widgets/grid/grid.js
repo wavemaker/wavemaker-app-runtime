@@ -1658,6 +1658,8 @@ WM.module('wm.widgets.grid')
                 if (CONSTANTS.isStudioMode) {
                     /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
                     $scope.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
+                    $scope.widgetProps.multiselect.show = $scope.isPartOfLiveGrid ? false : $scope.widgetProps.multiselect.show;
+                    $scope.widgetProps.multiselect.showindesigner = $scope.isPartOfLiveGrid ? false : $scope.widgetProps.multiselect.showindesigner;
                     /* In Studio, disabling readonlygrid property if bound to a service variable or view */
                     if (!($scope.binddataset && (isBoundToServiceVariable || isBoundToStaticVariable || isBoundToServiceVariableSelectedItem)) && !isBoundToView()) {
                         $scope.widgetProps.readonlygrid.disabled = false;
