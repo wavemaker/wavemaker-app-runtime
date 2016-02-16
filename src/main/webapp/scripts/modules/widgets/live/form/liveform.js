@@ -584,23 +584,25 @@ WM.module('wm.widgets.live')
                 $scope.changeDataObject = function (dataObj) {
                     var primaryKey,
                         href;
-                    $scope.formFields.forEach(function (formField) {
-                        if (isTimeType(formField)) {
-                            formField.value = getValidTime(dataObj[formField.key]);
-                        } else if (formField.type === "blob") {
-                            if ($scope.dataset.propertiesMap) {
-                                var primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
-                                primaryKey = primaryKeys.join();
-                                href = (($scope.variableObj.prefabName !== "" && $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
-                                href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + formField.key + '?' + Math.random();
-                                formField.href = href;
+                    if ($scope.formFields) {
+                        $scope.formFields.forEach(function (formField) {
+                            if (isTimeType(formField)) {
+                                formField.value = getValidTime(dataObj[formField.key]);
+                            } else if (formField.type === "blob") {
+                                if ($scope.dataset.propertiesMap) {
+                                    var primaryKeys = $scope.dataset.propertiesMap.primaryFields || $scope.dataset.propertiesMap.primaryKeys;
+                                    primaryKey = primaryKeys.join();
+                                    href = (($scope.variableObj.prefabName !== "" && $scope.variableObj.prefabName !== undefined) ? "prefabs/" + $scope.variableObj.prefabName : "services") + '/';
+                                    href = href + $scope.variableObj.liveSource + '/' + $scope.variableObj.type + '/' + dataObj[primaryKey] + '/content/' + formField.key + '?' + Math.random();
+                                    formField.href = href;
+                                }
+                                formField.value = dataObj[formField.key];
+                            } else {
+                                formField.value = dataObj[formField.key];
                             }
-                            formField.value = dataObj[formField.key];
-                        } else {
-                            formField.value = dataObj[formField.key];
-                        }
-                    });
-                    $scope.setPrevDataValues();
+                        });
+                        $scope.setPrevDataValues();
+                    }
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
@@ -934,42 +936,44 @@ WM.module('wm.widgets.live')
                             if (dependsonWidget) {
                                 scope.subscribedWidget = dependsonWidget;
                                 eventChangeHandler = function (event, widgetid, eventName) {
-                                    /* handle operation change */
-                                    switch (eventName) {
-                                    case 'create':
-                                        scope.isSelected = true;
-                                        scope.rowdata = '';
-                                        /*In case of dialog layout set the previous data Array before clearing off*/
-                                        if (scope.isLayoutDialog) {
-                                            scope.setPrevformFields(scope.formFields);
-                                            scope.formFields = [];
+                                    if (widgetid === scope.subscribedWidget.name) {
+                                        /* handle operation change */
+                                        switch (eventName) {
+                                        case 'create':
+                                            scope.isSelected = true;
+                                            scope.rowdata = '';
+                                            /*In case of dialog layout set the previous data Array before clearing off*/
+                                            if (scope.isLayoutDialog) {
+                                                scope.setPrevformFields(scope.formFields);
+                                                scope.formFields = [];
+                                            }
+                                            scope.new();
+                                            if (scope.isLayoutDialog) {
+                                                DialogService.showDialog(scope._dialogid, { 'resolve': {}, 'scope' : scope });
+                                            }
+                                            break;
+                                        case 'update':
+                                            scope.isSelected = true;
+                                            /*In case of dialog layout set the previous data Array before clearing off*/
+                                            if (scope.isLayoutDialog) {
+                                                scope.setPrevformFields(scope.formFields);
+                                                scope.formFields = [];
+                                            }
+                                            scope.edit();
+                                            scope.$root.$safeApply(scope);
+                                            if (scope.isLayoutDialog) {
+                                                /*Open the dialog in view or edit mode based on the defaultmode property*/
+                                                scope.isUpdateMode = true;
+                                                DialogService.showDialog(scope._dialogid, {'resolve': {}, 'scope': scope});
+                                            }
+                                            break;
+                                        case 'read':
+                                            scope.isUpdateMode = false;
+                                            break;
+                                        case 'delete':
+                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject(scope.subscribedWidget.selecteditem)});
+                                            break;
                                         }
-                                        scope.new();
-                                        if (scope.isLayoutDialog) {
-                                            DialogService.showDialog(scope._dialogid, { 'resolve': {}, 'scope' : scope });
-                                        }
-                                        break;
-                                    case 'update':
-                                        scope.isSelected = true;
-                                        /*In case of dialog layout set the previous data Array before clearing off*/
-                                        if (scope.isLayoutDialog) {
-                                            scope.setPrevformFields(scope.formFields);
-                                            scope.formFields = [];
-                                        }
-                                        scope.edit();
-                                        scope.$root.$safeApply(scope);
-                                        if (scope.isLayoutDialog) {
-                                            /*Open the dialog in view or edit mode based on the defaultmode property*/
-                                            scope.isUpdateMode = true;
-                                            DialogService.showDialog(scope._dialogid, {'resolve': {}, 'scope': scope});
-                                        }
-                                        break;
-                                    case 'read':
-                                        scope.isUpdateMode = false;
-                                        break;
-                                    case 'delete':
-                                        scope.subscribedWidget.call('delete', {"row": scope.constructDataObject(scope.formFields)});
-                                        break;
                                     }
                                 };
                                 handlers.push(dependsonWidget.$watch('selectedItems', function (newVal) {

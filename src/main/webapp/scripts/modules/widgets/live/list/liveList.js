@@ -549,6 +549,11 @@ WM.module('wm.widgets.live')
                 });
                 return items;
             }
+            //Triggers event to update or delete list item
+            function triggerWMEvent($is, evt, name) {
+                $is.selecteditem = WM.element(evt.delegateTarget).item;
+                $rs.$emit('wm-event', $is.name, name);
+            }
 
             function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
@@ -617,6 +622,14 @@ WM.module('wm.widgets.live')
                         isMultiSelect = true;
                         $rs.$safeApply($is);
                     }
+                });
+                //Triggered on click of edit action
+                $el.on('click', '[class*="edit-list-item"]', function (evt) {
+                    triggerWMEvent($is, evt, 'update');
+                });
+                //Triggered on click of delete action
+                $el.on('click', '[class*="delete-list-item"]', function (evt) {
+                    triggerWMEvent($is, evt, 'delete');
                 });
             }
 
