@@ -134,7 +134,7 @@ WM.module('wm.layouts.containers')
                     }
                     scope.formdata = formData;
                     //If its a service variable call setInput and assign form data and invoke the service
-                    if (formVariable.category === 'wm.ServiceVariable') {
+                    if (formVariable && formVariable.category === 'wm.ServiceVariable') {
                         formVariable.setInput(formData);
                         formVariable.update({}, function () {
                             scope.statusMessage = {
