@@ -65,7 +65,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         applyDataModel: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/apply",
+            url: "services/projects/:projectID/datamodels/update?serviceId=:serviceId",
             method: "POST"
         },
         revertDataModel: {
@@ -281,11 +281,11 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "GET"
         },
         getConnectionProperties: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/connectionproperties",
+            url: "services/projects/:projectID/database/connectionproperties?serviceId=:serviceId",
             method: "GET"
         },
         updateConnectionProperties: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/connectionproperties",
+            url: "services/projects/:projectID/database/connectionproperties?serviceId=:serviceId",
             method: "PUT"
         }
     }

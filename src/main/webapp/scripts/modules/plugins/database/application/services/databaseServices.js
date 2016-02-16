@@ -329,7 +329,7 @@ wm.plugins.database.services.DatabaseService = [
                         "username": params.username,
                         "password": params.password,
                         "url": params.url,
-                        "schemaFilter": params.schemaFilter.replace(/ /g, ''),
+                        "schemaFilter": params.schemaFilter,
                         "tableFilter": null,
                         "driverClass": params.driverClass,
                         "dialect": params.dialect,
@@ -554,7 +554,7 @@ wm.plugins.database.services.DatabaseService = [
                     action: "applyDataModel",
                     urlParams: {
                         projectID: params.projectID,
-                        dataModelName: params.dataModelName
+                        serviceId: params.dataModelName
                     }
                 }, successCallback, failureCallback);
             },
@@ -1479,7 +1479,7 @@ wm.plugins.database.services.DatabaseService = [
                     action: "getConnectionProperties",
                     urlParams: {
                         projectID: params.projectID,
-                        dataModelName: params.dataModelName
+                        serviceId: params.dataModelName
                     }
                 }, successCallback, failureCallback);
             },
@@ -1508,7 +1508,7 @@ wm.plugins.database.services.DatabaseService = [
                     action: "updateConnectionProperties",
                     urlParams: {
                         projectID: params.projectID,
-                        dataModelName: params.dataModelName
+                        serviceId: params.dataModelName
                     },
                     data: params.data
                 }, successCallback, failureCallback);
