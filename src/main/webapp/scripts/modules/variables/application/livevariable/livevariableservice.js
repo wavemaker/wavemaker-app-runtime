@@ -429,7 +429,7 @@ wm.variables.services.$liveVariable = [
                                     filterOptions.push(fieldName + "." + subFieldName + "=" + subFieldValue);
                                 }
                             });
-                        } else if (WM.isDefined(fieldValue) && fieldValue !== null) {
+                        } else if (WM.isDefined(fieldValue) && fieldValue !== null && fieldValue !== '') {
                             /*Based on the sqlType of the field, format the value & set the filter condition.*/
                             switch (fieldType) {
                             case "integer":
