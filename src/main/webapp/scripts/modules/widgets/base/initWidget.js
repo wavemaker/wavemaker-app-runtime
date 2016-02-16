@@ -156,7 +156,10 @@ WM.module('wm.widgets.base')
                                 locals = locals || {};
                                 locals.iScope = $is;
                                 locals.$s  = $s;
-                                return getParentMethod($s, locals);
+
+                                var retVal = getParentMethod($s, locals);
+                                $rs.$safeApply($s);
+                                return retVal;
                             };
                         }
                     });
@@ -278,7 +281,10 @@ WM.module('wm.widgets.base')
                                 if (!locals.$scope) {
                                     locals.$scope = $is;
                                 }
-                                return fn($s, locals);
+
+                                var retVal = fn($s, locals);
+                                $rs.$safeApply($s);
+                                return retVal;
                             };
                         }
 
