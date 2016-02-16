@@ -134,37 +134,35 @@ wm.variables.services.$liveVariable = [
                 }
                 return colArr;
             },
+            getHibernateOrSqlType = function (variable, fieldName, type) {
+                var columns = variable.propertiesMap.columns,
+                    column,
+                    relatedCols,
+                    relatedCol;
+                if (_.includes(fieldName, '.')) {
+                    column = _.find(columns, function (col) {
+                        return col.fieldName === fieldName.split('.')[0];
+                    });
+                    relatedCols = column && column.columns;
+                    relatedCol = _.find(relatedCols, function (col) {
+                        return col.fieldName === fieldName.split('.')[1];
+                    });
+                    return relatedCol && relatedCol[type];
+                }
+                column = _.find(columns, function (col) {
+                    return col.fieldName === fieldName;
+                });
+                return column && column[type];
+            },
             /*Function to get the hibernateType of the specified field.*/
             getHibernateType = function (variable, fieldName) {
-                var columns = variable.propertiesMap.columns,
-                    columnsCount = columns.length,
-                    index,
-                    column;
-                /*Loop through the columns of the liveVariable*/
-                for (index = 0; index < columnsCount; index += 1) {
-                    column = columns[index];
-                    /*Return the type of the column when the fieldName matches the current column.*/
-                    if (column.fieldName === fieldName) {
-                        return column.hibernateType;
-                    }
-                }
+                return getHibernateOrSqlType(variable, fieldName, 'hibernateType');
             },
-        /*Function to get the sqlType of the specified field.*/
+            /*Function to get the sqlType of the specified field.*/
             getSqlType = function (variable, fieldName) {
-                var columns = variable.propertiesMap.columns,
-                    columnsCount = columns.length,
-                    index,
-                    column;
-                /*Loop through the columns of the liveVariable*/
-                for (index = 0; index < columnsCount; index += 1) {
-                    column = columns[index];
-                    /*Return the type of the column when the fieldName matches the current column.*/
-                    if (column.fieldName === fieldName) {
-                        return column.type;
-                    }
-                }
+                return getHibernateOrSqlType(variable, fieldName, 'type');
             },
-        /*Function to check if the specified field has a one-to-many relation or not.*/
+            /*Function to check if the specified field has a one-to-many relation or not.*/
             isRelatedFieldMany = function (variable, fieldName) {
                 var columns = variable.propertiesMap.columns,
                     columnsCount = columns.length,
@@ -431,7 +429,7 @@ wm.variables.services.$liveVariable = [
                                     filterOptions.push(fieldName + "." + subFieldName + "=" + subFieldValue);
                                 }
                             });
-                        } else if (WM.isDefined(fieldValue)) {
+                        } else if (WM.isDefined(fieldValue) && fieldValue !== null) {
                             /*Based on the sqlType of the field, format the value & set the filter condition.*/
                             switch (fieldType) {
                             case "integer":
