@@ -2,9 +2,9 @@
 /*jslint nomen: true*/
 
 WM.module('wm.widgets.basic')
-    .service('wmToaster', ['toaster', function (toaster) {
+    .service('wmToaster', ['toaster','$rootScope', '$compile', '$timeout', function (toaster, $rs, $compile, $timeout) {
         'use strict';
-        var _showToaster = function (type, title, desc, timeout, bodyOutputType) {
+        var _showToaster = function (type, title, desc, timeout, bodyOutputType, onClickHandler, onHideCallback) {
             /*pop the toaster only if either title or description are defined*/
             if (title || desc) {
                 /*hide all previous toasters*/
@@ -19,9 +19,29 @@ WM.module('wm.widgets.basic')
                     }
                 }
 
-                toaster.pop(type, title, desc, timeout, bodyOutputType);
+                toaster.pop(type, title, desc, timeout, bodyOutputType, onClickHandler, undefined, undefined, undefined, onHideCallback);
             }
-        };
+        },  classlist = [],
+            idCount = 0,
+            idMapper = {};
+        //renders the custom notification call
+        function renderNotification(template, newClass, timeout, position, onclickHandler, onHideCallback) {
+            $rs.toasterClasses = {};
+            $rs.toasterClasses[newClass] = 'custom-toaster ' + newClass;
+            if (!_.includes(classlist, newClass)) {
+                idMapper[newClass] = ++idCount;
+            }
+            var trustedHtml = $compile(template)($rs),
+                toastTemplate = '<toaster-container name = "' + newClass + '" toaster-options="{\'limit\': 1,\'time-out\': 2000, \'position-class\': \'' + position + '\', \'icon-classes\': toasterClasses, \'toaster-id\': ' + idMapper[newClass] + '}"></toaster-container>';
+            if (!_.includes(classlist, newClass)) {
+                WM.element('body').append($compile(toastTemplate)($rs));
+                classlist.push(newClass);
+            }
+            $rs.$safeApply($rs);
+            $timeout(function () {
+                toaster.pop({ type: newClass, body: trustedHtml[0].outerHTML, onHideCallback: onHideCallback, toasterId: idMapper[newClass], timeout: timeout, bodyOutputType: 'trustedHtml', clickHandler: onclickHandler});
+            }, 350);
+        }
 
         return {
 
@@ -102,9 +122,12 @@ WM.module('wm.widgets.basic')
              * @param {string} title title to be displayed on the top
              * @param {string} desc of the notification
              * @param {string} timeout of the notification
+             * @param {string} bodyOutputType of the notification
+             * @param {function} onClickHandler of the notification
+             * @param {function} onHideCallback of the notification
              */
-            show: function (type, title, desc, timeout, bodyOutputType) {
-                _showToaster(type, title, desc, timeout, bodyOutputType);
+            show: function (type, title, desc, timeout, bodyOutputType, onClickHandler, onHideCallback) {
+                _showToaster(type, title, desc, timeout, bodyOutputType, onClickHandler, onHideCallback);
             },
 
             /**
@@ -118,6 +141,26 @@ WM.module('wm.widgets.basic')
              */
             hide: function () {
                 WM.element('.toast').hide();
+            },
+
+            /**
+             * @ngdoc function
+             * @name $wmToaster#createCustomNotification
+             * @methodOf wm.widgets.basic.$wmToaster
+             * @function
+             *
+             * @description
+             * pops-up a toaster depending on the page name parameter 'content' .
+             *
+             * @param {string} content the page name you want to display
+             * @param {string} className the notification variable name
+             * @param {number} timeout the duration of the notification to be displayed
+             * @param {string} position the position of the notification
+             * @param {method} onClickHandler handles the method of click on notification
+             * @param {method} onHideCallback handles the method on hide of notification
+             */
+            createCustomNotification: function (content, className, timeout, position, onClickHandler, onHideCallback) {
+                renderNotification('<wm-container content="' + content + '"></wm-container>', className, timeout, position, onClickHandler, onHideCallback);
             }
         };
     }]);
