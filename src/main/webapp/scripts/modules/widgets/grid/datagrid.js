@@ -1,4 +1,4 @@
-/*global $, window, angular, moment, WM, _*/
+/*global $, window, angular, moment, WM, _, FormData, document, parseInt, Blob*/
 /*jslint todo: true*/
 /**
  * JQuery Datagrid widget.
@@ -617,11 +617,13 @@ $.widget('wm.datagrid', {
                 var fields = colDef.field.split('.'),
                     text = item,
                     j,
-                    len = fields.length;
+                    len = fields.length,
+                    key,
+                    isArray;
 
                 for (j = 0; j < len; j++) {
-                    var key = fields[j],
-                        isArray = undefined;
+                    key = fields[j];
+                    isArray = undefined;
                     if (key.indexOf('[0]') !== -1) {
                         key = key.replace('[0]', '');
                         isArray = true;
@@ -975,7 +977,7 @@ $.widget('wm.datagrid', {
     /**
      * deselect a row
      */
-    deselectRow: function(row){
+    deselectRow: function (row) {
         this.selectRow(row, false);
     },
 
@@ -1120,12 +1122,14 @@ $.widget('wm.datagrid', {
                 colDef = self.preparedHeaderData[colId],
                 fields = colDef.field.split('.'),
                 $ie = $el.find('input'),
-                text = self._getValue($ie, fields);
+                text = self._getValue($ie, fields),
+                k,
+                d;
             if (fields.length === 1) {
                 isDataChanged = !text && rowData[colDef.field] === null ? false : !(rowData[colDef.field] == text);
             } else {
-                var d = rowData[fields[0]];
-                for (var k = 1; k < fields.length - 1; k++) {
+                d = rowData[fields[0]];
+                for (k = 1; k < fields.length - 1; k++) {
                     if (this.Utils.isDefined(d) && fields[k] in d) {
                         d = d[fields[k]];
                     }
@@ -1151,7 +1155,10 @@ $.widget('wm.datagrid', {
             rowId = parseInt($row.attr('data-row-id'), 10),
             isNewRow,
             $editableElements,
-            isDataChanged = false;
+            isDataChanged = false,
+            formData,
+            isFormDataSupported,
+            multipartData;
         if (e.data.action === 'edit') {
             if ($.isFunction(this.options.beforeRowUpdate)) {
                 this.options.beforeRowUpdate(rowData, e);
@@ -1171,7 +1178,6 @@ $.widget('wm.datagrid', {
                     id = $el.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id],
                     editableTemplate,
-                    $input,
                     customExp,
                     originalTemplate,
                     compiledTemplate,
@@ -1189,16 +1195,14 @@ $.widget('wm.datagrid', {
                         $el.find('input').val(cellText);
                     } else {
                         if (colDef.formatpattern) {
-                            $el.addClass('cell-editing editable-expression').html(editableTemplate).data(
-                                'originalText', cellText);
+                            $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
                             // Put the original value while editing, not the formatted value.
                             $el.find('input').val(rowData[colDef.field] || self._getColumnValue(colDef, rowData));
                         } else if (colDef.customExpression) {
                             customExp = colDef.customExpression;
                             originalTemplate = customExp;
                             compiledTemplate = self.options.getCompiledTemplate(customExp, rowData, colDef, true);
-                            $el.addClass('cell-editing editable-expression').data(
-                                'originalValue', {'template': originalTemplate, 'rowData': angular.copy(rowData), 'colDef': colDef});
+                            $el.addClass('cell-editing editable-expression').data('originalValue', {'template': originalTemplate, 'rowData': _.cloneDeep(rowData), 'colDef': colDef});
                             if (colDef.editWidgetType) {
                                 $el.html(editableTemplate);
                             } else {
@@ -1222,9 +1226,8 @@ $.widget('wm.datagrid', {
             $editableElements = $row.find('td.cell-editing');
             isNewRow = rowId >= this.preparedData.length;
             if (e.data.action === 'save') {
-                var isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob),
-                    formData,
-                    multipartData = false;
+                isFormDataSupported = (window.File && window.FileReader && window.FileList && window.Blob);
+                multipartData = false;
                 if (isFormDataSupported) {
                     /* Angular does not bind file values so using native object to send files */
                     formData = new FormData();
@@ -1244,13 +1247,16 @@ $.widget('wm.datagrid', {
                             colDef = self.preparedHeaderData[colId],
                             fields = colDef.field.split('.'),
                             $ie = $el.find('input'),
-                            text = self._getValue($ie, fields);
+                            text = self._getValue($ie, fields),
+                            d,
+                            k,
+                            x;
                         $el.removeClass('datetime-wrapper');
                         if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
                             text = $el.children().isolateScope().datavalue;
                         }
                         if (colDef.type === 'timestamp' && (!colDef.editWidgetType || colDef.editWidgetType === 'text')) {
-                            text = parseInt(text);
+                            text = parseInt(text, 10);
                         }
                         if (fields.length === 1) {
                             if (colDef.editWidgetType === 'upload') {
@@ -1262,8 +1268,8 @@ $.widget('wm.datagrid', {
                                 rowData[colDef.field] = text;
                             }
                         } else if (!isNewRow && fields[0] in rowData) {
-                            var d = rowData[fields[0]];
-                            for (var k = 1; k < fields.length - 1; k++) {
+                            d = rowData[fields[0]];
+                            for (k = 1; k < fields.length - 1; k++) {
                                 if (this.Utils.isDefined(d) && fields[k] in d) {
                                     d = d[fields[k]];
                                 }
@@ -1273,15 +1279,15 @@ $.widget('wm.datagrid', {
                             if (!(fields[0] in rowData)) {
                                 rowData[fields[0]] = {};
                             }
-                            var x = rowData[fields[0]];
-                            for (var k = 1; k < fields.length - 1; k++) {
+                            x = rowData[fields[0]];
+                            for (k = 1; k < fields.length - 1; k++) {
                                 if (this.Utils.isDefined(x) && !(fields[k] in x)) {
                                     x[fields[k]] = {};
                                 }
                             }
                             x[fields[k]] = text;
                         }
-                    })
+                    });
                     if (multipartData) {
                         formData.append('wm_data_json', new Blob([JSON.stringify(rowData)], {
                             type: 'application/json'
@@ -1304,7 +1310,7 @@ $.widget('wm.datagrid', {
                 if (isNewRow) {
                     $row.remove();
                     if (!this.preparedData.length) {
-                        this.setStatus('nodata', this.dataStatus['nodata']);
+                        this.setStatus('nodata', this.dataStatus.nodata);
                     }
                     return;
                 }
@@ -1319,7 +1325,7 @@ $.widget('wm.datagrid', {
             }
         }
     },
-    cancelEdit: function($editableElements) {
+    cancelEdit: function ($editableElements) {
         var self = this;
         $editableElements.each(function () {
             var $el = $(this),
@@ -1376,14 +1382,16 @@ $.widget('wm.datagrid', {
         var $row = $(e.target).closest('tr'),
             rowId = $row.attr('data-row-id'),
             rowData = this.options.data[rowId],
-            isNewRow = rowId >= this.preparedData.length;
+            isNewRow = rowId >= this.preparedData.length,
+            className,
+            isActiveRow;
         if (isNewRow) {
             $row.remove();
             return;
         }
         if ($.isFunction(this.options.onRowDelete)) {
-            var className = this.options.cssClassNames['deleteRow'],
-                isActiveRow = $row.attr('class').indexOf('active') !== -1;
+            className = this.options.cssClassNames.deleteRow;
+            isActiveRow = $row.attr('class').indexOf('active') !== -1;
             if (isActiveRow) {
                 $row.removeClass('active');
             }
@@ -1510,7 +1518,8 @@ $.widget('wm.datagrid', {
     _renderSearch: function () {
         var $htm = $(this._getSearchTemplate()),
             self = this,
-            $searchBox;
+            $searchBox,
+            placeholder;
 
         function search(e) {
             e.stopPropagation();
@@ -1540,12 +1549,12 @@ $.widget('wm.datagrid', {
             var colDefIndex = $htm.find('option:selected').attr('data-coldef-index'),
                 colDef = self.options.colDefs[colDefIndex];
             if (colDef) {
-                var placeholder = colDef.searchPlaceholder || 'Search';
+                placeholder = colDef.searchPlaceholder || 'Search';
                 $htm.find('[data-element="dgSearchText"]').attr('placeholder', placeholder);
             }
             $searchBox.val('');
             // If "No data found" message is shown, and user changes the selection, then fetch all data.
-            if (self.dataStatusContainer.find('.status').text() === self.options.dataStates['nodata']) {
+            if (self.dataStatusContainer.find('.status').text() === self.options.dataStates.nodata) {
                 search(e);
             }
         });
@@ -1569,8 +1578,7 @@ $.widget('wm.datagrid', {
     _renderHeader: function () {
         var $colgroup = $(this._getHeaderTemplate().colgroup),
             $header = $(this._getHeaderTemplate().header),
-            self = this,
-            cols;
+            self = this;
         function toggleSelectAll(e) {
             var $checkboxes = $('tbody tr:visible td input:checkbox:not(:disabled)', self.gridElement),
                 checked = this.checked;
@@ -1642,7 +1650,7 @@ $.widget('wm.datagrid', {
                 }
             });
             /*On scroll of the content table, scroll the header*/
-            this.gridElement.parent().scroll(function() {
+            this.gridElement.parent().scroll(function () {
                 self.gridHeaderElement.parent().prop("scrollLeft", this.scrollLeft);
             });
         }
@@ -1725,6 +1733,17 @@ $.widget('wm.datagrid', {
         this.options[key] = value;
         if (key === 'height') {
             this.gridContainer.find('.app-grid-content').css(key, value);
+        }
+    },
+    /*Change the column header title. function will be called if display name changes in runmode*/
+    setColumnProp: function (fieldName, property, val) {
+        var $col;
+        switch (property) {
+        case 'displayName':
+            $col = this.gridHeader.find('th[data-col-field="' + fieldName + '"]');
+            $col.attr('title', val);
+            $col.find('.header-data').text(val);
+            break;
         }
     },
 

@@ -2066,6 +2066,15 @@ WM.module('wm.widgets.grid')
 
                         scope.ColumnDef.prototype = new wm.baseClasses.FieldDef();
 
+                        scope.ColumnDef.prototype.setProperty = function (property, newval) {
+                            this.$is.setProperty.call(this, property, newval);
+                            if (property === 'displayName') {
+                                scope.datagridElement.datagrid('setColumnProp', this.field, property, newval);
+                            } else {
+                                this.$is.reRender && this.$is.reRender();
+                            }
+                        };
+
                         var index,
                             exprWatchHandlers = [],
                             expr,
@@ -2114,8 +2123,9 @@ WM.module('wm.widgets.grid')
                             };
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(scope.$parent, expression, function (newVal) {
-                                scope.$parent.fieldDefs[index][property] = newVal;
-                                scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.$parent.fieldDefs));
+                                if (newVal) {
+                                    scope.$parent.fieldDefs[index].setProperty(property, newVal);
+                                }
                             }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                         }
 
