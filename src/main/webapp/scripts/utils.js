@@ -1635,20 +1635,26 @@ WM.module('wm.utils', [])
         }
 
         // The bound value is replaced with {{item.fieldname}} here. This is needed by the liveList when compiling inner elements
-        function updateTmplAttrs(parentDataSet, idx, node) {
-            var _parentDataSet = parentDataSet.replace('bind:', ''),
-                regex = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g');
-            _.forEach(node.attributes, function (attr) {
-                var value = attr.value;
+        function updateTmplAttrs($root, parentDataSet) {
 
-                if (_.startsWith(value, 'bind:')) {
-                    /*if the attribute value is "bind:xxxxx.xxxx", either the dataSet/scopeDataSet has to contain "xxxx.xxxx" */
-                    if (_.includes(value, _parentDataSet)) {
-                        value = value.replace('bind:', '');
-                        value = value.replace(regex, 'item');
-                        attr.value = '{{' + value + '}}';
+            var _parentDataSet = parentDataSet.replace('bind:', ''),
+                regex          = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g');
+
+            $root.find('*').each(function () {
+                var node = this;
+
+                _.forEach(node.attributes, function (attr) {
+                    var value = attr.value;
+
+                    if (_.startsWith(value, 'bind:')) {
+                        /*if the attribute value is "bind:xxxxx.xxxx", either the dataSet/scopeDataSet has to contain "xxxx.xxxx" */
+                        if (_.includes(value, _parentDataSet)) {
+                            value = value.replace('bind:', '');
+                            value = value.replace(regex, 'item');
+                            attr.value = '{{' + value + '}}';
+                        }
                     }
-                }
+                });
             });
         }
         // expose the methods on the service instance.

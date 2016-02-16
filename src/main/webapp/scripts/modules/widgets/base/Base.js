@@ -1402,7 +1402,9 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.carousel" : {
                         "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
-                        "animationinterval" : {"type" : "number", "value" : "3"}
+                        "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
+                        "animationinterval" : {"type" : "number", "value" : "3"},
+                        "type" : {"type" : "string", "show" : false}
                     },
                     "wm.tabbar" : {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},

@@ -532,10 +532,12 @@ WM.module('wm.widgets.live')
                 var $tmpl = WM.element(tmpl),
                     $div  = WM.element('<div></div>').append($tmpl),
                     parentDataSet = attrs.dataset || attrs.scopedataset;
+
                 if (parentDataSet) {
-                    $div.find('*').each(Utils.updateTmplAttrs.bind(undefined, parentDataSet));
+                    Utils.updateTmplAttrs($div, parentDataSet);
                 }
                 $tmpl = applyWrapper($tmpl, attrs);
+
                 return $tmpl;
             }
             /*Function to get data of all active elements*/

@@ -1,16 +1,15 @@
-/*global WM, */
+/*global WM,_ */
 /*jslint todo: true */
 /*Directive for carousel */
 WM.module('wm.widgets.advanced')
-    .run(['$templateCache', function ($templateCache) {
+    .run(['$templateCache', function ($tc) {
         'use strict';
-        $templateCache.put('template/widget/advanced/carousel/carousel.html',
+        $tc.put('template/widget/advanced/carousel/static/carousel.html',
                 '<div init-widget class="app-carousel carousel slide" data-ng-show="show" apply-styles>' +
                     '<ol class="carousel-indicators">' +
                         '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': activeIndex === $index}" data-ng-click="goTo($index)"></li>' +
                     '</ol>' +
-                    '<div class="carousel-inner" wmtransclude>' +
-                    '</div>' +
+                    '<div class="carousel-inner" wmtransclude></div>' +
                     '<a class="left carousel-control" data-ng-click="previous()">' +
                         '<i class="glyphicon glyphicon-chevron-left"></i>' +
                     '</a>' +
@@ -19,7 +18,11 @@ WM.module('wm.widgets.advanced')
                     '</a>' +
                 '</div>'
             );
-        $templateCache.put('template/widget/advanced/carousel/design/carousel.html',
+        $tc.put('template/widget/advanced/carousel/design/dynamic/carousel.html',
+            '<div apply-styles init-widget class="app-carousel carousel slide" data-ng-show="show" wmtransclude></div>'
+            );
+
+        $tc.put('template/widget/advanced/carousel/design/static/carousel.html',
                  '<div init-widget class="app-carousel carousel slide" data-ng-show="show" apply-styles>' +
                      '<div class="carousel-inner" wmtransclude></div>' +
                      '<div class="carousel-actions">' +
@@ -31,50 +34,128 @@ WM.module('wm.widgets.advanced')
                      '</div>' +
                  '</div>'
             );
-        $templateCache.put('template/widget/advanced/carousel/carousel-content.html',
-                             '<div class="app-carousel-item item" apply-styles init-widget wmtransclude></div>');
-    }]).directive('wmCarousel', ['$interval', 'PropertiesFactory', '$templateCache', 'CONSTANTS', '$timeout', 'WidgetUtilService', function ($interval, PropertiesFactory, $templateCache, CONSTANTS, $timeout, WidgetUtilService) {
-        'use strict';
-        /* get the properties related to the carousel */
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base', 'wm.containers']);
-        return {
-            'restrict' : 'E',
-            'scope' : {},
-            'transclude': true,
-            'template': $templateCache.get('template/widget/advanced/carousel' + (CONSTANTS.isStudioMode ? '/design/' : '/') + 'carousel.html'),
-            'replace' : true,
-            'controller': function ($scope) {
-                this.register = function (contentScope) {
-                    /**check for the first index of the slide deck and class active**/
-                    if (!$scope.contents.length) {
-                        contentScope.getElement().addClass('active');
-                    }
 
-                    $scope.contents.push(contentScope);
-                    /**In studio mode the last slide is selected after add**/
-                    if (CONSTANTS.isStudioMode) {
-                        $scope.last();
+        $tc.put('template/widget/advanced/carousel/dynamic/carousel.html',
+            '<div init-widget wmtransclude apply-styles data-identifier="carousel"></div>'
+            );
+
+        $tc.put('template/widget/advanced/carousel/carousel-content.html',
+            '<div class="app-carousel-item item" apply-styles init-widget wmtransclude></div>'
+            );
+
+    }])
+    .directive('wmCarousel', [
+        '$interval',
+        'PropertiesFactory',
+        '$templateCache',
+        'CONSTANTS',
+        '$timeout',
+        'WidgetUtilService',
+        '$compile',
+        'Utils',
+
+        function ($interval, PropertiesFactory, $templateCache, CONSTANTS, $timeout, WidgetUtilService, $compile, Utils) {
+            'use strict';
+
+            var widgetProps,
+                directiveDefn,
+                notifyFor,
+                slideTemplateWrapper,
+                CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'};
+
+            widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base', 'wm.containers']);
+            notifyFor   = {
+                'dataset' : true,
+                'type'    : true
+            };
+
+            slideTemplateWrapper =
+                '<uib-carousel interval="interval" no-wrap="noWrapSlides"> ' +
+                    '<uib-slide ng-repeat="item in slides" active="slide.active" index="slide.id"></uib-slide>' +
+                '</uib-carousel>';
+
+            function propertyChangeHandler($is, attrs, key, newVal) {
+                switch (key) {
+                case 'dataset':
+                    if (attrs.type === CAROUSEL_TYPE.DYNAMIC) {
+                        $is.slides = newVal.data;
                     }
-                };
-                this.unregister = function (contentScope) {
-                    var i, len = $scope.contents.length;
-                    for (i = 0; i < len; i++) {
-                        if ($scope.contents[i].$id === contentScope.$id) {
-                            break;
+                    break;
+                case 'type':
+                    if ($is.widgetid) {
+                        $is.widgetProps.addchild.show = newVal !== CAROUSEL_TYPE.DYNAMIC;
+                    }
+                    break;
+                }
+            }
+
+            function applyWrapper($tmplContent) {
+                var $tmpl = WM.element(slideTemplateWrapper);
+                $tmpl.children().first().append($tmplContent);
+                return $tmpl;
+            }
+
+            function prepareSlideTemplate(tmpl, attrs) {
+                var $tmpl = WM.element(tmpl),
+                    parentDataSet = attrs.dataset || attrs.scopedataset;
+                if (parentDataSet) {
+                    Utils.updateTmplAttrs($tmpl, parentDataSet);
+                }
+                $tmpl = applyWrapper($tmpl, attrs);
+                return $tmpl;
+            }
+
+            //this function decides which template should be set based on the condition.
+            function templateFn($el, attrs) {
+                // if type attribute is set then dynamic carousel template is used.
+                if (attrs.type) {
+                    return $templateCache.get('template/widget/advanced/carousel' + (CONSTANTS.isStudioMode ? '/design/dynamic/' : '/dynamic/') + 'carousel.html');
+                }
+                return $templateCache.get('template/widget/advanced/carousel' + (CONSTANTS.isStudioMode ? '/design/static/' : '/static/') + 'carousel.html');
+            }
+
+            directiveDefn = {
+                'restrict'  : 'E',
+                'scope'     : {},
+                'transclude': true,
+                'template'  : templateFn,
+                'replace'   : true,
+                'controller': function ($is) {
+                    var _map = {};
+                    // this keeps a copy of carousel-template
+                    this.$set = function (key, value) {
+                        _map[key] = value;
+                    };
+                    // this gets a template based on the key.
+                    this.$get = function (key) {
+                        return _map[key];
+                    };
+                    this.register = function (contentScope) {
+                        // check for the first index of the slide deck and class active
+                        if (!$is.contents.length) {
+                            contentScope.getElement().addClass('active');
                         }
-                    }
-                    $scope.contents.splice(i, 1);
-                    $scope.goTo($scope.activeIndex);
-                };
-            },
-            'compile' : function () {
-                return {
-                    'pre': function (scope) {
-                        /* save the reference to widgetProps in scope */
-                        scope.widgetProps = widgetProps;
-                        scope.contents = [];
-                        scope.activeIndex = 0;
-                        /**Animation function to move the slides**/
+
+                        $is.contents.push(contentScope);
+                        //In studio mode the last slide is selected after add
+                        if ($is.widgetid) {
+                            $is.last();
+                        }
+                    };
+                    this.unregister = function (contentScope) {
+                        var i, len = $is.contents.length;
+                        for (i = 0; i < len; i++) {
+                            if ($is.contents[i].$id === contentScope.$id) {
+                                break;
+                            }
+                        }
+                        $is.contents.splice(i, 1);
+                        $is.goTo($is.activeIndex);
+                    };
+                },
+                'link' : {
+                    'pre': function ($is, $el, attrs) {
+                        //Animation function to move the slides
                         function animateSlide($active, $next, type) {
                             var direction = type === 'next' ? 'left' : 'right';
                             $next.addClass(type);
@@ -86,113 +167,210 @@ WM.module('wm.widgets.advanced')
                                 $active.removeClass(['active', direction].join(' '));
                             }, 600, false);
                         }
-                        /** function for slide  to move to a specific slide index**/
-                        scope.goTo = function (index) {
-                            if (!scope.contents[scope.activeIndex]) {
-                                return;
-                            }
-                            var oldElement = scope.contents[scope.activeIndex].getElement(),
-                                newElement = scope.contents[index].getElement(),
-                                type = 'next';
-                            if (CONSTANTS.isStudioMode) {
-                                oldElement.removeClass('active');
-                                newElement.addClass('active');
-                                scope.activeIndex  = index;
-                            } else {
-                                scope.stop();
-                                if (scope.activeIndex > index) {
-                                    type = 'prev';
-                                }
-                                animateSlide(oldElement, newElement, type);
-                                scope.activeIndex  = index;
-                                scope.play();
-                            }
-                        };
-                        /**function to move to next slide**/
-                        scope.next = function () {
-                            if (scope.activeIndex > scope.contents.length - 2) {
-                                scope.goTo(0);
-                            } else {
-                                scope.goTo(scope.activeIndex + 1);
-                            }
-                        };
-                        /**function to move to previous slide**/
-                        scope.previous = function () {
-                            if (scope.activeIndex < 1) {
-                                scope.goTo(scope.contents.length - 1);
-                            } else {
-                                scope.goTo(scope.activeIndex - 1);
-                            }
-                        };
-                        /**function to move to first slide**/
-                        scope.first = function () {
-                            scope.goTo(0);
-                        };
-                        /**function to move to last slide**/
-                        scope.last = function () {
-                            scope.goTo(scope.contents.length - 1);
-                        };
-                        /**define play and stop methods**/
-                        if (CONSTANTS.isRunMode) {
-                            /**function to play the slides**/
-                            scope.play = function () {
-                                if (!scope.autoPlay && scope.animationinterval >= 1) {
-                                    scope.autoPlay = $interval(function () {
-                                        scope.next();
-                                    }, scope.animationinterval * 1000);
-                                }
-                            };
-                            /**function to stop the slides**/
-                            scope.stop = function () {
-                                if (scope.autoPlay) {
-                                    $interval.cancel(scope.autoPlay);
-                                }
-                                scope.autoPlay = undefined;
-                            };
-                        }
-                    },
-                    'post': function (scope, element, attrs) {
-                        if (CONSTANTS.isRunMode) {
-                            /**function to auto start the slide show**/
-                            scope.play();
-                        }
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
-            }
-        };
-    }]).directive('wmCarouselContent', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
-        'use strict';
-        /* Get the properties related to the carousel-content */
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']);
-        return {
-            'restrict': 'E',
-            'scope': {},
-            'transclude': true,
-            'template': $templateCache.get('template/widget/advanced/carousel/carousel-content.html'),
-            'replace': true,
-            'require': '^wmCarousel',
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /* save the reference to widgetProps in scope */
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs, controller) {
-                        scope.getElement = function () {
-                            return element;
-                        };
-                        scope.$on('$destroy', function () {
-                            controller.unregister(scope);
-                        });
-                        controller.register(scope);
+                        if (!attrs.type) {
+                            $is.widgetProps = widgetProps;
+                            $is.contents    = [];
+                            $is.activeIndex = 0;
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                            //function for slide  to move to a specific slide index
+                            $is.goTo = function (index) {
+                                if (!$is.contents[$is.activeIndex]) {
+                                    return;
+                                }
+                                var oldElement = $is.contents[$is.activeIndex].getElement(),
+                                    newElement = $is.contents[index].getElement(),
+                                    type = 'next';
+
+                                if ($is.widgetid) {
+                                    oldElement.removeClass('active');
+                                    newElement.addClass('active');
+                                    $is.activeIndex  = index;
+                                } else {
+                                    $is.stop();
+                                    if ($is.activeIndex > index) {
+                                        type = 'prev';
+                                    }
+                                    animateSlide(oldElement, newElement, type);
+                                    $is.activeIndex  = index;
+                                    $is.play();
+                                }
+                            };
+
+                            //function to move to next slide
+                            $is.next = function () {
+                                if ($is.activeIndex > $is.contents.length - 2) {
+                                    $is.goTo(0);
+                                } else {
+                                    $is.goTo($is.activeIndex + 1);
+                                }
+                            };
+
+                            //function to move to previous slide
+                            $is.previous = function () {
+                                if ($is.activeIndex < 1) {
+                                    $is.goTo($is.contents.length - 1);
+                                } else {
+                                    $is.goTo($is.activeIndex - 1);
+                                }
+                            };
+
+                            //function to move to first slide
+                            $is.first = function () {
+                                $is.goTo(0);
+                            };
+
+                            //function to move to last slide
+                            $is.last = function () {
+                                $is.goTo($is.contents.length - 1);
+                            };
+
+                            //define play and stop methods
+                            if (CONSTANTS.isRunMode) {
+                                //function to play the slides
+                                $is.play = function () {
+                                    if (!$is.autoPlay && $is.animationinterval >= 1) {
+                                        $is.autoPlay = $interval(function () {
+                                            $is.next();
+                                        }, $is.animationinterval * 1000);
+                                    }
+                                };
+
+                                //function to stop the slides
+                                $is.stop = function () {
+                                    if ($is.autoPlay) {
+                                        $interval.cancel($is.autoPlay);
+                                    }
+                                    $is.autoPlay = undefined;
+                                };
+                            }
+                        } else {
+                            $is.widgetProps = $is.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                        }
+                    },
+                    'post': function ($is, $el, attrs, listCtrl) {
+                        var $s = $el.scope(),
+                            $slideTemplate;
+
+                        $is.interval = $is.animationinterval * 1000;
+                        Object.defineProperties($is, {
+                            'Variables': {
+                                get: function () {
+                                    return $s.Variables;
+                                }
+                            },
+                            'Widgets': {
+                                get: function () {
+                                    return $s.Widgets;
+                                }
+                            }
+                        });
+                        if (CONSTANTS.isRunMode) {
+                            if (!attrs.type) {
+                                $is.play();
+                            } else {
+                                $slideTemplate = prepareSlideTemplate(listCtrl.$get('carouselTemplate'), attrs);
+                                $el.prepend($slideTemplate);
+                                $compile($slideTemplate)($el.closest('[data-identifier="carousel"]').isolateScope());
+                            }
+                        }
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);
+                        WidgetUtilService.postWidgetCreate($is, $el, attrs);
                     }
-                };
+                }
+            };
+
+            return directiveDefn;
+        }
+    ])
+    .directive('wmCarouselContent', [
+        'PropertiesFactory',
+        '$templateCache',
+        'WidgetUtilService',
+
+        function (PropertiesFactory, $templateCache, WidgetUtilService) {
+            'use strict';
+
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']);
+            return {
+                'restrict'  : 'E',
+                'scope'     : {},
+                'transclude': true,
+                'template'  : $templateCache.get('template/widget/advanced/carousel/carousel-content.html'),
+                'replace'   : true,
+                'require'   : '^wmCarousel',
+                'compile'   : function () {
+                    return {
+                        'pre': function ($is) {
+                            $is.widgetProps = widgetProps;
+                        },
+                        'post': function ($is, $el, attrs, controller) {
+                            $is.getElement = function () {
+                                return $el;
+                            };
+                            $is.$on('$destroy', function () {
+                                controller.unregister($is);
+                            });
+                            controller.register($is);
+                            WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                        }
+                    };
+                }
+            };
+        }
+    ])
+    .directive('wmCarouselTemplate', [
+        'PropertiesFactory',
+        '$templateCache',
+        'WidgetUtilService',
+        'CONSTANTS',
+
+        function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS) {
+            'use strict';
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']),
+                directiveDefn;
+
+            function preLinkFn($is) {
+                $is.widgetProps = widgetProps;
             }
-        };
-    }]);
+
+            function studioMode_postLinkFn($is, $el, attrs) {
+                WidgetUtilService.postWidgetCreate($is, $el, attrs);
+            }
+
+            function runMode_preLinkFn($is, $el, attrs, listCtrl) {
+                listCtrl.$set('carouselTemplate', $el.children());
+                $el.remove();
+            }
+
+            directiveDefn = {
+                'restrict' : 'E',
+                'replace'   : true
+            };
+
+            if (CONSTANTS.isStudioMode) {
+                WM.extend(directiveDefn, {
+                    'transclude': true,
+                    'scope'     : {},
+                    'template'  : $templateCache.get('template/widget/advanced/carousel/carousel-content.html'),
+                    'link'      : {
+                        'pre' : preLinkFn,
+                        'post': studioMode_postLinkFn
+                    }
+                });
+            } else {
+                WM.extend(directiveDefn, {
+                    'scope'     : {},
+                    'terminal'  : true,
+                    'require'   : '^wmCarousel',
+                    'link'      : {
+                        'pre' : runMode_preLinkFn
+                    }
+                });
+            }
+
+            return directiveDefn;
+        }
+    ]);
 
 /**
  * @ngdoc directive
@@ -208,6 +386,11 @@ WM.module('wm.widgets.advanced')
  * @requires PropertiesFactory
  * @requires $templateCache
  * @requires CONSTANTS
+ * @requires $timeout
+ * @requires WidgetUtilService
+ * @requires $compile
+ * @requires Utils
+ *
  *
  * @param {string=} name
  *                  Name of the carousel.
@@ -222,6 +405,11 @@ WM.module('wm.widgets.advanced')
  * @param {number=} animationinterval
  *                  Defines the time interval (in seconds) between two slide transitions.  <br>
  *                  Default value: `3`.
+ *
+ * @param {string=} dataset
+ *                  Sets the data for the list.<br>
+ *                  This is a bindable property.<br>
+ *                  When bound to a variable, the data associated with the variable is displayed in the list.
  * @example
     <example module="wmCore">
         <file name="index.html">
@@ -291,4 +479,45 @@ WM.module('wm.widgets.advanced')
             }
         </file>
     </example>
+ */
+/**
+ * @ngdoc directive
+ * @name wm.widgets.advanced.directive:wmCarouselContentTemplate
+ * @restrict E
+ *
+ * @description
+ * The `wmCarouselContentTemplate` directive defines wm-carousel-content-template widget.<br>
+ * This widget has to be used with in wm-carousel.
+ *
+ *
+ * @scope
+ *
+ * @requires PropertiesFactory
+ * @requires $templateCache
+ * @requires CONSTANTS
+ * @requires WidgetUtilService
+ *
+ * @param {string=} name
+ *                  Name of the carousel content template.
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the carousel on the web page. <br>
+ *                  Default value: `true`.
+ * @example
+    <example module="wmCore">
+        <file name="index.html">
+            <div data-ng-controller="Ctrl" class="wm-app">
+                <wm-carousel animationinterval="5" height="100%">
+                    <wm-carousel-content-template type='dynamic'>
+                         <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
+                    </wm-carousel-content-template>
+                </wm-carousel>
+            </div>
+        </file>
+        <file name="script.js">
+            function Ctrl($scope) {
+                $scope.demo = true;
+            }
+        </file>
+     </example>
  */

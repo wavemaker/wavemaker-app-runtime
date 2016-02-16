@@ -174,8 +174,10 @@ WM.module('wm.layouts.containers')
             function prepareMediaListTemplate(tmpl, attrs) {
                 var $tmpl = WM.element(tmpl),
                     $div = WM.element('<div></div>').append($tmpl);
-                $div.find('*').each(Utils.updateTmplAttrs.bind(undefined, attrs.dataset));
+
+                Utils.updateTmplAttrs($div, attrs.dataset);
                 $tmpl = applyWrapper($tmpl);
+
                 return $tmpl;
             }
 
