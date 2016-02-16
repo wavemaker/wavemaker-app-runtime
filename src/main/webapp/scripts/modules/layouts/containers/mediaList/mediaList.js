@@ -163,25 +163,6 @@ WM.module('wm.layouts.containers')
                 }
             }
 
-            // Function to evaluate the binding for the attributes
-            // The bound value is replaced with {{item.fieldname}} here. This is needed by the liveList when compiling inner elements
-            function updateTmplAttrs(parentDataSet, idx, node) {
-                var _parentDataSet = parentDataSet.replace('bind:', ''),
-                    regex = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g');
-                _.forEach(node.attributes, function (attr) {
-                    var value = attr.value;
-
-                    if (_.startsWith(value, 'bind:')) {
-                        /*if the attribute value is "bind:xxxxx.xxxx", either the dataSet/scopeDataSet has to contain "xxxx.xxxx" */
-                        if (_.includes(value, _parentDataSet)) {
-                            value = value.replace('bind:', '');
-                            value = value.replace(regex, 'item');
-                            attr.value = '{{' + value + '}}';
-                        }
-                    }
-                });
-            }
-
             // append the template content to the list item wrapper.
             function applyWrapper($tmplContent) {
                 var tmpl = WM.element(elementsMarkup);
@@ -193,7 +174,7 @@ WM.module('wm.layouts.containers')
             function prepareMediaListTemplate(tmpl, attrs) {
                 var $tmpl = WM.element(tmpl),
                     $div = WM.element('<div></div>').append($tmpl);
-                $div.find('*').each(updateTmplAttrs.bind(undefined, attrs.dataset));
+                $div.find('*').each(Utils.updateTmplAttrs.bind(undefined, attrs.dataset));
                 $tmpl = applyWrapper($tmpl);
                 return $tmpl;
             }
