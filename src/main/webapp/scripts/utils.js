@@ -1633,6 +1633,24 @@ WM.module('wm.utils', [])
                 'exact'    : 'exact'
             };
         }
+
+        // The bound value is replaced with {{item.fieldname}} here. This is needed by the liveList when compiling inner elements
+        function updateTmplAttrs(parentDataSet, idx, node) {
+            var _parentDataSet = parentDataSet.replace('bind:', ''),
+                regex = new RegExp('(' + _parentDataSet + ')(\\[0\\])?(.data\\[\\$i\\])?(.content\\[\\$i\\])?(\\[\\$i\\])?', 'g');
+            _.forEach(node.attributes, function (attr) {
+                var value = attr.value;
+
+                if (_.startsWith(value, 'bind:')) {
+                    /*if the attribute value is "bind:xxxxx.xxxx", either the dataSet/scopeDataSet has to contain "xxxx.xxxx" */
+                    if (_.includes(value, _parentDataSet)) {
+                        value = value.replace('bind:', '');
+                        value = value.replace(regex, 'item');
+                        attr.value = '{{' + value + '}}';
+                    }
+                }
+            });
+        }
         // expose the methods on the service instance.
 
         this.camelCase                  = WM.element.camelCase;
@@ -1736,4 +1754,5 @@ WM.module('wm.utils', [])
         this.getValidDateObject         = getValidDateObject;
         this.getVariableDetails         = getVariableDetails;
         this.getMatchModes              = getMatchModes;
+        this.updateTmplAttrs            = updateTmplAttrs;
     }]);
