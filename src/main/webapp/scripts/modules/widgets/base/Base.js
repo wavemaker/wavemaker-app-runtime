@@ -2611,7 +2611,7 @@ WM.module('wm.widgets.base', [])
                 'zindex'                : 'zIndex'
             };
             SHELL_TYPE_IGNORE_LIST     = 'height overflow paddingunit paddingtop paddingright paddingbottom paddingleft';
-            CONTAINER_TYPE_IGNORE_LIST = SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST = 'textalign';
+            CONTAINER_TYPE_IGNORE_LIST = SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST = 'textalign width';
 
             _.keys(propNameCSSKeyMap)
                 .concat(SHELL_TYPE_IGNORE_LIST.split(' '))
