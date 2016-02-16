@@ -120,7 +120,7 @@ WM.module('wm.widgets.advanced')
                 'transclude': true,
                 'template'  : templateFn,
                 'replace'   : true,
-                'controller': function ($is) {
+                'controller': function ($scope) {
                     var _map = {};
                     // this keeps a copy of carousel-template
                     this.$set = function (key, value) {
@@ -132,25 +132,25 @@ WM.module('wm.widgets.advanced')
                     };
                     this.register = function (contentScope) {
                         // check for the first index of the slide deck and class active
-                        if (!$is.contents.length) {
+                        if (!$scope.contents.length) {
                             contentScope.getElement().addClass('active');
                         }
 
-                        $is.contents.push(contentScope);
+                        $scope.contents.push(contentScope);
                         //In studio mode the last slide is selected after add
-                        if ($is.widgetid) {
-                            $is.last();
+                        if ($scope.widgetid) {
+                            $scope.last();
                         }
                     };
                     this.unregister = function (contentScope) {
-                        var i, len = $is.contents.length;
+                        var i, len = $scope.contents.length;
                         for (i = 0; i < len; i++) {
-                            if ($is.contents[i].$id === contentScope.$id) {
+                            if ($scope.contents[i].$id === contentScope.$id) {
                                 break;
                             }
                         }
-                        $is.contents.splice(i, 1);
-                        $is.goTo($is.activeIndex);
+                        $scope.contents.splice(i, 1);
+                        $scope.goTo($scope.activeIndex);
                     };
                 },
                 'link' : {
