@@ -77,7 +77,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
      * @param sortResolver The sort resolver to use
      */
     public WMPageableHandlerMethodArgumentResolver(SortHandlerMethodArgumentResolver sortResolver) {
-        this.sortResolver = sortResolver == null ? new SortHandlerMethodArgumentResolver() : sortResolver;
+        this.sortResolver = sortResolver == null ? new WMSortHandlerMethodArgumentResolver() : sortResolver;
     }
 
     /**
