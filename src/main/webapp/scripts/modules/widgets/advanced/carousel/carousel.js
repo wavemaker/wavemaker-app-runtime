@@ -97,7 +97,10 @@ WM.module('wm.widgets.advanced')
 
             function prepareSlideTemplate(tmpl, attrs) {
                 var $tmpl = WM.element(tmpl),
+                    $div  = WM.element('<div></div>'),
                     parentDataSet = attrs.dataset || attrs.scopedataset;
+
+                $tmpl = $div.append($tmpl);
                 if (parentDataSet) {
                     Utils.updateTmplAttrs($tmpl, parentDataSet);
                 }
