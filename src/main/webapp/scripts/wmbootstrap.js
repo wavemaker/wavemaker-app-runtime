@@ -71,8 +71,10 @@ Application
             '$cacheFactory',
             '$document',
             'CONSTANTS',
+            'wmSpinner',
+            '$timeout',
 
-            function ($q, Utils, BaseService, $location, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS) {
+            function ($q, Utils, BaseService, $location, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout) {
                 'use strict';
 
                 var prevRoute,
@@ -136,8 +138,19 @@ Application
                     });
                 }
 
+                function showPageSwitchSpinner() {
+                    wmSpinner.show('', 'globalSpinner', 'app-page-switch');
+                }
+
+                function hidePageSwitchSpinner() {
+                    $timeout(function () {
+                        wmSpinner.hide('globalSpinner');
+                    }, 20);
+                }
+
                 function defaultPageLoadErrorHandler(pageName, onSuccess, onError, jqxhr) {
                     if (jqxhr.status === 401 && !jqxhr.headers('X-WM-Login-ErrorMessage')) {
+                        hidePageSwitchSpinner();
                         handleSessionTimeout(pageName, onSuccess, onError);
                     } else if (jqxhr.status === 403) {
                         // in-case of 403 forbidden error
@@ -327,6 +340,8 @@ Application
                 this.isDeviceReady              = isDeviceReady;
                 this.loadSecurityConfig         = loadSecurityConfig;
                 this.handleSessionTimeOut       = handleSessionTimeout;
+                this.showPageSwitchSpinner      = showPageSwitchSpinner;
+                this.hidePageSwitchSpinner      = hidePageSwitchSpinner;
             }
         ])
     .config(
@@ -444,14 +459,12 @@ Application
                     }
 
                     // hide the app-spinner
-                    $timeout(function () {
-                        wmSpinner.hide('globalSpinner');
-                    }, 20);
+                    AppManager.hidePageSwitchSpinner();
                 });
 
                 // show the app-spinner on route change start
                 $rs.$on('$routeChangeStart', function () {
-                    wmSpinner.show('', 'globalSpinner', 'app-page-switch');
+                    AppManager.showPageSwitchSpinner();
                 });
 
                 /*
