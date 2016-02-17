@@ -36,7 +36,7 @@ WM.module('wm.widgets.advanced')
             );
 
         $tc.put('template/widget/advanced/carousel/dynamic/carousel.html',
-            '<div init-widget wmtransclude apply-styles data-identifier="carousel"></div>'
+            '<div class="app-carousel" init-widget wmtransclude apply-styles data-identifier="carousel"></div>'
             );
 
         $tc.put('template/widget/advanced/carousel/carousel-content.html',
