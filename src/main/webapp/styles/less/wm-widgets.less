@@ -1997,6 +1997,21 @@ If the height and width are not specified the video takes the height of the post
 
 .app-livefilter {
   position: relative;
+  .panel-heading {
+    .panel-title {
+      display: table;
+      width: 100%;
+    }
+    .panel-actions {
+      display: table-cell;
+      text-align: right;
+      .panel-action {
+        background: transparent;
+        border: none;
+        padding: 0;
+      }
+    }
+  }
   .form-control {
     display: inline-block;
   }

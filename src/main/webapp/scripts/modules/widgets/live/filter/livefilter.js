@@ -9,10 +9,15 @@ WM.module('wm.widgets.live')
                     '<div class="form-header panel-heading" data-ng-if="title"><h3 class="panel-title">' +
                         '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
                         '<span class="form-header-text">{{title}}</span>' +
+                        '<div class="panel-actions">' +
+                            '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
+                        '</div>' +
                     '</h3></div>' +
-                '<div data-identifier="filter-elements" class="panel-body" ng-transclude></div>' +
-                '<div class="hidden-filter-elements"></div>' +
-                '<div class="basic-btn-grp form-action panel-footer clearfix"></div>' +
+                    '<div data-ng-show="expanded" class="panel-body">' +
+                        '<div data-identifier="filter-elements" ng-transclude></div>' +
+                        '<div class="hidden-filter-elements"></div>' +
+                        '<div class="basic-btn-grp form-action panel-footer clearfix"></div>' +
+                    '</div>' +
                 '</form>'
             );
     }]).directive('wmLivefilter', ['PropertiesFactory',
@@ -319,6 +324,21 @@ WM.module('wm.widgets.live')
                             $scope.filter();
                         }
                     };
+                    $scope.expandCollapsePanel = function ($event) {
+                        if ($scope.collapsible && CONSTANTS.isRunMode) {
+                            if ($scope.expanded) {
+                                if ($scope.onCollapse) {
+                                    $scope.onCollapse({$event: $event, $scope: this});
+                                }
+                            } else {
+                                if ($scope.onExpand) {
+                                    $scope.onExpand({$event: $event, $scope: this});
+                                }
+                            }
+                            /* flip the active flag */
+                            $scope.expanded = !$scope.expanded;
+                        }
+                    };
                 },
                 template: function (element) {
                     filterMarkup = element.html();
@@ -342,6 +362,9 @@ WM.module('wm.widgets.live')
                             iScope.filterFields = {};
                         },
                         post: function (scope, element, attrs) {
+                            if (scope.expanded === undefined) {
+                                scope.expanded = true;
+                            }
                             /*
                              * Extend the properties from the form controller exposed to end user in page script
                              * Kept in try/catch as the controller may not be available sometimes

@@ -1464,7 +1464,9 @@ WM.module('wm.widgets.base', [])
                         "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "tabindex": {"type": "string", "value": "0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "collapsible": {"type": "boolean", "showindesigner": true},
+                        "expanded": {"type": "boolean", "value": true, "showindesigner": true}
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},
