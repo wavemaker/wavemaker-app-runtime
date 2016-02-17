@@ -128,6 +128,8 @@ WM.module('wm.widgets.advanced')
 
 
             function propertyChangeHandler($is, attrs, key, newVal) {
+                var widgetProperties = $is.widgetProps;
+
                 switch (key) {
                 case 'dataset':
                     if (attrs.type === CAROUSEL_TYPE.DYNAMIC) {
@@ -136,7 +138,8 @@ WM.module('wm.widgets.advanced')
                     break;
                 case 'type':
                     if ($is.widgetid) {
-                        $is.widgetProps.addchild.show = newVal !== CAROUSEL_TYPE.DYNAMIC;
+                        widgetProperties.addchild.show = newVal !== CAROUSEL_TYPE.DYNAMIC;
+                        widgetProperties.dataset.show  = newVal === CAROUSEL_TYPE.DYNAMIC;
                     }
                     break;
                 }
@@ -300,7 +303,7 @@ WM.module('wm.widgets.advanced')
                                 };
                             }
                         } else {
-                            $is.widgetProps = $is.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
+                            $is.widgetProps = attrs.widgetid ? Utils.getClonedObject(widgetProps) : widgetProps;
                         }
                     },
                     'post': function ($is, $el, attrs, listCtrl) {
