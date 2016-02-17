@@ -70,15 +70,68 @@ WM.module('wm.widgets.advanced')
             };
 
             slideTemplateWrapper =
-                '<uib-carousel interval="interval" no-wrap="noWrapSlides"> ' +
-                    '<uib-slide ng-repeat="item in slides" active="slide.active" index="slide.id"></uib-slide>' +
+                '<uib-carousel interval="interval" active="active" no-wrap="noWrapSlides"> ' +
+                    '<uib-slide ng-repeat="item in fieldDefs track by $index"  index="$index"></uib-slide>' +
                 '</uib-carousel>';
+
+            function updateFieldDefs($is, data) {
+                $is.fieldDefs = data;
+            }
+
+            function getVariable($is, variableName) {
+
+                if (!variableName) {
+                    return undefined;
+                }
+
+                var variables = $is.Variables || {};
+                return variables[variableName];
+            }
+
+            function onDataChange($is, nv) {
+                if (nv) {
+                    if (nv.data) {
+                        nv = nv.data;
+                    } else {
+                        if (!_.includes($is.binddataset, 'bind:Widgets.')) {
+                            var boundVariableName = Utils.getVariableName($is),
+                                variable = getVariable($is, boundVariableName);
+                            // data from the live list must have .data filed
+                            if (variable && variable.category === 'wm.LiveVariable') {
+                                return;
+                            }
+                        }
+                    }
+
+                    //If the data is a pageable object, then display the content.
+                    if (WM.isObject(nv) && Utils.isPageable(nv)) {
+                        nv = nv.content;
+                    }
+
+                    if (WM.isObject(nv) && !WM.isArray(nv)) {
+                        nv = [nv];
+                    }
+                    if (!$is.binddataset) {
+                        if (WM.isString(nv)) {
+                            nv = nv.split(',');
+                        }
+                    }
+                    if (WM.isArray(nv)) {
+                        updateFieldDefs($is, nv);
+                    }
+                } else {
+                    if (CONSTANTS.isRunMode) {
+                        updateFieldDefs($is, []);
+                    }
+                }
+            }
+
 
             function propertyChangeHandler($is, attrs, key, newVal) {
                 switch (key) {
                 case 'dataset':
                     if (attrs.type === CAROUSEL_TYPE.DYNAMIC) {
-                        $is.slides = newVal.data;
+                        onDataChange($is, newVal);
                     }
                     break;
                 case 'type':
