@@ -65,7 +65,7 @@ $.widget('wm.datagrid', {
                     text = hasField ? self.preparedData[rowId][field] : $row.text();
 
                 // If the list item does not contain the text phrase fade it out
-                if (text.toString().search(searchTextRegEx) === -1) {
+                if (text === null || text.toString().search(searchTextRegEx) === -1) {
                     $row.hide();
                 } else {
                     $row.show();
