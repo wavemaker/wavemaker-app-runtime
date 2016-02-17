@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <wavemaker-api-tools.version>1.0.9</wavemaker-api-tools.version>
+        <wavemaker-api-tools.version>1.0.10</wavemaker-api-tools.version>
 
         <slf4j.version>1.7.12</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
@@ -141,37 +141,37 @@
         </plugins>
         <pluginManagement>
             <plugins>
-	       <plugin>
-                   <groupId>com.mycila.maven-license-plugin</groupId>
-                     <artifactId>maven-license-plugin</artifactId>
-                        <version>1.9.0</version>
-                        <configuration>
-                          <header>${license.header.file}</header>
-                            <strictCheck>true</strictCheck>
-                            <includes>
-                                <include>**/*.java</include>
-                            </includes>
-                            <properties>
-                                <year>2015</year>
-                                <company>WaveMaker, Inc</company>
-                            </properties>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>format-license</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>format</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>check-license</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                <plugin>
+                    <groupId>com.mycila.maven-license-plugin</groupId>
+                    <artifactId>maven-license-plugin</artifactId>
+                    <version>1.9.0</version>
+                    <configuration>
+                        <header>${license.header.file}</header>
+                        <strictCheck>true</strictCheck>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <properties>
+                            <year>2015</year>
+                            <company>WaveMaker, Inc</company>
+                        </properties>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>format-license</id>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>format</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>check-license</id>
+                            <phase>process-sources</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <artifactId>maven-antrun-plugin</artifactId>
@@ -835,7 +835,7 @@
     </repositories>
 
     <pluginRepositories>
-	    <pluginRepository>
+        <pluginRepository>
             <id>autoincrement-versions-maven-plugin</id>
             <name>autoincrement-versions-maven-plugin</name>
             <url>http://autoincrement-versions-maven-plugin.googlecode.com/svn/repo</url>
