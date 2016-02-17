@@ -269,7 +269,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
                     /*push the operation only if does not exist previously*/
                     operationObject = {
-                        name: operation.operationId || operation.name,
+                        name: operation[WS_CONSTANTS.OPERATION_NAME_KEY] || operation.operationId || operation.name,
                         operationType: operation.operationType || null,
                         parameter: undefined,
                         isList: isList,

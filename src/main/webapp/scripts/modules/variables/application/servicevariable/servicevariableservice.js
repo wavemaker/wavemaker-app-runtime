@@ -537,7 +537,7 @@ wm.variables.services.$servicevariable = ['Variables',
                         for (var j = 0, nOps = supportedOperations.length; j < nOps; j++) {
                             var opType = supportedOperations[j],
                                 operation = path[opType];
-                            if (operation && operation.operationId === selectedOperation) {
+                            if (operation && operation[WS_CONSTANTS.OPERATION_NAME_KEY] === selectedOperation) {
                                 /* if controller is provided, check for controller match as well */
                                 if (controller && controller + "Controller" !== path[CONTROLLER_KEY]) {
                                     continue;
