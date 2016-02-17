@@ -15,30 +15,31 @@
  */
 package com.wavemaker.runtime.data.dao;
 
-import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.wavemaker.runtime.data.expression.AttributeType;
-import com.wavemaker.runtime.data.expression.QueryFilter;
-import com.wavemaker.runtime.data.spring.WMPageImpl;
-import com.wavemaker.studio.common.ser.WMDateDeSerializer;
-import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
+import javax.annotation.PostConstruct;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.criterion.*;
-import org.hibernate.type.*;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
+
+import com.wavemaker.runtime.data.expression.QueryFilter;
+import com.wavemaker.runtime.data.spring.WMPageImpl;
+
+import com.wavemaker.runtime.data.expression.AttributeType;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
@@ -111,68 +112,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         Criterion criterion = null;
         Object attributeValue = queryFilter.getAttributeValue();
         String attributeName = queryFilter.getAttributeName();
-        switch (queryFilter.getFilterCondition()) {
-            case EQUALS:
-                if (attributeValue instanceof Collection) {
-                    criterion = Restrictions.in(attributeName, (Collection) attributeValue);
-                } else if (attributeValue.getClass().isArray()) {
-                    criterion = Restrictions.in(attributeName, (Object[]) attributeValue);
-                } else {
-                    criterion = Restrictions.eq(attributeName, attributeValue);
-                }
-                break;
-            case NOT_EQUALS:
-                criterion = Restrictions.ne(attributeName, attributeValue);
-                break;
-            case NULL:
-                criterion = Restrictions.isNull(attributeName);
-                break;
-            case NULL_OR_EMPTY:
-                criterion = Restrictions.eqOrIsNull(attributeName, "");
-                break;
-            case BETWEEN:
-                if (attributeValue instanceof Collection) {
-                    Collection collection = (Collection) attributeValue;
-                    if(collection.size() != 2)
-                        throw new IllegalArgumentException("Between expression should have a collection/array of values with just two entries.");
-
-                    Iterator iterator = collection.iterator();
-                    criterion = Restrictions.between(attributeName, iterator.next(), iterator.next());
-                } else if (attributeValue.getClass().isArray()) {
-                    Object[] array = (Object[]) attributeValue;
-                    if(array.length != 2)
-                        throw new IllegalArgumentException("Between expression should have a array/array of values with just two entries.");
-
-                    criterion = Restrictions.between(attributeName, array[0], array[1]);
-                } else {
-                    throw new IllegalArgumentException("Between expression should have a collection/array of values with just two entries.");
-                }
-                break;
-            case STARTING_WITH:
-                criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.START);
-                break;
-            case ENDING_WITH:
-                criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.END);
-                break;
-            case CONTAINING:
-                criterion = Restrictions.ilike(attributeName, String.valueOf(attributeValue), MatchMode.ANYWHERE);
-                break;
-            case LESS_THAN:
-                criterion = Restrictions.lt(attributeName, attributeValue);
-                break;
-            case LESS_THAN_OR_EQUALS:
-                criterion = Restrictions.le(attributeName, attributeValue);
-                break;
-            case GREATER_THAN:
-                criterion = Restrictions.gt(attributeName, attributeValue);
-                break;
-            case GREATER_THAN_OR_EQUALS:
-                criterion = Restrictions.ge(attributeName, attributeValue);
-                break;
-            default:
-                throw new RuntimeException("Unhandled filter condition: " + queryFilter.getFilterCondition());
-        }
-        return criterion;
+        return queryFilter.getFilterCondition().criterion(attributeName, attributeValue);
     }
 
     private Page executeAndGetPageableData(Criteria criteria, Pageable pageable) {
@@ -243,67 +183,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     private Object getUpdatedAttributeValue(Object attributeValue, AttributeType attributeType) {
-        switch (attributeType) {
-            case BIG_DECIMAL:
-                return BigDecimalType.INSTANCE.fromString(attributeValue.toString());
-            case BIG_INTEGER:
-                return BigIntegerType.INSTANCE.fromString(attributeValue.toString());
-            case BLOB:
-                return BlobType.INSTANCE.fromString(attributeValue.toString());
-            case BOOLEAN:
-                return BooleanType.INSTANCE.fromString(attributeValue.toString());
-            case BYTE:
-                return ByteType.INSTANCE.fromString(attributeValue.toString());
-            case CHARACTER:
-                return CharacterType.INSTANCE.fromString(attributeValue.toString());
-            case CURRENCY:
-                return CurrencyType.INSTANCE.fromString(attributeValue.toString());
-            case DATE:
-                if (attributeValue instanceof Number) {
-                    return new java.sql.Date(((Number) attributeValue).longValue());
-                } else {
-                    return WMDateDeSerializer.getDate((String) attributeValue);
-                }
-            case DOUBLE:
-                return DoubleType.INSTANCE.fromString(attributeValue.toString());
-            case FLOAT:
-                return FloatType.INSTANCE.fromString(attributeValue.toString());
-            case INTEGER:
-                return IntegerType.INSTANCE.fromString(attributeValue.toString());
-            case LONG:
-                return LongType.INSTANCE.fromString(attributeValue.toString());
-            case LOCALE:
-                return LocaleType.INSTANCE.fromString(attributeValue.toString());
-            case TIMEZONE:
-                return TimeZoneType.INSTANCE.fromString(attributeValue.toString());
-            case TRUE_FALSE:
-                return TrueFalseType.INSTANCE.fromString(attributeValue.toString());
-            case YES_NO:
-                return YesNoType.INSTANCE.fromString(attributeValue.toString());
-            case CLOB:
-                return ClobType.INSTANCE.fromString(attributeValue.toString());
-            case STRING:
-                return StringType.INSTANCE.fromString(attributeValue.toString());
-            case SHORT:
-                return ShortType.INSTANCE.fromString(attributeValue.toString());
-            case TEXT:
-                return TextType.INSTANCE.fromString(attributeValue.toString());
-            case TIME:
-                if (attributeValue instanceof Number) {
-                    return new java.sql.Time(((Number) attributeValue).longValue());
-                } else {
-                    return WMDateDeSerializer.getDate((String) attributeValue);
-                }
-            case DATETIME:
-                return WMLocalDateTimeDeSerializer.getLocalDateTime((String) attributeValue);
-            case TIMESTAMP:
-                return new Timestamp(((Number) attributeValue).longValue());
-            case CALENDAR:
-                return new Date(((Number) attributeValue).longValue());
-            case CALENDAR_DATE:
-                return new Date(((Number) attributeValue).longValue());
-        }
-        return attributeValue;
+        return attributeType.toJavaType(attributeValue);
     }
 
     @Override
