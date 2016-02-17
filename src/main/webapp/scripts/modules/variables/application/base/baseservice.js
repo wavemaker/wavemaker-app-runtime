@@ -136,7 +136,7 @@ wm.variables.services.Variables = [
                         Utils.triggerFn(success);
                     }
                 }
-                reloadRequired.push(VARIABLE_CONSTANTS.OWNER.APP, $rootScope.activePageName);
+                reloadRequired.push(VARIABLE_CONSTANTS.OWNER.APP);
                 getAppVariables(function (appVariables) {
                     setAppVariables(appVariables);
                     appVariablesLoaded = true;
@@ -144,6 +144,7 @@ wm.variables.services.Variables = [
                 }, error);
 
                 if ($rootScope.activePageName) {
+                    reloadRequired.push($rootScope.activePageName);
                     getPageVariables($rootScope.activePageName, function () {
                         pageVariablesLoaded = true;
                         handleSuccess();
