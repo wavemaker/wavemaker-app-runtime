@@ -126,6 +126,7 @@ wm.plugins.webServices.constant('WS_CONSTANTS', {
     HTTP_METHODS: ["GET", "POST", "PUT", "HEAD", "PATCH", "DELETE", "TRACE", "OPTIONS"],
     NON_BODY_HTTP_METHODS: ["GET", "HEAD"],
     PRIMITIVE_DATA_TYPES: ["number", "integer", "string", "boolean", "file"],
+    OPERATION_NAME_KEY: "x-WM-METHOD_NAME",
     CONTENT_TYPES: {
         FORM_URL_ENCODED: "application/x-www-form-urlencoded",
         MULTIPART_FORMDATA: "multipart/form-data",
