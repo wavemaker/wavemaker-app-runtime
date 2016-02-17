@@ -124,6 +124,12 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             case NOT_EQUALS:
                 criterion = Restrictions.ne(attributeName, attributeValue);
                 break;
+            case NULL:
+                criterion = Restrictions.isNull(attributeName);
+                break;
+            case NULL_OR_EMPTY:
+                criterion = Restrictions.eqOrIsNull(attributeName, "");
+                break;
             case BETWEEN:
                 if (attributeValue instanceof Collection) {
                     Collection collection = (Collection) attributeValue;
