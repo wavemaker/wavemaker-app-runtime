@@ -1676,7 +1676,10 @@ WM.module('wm.widgets.grid')
                                 'deleterow': $scope.deleterow
                             });
                         } else {
-                            $rootScope.$emit('update-widget-property', 'readonlygrid', true);
+                            //For service and static variable update readonly only if its not set on to the grid
+                            if (!$scope.readonlygrid) {
+                                $rootScope.$emit('update-widget-property', 'readonlygrid', true);
+                            }
                         }
                         $scope.widgetProps.readonlygrid.disabled = true;
                     }
