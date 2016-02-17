@@ -488,10 +488,7 @@ wm.variables.services.$liveVariable = [
                 }
 
                 orderByFields = (!options.orderBy || WM.element.isEmptyObject(options.orderBy)) ? variable.orderBy : options.orderBy;
-                orderByFields.split("&").forEach(function (orderByOption) {
-                    orderByOptions += "sort=" + orderByOption + "&";
-                });
-                orderByOptions = orderByOptions.slice(0, -1);
+                orderByOptions = orderByFields ? "sort=" + orderByFields : "";
 
                 return {
                     'filter': filterOptions,

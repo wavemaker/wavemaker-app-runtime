@@ -24,6 +24,22 @@ wm.variables.services.Variables = [
     function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils) {
         "use strict";
 
+        /**
+         * Migrates old orderBy expression to new
+         * e.g. field1,asc&fied2,desc --> field1 asc,field2 desc
+         * @param variable for which migration to be done
+         */
+        function migrateOrderBy(variable) {
+            /* migrate old orderBy properties */
+            var orderBy = variable.orderBy || "";
+            if (_.includes(orderBy, '&')) {
+                orderBy = _.map(variable.orderBy.split('&'), function (clause) {
+                    return clause.replace(/,/g, ' ');
+                }).join(',');
+            }
+            variable.orderBy = orderBy;
+        }
+
         /*flag to determine app mode
          true: RUN mode
          false: STUDIO mode
@@ -543,6 +559,7 @@ wm.variables.services.Variables = [
                             }, null, false);
                         }
                     } else if (variable.category === "wm.LiveVariable") {
+                        migrateOrderBy(variable);
                         if (runMode) {
                             variable.canUpdate = true;
                         }

@@ -405,11 +405,13 @@ wm.variables.services.$servicevariable = ['Variables',
                         methodInfo.parameters.forEach(function (param) {
                             param.sampleValue = variable.dataBinding[param.name];
                             /* supporting pagination for query service variable */
-                            if (serviceType === SERVICE_TYPE_DATA && ["page", "size"].indexOf(param.name) !== -1) {
+                            if (serviceType === SERVICE_TYPE_DATA && VARIABLE_CONSTANTS.PAGINATION_PARAMS.indexOf(param.name) !== -1) {
                                 if (param.name === "size") {
-                                    param.sampleValue = parseInt(variable.maxResults, 10) || 20;
+                                    param.sampleValue = param.sampleValue || parseInt(variable.maxResults, 10) || 20;
                                 } else if (param.name === "page") {
-                                    param.sampleValue = options.page || 1;
+                                    param.sampleValue = options.page || param.sampleValue || 1;
+                                } else if (param.name === "sort") {
+                                    param.sampleValue = options.orderBy || '';
                                 }
                             }
                         });

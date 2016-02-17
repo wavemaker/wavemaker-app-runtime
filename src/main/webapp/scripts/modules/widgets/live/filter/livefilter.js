@@ -113,7 +113,6 @@ WM.module('wm.widgets.live')
                         page = options.page || page;
                         orderBy = options.orderBy || "";
                         $scope.orderBy = options.orderBy;
-                        orderBy = orderBy.split(",").join(" ");
                         /* Copy the values to be sent to the user as '$data' before servicecall */
                         _.each($scope.formFields, function (field) {
                             if (!field.isRange) {

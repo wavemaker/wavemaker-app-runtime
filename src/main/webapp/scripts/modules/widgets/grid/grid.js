@@ -830,8 +830,8 @@ WM.module('wm.widgets.grid')
                 sortHandler = function (sortObj, e) {
                     var filterFields,
                         variable = $scope.gridElement.scope().Variables[$scope.variableName],
-                        fieldName = variable.getModifiedFieldName(sortObj.field),
-                        sortOptions = fieldName + ',' + sortObj.direction;
+                        fieldName = variable.category === 'wm.LiveVariable' ? variable.getModifiedFieldName(sortObj.field) : sortObj.field,
+                        sortOptions = fieldName + ' ' + sortObj.direction;
                     /* Update the sort info for passing to datagrid */
                     $scope.gridOptions.sortInfo.field = sortObj.field;
                     $scope.gridOptions.sortInfo.direction = sortObj.direction;
@@ -853,7 +853,7 @@ WM.module('wm.widgets.grid')
                         if ($scope.isBoundToFilter && $scope.widgetName) {
                             /* if Grid bound to filter, get sorted data through filter widget (with applied filters in place)*/
                             $scope.Widgets[$scope.widgetName].applyFilter({"orderBy": sortOptions});
-                        } else {
+                        } else if (variable.category === 'wm.LiveVariable') {
                             /* else get sorted data through variable */
                             variable.update({
                                 'type': 'wm.LiveVariable',
@@ -888,9 +888,29 @@ WM.module('wm.widgets.grid')
                             }, function (error) {
                                 wmToaster.show('error', 'ERROR', error);
                             });
+                        } else if (variable.category === "wm.ServiceVariable") {
+                            /* Will be called only in case of Query service variables */
+                            variable.update({
+                                'orderBy': sortOptions,
+                                'page': 1
+                            }, function (data) {
+                                /*Navigate to the first page upon sorting.*/
+                                $scope.serverData = data.content;
+                                /*Check for sanity*/
+                                if ($scope.dataNavigator) {
+                                    $scope.dataNavigator.dataset = data;
+
+                                    /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
+                                    if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
+                                        $scope.dataNavigator.navigatePage('prev');
+                                    }
+                                }
+                                setGridData($scope.serverData);
+                            }, function (error) {
+                                wmToaster.show('error', 'ERROR', error);
+                            })
                         }
                     }
-                    $scope.onSort({$event: e, $data: $scope.serverData});
                 },
                 /*Returns data filtered using searchObj*/
                 getSearchResult = function (data, searchObj) {
@@ -1643,13 +1663,19 @@ WM.module('wm.widgets.grid')
                                 $scope.primaryKey = variableObj.getPrimaryKey();
                             }
                             $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
+                        } else if (variableObj.serviceType === 'DataService' && variableObj.controller !== 'ProcedureExecution') {
+                            /*Calling the specific search and sort handlers*/
+                            $scope.setDataGridOption('sortHandler', sortHandler);
                         } else if (variableObj.serviceType !== 'DataService') {
                             /*Calling the specific search and sort handlers*/
                             $scope.setDataGridOption('searchHandler', handleOperation);
                             $scope.setDataGridOption('sortHandler', handleOperation);
                         }
-                        /*if the grid is not bound to widgets*/
+                    } else if (isBoundToFilter) {
+                        /*If the variable is deleted hiding the spinner and showing the no data found message*/
+                        $scope.setDataGridOption('sortHandler', sortHandler);
                     } else if ($scope.binddataset.indexOf('bind:Widgets') === -1) {
+                        /*if the grid is not bound to widgets*/
                         /*If the variable is deleted hiding the spinner and showing the no data found message*/
                         $scope.datagridElement.datagrid('setStatus', 'error', $scope.nodatamessage);
                     }
