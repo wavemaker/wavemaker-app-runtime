@@ -1861,9 +1861,6 @@ WM.module('wm.widgets.grid')
                         columnDef.generator = columns[columnDef.field].generator;
                         columnDef.readonly = WM.isDefined(columns[columnDef.field].readonly) ?
                                     columns[columnDef.field].readonly === "true" : (columnDef.generator === 'identity' && columns[columnDef.field].isRelatedPk !== 'true');
-
-                        /*Prevent searching and sorting on non-primary key columns in related tables.*/
-                        columnDef.searchable = columnDef.sortable = !(columnDef.field && columnDef.field.indexOf('.') !== -1 && !columnDef.primaryKey);
                         if (columnDef.type === 'timestamp' || columnDef.type === 'datetime' || columnDef.type === 'date') {
                             if (!columnDef.formatpattern) {
                                 columnDef.formatpattern = 'toDate';
@@ -2156,7 +2153,9 @@ WM.module('wm.widgets.grid')
                                 'dataset': attrs.dataset,
                                 'datafield': attrs.datafield,
                                 'displayfield': attrs.displayfield,
-                                'defaultvalue': attrs.defaultvalue
+                                'defaultvalue': attrs.defaultvalue,
+                                'sortable': attrs.sortable !== 'false',
+                                'searchable': attrs.searchable !== 'false'
                             },
                             updateCustomExpression = function (column) {
                                 LiveWidgetUtils.setColumnConfig(column);
@@ -2178,8 +2177,6 @@ WM.module('wm.widgets.grid')
                         if (tElement.context.innerHTML) {
                             columnDef.customExpression = tElement.context.innerHTML;
                         }
-                        /*Prevent searching and sorting on non-primary key columns in related tables.*/
-                        columnDef.searchable = columnDef.sortable = !(columnDef.field && columnDef.field.indexOf('.') !== -1 && !columnDef.primaryKey);
                         columnDef.readonly = WM.isDefined(attrs.readonly) ? attrs.readonly === "true" : (columnDef.generator === 'identity' && !columnDef.isRelatedPk);
 
                         if (columnDef.type === 'blob' && !columnDef.customExpression) {
