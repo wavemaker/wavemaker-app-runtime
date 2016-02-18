@@ -28,13 +28,13 @@
   }
   .app-mobile-navbar {
     & + .app-content {
-      .calc('height', ~"calc(100% - @{app-mobile-nav-height})") !important;
+      .calc('height', ~"calc(100% - @{app-mobile-nav-height} - 1pt)") !important;
       margin: 0;
     }
   }
   &.has-tabbar {
     .app-mobile-navbar + .app-content {
-      .calc('height', ~"calc( 100% - @{app-mobile-nav-height} - @{app-mobile-tabbar-height})") !important;
+      .calc('height', ~"calc( 100% - @{app-mobile-nav-height} - @{app-mobile-tabbar-height} - 1pt)") !important;
     }
   }
   &.has-tabbar-top .app-mobile-navbar + .app-content {
