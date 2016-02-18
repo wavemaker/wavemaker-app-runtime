@@ -406,6 +406,9 @@ WM.module('wm.widgets.basic')
  *                  This is a bindable property. <br>
  *                  This property will be used to show/hide the search widget on the web page. <br>
  *                  Default value: `true`.
+ * @param {boolean=} casesensitive
+ *                  This property decides whether search will be case-sensitive or not. <br>
+ *                  Default value: `false`.
  * @param {string=}  on-submit
  *                  Callback function which will be triggered when the search icon is clicked.
  *
