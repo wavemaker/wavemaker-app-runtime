@@ -233,12 +233,14 @@ WM.module('wm.widgets.live')
                                     break;
                                 }
                                 if (WM.isDefined(fieldValue) && fieldValue !== '' && fieldValue !== null) {
-                                    formFields[colName] = {
-                                        'value': fieldValue
-                                    };
-                                    if (filterField.type === 'string' || matchMode) { //Only for string types, custom match modes are enabled
+                                    formFields[colName] = {};
+                                    if (matchMode) {
+                                        formFields[colName].matchMode = matchMode;
+                                        fieldValue = undefined;
+                                    } else if (filterField.type === 'string') { //Only for string types, custom match modes are enabled
                                         formFields[colName].matchMode = matchMode || filterField.matchmode || variable.matchMode;
                                     }
+                                    formFields[colName].value = fieldValue;
                                 }
                             }
                         });

@@ -400,6 +400,15 @@ wm.variables.services.$liveVariable = [
                     orderByOptions = '',
                     getFieldType = function (options) {
                         return options.type || getSqlType(variable, options.fieldName) || 'integer';
+                    },
+                    getAttributeName = function (fieldName) {
+                        var attrName = fieldName;
+                        variable.propertiesMap.columns.forEach(function (column) {
+                            if (column.fieldName === fieldName && column.isRelated) {
+                                attrName = column.relatedFieldName;
+                            }
+                        });
+                        return attrName;
                     };
                 /*get the filter fields from the variable*/
                 _.each(variable.filterFields, function (value, key) {
@@ -470,16 +479,21 @@ wm.variables.services.$liveVariable = [
                             default:
                                 break;
                             }
-
-                            attributeName = fieldName;
-                            variable.propertiesMap.columns.forEach(function (column) {
-                                if (column.fieldName === fieldName && column.isRelated) {
-                                    attributeName = column.relatedFieldName;
-                                }
-                            });
+                            attributeName = getAttributeName(fieldName);
                             filterOptions.push({
                                 "attributeName": attributeName,
                                 "attributeValue": fieldValue,
+                                "attributeType": fieldType.toUpperCase(),
+                                "filterCondition": filterCondition
+                            });
+                        } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
+                            attributeName = getAttributeName(fieldName);
+                            if (fieldType !== 'string') {
+                                filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['null'];
+                            }
+                            filterOptions.push({
+                                "attributeName": attributeName,
+                                "attributeValue": '',
                                 "attributeType": fieldType.toUpperCase(),
                                 "filterCondition": filterCondition
                             });

@@ -484,6 +484,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "empty"            : "EMPTY",
         "nullorempty"      : "NULL_OR_EMPTY"
     },
+    "DATABASE_EMPTY_MATCH_MODES": ["NULL", "EMPTY", "NULL_OR_EMPTY"],
     "ACTIONS": {
         "CREATE": "CREATE",
         "UPDATE": "UPDATE",
