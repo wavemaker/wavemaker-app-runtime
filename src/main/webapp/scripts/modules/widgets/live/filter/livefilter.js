@@ -1,4 +1,4 @@
-/*global WM, window, _ */
+/*global WM, window, _, wm */
 
 WM.module('wm.widgets.live')
     .run(["$templateCache", function ($templateCache) {
@@ -27,16 +27,27 @@ WM.module('wm.widgets.live')
         '$compile',
         'CONSTANTS',
         'QueryBuilder',
-        '$filter',
         'Utils',
         'wmToaster',
         '$controller',
         'LiveWidgetUtils',
-        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, $filter, Utils, wmToaster, $controller, LiveWidgetUtils) {
+        function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, Utils, wmToaster, $controller, LiveWidgetUtils) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.layouts', 'wm.containers']),
                 filterMarkup = '',
-                notifyFor;
+                notifyFor,
+                FILTER_CONSTANTS = {
+                    'EMPTY_KEY'   : 'EMPTY_NULL_FILTER',
+                    'EMPTY_VALUE' : 'No Value',
+                    'NULLEMPTY'   : ['null', 'empty'],
+                    'NULL'        : 'null',
+                    'EMPTY'       : 'empty',
+                    'LABEL_KEY'   : 'key',
+                    'LABEL_VALUE' : 'value'
+                },
+                getEnableEmptyFilter = function (enableemptyfilter) {
+                    return enableemptyfilter && _.intersection(enableemptyfilter.split(','), FILTER_CONSTANTS.NULLEMPTY).length > 0;
+                };
             if (CONSTANTS.isStudioMode) {
                 notifyFor = {
                     'dataset': true,
@@ -105,10 +116,14 @@ WM.module('wm.widgets.live')
                             isValid,
                             dataModel = {},
                             MATCH_MODES = {
-                                'BETWEEN' : 'between',
-                                'GREATER' : 'greaterthanequal',
-                                'LESSER'  : 'lessthanequal'
-                            };
+                                'BETWEEN'     : 'between',
+                                'GREATER'     : 'greaterthanequal',
+                                'LESSER'      : 'lessthanequal',
+                                'NULL'        : 'null',
+                                'EMPTY'       : 'empty',
+                                'NULLOREMPTY' : 'nullorempty'
+                            },
+                            emptyFilterOptions = $scope.enableemptyfilter.split(',');
                         options = options || {};
                         page = options.page || page;
                         orderBy = options.orderBy || "";
@@ -183,12 +198,23 @@ WM.module('wm.widgets.live')
                                 switch (filterField.widget) {
                                 case 'select':
                                 case 'radioset':
-                                    if (filterField.type === 'boolean') {
-                                        if (WM.isDefined(filterField._value) && filterField._value !== '') {
-                                            fieldValue = JSON.parse(filterField._value);
+                                    if (getEnableEmptyFilter($scope.enableemptyfilter) && filterField._value === FILTER_CONSTANTS.EMPTY_KEY) {
+                                        if (_.intersection(emptyFilterOptions, FILTER_CONSTANTS.NULLEMPTY).length === 2) {
+                                            matchMode = MATCH_MODES.NULLOREMPTY;
+                                        } else if (_.includes(emptyFilterOptions, FILTER_CONSTANTS.NULL)) {
+                                            matchMode = MATCH_MODES.NULL;
+                                        } else if (_.includes(emptyFilterOptions, FILTER_CONSTANTS.EMPTY)) {
+                                            matchMode = MATCH_MODES.EMPTY;
                                         }
-                                    } else {
                                         fieldValue = filterField._value;
+                                    } else {
+                                        if (filterField.type === 'boolean') {
+                                            if (WM.isDefined(filterField._value) && filterField._value !== '') {
+                                                fieldValue = JSON.parse(filterField._value);
+                                            }
+                                        } else {
+                                            fieldValue = filterField._value;
+                                        }
                                     }
                                     break;
                                 case 'checkboxset':
@@ -210,8 +236,8 @@ WM.module('wm.widgets.live')
                                     formFields[colName] = {
                                         'value': fieldValue
                                     };
-                                    if (filterField.type === 'string') { //Only for string types, custom match modes are enabled
-                                        formFields[colName].matchMode = filterField.matchmode || variable.matchMode;
+                                    if (filterField.type === 'string' || matchMode) { //Only for string types, custom match modes are enabled
+                                        formFields[colName].matchMode = matchMode || filterField.matchmode || variable.matchMode;
                                     }
                                 }
                             }
@@ -394,7 +420,9 @@ WM.module('wm.widgets.live')
                                         columns,
                                         aliasColumn,
                                         fieldColumn,
-                                        widgetTypes = ['select', 'radioset', 'checkboxset'];
+                                        widgetTypes = ['select', 'radioset', 'checkboxset'],
+                                        isEnableEmptyFilter = getEnableEmptyFilter(scope.enableemptyfilter),
+                                        emptyOption = {};
 
                                     fieldColumn = variable.getModifiedFieldName(filterField.field);
                                     if (_.includes(widgetTypes, filterField.widget) && !filterField.tempDataset) {
@@ -406,15 +434,12 @@ WM.module('wm.widgets.live')
                                                 "tableName": tableName,
                                                 "columns": [" DISTINCT " + columns + " AS " + aliasColumn]
                                             });
-                                            filterField.datafield = aliasColumn;
-                                            filterField.displayfield = aliasColumn;
                                         } else {
+                                            aliasColumn = fieldColumn;
                                             query = QueryBuilder.getQuery({
                                                 "tableName": scope.result.propertiesMap.entityName,
                                                 "columns": [" DISTINCT " + fieldColumn + " AS " + filterField.field]
                                             });
-                                            filterField.datafield = filterField.field;
-                                            filterField.displayfield = filterField.field;
                                         }
                                         /* Sending size = 500 because we want to populate all data values in widgets
                                          * like select box, checkbox set etc.
@@ -429,7 +454,23 @@ WM.module('wm.widgets.live')
                                             "nativeSql": false,
                                             "prefabName": variable.prefabName
                                         }, function (data) {
-                                            filterField.dataset = data.content;
+                                            filterField.dataset = [];
+                                            if (isEnableEmptyFilter && filterField.widget !== 'checkboxset') {
+                                                emptyOption[FILTER_CONSTANTS.LABEL_KEY]   = FILTER_CONSTANTS.EMPTY_KEY;
+                                                emptyOption[FILTER_CONSTANTS.LABEL_VALUE] = FILTER_CONSTANTS.EMPTY_VALUE;
+                                                filterField.dataset.push(emptyOption);
+                                            }
+                                            _.each(data.content, function (key) {
+                                                var value = key[aliasColumn],
+                                                    option = {};
+                                                if (value !== null && value !== '') {
+                                                    option[FILTER_CONSTANTS.LABEL_KEY]   = value;
+                                                    option[FILTER_CONSTANTS.LABEL_VALUE] = value;
+                                                    filterField.dataset.push(option);
+                                                }
+                                            });
+                                            filterField.displayfield = FILTER_CONSTANTS.LABEL_VALUE;
+                                            filterField.datafield    = FILTER_CONSTANTS.LABEL_KEY;
                                         });
                                     }
                                 });

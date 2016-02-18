@@ -479,7 +479,10 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "lessthan"         : "LESS_THAN",
         "lessthanequal"    : "LESS_THAN_OR_EQUALS",
         "greaterthan"      : "GREATER_THAN",
-        "greaterthanequal" : "GREATER_THAN_OR_EQUALS"
+        "greaterthanequal" : "GREATER_THAN_OR_EQUALS",
+        "null"             : "NULL",
+        "empty"            : "EMPTY",
+        "nullorempty"      : "NULL_OR_EMPTY"
     },
     "ACTIONS": {
         "CREATE": "CREATE",
