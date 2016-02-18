@@ -128,6 +128,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/datamodels/:dataModelName/tables/:entityName/relations/:relationName",
             method: "DELETE"
         },
+        getTypesMap: {
+            url: "services/projects/:projectID/services/typesmap",
+            method: "GET"
+        },
 
         /*Queries Related services*/
 
@@ -371,94 +375,92 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     },
     "DATABASE_DATA_TYPES": {
         "big_decimal": {
-            "sql_type": "big_decimal",
+            "java_type": "big_decimal",
             "default_value": "0",
             "precision": true
         },
         "big_integer": {
-            "sql_type": "big_integer",
+            "java_type": "big_integer",
             "default_value": "0",
             "precision": true
         },
         "blob": {
-            "sql_type": "blob",
+            "java_type": "blob",
             "default_value": "null"
         },
         "boolean": {
-            "sql_type": "boolean",
+            "java_type": "boolean",
             "default_value": "false"
         },
         "byte": {
-            "sql_type": "byte",
+            "java_type": "byte",
             "default_value": "null",
             "precision": true
         },
         "character": {
-            "sql_type": "character",
+            "java_type": "character",
             "default_value": "null"
         },
         "clob": {
-            "sql_type": "clob",
+            "java_type": "clob",
             "default_value": "null"
         },
         "date": {
-            "sql_type": "date",
+            "java_type": "date",
             "default_value": "null"
         },
         "datetime": {
-            "sql_type": "datetime",
+            "java_type": "datetime",
             "default_value": "null"
         },
         "double": {
-            "sql_type": "double",
+            "java_type": "double",
             "default_value": "0",
-            "precision": true
         },
         "float": {
-            "sql_type": "float",
+            "java_type": "float",
             "default_value": "0",
-            "precision": true
         },
         "integer": {
-            "sql_type": "integer",
+            "java_type": "integer",
             "default_value": "0",
             "precision": true
         },
         "long": {
-            "sql_type": "long",
+            "java_type": "long",
             "default_value": "0",
             "precision": true
         },
         "string": {
-            "sql_type": "string",
+            "java_type": "string",
             "default_value": "null",
             "length": true
         },
         "short": {
-            "sql_type": "short",
+            "java_type": "short",
             "default_value": "0",
             "precision": true
         },
         "text": {
-            "sql_type": "text",
+            "java_type": "text",
             "default_value": "null"
         },
         "time": {
-            "sql_type": "time",
+            "java_type": "time",
             "default_value": "null"
         },
         "timestamp": {
-            "sql_type": "timestamp",
+            "java_type": "timestamp",
             "default_value": "null"
         }
     },
     "DATABASE_SECONDARY_DATA_TYPES": {
         "binary": {
-            "sql_type": "blob",
+            "java_type": "blob",
             "default_value": "null"
         },
         "long": {
-            "sql_type": "double",
+            "java_type": "double",
             "default_value": "null"
         }
     },

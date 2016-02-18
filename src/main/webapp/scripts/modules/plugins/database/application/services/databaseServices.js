@@ -1515,6 +1515,32 @@ wm.plugins.database.services.DatabaseService = [
             },
             /**
              * @ngdoc function
+             * @name wm.database.$DatabaseService#getTypesMap
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to get types map having sql and java types.
+             *
+             * @param {object} params
+             *                 Object containing project id.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+            getTypesMap: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "getTypesMap",
+                    urlParams: {
+                        projectID: params.projectID
+                    }
+                }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
              * @name wm.database.$DatabaseService#readTableData
              * @methodOf wm.database.$DatabaseService
              * @function

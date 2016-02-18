@@ -207,11 +207,11 @@ wm.variables.services.$liveVariable = [
                         variableType,
                         tableNameToEntityNameMap = {},
                         entityNameToTableNameMap = {},
-                        getSQLType = function (sqlType) {
-                            if (DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType]) {
-                                return DB_CONSTANTS.DATABASE_DATA_TYPES[DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[sqlType].sql_type].sql_type;
+                        getJavaType = function (javaType) {
+                            if (DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[javaType]) {
+                                return DB_CONSTANTS.DATABASE_DATA_TYPES[DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[javaType].java_type].java_type;
                             }
-                            return sqlType;
+                            return javaType;
                         };
                     WM.forEach(database.tables, function (table) {
                         tableNameToEntityNameMap[table.name] = table.entityName;
@@ -260,23 +260,23 @@ wm.variables.services.$liveVariable = [
                                     isPrimaryKey = _.intersection(sourceCols, primaryKeys).length > 0,
                                     newColumn,
                                     relatedCol,
-                                    sqlType;
+                                    javaType;
                                 /*Find out the foreign keys from the relations*/
                                 foreignKeys = foreignKeys.concat(sourceCols);
                                 /*Find the related column*/
                                 relatedCol = _.find(table.columns, function (col) {
                                     return col.name === sourceCols[0];
                                 });
-                                sqlType = getSQLType(relatedCol.sqlType);
+                                javaType = getJavaType(relatedCol.javaType);
                                 newColumn = {
                                     'fieldName'          : relation.fieldName,
-                                    'type'               : sqlType,
-                                    'hibernateType'      : relatedCol.hibernateType,
-                                    'fullyQualifiedType' : sqlType,
+                                    'type'               : javaType,
+                                    'fullyQualifiedType' : javaType,
                                     'columnName'         : sourceCols.join(','),
                                     'isPrimaryKey'       : isPrimaryKey,
                                     'notNull'            : !relatedCol.nullable,
                                     'length'             : relatedCol.length,
+                                    'precision'          : relatedCol.precision,
                                     'scale'              : relatedCol.scale,
                                     'generator'          : relatedCol.generator,
                                     'isRelated'          : true,
@@ -299,22 +299,22 @@ wm.variables.services.$liveVariable = [
                                 packageDetails[tablePackageName].primaryFields.push(column.fieldName);
                             }
                             if (!_.includes(columnsAdded, column.name)) {
-                                var sqlType = getSQLType(column.sqlType),
+                                var javaType = getJavaType(column.javaType),
                                     isPrimaryKey = _.includes(primaryKeys, column.name),
                                     isForeignKey = _.includes(foreignKeys, column.name);
                                 tableDetails[tableName].columns.push({
-                                    "fieldName": column.fieldName,
-                                    "type": sqlType,
-                                    "hibernateType": column.hibernateType,
-                                    "fullyQualifiedType": sqlType,
-                                    "columnName": column.name,
-                                    "isPrimaryKey": isPrimaryKey,
-                                    "notNull": !column.nullable,
-                                    "length": column.length,
-                                    "precision": column.precision,
-                                    "generator": column.generator,
-                                    "isRelated": isForeignKey,
-                                    "defaultValue": column.defaultValue
+                                    "fieldName"         : column.fieldName,
+                                    "type"              : javaType,
+                                    "fullyQualifiedType": javaType,
+                                    "columnName"        : column.name,
+                                    "isPrimaryKey"      : isPrimaryKey,
+                                    "notNull"           : !column.nullable,
+                                    "length"            : column.length,
+                                    "precision"         : column.precision,
+                                    "scale"             : column.scale,
+                                    "generator"         : column.generator,
+                                    "isRelated"         : isForeignKey,
+                                    "defaultValue"      : column.defaultValue
                                 });
                             }
                         });
@@ -399,7 +399,7 @@ wm.variables.services.$liveVariable = [
                     orderByFields,
                     orderByOptions = '',
                     getFieldType = function (options) {
-                        return options.type || getHibernateType(variable, options.fieldName) || getSqlType(variable, options.fieldName) || 'integer';
+                        return options.type || getSqlType(variable, options.fieldName) || 'integer';
                     };
                 /*get the filter fields from the variable*/
                 _.each(variable.filterFields, function (value, key) {
