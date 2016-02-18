@@ -411,7 +411,7 @@ wm.variables.services.$servicevariable = ['Variables',
                                 } else if (param.name === "page") {
                                     param.sampleValue = options.page || param.sampleValue || 1;
                                 } else if (param.name === "sort") {
-                                    param.sampleValue = options.orderBy || '';
+                                    param.sampleValue = options.orderBy || variable.orderBy || '';
                                 }
                             }
                         });
