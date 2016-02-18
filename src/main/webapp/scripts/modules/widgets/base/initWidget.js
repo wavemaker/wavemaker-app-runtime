@@ -700,12 +700,13 @@ WM.module('wm.widgets.base')
              * acceptsArray: bound entity accepts array like values
              */
             function register(scope, watchExpr, listenerFn, config) {
-                var watchInfo, _config = config || {},
-                    deepWatch = _config.deepWatch,
-                    allowPageable = _config.allowPageable,
-                    acceptsArray = _config.acceptsArray,
-                    variableName = watchExpr.split('.')[1],
-                    variableObject = variableName && scope.Variables && scope.Variables[variableName];
+                var watchInfo,
+                    _config        = config || {},
+                    deepWatch      = _config.deepWatch,
+                    allowPageable  = _config.allowPageable,
+                    acceptsArray   = _config.acceptsArray,
+                    regExp         = new RegExp(/Variables\.(\w*)\.dataSet\[\$i\]/g), //Reg exp to match all Variables which has dataSet[$i]
+                    variableObject;
 
                 function isPageable(variable) {
                     return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === "DataService" && variable.controller !== "ProcedureExecution") || variable.category === "wm.LiveVariable");
@@ -716,12 +717,16 @@ WM.module('wm.widgets.base')
                         listenerFn();
                         return;
                     }
+                    //Check each match is pageable and replace dataSet[$i] with dataSet.content[$i]
+                    watchExpr = watchExpr.replace(regExp, function (match, key) {
+                        variableObject = _.get(scope.Variables, key);
+                            /*In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped*/
+                            /*So for procedures the watch expression will not have content in it*/
+                            if(variableObject && isPageable(variableObject)) {
+                                return 'Variables.' + key + '.dataSet.content[$i]';
+                            }
+                    });
 
-                    /*In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped*/
-                    /*So for procedures the watch expression will not have content in it*/
-                    if(variableObject && isPageable(variableObject)) {
-                        watchExpr = watchExpr.replace('.dataSet[$i]', '.dataSet.content[$i]');
-                    }
                     watchInfo = getUpdatedWatchExpr(watchExpr, acceptsArray, allowPageable, listenerFn);
                 } else {
                     watchInfo = {
