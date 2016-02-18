@@ -1489,6 +1489,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "value": '100%', "pattern": dimensionRegex},
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
+                        "casesensitive": {"type": "boolean", "show": "false", "value": false},
                         /* searchbar in mobile-navbar*/
                         "navsearchbar": {"type": "string", "show": "false"}
                     },

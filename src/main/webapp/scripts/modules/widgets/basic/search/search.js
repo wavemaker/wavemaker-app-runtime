@@ -33,7 +33,7 @@ WM.module('wm.widgets.basic')
                         'data-ng-model="query"' +
                         ' tabindex="{{tabindex}}"' +
                         ' accesskey="{{shortcutkey}}"' +
-                        'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue | limitTo:limit" ' +
+                        'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
@@ -41,7 +41,7 @@ WM.module('wm.widgets.basic')
                         'data-ng-model="query"' +
                         ' accesskey="{{shortcutkey}}"' +
                         ' tabindex="{{tabindex}}"' +
-                        'uib-typeahead="item for item in itemList | filter:$viewValue | limitTo:limit" ' +
+                        'uib-typeahead="item for item in itemList | filter:$viewValue:casesensitive | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
@@ -60,14 +60,14 @@ WM.module('wm.widgets.basic')
                 '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     'data-ng-model="query"' +
                     ' accesskey="{{shortcutkey}}"' +
-                    'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue | limitTo:limit" ' +
+                    'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
                     'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     'typeahead-template-url="template/widget/form/searchlist.html"' +
                 '>' +
                 '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfStrings\'" type="text" class="form-control list-of-strings" placeholder="{{placeholder}}"' +
                     'data-ng-model="query"' +
                     ' accesskey="{{shortcutkey}}"' +
-                    'uib-typeahead="item for item in itemList | filter:$viewValue | limitTo:limit" ' +
+                    'uib-typeahead="item for item in itemList | filter:$viewValue:casesensitive | limitTo:limit" ' +
                     'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     'typeahead-template-url="template/widget/form/searchlist.html"' +
                 '>' +
@@ -77,15 +77,19 @@ WM.module('wm.widgets.basic')
     }])
     .filter('_custom_search_filter', function () {
         'use strict';
-        return function (entries, key, val) {
-
+        return function (entries, key, val, casesensitive) {
             // filter the entries based on the $is.searchkey and the input
             if (!key) {
                 return entries;
             }
 
             return _.filter(entries, function (entry) {
-                return _.includes(entry[key], val);
+                var a = entry[key], b = val;
+                if (!casesensitive) {
+                    a = a && a.toLowerCase();
+                    b = b && b.toLowerCase();
+                }
+                return _.includes(a, b);
             });
         };
     })
