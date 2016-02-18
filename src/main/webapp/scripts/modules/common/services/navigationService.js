@@ -151,19 +151,6 @@ wm.modules.wmCommon.services.NavigationService = [
             }
         }
 
-        /*
-         * returns the path prefix for the app
-         */
-        function getPathPrefix(pageName) {
-            if ($rs.isSecurityEnabled && pageName === 'Login') {
-                return 'login.html';
-            }
-            if ($window.location.pathname.split('/').pop() === 'index.html') {
-                return 'index.html';
-            }
-            return '';
-        }
-
         //listens for the event only once and destroys the listener.
         function listenOnce(eventName, callBack) {
             var removeListener = $rs.$on(eventName, function () {
@@ -205,7 +192,7 @@ wm.modules.wmCommon.services.NavigationService = [
         this.goToPage = function (pageName, transition, viewName) {
             nextTransitionToApply = transition || '';
 
-            var _location = getPathPrefix(pageName) + '#/' + pageName;
+            var _location = '#/' + pageName;
             if (viewName) {
                 _location +=  '.' + viewName;
             }
