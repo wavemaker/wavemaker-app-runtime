@@ -409,6 +409,12 @@ wm.variables.services.$liveVariable = [
                             }
                         });
                         return attrName;
+                    },
+                    getFilterCondition = function (filterCondition) {
+                        if (_.includes(DB_CONSTANTS.DATABASE_RANGE_MATCH_MODES, filterCondition)) {
+                            return filterCondition;
+                        }
+                        return DB_CONSTANTS.DATABASE_MATCH_MODES['exact'];
                     };
                 /*get the filter fields from the variable*/
                 _.each(variable.filterFields, function (value, key) {
@@ -427,53 +433,53 @@ wm.variables.services.$liveVariable = [
                 if (variable.operation === 'read') {
                     _.each(filterFields, function (fieldOptions) {
                         var attributeName,
-                            fieldName = fieldOptions.fieldName,
-                            fieldValue = fieldOptions.value,
-                            fieldType = getFieldType(fieldOptions),
+                            fieldName       = fieldOptions.fieldName,
+                            fieldValue      = fieldOptions.value,
+                            fieldType       = getFieldType(fieldOptions),
                             filterCondition = fieldOptions.filterCondition;
                         /* if the field value is an object(complex type), loop over each field inside and push only first level fields */
                         if (WM.isObject(fieldValue) && !WM.isArray(fieldValue)) {
                             WM.forEach(fieldValue, function (subFieldValue, subFieldName) {
                                 if (subFieldValue && !WM.isObject(subFieldValue)) {
-                                    filterOptions.push(fieldName + "." + subFieldName + "=" + subFieldValue);
+                                    filterOptions.push(fieldName + '.' + subFieldName + '=' + subFieldValue);
                                 }
                             });
                         } else if (WM.isDefined(fieldValue) && fieldValue !== null && fieldValue !== '') {
                             /*Based on the sqlType of the field, format the value & set the filter condition.*/
                             switch (fieldType) {
-                            case "integer":
+                            case 'integer':
                                 fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
                                     return parseInt(value, 10);
                                 }) : parseInt(fieldValue, 10);
-                                filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                filterCondition = getFilterCondition(filterCondition);
                                 break;
-                            case "big_decimal":
-                            case "big_integer":
-                            case "character":
-                            case "double":
-                            case "float":
-                            case "boolean":
-                            case "short":
-                            case "byte":
-                            case "time":
-                                filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                            case 'big_decimal':
+                            case 'big_integer':
+                            case 'character':
+                            case 'double':
+                            case 'float':
+                            case 'boolean':
+                            case 'short':
+                            case 'byte':
+                            case 'time':
+                                filterCondition = getFilterCondition(filterCondition);
                                 break;
-                            case "date":
-                            case "datetime":
-                                fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
-                                filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                            case 'date':
+                            case 'datetime':
+                                fieldValue      = getDateInDefaultFormat(fieldValue, fieldType);
+                                filterCondition = getFilterCondition(filterCondition);
                                 break;
-                            case "timestamp":
+                            case 'timestamp':
                                 fieldValue = WM.isArray(fieldValue) ? _.map(fieldValue, function (value) {
                                     return moment(value).valueOf();
                                 }) : moment(fieldValue).valueOf();
-                                filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                filterCondition = getFilterCondition(filterCondition);
                                 break;
-                            case "string":
+                            case 'string':
                                 if (WM.isArray(fieldValue)) {
-                                    filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES["exact"];
+                                    filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['exact'];
                                 } else {
-                                    filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES["anywhere"];
+                                    filterCondition = filterCondition || DB_CONSTANTS.DATABASE_MATCH_MODES['anywhere'];
                                 }
                                 break;
                             default:
@@ -481,10 +487,10 @@ wm.variables.services.$liveVariable = [
                             }
                             attributeName = getAttributeName(fieldName);
                             filterOptions.push({
-                                "attributeName": attributeName,
-                                "attributeValue": fieldValue,
-                                "attributeType": fieldType.toUpperCase(),
-                                "filterCondition": filterCondition
+                                'attributeName'   : attributeName,
+                                'attributeValue'  : fieldValue,
+                                'attributeType'   : fieldType.toUpperCase(),
+                                'filterCondition' : filterCondition
                             });
                         } else if (_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
                             attributeName = getAttributeName(fieldName);
@@ -492,17 +498,17 @@ wm.variables.services.$liveVariable = [
                                 filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES['null'];
                             }
                             filterOptions.push({
-                                "attributeName": attributeName,
-                                "attributeValue": '',
-                                "attributeType": fieldType.toUpperCase(),
-                                "filterCondition": filterCondition
+                                'attributeName'   : attributeName,
+                                'attributeValue'  : '',
+                                'attributeType'   : fieldType.toUpperCase(),
+                                'filterCondition' : filterCondition
                             });
                         }
                     });
                 }
 
                 orderByFields = (!options.orderBy || WM.element.isEmptyObject(options.orderBy)) ? variable.orderBy : options.orderBy;
-                orderByOptions = orderByFields ? "sort=" + orderByFields : "";
+                orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
 
                 return {
                     'filter': filterOptions,

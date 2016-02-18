@@ -457,7 +457,7 @@ WM.module('wm.widgets.live')
                                             "prefabName": variable.prefabName
                                         }, function (data) {
                                             filterField.dataset = [];
-                                            if (isEnableEmptyFilter && filterField.widget !== 'checkboxset') {
+                                            if (isEnableEmptyFilter && filterField.widget !== 'checkboxset' && !filterField.isRange) {
                                                 emptyOption[FILTER_CONSTANTS.LABEL_KEY]   = FILTER_CONSTANTS.EMPTY_KEY;
                                                 emptyOption[FILTER_CONSTANTS.LABEL_VALUE] = FILTER_CONSTANTS.EMPTY_VALUE;
                                                 filterField.dataset.push(emptyOption);
