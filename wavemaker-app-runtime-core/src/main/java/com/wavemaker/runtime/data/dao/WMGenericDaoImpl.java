@@ -99,6 +99,15 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 Criteria criteria = session.createCriteria(entityClass);
                 if (queryFilters != null && queryFilters.length > 0) {
                     for (QueryFilter queryFilter : queryFilters) {
+                        final String attributeName = queryFilter.getAttributeName();
+
+                        // if search filter contains related table property, then add entity alias to criteria to perform search on related properties.
+                        final int indexOfDot = attributeName.indexOf(".");
+                        if (indexOfDot != -1) {
+                            String relatedEntityName = attributeName.substring(0, indexOfDot);
+                            criteria = criteria.createAlias(relatedEntityName, relatedEntityName);
+                        }
+
                         Criterion criterion = createCriterion(queryFilter);
                         criteria.add(criterion);
                     }
@@ -109,7 +118,6 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     protected Criterion createCriterion(QueryFilter queryFilter) {
-        Criterion criterion = null;
         Object attributeValue = queryFilter.getAttributeValue();
         String attributeName = queryFilter.getAttributeName();
         return queryFilter.getFilterCondition().criterion(attributeName, attributeValue);
@@ -135,6 +143,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         } finally {
             //unset the projection
             countCriteria.setProjection(null);
+            countCriteria.setResultTransformer(Criteria.ROOT_ENTITY);
         }
         return count;
     }
