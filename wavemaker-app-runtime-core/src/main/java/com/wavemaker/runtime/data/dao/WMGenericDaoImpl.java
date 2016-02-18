@@ -43,6 +43,7 @@ import com.wavemaker.runtime.data.expression.AttributeType;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
+    public static final String SEARCH_PROPERTY_DILIMITTER = ".";
     private Class<Entity> entityClass;
 
     public abstract HibernateTemplate getTemplate();
@@ -102,11 +103,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                         final String attributeName = queryFilter.getAttributeName();
 
                         // if search filter contains related table property, then add entity alias to criteria to perform search on related properties.
-                        final int indexOfDot = attributeName.indexOf(".");
-                        if (indexOfDot != -1) {
-                            String relatedEntityName = attributeName.substring(0, indexOfDot);
-                            criteria = criteria.createAlias(relatedEntityName, relatedEntityName);
-                        }
+                        criteria = criteriaForRelatedProperty(criteria, attributeName);
 
                         Criterion criterion = createCriterion(queryFilter);
                         criteria.add(criterion);
@@ -155,19 +152,33 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             Iterator<Sort.Order> iterator = pageable.getSort().iterator();
             while (iterator.hasNext()) {
                 Sort.Order order = iterator.next();
+                final String property = order.getProperty();
+                criteriaForRelatedProperty(criteria, property);
                 if (order.getDirection().equals(Sort.Direction.DESC)) {
-                    criteria.addOrder(Order.desc(order.getProperty()));
+                    criteria.addOrder(Order.desc(property));
                 } else {
-                    criteria.addOrder(Order.asc(order.getProperty()));
+                    criteria.addOrder(Order.asc(property));
                 }
             }
         }
+    }
+
+    private Criteria criteriaForRelatedProperty(Criteria criteria, final String attributeName) {
+        final int indexOfDot = attributeName.indexOf(SEARCH_PROPERTY_DILIMITTER);
+        if (indexOfDot != -1) {
+            String relatedEntityName = attributeName.substring(0, indexOfDot);
+            criteria = criteria.createAlias(relatedEntityName, relatedEntityName);
+        }
+        return criteria;
     }
 
     private void validateQueryFilters(QueryFilter[] queryFilters) {
         if (queryFilters != null && queryFilters.length > 0) {
             for (QueryFilter queryFilter : queryFilters) {
                 Object attributeValue = queryFilter.getAttributeValue();
+                if (attributeValue == null)
+                    continue;
+
                 AttributeType attributeType = queryFilter.getAttributeType();
                 if (attributeValue instanceof Collection) {
                     Collection collection = (Collection) attributeValue;
