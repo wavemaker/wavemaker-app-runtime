@@ -8,7 +8,12 @@ WM.module('wm.widgets.live')
 
         $tc.put('template/widget/list.html',
                     '<div class="app-livelist panel" init-widget live-actions apply-styles="shell" data-ng-show="show">' +
-                        '<div class="panel-heading" data-ng-if="title"><h4 class="panel-title">{{title}}</h4></div>' +
+                        '<div class="form-header panel-heading" data-ng-if="title">' +
+                            '<h4 class="panel-title">' +
+                                '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
+                                '<span>{{title}}</span>' +
+                            '</h4>' +
+                        '</div>' +
                         '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
