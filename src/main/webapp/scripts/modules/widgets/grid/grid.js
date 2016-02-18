@@ -1030,6 +1030,14 @@ WM.module('wm.widgets.grid')
                     }
                     $scope.$root.$safeApply($scope);
                 },
+                updateVariable = function (variable) {
+                    /*If grid is bound to filter, update the variable dataset*/
+                    if ($scope.isBoundToFilter) {
+                        variable.update({
+                            'type': 'wm.LiveVariable'
+                        }, WM.noop);
+                    }
+                },
                 deleteRecord = function (row, cancelRowDeleteCallback) {
                     if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
@@ -1057,6 +1065,7 @@ WM.module('wm.widgets.grid')
                             $scope.$emit('on-row-delete', row);
 
                             $scope.onRecordDelete();
+                            updateVariable(variable);
                             if ($scope.deletemessage) {
                                 wmToaster.show("success", "SUCCESS", $scope.deletemessage);
                             }
@@ -1102,6 +1111,7 @@ WM.module('wm.widgets.grid')
                             }
                             wmToaster.show('success', 'SUCCESS', 'Record added successfully');
                             $scope.initiateSelectItem('last', response, $scope.primaryKey);
+                            updateVariable(variable);
                             Utils.triggerFn(options.success, response);
                         }
                     }, function (error) {
@@ -1141,6 +1151,7 @@ WM.module('wm.widgets.grid')
                             $scope.operationType = "";
                             wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
                             $scope.initiateSelectItem('current', response, $scope.primaryKey);
+                            updateVariable(variable);
                             Utils.triggerFn(options.success, response);
                         }
                     }, function (error) {
