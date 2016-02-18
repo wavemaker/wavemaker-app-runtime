@@ -65,7 +65,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         applyDataModel: {
-            url: "services/projects/:projectID/datamodels/update?serviceId=:serviceId",
+            url: "services/projects/:projectID/database/update?serviceId=:serviceId",
             method: "POST"
         },
         revertDataModel: {
