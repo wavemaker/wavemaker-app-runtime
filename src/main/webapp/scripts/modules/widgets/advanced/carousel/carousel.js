@@ -233,7 +233,7 @@ WM.module('wm.widgets.advanced')
 
                             //function for slide  to move to a specific slide index
                             $is.goTo = function (index) {
-                                if (!$is.contents[$is.activeIndex]) {
+                                if (!$is.contents[$is.activeIndex] || $is.activeIndex === index) {
                                     return;
                                 }
                                 var oldElement = $is.contents[$is.activeIndex].getElement(),
