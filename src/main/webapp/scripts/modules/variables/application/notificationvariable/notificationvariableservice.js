@@ -25,16 +25,50 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                     toasterOptions = (WM.element('[toaster-options]').scope() && WM.element('[toaster-options]').scope().config) || {},
                     scope;
 
+                //callback function to execute on click of the custom notification element
+                function customNotificationOnClick() {
+                    if (_.trim(variable.onClick)) {
+                        if (WM.isFunction(scope[variableName + 'onClick'])) {
+                            scope[variableName + 'onClick'](variable, null);
+                        } else {
+                            $rootScope.$emit('invoke-service', variable.onClick, {scope: scope});
+                        }
+                    }
+                }
+                //callback function to execute on hide of the custom notification element
+                function customNotificationOnHide() {
+                    if (_.trim(variable.onHide)) {
+                        if (WM.isFunction(scope[variableName + 'onHide'])) {
+                            scope[variableName + 'onHide'](variable, null);
+                        } else {
+                            $rootScope.$emit('invoke-service', variable.onHide, {scope: scope});
+                        }
+                    }
+                }
 
                 if (operation === 'toast') {
                     var type = (options.class || variable.dataBinding.class || "info").toLowerCase(),
                         body = options.message || variable.dataBinding.text,
                         timeout = parseInt(variable.dataBinding.duration),
-                        positionClass = "toast-" + (options.position || variable.dataBinding.toasterPosition || 'bottom right').replace(' ', '-');
+                        positionClass = "toast-" + (options.position || variable.dataBinding.toasterPosition || 'bottom right').replace(' ', '-'),
+                        content = variable.dataBinding.page;
                     toasterOptions.position = positionClass;
-                    wmToaster.show(type, "", body, timeout);
+                    //check the variable scope and call the callback functions accordingly
+                    if (variableOwner === 'Application') {
+                        scope = $rootScope || {};
+                    } else {
+                        scope = options.scope || {};
+                    }
+                    //check for the older projects not having content property in the variable
+                    if (variable.dataBinding.content && variable.dataBinding.content === 'page') {
+                        if (content) {
+                            wmToaster.createCustomNotification(content, variableName, timeout, positionClass, customNotificationOnClick, customNotificationOnHide);
+                        }
+                    } else {
+                        wmToaster.show(type, "", body, timeout, undefined, customNotificationOnClick, customNotificationOnHide);
+                    }
                 } else {
-                    /* get the callback scope for the variable based on its owner */
+                /* get the callback scope for the variable based on its owner */
                     if (variableOwner === "Application") {
                         scope = $rootScope || {};
                     } else {
