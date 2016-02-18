@@ -145,7 +145,7 @@ Application
                 function hidePageSwitchSpinner() {
                     $timeout(function () {
                         wmSpinner.hide('globalSpinner');
-                    }, 20);
+                    }, 200);
                 }
 
                 function defaultPageLoadErrorHandler(pageName, onSuccess, onError, jqxhr) {
@@ -399,7 +399,6 @@ Application
             'Variables',
             'CONSTANTS',
             'wmSpinner',
-            '$timeout',
 
             //do not remove the below lines
             'BasicVariableService',
@@ -411,7 +410,7 @@ Application
             'LogoutVariableService',
             'TimerVariableService',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, $timeout) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner) {
                 'use strict';
 
                 var projectID      = ProjectService.getId(), // ProjectID will always be at the same index in the URL

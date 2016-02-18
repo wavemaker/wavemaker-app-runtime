@@ -838,7 +838,7 @@ WM.module('wm.widgets.base', [])
                         "image": {"type": "string", "bindable": "in-bound"},
                         "imagewidth": {"type": "string"},
                         "imageheight": {"type": "string"},
-                        "animation" : {"type": "list", value:"spin", "options": spinnerAnimationOptions},
+                        "animation" : {"type": "list", value: "spin", "options": spinnerAnimationOptions},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -990,7 +990,7 @@ WM.module('wm.widgets.base', [])
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields"},
                         "defaultview": {"type": "selectByObject", "options": [{"label": "action-view", "value": "actionview"}, {"label": "search-view", "value": "searchview"}], "value": "actionview", "displayfield": "label", "datafield": "value" },
                         "query": {"type": "string", "bindable": "in-out-bound", "value": ""},
-                        "addchild": {"hidelabel": true,"options":[{"label":"Anchor", "widgettype": "wm-anchor", "defaults": {"iconclass": "fa fa-plus", "caption": ""}}, {"label": "Menu", "widgettype": "wm-menu", "defaults": {"iconclass": "fa fa-plus", "type": "anchor", "caption": ""}}, {"label": "Popover", "widgettype": "wm-popover", "defaults": {"iconclass": "fa fa-plus", "caption": ""}}, {"label": "Button", "widgettype": "wm-button", "defaults": {"iconclass": "fa fa-plus", "class": "navbar-btn btn-primary", "caption": ""}}],"widget":"add-widget"}
+                        "addchild": {"hidelabel": true, "options": [{"label": "Anchor", "widgettype": "wm-anchor", "defaults": {"iconclass": "fa fa-plus", "caption": ""}}, {"label": "Menu", "widgettype": "wm-menu", "defaults": {"iconclass": "fa fa-plus", "type": "anchor", "caption": ""}}, {"label": "Popover", "widgettype": "wm-popover", "defaults": {"iconclass": "fa fa-plus", "caption": ""}}, {"label": "Button", "widgettype": "wm-button", "defaults": {"iconclass": "fa fa-plus", "class": "navbar-btn btn-primary", "caption": ""}}], "widget": "add-widget"}
                     },
                     'wm.layouts.listtemplate': {
                         "height": {"type": "string", "pattern": dimensionRegex},

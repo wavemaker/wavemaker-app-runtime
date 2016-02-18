@@ -7,7 +7,7 @@
  */
 
 WM.module('wm.widgets.basic').
-    factory('wmSpinner', function () {
+    factory('wmSpinner', function ($animate) {
         "use strict";
         var spinnerMap = {},
             spinnerId = 0,
@@ -16,6 +16,7 @@ WM.module('wm.widgets.basic').
         function getAppSpinnerScope() {
             if (!appSpinner) {
                 appSpinner = WM.element('body >.app-spinner:first').isolateScope();
+                $animate.enabled(false, appSpinner);
             }
             return appSpinner;
         }
