@@ -409,17 +409,17 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "java_type": "date",
             "default_value": "null"
         },
-        "datetime": {
-            "java_type": "datetime",
+        "date_time": {
+            "java_type": "date_time",
             "default_value": "null"
         },
         "double": {
             "java_type": "double",
-            "default_value": "0",
+            "default_value": "0"
         },
         "float": {
             "java_type": "float",
-            "default_value": "0",
+            "default_value": "0"
         },
         "integer": {
             "java_type": "integer",
@@ -449,8 +449,8 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "java_type": "time",
             "default_value": "null"
         },
-        "timestamp": {
-            "java_type": "timestamp",
+        "time_stamp": {
+            "java_type": "time_stamp",
             "default_value": "null"
         }
     },
