@@ -281,7 +281,7 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "shortcutkey": {"type": "string"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-link", "btn-transparent", "jumbotron"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]}
                     },
                     "wm.rating": {
                         "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
@@ -328,7 +328,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.buttongroup": {
                         "vertical": {"type": "boolean"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-toolbar", "btn-group-vertical"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-group-raised", "btn-toolbar", "btn-group-vertical"]}
                     },
                     "wm.switch": {
                         "width": {"type": "string", "pattern": dimensionRegex},
@@ -1097,10 +1097,11 @@ WM.module('wm.widgets.base', [])
                         "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["card", "well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
                     },
                     'wm.layouts.footer': {
-                        "height": {"type": "string", "pattern": dimensionRegex}
+                        "height": {"type": "string", "pattern": dimensionRegex},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["card-footer"]}
                     },
                     'wm.layouts.layoutgrid': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
@@ -1196,7 +1197,8 @@ WM.module('wm.widgets.base', [])
                         "onSuccess": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"},
                         // property specific to mobile with formlayout page
-                        "onBackbtnclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
+                        "onBackbtnclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     "wm.layouts.segmentedcontrol" : {
                         "onBeforeSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1439,7 +1441,8 @@ WM.module('wm.widgets.base', [])
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "value": "", "pattern": classRegex},
                         "navigation": {"type": "list", "options": ["None", "Basic", "Advanced", "Scroll"], "value": "None"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
-                        "tabindex": {"type": "string", "value": "0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default","panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1468,7 +1471,8 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string", "value": "0"},
                         "collapsible": {"type": "boolean", "showindesigner": true},
                         "expanded": {"type": "boolean", "value": true, "showindesigner": true},
-                        "enableemptyfilter": {"type": "selectall", "options": ["null", "empty"], "displaytype": "block", "value": " ", "showindesigner": true}
+                        "enableemptyfilter": {"type": "selectall", "options": ["null", "empty"], "displaytype": "block", "value": " ", "showindesigner": true},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     "wm.search": {
                         "scopedatavalue": {"type": "string"},
