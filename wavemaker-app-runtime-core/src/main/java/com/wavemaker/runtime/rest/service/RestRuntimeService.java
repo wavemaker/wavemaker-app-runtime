@@ -92,7 +92,7 @@ public class RestRuntimeService {
         Path path = pathEntry.getValue();
         Operation operation = null;
         for (Operation eachOperation : path.getOperations()) {
-            if (eachOperation.getOperationId().equals(operationId)) {
+            if (eachOperation.getMethodName().equals(operationId)) {
                 operation = eachOperation;
                 break;
             }
