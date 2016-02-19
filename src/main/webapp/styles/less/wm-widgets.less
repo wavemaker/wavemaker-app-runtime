@@ -921,7 +921,9 @@ body.modal-open {
         }
         .media-right {
           a i, span {
-              font-size: 1.5em;
+            font-size: 1.5em;
+            text-decoration: none;
+            color: inherit;
           }
         }
         .file-details {
@@ -1035,6 +1037,16 @@ body.modal-open {
     margin-top: 0;
     .img-thumbnail {
       max-width: none;
+    }
+  }
+  .media-right {
+    padding-left: 0 !important;
+    a, a:hover, a:focus {
+      text-decoration: none;
+      i, span {
+        font-size: 2em;
+        color: inherit;
+      }
     }
   }
   .thumbnail{
