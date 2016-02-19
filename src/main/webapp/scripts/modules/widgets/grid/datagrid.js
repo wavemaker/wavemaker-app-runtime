@@ -1,4 +1,4 @@
-/*global $, window, angular, moment, WM, _, FormData, document, parseInt, Blob*/
+/*global $, window, angular, moment, WM, _, FormData, document, parseInt, Blob, navigator*/
 /*jslint todo: true*/
 /**
  * JQuery Datagrid widget.
@@ -167,6 +167,9 @@ $.widget('wm.datagrid', {
         isValidHtml: function (htm) {
             var validHtmlRegex = /<[a-z][\s\S]*>/i;
             return validHtmlRegex.test(htm);
+        },
+        isMac: function () {
+            return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
         }
     },
 
@@ -1676,11 +1679,13 @@ $.widget('wm.datagrid', {
         if (!this.tableId) {
             this.tableId = this.Utils.generateGuid();
         }
-        var statusContainer =
+        var sortVisible = this.Utils.isMac() ? '' : 'sort-visible',
+            statusContainer =
                 '<div class="overlay" style="display: none;">' +
                     '<div class="status"><i class="fa fa-spinner fa-spin"></i><span class="message"></span></div>' +
                 '</div>',
-            table = '<div class="table-container table-responsive"><div class="app-grid-header"><div class="app-grid-header-inner"><table class="' + this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid + '" id="table_header_' + this.tableId + '">' +
+            table = '<div class="table-container table-responsive"><div class="app-grid-header ' + sortVisible +
+                    '"><div class="app-grid-header-inner"><table class="' + this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid + '" id="table_header_' + this.tableId + '">' +
                     '</table></div></div><div class="app-grid-content" style="height:' + this.options.height + ';"><table class="' + this.options.cssClassNames.gridDefault + ' ' + this.options.cssClassNames.grid + '" id="table_' + this.tableId + '">' +
                     '</table></div>' +
                 '</div>';
