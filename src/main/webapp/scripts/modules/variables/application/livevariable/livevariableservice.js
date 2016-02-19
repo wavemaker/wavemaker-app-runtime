@@ -50,6 +50,7 @@ wm.variables.services.$liveVariable = [
             packageDetails = {},
             dateTimeFormats = Utils.getDateTimeDefaultFormats(),
             isDateTime = Utils.getDateTimeTypes(),
+            emptyArr = [],
         /*Function to clear set variables*/
             reset = function () {
                 isProjectDeployed = (CONSTANTS.isRunMode);
@@ -545,7 +546,7 @@ wm.variables.services.$liveVariable = [
                         }
 
                         /* update the dataSet against the variable */
-                        updateVariableDataset(variable, [], variable.propertiesMap);
+                        updateVariableDataset(variable, emptyArr, variable.propertiesMap);
 
                         /* If callback function is provided, send the data to the callback.
                          * The same callback if triggered in case of error also. The error-handling is done in grid.js*/
@@ -1030,15 +1031,15 @@ wm.variables.services.$liveVariable = [
                             writableVariable = Variables.getVariableByName(variable.name);
                             getTableMetaData(projectID, variable, writableVariable, options, function () {
                                 /*For variables of all operations, update the dataSet with the "propertiesMap" only.*/
-                                updateVariableDataset(variable, {}, variable.propertiesMap, {});
+                                updateVariableDataset(variable, emptyArr, variable.propertiesMap, {});
                                 /* if callback function is provided, send the data to the callback */
-                                Utils.triggerFn(success, [], variable.propertiesMap, {}, {"dataSize": null, "maxResults": variable.maxResults});
+                                Utils.triggerFn(success, emptyArr, variable.propertiesMap, {}, {"dataSize": null, "maxResults": variable.maxResults});
                             });
                         }
                         /*In the Run mode, for variables of insert/update/delete type operation, update the dataSet with the "propertiesMap" only.*/
                         if (CONSTANTS.isRunMode && variable.operation !== 'read') {
                             /* update the dataSet against the variable */
-                            updateVariableDataset(variable, {}, variable.propertiesMap, {});
+                            updateVariableDataset(variable, emptyArr, variable.propertiesMap, {});
                         }
 
                         /* Do not make calls to fetch data in case 'skipFetchData' is true, This flag is true when the variable is created for the first time */
