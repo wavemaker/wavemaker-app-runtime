@@ -25,7 +25,7 @@ WM.module('wm.prefabs')
         'DialogService',
         'FileService',
 
-        function ($rootScope, $timeout, $ocLazyLoad, PrefabService, ProjectService, Variables, Utils, wmToaster, CONSTANTS, i18nService, $q, $interval, DialogService, FileService) {
+        function ($rs, $timeout, $ocLazyLoad, PrefabService, ProjectService, Variables, Utils, wmToaster, CONSTANTS, i18nService, $q, $interval, DialogService, FileService) {
             'use strict';
 
             var studioPrefabNamePropertiesMap,
@@ -91,7 +91,7 @@ WM.module('wm.prefabs')
                         Utils.triggerFn(callback);
                     },
                     function () {
-                        wmToaster.show('error', $rootScope.locale.MESSAGE_ERROR_TITLE, $rootScope.locale.MESSAGE_ERROR_PROJECT_PREFAB_LIST_FAILED_DESC);
+                        wmToaster.show('error', $rs.locale.MESSAGE_ERROR_TITLE, $rs.locale.MESSAGE_ERROR_PROJECT_PREFAB_LIST_FAILED_DESC);
                     },
                     true
                 );
@@ -121,7 +121,7 @@ WM.module('wm.prefabs')
                             Utils.triggerFn(callback, response);
                         },
                         function () {
-                            wmToaster.show('error', $rootScope.locale.MESSAGE_PREFAB_CONFIG_ERROR_TITLE, $rootScope.locale.MESSAGE_PREFAB_CONFIG_ERROR_DESC);
+                            wmToaster.show('error', $rs.locale.MESSAGE_PREFAB_CONFIG_ERROR_TITLE, $rs.locale.MESSAGE_PREFAB_CONFIG_ERROR_DESC);
                         },
                         true
                     );
@@ -147,7 +147,7 @@ WM.module('wm.prefabs')
                     function (error) {
                         delete studioPrefabNamePropertiesMap[prefabName];
                         delete studioPrefabNameConfigMap[prefabName];
-                        //wmToaster.show('error', $rootScope.locale.MESSAGE_PREFAB_CONFIG_ERROR_TITLE, $rootScope.locale.MESSAGE_PREFAB_CONFIG_ERROR_DESC);
+                        //wmToaster.show('error', $rs.locale.MESSAGE_PREFAB_CONFIG_ERROR_TITLE, $rs.locale.MESSAGE_PREFAB_CONFIG_ERROR_DESC);
                         //wmLogger.error("GOT_RESPONSE_FROM_SERVER", "Prefab config file error");
                         deferred.reject(error);
                     }
@@ -210,7 +210,7 @@ WM.module('wm.prefabs')
                     appPrefabNameConfigMap[prefabName] = studioPrefabNameConfigMap[prefabName];
                     Utils.triggerFn(callback);
                 }, function () {
-                    wmToaster.show('error', $rootScope.locale.MESSAGE_ERROR_TITLE, $rootScope.locale.MESSAGE_ERROR_PREFAB_REGISTER_FAILED_DESC);
+                    wmToaster.show('error', $rs.locale.MESSAGE_ERROR_TITLE, $rs.locale.MESSAGE_ERROR_PREFAB_REGISTER_FAILED_DESC);
                 });
             }
 
@@ -350,7 +350,7 @@ WM.module('wm.prefabs')
                 /*read the file content*/
                 FileService.read({
                     path: 'app/prefabs/' + prefabName + url,
-                    projectID: $rootScope.project.id
+                    projectID: $rs.project.id
                 }, function (prefabContent) {
                     var pageDom = WM.element("<div>" + prefabContent + "</div>"),
                         htmlMarkup = pageDom.find('script[id="Main.html"]').html() || '';
@@ -385,7 +385,7 @@ WM.module('wm.prefabs')
                 if (CONSTANTS.isRunMode) {
                     i18nService.loadComponentLocaleBundle(localePath);
                 } else {
-                    $rootScope.$emit('load-component-locale-bundle', localePath);
+                    $rs.$emit('load-component-locale-bundle', localePath);
                 }
             }
 
@@ -411,7 +411,7 @@ WM.module('wm.prefabs')
                                 : 'services/projects/' + getProjectId() + '/resources/info/web/app/prefabs/' + prefabName + '/';
 
                 if (pendingTasks.resources[prefabName]) {
-                    handler = $rootScope.$on(prefabName + '-dependencies-ready', function (evt, prefabContent) {
+                    handler = $rs.$on(prefabName + '-dependencies-ready', function (evt, prefabContent) {
                         evt.stopPropagation();
                         deferred.resolve(prefabContent);
                         handler();
@@ -452,7 +452,7 @@ WM.module('wm.prefabs')
                         .then(loadPrefabMinifiedPage.bind(undefined, prefabName))
                         .then(function (prefabContent) {
                             pendingTasks.resources[prefabName] = undefined;
-                            $rootScope.$emit(prefabName + '-dependencies-ready', prefabContent);
+                            $rs.$emit(prefabName + '-dependencies-ready', prefabContent);
                             deferred.resolve(prefabContent);
                         });
                 }
@@ -475,11 +475,11 @@ WM.module('wm.prefabs')
                 }
 
                 /* unset flag to force reload */
-                $rootScope.reloadPrefabConfig = undefined;
+                $rs.reloadPrefabConfig = undefined;
 
                 /* read the config from respective file */
                 FileService.read({
-                    projectID: $rootScope.project.id,
+                    projectID: $rs.project.id,
                     path: 'config.json'
                 }, function (response) {
                     activePrefabConfig = response;
@@ -495,7 +495,7 @@ WM.module('wm.prefabs')
             function setConfig(config, success, error) {
                 activePrefabConfig = config;
                 FileService.write({
-                    projectID: $rootScope.project.id,
+                    projectID: $rs.project.id,
                     path: 'config.json',
                     content: config
                 }, function (response) {
@@ -505,106 +505,132 @@ WM.module('wm.prefabs')
                 });
             }
 
-            return {
+            function updateHTMLImportRefs(prefabName, markup) {
+                var $markup = WM.element(markup);
+                $markup.find('link[rel=import]')
+                    .each(function () {
+                        var $el  = WM.element(this),
+                            href = $el.attr('href'),
+                            resourcePath;
 
-                /**
-                 * @ngdoc function
-                 * @name wm.prefab.$PrefabManager#removePrefab
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @function
-                 *
-                 * @description
-                 * remove the specified prefab
-                 *
-                 * @param {object} params specifying the prefabID which needs to be deleted
-                 */
-                removePrefab: removePrefab,
+                        resourcePath = CONSTANTS.isRunMode
+                            ? 'app/prefabs/' + prefabName + '/'
+                            : 'services/projects/' + getProjectId() + '/resources/info/web/app/prefabs/' + prefabName + '/';
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#loadDependencies
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will load the dependencies of the prefab
-                 */
-                loadDependencies: loadDependencies,
+                        $el.attr('href', getPrefabResourceUrl(href, resourcePath));
+                    });
+                return $markup[0].outerHTML;
+            }
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#loadScripts
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will load the script resources of the prefab
-                 */
-                loadScripts: loadScripts,
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#loadModules
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will load the external angular modules of the prefab
-                 */
-                loadModules: loadModules,
+            /**
+             * @ngdoc function
+             * @name wm.prefab.$PrefabManager#removePrefab
+             * @methodOf wm.prefab.$PrefabManager
+             * @function
+             *
+             * @description
+             * remove the specified prefab
+             *
+             * @param {object} params specifying the prefabID which needs to be deleted
+             */
+            this.removePrefab = removePrefab;
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#listStudioPrefabs
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will load the list of prefabs in studio
-                 */
-                listStudioPrefabs: listStudioPrefabs,
+            /**
+             * @ngdoc function
+             * @name PrefabManager#loadDependencies
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the dependencies of the prefab
+             */
+            this.loadDependencies = loadDependencies;
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#getAllStudioPrefabsConfig
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will load config.json files of all the prefabs in studio
-                 */
-                getAllStudioPrefabsConfig: getAllStudioPrefabsConfig,
+            /**
+             * @ngdoc function
+             * @name PrefabManager#loadScripts
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the script resources of the prefab
+             */
+            this.loadScripts = loadScripts;
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#loadModules
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will register a prefab(copy from studio to app/project)
-                 */
-                registerPrefab: registerPrefab,
+            /**
+             * @ngdoc function
+             * @name PrefabManager#loadModules
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the external angular modules of the prefab
+             */
+            this.loadModules = loadModules;
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#loadModules
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will load the config.json of app-prefab
-                 */
-                loadAppPrefabConfig: loadAppPrefabConfig,
+            /**
+             * @ngdoc function
+             * @name PrefabManager#listStudioPrefabs
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the list of prefabs in studio
+             */
+            this.listStudioPrefabs = listStudioPrefabs;
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#getConfig
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will load the config.json of active prefab project
-                 * @param {success} success callback
-                 * @param {error} error callback
-                 * @param {reload} flag to force reload the config file
-                 */
-                getConfig: getConfig,
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getAllStudioPrefabsConfig
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load config.json files of all the prefabs in studio
+             */
+            this.getAllStudioPrefabsConfig = getAllStudioPrefabsConfig;
 
-                /**
-                 * @ngdoc function
-                 * @name PrefabManager#setConfig
-                 * @methodOf wm.prefab.$PrefabManager
-                 * @description
-                 * this function will save the config.json of active prefab project
-                 * @param {success} success callback
-                 * @param {error} error callback
-                 */
-                setConfig: setConfig
-            };
+            /**
+             * @ngdoc function
+             * @name PrefabManager#loadModules
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will register a prefab(copy from studio to app/project)
+             */
+            this.registerPrefab = registerPrefab;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#loadModules
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the config.json of app-prefab
+             */
+            this.loadAppPrefabConfig = loadAppPrefabConfig;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#getConfig
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will load the config.json of active prefab project
+             * @param {success} success callback
+             * @param {error} error callback
+             * @param {reload} flag to force reload the config file
+             */
+            this.getConfig = getConfig;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#setConfig
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will save the config.json of active prefab project
+             * @param {success} success callback
+             * @param {error} error callback
+             */
+            this.setConfig = setConfig;
+
+            /**
+             * @ngdoc function
+             * @name PrefabManager#updateHTMLImportRefs
+             * @methodOf wm.prefab.$PrefabManager
+             * @description
+             * this function will update the href urls for the html import elements
+             * @param {string} prefabName name of the prefab
+             * @param {string|object} markup prefab html content(string/jQuery Object)
+             */
+            this.updateHTMLImportRefs = updateHTMLImportRefs;
         }
     ]);
