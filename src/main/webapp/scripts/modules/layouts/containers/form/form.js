@@ -105,14 +105,17 @@ WM.module('wm.layouts.containers')
                     //Get all form fields and prepare form data as key value pairs
                     _.forEach(scope.formFields, function (field) {
                         fieldTarget = field.target.split('.');
-                        if (fieldTarget.length === 1) {
+                        if (fieldTarget.length === 1 && !formData[field.name]) {
                             formData[field.name] = field.value;
                         } else {
-                            if (formVariable.category === 'wm.Variable') {
+                            if (formVariable.category === 'wm.Variable' && !formData[fieldTarget[1]]) {
                                 formData[fieldTarget[1]] = field.value;
                             } else {
                                 formData[fieldTarget[0]] = formData[fieldTarget[0]] || {};
-                                formData[fieldTarget[0]][fieldTarget[1]] = field.value;
+                                //Check for if property already not exits
+                                if (!formData[fieldTarget[0]][fieldTarget[1]]) {
+                                    formData[fieldTarget[0]][fieldTarget[1]] = field.value;
+                                }
                             }
                         }
                     });
@@ -127,7 +130,7 @@ WM.module('wm.layouts.containers')
                             formData[fieldTarget[0]][fieldTarget[1]] = formWidget.dataset;
                         }
                     });
-                    params = {$event: event, $scope: scope, $formData: scope.formdata};
+                    params = {$event: event, $scope: scope, $formData: formData};
                     //If on submit is there execute it and if it returns true do service variable invoke else return
                     if (scope.onSubmit && scope.onSubmit(params) === false) {
                         return;
