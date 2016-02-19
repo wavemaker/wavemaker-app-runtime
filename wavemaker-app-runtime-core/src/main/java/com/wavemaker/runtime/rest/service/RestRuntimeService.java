@@ -52,8 +52,8 @@ public class RestRuntimeService {
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
-    public RestResponse executeRestCall(String serviceId, String operationId, Map<String, Object> params) throws IOException {
-        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, operationId, params);
+    public RestResponse executeRestCall(String serviceId, String methodName, Map<String, Object> params) throws IOException {
+        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, methodName, params);
         logger.debug("Rest service request details {}", restRequestInfo.toString());
         RestResponse restResponse = invokeRestCall(restRequestInfo);
         logger.debug("Rest service response details for the endpoint {} is {}", restRequestInfo.getEndpointAddress(), restResponse.toString());
@@ -85,20 +85,20 @@ public class RestRuntimeService {
         return restResponse;
     }
 
-    private RestRequestInfo getRestRequestInfo(String serviceId, String operationId, Map<String, Object> params) throws IOException {
+    private RestRequestInfo getRestRequestInfo(String serviceId, String methodName, Map<String, Object> params) throws IOException {
         Swagger swagger = getSwaggerDoc(serviceId);
         Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
         String relativePath = pathEntry.getKey();
         Path path = pathEntry.getValue();
         Operation operation = null;
         for (Operation eachOperation : path.getOperations()) {
-            if (eachOperation.getOperationId().equals(operationId)) {
+            if (eachOperation.getMethodName().equals(methodName)) {
                 operation = eachOperation;
                 break;
             }
         }
         if (operation == null) {
-            throw new WMRuntimeException("Operation does not exist with id " + operationId);
+            throw new WMRuntimeException("Operation does not exist with id " + methodName);
         }
         RestRequestInfo restRequestInfo = new RestRequestInfo();
         final String seheme = swagger.getSchemes().get(0).toValue();

@@ -64,14 +64,14 @@ public class RestRuntimeController extends AbstractController {
         return new ModelAndView(new NoOpView(), new HashMap<String,Object>());
     }
 
-    private void executeRestCall(String serviceId, String operationId,
+    private void executeRestCall(String serviceId, String methodName,
                                 HttpServletRequest httpServletRequest,
                                 HttpServletResponse httpServletResponse) throws IOException {
-        Map<String, Object> params = new HashMap();
+        Map<String, Object> params = new HashMap<>();
         addHeaders(httpServletRequest, params);
         addRequestParams(httpServletRequest, params);
         addRequestBody(httpServletRequest, params);
-        RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, operationId, params);
+        RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, methodName, params);
         Map<String,List<String>> responseHeaders = restResponse.getResponseHeaders();
         for (String responseHeaderKey : responseHeaders.keySet()) {
             String updatedResponseHeaderKey = "X-WM-"+ responseHeaderKey;
