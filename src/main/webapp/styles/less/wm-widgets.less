@@ -765,7 +765,6 @@ html, body {
 @app-dialog-body-bg-color: @white;
 @app-dialog-close-button-border-color: #999999;
 @app-dialog-close-box-shadow-color: #333333;
-
 /* giving absolute position to view*/
 .dialog-view {
   .width-height();
@@ -844,7 +843,6 @@ html, body {
     }
     .app-form {
       box-shadow: none;
-      border-color: transparent;
       .panel-body {
         padding: 0;
       }
@@ -868,7 +866,9 @@ html, body {
     }
   }
   .app-form {
-    box-shadow: none;
+    box-shadow: none !important;
+    border-color: transparent;
+    margin-bottom: 0;
   }
 }
 
@@ -1619,7 +1619,7 @@ If the height and width are not specified the video takes the height of the post
         font-size: 2em;
       }
     }
-    .app-media-fullscreen-nav-control{
+    .app-media-fullscreen-nav-control {
       position: absolute;
       top: 10%;
       background-color: @app-media-full-screen-nav-control-bg-color;
