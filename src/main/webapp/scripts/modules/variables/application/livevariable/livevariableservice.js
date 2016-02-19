@@ -213,6 +213,9 @@ wm.variables.services.$liveVariable = [
                             }
                             return javaType;
                         };
+                    /*Clearing old relatedTables array so that it is populated with new values*/
+                    variable.relatedTables = [];
+                    variable.properties = [];
                     WM.forEach(database.tables, function (table) {
                         tableNameToEntityNameMap[table.name] = table.entityName;
                         entityNameToTableNameMap[table.entityName] = table.name;

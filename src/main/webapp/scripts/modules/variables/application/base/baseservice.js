@@ -148,20 +148,18 @@ wm.variables.services.Variables = [
                 function handleSuccess() {
                     /*Executing success if both app and current page variables are reloaded*/
                     if (pageVariablesLoaded && appVariablesLoaded) {
-                        updateVariableValues($rootScope.activePageName);
                         Utils.triggerFn(success);
                     }
                 }
                 reloadRequired.push(VARIABLE_CONSTANTS.OWNER.APP);
-                getAppVariables(function (appVariables) {
-                    setAppVariables(appVariables);
+                initAppVariables($rootScope, function () {
                     appVariablesLoaded = true;
                     handleSuccess();
                 }, error);
 
                 if ($rootScope.activePageName) {
                     reloadRequired.push($rootScope.activePageName);
-                    getPageVariables($rootScope.activePageName, function () {
+                    initPageVariables($rootScope.activePageName, function () {
                         pageVariablesLoaded = true;
                         handleSuccess();
                     }, error);
@@ -486,7 +484,7 @@ wm.variables.services.Variables = [
                 var triggerStartUpdate = true;
                 function validateStartUpdateTrigger(variable) {
                     function isBound(binding) {
-                        return Utils.stringStartsWith(binding.value, "bind:")
+                        return Utils.stringStartsWith(binding.value, "bind:");
                     }
 
                     return !(variable.autoUpdate === true && _.some(variable.dataBinding, isBound));
@@ -793,13 +791,7 @@ wm.variables.services.Variables = [
             },
 
             /* function to initialize variables for passed page */
-            initPageVariables = function (pageName, scope, options) {
-                /* param sanity check */
-                options = options || {};
-                options.updateAppVariables = options.updateAppVariables || false;
-
-                /* initialize the scope */
-                activeScope = scope;
+            initPageVariables = function (pageName, success, error, isUpdatePageVariables) {
                 activePage = pageName;
                 self.variableCollection = self.variableCollection || {};
 
@@ -815,26 +807,24 @@ wm.variables.services.Variables = [
 
                     /* store the page variables collection */
                     self.variableCollection[activePage] = pageVariables;
-                    updateVariableValues(activePage, !options.updateAppVariables);
+                    updateVariableValues(activePage, !isUpdatePageVariables);
 
                     /* emit an event to specify variables are loaded */
                     $rootScope.$emit('on-' + activePage + '-variables-ready', pageVariables);
 
                     /* check for sanity of success call back and call it */
-                    Utils.triggerFn(options.success, self.variableCollection);
+                    Utils.triggerFn(success, self.variableCollection);
                 }, function (errMsg) {
                     /* initialize the app variables collection to empty */
                     self.variableCollection[activePage] = {};
 
                     /* check for sanity of error call back and call it */
-                    Utils.triggerFn(options.error, errMsg);
+                    Utils.triggerFn(error, errMsg);
                 });
             },
 
             /*function to initialize variable collection*/
-            initVariableCollection = function (activeWorkspaceName, scope, success, error, isUpdatePageVariables) {
-                /* initialize the scope */
-                activeScope = scope;
+            initVariableCollection = function (activeWorkspaceName, success, error, isUpdatePageVariables) {
                 activePage = activeWorkspaceName;
                 self.variableCollection = self.variableCollection || {};
 
@@ -1648,7 +1638,7 @@ wm.variables.services.Variables = [
                     if (_.includes(reloadRequired, 'App')) {
                         reloadVariables(success, error);
                     } else if (_.includes(reloadRequired, activePageName)) {
-                        getPageVariables(activePageName, success, error);
+                        initPageVariables(activePageName, success, error);
                     } else {
                         Utils.triggerFn(success);
                     }
@@ -1685,7 +1675,7 @@ wm.variables.services.Variables = [
                 }
                 function onSuccess() {
                     if (_.includes(reloadRequired, activePageName)) {
-                        getPageVariables(activePageName, success, error);
+                        initPageVariables(activePageName, success, error);
                     } else {
                         Utils.triggerFn(success);
                     }
