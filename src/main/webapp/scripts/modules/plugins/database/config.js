@@ -314,6 +314,12 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         }
     },
     "PERMISSIONS": {
+        "DEFAULT": {
+            "CREATE": true,
+            "UPDATE": true,
+            "DELETE": true,
+            "READ"  : true
+        },
         "HSQLDB": {
             "CREATE": false,
             "UPDATE": false,
@@ -375,93 +381,66 @@ wm.plugins.database.constant('DB_CONSTANTS', {
     },
     "DATABASE_DATA_TYPES": {
         "big_decimal": {
-            "java_type": "big_decimal",
-            "default_value": "0",
-            "precision": true
+            "java_type": "big_decimal"
         },
         "big_integer": {
-            "java_type": "big_integer",
-            "default_value": "0",
-            "precision": true
+            "java_type": "big_integer"
         },
         "blob": {
-            "java_type": "blob",
-            "default_value": "null"
+            "java_type": "blob"
         },
         "boolean": {
-            "java_type": "boolean",
-            "default_value": "false"
+            "java_type": "boolean"
         },
         "byte": {
-            "java_type": "byte",
-            "default_value": "null",
-            "precision": true
+            "java_type": "byte"
         },
         "character": {
-            "java_type": "character",
-            "default_value": "null"
+            "java_type": "character"
         },
         "clob": {
-            "java_type": "clob",
-            "default_value": "null"
+            "java_type": "clob"
         },
         "date": {
-            "java_type": "date",
-            "default_value": "null"
+            "java_type": "date"
         },
-        "date_time": {
-            "java_type": "date_time",
-            "default_value": "null"
+        "datetime": {
+            "java_type": "datetime"
         },
         "double": {
-            "java_type": "double",
-            "default_value": "0"
+            "java_type": "double"
         },
         "float": {
-            "java_type": "float",
-            "default_value": "0"
+            "java_type": "float"
         },
         "integer": {
-            "java_type": "integer",
-            "default_value": "0",
-            "precision": true
+            "java_type": "integer"
         },
         "long": {
-            "java_type": "long",
-            "default_value": "0",
-            "precision": true
+            "java_type": "long"
         },
         "string": {
-            "java_type": "string",
-            "default_value": "null",
-            "length": true
+            "java_type": "string"
         },
         "short": {
-            "java_type": "short",
-            "default_value": "0",
-            "precision": true
+            "java_type": "short"
         },
         "text": {
-            "java_type": "text",
-            "default_value": "null"
+            "java_type": "text"
         },
         "time": {
-            "java_type": "time",
-            "default_value": "null"
+            "java_type": "time"
         },
-        "time_stamp": {
-            "java_type": "time_stamp",
-            "default_value": "null"
+        "timestamp": {
+            "java_type": "timestamp"
         }
     },
     "DATABASE_SECONDARY_DATA_TYPES": {
         "binary": {
-            "java_type": "blob",
-            "default_value": "null"
+            "java_type": "blob"
         },
         "long": {
-            "java_type": "double",
-            "default_value": "null"
+            "java_type": "double"
         }
     },
     "DATABASE_GENERATORS": {
