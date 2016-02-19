@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/label.html',
-            '<label class="control-label app-label" data-ng-show="show" title="{{hint}}" init-widget apply-styles data-ng-class="{required:required}"></label>'
+            '<label class="app-label" data-ng-show="show" title="{{hint}}" init-widget apply-styles data-ng-class="{required:required}"></label>'
             );
     }])
     .directive('wmLabel', ['PropertiesFactory', 'WidgetUtilService', '$sce', function (PropertiesFactory, WidgetUtilService, $sce) {
