@@ -308,11 +308,11 @@ WM.module('wm.widgets.live')
                     return '********';
                 }
                 if (type === 'datetime' || type === 'timestamp') {
-                    caption += ' | date:formFields[' + index + '].datepattern || \'yyyy-MM-dd HH:mm:ss\'';
+                    caption += ' | date:formFields[' + index + '].datepattern || \'yyyy-MM-dd hh:mm:ss a\'';
                 } else if (type === 'time') {
-                    caption += ' | date:\'HH:mm:ss\'';
+                    caption += ' | date:formFields[' + index + '].timepattern ||  \'hh:mm a\'';
                 } else if (type === 'date') {
-                    caption += ' | date:formFields[' + index + '].datepattern';
+                    caption += ' | date:formFields[' + index + '].datepattern ||  \'yyyy-MM-dd\'';
                 } else if (type === 'select') {
                     caption =  'formFields[' + index + '].isRelated ? getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield) : formFields[' + index + '].value';
                 } else if (type === 'rating') {
