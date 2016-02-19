@@ -640,6 +640,7 @@ WM.module('wm.widgets.base', [])
                         "displayfield": {"type": "list", "options": [""], "value": ""},
                         "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "usekeys": {"type": "boolean"},
+                        "required": {"type": "boolean", "bindable": "in-bound", "value": false},
                         "selectedvalue": {"type": "string, number, boolean, date, time, object", "widget": "string", "value": "", "bindable": "in-bound"}
                     },
                     "wm.colorpicker": {

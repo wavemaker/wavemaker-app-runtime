@@ -326,7 +326,7 @@ WM.module('wm.widgets.live')
                     dateTypes = ['date', 'datetime'],
                     textTypes = ['text', 'password', 'textarea'],
                     evtTypes = getEventTypes(),
-                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype'];
+                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset'];
                 Object.keys(fieldDef).forEach(function (field) {
                     if (_.includes(excludeProperties, field)) {
                         return;
