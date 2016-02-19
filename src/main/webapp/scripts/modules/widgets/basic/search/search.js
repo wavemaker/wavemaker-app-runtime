@@ -33,7 +33,7 @@ WM.module('wm.widgets.basic')
                         'data-ng-model="query"' +
                         ' tabindex="{{tabindex}}"' +
                         ' accesskey="{{shortcutkey}}"' +
-                        'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
+                        'uib-typeahead="item.wmDisplayLabel for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
@@ -60,7 +60,7 @@ WM.module('wm.widgets.basic')
                 '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     'data-ng-model="query"' +
                     ' accesskey="{{shortcutkey}}"' +
-                    'uib-typeahead="item[displaylabel] for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
+                    'uib-typeahead="item.wmDisplayLabel for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
                     'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     'typeahead-template-url="template/widget/form/searchlist.html"' +
                 '>' +
@@ -96,7 +96,6 @@ WM.module('wm.widgets.basic')
     .directive('wmSearch', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', '$timeout', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base']),
-            dataSetRegEx = new RegExp(/scopedataset\./ig),
             notifyFor = {
                 'searchkey': true,
                 'displaylabel': true,
@@ -135,9 +134,9 @@ WM.module('wm.widgets.basic')
                         scope.dataSetType = 'listOfObjects';
                         WM.forEach(dataSet, function (eachItem, index) {
                             // convert display-label-value to string, as ui.typeahead expects only strings
-                            dataSet[index][scope.displaylabel] = eachItem[scope.displaylabel] && eachItem[scope.displaylabel].toString();
+                            dataSet[index].wmDisplayLabel = WidgetUtilService.getEvaluatedData(scope, eachItem, {expressionName: 'displaylabel'});
                             // to save all the image urls
-                            dataSet[index].wmImgSrc = eachItem[scope.displayimagesrc];
+                            dataSet[index].wmImgSrc = WidgetUtilService.getEvaluatedData(scope, eachItem, {expressionName: 'displayimagesrc'});
                         });
                     } else {
                         scope.dataSetType = 'listOfStrings';
@@ -262,12 +261,6 @@ WM.module('wm.widgets.basic')
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
-            case 'searchkey':
-                scope.searchkey = newVal && newVal.replace(dataSetRegEx, '');
-                break;
-            case 'displaylabel':
-                scope.displaylabel = newVal && newVal.replace(dataSetRegEx, '');
-                break;
             case 'dataset':
                 // if studio-mode, then update the search-key, display-label in property panel
                 if (scope.widgetid) {
@@ -275,9 +268,6 @@ WM.module('wm.widgets.basic')
                 }
                 // set the datatSet of the widget
                 setDataSet(newVal, scope);
-                break;
-            case 'displayimagesrc':
-                scope.displayimagesrc = newVal;
                 break;
             case 'active':
                 /*listening on 'active' property, as losing the properties during page switch
