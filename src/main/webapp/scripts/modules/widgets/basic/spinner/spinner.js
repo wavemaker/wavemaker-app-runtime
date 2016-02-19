@@ -5,14 +5,15 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/spinner.html',
-            '<div ng-class="[\'app-spinner\', size, spinnerclass]" ng-show="show" init-widget title="{{hint}}" apply-styles>' +
+            '<div ng-class="[\'app-spinner\', size, spinnerclass]" ng-show="show" init-widget title="{{hint}}" apply-styles no-animate>' +
                 '<div class="spinner-message">' +
-                    '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-show="show" ng-style="{\'font-size\' : iconsize}" ></i>' +
-                    '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent" ></span>' +
+                    '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-show="show" ng-style="{\'font-size\' : iconsize}"></i>' +
+                    '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent"></span>' +
                 '</div>' +
             '</div>'
             );
-    }]).directive('wmSpinner', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'Utils', '$sce', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, Utils, $sce) {
+    }])
+    .directive('wmSpinner', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'Utils', '$sce', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, Utils, $sce) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.spinner', ['wm.base']),
             notifyFor = {

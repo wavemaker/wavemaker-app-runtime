@@ -16,7 +16,6 @@ WM.module('wm.widgets.basic').
         function getAppSpinnerScope() {
             if (!appSpinner) {
                 appSpinner = WM.element('body >.app-spinner:first').isolateScope();
-                $animate.enabled(false, appSpinner);
             }
             return appSpinner;
         }

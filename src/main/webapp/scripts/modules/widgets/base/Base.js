@@ -1957,6 +1957,16 @@ WM.module('wm.widgets.base', [])
             }
         };
     }])
+    // directive to disable animation on an element.
+    .directive('noAnimate', function ($animate) {
+        'use strict';
+        return {
+            'link': function ($s, $el) {
+                $animate.enabled($el, false);
+            }
+        };
+    })
+
     /**
      * @ngdoc directive
      * @name wm.widgets.directive:roles
