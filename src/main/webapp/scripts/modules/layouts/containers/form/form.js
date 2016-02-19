@@ -98,12 +98,14 @@ WM.module('wm.layouts.containers')
                 formData = {},
                 formVariable,
                 fieldTarget,
-                formWidget;
+                formWidget,
+                field;
             element.on('submit', function (event) {
                 formVariable = element.scope().Variables[scope.formvariable];
                 if (scope.onSubmit || formVariable) {
                     //Get all form fields and prepare form data as key value pairs
-                    _.forEach(scope.formFields, function (field) {
+                    element.find('[data-role="form-field"]').each(function () {
+                        field       = WM.element(this).isolateScope().fieldDefConfig;
                         fieldTarget = field.target.split('.');
                         if (fieldTarget.length === 1 && !formData[field.name]) {
                             formData[field.name] = field.value;
@@ -180,7 +182,6 @@ WM.module('wm.layouts.containers')
                             bindEvents(scope, element);
                             scope.resetForm = resetForm.bind(undefined, element);
                         }
-                        scope.formFields = element.scope().formFields;
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
