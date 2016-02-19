@@ -36,10 +36,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
 
-import com.wavemaker.runtime.data.expression.QueryFilter;
-import com.wavemaker.runtime.data.spring.WMPageImpl;
-
 import com.wavemaker.runtime.data.expression.AttributeType;
+import com.wavemaker.runtime.data.expression.QueryFilter;
+import com.wavemaker.runtime.data.expression.Type;
+import com.wavemaker.runtime.data.spring.WMPageImpl;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
@@ -168,7 +168,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         if (indexOfDot != -1) {
             String relatedEntityName = attributeName.substring(0, indexOfDot);
             criteria = criteria.createAlias(relatedEntityName, relatedEntityName);
-        }
+         }
         return criteria;
     }
 
@@ -176,7 +176,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         if (queryFilters != null && queryFilters.length > 0) {
             for (QueryFilter queryFilter : queryFilters) {
                 Object attributeValue = queryFilter.getAttributeValue();
-                if (attributeValue == null)
+                if (attributeValue == null || queryFilter.getFilterCondition() == Type.NULL)
                     continue;
 
                 AttributeType attributeType = queryFilter.getAttributeType();
