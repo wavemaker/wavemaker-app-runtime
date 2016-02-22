@@ -36,7 +36,7 @@ WM.module('wm.widgets.live')
             };
 
             this.$get = function (key) {
-                return _map[key];
+                return _map[key].clone(true);
             };
         }
     ])
@@ -55,11 +55,12 @@ WM.module('wm.widgets.live')
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events']),
-                liTemplateWrapper_start = '<li data-ng-repeat="item in fieldDefs track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ',
-                liTemplateWrapper_end   = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>',
+                liTemplateWrapper_start,
+                liTemplateWrapper_end,
                 notifyFor = {
                     'dataset'        : true,
                     'height'         : true,
+                    'groupby'        : true,
                     'navigation'     : CONSTANTS.isStudioMode,
                     'itemsperrow'    : CONSTANTS.isStudioMode
                 },
@@ -245,8 +246,85 @@ WM.module('wm.widgets.live')
                     });
             }
 
+            // finds the field having the given fieldName and returns the obj
+            function getObjfromFieldname(name, data) {
+                return _.find(data, function (field) {
+                    return field.fieldName ===  name;
+                });
+            }
+
+            // returns the field type
+            function getFieldType(dataProps, groupby) {
+                var field = groupby.split('.'),
+                    obj;
+                _.each(field, function (name, idx) {
+                    if (idx === 0) {
+                        obj = getObjfromFieldname(name, dataProps.columns);
+                    } else {
+                        obj = getObjfromFieldname(name, obj.columns);
+                    }
+                });
+                return obj.type;
+            }
+
+            // This function adds the li elements if groupby is set.
+            function addListElements(_s, $el, $is, attrs, listCtrl) {
+                var $liTemplate,
+                    groupedLiData,
+                    regex    = /[^\w]/g,
+                    ALPHABET = 'alphabet';
+
+                $el.find('> [data-identifier=list]').empty();
+
+                // groups the fields based on the groupby value.
+                groupedLiData = _.groupBy(_s.fieldDefs, function (liData) {
+                    var concatStr;
+
+                    // if grouby has related column then get the value of the related column and return the value.
+                    if (_.includes($is.groupby, '.')) {
+                        _.each($is.groupby.split('.'), function (s) {
+                            if (!concatStr) {
+                                concatStr = liData[s];
+                            } else {
+                                concatStr = concatStr[s];
+                            }
+                        });
+                    } else {
+                        concatStr = liData[$is.groupby];
+                    }
+
+                    // if match prop is alphabetic ,get the starting alphabet of the word as key.
+                    if ($is.match === ALPHABET) {
+                        return concatStr.substr(0, 1);
+                    }
+
+                    return concatStr;
+                });
+
+                // append data to li based on the grouped data.
+                _.each(groupedLiData, function (groupedData, groupkey) {
+                    liTemplateWrapper_start  = '';
+                    liTemplateWrapper_end    = '></li></ul></li>';
+                    liTemplateWrapper_start +=  '<li class="app-list-item-group clearfix"><ul class="list-group" data-ng-class="listclass"><li class="app-list-item-header list-item"><h4>' + groupkey + '</h4></li>';
+
+                    groupkey = groupkey.replace(regex, '');
+
+                    // appending the sorted data to scope based to groupkey
+                    _s['_groupData' + groupkey] = _.sortBy(groupedData, function (data) {
+                        return data[$is.groupby];
+                    });
+
+                    liTemplateWrapper_start += '<li data-ng-repeat="item in _groupData' +  groupkey + ' track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ';
+
+                    $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true);
+
+                    $el.find('> [data-identifier=list]').append($liTemplate);
+                    $compile($liTemplate)($is.$liScope);
+                });
+            }
+
             /** With given data, creates list items and updates the markup*/
-            function updateFieldDefs($is, $el, data) {
+            function updateFieldDefs($is, $el, data, attrs, listCtrl) {
                 var unbindWatcher,
                     _s = $is.$liScope,
                     fieldDefs = _s.fieldDefs;
@@ -267,6 +345,11 @@ WM.module('wm.widgets.live')
                     });
                 } else {
                     _s.fieldDefs = data;
+                }
+
+                if ($is.groupby && $is.groupby !== '') {
+                    _s.fieldDefs = _.sortBy(_s.fieldDefs, $is.groupby);
+                    addListElements(_s, $el, $is, attrs, listCtrl);
                 }
 
                 if (!data.length) {
@@ -294,7 +377,7 @@ WM.module('wm.widgets.live')
                 }
             }
 
-            function onDataChange($is, $el, nv) {
+            function onDataChange($is, $el, nv, attrs, listCtrl) {
                 if (nv) {
                     $is.noDataFound = false;
 
@@ -325,16 +408,16 @@ WM.module('wm.widgets.live')
                         }
                     }
                     if (WM.isArray(nv)) {
-                        updateFieldDefs($is, $el, nv);
+                        updateFieldDefs($is, $el, nv, attrs, listCtrl);
                     }
                 } else {
                     if (CONSTANTS.isRunMode) {
-                        updateFieldDefs($is, $el, []);
+                        updateFieldDefs($is, $el, [], attrs, listCtrl);
                     }
                 }
             }
 
-            function setupDataSource($is, $el, nv) {
+            function setupDataSource($is, $el, nv, attrs, listCtrl) {
 
                 var $dataNavigator, // dataNavigator element
                     dataNavigator,  // dataNavigator scope
@@ -358,7 +441,7 @@ WM.module('wm.widgets.live')
 
                         // create a watch on dataNavigator.result
                         $is._watchers.dataNavigatorResult = dataNavigator.$watch('result', function (_nv) {
-                            onDataChange($is, $el, _nv);
+                            onDataChange($is, $el, _nv, attrs, listCtrl);
                         }, true);
                         $is._watchers.dataNavigatorMaxResults = dataNavigator.$watch('maxResults', function (_nv) {
                             $is.pagesize = _nv;
@@ -367,7 +450,7 @@ WM.module('wm.widgets.live')
                         dataNavigator.dataset = binddataset;
                     });
                 } else {
-                    onDataChange($is, $el, nv);
+                    onDataChange($is, $el, nv, attrs, listCtrl);
                 }
             }
 
@@ -388,20 +471,20 @@ WM.module('wm.widgets.live')
                 updateSelectedItemDataType($is, variable);
             }
 
-            function runMode_onDataSetChange($is, $el, nv) {
+            function runMode_onDataSetChange($is, $el, nv, attrs, listCtrl) {
                 if ($is.oldbinddataset !== $is.binddataset) {
-                    setupDataSource($is, $el, nv);
+                    setupDataSource($is, $el, nv, attrs, listCtrl);
                 } else {
-                    onDataChange($is, $el, nv);
+                    onDataChange($is, $el, nv, attrs, listCtrl);
                 }
             }
 
-            function onDataSetChange($is, $el, doNotRemoveTemplate, nv) {
+            function onDataSetChange($is, $el, doNotRemoveTemplate, nv, attrs, listCtrl) {
 
                 if (CONSTANTS.isStudioMode) {
                     studioMode_onDataSetChange($is, doNotRemoveTemplate);
                 } else {
-                    runMode_onDataSetChange($is, $el, nv);
+                    runMode_onDataSetChange($is, $el, nv, attrs, listCtrl);
                 }
 
                 $is.oldbinddataset = $is.binddataset;
@@ -441,10 +524,14 @@ WM.module('wm.widgets.live')
 
             /** In case of run mode, the field-definitions will be generated from the markup*/
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler($is, $el, attrs, key, nv, ov) {
+            function propertyChangeHandler($is, $el, attrs, listCtrl, key, nv, ov) {
                 var doNotRemoveTemplate,
                     oldClass,
-                    newClass;
+                    newClass,
+                    selectedVariable,
+                    eleScope = $el.scope(),
+                    variable = Utils.getVariableName($is, eleScope),
+                    wp       =  $is.widgetProps;
                 /**checking if the height is set on the element then we will enable the overflow**/
 
                 switch (key) {
@@ -455,7 +542,43 @@ WM.module('wm.widgets.live')
                     break;
                 case 'dataset':
                     doNotRemoveTemplate = attrs.template === 'true';
-                    onDataSetChange($is, $el, doNotRemoveTemplate, nv);
+                    onDataSetChange($is, $el, doNotRemoveTemplate, nv, attrs, listCtrl);
+
+                    selectedVariable = eleScope.Variables[variable];
+
+                    if ($is.widgetid) {
+                        // groupby is not shown for device variables
+                        if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
+                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'groupby': ''});
+                            wp.groupby.show = false;
+                        }
+
+                        // set the groupby options
+                        wp.groupby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, true);
+
+                        // show the match property
+                        if ($is.groupby && nv.propertiesMap) {
+                            wp.match.show = (getFieldType(nv.propertiesMap, $is.groupby) === 'string');
+                        }
+
+                        /*if studio-mode, then update the displayField & dataField in property panel*/
+                        if (WM.isDefined(nv) && nv !== null && !nv.length) {
+                            //Get variable and properties map only on binddataset change
+                            if ($is.oldBindDataSet !== $is.binddataset) {
+                                if (!WM.isString(nv)) {
+                                    if (selectedVariable.category === 'wm.LiveVariable') {
+                                        nv.propertiesMap = selectedVariable.propertiesMap;
+                                    }
+                                }
+                            }
+                            if ($is.groupby) {
+                                wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, false);
+                            }
+                        }
+                        if (!wp.match.show) {
+                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
+                        }
+                    }
                     break;
                 case 'itemsperrow':
                     if (CONSTANTS.isStudioMode) {
@@ -467,6 +590,25 @@ WM.module('wm.widgets.live')
                 case 'navigation':
                     if (CONSTANTS.isStudioMode) {
                         onNavigationTypeChange($is, nv);
+                    }
+                    break;
+                case 'groupby':
+                    selectedVariable = eleScope.Variables[variable];
+                    if ($is.widgetid) {
+                        if ($is.dataset) {
+                            if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
+                                wp.match.show = $rs.dataTypes[selectedVariable.type].fields[$is.groupby].type === 'java.lang.String';
+                            } else {
+                                wp.match.show = (getFieldType($is.dataset.propertiesMap, $is.groupby) === 'string');
+                            }
+                        }
+                        // enablereorder is not shown with groupby
+                        if (nv) {
+                            wp.enablereorder.show = false;
+                        }
+                        if (!wp.match.show) {
+                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
+                        }
                     }
                     break;
                 }
@@ -516,7 +658,7 @@ WM.module('wm.widgets.live')
                 return $liScope;
             }
 
-            function applyWrapper($tmplContent, attrs) {
+            function applyWrapper($tmplContent, attrs, flag) {
                 var tmpl = liTemplateWrapper_start;
 
                 if (attrs.hasOwnProperty('onMouseenter')) {
@@ -529,11 +671,16 @@ WM.module('wm.widgets.live')
 
                 tmpl += liTemplateWrapper_end;
                 tmpl = WM.element(tmpl);
-                tmpl.first().append($tmplContent);
+
+                if (flag) {
+                    tmpl.find('.app-list-item').append($tmplContent);
+                } else {
+                    tmpl.first().append($tmplContent);
+                }
                 return tmpl;
             }
 
-            function prepareLITemplate(tmpl, attrs) {
+            function prepareLITemplate(tmpl, attrs, flag) {
                 var $tmpl = WM.element(tmpl),
                     $div  = WM.element('<div></div>').append($tmpl),
                     parentDataSet = attrs.dataset || attrs.scopedataset;
@@ -541,7 +688,7 @@ WM.module('wm.widgets.live')
                 if (parentDataSet) {
                     Utils.updateTmplAttrs($div, parentDataSet);
                 }
-                $tmpl = applyWrapper($tmpl, attrs);
+                $tmpl = applyWrapper($tmpl, attrs, flag);
 
                 return $tmpl;
             }
@@ -566,11 +713,13 @@ WM.module('wm.widgets.live')
                     selectCount = 0,
                     isMultiSelect = false;// Setting to true on first long press
                 /*listen on to the click event for the ul element & get li clicked of the live-list */
-                $el.on('click.wmActive', 'ul', function (evt) {
+                $el.on('click.wmActive', 'ul.list-group', function (evt) {
                     /*returning if click event is triggered within 50ms after pressup event occurred*/
                     if (pressStartTimeStamp + 50 > Date.now()) {
                         return;
                     }
+                    evt.stopPropagation();
+                    evt.preventDefault();
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
                         $liScope = $li && $li.scope(),
                         isActive = $li.hasClass('active');
@@ -619,13 +768,13 @@ WM.module('wm.widgets.live')
                 $hammerEl.on('pressup', function (evt) {
                     if (!isMultiSelect) {
                         selectCount = 0;
-                        pressStartTimeStamp = evt.timeStamp;//Recording pressup event's timestamp
                         var $li = WM.element(evt.target).closest('li.app-list-item');
                         $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
                         selectCount += 1;
                         $li.addClass('active'); // adding active class to current selectedItem
                         isMultiSelect = true;
                         $rs.$safeApply($is);
+                        pressStartTimeStamp = Date.now();//Recording pressup event's timestamp
                     }
                 });
                 //Triggered on click of edit action
@@ -745,10 +894,15 @@ WM.module('wm.widgets.live')
                 $is.$liScope = $liScope;
 
                 if (CONSTANTS.isRunMode) {
+                    if (!$is.groupby) {
+                        liTemplateWrapper_start = '<li data-ng-repeat="item in fieldDefs track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ';
+                        liTemplateWrapper_end   = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>';
+                        $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
 
-                    $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
-                    $el.find('> [data-identifier=list]').prepend($liTemplate);
-                    $compile($liTemplate)($liScope);
+                        $el.find('> [data-identifier=list]').append($liTemplate);
+                        $el.find('> [data-identifier=list]').addClass('list-group');
+                        $compile($liTemplate)($liScope);
+                    }
 
                     if ($is.enablereorder) {
                         configureDnD($el, $is);
@@ -765,7 +919,7 @@ WM.module('wm.widgets.live')
                     setupEvtHandlers($is, $el, attrs);
                 }
                 /* register the property change handler */
-                WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs), $is, notifyFor);
+                WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
 
                 defineSelectedItemProp($is, $el, []);
                 /* Select the given item*/

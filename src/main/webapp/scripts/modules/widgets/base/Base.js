@@ -1442,7 +1442,9 @@ WM.module('wm.widgets.base', [])
                         "navigation": {"type": "list", "options": ["None", "Basic", "Advanced", "Scroll"], "value": "None"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default","panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default","panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
+                        "groupby": {"type": "list", "show": true},
+                        "match": {"type": "list", "options": ["alphabet", "word"], "show": false, "value": "word"}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
@@ -1701,7 +1703,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "minvalue", "maxvalue", "displayformat", "updateon", "updatedelay", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
-                {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "method", "action", "enctype", "searchkey", "displaylabel", "displayimagesrc", "usekeys", "actions",  "datafield", "itemlabel", "itemicon", "itemlink", "itemchildren", "displayfield", "displayexpression", "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype", "thumbnailurl", "mediaurl"], "parent": "properties"},
+                {"name": "dataset", "properties": ["service", "operation", "scopedataset", "dataset", "options",  "hyperlink", "formfield", "method", "action", "enctype", "searchkey", "displaylabel", "displayimagesrc", "usekeys", "actions",  "datafield", "itemlabel", "itemicon", "itemlink", "itemchildren", "displayfield", "displayexpression", "groupby", "aggregation", "aggregationcolumn", "orderby", "orderbycolumn", "nodelabel", "nodeicon", "nodechildren",  "badgevalue",  "badgetype", "thumbnailurl", "mediaurl", "match"], "parent": "properties"},
                 {"name": "xaxis", "properties": ["xaxisdatakey", "xaxislabel", "xunits", "xnumberformat", "xdigits", "xdateformat", "xaxislabeldistance"], "parent": "properties"},
                 {"name": "yaxis", "properties": ["yaxisdatakey", "yaxislabel", "yunits", "ynumberformat", "ydigits", "ydateformat", "yaxislabeldistance"], "parent": "properties"},
                 {"name": "zaxis", "properties": ["bubblesize"], "parent": "properties"},
