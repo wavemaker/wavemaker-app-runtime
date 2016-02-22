@@ -56,7 +56,19 @@ module.exports = function (grunt) {
                         dest: '<%= config.application %>/styles/images/ui-icons.png'
                     },
                     {
-                        cwd: '<%= config.styles %>/fonts',
+                        cwd: '<%= config.components %>/bootstrap/fonts',
+                        src: '*',
+                        expand: true,
+                        dest: '<%= config.application %>/styles/fonts'
+                    },
+                    {
+                        cwd: '<%= config.components %>/font-awesome/fonts',
+                        src: '*',
+                        expand: true,
+                        dest: '<%= config.application %>/styles/fonts'
+                    },
+                    {
+                        cwd: '<%= config.components %>/wavicon/fonts',
                         src: '*',
                         expand: true,
                         dest: '<%= config.application %>/styles/fonts'
@@ -87,7 +99,19 @@ module.exports = function (grunt) {
                         dest: '<%= config.mobile %>/styles/images/ui-icons.png'
                     },
                     {
-                        cwd: '<%= config.styles %>/fonts',
+                        cwd: '<%= config.components %>/bootstrap/fonts',
+                        src: '*',
+                        expand: true,
+                        dest: '<%= config.mobile %>/styles/fonts'
+                    },
+                    {
+                        cwd: '<%= config.components %>/font-awesome/fonts',
+                        src: '*',
+                        expand: true,
+                        dest: '<%= config.mobile %>/styles/fonts'
+                    },
+                    {
+                        cwd: '<%= config.components %>/wavicon/fonts',
                         src: '*',
                         expand: true,
                         dest: '<%= config.mobile %>/styles/fonts'
