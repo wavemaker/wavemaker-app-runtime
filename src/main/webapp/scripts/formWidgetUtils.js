@@ -347,7 +347,8 @@ WM.module('wm.widgets.form')
                 var template = '',
                     liClass,
                     labelClass,
-                    type;
+                    type,
+                    required = '';
                 switch (widgetType) {
                 case 'checkboxset':
                     liClass = 'checkbox app-checkbox';
@@ -358,6 +359,7 @@ WM.module('wm.widgets.form')
                     liClass = 'radio app-radio';
                     labelClass = 'app-radioset-label';
                     type = 'radio';
+                    required = ' data-ng-required="' + scope.required + '" name=' + scope.name;
                     break;
                 }
                 /*iterating over the keys to create the template for the widget.*/
@@ -366,7 +368,7 @@ WM.module('wm.widgets.form')
                     template = template +
                         '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + dataKey + "'" + ']}">' +
                             '<label class="' + labelClass + '" data-ng-class="{\'disabled\':disabled}" title="' + dataKey + '">' +
-                                 '<input type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + index + ' value="' + dataKey + '" data-ng-checked="checkedValues[' + "'" + dataKey + "'" + ']""/>' +
+                                 '<input ' + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + index + ' value="' + dataKey + '" data-ng-checked="checkedValues[' + "'" + dataKey + "'" + ']"/>' +
                                  '<span class="caption">' + dataKey + '</span>' +
                             '</label>' +
                         '</li>';

@@ -116,6 +116,9 @@ WM.module('wm.widgets.form')
         }
         /* checks if the given value object is in the given model array of objects */
         function valueInModel(model, value, dataObject) {
+            if (!WM.isDefined(model)) {
+                return false;
+            }
             /*If model is equal to value, return true*/
             if (model === value) {
                 return true;
