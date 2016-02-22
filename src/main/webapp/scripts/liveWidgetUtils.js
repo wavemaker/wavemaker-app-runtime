@@ -14,8 +14,9 @@ WM.module('wm.widgets.live')
         'PropertiesFactory',
         '$compile',
         '$liveVariable',
+        'CONSTANTS',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS) {
             'use strict';
             var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
                 eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
@@ -821,6 +822,13 @@ WM.module('wm.widgets.live')
                     break;
                 case 'inputtype':
                     FormWidgetUtils.setPropertiesTextWidget(wdgtProperties, newVal);
+                    compileField();
+                    break;
+                case 'show':
+                    if (CONSTANTS.isStudioMode && newVal) {
+                        Utils.getService('LiveWidgetsMarkupManager').updateFieldMarkup({'formName': parentScope.name, 'fieldName': scope.name});
+                        element.parents('[widgettype="wm-gridcolumn"]').removeClass('hide');
+                    }
                     compileField();
                     break;
                 case 'required':
