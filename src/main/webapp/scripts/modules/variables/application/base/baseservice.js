@@ -1483,8 +1483,8 @@ wm.variables.services.Variables = [
                     /*If a variable has been selected for "binding", increment the bindCount.
                     * Else, if the variable has been selected for "unbinding", decrement the bindCount.*/
                     if (isBind) {
+                        variable.bindCount = ((variable.bindCount || 0) + (bindCount || 1));
                         if (!variable.startUpdate) {
-                            variable.bindCount = ((variable.bindCount || 0) + (bindCount || 1));
                             writableVariable.startUpdate = variable.startUpdate = true;
                             if (WM.isFunction(variable.update)) {
                                 variable.update();
