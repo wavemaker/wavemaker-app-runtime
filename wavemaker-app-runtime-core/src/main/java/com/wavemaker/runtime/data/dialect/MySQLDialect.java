@@ -36,8 +36,6 @@ public class MySQLDialect extends MySQL5Dialect {
         //as hibernate timestamp is mapping to sql datetime in mysql,So forcing hibernate timestamp to map sql timestamp.
         registerColumnType(Types.TIMESTAMP, "timestamp");
         registerColumnType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime");
-
-        registerHibernateType(CommonConstants.DATE_TIME_WM_TYPE_CODE, "datetime");
     }
 
 }
