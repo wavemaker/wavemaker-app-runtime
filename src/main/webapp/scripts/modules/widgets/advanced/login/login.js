@@ -8,8 +8,7 @@ WM.module("wm.widgets.advanced")
         $templateCache.put("template/widget/advanced/login.html",
             '<div init-widget class="app-login" data-ng-show="show" apply-styles="container">' +
                 '<wm-message scopedataset="loginMessage" class="app-login-message"></wm-message>' +
-                '<form autocomplete="off" class="app-form app-login-form" method="post" wmtransclude>' +
-                '</form>' +
+                '<form autocomplete="off" class="app-form app-login-form" method="post" wmtransclude></form>' +
             '</div>');
 
     }]).directive('wmLogin', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'CONSTANTS', '$controller', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, CONSTANTS, $controller) {
@@ -23,7 +22,7 @@ WM.module("wm.widgets.advanced")
                 'onSuccess': '&',
                 'onError': '&'
             },
-            transclude: true,
+            'transclude': true,
             'template': $templateCache.get("template/widget/advanced/login.html"),
             'compile': function (tElement, tAttr) {
 
@@ -57,9 +56,11 @@ WM.module("wm.widgets.advanced")
                             element.find('.app-login-button').click(function (event) {
                                 var loginDetails,
                                     successFn = attrs.onSuccess || '',
-                                    errorFn = attrs.onError || '',
-                                    submitFn = attrs.onSubmit || '',
-                                    clickFn = WM.element(this).isolateScope().onClick || '',
+                                    errorFn   = attrs.onError || '',
+                                    submitFn  = attrs.onSubmit || '',
+                                    clickFn   = WM.element(this).isolateScope().onClick || '',
+                                    $userName = element.find('[name="usernametext"]'),
+                                    $password = element.find('[name="passwordtext"]'),
                                     onSuccess = function () {
                                         element.trigger("success");
                                         if (successFn.indexOf('(') !== -1) {
@@ -81,11 +82,17 @@ WM.module("wm.widgets.advanced")
                                         }
                                     };
                                 scope.loginMessage = null;
+
+                                // prevent the actions when the userName/Pwd fields are not valid.
+                                if ($userName.controller('ngModel').$invalid || $password.controller('ngModel').$invalid) {
+                                    return;
+                                }
+
                                 /* when on-submit not defined, then call the app-login service, else call custom service*/
                                 if (!submitFn && !clickFn) {
                                     loginDetails = {
-                                        username: element.find('[name="usernametext"]').val(),
-                                        password: element.find('[name="passwordtext"]').val()
+                                        username: $userName.val(),
+                                        password: $password.val()
                                     };
                                     element.scope().Variables.loginVariable.login({loginInfo: loginDetails}, onSuccess, onError);
                                 } else {
