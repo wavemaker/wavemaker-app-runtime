@@ -52,8 +52,10 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             @Override
             public Page<Object> doInHibernate(Session session) throws HibernateException {
                 Query namedQuery = session.getNamedQuery(queryName);
+                Query copyOfNamedQuery = namedQuery;
                 final boolean isNative = namedQuery instanceof SQLQuery;
                 if (isNative) {
+                    //adding order by from pagination to query.
                     namedQuery = createNativeQuery(namedQuery.getQueryString(), pageable.getSort(), params);
                 }
                 QueryHelper.setResultTransformer(namedQuery);
@@ -61,7 +63,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
                 if (pageable != null) {
                     namedQuery.setFirstResult(pageable.getOffset());
                     namedQuery.setMaxResults(pageable.getPageSize());
-                    Long count = QueryHelper.getQueryResultCount(namedQuery.getQueryString(), params, isNative, template);
+                    Long count = QueryHelper.getQueryResultCount(copyOfNamedQuery.getQueryString(), params, isNative, template);
                     return new WMPageImpl(namedQuery.list(), pageable, count);
                 } else
                     return new WMPageImpl(namedQuery.list());
@@ -176,6 +178,9 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         return sqlQuery;
     }
 
+    /**
+     * create native order by query from the given queryString & sort criteria...
+     */
     private SQLQuery createNativeQuery(String queryString, Sort sort, Map<String, Object> params) {
         String orderedQuery = QueryHelper.arrangeForSort(queryString, sort, true);
         return createNativeQuery(orderedQuery, params);

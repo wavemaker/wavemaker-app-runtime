@@ -40,7 +40,7 @@ public class QueryHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryHelper.class);
 
     private static final String COUNT_QUERY_TEMPLATE = "select count(*) from ({0}) wmTempTable";
-    private static final String ORDER_BY_QUERY_TEMPLATE = "select * from ({0}) ";
+    private static final String ORDER_BY_QUERY_TEMPLATE = "select * from ({0}) wmTempTable";
     private static final String SELECT_COUNT1 = "select count(*) ";
 
     private static final String FROM = " FROM ";
