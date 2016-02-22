@@ -11,10 +11,10 @@ WM.module('wm.widgets.advanced')
                     '<div class="modal fade" style="display: block;" data-ng-class="{in : show}" >' +
                         '<div class="modal-dialog">' +
                             '<div class="modal-content">' +
-                                '<div class="modal-header">' +
+                                '<div class="modal-header clearfix">' +
                                     '<h4 class="modal-title pull-left">' +
                                         '<span data-ng-click="onFileClick(directory.parent)" data-ng-show="directory.parent">' +
-                                            '<i class="fa fa-long-arrow-left"></i>' +
+                                            '<i class="fa fa-chevron-left"></i>' +
                                         '</span>' +
                                         ' {{directory.name}}' +
                                     '</h4>' +
