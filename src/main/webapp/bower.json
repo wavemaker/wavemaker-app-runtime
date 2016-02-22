@@ -29,7 +29,8 @@
         "angular-ui-calendar": "1.0.0",
         "moment": "2.11.2",
         "ngCordova":"v0.1.24-alpha",
-        "ng-websocket": "v0.2.1"
+        "ng-websocket": "v0.2.1",
+        "wavicon": "https://github.com/wavemaker/wavicon.git#v1.0.1"
     },
     "resolutions": {
         "d3": "v3.5.14",
@@ -79,6 +80,9 @@
             ".": [
                 "dist/ocLazyLoad.min.js"
             ]
+        },
+        "wavicon" : {
+          ".": "dist/wavicon/android"
         }
     }
 }
