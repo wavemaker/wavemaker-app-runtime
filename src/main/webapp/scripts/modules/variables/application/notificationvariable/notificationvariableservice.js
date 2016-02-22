@@ -12,7 +12,7 @@
  * The 'NotificationVariableService' provides methods to work with Notification variables
  */
 
-wm.variables.services.NotificationVariableService = function (BaseVariablePropertyFactory, DialogService, $rootScope, wmToaster) {
+wm.variables.services.NotificationVariableService = function (BaseVariablePropertyFactory, DialogService, $rootScope, wmToaster, Variables) {
     "use strict";
 
     /* properties of a basic variable - should contain methods applicable on this particular object */
@@ -23,29 +23,23 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                     variableOwner = variable.owner,
                     operation = variable.operation,
                     toasterOptions = (WM.element('[toaster-options]').scope() && WM.element('[toaster-options]').scope().config) || {},
-                    scope;
+                    scope,
+                    initiateCallback = Variables.initiateCallback;
 
                 //callback function to execute on click of the custom notification element
                 function customNotificationOnClick() {
-                    if (_.trim(variable.onClick)) {
-                        if (WM.isFunction(scope[variableName + 'onClick'])) {
-                            scope[variableName + 'onClick'](variable, null);
-                        } else {
-                            $rootScope.$emit('invoke-service', variable.onClick, {scope: scope});
-                        }
+                    if (variable.onClick) {
+                        initiateCallback('onClick', variable, scope);
+                    } else {
+                        wmToaster.hide();
                     }
                 }
                 //callback function to execute on hide of the custom notification element
                 function customNotificationOnHide() {
-                    if (_.trim(variable.onHide)) {
-                        if (WM.isFunction(scope[variableName + 'onHide'])) {
-                            scope[variableName + 'onHide'](variable, null);
-                        } else {
-                            $rootScope.$emit('invoke-service', variable.onHide, {scope: scope});
-                        }
+                    if (variable.onHide) {
+                        initiateCallback('onHide', variable, scope);
                     }
                 }
-
                 if (operation === 'toast') {
                     var type = (options.class || variable.dataBinding.class || "info").toLowerCase(),
                         body = options.message || variable.dataBinding.text,
@@ -89,33 +83,15 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                                         'onClose': variableName + "onClose"
                                     },
                                     onOk: function () {
-                                        if (variable.onOk.trim()) {
-                                            if (WM.isFunction(scope[variableName + "onOk"])) {
-                                                scope[variableName + "onOk"](variable, null);
-                                            } else {
-                                                $rootScope.$emit('invoke-service', variable.onOk, {scope: scope});
-                                            }
-                                        }
+                                        initiateCallback('onOk', variable, scope);
                                         DialogService.hideDialog(dialogId);
                                     },
                                     onCancel: function () {
-                                        if (variable.onCancel.trim()) {
-                                            if (WM.isFunction(scope[variableName + "onCancel"])) {
-                                                scope[variableName + "onCancel"](variable, null);
-                                            } else {
-                                                $rootScope.$emit('invoke-service', variable.onCancel, {scope: scope});
-                                            }
-                                        }
+                                        initiateCallback('onCancel', variable, scope);
                                         DialogService.hideDialog(dialogId);
                                     },
                                     onClose: function () {
-                                        if (variable.onClose.trim()) {
-                                            if (WM.isFunction(scope[variableName + "onClose"])) {
-                                                scope[variableName + "onClose"](variable, null);
-                                            } else {
-                                                $rootScope.$emit('invoke-service', variable.onClose, {scope: scope});
-                                            }
-                                        }
+                                        initiateCallback('onClose', variable, scope);
                                         DialogService.hideDialog(dialogId);
                                     }
                                 };
