@@ -387,12 +387,15 @@ WM.module('wm.utils', [])
         function prepareFieldDefs(data, columnUpperBound, includeParentNode, noModifyTitle) {
             var defaultDefs = false,
                 dataObject,
-                columnDef = [];
-            /*if no data provided, initialize default column definitions*/
-            if (!data || data.length === 0) {
-                data = [
+                columnDef = [],
+                defaultData = [
                     {'column1': '', 'column2': '', 'column3': '', 'column4': '', 'column5': ''}
                 ];
+            /*if no data provided, initialize default column definitions*/
+            if (!data || data.length === 0) {
+                data = defaultData;
+                defaultDefs = true;
+            } else if (_.isEqual(data, defaultData)) {
                 defaultDefs = true;
             }
 
