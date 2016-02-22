@@ -291,6 +291,10 @@ wm.variables.services.Variables = [
 
             /*Function to check if map is empty in provided context*/
             isCrudEmpty = function (map, pageName) {
+                /*If the map for particular page doesn't exist then considering its empty*/
+                if (!map.CREATE[pageName]) {
+                    return true;
+                }
                 return !map.CREATE[pageName].length && !map.UPDATE[pageName].length && !map.DELETE[pageName].length && !map.MOVE[pageName].length;
             },
 
@@ -1184,7 +1188,7 @@ wm.variables.services.Variables = [
 
                 /* if app level variable make it available in the active page scope */
                 if (owner === VARIABLE_CONSTANTS.OWNER.APP) {
-                    if ($rootScope.activePageName) {
+                    if ($rootScope.activePageName && pageScopeMap[$rootScope.activePageName]) {
                         Object.defineProperty(pageScopeMap[$rootScope.activePageName].Variables, name, {
                             configurable: true,
                             get: function () {
