@@ -473,6 +473,20 @@ WM.module('wm.widgets.form')
             }
             /**
              * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getTimestampFromDate
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to get timestamp of date with time ignored
+             *
+             * @param {object} date date for which timestamp is required
+             */
+            function getTimestampFromDate(date) {
+                return moment($filter('date')(date, 'yyyy-MM-dd')).valueOf();
+            }
+            /**
+             * @ngdoc function
              * @name wm.widgets.form.FormWidgetUtils#getProxyExcludeDates
              * @methodOf wm.widgets.form.FormWidgetUtils
              * @function
@@ -498,7 +512,7 @@ WM.module('wm.widgets.form')
                 _.forEach(dates, function (date) {
                     /*formatting date/timestamp in to date and converting it to long value and populating
                      'proxyExcludeDates' which is used in 'excludeDates()'*/
-                    proxyExcludeDates.push(moment(moment(date).format('MM/DD/YYYY')).valueOf());
+                    proxyExcludeDates.push(getTimestampFromDate(date));
                 });
                 return proxyExcludeDates;
             }
@@ -532,19 +546,20 @@ WM.module('wm.widgets.form')
                 return proxyModelValue;
             }
 
-            this.getDisplayField = getDisplayField;
-            this.setPropertiesTextWidget = setPropertiesTextWidget;
-            this.createDataKeys = createDataKeys;
-            this.updatePropertyPanelOptions = updatePropertyPanelOptions;
-            this.getParsedDataSet = getParsedDataSet;
-            this.getModelValue = getModelValue;
+            this.getDisplayField                = getDisplayField;
+            this.setPropertiesTextWidget        = setPropertiesTextWidget;
+            this.createDataKeys                 = createDataKeys;
+            this.updatePropertyPanelOptions     = updatePropertyPanelOptions;
+            this.getParsedDataSet               = getParsedDataSet;
+            this.getModelValue                  = getModelValue;
             this.getRadiosetCheckboxsetTemplate = getRadiosetCheckboxsetTemplate;
-            this.getBoundVariableCategory = getBoundVariableCategory;
-            this.appendMessage = appendMessage;
-            this.getProxyEventsMap = getProxyEventsMap;
-            this.getFocusBlurEvents = getFocusBlurEvents;
-            this.eventProxy = eventProxy;
-            this.getProxyExcludeDates = getProxyExcludeDates;
-            this.getUpdatedModel = getUpdatedModel;
+            this.getBoundVariableCategory       = getBoundVariableCategory;
+            this.appendMessage                  = appendMessage;
+            this.getProxyEventsMap              = getProxyEventsMap;
+            this.getFocusBlurEvents             = getFocusBlurEvents;
+            this.eventProxy                     = eventProxy;
+            this.getTimestampFromDate           = getTimestampFromDate;
+            this.getProxyExcludeDates           = getProxyExcludeDates;
+            this.getUpdatedModel                = getUpdatedModel;
         }
     ]);

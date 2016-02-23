@@ -308,7 +308,7 @@ WM.module('wm.widgets.form')
                         };
 
                         scope.excludeDates = function (date) {
-                            return _.includes(scope.proxyExcludeDates, Date.parse(date));
+                            return _.includes(scope.proxyExcludeDates, FormWidgetUtils.getTimestampFromDate(date));
                         };
 
                         /*Set the model if datavalue doesnt exists*/
