@@ -9,9 +9,9 @@ import com.wavemaker.studio.common.ser.WMDateDeSerializer;
 import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
 
 /**
-* @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
-* @since 17/2/16
-*/
+ * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
+ * @since 17/2/16
+ */
 public enum AttributeType implements TypeConverter {
 
     BIG_DECIMAL {
@@ -29,19 +29,19 @@ public enum AttributeType implements TypeConverter {
     BLOB {
         @Override
         public Object toJavaType(final Object value) {
-            return BigIntegerType.INSTANCE.fromString(value.toString());
+            return BlobType.INSTANCE.fromString(value.toString());
         }
     },
     BOOLEAN {
         @Override
         public Object toJavaType(final Object value) {
-            return BigIntegerType.INSTANCE.fromString(value.toString());
+            return BooleanType.INSTANCE.fromString(value.toString());
         }
     },
     BYTE {
         @Override
         public Object toJavaType(final Object value) {
-            return BigIntegerType.INSTANCE.fromString(value.toString());
+            return ByteType.INSTANCE.fromString(value.toString());
         }
     },
     CALENDAR {
@@ -59,7 +59,7 @@ public enum AttributeType implements TypeConverter {
     CHARACTER {
         @Override
         public Object toJavaType(final Object value) {
-            return null;
+            return CharacterType.INSTANCE.fromString(value.toString());
         }
     },
     CLOB {
@@ -71,7 +71,7 @@ public enum AttributeType implements TypeConverter {
     CURRENCY {
         @Override
         public Object toJavaType(final Object value) {
-            return null;
+            return CurrencyType.INSTANCE.fromString(value.toString());
         }
     },
     DATE {
