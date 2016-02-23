@@ -725,6 +725,7 @@ WM.module('wm.widgets.base')
                             if(variableObject && isPageable(variableObject)) {
                                 return 'Variables.' + key + '.dataSet.content[$i]';
                             }
+                            return match;
                     });
 
                     watchInfo = getUpdatedWatchExpr(watchExpr, acceptsArray, allowPageable, listenerFn);
