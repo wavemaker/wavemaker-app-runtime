@@ -178,7 +178,13 @@ wm.modules.wmCommon.services.BaseService = [
                 var errTitle, errMsg, errorDetails, appManager;
                 /*if user is unauthorized, then show login dialog*/
                 if (error.status === 401 && !error.headers('X-WM-Login-ErrorMessage')) {
-                    pushToErrorCallStack(config, successCallback, failureCallback);
+                    if (CONSTANTS.isRunMode && config.url !== 'app.variables.json') {
+                        /*
+                         * a failed app.variables.json file doesn't need to be re-invoked always after login
+                         * wmbootstrap is handling the re-invoking
+                         */
+                        pushToErrorCallStack(config, successCallback, failureCallback);
+                    }
                     if (CONSTANTS.isRunMode) {
                         appManager = Utils.getService("AppManager");
                         appManager.handleSessionTimeOut();

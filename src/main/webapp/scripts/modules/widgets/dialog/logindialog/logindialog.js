@@ -30,11 +30,12 @@ WM.module('wm.widgets.dialog')
                     /* replacing wm-logindialog with wm-dialog-container in run mode to have a container for header, content and footer.
                      wm-dialog-container has a template similar to wm-dialog, replacing since wm-dialog returns script tag*/
                     var dialogEle = WM.element(template[0].outerHTML),
+                        onsubmit = dialogEle.attr('on-submit') || '',
                         onsuccess = dialogEle.attr('on-success') || '',
                         onerror = dialogEle.attr('on-error') || '',
                         dialog = template[0].outerHTML.replace("<wm-logindialog ", "<wm-dialog-container class='app-login-dialog' ");
                     dialog = dialog.replace("</wm-logindialog>", "</wm-dialog-container>");
-                    dialog = '<wm-logindialog-container on-success="' + onsuccess + '" on-error="' + onerror + '">' + dialog + '</wm-logindialog-container>';
+                    dialog = '<wm-logindialog-container on-submit="' + onsubmit + '" on-success="' + onsuccess + '" on-error="' + onerror + '">' + dialog + '</wm-logindialog-container>';
                     transcludedContent = dialog;
                     id = attrs.name;
                     return '<script type="text/ng-template" id="' + id + '">' + transcludedContent + "</script>";
@@ -76,6 +77,7 @@ WM.module('wm.widgets.dialog')
             "transclude": true,
             "scope": {
                 "dialogid": '@',
+                "onSubmit": '&',
                 "onSuccess": '&',
                 "onError": '&'
             },
@@ -87,49 +89,63 @@ WM.module('wm.widgets.dialog')
                         scope.widgetProps = widgetProps;
                     },
                     "post": function (scope, element, attrs) {
+                        function onSuccess() {
+                            element.trigger("success");
+                            scope.onSuccess({$event: event, $scope: scope});
+                        }
+
+                        function onError(error) {
+                            scope.loginMessage = scope.$parent.loginMessage = {
+                                type: 'error',
+                                caption: scope.errormessage || error
+                            };
+                            element.trigger("error");
+                            scope.onError({$event: event, $scope: scope});
+                        }
+
                         if (CONSTANTS.isRunMode) {
+                            var submitFn = attrs.onSubmit || '',
+                                loginBtn = element.find('.app-button[name="loginbutton"]'),
+                                loginBtnClickFn  = loginBtn.isolateScope().onClick || '',
+                                lastLoggedinUser;
+
                             /*function to be called in case of login*/
                             scope.doLogin = function (event) {
                                 scope.loginMessage = scope.$parent.loginMessage = null;
-                                var curUser = element.find('[name="usernametext"]').val();
-                                SecurityService.appLogin({
-                                    username: curUser,
-                                    password: element.find('[name="passwordtext"]').val()
-                                }, function (response) {
-                                    var redirectUrl = response && response.url ? response.url : 'index.html';
-                                    if (CONSTANTS.hasCordova && _.includes(redirectUrl, '/')) {
-                                        /*
-                                         * when the application is running as a mobile application,
-                                         * use the local app files instead of server files.
-                                         */
-                                        redirectUrl = redirectUrl.substr(redirectUrl.lastIndexOf('/') + 1);
-                                    }
-                                    scope.$root.isUserAuthenticated = true;
-                                    element.trigger("success");
-                                    /*setting the received redirect url for the logged-in user's landing page configuration to the
-                                    * current scope to be propagated to the common login dialog success handler*/
-                                    scope.redirectUrl = redirectUrl;
-                                    /* if a different user logs in than the last logged in user, redirect to his landing page */
-                                    if (SecurityService.getLastLoggedInUser() !== curUser) {
-                                        $window.location = $window.location.pathname;
-                                    }
-                                    scope.onSuccess({$event: event, $scope: scope});
-                                    scope.$root.$emit("update-loggedin-user");
-                                    BaseService.executeErrorCallStack();
-                                }, function (error) {
-                                    scope.loginMessage = scope.$parent.loginMessage = {
-                                        type: 'error',
-                                        caption: scope.errormessage || error
+                                var curUser = element.find('[name="usernametext"]').val(),
+                                    password = element.find('[name="passwordtext"]').val(),
+                                    loginDetails;
+
+                                /* when on-submit not defined, then call the app-login service, else call custom service*/
+                                if (!submitFn && !loginBtnClickFn) {
+                                    lastLoggedinUser = SecurityService.getLastLoggedInUser();
+                                    loginDetails = {
+                                        username: curUser,
+                                        password: password
                                     };
-                                    element.trigger("error");
-                                    scope.onError({$event: event, $scope: scope});
-                                });
+                                    element.scope().Variables.loginVariable.login({loginInfo: loginDetails, mode: 'dialog'}, function () {
+                                        if (lastLoggedinUser && curUser !== lastLoggedinUser) {
+                                            $window.location = $window.location.pathname;
+                                        }
+                                        Utils.triggerFn(onSuccess);
+                                    }, onError);
+                                } else {
+                                    if (loginBtnClickFn) {
+                                        loginBtnClickFn({$event: event, $scope: scope});
+                                    }
+                                    if (submitFn.indexOf('(') !== -1) {
+                                        scope.onSubmit({$event: event, $scope: scope});
+                                    } else {
+                                        scope.$root.$emit('invoke-service', submitFn, {scope: element.scope(), mode: 'dialog'}, onSuccess, onError);
+                                    }
+                                }
                             };
-                            var loginbutton = element.find('.app-button[name="loginbutton"]');
+
+                            //var loginbutton = element.find('.app-button[name="loginbutton"]');
                             /*to remove the on-click event handler*/
-                            loginbutton.unbind('click');
+                            loginBtn.unbind('click');
                             /*bind sign-in functionality to the sign-in button*/
-                            loginbutton.click(scope.doLogin.bind(null));
+                            loginBtn.click(scope.doLogin.bind(null));
                             /*bind sign-in functionality to the sign-in button*/
                             element.find('.app-textbox').keypress(function (evt) {
                                 evt.stopPropagation();

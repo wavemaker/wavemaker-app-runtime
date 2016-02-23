@@ -824,7 +824,8 @@ WM.module('wm.widgets.base', [])
                     "wm.logindialog": {
                         "height": {"type": "string", "show": false, "pattern": dimensionRegex},
                         "closable": {"type": "boolean", "value": true},
-                        "modal": {"type": "boolean", "value": true}
+                        "modal": {"type": "boolean", "value": true},
+                        "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.designdialog": {
                         "modal": {"type": "boolean", "value": false},

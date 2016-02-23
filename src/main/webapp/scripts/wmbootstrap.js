@@ -80,7 +80,8 @@ Application
                 var prevRoute,
                     cache           = $cacheFactory('APP_PAGES'),
                     NG_LOCALE_PATH  = 'resources/ngLocale/',
-                    APP_LOCALE_PATH = 'resources/i18n/';
+                    APP_LOCALE_PATH = 'resources/i18n/',
+                    appVariablesLoaded = false;
 
                 function defaultPageLoadSuccessHandler(pageName, response) {
                     cache.put(pageName, Utils.parseCombinedPageContent(response.data, pageName));
@@ -234,7 +235,6 @@ Application
 
                 function initAppVariables($s) {
                     var deferred = $q.defer();
-                    Variables.initAppVariables($s, deferred.resolve, deferred.reject);
                     return deferred.promise;
                 }
 
@@ -243,11 +243,13 @@ Application
                  * if security disabled, user not authenticated, it is reset.
                  */
                 function updateLoggedInUserVariable() {
-                    var loggedInUser = $rs.Variables && $rs.Variables.loggedInUser && $rs.Variables.loggedInUser.dataSet;
+                    var loggedInUser = $rs.Variables && $rs.Variables.loggedInUser && $rs.Variables.loggedInUser.dataSet,
+                        deferred = $q.defer();
 
                     // sanity check
                     if (!loggedInUser) {
-                        return;
+                        $timeout(deferred.resolve);
+                        return deferred.promise;
                     }
 
                     // local function to clear the loggedInUser details.
@@ -257,6 +259,7 @@ Application
                         loggedInUser.name            = undefined;
                         loggedInUser.id              = undefined;
                         loggedInUser.tenantId        = undefined;
+                        deferred.resolve();
                     }
 
                     SecurityService.getConfig(function (config) {
@@ -267,11 +270,13 @@ Application
                                 loggedInUser.name            = config.userInfo.userName;
                                 loggedInUser.id              = config.userInfo.userId;
                                 loggedInUser.tenantId        = config.userInfo.tenantId;
+                                deferred.resolve();
                                 return;
                             }
                         }
                         clearLoggedInUser();
                     }, clearLoggedInUser);
+                    return deferred.promise;
                 }
 
                 function getPreparedPageContent(pageName) {
@@ -295,7 +300,7 @@ Application
                     cache = $cacheFactory('APP_PAGES');
                 }
 
-                function loadSecurityConfig() {
+                function loadSecurityConfig(forcePageLoad) {
                     var deferred = $q.defer(),
                         page;
 
@@ -318,7 +323,7 @@ Application
                             } else {
                                 page = config.homePage;
                             }
-                            if ($location.path() === '/') {
+                            if ($location.path() === '/' || forcePageLoad) {
                                 $location.path(page);
                             }
                             deferred.resolve();
@@ -328,20 +333,73 @@ Application
                     return deferred.promise;
                 }
 
+                /**
+                 * Initializes the following
+                 * app variables
+                 * i18 services
+                 * loggedInUser variable
+                 * @returns {promise|*}
+                 */
+                function initAppVariablesAndDependencies() {
+                    var deferred = $q.defer();
+                    Variables.initAppVariables(undefined, function (appVariables) {
+                        appVariablesLoaded = true;
+                        var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
+                        initI18nService(_.keys(supportedLocale), _WM_APP_PROPERTIES.defaultLanguage);
+                        updateLoggedInUserVariable().
+                            then(function () {
+                                deferred.resolve();
+                            });
+                    }, function (error) {
+                        deferred.reject(error);
+                    });
+                    return deferred.promise;
+                }
+
+                /**
+                 * Updates the security config in SecurityService by making a fresh call to the API
+                 * If app.variables not loaded, will load them and the related dependencies
+                 * Updates the loggedInUser with the fresh user info
+                 * @returns {promise|*}
+                 */
+                function resetSecurityConfig() {
+                    var deferred = $q.defer();
+                    SecurityService.setConfig(null);
+                    SecurityService.getConfig(function () {
+                        if (!appVariablesLoaded) {
+                            initAppVariablesAndDependencies().
+                                then(deferred.resolve, deferred.resolve);
+                        } else {
+                            updateLoggedInUserVariable().
+                                then(deferred.resolve, deferred.resolve);
+                        }
+                    });
+                    return deferred.promise;
+                }
+
+                /**
+                 * Navigates to the current user's homePage based on the config in SecurityService
+                 * Assumption is the SecurityService is updated with the latest security config before making call to this function
+                 */
+                function navigateOnLogin() {
+                    loadSecurityConfig(true);
+                }
+
                 $rs.$on('app-logout-success', clearPagesCache);
 
-                this.loadPage                   = loadPage;
-                this.getPageContent             = getPageContent;
-                this.loadCommonPage             = loadCommonPage;
-                this.initI18nService            = initI18nService;
-                this.initAppVariables           = initAppVariables;
-                this.updateLoggedInUserVariable = updateLoggedInUserVariable;
-                this.getPreparedPageContent     = getPreparedPageContent;
-                this.isDeviceReady              = isDeviceReady;
-                this.loadSecurityConfig         = loadSecurityConfig;
-                this.handleSessionTimeOut       = handleSessionTimeout;
-                this.showPageSwitchSpinner      = showPageSwitchSpinner;
-                this.hidePageSwitchSpinner      = hidePageSwitchSpinner;
+                this.loadPage                           = loadPage;
+                this.getPageContent                     = getPageContent;
+                this.loadCommonPage                     = loadCommonPage;
+                this.initI18nService                    = initI18nService;
+                this.initAppVariablesAndDependencies    = initAppVariablesAndDependencies;
+                this.getPreparedPageContent             = getPreparedPageContent;
+                this.isDeviceReady                      = isDeviceReady;
+                this.loadSecurityConfig                 = loadSecurityConfig;
+                this.handleSessionTimeOut               = handleSessionTimeout;
+                this.showPageSwitchSpinner              = showPageSwitchSpinner;
+                this.hidePageSwitchSpinner              = hidePageSwitchSpinner;
+                this.resetSecurityConfig                = resetSecurityConfig;
+                this.navigateOnLogin                    = navigateOnLogin;
             }
         ])
     .config(
@@ -485,16 +543,8 @@ Application
                         .then(function () {
                             return AppManager.loadCommonPage($s);
                         }).then(function () {
-                            SecurityService.getConfig(function (config) {
-                                AppManager.initAppVariables($s)
-                                    .then(function (appVariables) {
-                                        var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
-                                        AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
-                                        // if user us authenticated, update user details in loggedInUser variable
-                                        if (config.authenticated) {
-                                            AppManager.updateLoggedInUserVariable();
-                                        }
-                                    });
+                            SecurityService.getConfig(function () {
+                                AppManager.initAppVariablesAndDependencies();
                             });
                         });
                 }
@@ -520,11 +570,6 @@ Application
                         pageReadyDeregister();
                     });
                 }
-
-                $rs.$on('update-loggedin-user', function () {
-                    SecurityService.setConfig(null);
-                    AppManager.updateLoggedInUserVariable();
-                });
 
                 // function to invoke a service during run time
                 $rs.$on('invoke-service', function (event, name, options, onSuccess, onError) {

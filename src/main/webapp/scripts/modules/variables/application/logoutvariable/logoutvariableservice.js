@@ -64,23 +64,25 @@ wm.variables.services.LogoutVariableService = ['Variables',
                             $rootScope.isUserAuthenticated = false;
                             Utils.triggerFn(success);
                             if (variable.useDefaultSuccessHandler) {
-                                var redirectPage = variable.redirectTo;
+                                var redirectPage = variable.redirectTo,
+                                    appManager;
+                                /* backward compatibility (index.html/login.html may be present in older projects) */
                                 if (!redirectPage || redirectPage === "login.html" || redirectPage === "index.html") {
                                     redirectPage = "";
                                 }
                                 $location.url(redirectPage);
                                 $window.location.reload();
-                            } else {
-                                if (CONSTANTS.isRunMode) {
-                                    WM.forEach(variableEvents, function (event) {
-                                        if (event !== "onError") {
-                                            initiateCallback(event, variable, callBackScope);
-                                        }
+                            } else if (CONSTANTS.isRunMode) {
+                                appManager = Utils.getService("AppManager");
+                                appManager.resetSecurityConfig().
+                                    then(function () {
+                                        WM.forEach(variableEvents, function (event) {
+                                            if (event !== "onError") {
+                                                initiateCallback(event, variable, callBackScope);
+                                            }
+                                        });
                                     });
-                                }
                             }
-                            /* clear the logged in user variable */
-                            $rootScope.$emit("update-loggedin-user");
                         }, handleError);
                     } else {
                         handleError();

@@ -78,38 +78,60 @@ wm.variables.services.LoginVariableService = ['Variables',
                     return;
                 }
                 variable.promise = SecurityService.appLogin(params, function (response) {
-                    var redirectUrl = response && response.url ? response.url : 'index.html';
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.isUserAuthenticated = true;
-                        Utils.triggerFn(success);
-                        $rootScope.$emit("update-loggedin-user");
-                        WM.forEach(variableEvents, function (event) {
-                            if (event !== "onError") {
-                                initiateCallback(event, variable, callBackScope);
-                            }
-                        });
-                    }
-                    if (variable.useDefaultSuccessHandler) {
-                        if (CONSTANTS.hasCordova && _.includes(redirectUrl, '/')) {
-                            /*
-                             * when the application is running as a mobile application,
-                             * use the local app files instead of server files.
-                             */
-                            redirectUrl = redirectUrl.substr(redirectUrl.lastIndexOf('/') + 1);
-                        }
-                        var redirectPage = $location.search().redirectTo;
-                        if (redirectPage && WM.isString(redirectPage) && SecurityService.getLastLoggedInUser() === params.username) {
-                            BaseService.executeErrorCallStack();
-                            $location.url(redirectPage);
-                        } else {
-                            $window.location = $window.location.pathname;
-                        }
+                    var redirectUrl = response && response.url ? response.url : 'index.html',
+                        appManager = Utils.getService("AppManager"),
+                        lastLoggedinUser = SecurityService.getLastLoggedInUser();
+                    if (!CONSTANTS.isRunMode) {
+                        return;
                     }
                     /*
-                     * IN CASE OF NOT USING DEFAULT-SUCCESS-HANDLER the new securityConfig are expected
-                     * If they are fetched on login response, they can be simply updated
-                     * Else a fresh call need to update the same
+                     * Get fresh security config
+                     * Get App variables. if not loaded
+                     * Update loggedInUser variable with new user details
                      */
+                    appManager.resetSecurityConfig().
+                        then(function () {
+                            $rootScope.isUserAuthenticated = true;
+                            Utils.triggerFn(success);
+
+                            WM.forEach(variableEvents, function (event) {
+                                if (event !== "onError") {
+                                    initiateCallback(event, variable, callBackScope);
+                                }
+                            });
+
+                            /* if first time user loggin in or same user re-logging in, execute n/w calls failed before logging in */
+                            if (!lastLoggedinUser || lastLoggedinUser === params.username) {
+                                BaseService.executeErrorCallStack();
+                            }
+
+                            /* handle navigation if defaultSuccessHandler on variable is true */
+                            if (variable.useDefaultSuccessHandler) {
+                                if (CONSTANTS.hasCordova && _.includes(redirectUrl, '/')) {
+                                    /*
+                                     * when the application is running as a mobile application,
+                                     * use the local app files instead of server files.
+                                     */
+                                    redirectUrl = redirectUrl.substr(redirectUrl.lastIndexOf('/') + 1);
+                                }
+                                var redirectPage = $location.search().redirectTo;
+                                /* if redirectPage found in url, case of re-login on session timeout*/
+                                if (redirectPage && WM.isString(redirectPage)) {
+                                    if (lastLoggedinUser === params.username) {
+                                        /* if same user re-logging in, navigate to provided redirectPage */
+                                        $location.url(redirectPage);
+                                    } else {
+                                        /* else, re-load the app, navigation will be taken care in wmbootstrap.js' */
+                                        $window.location = $window.location.pathname;
+                                    }
+                                } else if (options.mode === 'dialog' && lastLoggedinUser !== params.username) {
+                                    /* else, re-load the app, navigation will be taken care in wmbootstrap.js' */
+                                    $window.location = $window.location.pathname;
+                                } else if (options.mode !== 'dialog') {
+                                    appManager.navigateOnLogin();
+                                }
+                            }
+                        });
                 }, function () {
                     /* if in RUN mode, trigger error events associated with the variable */
                     if (CONSTANTS.isRunMode) {
