@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/datetime.html',
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
-                '<input class="form-control app-textbox display-input" data-ng-model="_displayModel" accesskey="{{shortcutkey}}">' +
+                '<input class="form-control app-textbox display-input" data-ng-model="_displayModel" accesskey="{{shortcutkey}}" ng-change="updateDateTimeModel()" ng-model-options="{updateOn: \'blur\'}">' +
                 '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" date-disabled="excludeDays(date) || excludeDates(date)" data-ng-model="_dateModel" ' +
                     ' uib-datepicker-popup min-date=mindate max-date=maxdate is-open="isDateOpen" show-weeks="{{showweeks}}">' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
@@ -208,7 +208,22 @@ WM.module('wm.widgets.form')
                         }
                     },
                     post: function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element),
+                            setModels = function (val) {
+                                var dateTime;
+                                if (val) {
+                                    dateTime = parseDateTime(val);
+                                    if (dateTime.getTime()) {
+                                        scope._proxyModel = scope._timeModel = dateTime.getTime();
+                                        scope._dateModel  = new Date(scope._proxyModel);
+                                    } else {
+                                        scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
+                                    }
+                                } else {
+                                    scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
+                                }
+                                scope.formatDateTime();
+                            };
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
@@ -250,6 +265,15 @@ WM.module('wm.widgets.form')
                             scope._prevDateTime = scope._model_;
                         };
 
+                        /*update the model when changed manually*/
+                        scope.updateDateTimeModel = function () {
+                            if (!isNaN(Date.parse(scope._displayModel))) {
+                                setModels(scope._displayModel);
+                            } else {
+                                this._proxyModel = undefined;
+                            }
+                        };
+
                         /*Called from form reset when users clicks on form reset*/
                         scope.reset = function () {
                             //TODO implement custom reset logic here
@@ -286,18 +310,7 @@ WM.module('wm.widgets.form')
                                         this._proxyModel = undefined;
                                     }
                                 } else {
-                                    if (val) {
-                                        dateTime = parseDateTime(val);
-                                        if (dateTime.getTime()) {
-                                            this._proxyModel = this._timeModel = dateTime.getTime();
-                                            this._dateModel  = new Date(this._proxyModel);
-                                        } else {
-                                            this._proxyModel = this._dateModel = this._timeModel = undefined;
-                                        }
-                                    } else {
-                                        this._proxyModel = this._dateModel = this._timeModel = undefined;
-                                    }
-                                    scope.formatDateTime();
+                                    setModels(val);
                                 }
                             }
                         });

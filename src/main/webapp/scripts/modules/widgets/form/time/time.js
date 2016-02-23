@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
                 ' data-ng-model="_proxyModel"' + /* _proxyModel is a private variable inside this scope */
                 ' data-ng-show="show" ' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})" >' +
-                '<input class="form-control app-textbox display-input" data-ng-model="_timeModel" accesskey="{{shortcutkey}}">' +
+                '<input class="form-control app-textbox display-input" data-ng-model="_timeModel" accesskey="{{shortcutkey}}" ng-change="updateTimeModel()" ng-model-options="{updateOn: \'blur\'}">' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
                         '<uib-timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds"></uib-timepicker>' +
@@ -154,7 +154,16 @@ WM.module('wm.widgets.form')
 
                     },
                     post: function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element),
+                            setProxyModel = function (val) {
+                                var dateTime;
+                                if (val) {
+                                    dateTime = Utils.getValidDateObject(val);
+                                    scope._proxyModel = WM.isDate(dateTime) ? dateTime : undefined;
+                                } else {
+                                    scope._proxyModel = undefined;
+                                }
+                            };
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
 
@@ -178,6 +187,15 @@ WM.module('wm.widgets.form')
                         /*update the model for device time*/
                         scope.updateModel = function () {
                             scope._model_ = scope._proxyModel;
+                        };
+                        /*update the model when changed manually*/
+                        scope.updateTimeModel = function () {
+                            if (!isNaN(Date.parse(moment().format('YYYY-MM-DD') + ' ' + scope._timeModel))) {
+                                setProxyModel(scope._timeModel);
+                                setTimeModel(scope);
+                            } else {
+                                this._proxyModel = undefined;
+                            }
                         };
                         /* handle initial readonly/disabled values */
                         $timeout(function () {
@@ -214,12 +232,7 @@ WM.module('wm.widgets.form')
                                     }
                                     return;
                                 }
-                                if (val) {
-                                    dateTime = Utils.getValidDateObject(val);
-                                    this._proxyModel = WM.isDate(dateTime) ? dateTime : undefined;
-                                } else {
-                                    this._proxyModel = undefined;
-                                }
+                                setProxyModel(val);
                                 setTimeModel(scope);
                             }
                         });
