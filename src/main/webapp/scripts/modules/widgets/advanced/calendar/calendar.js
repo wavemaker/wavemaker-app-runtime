@@ -75,8 +75,11 @@ WM.module('wm.widgets.advanced')
                 switch (key) {
                 case 'dataset':
                     scope.eventSources.length = 0;
-                    newVal = WM.isObject(newVal) ? newVal : {};
-                    scope.eventSources.push(newVal);
+                    newVal = WM.isArray(newVal) ? newVal : [];
+
+                    if(_.intersection(_.keys(newVal[0]), ['allDay','start','end']).length === 3){
+                        scope.eventSources.push(newVal);
+                    }
                     break;
                 case 'height':
                     calendar.height = parseInt(newVal, 10);
