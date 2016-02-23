@@ -205,7 +205,7 @@ WM.module('wm.widgets.form')
                             return mode === 'day' && _.includes(attrs.excludedays, date.getDay());
                         };
                         scope.excludeDates = function (date, mode) {
-                            return mode === 'day' && _.includes(scope.proxyExcludeDates, Date.parse(date));
+                            return mode === 'day' && _.includes(scope.proxyExcludeDates, FormWidgetUtils.getTimestampFromDate(date));
                         };
 
                         /*set the default value*/
