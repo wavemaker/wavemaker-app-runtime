@@ -361,7 +361,7 @@ WM.module('wm.widgets.grid')
                             /**runModeInitialProperties are not triggered in property change handler in run mode.
                              * So, set these grid options based on the attribute values.
                              * This is done to prevent re-rendering of the grid for a property change in run mode**/
-                            _.each(runModeInitialProperties, function (value, key) {
+                            _.forEach(runModeInitialProperties, function (value, key) {
                                 var attrValue = attrs[key];
                                 if (WM.isDefined(attrValue)) {
                                     scope.gridOptions[value] = (attrValue === "true" || attrValue === true);
@@ -375,6 +375,8 @@ WM.module('wm.widgets.grid')
 
                         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                         function propertyChangeHandler(key, newVal) {
+                            var actionsObj,
+                                addNewRowButtonIndex;
                             /*Monitoring changes for styles or properties and accordingly handling respective changes.*/
                             switch (key) {
                             case 'width':
@@ -461,7 +463,7 @@ WM.module('wm.widgets.grid')
                                 break;
                             case 'insertrow':
                                 scope.insertrow = (newVal === true || newVal === 'true');
-                                var addNewRowButtonIndex = getObjectIndexInArray('key', 'addNewRow', scope.actions);
+                                addNewRowButtonIndex = getObjectIndexInArray('key', 'addNewRow', scope.actions);
                                 if (scope.insertrow) {
                                     // Add button definition to actions if it does not already exist.
                                     if (addNewRowButtonIndex === -1) {
@@ -475,7 +477,7 @@ WM.module('wm.widgets.grid')
                                     }
                                 }
                                 if (CONSTANTS.isStudioMode) {
-                                    var actionsObj = {
+                                    actionsObj = {
                                         type: 'GRID',
                                         widgetName: scope.name,
                                         scopeId: scope.$id,
@@ -623,10 +625,9 @@ WM.module('wm.widgets.grid')
         "Variables",
         "CONSTANTS",
         "Utils",
-        "dateFilter",
         "wmToaster",
         "$servicevariable",
-        function ($rootScope, $scope, $timeout, $compile, Variables, CONSTANTS, Utils, dateFilter, wmToaster, $servicevariable) {
+        function ($rootScope, $scope, $timeout, $compile, Variables, CONSTANTS, Utils, wmToaster, $servicevariable) {
             'use strict';
             var columnObj = {
                     rowOperationsColumn: {
@@ -669,6 +670,56 @@ WM.module('wm.widgets.grid')
                 isBoundToStaticVariable,
                 navigatorResultWatch,
                 navigatorMaxResultWatch,
+            /* Check whether it is non-empty row. */
+                isEmptyRecord = function (record) {
+                    var properties = Object.keys(record),
+                        data,
+                        isDisplayed;
+
+                    return properties.every(function (prop, index) {
+                        data = record[prop];
+                        /* If fieldDefs are missing, show all columns in data. */
+                        isDisplayed = ($scope.fieldDefs.length && WM.isDefined($scope.fieldDefs[index]) && (CONSTANTS.isMobile ? $scope.fieldDefs[index].mobileDisplay : $scope.fieldDefs[index].pcDisplay)) || true;
+                        /*Validating only the displayed fields*/
+                        if (isDisplayed) {
+                            return (data === null || data === undefined || data === '');
+                        }
+                        return true;
+                    });
+                },
+            /* Function to remove the empty data. */
+                removeEmptyRecords = function (serviceData) {
+                    var allRecords = serviceData.data || serviceData,
+                        filteredData = [];
+                    if (allRecords && allRecords.length) {
+                        /*Comparing and pushing the non-empty data columns*/
+                        filteredData = allRecords.filter(function (record) {
+                            return record && !isEmptyRecord(record);
+                        });
+                    }
+                    return filteredData;
+                },
+                setGridData = function (serverData) {
+                    var data = serverData;
+                    /*If serverData has data but is undefined, then return*/
+                    if (isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap)) {
+                        if (!serverData.data || Utils.isEmptyObject(serverData.data)) {
+                            return;
+                        }
+                        data = serverData.data;
+                    }
+                    if ($scope.filternullrecords) {
+                        $scope.gridData = removeEmptyRecords(data);
+                    } else {
+                        $scope.gridData = data;
+                    }
+                    if ($scope.gridData && $scope.gridData.length === 0) {
+                        $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
+                    } else {
+                        $scope.datagridElement.datagrid('setStatus', 'ready');
+                    }
+                    $scope.$root.$safeApply($scope);
+                },
             /*function to transform the service data to grid acceptable data*/
                 transformData = function (dataObject, variableName) {
                     var newObj,
@@ -822,7 +873,7 @@ WM.module('wm.widgets.grid')
                         }
                         setGridData($scope.serverData);
 
-                    }, function (error) {
+                    }, function () {
                         wmToaster.show('error', 'ERROR', 'No results found.');
                         setGridData([]);
                     });
@@ -908,7 +959,7 @@ WM.module('wm.widgets.grid')
                                 setGridData($scope.serverData);
                             }, function (error) {
                                 wmToaster.show('error', 'ERROR', error);
-                            })
+                            });
                         }
                     }
                 },
@@ -978,57 +1029,6 @@ WM.module('wm.widgets.grid')
                 compileTemplateInGridScope = function (htm) {
                     var el = WM.element(htm);
                     return $compile(el)($scope);
-                },
-            /* Check whether it is non-empty row. */
-                isEmptyRecord = function (record) {
-                    var properties = Object.keys(record),
-                        data,
-                        isDisplayed;
-
-                    return properties.every(function (prop, index) {
-                        data = record[prop];
-                        /* If fieldDefs are missing, show all columns in data. */
-                        isDisplayed = ($scope.fieldDefs.length && WM.isDefined($scope.fieldDefs[index]) && (CONSTANTS.isMobile ?
-                                $scope.fieldDefs[index].mobileDisplay : $scope.fieldDefs[index].pcDisplay)) || true;
-                        /*Validating only the displayed fields*/
-                        if (isDisplayed) {
-                            return (data === null || data === undefined || data === '');
-                        }
-                        return true;
-                    });
-                },
-            /* Function to remove the empty data. */
-                removeEmptyRecords = function (serviceData) {
-                    var allRecords = serviceData.data || serviceData,
-                        filteredData = [];
-                    if (allRecords && allRecords.length) {
-                        /*Comparing and pushing the non-empty data columns*/
-                        filteredData = allRecords.filter(function (record) {
-                            return record && !isEmptyRecord(record);
-                        });
-                    }
-                    return filteredData;
-                },
-                setGridData = function (serverData) {
-                    var data = serverData;
-                    /*If serverData has data but is undefined, then return*/
-                    if (isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap)) {
-                        if (!serverData.data || Utils.isEmptyObject(serverData.data)) {
-                            return;
-                        }
-                        data = serverData.data;
-                    }
-                    if ($scope.filternullrecords) {
-                        $scope.gridData = removeEmptyRecords(data);
-                    } else {
-                        $scope.gridData = data;
-                    }
-                    if ($scope.gridData && $scope.gridData.length === 0) {
-                        $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
-                    } else {
-                        $scope.datagridElement.datagrid('setStatus', 'ready');
-                    }
-                    $scope.$root.$safeApply($scope);
                 },
                 deleteRecord = function (row, cancelRowDeleteCallback) {
                     if ($scope.gridVariable.propertiesMap && $scope.gridVariable.propertiesMap.tableType === "VIEW") {
@@ -1538,13 +1538,15 @@ WM.module('wm.widgets.grid')
                     variableObj,
                     elScope,
                     result,
-                    selectedItemIndex,
                     isBoundToSelectedItem,
                     isBoundToSelectedItemSubset,
                     isBoundToServiceVariableSelectedItem,
                     isBoundToQueryServiceVariable,
                     isBoundToFilter,
-                    columns;
+                    columns,
+                    isPageable = false,
+                    widgetBindingDetails,
+                    relatedTables;
                 $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
 
                 result = Utils.getValidJSON(newVal);
@@ -1576,6 +1578,7 @@ WM.module('wm.widgets.grid')
                 /*If the data is a pageable object, then display the content.*/
                 if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
                     newVal = newVal.content;
+                    isPageable = true;
                 }
 
                 if (newVal) {
@@ -1611,9 +1614,9 @@ WM.module('wm.widgets.grid')
                         isBoundToServiceVariableSelectedItem = variableObj && variableObj.category === 'wm.ServiceVariable';
                         if (isBoundToSelectedItemSubset || isBoundToSelectedItem) {
                             if (variableName === null) {
-                                var widgetBindingDetails = fetchReferenceDetails();
+                                widgetBindingDetails = fetchReferenceDetails();
                                 if (!widgetBindingDetails.fields) {
-                                    var relatedTables = (widgetBindingDetails.referenceVariable && widgetBindingDetails.referenceVariable.relatedTables) || [];
+                                    relatedTables = (widgetBindingDetails.referenceVariable && widgetBindingDetails.referenceVariable.relatedTables) || [];
                                     variableName = widgetBindingDetails.referenceVariableName;
                                     relatedTables.forEach(function (val) {
                                         if (val.columnName === widgetBindingDetails.relatedFieldName) {
@@ -1681,7 +1684,11 @@ WM.module('wm.widgets.grid')
                         } else if (variableObj.serviceType !== 'DataService') {
                             /*Calling the specific search and sort handlers*/
                             $scope.setDataGridOption('searchHandler', handleOperation);
-                            $scope.setDataGridOption('sortHandler', handleOperation);
+                            if (isPageable) {
+                                $scope.setDataGridOption('sortHandler', sortHandler);
+                            } else {
+                                $scope.setDataGridOption('sortHandler', handleOperation);
+                            }
                         }
                     } else if (isBoundToFilter) {
                         /*If the variable is deleted hiding the spinner and showing the no data found message*/
@@ -2115,7 +2122,7 @@ WM.module('wm.widgets.grid')
 
                         var index,
                             exprWatchHandlers = [],
-                            expr,
+                            config,
                             textAlignment = attrs.textalignment || 'left',
                             backgroundColor = attrs.backgroundcolor || '',
                             textColor = attrs.textcolor || '',
@@ -2193,7 +2200,7 @@ WM.module('wm.widgets.grid')
                             updateCustomExpression(columnDef);
                             if (CONSTANTS.isStudioMode && scope.$parent.fullFieldDefs.length === scope.$parent.gridColumnCount) {
                                 /* Update markup for grid. */
-                                var config = {
+                                config = {
                                     widgetName: scope.name,
                                     scopeId: scope.$parent.$id,
                                     fieldDefs: scope.$parent.fullFieldDefs
@@ -2235,7 +2242,7 @@ WM.module('wm.widgets.grid')
             }
         };
     }])
-    .directive('wmGridAction', ['$compile', 'CONSTANTS', 'LiveWidgetUtils', function ($compile, CONSTANTS, LiveWidgetUtils) {
+    .directive('wmGridAction', ['CONSTANTS', 'LiveWidgetUtils', function (CONSTANTS, LiveWidgetUtils) {
         'use strict';
         return {
             "restrict": 'E',
