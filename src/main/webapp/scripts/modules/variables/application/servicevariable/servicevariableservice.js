@@ -407,11 +407,11 @@ wm.variables.services.$servicevariable = ['Variables',
                             /* supporting pagination for query service variable */
                             if (VARIABLE_CONSTANTS.PAGINATION_PARAMS.indexOf(param.name) !== -1) {
                                 if (param.name === "size") {
-                                    param.sampleValue = options.size || param.sampleValue || parseInt(variable.maxResults, 10) || 20;
+                                    param.sampleValue = options.size || param.sampleValue || parseInt(variable.maxResults, 10);
                                 } else if (param.name === "page") {
-                                    param.sampleValue = options.page || param.sampleValue || 1;
+                                    param.sampleValue = options.page || param.sampleValue;
                                 } else if (param.name === "sort") {
-                                    param.sampleValue = options.orderBy || param.sampleValue || variable.orderBy || '';
+                                    param.sampleValue = options.orderBy || param.sampleValue || variable.orderBy;
                                 }
                             }
                         });
