@@ -209,25 +209,25 @@ WM.module('wm.widgets.live')
              */
             function getFieldTypeWidgetTypesMap() {
                 var fieldTypeWidgetTypeMap = {
-                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider'],
-                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider'],
-                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
-                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
-                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
-                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider'],
+                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency'],
+                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency'],
+                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
+                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
+                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
+                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
                     'byte'       : ['text', 'number', 'select', 'checkboxset', 'radioset'],
-                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp'],
-                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset'],
-                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp'],
+                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency'],
+                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency'],
+                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency'],
                     'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset'],
                     'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset'],
                     'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset'],
                     'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset'],
                     'boolean'    : ['checkbox', 'radioset', 'toggle', 'select'],
-                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number'],
+                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch'],
                     'clob'       : ['text', 'number', 'select', 'textarea', 'richtext'],
                     'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp']
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime']
                 };
                 return fieldTypeWidgetTypeMap;
             }
@@ -461,6 +461,16 @@ WM.module('wm.widgets.live')
                 var additionalFields = ' maxvalue="{{formFields[' + index + '].maxvalue}}" ';
                 return getDefaultTemplate('rating', fieldDef, index, '', '', '', additionalFields, true);
             }
+
+            function getSwitchTemplate(fieldDef, index) {
+                var additionalFields = 'scopedataset="formFields[' + index + '].dataset" dataset="" datafield="{{formFields[' + index + '].datafield}}" displayfield="{{formFields[' + index + '].displayfield}}"';
+                return getDefaultTemplate('switch', fieldDef, index, '', '', '', additionalFields);
+            }
+
+            function getCurrencyTemplate(fieldDef, index) {
+                var additionalFields = 'currency="{{formFields[' + index + '].currency}}"';
+                return getDefaultTemplate('currency', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value', additionalFields);
+            }
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getHiddenTemplate
@@ -543,6 +553,12 @@ WM.module('wm.widgets.live')
                     break;
                 case 'rating':
                     template += getRatingTemplate(fieldDef, index);
+                    break;
+                case 'switch':
+                    template += getSwitchTemplate(fieldDef, index);
+                    break;
+                case 'currency':
+                    template += getCurrencyTemplate(fieldDef, index);
                     break;
                 default:
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
@@ -868,6 +884,8 @@ WM.module('wm.widgets.live')
                             defaultProp = 'selectedvalue';
                         } else if (widgetType === 'checkboxset') {
                             defaultProp = 'selectedvalues';
+                        } else if (widgetType === 'switch') {
+                            defaultProp = 'defaultvalue';
                         } else {
                             defaultProp = 'datavalue';
                         }
@@ -879,67 +897,79 @@ WM.module('wm.widgets.live')
                 widgetType = widgetType.toLowerCase();
                 switch (widgetType) {
                 case 'textarea':
-                    baseProperties = 'wm.textarea';
-                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
+                    baseProperties      = 'wm.textarea';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
                     break;
                 case 'toggle':
                 case 'checkbox':
-                    baseProperties = 'wm.checkbox';
-                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    baseProperties      = 'wm.checkbox';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
                     break;
                 case 'slider':
-                    baseProperties = 'wm.slider';
-                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.events.change'];
+                    baseProperties      = 'wm.slider';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.events.change'];
                     break;
                 case 'richtext':
-                    baseProperties = 'wm.richtexteditor';
-                    extendedProperties = ['wm.base', 'wm.base.editors'];
+                    baseProperties      = 'wm.richtexteditor';
+                    extendedProperties  = ['wm.base', 'wm.base.editors'];
                     break;
                 case 'select':
-                    baseProperties = 'wm.select';
-                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.editors.dataseteditors', 'wm.base.events.keyboard'];
+                    baseProperties      = 'wm.select';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.editors.dataseteditors', 'wm.base.events.keyboard'];
                     break;
                 case 'checkboxset':
-                    baseProperties = 'wm.checkboxset';
-                    extendedProperties = ['wm.base', 'wm.booleaneditors'];
+                    baseProperties      = 'wm.checkboxset';
+                    extendedProperties  = ['wm.base', 'wm.booleaneditors'];
                     break;
                 case 'radioset':
-                    baseProperties = 'wm.radioset';
-                    extendedProperties = ['wm.base', 'wm.booleaneditors'];
+                    baseProperties      = 'wm.radioset';
+                    extendedProperties  = ['wm.base', 'wm.booleaneditors'];
                     break;
                 case 'date':
-                    baseProperties = 'wm.date';
-                    extendedProperties = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
+                    baseProperties      = 'wm.date';
+                    extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
                     break;
                 case 'time':
-                    baseProperties = 'wm.time';
-                    extendedProperties = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
+                    baseProperties      = 'wm.time';
+                    extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
                     break;
                 case 'datetime':
                 case 'timestamp':
-                    baseProperties = 'wm.datetime';
-                    extendedProperties = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
+                    baseProperties      = 'wm.datetime';
+                    extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime'];
                     break;
                 case 'rating':
-                    baseProperties = 'wm.rating';
-                    extendedProperties = ['wm.base', 'wm.base.editors'];
+                    baseProperties      = 'wm.rating';
+                    extendedProperties  = ['wm.base', 'wm.base.editors'];
                     break;
                 case 'upload':
-                    baseProperties = '';
-                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    baseProperties      = '';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    break;
+                case 'switch':
+                    baseProperties      = 'wm.switch';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    break;
+                case 'currency':
+                    baseProperties      = 'wm.currency';
+                    extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors'];
                     break;
                 default:
-                    baseProperties = 'wm.text';
-                    extendedProperties = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
+                    baseProperties      = 'wm.text';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
                     break;
                 }
-                widgetProps = PropertiesFactory.getPropertiesOf(baseProperties, extendedProperties);
+                widgetProps             = PropertiesFactory.getPropertiesOf(baseProperties, extendedProperties);
                 widgetProps.displayname =  {'type': "string", 'show': true, 'bindable': "in-bound"};
-                widgetProps.widget = {'type': 'label', 'show': true};
+                widgetProps.widget      = {'type': 'label', 'show': true};
                 if (_.includes(textWidgets, widgetType)) {
                     /*In form and filter, type conflicts with data type. Change the type to input type.*/
                     widgetProps.inputtype = WM.copy(widgetProps.type);
                     delete widgetProps.type;
+                }
+                if (widgetType === 'switch') {
+                    widgetProps.dataset.value   = '';
+                    widgetProps.datafield.value = '';
                 }
                 if (widgetType === 'upload') {
                     widgetProps = WM.extend(widgetProps, {
