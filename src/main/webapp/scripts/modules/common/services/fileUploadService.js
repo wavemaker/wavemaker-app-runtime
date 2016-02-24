@@ -60,7 +60,7 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
     function uploadWithFileTransfer(file, url, options) {
         var defer = $q.defer(),
             ft = new FileTransfer(),
-            uploadUrl = $rootScope.project.deployedUrl + url,
+            uploadUrl = $rootScope.project.deployedUrl + '/' + url,
             ftOptions = {
                 'fileKey'   : options.paramName,
                 'fileName'  : file.name
