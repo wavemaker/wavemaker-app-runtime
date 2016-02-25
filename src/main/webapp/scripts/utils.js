@@ -1654,7 +1654,7 @@ WM.module('wm.utils', [])
                         if (_.includes(value, _parentDataSet)) {
                             value = value.replace('bind:', '');
                             value = value.replace(regex, 'item');
-                            attr.value = '{{' + value + '}}';
+                            attr.value = 'bind:' + value;
                         }
                     }
                 });
