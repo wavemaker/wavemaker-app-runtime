@@ -27,13 +27,18 @@ WM.module('wm.widgets.form')
             case 'required':
                 /*When a composite widget is set to required then it's label and input also set to required*/
                 var labelEle = element.find('.app-label.ng-isolate-scope'),
-                    inputEle = element.find('.form-control.ng-isolate-scope');
+                    inputElements = ['.input-group.ng-isolate-scope', '.form-control.ng-isolate-scope', 'app-radio.ng-isolate-scope', '.list-group', '.app-checkbox.ng-isolate-scope'];
                 if (labelEle.length) {
                     WM.element(labelEle).first().isolateScope().required = newVal;
                 }
-                if (inputEle.length) {
-                    WM.element(inputEle).isolateScope().required = newVal;
-                }
+                inputElements.forEach(function (ele) {
+                    var inputEle = element.find(ele);
+                    if (inputEle.length) {
+                        inputEle.each(function () {
+                            WM.element(this).isolateScope().required = newVal;
+                        });
+                    }
+                });
                 break;
             }
         }
