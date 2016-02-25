@@ -26,7 +26,7 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',
-                '<ul class="dropdown-menu {{menulayout}} {{menualign}}" uib-dropdown-menu>' +
+                '<ul class="dropdown-menu {{menulayout}} {{menualign}} {{animateClass}}" uib-dropdown-menu>' +
                     '<wm-menu-dropdown-item data-ng-repeat="item in items" linktarget="linktarget" item="item" menualign="menualign"/>' +
                 '</ul>'
             );
@@ -208,8 +208,34 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmMenuDropdown', ['$templateCache', function ($templateCache) {
+    .directive('wmMenuDropdown', ['$templateCache', 'CONSTANTS', function ($templateCache, CONSTANTS) {
         'use strict';
+        var animated         = 'animated ',
+            animationClasses = {
+                'scale' : {
+                    'name'      : 'wmScaleInLeft',
+                    'down,right': 'wmScaleInLeft',
+                    'down,left' : 'wmScaleInRight',
+                    'up,right'  : 'wmScaleInTopLeft',
+                    'up,left'   : 'wmScaleInTopRight'
+                },
+                'fade' : {
+                    'name'      : 'fadeIn',
+                    'down,right': 'fadeIn',
+                    'down,left' : 'fadeIn',
+                    'up,right'  : 'fadeIn',
+                    'up,left'   : 'fadeIn'
+                },
+                'slide': {
+                    'name'      : 'wmSlideInDown',
+                    'down,right': 'wmSlideInDown',
+                    'down,left' : 'wmSlideInDown',
+                    'up,right'  : 'wmSlideInUp',
+                    'up,left'   : 'wmSlideInUp'
+                }
+            },
+            animation,
+            menuPosition;
         return {
             'restrict': "E",
             'replace': true,
@@ -222,12 +248,22 @@ WM.module('wm.widgets.form')
             'template': $templateCache.get('template/widget/form/menu/dropdown.html'),
             'compile': function () {
                 return {
-                    'post': function (scope) {
+                    'post': function (scope, element) {
                         scope.onSelect = function (args) {
                             if (!args.$scope.item.link) {
                                 scope.$parent.onSelect(args);
                             }
                         };
+                        if (CONSTANTS.isRunMode) {
+                            animation    = element.parent().isolateScope().animateitems;
+                            menuPosition = scope.$parent.menuposition;
+                            if (animation) { //If animation is set then add animation class based on menu position, if not set it to default
+                                scope.animateClass = animated + (animationClasses[animation][menuPosition] || animationClasses[animation].name);
+                            } else if (scope.items && element.parent().scope().animateClass) {
+                                //Set same animation to sub menu items of that of the parent.
+                                scope.animateClass = element.parent().scope().animateClass;
+                            }
+                        }
                     }
                 };
             }

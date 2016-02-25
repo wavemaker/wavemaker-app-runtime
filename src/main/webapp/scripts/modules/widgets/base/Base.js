@@ -356,6 +356,7 @@ WM.module('wm.widgets.base', [])
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "linktarget": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_blank", "widget": "datalist"},
                         "tabindex": {"type": "string", "value": "0"},
+                        "animateitems": {"type": "list", "options": ['', 'slide', 'fade', 'scale']},
                         "shortcutkey": {"type": "string"}
                     },
 
@@ -1715,7 +1716,7 @@ WM.module('wm.widgets.base', [])
                     "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
+                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation","animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "shortcutkey", "showcaptions", "multiselect", "radioselect", "enablesort", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex"], "parent": "properties"},
