@@ -715,7 +715,7 @@ WM.module('wm.widgets.live')
                 /*listen on to the click event for the ul element & get li clicked of the live-list */
                 $el.on('click.wmActive', 'ul.list-group', function (evt) {
                     /*returning if click event is triggered within 50ms after pressup event occurred*/
-                    if (pressStartTimeStamp + 50 > Date.now()) {
+                    if (pressStartTimeStamp + 50 > Date.now() || WM.element(evt.target).is('input')) {
                         return;
                     }
                     evt.stopPropagation();
