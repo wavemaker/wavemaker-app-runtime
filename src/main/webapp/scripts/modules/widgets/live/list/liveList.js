@@ -719,7 +719,6 @@ WM.module('wm.widgets.live')
                         return;
                     }
                     evt.stopPropagation();
-                    evt.preventDefault();
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
                         $liScope = $li && $li.scope(),
                         isActive = $li.hasClass('active');

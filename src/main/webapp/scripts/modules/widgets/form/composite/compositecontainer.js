@@ -26,10 +26,14 @@ WM.module('wm.widgets.form')
             switch (key) {
             case 'required':
                 /*When a composite widget is set to required then it's label and input also set to required*/
-                var labelEle = element.find('.control-label.ng-isolate-scope'),
+                var labelEle = element.find('.app-label.ng-isolate-scope'),
                     inputEle = element.find('.form-control.ng-isolate-scope');
-                WM.element(labelEle).isolateScope().required = newVal;
-                WM.element(inputEle).isolateScope().required = newVal;
+                if (labelEle.length) {
+                    WM.element(labelEle).first().isolateScope().required = newVal;
+                }
+                if (inputEle.length) {
+                    WM.element(inputEle).isolateScope().required = newVal;
+                }
                 break;
             }
         }
