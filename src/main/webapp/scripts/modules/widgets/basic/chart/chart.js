@@ -1806,7 +1806,7 @@ WM.module('wm.widgets.basic')
                 scope.isServiceVariable = variableObj && variableObj.category === 'wm.ServiceVariable';
 
                 /*liveVariables contain data in 'data' property" of the variable*/
-                scope.chartData = scope.isLiveVariable ? newVal && (newVal.data || '') : newVal;
+                scope.chartData = scope.isLiveVariable ? newVal && (newVal.data || '') : (newVal && newVal.dataValue === "" && _.keys(newVal).length === 1) ? "" : newVal;
 
                 /*if the data returned is an object make it an array of object*/
                 if (!WM.isArray(scope.chartData) && WM.isObject(scope.chartData)) {
