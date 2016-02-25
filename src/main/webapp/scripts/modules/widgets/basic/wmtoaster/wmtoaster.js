@@ -1,8 +1,8 @@
-/*global WM, */
+/*global WM, _*/
 /*jslint nomen: true*/
 
 WM.module('wm.widgets.basic')
-    .service('wmToaster', ['toaster','$rootScope', '$compile', '$timeout', function (toaster, $rs, $compile, $timeout) {
+    .service('wmToaster', ['toaster', '$rootScope', '$compile', '$timeout', function (toaster, $rs, $compile, $timeout) {
         'use strict';
         var _showToaster = function (type, title, desc, timeout, bodyOutputType, onClickHandler, onHideCallback) {
             /*pop the toaster only if either title or description are defined*/
