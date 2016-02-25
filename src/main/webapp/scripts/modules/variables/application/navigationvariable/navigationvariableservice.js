@@ -1,4 +1,4 @@
-/*global wm, WM*/
+/*global wm, WM, _*/
 /*jslint sub: true */
 
 /**
@@ -31,12 +31,12 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
 
                     /*if operation is goToPage, navigate to the pageName*/
                     switch (operation) {
-                    case 'goToPreviousPage' :
+                    case 'goToPreviousPage':
                         NavigationService.goToPrevious();
                         break;
                     case 'gotoPage':
                         try {
-                            NavigationService.goToPage(pageName, variable.pageTransitions);
+                            NavigationService.goToPage(pageName, variable.pageTransitions, undefined, options.$event);
                             sourceScope.$root.$safeApply(sourceScope);
                         } catch (ignore) {
                         }
@@ -57,14 +57,16 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
 
                     /* if view name found, call routine to navigate to it */
                     if (viewName) {
-                        NavigationService.goToView(pageName, viewName, variable.pageTransitions);
+                        NavigationService.goToView(pageName, viewName, variable.pageTransitions, options.$event);
                     }
                 }
             }
         },
         basicVariableObj = {
-            navigate: function () {
-                methods.navigate(this, {scope: this.activeScope});
+            navigate: function (options) {
+                options        = options || {};
+                options.scope  = options.scope  || this.activeScope;
+                methods.navigate(this, options);
             }
         };
 

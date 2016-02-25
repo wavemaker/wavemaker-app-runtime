@@ -189,7 +189,7 @@ wm.modules.wmCommon.services.NavigationService = [
          * @param {string} transition Page-transition applied to the page.
          * @param {string} viewName Name of the view within the page.
          */
-        this.goToPage = function (pageName, transition, viewName) {
+        this.goToPage = function (pageName, transition, viewName, $event) {
             nextTransitionToApply = transition || '';
 
             var _location = '#/' + pageName;
@@ -197,6 +197,7 @@ wm.modules.wmCommon.services.NavigationService = [
                 _location +=  '.' + viewName;
             }
 
+            $rs._appNavEvt   = $event;
             $window.location = _location;
         };
 
@@ -213,12 +214,12 @@ wm.modules.wmCommon.services.NavigationService = [
          * @param {string} viewName Name of the view within the page.
          * @param {string} transition Page-transition applied to the page.
          */
-        this.goToView = function (pageName, viewName, transition) {
+        this.goToView = function (pageName, viewName, transition, $event) {
 
             if (!pageName || pageName === $rs.activePageName || isPartialWithNameExists(pageName)) {
                 goToView(WM.element(parentSelector).find('[name="' + viewName + '"]'), viewName);
             } else {
-                this.goToPage(pageName, transition, viewName);
+                this.goToPage(pageName, transition, viewName, $event);
                 listenOnce('page-ready', function () {
                     goToView(WM.element(parentSelector).find('[name="' + viewName + '"]'), viewName);
                 });
@@ -234,10 +235,10 @@ wm.modules.wmCommon.services.NavigationService = [
          * @description
          * Navigates to last visited page.
          */
-        this.goToPrevious = function () {
+        this.goToPrevious = function ($event) {
             var lastPage = pageStackObject.getLastPage();
             if (lastPage) {
-                this.goToPage(lastPage.name);
+                this.goToPage(lastPage.name, undefined, undefined, $event);
                 return true;
             }
             return false;

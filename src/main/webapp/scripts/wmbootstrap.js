@@ -439,14 +439,22 @@ Application
                  * Page Variables are also set and made available for registration
                  * For Prefabs: localization resources are loaded
                  */
-                $rs.$on('$routeChangeSuccess', function (evt, $route) {
-                    var pageName = $route.params.name,
+                $rs.$on('$routeChangeSuccess', function (evt, $cRoute, $pRoute) {
+                    var pageName = $cRoute.params.name,
                         pageVars,
                         supportedLocale;
 
+                    if ($rs._appNavEvt) {
+                        $rs._appNavEvt.widgetName = $rs._appNavEvt.target.closest('[init-widget]').name;
+                    }
+
+                    Utils.triggerFn($rs.onBeforePageLoad, {'requested': $cRoute.params.name, 'last': _.get($pRoute, 'params.name')}, $rs._appNavEvt);
+
+                    $rs._appNavEvt = undefined;
+
                     if (pageName) {
                         pageName = pageName.split('.').shift();
-                        $route.locals.$template = AppManager.getPreparedPageContent(pageName);
+                        $cRoute.locals.$template = AppManager.getPreparedPageContent(pageName);
                         // set the page-level variables, registration will occur in the page directive
                         pageVars = AppManager.getPageContent(pageName, 'variables');
                         Variables.setPageVariables(pageName, pageVars);

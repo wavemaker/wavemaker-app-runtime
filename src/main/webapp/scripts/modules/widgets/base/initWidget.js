@@ -1,4 +1,4 @@
-/*global WM, _*/
+/*global WM, _, wm*/
 /**
  * @ngdoc directive
  * @name wm.widgets.directive:initWidget
@@ -26,12 +26,11 @@ WM.module('wm.widgets.base')
         'CONSTANTS',
         '$parse',
         '$timeout',
-        'DataFormatService', /*Do not remove*/
-        '$animate',
         '$routeParams',
         'BindingManager',
+        'DataFormatService', /*Do not remove*/
 
-        function ($rs, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, DataFormatService, $animate, $routeParams, BindingManager) {
+        function ($rs, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, $routeParams, BindingManager) {
             'use strict';
 
             var booleanAttrs = [
@@ -78,7 +77,7 @@ WM.module('wm.widgets.base')
 
                 var parts;
 
-                /* For anchor elements suppressing the default action to refresh the page */
+                // For anchor elements suppressing the default action to refresh the page
                 if (isAnchor) {
                     $evt.preventDefault();
                 }
@@ -96,9 +95,9 @@ WM.module('wm.widgets.base')
                     }
                 }
 
-                /* Emit the event in a timeout, so that any variable watching on current widget is updated with its value */
+                // Emit the event in a timeout, so that any variable watching on current widget is updated with its value
                 $timeout(function () {
-                    $rs.$emit('invoke-service', customEvtName, {'scope': $s});
+                    $rs.$emit('invoke-service', customEvtName, {'scope': $s, '$event': $evt});
                 });
             }
 
@@ -168,11 +167,10 @@ WM.module('wm.widgets.base')
             function onWatchExprValueChange($is, $s, key, watchExpr, newVal) {
                 $is[key + '__updateFromWatcher'] = true;
                 if (WM.isDefined(newVal) && newVal !== null && newVal !== '') {
-                    /*Check if "newVal" is a Pageable object.*/
+                    //Check if "newVal" is a Pageable object.
                     if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
-                        /*Check if the scope is configured to accept Pageable objects.
-                         * If configured, set the newVal.
-                         * Else, set only the content.*/
+                        // Check if the scope is configured to accept Pageable objects.
+                        // If configured, set the newVal. Else, set only the content.
                         if ($is.allowPageable) {
                             $is[key] = newVal;
                         } else {
@@ -182,7 +180,7 @@ WM.module('wm.widgets.base')
                         $is[key] = newVal;
                     }
                 } else {
-                    /*In studio mode, remove ".data[$i]" in the watch-expression so that it is not visible in the canvas.*/
+                    // In studio mode, remove ".data[$i]" in the watch-expression so that it is not visible in the canvas.
                     if (CONSTANTS.isStudioMode) {
                         watchExpr = watchExpr.replace('.data[$i]', '');
                     }
@@ -197,7 +195,7 @@ WM.module('wm.widgets.base')
             }
 
             function processEventAttr($is, attrName, attrValue) {
-                var onEvtName = _.camelCase(attrName); /* prepend the event name with "on" eg, 'click' with on --> onClick */
+                var onEvtName = _.camelCase(attrName); // prepend the event name with "on" eg, 'click' with on --> onClick
 
                 // save the attrValue in isolateScope. eg, $is.__onClick = "f1();dialog1.show;f2();"
                 $is['__' + onEvtName] = attrValue;
@@ -222,7 +220,7 @@ WM.module('wm.widgets.base')
             function processAttr($is, $s, attrs, widgetProps, attrName, attrValue) {
                 var propValue = attrValue;
 
-                /* monitor only the properties that are defined inside widgetProps and which are not defined in scope {} */
+                // monitor only the properties that are defined inside widgetProps and which are not defined in scope {}
 
                 /*
                  * if the attribute is inside widget property,
@@ -243,7 +241,7 @@ WM.module('wm.widgets.base')
                             }
                             setInitProp($is, attrName, propValue);
                         } else {
-                            /* if the value is other than class read it from the attrs, which will have resolved interpolated values */
+                            // if the value is other than class read it from the attrs, which will have resolved interpolated values
                             if (isInterpolated(propValue)) {
                                 watchProperty($is, attrs, attrName);
                             } else {
@@ -252,7 +250,7 @@ WM.module('wm.widgets.base')
                         }
                     }
                 } else {
-                    /* attributes which not part of widgetProps like wigetid, widgettype will be handled here. */
+                    // attributes which not part of widgetProps like wigetid, widgettype will be handled here.
 
                     if (isInterpolated(propValue)) {
                         watchProperty($is, attrs, attrName);
@@ -324,7 +322,7 @@ WM.module('wm.widgets.base')
 
                         Utils.triggerFn(fn); // de register the existing watch
 
-                        /* if property is bound to a variable/widget, watch on it */
+                        // if property is bound to a variable/widget, watch on it
                         if (nv) {
                             // when the `show` property is bound to a property/expression do not evaluate that when the widget is in canvas
                             if (isWidgetInsideCanvas && isShowProperty) {
@@ -345,14 +343,23 @@ WM.module('wm.widgets.base')
 
             function defineDataValueGetterSetters($is, $el, attrs) {
                 var flg,
-                    key                 = 'datavalue',
-                    bindKey             = 'bind' + key,
-                    _watchers           = $is._watchers,
-                    UPDATE_FROM_WATCHER = key + '__updateFromWatcher',
-                    isSelect     = flg  = $el.is('select'),
-                    isNumberType = flg  = !flg && $el.is('input[type=number], .app-currency, .app-slider, .app-ratings'),
-                    isCheckbox   = flg  = !flg && $el.is('.app-checkbox'),
-                    isDate              = !flg && $el.is('input[type=date]');
+                    key,
+                    bindKey,
+                    _watchers,
+                    UPDATE_FROM_WATCHER,
+                    isSelect,
+                    isNumberType,
+                    isCheckbox,
+                    isDate;
+
+                key                 = 'datavalue';
+                bindKey             = 'bind' + key;
+                _watchers           = $is._watchers;
+                UPDATE_FROM_WATCHER = key + '__updateFromWatcher';
+                isSelect     = flg  = $el.is('select');
+                isNumberType = flg  = !flg && $el.is('input[type=number], .app-currency, .app-slider, .app-ratings');
+                isCheckbox   = flg  = !flg && $el.is('.app-checkbox');
+                isDate              = !flg && $el.is('input[type=date]');
 
                 function parseDataValue(val) {
                     var modifiedVal = val,
@@ -397,20 +404,30 @@ WM.module('wm.widgets.base')
                         $is._model_ = parseDataValue(nv);
                         Utils.triggerFn($is._onChange);
                     }
-                })
+                });
             }
 
-            function definePropertyGetterSetters($is, $s, $el, attrs, propDetails, isBindableProperty, key , value) {
+            function definePropertyGetterSetters($is, $s, $el, attrs, propDetails, isBindableProperty, key, value) {
                 var flg,
-                    bindKey             = 'bind' + key,
-                    UPDATE_FROM_WATCHER = key + '__updateFromWatcher',
-                    _watchers           = $is._watchers,
-                    type                = propDetails.type,
-                    isBooleanType = flg = type === 'boolean',
-                    isNumberType        = !flg && type === 'number',
-                    _isBooleanAttr      = isBooleanAttr(key),
-                    isFontSize          = key === 'fontsize',
-                    isName              = key === 'name';
+                    bindKey,
+                    UPDATE_FROM_WATCHER,
+                    _watchers,
+                    type,
+                    isBooleanType,
+                    isNumberType,
+                    _isBooleanAttr,
+                    isFontSize,
+                    isName;
+
+                bindKey             = 'bind' + key;
+                UPDATE_FROM_WATCHER = key + '__updateFromWatcher';
+                _watchers           = $is._watchers;
+                type                = propDetails.type;
+                isBooleanType = flg = type === 'boolean';
+                isNumberType        = !flg && type === 'number';
+                _isBooleanAttr      = isBooleanAttr(key);
+                isFontSize          = key === 'fontsize';
+                isName              = key === 'name';
 
                 setInitProp($is, key, value);
 
@@ -433,7 +450,7 @@ WM.module('wm.widgets.base')
                 }
 
                 function hasValueChanged(nv, ov, doEqualsCheck) {
-                    /*When both "oldVal" and "newVal" are objects/arrays, comparison is not done.*/
+                    // When both "oldVal" and "newVal" are objects/arrays, comparison is not done.
                     if (doEqualsCheck) {
                         return !WM.equals(nv, ov);
                     }
@@ -473,7 +490,7 @@ WM.module('wm.widgets.base')
                             return;
                         }
 
-                        /* if the name is changed, update the tree and registry of the Widgets service */
+                        // if the name is changed, update the tree and registry of the Widgets service
                         if (isName) {
                             if (attrs.widgetid) { // widget is inside the canvas
                                 $rs.$emit('name-change', attrs.widgetid, nv, ov, $is);
@@ -500,7 +517,7 @@ WM.module('wm.widgets.base')
                 if (propName === 'datavalue' && hasModel) {
                     defineBindPropertyGetterSetters($is, $s, attrs, propDetails, propName);
                     defineDataValueGetterSetters($is, $el, attrs);
-                } else if (!propDetails.ignoreGetterSetters){
+                } else if (!propDetails.ignoreGetterSetters) {
 
                     _isBindableProperty = isBindableProperty(propDetails);
                     if (_isBindableProperty) {
@@ -529,15 +546,16 @@ WM.module('wm.widgets.base')
              * Class : FieldDef
              * Discription : FieldDef contains getter and setter methods to get and set fields of widgets
              * */
-            wm.baseClasses.FieldDef = function () {
-            };
+            wm.baseClasses.FieldDef = _.noop;
 
             wm.baseClasses.FieldDef.prototype = {
-                setProperty : function (field, newval) {
+                'setProperty' : function (field, newval) {
                     this.$is.setProperty.call(this, field, newval);
-                    this.$is.reRender && this.$is.reRender();
+                    if (this.$is.reRender) {
+                        this.$is.reRender();
+                    }
                 },
-                getProperty : function (field) {
+                'getProperty' : function (field) {
                     return this.$is.getProperty.call(this, field);
                 }
             };
@@ -560,13 +578,17 @@ WM.module('wm.widgets.base')
                             $is._watchers = {};
 
                             $is.$on('$destroy', deregisterWatchersOniScope.bind(undefined, $is));
-                            /*Register a watch on the element for destroy and destroy the scope.
-                             In some cases such as tabs, the tab-content couldn't be destroyed from isolateScope if the parent tabs was destroyed first*/
+
+                            /*
+                             * Register a watch on the element for destroy and destroy the scope.
+                             * In some cases such as tabs, the tab-content couldn't be destroyed from isolateScope if the parent tabs was destroyed first
+                             */
                             if (attrs.widgetid) {
                                 $el.on('$destroy', $is.$destroy.bind($is));
                             } else {
                                 $is._widgettype = $tEl.context.tagName.toLowerCase();
                             }
+
                             $is._initState = {};
 
                             if (attrs.hasOwnProperty('hasModel') && !attrs.widgetid) {
@@ -581,13 +603,13 @@ WM.module('wm.widgets.base')
                                 }
                             }
 
-                            /*Setter for widget properties*/
-                            $is.setProperty = function(option, value) {
+                            // Setter for widget properties
+                            $is.setProperty = function (option, value) {
                                 this[option] = value;
                             };
 
-                            /*Getter for widget properties*/
-                            $is.getProperty = function(option) {
+                            // Getter for widget properties
+                            $is.getProperty = function (option) {
                                 return this[option];
                             };
 
@@ -595,12 +617,12 @@ WM.module('wm.widgets.base')
                                 WM.extend($is.widgetProps, {'active': {}});
                             }
 
-                            /* initialize setters and getters */
+                            // initialize setters and getters
                             defineGetterSettersForProps($is, $s, $el, attrs);
 
                             processAttrs($is, $s, $tEl, attrs);
 
-                            /* remove the datavalue property from scope and store it temporarily, so that all dependencies are intialized first */
+                            // remove the datavalue property from scope and store it temporarily, so that all dependencies are intialized first
                             if ($is._initState.hasOwnProperty('datavalue')) {
                                 hasDataValue = true;
                                 datavalue_value = $is._initState.datavalue;
@@ -613,7 +635,7 @@ WM.module('wm.widgets.base')
                                     $is[key] = $is._initState[key];
                                 });
 
-                            /* if element has datavalue, populate it into the isolateScope */
+                            // if element has datavalue, populate it into the isolateScope
                             if (hasDataValue) {
                                 $is.datavalue = datavalue_value;
                             }
@@ -646,11 +668,10 @@ WM.module('wm.widgets.base')
             function arrayConsumer(listenerFn, allowPageable, restExpr, newVal, oldVal) {
                 var data = newVal,
                     formattedData;
-                /*Check if "newVal" is a Pageable object.*/
+                // Check if "newVal" is a Pageable object.
                 if (WM.isObject(data) && Utils.isPageable(data) && !allowPageable) {
-                    /*Check if the scope is configured to accept Pageable objects.
-                     * If configured, set the newVal.
-                     * Else, set only the content.*/
+                    // Check if the scope is configured to accept Pageable objects.
+                    // If configured, set the newVal. Else, set only the content.
                     data = data.content;
                 }
 
@@ -668,16 +689,16 @@ WM.module('wm.widgets.base')
                 // replace all `[$i]` with `[0]` and return the expression
                 if (!acceptsArray) {
                     return {
-                        'expr': expr.replace(regex, $0),
-                        'listener': listener
+                        'expr'     : expr.replace(regex, $0),
+                        'listener' : listener
                     };
                 }
 
                 // listener accepts array
                 // replace all except the last `[$i]` with `[0]` and return the expression.
-                var index = expr.lastIndexOf($I),
-                    _expr = expr.substr(0, index).replace($I, $0),
-                    restExpr = expr.substr(index + 5),
+                var index           = expr.lastIndexOf($I),
+                    _expr           = expr.substr(0, index).replace($I, $0),
+                    restExpr        = expr.substr(index + 5),
                     arrayConsumerFn = listener;
 
                 if (restExpr) {
@@ -685,8 +706,8 @@ WM.module('wm.widgets.base')
                 }
 
                 return {
-                    'expr': _expr,
-                    'listener': arrayConsumerFn
+                    'expr'     : _expr,
+                    'listener' : arrayConsumerFn
                 };
             }
 
@@ -699,7 +720,7 @@ WM.module('wm.widgets.base')
              * allowPageable: is the data pageable
              * acceptsArray: bound entity accepts array like values
              */
-            function register(scope, watchExpr, listenerFn, config) {
+            function register($s, watchExpr, listenerFn, config) {
                 var watchInfo,
                     _config        = config || {},
                     deepWatch      = _config.deepWatch,
@@ -709,7 +730,7 @@ WM.module('wm.widgets.base')
                     variableObject;
 
                 function isPageable(variable) {
-                    return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === "DataService" && variable.controller !== "ProcedureExecution") || variable.category === "wm.LiveVariable");
+                    return ((variable.category === 'wm.ServiceVariable' && variable.serviceType === 'DataService' && variable.controller !== 'ProcedureExecution') || variable.category === 'wm.LiveVariable');
                 }
 
                 if (isArrayTypeExpr(watchExpr)) {
@@ -719,24 +740,24 @@ WM.module('wm.widgets.base')
                     }
                     //Check each match is pageable and replace dataSet[$i] with dataSet.content[$i]
                     watchExpr = watchExpr.replace(regExp, function (match, key) {
-                        variableObject = _.get(scope.Variables, key);
-                            /*In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped*/
-                            /*So for procedures the watch expression will not have content in it*/
-                            if(variableObject && isPageable(variableObject)) {
-                                return 'Variables.' + key + '.dataSet.content[$i]';
-                            }
-                            return match;
+                        variableObject = _.get($s.Variables, key);
+                        // In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped
+                        // So for procedures the watch expression will not have content in it
+                        if (variableObject && isPageable(variableObject)) {
+                            return 'Variables.' + key + '.dataSet.content[$i]';
+                        }
+                        return match;
                     });
 
                     watchInfo = getUpdatedWatchExpr(watchExpr, acceptsArray, allowPageable, listenerFn);
                 } else {
                     watchInfo = {
-                        'expr': watchExpr,
+                        'expr'    : watchExpr,
                         'listener': listenerFn
                     };
                 }
 
-                return scope.$watch(watchInfo.expr, watchInfo.listener, deepWatch);
+                return $s.$watch(watchInfo.expr, watchInfo.listener, deepWatch);
             }
 
             this.register = register;
