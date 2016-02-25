@@ -171,6 +171,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
         },
         basicVariableObj = {
             notify: function (options) {
+                options = options || {};
                 options.scope = this.activeScope;
                 methods.notify(this, options);
             },
