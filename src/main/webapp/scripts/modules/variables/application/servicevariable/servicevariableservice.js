@@ -370,7 +370,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     requestParams = "",
                     params,
                     callBackScope,
-                    methodInfo;
+                    methodInfo,
+                    inputFields = options.inputFields || variable.dataBinding;
 
                 /* get the callback scope for the variable based on its owner */
                 if (variableOwner === "App") {
@@ -386,7 +387,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
-                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, variable.dataBinding);
+                    var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variable, callBackScope, inputFields);
                     if (preventCall === false) {
                         return;
                     }
@@ -395,7 +396,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 }
 
                 /* loop over the parameters required for the variable and push them request dataParams */
-                WM.forEach(variable.dataBinding, function (param) {
+                WM.forEach(inputFields, function (param) {
                     dataParams.push(param);
                 });
 
@@ -403,7 +404,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     methodInfo = Utils.getClonedObject(variable.wmServiceOperationInfo);
                     if (methodInfo.parameters) {
                         methodInfo.parameters.forEach(function (param) {
-                            param.sampleValue = variable.dataBinding[param.name];
+                            param.sampleValue = inputFields[param.name];
                             /* supporting pagination for query service variable */
                             if (VARIABLE_CONSTANTS.PAGINATION_PARAMS.indexOf(param.name) !== -1) {
                                 if (param.name === "size") {
@@ -418,7 +419,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                     params = constructRestRequestParams(methodInfo, serviceType, variable);
                 } else if (serviceType === SERVICE_TYPE_REST) {
-                    dataParams = [service, operation, Utils.getClonedObject(variable.dataBinding)];
+                    dataParams = [service, operation, Utils.getClonedObject(inputFields)];
 
                     /*prepare request params*/
                     params = {
@@ -624,6 +625,7 @@ wm.variables.services.$servicevariable = ['Variables',
                             variableActive[variable.activeScope.$id] = variableActive[variable.activeScope.$id] || {};
                             requestQueue[variable.activeScope.$id] = requestQueue[variable.activeScope.$id] || {};
                             if (variableActive[variable.activeScope.$id][variableName]) {
+                                options.inputFields = options.inputFields || Utils.getClonedObject(variable.dataBinding);
                                 requestQueue[variable.activeScope.$id][variableName] = requestQueue[variable.activeScope.$id][variableName] || [];
                                 requestQueue[variable.activeScope.$id][variableName].push({variable: variable, options: options, success: success, error: error});
                                 return;

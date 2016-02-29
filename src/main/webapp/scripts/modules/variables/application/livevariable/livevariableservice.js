@@ -422,11 +422,13 @@ wm.variables.services.$liveVariable = [
                     };
                 /*get the filter fields from the variable*/
                 _.each(variable.filterFields, function (value, key) {
-                    value.fieldName = key;
-                    if (getFieldType(value) === 'string') {
-                        value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];
+                    if (!options.filterFields || (options.filterFields && !options.filterFields[key])) {
+                        value.fieldName = key;
+                        if (getFieldType(value) === 'string') {
+                            value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];
+                        }
+                        filterFields.push(value);
                     }
-                    filterFields.push(value);
                 });
                 /*get the filter fields from the options*/
                 _.each(options.filterFields, function (value, key) {
@@ -780,7 +782,8 @@ wm.variables.services.$liveVariable = [
                     compositeKeysData = {},
                     prevCompositeKeysData = {},
                     id,
-                    columnName;
+                    columnName,
+                    inputFields = options.inputFields || variableDetails.inputFields;
                 /* evaluate the callback scope */
                 /* get the callback scope for the variable based on its owner */
                 if (variableDetails.owner === "App") {
@@ -805,7 +808,7 @@ wm.variables.services.$liveVariable = [
                 if (options.row) {
                     rowObject = options.row;
                 } else {
-                    WM.forEach(variableDetails.inputFields, function (fieldValue, fieldName) {
+                    WM.forEach(inputFields, function (fieldValue, fieldName) {
                         var fieldType,
                             primaryKeys = variableDetails.propertiesMap.primaryFields || variableDetails.propertiesMap.primaryKeys;
                         if (WM.isDefined(fieldValue) && fieldValue !== "") {
@@ -1013,6 +1016,11 @@ wm.variables.services.$liveVariable = [
                             if (variableActive[variable.activeScope.$id][variableName]) {
                                 requestQueue[variable.activeScope.$id] = requestQueue[variable.activeScope.$id] || {};
                                 requestQueue[variable.activeScope.$id][variableName] = requestQueue[variable.activeScope.$id][variableName] || [];
+                                if (variable.operation === "read") {
+                                    options.filterFields = options.filterFields || Utils.getClonedObject(variable.filterFields);
+                                } else {
+                                    options.inputFields = options.row || Utils.getClonedObject(variable.inputFields);
+                                }
                                 requestQueue[variable.activeScope.$id][variableName].push({variable: variable, options: options, success: success, error: error});
                                 return;
                             }
