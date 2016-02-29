@@ -695,7 +695,7 @@ WM.module('wm.widgets.live')
             /*Function to get data of all active elements*/
             function getSelectedItems($el, items) {
                 items.length = 0;
-                $el.find('li.active').each(function () {
+                $el.find('li.app-list-item.active').each(function () {
                     var liScope = WM.element(this).scope();
                     items.push(liScope.item);
                 });
