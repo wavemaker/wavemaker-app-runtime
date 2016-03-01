@@ -61,6 +61,8 @@ WM.module("wm.widgets.advanced")
                                     clickFn   = WM.element(this).isolateScope().onClick || '',
                                     $userName = element.find('[name="usernametext"]'),
                                     $password = element.find('[name="passwordtext"]'),
+                                    rememberMeElement,
+                                    $rememberMe,
                                     onSuccess = function () {
                                         element.trigger("success");
                                         if (successFn.indexOf('(') !== -1) {
@@ -83,6 +85,18 @@ WM.module("wm.widgets.advanced")
                                     };
                                 scope.loginMessage = null;
 
+                                //For old projects
+                                rememberMeElement = element.find('.app-checkbox [name="remembermeCheck"]');
+
+                                //For new projects
+                                if (!rememberMeElement.length) {
+                                    rememberMeElement = element.find('.app-checkbox [name="remembermecheck"]');
+                                }
+
+                                if (rememberMeElement.length) {
+                                    $rememberMe = rememberMeElement.val();
+                                }
+
                                 // prevent the actions when the userName/Pwd fields are not valid.
                                 if ($userName.controller('ngModel').$invalid || $password.controller('ngModel').$invalid) {
                                     return;
@@ -91,8 +105,9 @@ WM.module("wm.widgets.advanced")
                                 /* when on-submit not defined, then call the app-login service, else call custom service*/
                                 if (!submitFn && !clickFn) {
                                     loginDetails = {
-                                        username: $userName.val(),
-                                        password: $password.val()
+                                        'username'   : $userName.val(),
+                                        'password'   : $password.val(),
+                                        'rememberme' : $rememberMe.val()
                                     };
                                     element.scope().Variables.loginVariable.login({loginInfo: loginDetails}, onSuccess, onError);
                                 } else {

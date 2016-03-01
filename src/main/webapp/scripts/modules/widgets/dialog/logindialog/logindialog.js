@@ -119,14 +119,29 @@ WM.module('wm.widgets.dialog')
                                 scope.loginMessage = scope.$parent.loginMessage = null;
                                 var curUser = element.find('[name="usernametext"]').val(),
                                     password = element.find('[name="passwordtext"]').val(),
+                                    rememberMeElement,
+                                    rememberMe,
                                     loginDetails;
 
-                                /* when on-submit not defined, then call the app-login service, else call custom service*/
+                                //For old projects
+                                rememberMeElement = element.find('.app-checkbox [name="remembermeCheck"]');
+
+                                //For new projects
+                                if (!rememberMeElement.length) {
+                                    rememberMeElement = element.find('.app-checkbox [name="remembermecheck"]');
+                                }
+
+                                if (rememberMeElement.length) {
+                                    rememberMe = rememberMeElement.val();
+                                }
+
+                                // when on-submit not defined, then call the app-login service, else call custom service
                                 if (!submitFn && !loginBtnClickFn) {
                                     lastLoggedinUser = SecurityService.getLastLoggedInUser();
                                     loginDetails = {
-                                        username: curUser,
-                                        password: password
+                                        'username'  : curUser,
+                                        'password'  : password,
+                                        'rememberme': rememberMe
                                     };
                                     element.scope().Variables.loginVariable.login({loginInfo: loginDetails, mode: 'dialog'}, function () {
                                         if (lastLoggedinUser && curUser !== lastLoggedinUser) {

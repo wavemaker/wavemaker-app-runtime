@@ -95,8 +95,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "designMaxResults": {value: ""},
                     "operation": {"hide": true, "required": false},
                     "service": {"hide": true, "required": false},
-                    "dataSet": {"value": {username: "", password: ""}},
-                    "dataBinding": {"type": "list", "value": [{"target": "username", "type": "string"}, {"target": "password", "type": "string"}], "hide": true},
+                    "dataSet": {"value": {username: "", password: "", rememberme: false}},
+                    "dataBinding": {"type": "list", "value": [{"target": "username", "type": "string"}, {"target": "password", "type": "string"}, {"target": "rememberme", "type": "boolean"}], "hide": true},
                     "startUpdate": {"value": false},
                     "autoUpdate": {"value": false},
                     "useDefaultSuccessHandler": {"type": "boolean", "value": true}
