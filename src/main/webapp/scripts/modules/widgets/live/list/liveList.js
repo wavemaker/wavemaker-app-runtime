@@ -529,9 +529,10 @@ WM.module('wm.widgets.live')
                     oldClass,
                     newClass,
                     selectedVariable,
-                    eleScope = $el.scope(),
-                    variable = Utils.getVariableName($is, eleScope),
-                    wp       =  $is.widgetProps;
+                    eleScope          = $el.scope(),
+                    isBoundToVariable = _.includes($is.binddataset, 'bind:Variables.'),
+                    variable          = isBoundToVariable && Utils.getVariableName($is, eleScope),
+                    wp                = $is.widgetProps;
                 /**checking if the height is set on the element then we will enable the overflow**/
 
                 switch (key) {
@@ -544,7 +545,7 @@ WM.module('wm.widgets.live')
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, nv, attrs, listCtrl);
 
-                    selectedVariable = eleScope.Variables[variable];
+                    selectedVariable = variable && eleScope.Variables[variable];
 
                     if ($is.widgetid) {
                         // groupby is not shown for device variables
@@ -566,7 +567,7 @@ WM.module('wm.widgets.live')
                             //Get variable and properties map only on binddataset change
                             if ($is.oldBindDataSet !== $is.binddataset) {
                                 if (!WM.isString(nv)) {
-                                    if (selectedVariable.category === 'wm.LiveVariable') {
+                                    if (selectedVariable && selectedVariable.category === 'wm.LiveVariable') {
                                         nv.propertiesMap = selectedVariable.propertiesMap;
                                     }
                                 }
