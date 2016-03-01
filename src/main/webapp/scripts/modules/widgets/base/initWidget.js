@@ -164,7 +164,19 @@ WM.module('wm.widgets.base')
                     });
             }
 
-            function onWatchExprValueChange($is, $s, key, watchExpr, newVal) {
+            /**
+             * The method is called when the property of the widgets are changed.
+             * @param $is
+             * @param $s
+             * @param key
+             * @param watchExpr
+             * @param $el
+             * @param newVal
+             */
+            function onWatchExprValueChange($is, $s, key, watchExpr, $el, newVal) {
+                var value;
+                //removing the data-evaluated attribute. If the evaluation value is correct this property is not required in design mode.
+                $el.removeAttr('data-evaluated');
                 $is[key + '__updateFromWatcher'] = true;
                 if (WM.isDefined(newVal) && newVal !== null && newVal !== '') {
                     //Check if "newVal" is a Pageable object.
@@ -172,12 +184,12 @@ WM.module('wm.widgets.base')
                         // Check if the scope is configured to accept Pageable objects.
                         // If configured, set the newVal. Else, set only the content.
                         if ($is.allowPageable) {
-                            $is[key] = newVal;
+                            value = newVal;
                         } else {
-                            $is[key] = newVal.content;
+                            value = newVal.content;
                         }
                     } else {
-                        $is[key] = newVal;
+                        value = newVal;
                     }
                 } else {
                     // In studio mode, remove ".data[$i]" in the watch-expression so that it is not visible in the canvas.
@@ -190,8 +202,16 @@ WM.module('wm.widgets.base')
                      * OR if the mode is studio and if the widget is inside a partial
                      * OR if the mode is studio and if the widget is inside a prefab
                      */
-                    $is[key] = ($is.widgetid || (CONSTANTS.isStudioMode && ($s.partialcontainername || $s.prefabname))) ? watchExpr : '';
+                    value = ($is.widgetid || (CONSTANTS.isStudioMode && ($s.partialcontainername || $s.prefabname))) ? watchExpr : '';
+                    // Checking if the property is caption and value is not evaluated in the design mode
+                    if (value === watchExpr && (key === 'caption')) {
+                        //Adding the data-evaluated attribute to identify the unevaluated expression against the current widget
+                        $el.attr('data-evaluated', 'false');
+                        //setting the widget name instead of the binding expression
+                        value = '' + $is.name;
+                    }
                 }
+                $is[key] = value;
             }
 
             function processEventAttr($is, attrName, attrValue) {
@@ -303,7 +323,7 @@ WM.module('wm.widgets.base')
                 return val === true || val === 'true' || (identity ? val === identity : false);
             }
 
-            function defineBindPropertyGetterSetters($is, $s, attrs, propDetails, key, value) {
+            function defineBindPropertyGetterSetters($is, $s, attrs, propDetails, key, value, $el) {
                 var bindKey              = 'bind' +  key,
                     acceptedTypes        = propDetails.type,
                     acceptsArray         = _.includes(acceptedTypes, 'array'),
@@ -329,7 +349,7 @@ WM.module('wm.widgets.base')
                                 $is.show = true;
                             } else {
                                 watchExpr = nv.replace('bind:', '');
-                                listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, watchExpr);
+                                listenerFn = onWatchExprValueChange.bind(undefined, $is, $s, key, watchExpr, $el);
                                 _watchers[key] = BindingManager.register($s, watchExpr, listenerFn, {'deepWatch': true, 'allowPageable': $is.allowPageable, 'acceptsArray': acceptsArray});
                             }
                         } else {
@@ -515,13 +535,13 @@ WM.module('wm.widgets.base')
                 var _isBindableProperty;
 
                 if (propName === 'datavalue' && hasModel) {
-                    defineBindPropertyGetterSetters($is, $s, attrs, propDetails, propName);
+                    defineBindPropertyGetterSetters($is, $s, attrs, propDetails, propName, undefined, $el);
                     defineDataValueGetterSetters($is, $el, attrs);
                 } else if (!propDetails.ignoreGetterSetters) {
 
                     _isBindableProperty = isBindableProperty(propDetails);
                     if (_isBindableProperty) {
-                        defineBindPropertyGetterSetters($is, $s, attrs, propDetails, propName);
+                        defineBindPropertyGetterSetters($is, $s, attrs, propDetails, propName, undefined, $el);
                     }
                     definePropertyGetterSetters($is, $s, $el, attrs, propDetails, _isBindableProperty, propName, attrs[propName] ? undefined : propDetails.value);
                 }
