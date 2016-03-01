@@ -1171,7 +1171,7 @@ WM.module('wm.widgets.live')
                     customExpression = '<span>' + customExpression + '</span>';
                 }
                 el = WM.element(customExpression);
-                widgetClass = el.attr('widget-class');
+                widgetClass = el.attr('widget-class') || el.attr('class');
                 widgetNgClasses = parseNgClasses(el.attr('data-ng-class'));
                 switch (widgetType) {
                 case 'image':
