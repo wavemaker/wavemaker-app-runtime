@@ -16,7 +16,7 @@
     <target name="run-js-commands-local">
 
         <antcall target="cmd-template">
-            <param name="cmd.name" value="npm"/>
+            <param name="cmd.name" value="npm-cache"/>
             <param name="cmd.arg" value="install"/>
             <param name="cmd.executable.dir" value="src/main/webapp"/>
         </antcall>
@@ -32,7 +32,7 @@
     <target name="run-js-commands-production">
 
         <antcall target="cmd-template">
-            <param name="cmd.name" value="npm"/>
+            <param name="cmd.name" value="npm-cache"/>
             <param name="cmd.arg" value="install"/>
             <param name="cmd.executable.dir" value="src/main/webapp"/>
         </antcall>
