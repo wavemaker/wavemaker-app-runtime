@@ -268,9 +268,7 @@ WM.module('wm.widgets.form')
             if (window.FormData) { // Check for IE9
                 var response = getSuccessResponse(event);
                 if (response) {
-                    scope.filename = _.map(response, 'fileName').join(scope.fileNameSeperator);
-                    scope.filepath = _.map(response, 'path').join(scope.fileNameSeperator);
-                    scope.uploadedFiles = response;
+                    scope.uploadedFiles.push(response[0]);
                 } else {
                     onUploadError(scope, event);
                     return;
@@ -346,6 +344,7 @@ WM.module('wm.widgets.form')
         function uploadFiles($files, scope, uploadOptions) {
             var uploadUrl = constructUrl(scope.uploadUrl, scope.service, scope.operation, scope.destination);
             scope.fileTransfers = FileUploadService.upload($files, uploadUrl, uploadOptions);
+            scope.uploadedFiles = [];
             _.map(scope.fileTransfers, function (ft) {
                 ft.then(onUploadSuccess.bind(undefined, scope),
                     onUploadError.bind(undefined, scope),
@@ -397,7 +396,6 @@ WM.module('wm.widgets.form')
                         };
                         scope.formName = scope.name + (scope.multiple ? '-multiple-fileupload' : '-single-fileupload');
                         scope.chooseFilter = '';
-                        scope.fileNameSeperator = ";";
                         scope.uploadedFiles = {
                             "fileName": "",
                             "path": "",
@@ -634,8 +632,8 @@ WM.module('wm.widgets.form')
  * @param {string=} message
  *                  Message of the Fileuplaod widget. <br>
  *                  Default value: `You can also browse for files`
- * @param {boolean=} singlefileupload
- *                  Switch to single to multiple or multiple to single  file upload widgets. <br>
+ * @param {boolean=} multiple
+ *                  If set to true, multiple file upload is enabled. By default single file upload is enabled <br>
  *                  Default value: `false`.
  * @param {boolean=} show
  *                  This is a bindable property. <br>
