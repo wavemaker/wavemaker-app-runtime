@@ -23,6 +23,11 @@ public class WMAppRememberMeServices extends TokenBasedRememberMeServices {
 
     public WMAppRememberMeServices(final String key, final UserDetailsService userDetailsService) {
         super(key, userDetailsService);
+        init();
+    }
+
+    protected void init() {
+        setParameter(REMEMBER_ME_PARAMETER);
     }
 
     @Override
