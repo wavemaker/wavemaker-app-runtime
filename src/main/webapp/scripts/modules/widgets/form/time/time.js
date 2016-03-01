@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
                 ' data-ng-model="_proxyModel"' + /* _proxyModel is a private variable inside this scope */
                 ' data-ng-show="show" ' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})" >' +
-                '<input class="form-control app-textbox display-input" data-ng-model="_timeModel" accesskey="{{shortcutkey}}" ng-change="updateTimeModel()" ng-model-options="{updateOn: \'blur\'}">' +
+                '<input class="form-control app-textbox display-input" data-ng-model="_timeModel" accesskey="{{shortcutkey}}" ng-change="updateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
                         '<uib-timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds"></uib-timepicker>' +
