@@ -124,9 +124,10 @@ WM.module('wm.widgets.basic')
                     'width': -arrowDims.width / 2,
                     'height': -arrowDims.height / 2
                 },
+                pagePosition = WM.element('.app-page').offset(),
                 popoverPosition = {
-                    'left' : targetPosition.left + tipOffset.width,
-                    'top'  : targetPosition.top + tipOffset.height
+                    'left' : targetPosition.left + tipOffset.width - pagePosition.left,
+                    'top'  : targetPosition.top + tipOffset.height - pagePosition.top
                 };
             if (placement === 'left' || placement === 'right') {
                 if (placement === 'left') {
