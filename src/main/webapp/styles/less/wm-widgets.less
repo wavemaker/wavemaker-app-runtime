@@ -217,7 +217,10 @@ html, body {
     background-color: @wm-app-spinner-msg-bg-color;
     border: 2px @wm-app-spinner-border-color solid;
     display: inline-table;
-    border-collapse:separate;
+    border-collapse: separate;
+    /* this is fix for spinner overflow issue when height of the window is changed */
+    -webkit-transform: translate3d(0, 0, 0);
+
     .spinner-image {
       display: table-cell;
       vertical-align: middle;
