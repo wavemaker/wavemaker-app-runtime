@@ -105,10 +105,15 @@ WM.module('wm.widgets.dialog')
 
                         if (CONSTANTS.isRunMode) {
                             var submitFn = attrs.onSubmit || '',
-                                loginBtn = element.find('.app-button[name="loginbutton"]'),
-                                loginBtnClickFn  = loginBtn.isolateScope().onClick || '',
+                                loginBtn,
+                                loginBtnClickFn,
                                 lastLoggedinUser;
-
+                            loginBtn = element.find('[role*="loginbutton"]');
+                            // for older projects(<=8.0.6), role won't be there and name="loginbutton" will be present for CommonLoginDialog in Common page
+                            if (!loginBtn.length) {
+                                loginBtn = element.find('.app-button[name="loginbutton"]');
+                            }
+                            loginBtnClickFn  = loginBtn.length ? (loginBtn.isolateScope().onClick || '') : '';
                             /*function to be called in case of login*/
                             scope.doLogin = function (event) {
                                 scope.loginMessage = scope.$parent.loginMessage = null;
