@@ -52,21 +52,21 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             @Override
             public Page<Object> doInHibernate(Session session) throws HibernateException {
                 Query namedQuery = session.getNamedQuery(queryName);
-                Query copyOfNamedQuery = namedQuery;
-                final boolean isNative = namedQuery instanceof SQLQuery;
-                if (isNative) {
-                    //adding order by from pagination to query.
-                    namedQuery = createNativeQuery(namedQuery.getQueryString(), pageable.getSort(), params);
-                }
                 QueryHelper.setResultTransformer(namedQuery);
                 QueryHelper.configureParameters(namedQuery, params);
+
                 if (pageable != null) {
+                    Query copyOfNamedQuery = namedQuery;
+                    final boolean isNative = namedQuery instanceof SQLQuery;
+                    if (isNative) { //adding order by from pagination to query.
+                        namedQuery = createNativeQuery(namedQuery.getQueryString(), pageable.getSort(), params);
+                    }
                     namedQuery.setFirstResult(pageable.getOffset());
                     namedQuery.setMaxResults(pageable.getPageSize());
                     Long count = QueryHelper.getQueryResultCount(copyOfNamedQuery.getQueryString(), params, isNative, template);
                     return new WMPageImpl(namedQuery.list(), pageable, count);
-                } else
-                    return new WMPageImpl(namedQuery.list());
+                }
+                return new WMPageImpl(namedQuery.list());
             }
         });
     }
@@ -130,15 +130,16 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
         return template.execute(new HibernateCallback<Page<Object>>() {
             @Override
             public Page<Object> doInHibernate(final Session session) throws HibernateException {
-                SQLQuery sqlQuery = createNativeQuery(queryString, pageable.getSort(), params);
-
+                SQLQuery sqlQuery;
                 if (pageable != null) {
                     Long count = QueryHelper.getQueryResultCount(queryString, params, true, template);
+                    sqlQuery = createNativeQuery(queryString, pageable.getSort(), params);
                     sqlQuery.setFirstResult(pageable.getOffset());
                     sqlQuery.setMaxResults(pageable.getPageSize());
                     return new WMPageImpl(sqlQuery.list(), pageable, count);
-                } else
-                    return new WMPageImpl(sqlQuery.list());
+                }
+                sqlQuery = createNativeQuery(queryString, params);
+                return new WMPageImpl(sqlQuery.list());
             }
         });
     }
@@ -154,8 +155,8 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
                     hqlQuery.setFirstResult(pageable.getOffset());
                     hqlQuery.setMaxResults(pageable.getPageSize());
                     return new WMPageImpl(hqlQuery.list(), pageable, count);
-                } else
-                    return new WMPageImpl(hqlQuery.list());
+                }
+                return new WMPageImpl(hqlQuery.list());
             }
         });
     }

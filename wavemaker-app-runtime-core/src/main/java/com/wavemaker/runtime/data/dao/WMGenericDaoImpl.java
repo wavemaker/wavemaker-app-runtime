@@ -120,6 +120,24 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return queryFilter.getFilterCondition().criterion(attributeName, attributeValue);
     }
 
+    protected void updateCriteriaForPageable(Criteria criteria, Pageable pageable) {
+            criteria.setFirstResult(pageable.getOffset());
+            criteria.setMaxResults(pageable.getPageSize());
+            if (pageable.getSort() != null) {
+                Iterator<Sort.Order> iterator = pageable.getSort().iterator();
+                while (iterator.hasNext()) {
+                    Sort.Order order = iterator.next();
+                    final String property = order.getProperty();
+                    criteriaForRelatedProperty(criteria, property);
+                    if (order.getDirection().equals(Sort.Direction.DESC)) {
+                        criteria.addOrder(Order.desc(property));
+                    } else {
+                        criteria.addOrder(Order.asc(property));
+                    }
+                }
+            }
+    }
+
     private Page executeAndGetPageableData(Criteria criteria, Pageable pageable) {
         if (pageable != null) {
             long count = getRowCount(criteria);
@@ -145,30 +163,12 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         return count;
     }
 
-    protected void updateCriteriaForPageable(Criteria criteria, Pageable pageable) {
-        criteria.setFirstResult(pageable.getOffset());
-        criteria.setMaxResults(pageable.getPageSize());
-        if (pageable.getSort() != null) {
-            Iterator<Sort.Order> iterator = pageable.getSort().iterator();
-            while (iterator.hasNext()) {
-                Sort.Order order = iterator.next();
-                final String property = order.getProperty();
-                criteriaForRelatedProperty(criteria, property);
-                if (order.getDirection().equals(Sort.Direction.DESC)) {
-                    criteria.addOrder(Order.desc(property));
-                } else {
-                    criteria.addOrder(Order.asc(property));
-                }
-            }
-        }
-    }
-
     private Criteria criteriaForRelatedProperty(Criteria criteria, final String attributeName) {
         final int indexOfDot = attributeName.indexOf(SEARCH_PROPERTY_DILIMITTER);
         if (indexOfDot != -1) {
             String relatedEntityName = attributeName.substring(0, indexOfDot);
             criteria = criteria.createAlias(relatedEntityName, relatedEntityName);
-         }
+        }
         return criteria;
     }
 
