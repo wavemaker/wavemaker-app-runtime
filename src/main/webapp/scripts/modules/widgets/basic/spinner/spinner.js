@@ -7,7 +7,8 @@ WM.module('wm.widgets.basic')
         $templateCache.put('template/widget/spinner.html',
             '<div ng-class="[\'app-spinner\', size, spinnerclass]" ng-show="show" init-widget title="{{hint}}" apply-styles no-animate>' +
                 '<div class="spinner-message">' +
-                    '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-show="show" ng-style="{\'font-size\' : iconsize}"></i>' +
+                    '<span class="spinner-image animated infinite {{animation}}" ng-class="{\'fa-spin\' : animation === \'spin\'}" ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}" ng-if="type === \'image\'"></span>' +
+                    '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-show="show" ng-style="{\'font-size\' : iconsize}" ng-if="type === \'icon\'"></i>' +
                     '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent"></span>' +
                 '</div>' +
             '</div>'
@@ -17,11 +18,12 @@ WM.module('wm.widgets.basic')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.spinner', ['wm.base']),
             notifyFor = {
-                'image': true,
+                'image'          : true,
                 'backgroundimage': true,
-                'caption': true,
-                'iconclass': true,
-                'animation': true
+                'caption'        : true,
+                'iconclass'      : true,
+                'animation'      : true,
+                'type'           : true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -38,6 +40,15 @@ WM.module('wm.widgets.basic')
                 break;
             case 'iconclass':
                 scope.iconclass = scope.iconclass || 'fa fa-spinner fa-spin';
+                break;
+            case 'type':
+                if (scope.widgetid) {
+                    var isImage = (newVal === 'image'),
+                        widgetProperties = scope.widgetProps;
+
+                    widgetProperties.image.show = widgetProperties.imagewidth.show = widgetProperties.imageheight.show = isImage;
+                    widgetProperties.iconclass.show = widgetProperties.iconsize.show = !isImage;
+                }
                 break;
             case 'animation':
                 // if animation class is spin then add fa-spin class
@@ -63,10 +74,10 @@ WM.module('wm.widgets.basic')
                     'post': function (scope, element, attrs) {
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
                         scope.iconclass = scope.iconclass || 'fa fa-spinner';
+                        element.removeClass('animated ' + scope.animation);
 
                         if (!scope.widgetid) {
                             scope.$on('$destroy', $rootScope.$on('toggle-variable-state', function (event, variableName, show) {
