@@ -2,17 +2,21 @@ package com.wavemaker.runtime.security.token;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.UUID;
 
-import org.apache.commons.lang.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.RememberMeAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.util.StringUtils;
 
+import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.token.repository.InMemoryPersistentAuthTokenRepository;
 import com.wavemaker.runtime.security.token.repository.PersistentAuthTokenRepository;
 
@@ -41,7 +45,7 @@ public class WMTokenBasedAuthenticationService {
 
     private int tokenValiditySeconds = DEFAULT_VALIDITY_SECONDS;
     private String key = DEFAULT_KEY;
-    private PersistentAuthTokenRepository persistentAuthTokenRepository = new InMemoryPersistentAuthTokenRepository(tokenValiditySeconds);
+    private PersistentAuthTokenRepository<String, WMUser> persistentAuthTokenRepository = new InMemoryPersistentAuthTokenRepository(tokenValiditySeconds);
 
     public WMTokenBasedAuthenticationService() {
     }
@@ -66,14 +70,16 @@ public class WMTokenBasedAuthenticationService {
 
         Token token = new Token(encodeToken(new String[]{username, Long.toString(expiryTime), signatureValue}));
 
-        persistentAuthTokenRepository.addToken(token.getWmAuthToken(), (Authentication)SerializationUtils.clone(successfulAuthentication));
+        WMUser wmUser = toWMUser(successfulAuthentication);
+        persistentAuthTokenRepository.addToken(token.getWmAuthToken(), wmUser);
 
         return token;
 
     }
 
     public Authentication getAuthentication(Token token) {
-        return persistentAuthTokenRepository.getAuthentication(token.getWmAuthToken());
+        WMUser wmUser = persistentAuthTokenRepository.getAuthentication(token.getWmAuthToken());
+        return toAuthentication(wmUser);
     }
 
     public void setTokenValiditySeconds(final int tokenValiditySeconds) {
@@ -82,6 +88,33 @@ public class WMTokenBasedAuthenticationService {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    protected WMUser toWMUser(final Authentication authentication) {
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = (UsernamePasswordAuthenticationToken) authentication;
+            if (usernamePasswordAuthenticationToken.getPrincipal() instanceof WMUser) {
+                return (WMUser) usernamePasswordAuthenticationToken.getPrincipal();
+            }
+            String username = (String) usernamePasswordAuthenticationToken.getPrincipal();
+            String password = (String) usernamePasswordAuthenticationToken.getCredentials();
+            return toWMUser(username, password, authentication.getAuthorities());
+
+        } else if (authentication instanceof RememberMeAuthenticationToken) {
+            RememberMeAuthenticationToken rememberMeAuthenticationToken = (RememberMeAuthenticationToken) authentication;
+            String username = (String) rememberMeAuthenticationToken.getPrincipal();
+            String password = (String) rememberMeAuthenticationToken.getCredentials();
+            return toWMUser(username, password, authentication.getAuthorities());
+        }
+        return null;
+    }
+
+    private WMUser toWMUser(final String username, final String password, Collection<? extends GrantedAuthority> authorities) {
+        return new WMUser(username, username, password, username, 0, true, true, true, true, authorities, System.currentTimeMillis());
+    }
+
+    protected Authentication toAuthentication(final WMUser wmUser) {
+        return new UsernamePasswordAuthenticationToken(wmUser.getUsername(), null, wmUser.getAuthorities());
     }
 
     protected String retrieveUserName(Authentication authentication) {
@@ -136,7 +169,6 @@ public class WMTokenBasedAuthenticationService {
 
         return sb.toString();
     }
-
 
 
 }
