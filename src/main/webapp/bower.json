@@ -29,6 +29,7 @@
         "angular-ui-calendar": "1.0.0",
         "moment": "2.11.2",
         "ngCordova":"v0.1.24-alpha",
+        "ng-cordova-oauth":"0.2.3",
         "ng-websocket": "v0.2.1",
         "wavicon": "https://github.com/wavemaker/wavicon.git#v1.0.1"
     },
