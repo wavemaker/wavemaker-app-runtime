@@ -18,10 +18,11 @@ WM.module('wm.widgets.basic')
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.popover', ['wm.base', 'wm.base.editors', 'wm.anchor']),
             notifyFor = {
-                'iconclass': true,
-                'iconurl': true,
-                'caption': true,
-                'contentsource': CONSTANTS.isStudioMode
+                'iconclass'     : true,
+                'iconurl'       : true,
+                'caption'       : true,
+                'iconposition'  : true,
+                'contentsource' : CONSTANTS.isStudioMode
             },
             popoverProperties = PropertiesFactory.getPropertiesOf('wm.popover');
 
