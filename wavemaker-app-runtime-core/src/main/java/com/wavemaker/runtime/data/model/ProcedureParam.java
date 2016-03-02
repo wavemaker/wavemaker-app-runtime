@@ -25,16 +25,22 @@ public class ProcedureParam {
     private String valueType = null;
     private Boolean isList = Boolean.FALSE;
     private String testValue;
+    private boolean isSystemParam;
+    private String systemParamName;
 
     public ProcedureParam() {
     }
 
-    public ProcedureParam(String paramName, ProcedureParamType procedureParamType, Boolean isList, String valueType) {
+    public ProcedureParam(final String paramName, final ProcedureParamType procedureParamType, final String valueType, final Boolean isList, final String testValue, final boolean isSystemParam, final String systemParamName) {
         this.paramName = paramName;
         this.procedureParamType = procedureParamType;
-        this.isList = isList;
         this.valueType = valueType;
+        this.isList = isList;
+        this.testValue = testValue;
+        this.isSystemParam = isSystemParam;
+        this.systemParamName = systemParamName;
     }
+
     public String getValueType() {
         return valueType;
     }
@@ -73,6 +79,22 @@ public class ProcedureParam {
 
     public void setTestValue(final String testValue) {
         this.testValue = testValue;
+    }
+
+    public boolean isSystemParam() {
+        return isSystemParam;
+    }
+
+    public void setSystemParam(final boolean isSystemParam) {
+        this.isSystemParam = isSystemParam;
+    }
+
+    public String getSystemParamName() {
+        return systemParamName;
+    }
+
+    public void setSystemParamName(final String systemParamName) {
+        this.systemParamName = systemParamName;
     }
 
     @Override
