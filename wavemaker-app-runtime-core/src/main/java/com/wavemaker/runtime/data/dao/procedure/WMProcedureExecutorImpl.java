@@ -44,6 +44,7 @@ import com.wavemaker.runtime.data.model.ProcedureModel;
 import com.wavemaker.runtime.data.model.ProcedureParam;
 import com.wavemaker.runtime.data.model.ProcedureParamType;
 import com.wavemaker.runtime.data.util.ProceduresUtils;
+import com.wavemaker.runtime.system.SystemPropertiesUnit;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.json.JSONUtils;
@@ -118,10 +119,10 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
         Procedure procedure = getProcedure(procedureName);
         try {
-            List<CustomProcedureParam> customParameters = new ArrayList<CustomProcedureParam>();
+            List<CustomProcedureParam> customParameters = new ArrayList<>();
 
             for (ProcedureParam procedureParam : procedure.getProcedureParams()) {
-                CustomProcedureParam customProcedureParam = new CustomProcedureParam(procedureParam.getParamName(), params.get(procedureParam.getParamName()), procedureParam.getProcedureParamType(), procedureParam.getValueType());
+                CustomProcedureParam customProcedureParam = prepareCustomProcedureParam(params, procedureParam);
                 customParameters.add(customProcedureParam);
             }
 
@@ -131,15 +132,15 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
         }
     }
 
-    private List<Object> executeProcedure(String procedureString, List<CustomProcedureParam> customParameters) {
-        return executeNativeJDBCCall(procedureString, customParameters);
-    }
-
     @Override
     public List<Object> executeCustomProcedure(CustomProcedure customProcedure) {
         List<CustomProcedureParam> procedureParams = prepareParams(customProcedure.getProcedureParams());
         return executeProcedure(customProcedure.getProcedureStr(), procedureParams);
 
+    }
+
+    private List<Object> executeProcedure(String procedureString, List<CustomProcedureParam> customParameters) {
+        return executeNativeJDBCCall(procedureString, customParameters);
     }
 
     private List<Object> executeNativeJDBCCall(String procedureStr, List<CustomProcedureParam> customParams) {
@@ -210,6 +211,15 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
                 }
             }
         }
+    }
+
+    private CustomProcedureParam prepareCustomProcedureParam(final Map<String, Object> params, final ProcedureParam procedureParam) {
+        Object valueObject = params.get(procedureParam.getParamName());
+        if (procedureParam.isSystemParam()) {
+            valueObject = SystemPropertiesUnit.valueOf(procedureParam.getParamName()).getValue();
+        }
+        return new CustomProcedureParam(procedureParam.getParamName(), valueObject, procedureParam.getProcedureParamType(), procedureParam.getValueType());
+
     }
 
     private List<Object> processResultSet(Object resultSet) {
