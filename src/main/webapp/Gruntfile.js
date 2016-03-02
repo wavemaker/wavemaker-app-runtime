@@ -255,6 +255,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/ocLazyLoad/ocLazyLoad.min.js',
                         '<%= config.components %>/hammerjs/hammer.js',
                         '<%= config.components %>/ngCordova/ng-cordova.js',
+                        '<%= config.components %>/ng-cordova-oauth/ng-cordova-oauth.min.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
                         '<%= config.scripts %>/modules/base64/base64.js'
                     ]
