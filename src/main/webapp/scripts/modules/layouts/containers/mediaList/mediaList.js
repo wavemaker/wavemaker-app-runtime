@@ -14,7 +14,7 @@ WM.module('wm.layouts.containers')
             '<div class="app-medialist" data-ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget>' +
                 '<ul class="list-unstyled list-inline app-media-thumbnail" wmtransclude></ul>' +
                     '<div class="app-media-fullscreen" data-ng-show="selectedMediaIndex >= 0" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
-                        '<wm-mobile-navbar on-backbtnclick="exitFullScreen();" show-leftnav="false" backbuttoniconclass="fa fa-chevron-left" title= "{{selectedMediaIndex+1}}/{{fieldDefs.length}}"></wm-mobile-navbar>' +
+                        '<wm-mobile-navbar on-backbtnclick="exitFullScreen();" show-leftnav="false" backbuttoniconclass="wi wi-chevron-left" title= "{{selectedMediaIndex+1}}/{{fieldDefs.length}}"></wm-mobile-navbar>' +
                         '<wm-content>' +
                              '<wm-page-content>' +
                                 '<div class="app-content-column">' +

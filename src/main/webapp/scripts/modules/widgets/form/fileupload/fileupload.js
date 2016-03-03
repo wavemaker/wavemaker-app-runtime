@@ -72,7 +72,7 @@ WM.module('wm.widgets.form')
                                 '</div>' +
                                 '<div class="media-right media-middle" data-ng-if="ft.status === \'inprogress\' || ft.status === \'queued\'">' +
                                     '<a class="btn btn-transparent" type="button" ng-click="abortUpload($event, ft)">' +
-                                        '<i class="fa fa-remove"></i>' +
+                                        '<i class="wi wi-stop"></i>' +
                                     '</a>' +
                                 '</div>' +
                                 '<div class="media-right media-middle status" data-ng-if="mode === \'Upload\'" data-ng-hide="ft.status === \'abort\' || ft.status === \'inprogress\'">' +

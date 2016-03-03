@@ -14,12 +14,12 @@ WM.module('wm.widgets.advanced')
                                 '<div class="modal-header clearfix">' +
                                     '<h4 class="modal-title pull-left">' +
                                         '<span data-ng-click="onFileClick(directory.parent)" data-ng-show="directory.parent">' +
-                                            '<i class="fa fa-chevron-left"></i>' +
+                                            '<i class="wi wi-back"></i>' +
                                         '</span>' +
                                         ' {{directory.name}}' +
                                     '</h4>' +
                                     '<div data-ng-show="selectedFiles.length > 0" class="selected-file-button pull-right">' +
-                                        '<i class="fa fa-file-o" data-ng-show="selectedFiles.length == 1"></i>' +
+                                        '<i class="wi wi-file" data-ng-show="selectedFiles.length == 1"></i>' +
                                         '<i class="fa fa-files-o" data-ng-show="selectedFiles.length > 1"></i>' +
                                         ' {{selectedFiles.length}}' +
                                     '</div>' +
@@ -27,8 +27,8 @@ WM.module('wm.widgets.advanced')
                                 '<div class="modal-body">' +
                                     '<div class="file-info-box" data-ng-repeat="file in directory.files">' +
                                         '<div class="file-info"  data-ng-class="{\'bg-primary\': file.isSelected}" data-ng-click="onFileClick(file)">' +
-                                            '<i class="file-icon fa fa-folder" data-ng-if="!file.isFile"/>' +
-                                            '<i class="file-icon fa fa-file-o {{getFileExtension(file.name)}}" data-ng-if="file.isFile"/>' +
+                                            '<i class="file-icon wi wi-folder" data-ng-if="!file.isFile"/>' +
+                                            '<i class="file-icon wi wi-file {{getFileExtension(file.name)}}" data-ng-if="file.isFile"/>' +
                                             '<span class="file-name">{{file.name}}</span>' +
                                         '</div>' +
                                     '</div>' +

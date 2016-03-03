@@ -285,7 +285,7 @@ WM.module('wm.layouts.containers')
      <div ng-controller="Ctrl" class="wm-app">
      <wm-top-nav>
          <wm-mobile-navbar title="XMobile" fontweight="bold" fontsize="2" fontunit="em" paddingtop="5">
-            <wm-button caption="Users" type="button" iconclass="fa fa-trash-o"></wm-button>
+            <wm-button caption="Users" type="button" iconclass="wi wi-trash"></wm-button>
          </wm-mobile-navbar>
      </wm-top-nav>
      </div>

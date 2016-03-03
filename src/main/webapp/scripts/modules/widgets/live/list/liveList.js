@@ -899,7 +899,7 @@ WM.module('wm.widgets.live')
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
                         liTemplateWrapper_start = '<li data-ng-repeat="item in fieldDefs track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ';
-                        liTemplateWrapper_end   = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin fa-2x"></i> loading...</li>';
+                        liTemplateWrapper_end   = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin"></i> loading...</li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
 
                         $el.find('> [data-identifier=list]').append($liTemplate);

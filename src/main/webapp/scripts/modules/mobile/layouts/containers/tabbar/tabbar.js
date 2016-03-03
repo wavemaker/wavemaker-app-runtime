@@ -137,7 +137,7 @@ WM.module('wm.layouts.containers')
  *   <example module="wmCore">
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
- *              <wm-mobile-tabbar dataset="home,star,music,cog,edit"></wm-mobile-tabbar>
+ *              <wm-mobile-tabbar dataset="home,star,music,edit"></wm-mobile-tabbar>
  *           </div>
  *       </file>
  *       <file name="script.js">
