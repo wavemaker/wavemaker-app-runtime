@@ -162,8 +162,8 @@ WM.module('wm.widgets.form')
                     'pre': function (iScope, element, attrs) {
                         //@Deprecated iconname; use iconclass instead
                         if (!attrs.iconclass && attrs.iconname) {
-                            WM.element(tElement.context).attr('iconclass', 'glyphicon glyphicon-' + attrs.iconname);
-                            attrs.iconclass = 'glyphicon glyphicon-' + attrs.iconname;
+                            WM.element(tElement.context).attr('iconclass', 'wi wi-' + attrs.iconname);
+                            attrs.iconclass = 'wi wi-' + attrs.iconname;
                         }
                         /* support for dropposition */
                         if (attrs.dropposition === 'up') {
@@ -353,7 +353,7 @@ WM.module('wm.widgets.form')
     <example module="wmCore">
         <file name="index.html">
             <div data-ng-controller="Ctrl" class="wm-app">
-               <wm-menu scopedataset="nodes" menuposition="down,right" caption="Menu" iconclass="glyphicon glyphicon-align-justify"></wm-menu>
+               <wm-menu scopedataset="nodes" menuposition="down,right" caption="Menu" iconclass="wi wi-align-justify"></wm-menu>
             </div>
         </file>
         <file name="script.js">
@@ -361,23 +361,23 @@ WM.module('wm.widgets.form')
                $scope.nodes = [
                    {
                        "label": "item1",
-                       "icon": "glyphicon glyphicon-euro",
+                       "icon": "wi wi-euro-symbol",
                        "children" : [
                            {
                                "label": "sub-menu-item1",
-                               "icon": "glyphicon glyphicon-euro"
+                               "icon": "wi wi-euro-symbol"
                            },
                            {
                                "label": "sub-menu-item2",
-                               "icon": "glyphicon glyphicon-euro",
+                               "icon": "wi wi-euro-symbol",
                                 "children" : [
                                     {
                                        "label": "sub-menu-child-item1",
-                                       "icon": "glyphicon glyphicon-euro"
+                                       "icon": "wi wi-euro-symbol"
                                    },
                                    {
                                        "label": "sub-menu-child-item2",
-                                       "icon": "glyphicon glyphicon-euro"
+                                       "icon": "wi wi-euro-symbol"
                                   }
                              ]
                            }
@@ -385,15 +385,15 @@ WM.module('wm.widgets.form')
                    },
                    {
                        "label": "item2",
-                       "icon": "glyphicon glyphicon-euro"
+                       "icon": "wi wi-euro-symbol"
                    },
                    {
                        "label": "item3",
-                       "icon": "glyphicon glyphicon-euro"
+                       "icon": "wi wi-euro-symbol"
                    },
                    {
                        "label": "item4",
-                       "icon": "glyphicon glyphicon-euro"
+                       "icon": "wi wi-euro-symbol"
                    }
                ];
             }

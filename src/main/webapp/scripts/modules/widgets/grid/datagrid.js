@@ -299,7 +299,7 @@ $.widget('wm.datagrid', {
                 '</div><div class="input-append input-group">' +
                     '<input type="text" data-element="dgSearchText" class="form-control app-textbox" value="" placeholder="Search" style="display: inline-block;"/>' +
                     '<span class="input-group-addon"><button type="button" data-element="dgSearchButton" class="app-search-button" title="Search">' +
-                        '<i class="glyphicon glyphicon-search"></i>' +
+                        '<i class="wi wi-search"></i>' +
                     '</button></span>' +
                 '</div>' +
             '</div></form>';
@@ -354,12 +354,12 @@ $.widget('wm.datagrid', {
         var htm = '';
         if (colDef.operations.indexOf('update') !== -1) {
             htm +=
-                '<button type="button" class="row-action-button edit edit-row-button" title="Edit Row"><i class="glyphicon glyphicon-pencil"></i></button>' +
-                '<button type="button" class="row-action-button save save-edit-row-button hidden" title="Save"><i class="glyphicon glyphicon-ok"></i></button>' +
-                '<button type="button" class="row-action-button cancel cancel-edit-row-button hidden" title="Cancel"><i class="glyphicon glyphicon-remove"></i></button>';
+                '<button type="button" class="row-action-button edit edit-row-button" title="Edit Row"><i class="wi wi-pencil"></i></button>' +
+                '<button type="button" class="row-action-button save save-edit-row-button hidden" title="Save"><i class="wi wi-done"></i></button>' +
+                '<button type="button" class="row-action-button cancel cancel-edit-row-button hidden" title="Cancel"><i class="wi wi-cancel"></i></button>';
         }
         if (colDef.operations.indexOf('delete') !== -1) {
-            htm += '<button type="button" class="row-action-button delete delete-row-button" title="Delete Record"><i class="glyphicon glyphicon-trash"></i></button>';
+            htm += '<button type="button" class="row-action-button delete delete-row-button" title="Delete Record"><i class="wi wi-trash"></i></button>';
         }
         return htm;
     },

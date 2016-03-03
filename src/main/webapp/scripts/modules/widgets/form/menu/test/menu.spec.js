@@ -12,7 +12,7 @@ describe("Testing Form Widget: menu", function () {
             '<wm-menu caption="Menu caption" name="menu name" ' +
             'dropposition="down" width="150px" height="40px" ' +
             'scopedataset="MenuItems" dataset="Menu Item 1, Menu Item 2, Menu Item 3"' +
-            'show="true" iconclass="glyphicon-upload" ' +
+            'show="true" iconclass="wi-file-upload" ' +
             'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
             'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
             'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png"' +
@@ -68,7 +68,7 @@ describe("Testing Form Widget: menu", function () {
 
             //check for the iconclass property
             it("should check the iconclass put in property panel", function () {
-                iScope.iconclass = "glyphicon-upload";
+                iScope.iconclass = "wi-file-upload";
                 iScope.$apply();
                 expect($element.find('i').hasClass(iScope.iconclass)).toMatch(true);
             });
@@ -106,22 +106,22 @@ describe("Testing Form Widget: menu", function () {
             it("should check the construction of the child items from the dataset", function () {
                 iScope.dataset = [{
                         "label": "item1",
-                        "icon": "glyphicon glyphicon-euro"
+                        "icon": "wi wi-euro-symbol"
                     }, {
                         "label": "item2",
-                        "icon": "glyphicon glyphicon-euro"
+                        "icon": "wi wi-euro-symbol"
                     }, {
                         "label": "item3",
-                        "icon": "glyphicon glyphicon-euro"
+                        "icon": "wi wi-euro-symbol"
                     }, {
                         "label": "item4",
-                        "icon": "glyphicon glyphicon-euro",
+                        "icon": "wi wi-euro-symbol",
                         "children": [{
                             "label": "sub-menu-item1",
-                            "icon": "glyphicon glyphicon-euro"
+                            "icon": "wi wi-euro-symbol"
                         }, {
                             "label": "sub-menu-item2",
-                            "icon": "glyphicon glyphicon-euro"
+                            "icon": "wi wi-euro-symbol"
                         }]
                     }
                 ];

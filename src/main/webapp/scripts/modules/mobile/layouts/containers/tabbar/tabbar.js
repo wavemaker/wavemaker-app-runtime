@@ -46,7 +46,7 @@ WM.module('wm.layouts.containers')
             return newVal.map(function (item) {
                 return {
                     'label': item,
-                    'icon': 'glyphicon glyphicon-' + item
+                    'icon': 'wi wi-' + item
                 };
             });
         }

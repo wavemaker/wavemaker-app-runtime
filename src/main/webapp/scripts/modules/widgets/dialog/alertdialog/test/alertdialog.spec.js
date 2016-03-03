@@ -7,7 +7,7 @@ describe('Testing Widget: wm-alertdialog', function () {
         widget = {},
         widgetConfig,
         element,
-        markup = '<wm-alertdialog name="NameAlert" id="NameAlert123" iconclass="glyphicon glyphicon-heart" title="DialogAlert" message="I am an information  box!" oktext="Accept"'+
+        markup = '<wm-alertdialog name="NameAlert" id="NameAlert123" iconclass="wi wi-heart" title="DialogAlert" message="I am an information  box!" oktext="Accept"'+
                  'alerttype="information" width="600" height="200" animation="bounceIn" iconwidth="10" iconheight="15" iconmargin="10"></wm-alertdialog>',
         dialogBody;
 

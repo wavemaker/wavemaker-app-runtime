@@ -11,10 +11,10 @@ WM.module('wm.widgets.advanced')
                     '</ol>' +
                     '<div class="carousel-inner" wmtransclude></div>' +
                     '<a class="left carousel-control" data-ng-click="previous()">' +
-                        '<i class="glyphicon glyphicon-chevron-left"></i>' +
+                        '<i class="wi wi-chevron-left"></i>' +
                     '</a>' +
                     '<a class="right carousel-control" data-ng-click="next()">' +
-                        '<i class="glyphicon glyphicon-chevron-right"></i>' +
+                        '<i class="wi wi-chevron-right"></i>' +
                     '</a>' +
                 '</div>'
             );

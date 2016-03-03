@@ -10,7 +10,7 @@ describe("Testing Basic Widget: Icon", function () {
         widget = {},
         markup =
             '<wm-icon name="Icon name" title="Icon title" show="true" ' +
-            'animation="bounce" iconclass="glyphicon glyphicon-star-empty" iconsize="50px">' +
+            'animation="bounce" iconclass="wi wi-star-border" iconsize="50px">' +
             '</wm-icon>';
 
     widget.type = 'wm-icon'; // type of the widget

@@ -104,7 +104,7 @@ WM.module('wm.widgets.live')
                         {
                             key         :    'reset',
                             class       :    'form-reset btn-secondary',
-                            iconclass   :    'glyphicon glyphicon-refresh',
+                            iconclass   :    'wi wi-refresh',
                             action      :    'reset()',
                             displayName :    'Reset',
                             show        :    true,
@@ -114,7 +114,7 @@ WM.module('wm.widgets.live')
                         {
                             key         :   'cancel',
                             class       :   'form-cancel btn-secondary',
-                            iconclass   :   'glyphicon glyphicon-remove-circle',
+                            iconclass   :   'wi wi-cancel',
                             action      :   'cancel()',
                             displayName :   'Cancel',
                             show        :   true,
@@ -124,7 +124,7 @@ WM.module('wm.widgets.live')
                         {
                             key         :   'save',
                             class       :   'form-save btn-success',
-                            iconclass   :   $rs.isMobileApplicationType ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-save',
+                            iconclass   :   $rs.isMobileApplicationType ? 'wi wi-done' : 'wi wi-save',
                             action      :   '',
                             displayName :   'Save',
                             show        :   true,
@@ -134,7 +134,7 @@ WM.module('wm.widgets.live')
                         {
                             key         :   'delete',
                             class       :   'form-delete btn-secondary',
-                            iconclass   :   'glyphicon glyphicon-remove',
+                            iconclass   :   'wi wi-trash',
                             action      :   'delete()',
                             displayName :   'Delete',
                             show        :   true,
@@ -144,7 +144,7 @@ WM.module('wm.widgets.live')
                         {
                             key         :   'edit',
                             class       :   'form-update btn-secondary',
-                            iconclass   :   'glyphicon glyphicon-pencil',
+                            iconclass   :   'wi wi-pencil',
                             action      :   'edit()',
                             displayName :   'Edit',
                             show        :   true,
@@ -154,7 +154,7 @@ WM.module('wm.widgets.live')
                         {
                             key         :   'new',
                             class       :   'form-new btn-success',
-                            iconclass   :   'glyphicon glyphicon-plus',
+                            iconclass   :   'wi wi-plus',
                             action      :   'new()',
                             displayName :   'New',
                             show        :   true,
@@ -168,7 +168,7 @@ WM.module('wm.widgets.live')
                         {
                             key         :   'filter',
                             class       :   'btn-primary',
-                            iconclass   :   'glyphicon glyphicon-filter',
+                            iconclass   :   'wi wi-filter-list',
                             action      :   'filter()',
                             displayName :   'Filter',
                             show        :   true,
@@ -177,7 +177,7 @@ WM.module('wm.widgets.live')
                         {
                             key         :   'clear',
                             class       :   'btn',
-                            iconclass   :   'glyphicon glyphicon-remove-circle',
+                            iconclass   :   'wi wi-trash',
                             action      :   'clearFilter()',
                             displayName :   'Clear',
                             show        :   true,
@@ -189,7 +189,7 @@ WM.module('wm.widgets.live')
                         {
                             'key': 'addNewRow',
                             'displayName': 'New',
-                            'iconclass': 'glyphicon glyphicon-plus',
+                            'iconclass': 'wi wi-plus',
                             'show': true,
                             'class': 'btn-primary',
                             'action': 'addNewRow()'
@@ -400,9 +400,9 @@ WM.module('wm.widgets.live')
             function getFileUploadTemplate(fieldDef, index) {
                 var template = '';
                 if (fieldDef.filetype === 'image') {
-                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value || formFields[' + index + '].href"><img style="height:2em" class="glyphicon glyphicon-file" src="{{formFields[' + index + '].href}}"/></a>';
+                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value || formFields[' + index + '].href"><img style="height:2em" class="wi wi-file" src="{{formFields[' + index + '].href}}"/></a>';
                 } else {
-                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value !== null"><i class="glyphicon glyphicon-file"></i></a>';
+                    template = template + '<a class="form-control-static" target="_blank" href="{{formFields[' + index + '].href}}" data-ng-show="formFields[' + index + '].value !== null"><i class="wi wi-file"></i></a>';
                 }
                 template = template + '<input data-ng-class="{\'file-readonly\': formFields[' + index + '].readonly}" required="{{formFields[' + index + '].required}}" type="file" name="{{formFields[' + index + '].key}}" ng-required="{{formFields[' + index + '].required}}" ng-readonly="{{formFields[' + index + '].readonly}}" data-ng-show="isUpdateMode" data-ng-model="formFields[' + index + '].value" accept="{{formFields[' + index + '].permitted}}"/>';
                 return template;
@@ -1136,7 +1136,7 @@ WM.module('wm.widgets.live')
                     break;
                 default:
                     if (column.type === 'blob') {
-                        column.customExpression = '<a data-ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 glyphicon glyphicon-file"></i></a>';
+                        column.customExpression = '<a data-ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
                     }
                 }
             }

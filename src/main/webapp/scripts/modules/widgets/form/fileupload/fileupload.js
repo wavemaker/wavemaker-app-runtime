@@ -551,8 +551,8 @@ WM.module('wm.widgets.form')
     .filter('stateClass', function () {
         'use strict';
         var stateClassMap = {
-            'success'   : 'glyphicon glyphicon-ok-sign text-success',
-            'error'     : 'glyphicon glyphicon-remove-sign text-danger'
+            'success'   : 'wi wi-done text-success',
+            'error'     : 'wi wi-cancel text-danger'
         };
         return function (state) {
             return stateClassMap[state.toLowerCase()];

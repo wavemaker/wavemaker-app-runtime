@@ -10,7 +10,7 @@ WM.module('wm.widgets.live')
                         '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
                         '<span class="form-header-text">{{title}}</span>' +
                         '<div class="panel-actions">' +
-                            '<button type="button" class="app-icon glyphicon panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'glyphicon-minus\': \'glyphicon-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
+                            '<button type="button" class="app-icon wi panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'wi-minus\': \'wi-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
                         '</div>' +
                     '</h3></div>' +
                     '<div data-ng-show="expanded" class="panel-body">' +

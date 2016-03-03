@@ -13,7 +13,7 @@ describe("Testing Form Widget: fileupload", function () {
             'width="300px" fileuploadtitle="Drop your files here to start uploading." ' +
             'fileuploadmessage="You can also browse for files" multiple="true" ' +
             'show="true" contenttype="audio" destination="/resource/uploads" ' +
-            'iconclass="glyphicon glyphicon-upload" class="col-md-push-3" ' +
+            'iconclass="wi wi-file-upload" class="col-md-push-3" ' +
             'fontsize="20" fontfamily="Segoe UI" color="#0000FF" fontweight="bold" whitespace="nowrap" ' +
             'fontstyle="italic" textdecoration="underline" textalign="center" backgroundcolor="#00ff29" ' +
             'backgroundimage="http://www.google.com/doodle4google/images/splashes/featured.png"' +
@@ -94,9 +94,9 @@ describe("Testing Form Widget: fileupload", function () {
 
             //check for the iconclass property
             it("should check the iconclass put in property panel", function () {
-                iScope.iconclass = "glyphicon glyphicon-upload";
+                iScope.iconclass = "wi wi-file-upload";
                 iScope.$apply();
-                expect($element.find('.glyphicon ').hasClass('glyphicon-upload')).toBe(true);
+                expect($element.find('.wi ').hasClass('wi-file-upload')).toBe(true);
             });
         });
     });

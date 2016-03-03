@@ -9,8 +9,8 @@ describe("LoginDialog", function () {
         widget = {},
         widgetConfig,
         element,
-        markup = '<wm-logindialog modal="false" iconclass="glyphicon glyphicon-log-in" title="Login" name="logindialog1">'+
-            '<wm-dialogheader name="LoginDialog" width="600" height="200" animation="shake" iconclass="glyphicon glyphicon-heart" iconwidth="20px" iconheight="20px" iconmargin="5px" hint="LoginDialog"></wm-dialogheader>'+
+        markup = '<wm-logindialog modal="false" iconclass="wi wi-sign-in" title="Login" name="logindialog1">'+
+            '<wm-dialogheader name="LoginDialog" width="600" height="200" animation="shake" iconclass="wi wi-heart" iconwidth="20px" iconheight="20px" iconmargin="5px" hint="LoginDialog"></wm-dialogheader>'+
             '<wm-dialogcontent name="dialogcontent1">'+
             '<wm-form name="form1">'+
             '<wm-message scopedataset="loginMessage" class="app-login-dialog-message" name="message1"></wm-message>'+

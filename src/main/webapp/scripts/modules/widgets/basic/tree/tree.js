@@ -25,32 +25,32 @@ WM.module('wm.widgets.basic')
                 defaultTreeIconClass = 'plus-minus',
                 ICON_CLASSES = {
                     'folder': {
-                        'expanded' : 'glyphicon-folder-open',
-                        'collapsed': 'glyphicon-folder-close'
+                        'expanded' : 'wi-folder-open',
+                        'collapsed': 'wi-folder-close'
                     },
                     'circle-plus-minus': {
-                        'expanded' : 'glyphicon-minus-sign',
-                        'collapsed': 'glyphicon-plus-sign'
+                        'expanded' : 'wi-remove-circle-outline',
+                        'collapsed': 'wi-add-circle-outline'
                     },
                     'chevron': {
-                        'expanded' : 'glyphicon-chevron-down',
-                        'collapsed': 'glyphicon-chevron-right'
+                        'expanded' : 'wi-keyboard-arrow-down',
+                        'collapsed': 'wi-keyboard-arrow-right'
                     },
                     'menu': {
-                        'expanded' : 'glyphicon-menu-down',
-                        'collapsed': 'glyphicon-menu-right'
+                        'expanded' : 'wi-arrow-down',
+                        'collapsed': 'wi-arrow-right'
                     },
                     'triangle': {
-                        'expanded' : 'glyphicon-triangle-bottom',
-                        'collapsed': 'glyphicon-triangle-right'
+                        'expanded' : 'wi-arrow-drop-down-circle',
+                        'collapsed': 'wi-play-circle-filled'
                     },
                     'expand-collapse': {
-                        'expanded' : 'glyphicon-collapse-down',
-                        'collapsed': 'glyphicon-expand'
+                        'expanded' : 'wi-expand-less',
+                        'collapsed': 'wi-expand-more'
                     },
                     'plus-minus': {
-                        'expanded' : 'glyphicon-minus',
-                        'collapsed': 'glyphicon-plus'
+                        'expanded' : 'wi-minus',
+                        'collapsed': 'wi-plus'
                     }
                 };
 
@@ -107,7 +107,7 @@ WM.module('wm.widgets.basic')
 
                     if (nodeChildren && nodeChildren.length) { // parent node
                         $li.addClass('parent-node ' + _cls);
-                        expandCollapseIcon = WM.element('<i class="glyphicon ' + _iconCls  + ' "></i>');
+                        expandCollapseIcon = WM.element('<i class="wi ' + _iconCls  + ' "></i>');
                         if (nodeIcon) {
                             $iconNode.addClass(nodeIcon);
                         }
@@ -393,47 +393,47 @@ WM.module('wm.widgets.basic')
            $scope.nodes = [
                {
                    "label": "item1",
-                   "icon": "glyphicon glyphicon-euro",
+                   "icon": "wi wi-euro-symbol",
                    "children": []
                }, {
                    "label": "item2",
-                   "icon": "glyphicon glyphicon-euro",
+                   "icon": "wi wi-euro-symbol",
                    "children": [{
                        "label": "item2.1",
-                       "icon": "glyphicon glyphicon-euro",
+                       "icon": "wi wi-euro-symbol",
                        "children": [{
                            "label": "item2.1",
-                           "icon": "glyphicon glyphicon-euro",
+                           "icon": "wi wi-euro-symbol",
                            "children": [{
                                "label": "item2.1",
-                               "icon": "glyphicon glyphicon-euro"
+                               "icon": "wi wi-euro-symbol"
                            }, {
                                "label": "item2.2",
-                               "icon": "glyphicon glyphicon-euro"
+                               "icon": "wi wi-euro-symbol"
                            }, {
                                "label": "item2.3",
-                               "icon": "glyphicon glyphicon-euro"
+                               "icon": "wi wi-euro-symbol"
                            }, {
                                "label": "item2.4",
-                               "icon": "glyphicon glyphicon-euro"
+                               "icon": "wi wi-euro-symbol"
                            }]
                        }]
                    }, {
                        "label": "item2.2",
-                       "icon": "glyphicon glyphicon-euro"
+                       "icon": "wi wi-euro-symbol"
                    }, {
                        "label": "item2.3",
-                       "icon": "glyphicon glyphicon-euro"
+                       "icon": "wi wi-euro-symbol"
                    }, {
                        "label": "item2.4",
-                       "icon": "glyphicon glyphicon-euro"
+                       "icon": "wi wi-euro-symbol"
                    }]
                }, {
                    "label": "item3",
-                   "icon": "glyphicon glyphicon-euro"
+                   "icon": "wi wi-euro-symbol"
                }, {
                    "label": "item4",
-                   "icon": "glyphicon glyphicon-euro"
+                   "icon": "wi wi-euro-symbol"
                }
            ];
            }

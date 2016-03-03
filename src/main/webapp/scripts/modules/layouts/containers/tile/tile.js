@@ -117,7 +117,7 @@ WM.module('wm.layouts.containers')
  *  <div data-ng-controller="Ctrl" class="wm-app">
  *      <br>
  *      <wm-tile width="400" margintop="10" marginright="10" marginleft="10" marginbottom="10" backgroundcolor="#2F80E7" color="#fff"  paddingtop="10" paddingleft="10" paddingbottom="10" paddingright="10">
- *           <wm-icon iconsize="2em" iconclass="glyphicon glyphicon-user"></wm-icon>
+ *           <wm-icon iconsize="2em" iconclass="wi wi-user"></wm-icon>
  *           <wm-label width="100%" textalign="center" fontsize="3" fontunit="em" fontweight="bold" caption="12680"></wm-label>
  *           <wm-label width="100%" caption="Signups" textalign="center" fontweight="bold"></wm-label>
  *       </wm-tile>

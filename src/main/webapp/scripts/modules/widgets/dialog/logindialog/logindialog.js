@@ -202,7 +202,7 @@ WM.module('wm.widgets.dialog')
         <file name="index.html">
             <div data-ng-controller="Ctrl">
                 <wm-view class="dialog-view">
-                    <wm-logindialog modal="false" iconclass="glyphicon glyphicon-log-in" title="Login" name="loginDialog" on-error="logindialog1Error($event, $scope)" on-success="logindialog1Success($event, $scope)">
+                    <wm-logindialog modal="false" iconclass="wi wi-sign-in" title="Login" name="loginDialog" on-error="logindialog1Error($event, $scope)" on-success="logindialog1Success($event, $scope)">
                         <wm-dialogheader></wm-dialogheader>
                         <wm-dialogcontent>
                             <wm-form>

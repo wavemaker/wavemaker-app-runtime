@@ -294,7 +294,7 @@ WM.module('wm.layouts.containers')
                 $scope.items = [
                         {
                             "label": "Home",
-                            "icon": "glyphicon glyphicon-home",
+                            "icon": "wi wi-home",
                             "link": "#/home"
                         },
                         {
@@ -302,22 +302,22 @@ WM.module('wm.layouts.containers')
                             "children": [
                                 {
                                     "label": "Action",
-                                    "icon": "glyphicon glyphicon-book"
+                                    "icon": "wi wi-book"
                                 },
                                 {
                                     "label": "Help",
-                                    "icon": "glyphicon glyphicon-question-sign"
+                                    "icon": "wi wi-question-sign"
                                 }
                             ]
                         },
                         {
                             "label": "Others",
-                            "icon": "glyphicon glyphicon-shopping-cart",
+                            "icon": "wi wi-shopping-cart",
                             "link": "http://www.example.com"
                         },
                         {
                             "label": "Inventory",
-                            "icon": "glyphicon glyphicon-tags"
+                            "icon": "wi wi-tags"
                         }
                    ];
               };
@@ -338,7 +338,7 @@ WM.module('wm.layouts.containers')
             <div class="wm-app" data-ng-controller="Ctrl">
                 <wm-nav>
                     <wm-nav-item>
-                        <wm-anchor caption="Dashboard" iconclass="glyphicon glyphicon-dashboard" class="active"></wm-anchor>
+                        <wm-anchor caption="Dashboard" iconclass="wi wi-dashboard" class="active"></wm-anchor>
                     </wm-nav-item>
                 </wm-nav>
             </div>

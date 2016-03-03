@@ -46,24 +46,24 @@ WM.module('wm.widgets.basic')
                     scope.messageType = {
                         isSuccess: true
                     };
-                    scope.messageIcon = 'glyphicon glyphicon-ok-sign';
+                    scope.messageIcon = 'wi wi-done';
                 } else if (newVal === 'error') {
                     scope.messageType = {
                         isError: true
                     };
-                    scope.messageIcon = 'glyphicon glyphicon-remove-sign';
+                    scope.messageIcon = 'wi wi-cancel';
                 } else if (newVal === 'warning') {
                     scope.messageType = {
                         isWarning: true
                     };
-                    scope.messageIcon = 'glyphicon glyphicon-alert';
+                    scope.messageIcon = 'wi wi-bell';
                 } else if (newVal === 'warn') {/*Fallback to support old projects with type as "warn"*/
                     scope.type = 'warning';
                 } else if (newVal === 'info') {
                     scope.messageType = {
                         isInfo: true
                     };
-                    scope.messageIcon = 'glyphicon glyphicon-info-sign';
+                    scope.messageIcon = 'wi wi-info';
                 } else if (newVal === 'loading') {
                     scope.messageType = {
                         isLoading: true

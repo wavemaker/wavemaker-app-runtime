@@ -7,12 +7,12 @@ WM.module("wm.widgets.basic")
         $templateCache.put("template/widget/datanavigator.html",
             '<nav data-identifier="datanavigator" class="app-datanavigator clearfix" data-ng-show="show" init-widget apply-styles>' +
                 '<ul class="pagination {{class}}" data-ng-if="navcontrols === \'Advanced\'">' +
-                    '<li data-ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" data-ng-click="navigatePage(\'first\', $event)"><i class="glyphicon glyphicon-fast-backward"></i></a></li>' +
-                    '<li data-ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" data-ng-click="navigatePage(\'prev\', $event)"><i class="glyphicon glyphicon-step-backward"></i></a></li>' +
+                    '<li data-ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" data-ng-click="navigatePage(\'first\', $event)"><i class="wi wi-fast-backward"></i></a></li>' +
+                    '<li data-ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" data-ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-step-backward"></i></a></li>' +
                     '<li class="pagecount disabled"><a><input title="Current Page" type="number" data-ng-disabled="isDisableCurrent" data-ng-model="dn.currentPage" ng-model-options="{updateOn: \'change blur\'}" data-ng-change="onModelChange($event)" class="form-control" /></a></li>' +
                     '<li class="disabled"><a data-ng-hide="isDisableCount"> of {{pageCount}}</a></li>' +
-                    '<li data-ng-class="{\'disabled\':isDisableNext}"><a title="Go Next" name="next" href="javascript:void(0);" aria-label="Next" data-ng-click="navigatePage(\'next\', $event)"><i class="glyphicon glyphicon-step-forward"></i></a></li>' +
-                    '<li data-ng-class="{\'disabled\':isDisableLast}"><a title="Go to End" name="last" href="javascript:void(0);" aria-label="Last" data-ng-click="navigatePage(\'last\', $event)"><i class="glyphicon glyphicon-fast-forward"></i></a></li>' +
+                    '<li data-ng-class="{\'disabled\':isDisableNext}"><a title="Go Next" name="next" href="javascript:void(0);" aria-label="Next" data-ng-click="navigatePage(\'next\', $event)"><i class="wi wi-step-forward"></i></a></li>' +
+                    '<li data-ng-class="{\'disabled\':isDisableLast}"><a title="Go to End" name="last" href="javascript:void(0);" aria-label="Last" data-ng-click="navigatePage(\'last\', $event)"><i class="wi wi-fast-forward"></i></a></li>' +
                     '<li data-ng-if="showrecordcount" class="totalcount disabled"><a>Total Records: {{dataSize}}</a></li>' +
                 '</ul>' +
                 '<ul class="pager" data-ng-if="navcontrols === \'Basic\'">' +

@@ -51,7 +51,7 @@ WM.module('wm.widgets.live')
                                 '<wm-mobile-navbar title="{{title}}" on-backbtnclick="onBackbtnclick({$event: $event, $scope: this})">' +
                                     '<wm-button type="{{btn.type}}" class="navbar-btn btn-transparent" data-ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
-                                '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
+                                '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
                                 '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +
                                     template.context.innerHTML +
                                 '</div>' +
@@ -59,7 +59,7 @@ WM.module('wm.widgets.live')
                         '</form>';
 
                 defaultTemplate = '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
-                                    '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 glyphicon glyphicon-cog"></i>Live form in dialog mode</div>' +
+                                    '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
                                     '<div class="form-header panel-heading" data-ng-show="!isLayoutDialog" data-ng-if="title">' +
                                         '<h3 class="panel-title">' +
                                             '<i data-ng-if="iconclass" class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +

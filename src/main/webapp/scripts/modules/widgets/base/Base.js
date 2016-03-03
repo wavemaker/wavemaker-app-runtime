@@ -253,7 +253,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },
                     "wm.icon": {
-                        "iconclass": {"type": "string", "value": "glyphicon glyphicon-star-empty", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconclass": {"type": "string", "value": "wi wi-star-border", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "animation": {"type": "list", "options": animationOptions},
                         "color": {"type": "string", "widget": "color"},
@@ -305,7 +305,7 @@ WM.module('wm.widgets.base', [])
                         "capturetype": {"type": "list", "options": ["IMAGE", "VIDEO"], "value" : "IMAGE"},
                         "datavalue": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "title": {"type": "string", "bindable": "in-out-bound"},
-                        "iconclass": {"type": "string", "value": "glyphicon glyphicon-camera", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconclass": {"type": "string", "value": "wi wi-photo-camera", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex, "value" : "2em"},
                         /* capture picture options*/
                         "imagequality": {"type": "number", "value": 80},
@@ -786,7 +786,7 @@ WM.module('wm.widgets.base', [])
                     "wm.alertdialog": {
                         "title": {"type": "string", "value": "Alert", "bindable": "in-bound"},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-warning-sign", "pattern": classRegex},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "wi wi-warning", "pattern": classRegex},
                         "message": {"type": "string", "value": "I am an alert box!", "bindable": "in-bound"},
                         "alerttype": {"type": "list", "options": ["error", "information", "success", "warning"], "value": "error"}
                     },
@@ -794,7 +794,7 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "value": "Confirm", "bindable": "in-bound"},
                         "canceltext": {"type": "string", "value": "CANCEL", "bindable": "in-bound"},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-ok", "pattern": classRegex},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "wi wi-done", "pattern": classRegex},
                         "message": {"type": "string", "value": "I am confirm box!", "bindable": "in-bound"},
                         "onCancel": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
@@ -802,14 +802,14 @@ WM.module('wm.widgets.base', [])
                         "title": {"type": "string", "value": "External Content", "bindable": "in-bound"},
                         "url": {"type": "string", "value": "http://www.wavemaker.com", "bindable": "in-out-bound"},
                         "height": {"type": "string", "value": "400", "pattern": dimensionRegex},
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "glyphicon glyphicon-globe", "pattern": classRegex},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "wi wi-globe", "pattern": classRegex},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
                         "closable": {"type": "boolean", "value": true}
                     },
                     "wm.pagedialog": {
                         "title": {"type": "string", "value": "Page Content", "bindable": "in-bound"},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "glyphicon glyphicon-file", "pattern": classRegex},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "wi wi-file", "pattern": classRegex},
                         "closable": {"type": "boolean", "value": true}
                     },
                     "wm.logindialog": {
@@ -945,7 +945,7 @@ WM.module('wm.widgets.base', [])
                         "itemlabel": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itemlink": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itemchildren": {"type": "list", "options": [""], "datasetfilter" : "objects"},
-                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'glyphicon glyphicon-file', 'type': 'anchor'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'glyphicon glyphicon-file'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'glyphicon glyphicon-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'glyphicon glyphicon-file'} } }], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file'} } }], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]}
@@ -961,12 +961,12 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
                         "title": {"type": "string", "bindable": "in-bound"},
-                        "leftnavpaneliconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-menu-hamburger"},
+                        "leftnavpaneliconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "wi wi-menu"},
                         "backbutton":  {"type": "boolean", "value": true},
-                        "backbuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-menu-left"},
+                        "backbuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "wi wi-back"},
                         "backbuttonlabel":  {"type": "string"},
                         "searchbutton":  {"type": "boolean", "value": false},
-                        "searchbuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-search", "show": false},
+                        "searchbuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "wi wi-search", "show": false},
                         "searchbuttonlabel":  {"type": "string", "show": false},
                         "searchplaceholder": {"type": "string", "value": "Search", "show": false},
                         "onSearch": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1272,7 +1272,7 @@ WM.module('wm.widgets.base', [])
                         "maxfilesize": {"type": "string", "widget": "fileupload-relativepath", "value": "",  "info": "size in MB"},
                         "caption": {"type": "string", "value": "Upload", "bindable": "in-out-bound", "maxlength": 256},
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "glyphicon glyphicon-upload", "pattern": classRegex},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "wi wi-file-upload", "pattern": classRegex},
 
                         /* ---- events ---- */
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1404,7 +1404,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "dropposition": {"type": "list", "options": ["down", "up"], "value": "up"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "morebuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "glyphicon glyphicon-option-horizontal"},
+                        "morebuttoniconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "wi wi-more-horiz"},
                         "morebuttonlabel":  {"type": "string", "value": "more"}
                     },
                     "wm.tabbar.dataProps": {
@@ -1457,7 +1457,7 @@ WM.module('wm.widgets.base', [])
                         "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
                         "pagesize": {"type": "number", "value": 20},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_radio", "show": false},
-                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "value": "glyphicon glyphicon-filter", "pattern": classRegex},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "value": "wi wi-filter-list", "pattern": classRegex},
                         /* Events */
                         "onBeforeservicecall": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onError": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},

@@ -216,7 +216,7 @@ WM.module('wm.widgets.dialog')
                 <wm-button on-click="confirmDialog.show" caption="Show Dialog" class="btn-primary"></wm-button>
                 <wm-view class="dialog-view">
                     <wm-confirmdialog name="confirmDialog" controller="Ctrl"
-                        iconclass="glyphicon glyphicon-warning-sign" message="I am a confirm box"
+                        iconclass="wi wi-warning" message="I am a confirm box"
                         oktext="Ok!!" canceltext="Close" on-ok="onOkCallBack()"
                         on-cancel="onCancelCallBack()" on-close="onCloseCallBack()">
                     </wm-confirmdialog>

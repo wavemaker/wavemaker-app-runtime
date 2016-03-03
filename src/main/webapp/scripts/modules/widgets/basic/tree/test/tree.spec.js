@@ -97,10 +97,10 @@ describe("Testing Basic Widget: tree", function () {
             //it("should check the construction of the element from the dataset", function () {
             //    iScope.nodes = [{
             //        "label": "item1",
-            //        "icon": "glyphicon glyphicon-euro"
+            //        "icon": "wi wi-euro-symbol"
             //    }, {
             //        "label": "item2",
-            //        "icon": "glyphicon glyphicon-euro"
+            //        "icon": "wi wi-euro-symbol"
             //    }];
             //    iScope.$apply();
             //    var items = iScope.dataset.split(', ');

@@ -66,7 +66,7 @@ WM.module('wm.widgets.basic')
         <file name="index.html">
             <div data-ng-controller="Ctrl" class="wm-app">
                 <br>
-                <wm-icon iconclass="glyphicon glyphicon-search" iconsize="3em"></wm-icon>
+                <wm-icon iconclass="wi wi-search" iconsize="3em"></wm-icon>
             </div>
         </file>
         <file name="script.js">

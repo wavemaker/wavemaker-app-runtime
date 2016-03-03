@@ -10,7 +10,7 @@ describe('Testing Widget: wm-pagedialog', function () {
         widgetConfig,
         element,
         markup = '<wm-pagedialog name="PageName" oktext="Acccept" title="PageContent" width="600" height="200" content="header"'+
-                 'animation="shake" iconclass="glyphicon glyphicon-heart" iconwidth="20" iconheight="15" iconmargin="5"></wm-pagedialog>',
+                 'animation="shake" iconclass="wi wi-heart" iconwidth="20" iconheight="15" iconmargin="5"></wm-pagedialog>',
         dialogBody;
 
     /*Custom Test Suite for alert dialog widget.*/

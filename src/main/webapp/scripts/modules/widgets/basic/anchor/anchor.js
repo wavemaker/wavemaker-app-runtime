@@ -74,8 +74,8 @@ WM.module('wm.widgets.basic')
                     'pre': function (scope, element, attrs) {
                         //@Deprecated iconname; use iconclass instead
                         if (!attrs.iconclass && attrs.iconname) {
-                            WM.element(tElement.context).attr('iconclass', 'glyphicon glyphicon-' + attrs.iconname);
-                            attrs.iconclass = 'glyphicon glyphicon-' + attrs.iconname;
+                            WM.element(tElement.context).attr('iconclass', 'wi wi-' + attrs.iconname);
+                            attrs.iconclass = 'wi wi-' + attrs.iconname;
                         }
                         scope.showicon = !scope.iconurl;
                         scope.widgetProps = widgetProps;

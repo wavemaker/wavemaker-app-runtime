@@ -47,7 +47,7 @@ WM.module('wm.widgets.basic')
                     '>' +
                 '<span class="input-group-addon" data-ng-if="dataSetType === \'listOfObjects\' || dataSetType === \'listOfStrings\'" >' +
                     '<form data-ng-submit="onSubmit({$event: $event, $scope: this})" >' +
-                        '<button title="Search" class="app-search-button glyphicon glyphicon-search" type="submit" ' +
+                        '<button title="Search" class="app-search-button wi wi-search" type="submit" ' +
                             'data-ng-click="onTypeAheadSelect($event, $item, $model, $label)"' +
                         '></button>' +
                     '</form>' +
@@ -71,7 +71,7 @@ WM.module('wm.widgets.basic')
                     'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     'typeahead-template-url="template/widget/form/searchlist.html"' +
                 '>' +
-                '<i class="btn-close glyphicon glyphicon-remove" data-ng-show="showClosebtn" data-ng-click="clearText();"></i>' +
+                '<i class="btn-close wi wi-cancel" data-ng-show="showClosebtn" data-ng-click="clearText();"></i>' +
             '</div>'
             );
     }])

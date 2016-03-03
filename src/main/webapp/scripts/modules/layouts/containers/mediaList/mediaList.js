@@ -21,10 +21,10 @@ WM.module('wm.layouts.containers')
                                         '<div class="image-container">' +
                                             '<img class="center-block" data-ng-src="{{fieldDefs[selectedMediaIndex][mediaurl]}}">' +
                                                 '<a class="app-media-fullscreen-nav-control left" data-ng-show="selectedMediaIndex > 0" data-ng-click="showNext()">' +
-                                                    '<i class="glyphicon glyphicon-menu-left"></i>' +
+                                                    '<i class="wi wi-chevron-left"></i>' +
                                                 '</a>' +
                                                 '<a class="app-media-fullscreen-nav-control right" data-ng-show="selectedMediaIndex < fieldDefs.length-1" data-ng-click="showPrev()">' +
-                                                    '<i class="glyphicon glyphicon-menu-right"></i>' +
+                                                    '<i class="wi wi-chevron-right"></i>' +
                                                 '</a>' +
                                          '</div>' +
                                  '</div>' +

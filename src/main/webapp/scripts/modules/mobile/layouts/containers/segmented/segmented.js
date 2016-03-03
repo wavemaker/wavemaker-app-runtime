@@ -194,13 +194,13 @@ WM.module('wm.layouts.containers')
  *       <file name="index.html">
  *           <div data-ng-controller="Ctrl" class="wm-app">
  *                 <wm-segmented-control height="400" name="segmentedcontrol3">
- *                      <wm-segment-content caption="" name="segmentedcontrolcontent7" iconclass="glyphicon glyphicon-link">
+ *                      <wm-segment-content caption="" name="segmentedcontrolcontent7" iconclass="wi wi-link">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#db6a2c"></wm-tile>
  *                      </wm-segment-content>
- *                      <wm-segment-content caption="" name="segmentedcontrolcontent9" iconclass="glyphicon glyphicon-facetime-video">
+ *                      <wm-segment-content caption="" name="segmentedcontrolcontent9" iconclass="wi wi-video">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#72a68a"></wm-tile>
  *                      </wm-edcontent>
- *                      <wm-segment-content caption="" name="segmentedcontrolcontent4" iconclass="glyphicon glyphicon-picture">
+ *                      <wm-segment-content caption="" name="segmentedcontrolcontent4" iconclass="wi wi-picture">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#80d3ed"></wm-tile>
  *                      </wm-segment-content>
  *                  </wm-segmented-control>
