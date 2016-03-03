@@ -45,6 +45,7 @@ import com.wavemaker.runtime.data.model.ProcedureParam;
 import com.wavemaker.runtime.data.model.ProcedureParamType;
 import com.wavemaker.runtime.data.util.ProceduresUtils;
 import com.wavemaker.runtime.system.SystemPropertiesUnit;
+import com.wavemaker.studio.common.CommonConstants;
 import com.wavemaker.studio.common.MessageResource;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.json.JSONUtils;
@@ -214,11 +215,13 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
     }
 
     private CustomProcedureParam prepareCustomProcedureParam(final Map<String, Object> params, final ProcedureParam procedureParam) {
+        String paramName = procedureParam.getParamName();
         Object valueObject = params.get(procedureParam.getParamName());
         if (procedureParam.isSystemParam()) {
-            valueObject = SystemPropertiesUnit.valueOf(procedureParam.getParamName()).getValue();
+            paramName = CommonConstants.SYSTEM_PARAM_PREFIX + procedureParam.getSystemParamName();
+            valueObject = SystemPropertiesUnit.valueOf(paramName).getValue();
         }
-        return new CustomProcedureParam(procedureParam.getParamName(), valueObject, procedureParam.getProcedureParamType(), procedureParam.getValueType());
+        return new CustomProcedureParam(paramName, valueObject, procedureParam.getProcedureParamType(), procedureParam.getValueType());
 
     }
 
