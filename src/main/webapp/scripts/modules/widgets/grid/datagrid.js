@@ -1056,7 +1056,6 @@ $.widget('wm.datagrid', {
             this.options.onRowDeselect(rowData, e);
         }
     },
-
     /*Handles the double click of the grid row*/
     rowDblClickHandler: function (e, $row) {
         e.stopPropagation();
@@ -1066,11 +1065,10 @@ $.widget('wm.datagrid', {
         if (!rowData) {
             return;
         }
-        if ($.isFunction(this.options.beforeRowUpdate)) {
-            this.options.beforeRowUpdate(rowData, e, 'dblclick');
+        if ($.isFunction(this.options.onRowDblClick)) {
+            this.options.onRowDblClick(rowData, e);
         }
     },
-
     /* Handles column selection. */
     columnSelectionHandler: function (e) {
         e.stopImmediatePropagation();

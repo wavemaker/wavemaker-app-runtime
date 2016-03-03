@@ -163,6 +163,7 @@ WM.module('wm.widgets.grid')
                 "onBeforerowinsert": "&",
                 "onRowinsert": "&",
                 "onRowclick": "&",
+                "onRowdblclick": "&",
                 "onColumnselect": "&",
                 "onColumndeselect": "&",
                 "onEnterkeypress": "&",
@@ -1299,6 +1300,10 @@ WM.module('wm.widgets.grid')
                     if (WM.isDefined($scope.onClick)) {
                         $scope.onClick({$data: rowData, $event: e});
                     }
+                    $rootScope.$safeApply($scope);
+                },
+                onRowDblClick: function (rowData, e) {
+                    $scope.onRowdblclick({$data: rowData, $event: e});
                     $rootScope.$safeApply($scope);
                 },
                 onRowDeselect: function (rowData, e) {
