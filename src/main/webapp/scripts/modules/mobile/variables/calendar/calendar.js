@@ -1,18 +1,39 @@
 /*global WM, _*/
 WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', function (DeviceVariableService, $cordovaCalendar) {
     "use strict";
-    var event = {
-            title: '',
-            message: '',
-            location: '',
-            startDate: '',
-            endDate: ''
-        },
-        parseDate = function (dateStr, defaultDate) {
+    var parseDate = function (dateStr, defaultDate) {
             return (dateStr && dateStr.length > 0) ? new Date(dateStr) : defaultDate;
         },
         defaultStartDate = new Date(new Date().getTime() - (3 * 30 * 24 * 60 * 60 * 1000)), // 3 months previous date
         defaultEndDate = new Date(new Date().getTime() + (3 * 30 * 24 * 60 * 60 * 1000)),   // 3 months later date
+        modelMeta = { // setting the type of fields
+            'title' : {
+                fieldName: 'title',
+                type     : 'string',
+                value    : ''
+            },
+            'message': {
+                fieldName: 'message',
+                type     : 'string',
+                value    : ''
+            },
+            'location': {
+                fieldName: 'location',
+                type     : 'string',
+                value    : ''
+            },
+            'startDate': {
+                fieldName: 'startDate',
+                type     : 'date',
+                value    : ''
+            },
+            'endDate': {
+                fieldName: 'endDate',
+                type     : 'date',
+                value    : ''
+            }
+        },
+        event = _.mapValues(modelMeta, 'value'),
         operations = {
             createEvent: {
                 properties : [
@@ -74,6 +95,9 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
                         endDate: parseDate(variable.eventEnd, defaultEndDate)
                     };
                     $cordovaCalendar.findEvent(listEventOptions).then(success, error);
+                },
+                getMeta : function () {
+                    return modelMeta;
                 }
             }
         };

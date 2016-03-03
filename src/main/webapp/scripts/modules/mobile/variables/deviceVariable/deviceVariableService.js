@@ -98,6 +98,14 @@ wm.variables.services.DeviceVariableService = ['$rootScope', 'Variables', 'Utils
                 });
                 return _.chain(allProperties).flatten().uniq().value();
             },
+            getFieldType : function (variable, fieldName) {
+                var operation =  this.getOperation(variable.service, variable.operation),
+                    metaData;
+                if (operation.hasOwnProperty('getMeta')) {
+                    metaData = operation.getMeta();
+                    return metaData && metaData[fieldName] && metaData[fieldName].type;
+                }
+            },
             invoke : invoke
         };
     }];

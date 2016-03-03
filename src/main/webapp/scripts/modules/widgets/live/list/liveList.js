@@ -50,8 +50,9 @@ WM.module('wm.widgets.live')
         '$rootScope',
         '$servicevariable',
         '$timeout',
+        'DeviceVariableService',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events']),
@@ -272,25 +273,17 @@ WM.module('wm.widgets.live')
                 var $liTemplate,
                     groupedLiData,
                     regex    = /[^\w]/g,
-                    ALPHABET = 'alphabet';
+                    ALPHABET = 'alphabet',
+                    OTHERS = 'Others';
 
                 $el.find('> [data-identifier=list]').empty();
 
                 // groups the fields based on the groupby value.
                 groupedLiData = _.groupBy(_s.fieldDefs, function (liData) {
-                    var concatStr;
+                    var concatStr = Utils.findValueOf(liData, $is.groupby);
 
-                    // if grouby has related column then get the value of the related column and return the value.
-                    if (_.includes($is.groupby, '.')) {
-                        _.each($is.groupby.split('.'), function (s) {
-                            if (!concatStr) {
-                                concatStr = liData[s];
-                            } else {
-                                concatStr = concatStr[s];
-                            }
-                        });
-                    } else {
-                        concatStr = liData[$is.groupby];
+                    if (WM.isUndefined(concatStr)) {
+                        concatStr = OTHERS; // by default set the undefined groupKey as 'others'
                     }
 
                     // if match prop is alphabetic ,get the starting alphabet of the word as key.
@@ -522,6 +515,10 @@ WM.module('wm.widgets.live')
                 }
             }
 
+            function isFieldTypeString(variable, fieldName) {
+                return (DeviceVariableService.getFieldType(variable, fieldName) === 'string');
+            }
+
             /** In case of run mode, the field-definitions will be generated from the markup*/
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, $el, attrs, listCtrl, key, nv, ov) {
@@ -529,9 +526,9 @@ WM.module('wm.widgets.live')
                     oldClass,
                     newClass,
                     selectedVariable,
+                    fieldObj,
                     eleScope          = $el.scope(),
-                    isBoundToVariable = _.includes($is.binddataset, 'bind:Variables.'),
-                    variable          = isBoundToVariable && Utils.getVariableName($is, eleScope),
+                    variable          =  Utils.getVariableName($is, eleScope),
                     wp                = $is.widgetProps;
                 /**checking if the height is set on the element then we will enable the overflow**/
 
@@ -545,15 +542,9 @@ WM.module('wm.widgets.live')
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, nv, attrs, listCtrl);
 
-                    selectedVariable = variable && eleScope.Variables[variable];
+                    selectedVariable = eleScope.Variables[variable];
 
                     if ($is.widgetid) {
-                        // groupby is not shown for device variables
-                        if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
-                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'groupby': ''});
-                            wp.groupby.show = false;
-                        }
-
                         // set the groupby options
                         wp.groupby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
 
@@ -573,9 +564,19 @@ WM.module('wm.widgets.live')
                                 }
                             }
                             if ($is.groupby) {
+                                // set the groupby options
+                                if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
+                                    wp.groupby.options = _.keys(DeviceVariableService.getOperation(selectedVariable.service, selectedVariable.operation).getMeta());
+                                    return;
+                                }
                                 wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, {'sort' : false});
                             }
                         }
+                        // show match property for device variables
+                        if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable' && $is.groupby) {
+                            wp.match.show = isFieldTypeString(selectedVariable, $is.groupby);
+                        }
+
                         if (!wp.match.show) {
                             $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
                         }
@@ -599,6 +600,8 @@ WM.module('wm.widgets.live')
                         if ($is.dataset) {
                             if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
                                 wp.match.show = $rs.dataTypes[selectedVariable.type].fields[$is.groupby].type === 'java.lang.String';
+                            } else if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
+                                wp.match.show = isFieldTypeString(selectedVariable, $is.groupby);
                             } else {
                                 wp.match.show = (getFieldType($is.dataset.propertiesMap, $is.groupby) === 'string');
                             }
