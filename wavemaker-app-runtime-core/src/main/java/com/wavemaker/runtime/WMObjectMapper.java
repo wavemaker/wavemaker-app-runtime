@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.util.Date;
 
+import com.wavemaker.studio.common.json.serializer.NoOpByteArraySerializer;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.LocalDateTime;
 
@@ -41,10 +42,10 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 import com.wavemaker.runtime.data.json.WMHibernate4Module;
 import com.wavemaker.runtime.rest.model.RestResponseModule;
-import com.wavemaker.studio.common.ser.WMDateDeSerializer;
-import com.wavemaker.studio.common.ser.WMLocalDateTimeDeSerializer;
-import com.wavemaker.studio.common.ser.WMLocalDateTimeSerializer;
-import com.wavemaker.studio.common.ser.WMSqlDateDeSerializer;
+import com.wavemaker.studio.common.json.deserializer.WMDateDeSerializer;
+import com.wavemaker.studio.common.json.deserializer.WMLocalDateTimeDeSerializer;
+import com.wavemaker.studio.common.json.serializer.WMLocalDateTimeSerializer;
+import com.wavemaker.studio.common.json.deserializer.WMSqlDateDeSerializer;
 
 public class WMObjectMapper extends ObjectMapper {
 
@@ -263,7 +264,7 @@ public class WMObjectMapper extends ObjectMapper {
             registerModule(hibernate4Module);
 
             SimpleModule module = new SimpleModule("WMDefaultSerializer");
-            module.addSerializer(byte[].class, new ByteArraySerializer());
+            module.addSerializer(byte[].class, new NoOpByteArraySerializer());
             module.addSerializer(LocalDateTime.class, new WMLocalDateTimeSerializer());
             registerModule(module);
 

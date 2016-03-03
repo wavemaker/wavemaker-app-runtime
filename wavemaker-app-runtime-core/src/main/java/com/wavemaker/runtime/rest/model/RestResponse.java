@@ -15,10 +15,14 @@
  */
 package com.wavemaker.runtime.rest.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.wavemaker.studio.common.json.serializer.ByteArrayToStringSerializer;
+import com.wavemaker.studio.common.json.deserializer.StringifiedByteArrayDeSerializer;
+import org.apache.http.impl.cookie.BasicClientCookie;
+
 import java.util.List;
 import java.util.Map;
-
-import org.apache.http.impl.cookie.BasicClientCookie;
 
 
 /**
@@ -26,9 +30,13 @@ import org.apache.http.impl.cookie.BasicClientCookie;
  */
 public class RestResponse {
 
-    private String responseBody;
+    @JsonSerialize(using = ByteArrayToStringSerializer.class)
+    @JsonDeserialize(using = StringifiedByteArrayDeSerializer.class)
+    private byte[] responseBody;
 
-    private String convertedResponse;
+    @JsonSerialize(using = ByteArrayToStringSerializer.class)
+    @JsonDeserialize(using = StringifiedByteArrayDeSerializer.class)
+    private byte[] convertedResponse;
 
     private int statusCode;
 
@@ -46,19 +54,19 @@ public class RestResponse {
         this.cookies = cookies;
     }
 
-    public String getResponseBody() {
+    public byte[] getResponseBody() {
         return responseBody;
     }
 
-    public void setResponseBody(String responseBody) {
+    public void setResponseBody(byte[] responseBody) {
         this.responseBody = responseBody;
     }
 
-    public String getConvertedResponse() {
+    public byte[] getConvertedResponse() {
         return convertedResponse;
     }
 
-    public void setConvertedResponse(String convertedResponse) {
+    public void setConvertedResponse(byte[] convertedResponse) {
         this.convertedResponse = convertedResponse;
     }
 
