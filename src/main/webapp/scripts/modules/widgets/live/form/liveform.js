@@ -105,6 +105,7 @@ WM.module('wm.widgets.live')
                 /* prevformFields is used for showing the previous data when cancel is clicked and also for update calls*/
                 var prevformFields,
                     prevDataObject = {},
+                    isDeleteInProgress,
                     onResult = function (data, status, event) {
                         /* whether service call success or failure call this method*/
                         $scope.onResult({$event: event, $operation: $scope.operationType, $data: data});
@@ -312,6 +313,7 @@ WM.module('wm.widgets.live')
                         $scope.toggleMessage(false);
                         if ($scope.ctrl) {
                             if (!$scope.ctrl.confirmMessage()) {
+                                isDeleteInProgress = false;
                                 return;
                             }
                         }
@@ -476,10 +478,13 @@ WM.module('wm.widgets.live')
                     });
                 };
                 /*Sets the operationType to "delete" and calls the formSave function to handle the action*/
-                $scope.delete = function () {
+                $scope.delete = function (callBackFn) {
                     $scope.operationType = "delete";
                     prevDataObject = Utils.getClonedObject($scope.rowdata);
                     $scope.formSave();
+                    if (!isDeleteInProgress && callBackFn) {
+                        callBackFn();
+                    }
                 };
                 /*Check if the data is in required format, i.e, if the field has a key and type*/
                 $scope.isInReqdFormat = function (data) {

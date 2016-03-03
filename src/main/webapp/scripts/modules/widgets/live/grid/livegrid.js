@@ -61,9 +61,9 @@ WM.module('wm.widgets.live')
                                     'allowAddNewRow': false
                                 };
                             /* For row delete , set the row fields to the gridform */
-                            liveGridOptions.onRowDelete = function (row) {
+                            liveGridOptions.onRowDelete = function (row, callBackFn) {
                                 scope.gridform.rowdata = row;
-                                scope.gridform.delete();
+                                scope.gridform.delete(callBackFn);
                             };
                             /* call the registered methods in gridform's scope */
                             /*Function to obtain parsed regular expression as provided in properties.*/
