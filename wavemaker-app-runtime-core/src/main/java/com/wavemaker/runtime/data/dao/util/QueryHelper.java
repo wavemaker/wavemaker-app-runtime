@@ -25,6 +25,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.dialect.Dialect;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,7 @@ public class QueryHelper {
         return false;
     }
 
-    public static String arrangeForSort(String queryStr, Sort sort, boolean isNative) {
+    public static String arrangeForSort(String queryStr, Sort sort, boolean isNative, Dialect dialect) {
         if (isNative && sort != null) {
             final Iterator<Sort.Order> iterator = sort.iterator();
             StringBuffer queryWithOrderBy = new StringBuffer(ORDER_BY_QUERY_TEMPLATE.replace("{0}", queryStr));
@@ -93,12 +94,9 @@ public class QueryHelper {
             while (iterator.hasNext()) {
                 Sort.Order order = iterator.next();
                 if (StringUtils.isNotBlank(order.getProperty())) {
-                    if (count == 0) {
-                        queryWithOrderBy.append(ORDER_BY);
-                    } else {
-                        queryWithOrderBy.append(ORDER_PROPERTY_SEPARATOR);
-                    }
-                    queryWithOrderBy.append(order.getProperty() + EMPTY_SPACE_DELIMITER_FOR_QUERY + order.getDirection().name());
+                    String direction = (order.getDirection() == null) ? Sort.Direction.ASC.name() : order.getDirection().name();
+                    queryWithOrderBy.append(count == 0 ? ORDER_BY : ORDER_PROPERTY_SEPARATOR);
+                    queryWithOrderBy.append(quote(dialect, order.getProperty()) + EMPTY_SPACE_DELIMITER_FOR_QUERY + direction);
                     count++;
                 }
             }
@@ -106,6 +104,18 @@ public class QueryHelper {
         }
         return queryStr;
     }
+
+    /**
+     * Apply dialect-specific quoting to the the given table property.
+     */
+    public static String quote(Dialect dialect, String name) {
+        if (!StringUtils.isNotBlank(name)) {
+            return null;
+        }
+
+        return dialect.openQuote() + name + dialect.closeQuote();
+    }
+
     public static void setResultTransformer(Query query) {
         if (query instanceof SQLQuery) {
             query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);

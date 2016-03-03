@@ -24,6 +24,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -183,7 +185,7 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
      * create native order by query from the given queryString & sort criteria...
      */
     private SQLQuery createNativeQuery(String queryString, Sort sort, Map<String, Object> params) {
-        String orderedQuery = QueryHelper.arrangeForSort(queryString, sort, true);
+        String orderedQuery = QueryHelper.arrangeForSort(queryString, sort, true, getDialect());
         return createNativeQuery(orderedQuery, params);
     }
 
@@ -238,5 +240,9 @@ public class WMQueryExecutorImpl implements WMQueryExecutor {
             throw new WMRuntimeException(MessageResource.CLASS_NOT_FOUND, ex, paramType);
         }
         return paramValue;
+    }
+
+    private Dialect getDialect() {
+        return ((SessionFactoryImplementor) template.getSessionFactory()).getDialect();
     }
 }
