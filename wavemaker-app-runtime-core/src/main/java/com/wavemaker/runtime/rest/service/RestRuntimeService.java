@@ -15,17 +15,6 @@
  */
 package com.wavemaker.runtime.rest.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.text.StrSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
-
 import com.wavemaker.runtime.helper.SchemaConversionHelper;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
@@ -34,12 +23,23 @@ import com.wavemaker.runtime.util.SwaggerDocUtil;
 import com.wavemaker.studio.common.WMRuntimeException;
 import com.wavemaker.studio.common.json.JSONUtils;
 import com.wavemaker.studio.common.util.IOUtils;
+import com.wavemaker.studio.common.util.StringUtils;
 import com.wavemaker.studio.common.util.WMUtils;
 import com.wavemaker.tools.apidocs.tools.core.model.Operation;
 import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
 import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
+import org.apache.commons.lang3.text.StrSubstitutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Uday Shankar
@@ -62,15 +62,15 @@ public class RestRuntimeService {
 
     private RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
-        String responseBody = restResponse.getResponseBody();
+        String responseBody = StringUtils.getStringFromBytes(restResponse.getResponseBody());
         if (restResponse.getContentType() != null) {
             MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
             if (WMUtils.isXmlMediaType(responseContentType)) {
-                restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
+                restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString().getBytes());
                 restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
             } else if (!WMUtils.isJsonMediaType(responseContentType)) {
                 try {//trying if the content is of xml type
-                    restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString());
+                    restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString().getBytes());
                     restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
                 } catch (Exception e) {
                     logger.debug("Unable to read the response as xml for the media type {} and convert to json", responseContentType, e);

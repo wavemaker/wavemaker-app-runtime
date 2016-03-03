@@ -63,8 +63,8 @@ public class RestConnector {
     public RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
         final HttpClientContext httpClientContext = HttpClientContext.create();
 
-        ResponseEntity<String> responseEntity = getResponseEntity(restRequestInfo,
-                httpClientContext, String.class);
+        ResponseEntity<byte[]> responseEntity = getResponseEntity(restRequestInfo,
+                httpClientContext, byte[].class);
 
         RestResponse restResponse = new RestResponse();
         restResponse.setResponseBody(responseEntity.getBody());

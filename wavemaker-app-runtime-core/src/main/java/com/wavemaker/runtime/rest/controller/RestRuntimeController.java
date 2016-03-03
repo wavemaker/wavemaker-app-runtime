@@ -80,7 +80,7 @@ public class RestRuntimeController extends AbstractController {
                 httpServletResponse.setHeader(updatedResponseHeaderKey, responseHeaderValue);
             }
         }
-        String responseBody = restResponse.getResponseBody();
+        byte[] responseBody = restResponse.getResponseBody();
         responseBody = (responseBody != null) ? responseBody : restResponse.getConvertedResponse();
         int statusCode = restResponse.getStatusCode();
         if (statusCode >= 200 && statusCode<= 299) {
@@ -88,8 +88,8 @@ public class RestRuntimeController extends AbstractController {
                 httpServletResponse.setContentType(restResponse.getContentType());
             }
             httpServletResponse.setHeader("X-WM-STATUS_CODE", String.valueOf(statusCode));
-            responseBody = (responseBody == null) ? "" : responseBody;
-            IOUtils.copy(new ByteArrayInputStream(responseBody.getBytes()), httpServletResponse.getOutputStream(), true, false);
+            responseBody = (responseBody == null) ? "".getBytes() : responseBody;
+            IOUtils.copy(new ByteArrayInputStream(responseBody), httpServletResponse.getOutputStream(), true, false);
         } else {
             throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, statusCode, responseBody);
         }
