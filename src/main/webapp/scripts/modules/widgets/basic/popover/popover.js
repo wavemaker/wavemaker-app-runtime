@@ -202,7 +202,8 @@ WM.module('wm.widgets.basic')
                 popoverScope = createPopoverScope(element),
                 page = $rootScope.$activePageEl,
                 popoverEle = $compile($templateCache.get('template/widget/basic/popover.html'))(popoverScope),
-                pageClickListener;
+                pageClickListener,
+                dialogEle;
             page.append(popoverEle);
             popoverEle.show();
             //check if inline content
@@ -231,8 +232,10 @@ WM.module('wm.widgets.basic')
                 popoverEle.removeClass('invisible');
                 shiftFocusToChild(popoverEle);
             });
+            //check if the popover is inside the dialog and get the dialog element.
+            dialogEle = WM.element('.modal-dialog');
             if (popoverScope.popoverautoclose) {
-                pageClickListener = new ParentEventListener(page, popoverEle);
+                pageClickListener = dialogEle.length === 0 ? new ParentEventListener(page, popoverEle) : new ParentEventListener(dialogEle, popoverEle);
                 pageClickListener.on('click', function (event) {
                     Utils.triggerFn(onClose, event);
                 });
@@ -253,7 +256,7 @@ WM.module('wm.widgets.basic')
             'restrict': 'E',
             'replace': true,
             'scope': {},
-            'transclude': true,
+            'transclude': CONSTANTS.isRunMode,
             'template': function () {
                 var template = WM.element($templateCache.get('template/widget/anchor.html'));
                 if (CONSTANTS.isRunMode) {
@@ -300,7 +303,7 @@ WM.module('wm.widgets.basic')
                             };
 
                         } else {
-                            /* if content is provided as an attribute, give it preference */
+                            //if content is provided as an attribute, give it preference
                             scope.inlinecontent = tElement.context.innerHTML;
                         }
 

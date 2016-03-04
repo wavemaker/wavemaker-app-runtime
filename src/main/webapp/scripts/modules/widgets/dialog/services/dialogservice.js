@@ -25,7 +25,10 @@ WM.module('wm.widgets.dialog')
          and params is a key value pair with values for resolve, scope, windowClass that are required as options in $uibModal
          */
             openDialogIds = [];
-
+        //close all the popovers before opening/closing the dialog
+        function closePopover() {
+            WM.element('.app-popover').remove();
+        }
         /**
          * @deprecated
          * @ngdoc function
@@ -48,7 +51,8 @@ WM.module('wm.widgets.dialog')
             if (!dialogId || ($uibModalInstances && $uibModalInstances[dialogId])) {
                 return;
             }
-
+            //remove the popovers in the page to avoid the overlap with dialog
+            closePopover();
             if (CONSTANTS.isStudioMode) {
                 $rootScope.muteOverlayCalc = true;
             }
@@ -143,6 +147,8 @@ WM.module('wm.widgets.dialog')
 
         /* close specific open dialog using dialog ID*/
         function _closeDialog(dialogId) {
+            //remove the popovers in the page to avoid the overlap with dialog
+            closePopover();
             var dialogRef = openDialogIds.indexOf(dialogId);
             if (dialogRef !== -1) {
                 openDialogIds.splice(dialogRef, 1);
@@ -169,6 +175,8 @@ WM.module('wm.widgets.dialog')
             if (!dialogId || ($uibModalInstances && !$uibModalInstances[dialogId])) {
                 return;
             }
+            //remove the popovers in the page to avoid the overlap with dialog
+            closePopover();
 
             if (CONSTANTS.isStudioMode) {
                 $rootScope.muteOverlayCalc = false;
@@ -197,7 +205,6 @@ WM.module('wm.widgets.dialog')
          */
 
         function showConfirmDialog(params) {
-
             var dialogId = "global-confirm-dialog",
                 template,
                 controller,
@@ -213,6 +220,8 @@ WM.module('wm.widgets.dialog')
             if ($uibModalInstances && $uibModalInstances[dialogId]) {
                 return;
             }
+            //remove the popovers in the page to avoid the overlap with dialog
+            closePopover();
             template = WM.element("script[id=" + dialogId + "]");
             controller = params.controller;
             content = template.html();
@@ -326,6 +335,8 @@ WM.module('wm.widgets.dialog')
         /* close all opened dialogs */
         function closeAllDialogs() {
             var index;
+            //remove the popovers in the page to avoid the overlap with dialog
+            closePopover();
             for (index = 0; index < openDialogIds.length; index += 1) {
                 hideDialog(openDialogIds[index]);
             }
@@ -368,6 +379,8 @@ WM.module('wm.widgets.dialog')
                 'scope': parentScope,
                 '_props': properties
             };
+            //remove the popovers in the page to avoid the overlap with dialog
+            closePopover();
             showDialog(dialogId, obj);
         }
 
