@@ -1007,6 +1007,7 @@ WM.module('wm.widgets.grid')
                         ngSrc,
                         imageEl;
                     rowScope.row = row;
+                    rowScope.selectedItemData = row;
                     rowScope.row.getProperty = function (field) {
                         return row[field];
                     };
