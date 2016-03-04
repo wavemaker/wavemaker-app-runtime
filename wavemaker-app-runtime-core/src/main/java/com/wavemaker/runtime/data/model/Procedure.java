@@ -35,26 +35,24 @@ public class Procedure {
 
     private String comment = null;
     private String description = null;
+    private String outputType;
     private boolean returnsSingleResult = false;
     private List<ProcedureParam> procedureParams = new ArrayList<>();
     private Map<String,String> returnTypeMetadata = new LinkedHashMap<>();
 
+    public Procedure() {
+    }
 
     public Procedure(Procedure procedure) {
         this.name = procedure.getName();
         this.procedure = procedure.getProcedure();
         this.comment = procedure.getComment();
         this.description = procedure.getDescription();
+        this.outputType = procedure.getOutputType();
         this.returnsSingleResult = procedure.isReturnsSingleResult();
         this.procedureParams = procedure.getProcedureParams();
-        this.outputType = procedure.getOutputType();
         this.returnTypeMetadata = procedure.getReturnTypeMetadata();
     }
-
-    public Procedure() {
-    }
-
-    private String outputType;
 
     public String getName() {
         return name;

@@ -27,6 +27,21 @@ public class ProcedureModel {
     private String description;
     private List<Procedure> procedures = null;
 
+    public ProcedureModel() {
+    }
+
+    public ProcedureModel(final String name, final String description, final List<Procedure> procedures) {
+        this.name = name;
+        this.description = description;
+        this.procedures = procedures;
+    }
+
+    public ProcedureModel(ProcedureModel procedureModel) {
+        this.name = procedureModel.getName();
+        this.description = procedureModel.getDescription();
+        this.procedures = procedureModel.getProcedures();
+    }
+
     public String getName() {
         return name;
     }
