@@ -737,8 +737,8 @@ WM.module('wm.widgets.live')
                             }
                         } else {
                             selectCount = 0;
-                            $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
                             if (!isActive) {
+                                $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
                                 $li.addClass('active');
                             }
                             /*trigger $apply, as 'click' or 'tap' is out of angular-scope*/
