@@ -678,10 +678,11 @@ WM.module('wm.widgets.base')
         }
     ])
     .service('BindingManager', [
+        '$rootScope',
         'Utils',
         'CONSTANTS',
 
-        function (Utils, CONSTANTS) {
+        function ($rs, Utils, CONSTANTS) {
             'use strict';
 
             var regex    = /\[\$i\]/g,
@@ -699,13 +700,15 @@ WM.module('wm.widgets.base')
             function registerWatchers() {
                 var watcher;
 
-                while (watchers.length) {
-                    watcher = watchers.shift();
-                    if (!watcher.$s || watcher.$s.$$destroyed) {
-                        return;
+                $rs.$evalAsync(function () {
+                    while (watchers.length) {
+                        watcher = watchers.shift();
+                        if (!watcher.$s || watcher.$s.$$destroyed) {
+                            return;
+                        }
+                        watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
                     }
-                    watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
-                }
+                });
             }
 
             _registerWatchers = _.debounce(registerWatchers, 50);
