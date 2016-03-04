@@ -59,7 +59,7 @@ WM.module('wm.widgets.basic')
                 if (WM.isObject(newVal)) {
                     element.find('>span.anchor-caption').text(JSON.stringify(newVal));
                 } else {
-                    element.find('>span.anchor-caption').html(($sce.trustAs($sce.HTML, newVal.toString()).toString()));
+                    element.find('>span.anchor-caption').html(($sce.trustAs($sce.HTML, (newVal || '').toString()).toString()));
                 }
                 break;
             }

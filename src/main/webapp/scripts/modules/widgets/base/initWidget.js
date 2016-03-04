@@ -191,24 +191,22 @@ WM.module('wm.widgets.base')
                     } else {
                         value = newVal;
                     }
-                } else {
+                } else if (CONSTANTS.isStudioMode && key !== 'dataset') {
                     // In studio mode, remove ".data[$i]" in the watch-expression so that it is not visible in the canvas.
-                    if (CONSTANTS.isStudioMode) {
-                        watchExpr = watchExpr.replace('.data[$i]', '');
-                    }
+                    watchExpr = watchExpr.replace('.data[$i]', '');
                     /*
                      * Show the binding text
                      * if the widget is having a widget(i.e, inside canvas)
                      * OR if the mode is studio and if the widget is inside a partial
                      * OR if the mode is studio and if the widget is inside a prefab
                      */
-                    value = ($is.widgetid || (CONSTANTS.isStudioMode && ($s.partialcontainername || $s.prefabname))) ? watchExpr : '';
+                    value = ($is.widgetid || $s.partialcontainername || $s.prefabname) ? watchExpr : '';
                     // Checking if the property is caption and value is not evaluated in the design mode
-                    if (value === watchExpr && (key === 'caption')) {
+                    if (value === watchExpr && key === 'caption') {
                         //Adding the data-evaluated attribute to identify the unevaluated expression against the current widget
                         $el.attr('data-evaluated', 'false');
                         //setting the widget name instead of the binding expression
-                        value = '' + $is.name;
+                        value = $is.name;
                     }
                 }
                 $is[key] = value;
@@ -588,7 +586,8 @@ WM.module('wm.widgets.base')
                             var hasDataValue,
                                 datavalue_value,
                                 $s = $el.scope(),
-                                scopeVarName;
+                                scopeVarName,
+                                delayed = [];
 
                             if (!$is || !$is.widgetProps) {
                                 return;
@@ -649,11 +648,20 @@ WM.module('wm.widgets.base')
                                 delete $is._initState.datavalue;
                             }
 
-                            _.keys($is._initState)
-                                .forEach(function (key) {
+                            // delay the setting of binded properties in isolateScope
+                            _.forEach($is._initState, function (propVal, propName) {
+                                if (_.startsWith(propVal, 'bind:')) {
+                                    delayed.push({'name': propName, 'value': propVal});
+                                } else {
                                     // set the value in scope;
-                                    $is[key] = $is._initState[key];
-                                });
+                                    $is[propName] = propVal;
+                                }
+                            });
+
+                            // update the binded properties in isolateScope
+                            _.forEach(delayed, function (prop) {
+                                $is[prop.name] = prop.value;
+                            });
 
                             // if element has datavalue, populate it into the isolateScope
                             if (hasDataValue) {
@@ -676,14 +684,31 @@ WM.module('wm.widgets.base')
         function (Utils, CONSTANTS) {
             'use strict';
 
-            var regex = /\[\$i\]/g,
-                $I = '[$i]',
-                $0 = '[0]';
+            var regex    = /\[\$i\]/g,
+                $I       = '[$i]',
+                $0       = '[0]',
+                watchers = [],
+                _registerWatchers;
 
             function isArrayTypeExpr(expr) {
                 var matchers = expr.match(regex); // check for `[$i]` in the expression
                 return matchers && matchers.length;
             }
+
+            // register the watchers.
+            function registerWatchers() {
+                var watcher;
+
+                while (watchers.length) {
+                    watcher = watchers.shift();
+                    if (!watcher.$s || watcher.$s.$$destroyed) {
+                        return;
+                    }
+                    watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
+                }
+            }
+
+            _registerWatchers = _.debounce(registerWatchers, 50);
 
             function arrayConsumer(listenerFn, allowPageable, restExpr, newVal, oldVal) {
                 var data = newVal,
@@ -747,6 +772,7 @@ WM.module('wm.widgets.base')
                     allowPageable  = _config.allowPageable,
                     acceptsArray   = _config.acceptsArray,
                     regExp         = new RegExp(/Variables\.(\w*)\.dataSet\[\$i\]/g), //Reg exp to match all Variables which has dataSet[$i]
+                    deRegister     = {},
                     variableObject;
 
                 function isPageable(variable) {
@@ -777,7 +803,20 @@ WM.module('wm.widgets.base')
                     };
                 }
 
-                return $s.$watch(watchInfo.expr, watchInfo.listener, deepWatch);
+                watchers.push({
+                    '$s'         : $s,
+                    'expr'       : watchInfo.expr,
+                    'listener'   : watchInfo.listener,
+                    'deepWatch'  : deepWatch,
+                    'deRegister' : deRegister
+                });
+
+                // delay the registration of watcher to improve the load time performance.
+                _registerWatchers();
+
+                return function customWatchDeRegister() {
+                    Utils.triggerFn(deRegister.destroy);
+                };
             }
 
             this.register = register;

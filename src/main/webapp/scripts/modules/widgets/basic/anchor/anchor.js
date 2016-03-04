@@ -57,7 +57,7 @@ WM.module('wm.widgets.basic')
                 if (WM.isObject(newVal)) {
                     element.children('.anchor-caption').text(JSON.stringify(newVal));
                 } else {
-                    element.children('.anchor-caption').html(($sce.trustAs($sce.HTML, newVal.toString()).toString()));
+                    element.children('.anchor-caption').html(($sce.trustAs($sce.HTML, (newVal || '').toString()).toString()));
                 }
                 break;
             }

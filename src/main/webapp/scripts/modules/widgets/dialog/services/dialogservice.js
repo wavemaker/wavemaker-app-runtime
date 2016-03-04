@@ -48,6 +48,11 @@ WM.module('wm.widgets.dialog')
             if (!dialogId || ($uibModalInstances && $uibModalInstances[dialogId])) {
                 return;
             }
+
+            if (CONSTANTS.isStudioMode) {
+                $rootScope.muteOverlayCalc = true;
+            }
+
             var template = WM.element("script[id=" + dialogId + "]"),
                 controller = template.attr('controller'),
                 content = template.html(),
@@ -164,6 +169,11 @@ WM.module('wm.widgets.dialog')
             if (!dialogId || ($uibModalInstances && !$uibModalInstances[dialogId])) {
                 return;
             }
+
+            if (CONSTANTS.isStudioMode) {
+                $rootScope.muteOverlayCalc = false;
+            }
+
             $uibModalInstances[dialogId].close();
             // destroy the scope of the dialog
             if ($uibModalInstances[dialogId].scope) {

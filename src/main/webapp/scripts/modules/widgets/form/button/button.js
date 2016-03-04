@@ -47,7 +47,7 @@ WM.module('wm.widgets.form')
                 if (WM.isObject(newVal)) {
                     element.children('.btn-caption').text(JSON.stringify(newVal));
                 } else {
-                    element.children('.btn-caption').html(($sce.trustAs($sce.HTML, newVal.toString()).toString()));
+                    element.children('.btn-caption').html(($sce.trustAs($sce.HTML, (newVal || '').toString()).toString()));
                 }
                 break;
             }
