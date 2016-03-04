@@ -185,6 +185,7 @@ WM.module("wm.widgets.basic")
                                     /* Sending pageCount undefined to calculate it again for query.*/
                                     $scope.setDefaultPagingValues(dataSize, maxResults, currentPage, pageCount);
                                     $scope.disableNavigation();
+                                    $scope.isDisableLast = (dataSize === -1 || dataSize === CONSTANTS.INT_MAX_VALUE);
                                 }
                                 /*Re-compute the paging values in the following cases.
                                 1. Paging values have not been computed.
