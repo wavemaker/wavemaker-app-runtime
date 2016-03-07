@@ -12,9 +12,6 @@ App Runtime comprises of [Angular JS](https://angularjs.org/) based Widget libra
 
 ## Spring and Hibernate Services
 
-## Licensing
-WaveMaker App Runtime is licensed under Apache License, Version 2.0. See [License](/LICENSE) for full license text.
-
 ## Release Notes
 [Latest Release Notes](http://www.wavemaker.com/learn/docs/wavemaker-studio-release-notes/)
 
@@ -31,3 +28,6 @@ WaveMaker App Runtime is licensed under Apache License, Version 2.0. See [Licens
 * [ngCordova](https://github.com/driftyco/ng-cordova/)
  
 ## Build Instructions
+
+## Licensing
+WaveMaker App Runtime is licensed under Apache License, Version 2.0. See [License](/LICENSE) for full license text.
