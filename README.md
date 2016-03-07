@@ -6,14 +6,28 @@ App Runtime comprises of [Angular JS](https://angularjs.org/) based Widget libra
 
 ![](http://www.wavemaker.com/wp-content/uploads/9.png "WaveMaker")
 
-## AngularJS/Bootstrap Widget Library
-https://github.com/angular-ui/bootstrap
+## Widget Library
 
-## Themes based on Bootstrap
+## Hybrid Mobile Widgets and Plugins
 
-
-## Hybrid Mobile Widgets/Plugins
-https://github.com/driftyco/ng-cordova/
+## Spring and Hibernate Services
 
 ## Licensing
 WaveMaker App Runtime is licensed under Apache License, Version 2.0. See [License](/LICENSE) for full license text.
+
+## Release Notes
+[Latest Release Notes](http://www.wavemaker.com/learn/docs/wavemaker-studio-release-notes/)
+
+## Related Projects
+* [WaveMaker Sample Apps](https://github.com/wavemaker/wavemaker-sample-apps)
+* [WaveMaker Prefabs](https://github.com/wavemaker/wavemaker-studio-prefabs)
+* [WaveMaker Grunt Theme](https://github.com/wavemaker/grunt-wavemaker-theme)
+* [WaveMaker Icon Library, Wavicon](https://github.com/wavemaker/wavicon)
+
+## Dependent Projects
+* [WaveMaker Studio Commons](https://github.com/wavemaker/wavemaker-studio-commons)
+* [WaveMaker API Tools]()
+* [Angular UI Bootstrap](https://github.com/angular-ui/bootstrap)
+* [ngCordova](https://github.com/driftyco/ng-cordova/)
+ 
+## Build Instructions
