@@ -403,7 +403,14 @@ WM.module('wm.widgets.form')
                             "status": ""
                         };
                         scope.reset = function () {
-                            scope.uploadedFiles = [];
+                            //In case of upload mode
+                            if (scope.fileTransfers) {
+                                scope.fileTransfers.length = 0;
+                            }
+                            //In case of select mode
+                            if (scope.selectedFiles) {
+                                scope.selectedFiles.length = 0;
+                            }
                         };
                         scope.uploadUrl = (parentPrefabScope && parentPrefabScope.prefabname) ? ('prefabs/' + parentPrefabScope.prefabname) : 'services';
                         /*fetching the list of the services only in studio mode for properties panel*/
