@@ -16,4 +16,4 @@ https://github.com/angular-ui/bootstrap
 https://github.com/driftyco/ng-cordova/
 
 ## Licensing
-WaveMaker App Runtime is licensed under Apache License, Version 2.0. See (License)[] for full license text.
+WaveMaker App Runtime is licensed under Apache License, Version 2.0. See [License](/LICENSE) for full license text.
