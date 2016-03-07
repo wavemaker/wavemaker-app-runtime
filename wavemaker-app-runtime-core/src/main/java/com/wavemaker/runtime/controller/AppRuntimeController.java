@@ -125,7 +125,7 @@ public class AppRuntimeController {
 
                 if (ProceduresUtils.hasOutParam(customProcedure.getProcedureParams())) {
                     String metaDataName = PROCEDURE_PARENT_DATA_OBJECT_NAME.replaceAll("\\{serviceId\\}", serviceId);
-                    new ProcedureMetaData(metaDataName).constructMetadata(response);
+                    return new ProcedureMetaData(metaDataName).constructMetadata(response);
                 }
                 return new ArrayList<>();
             }
