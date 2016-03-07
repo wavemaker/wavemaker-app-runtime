@@ -107,6 +107,7 @@ wm.variables.services.$liveVariable = [
                     getRelatedCols = function (columns, prefix) {
                         var relatedCols,
                             colName;
+                        columns = _.sortBy(columns, 'isRelated');
                         columns.forEach(function (column) {
                             var variableObject;
                             /*If the column is related, find out the columns of the target table*/
