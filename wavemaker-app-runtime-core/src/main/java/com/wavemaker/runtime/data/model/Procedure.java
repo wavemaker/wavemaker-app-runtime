@@ -15,10 +15,14 @@
  */
 package com.wavemaker.runtime.data.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
+
+import com.wavemaker.runtime.data.metadata.DataObject;
+
 
 /**
  * @author Sowmyad
@@ -38,7 +42,7 @@ public class Procedure {
     private String outputType;
     private boolean returnsSingleResult = false;
     private List<ProcedureParam> procedureParams = new ArrayList<>();
-    private Map<String,String> returnTypeMetadata = new LinkedHashMap<>();
+    private List<DataObject> returnTypeMetadata = new ArrayList<>();
 
     public Procedure() {
     }
@@ -110,11 +114,11 @@ public class Procedure {
         this.outputType = outputType;
     }
 
-    public Map<String, String> getReturnTypeMetadata() {
+    public List<DataObject> getReturnTypeMetadata() {
         return returnTypeMetadata;
     }
 
-    public void setReturnTypeMetadata(final Map<String, String> returnTypeMetadata) {
+    public void setReturnTypeMetadata(final List<DataObject> returnTypeMetadata) {
         this.returnTypeMetadata = returnTypeMetadata;
     }
 }

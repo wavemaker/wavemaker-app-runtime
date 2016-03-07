@@ -16,15 +16,17 @@
 package com.wavemaker.runtime.data.model;
 
 import java.util.List;
-import java.util.Map;
+
+import com.wavemaker.runtime.data.metadata.DataObject;
 
 /**
  * @Author: sowmyad
  */
 public class ProcedureResponse {
+
     List<Object> procedureResult;
 
-    Map<String, String> metaData;
+    List<DataObject> metaData;
 
     public List<Object> getProcedureResult() {
         return procedureResult;
@@ -34,11 +36,11 @@ public class ProcedureResponse {
         this.procedureResult = page;
     }
 
-    public Map getMetaData() {
+    public List<DataObject> getMetaData() {
         return metaData;
     }
 
-    public void setMetaData(Map metaData) {
+    public void setMetaData(final List<DataObject> metaData) {
         this.metaData = metaData;
     }
 }
