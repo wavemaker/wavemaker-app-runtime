@@ -175,7 +175,7 @@ WM.module('wm.widgets.basic')
                 if (attrs.widgetid) {
                     levels = 0;
                 }
-                if ($is.nodes.length) {
+                if ($is.nodes && $is.nodes.length) {
                     docFrag = document.createDocumentFragment();
                     constructNodes($is, $is.nodes, WM.element(docFrag), levels);
                     $el.append(docFrag);

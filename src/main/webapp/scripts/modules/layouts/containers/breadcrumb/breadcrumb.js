@@ -52,7 +52,7 @@ WM.module('wm.layouts.containers')
                 if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
                     WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, scope);
                 }
-                break;
+                //break statement is intentionally removed for the flow
             case 'itemicon':
             case 'itemlabel':
             case 'itemlink':
