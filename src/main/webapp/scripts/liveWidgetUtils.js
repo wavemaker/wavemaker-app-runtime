@@ -570,32 +570,6 @@ WM.module('wm.widgets.live')
             }
 
             /**
-            * @ngdoc function
-            * @name wm.widgets.live.LiveWidgetUtils#getCustomItems
-            * @methodOf wm.widgets.live.LiveWidgetUtils
-            * @function
-            *
-            * @description
-            * return the array of custom actions/events defined by the user.
-            *
-            * @param {string} actions actions/events of a button
-            * @param {object} definedActions Predefined actions for the widget
-            */
-            function getCustomItems(actions, definedActions) {
-                var customItems = [];
-                actions = actions && actions.split(';');
-                if (WM.isArray(actions)) {
-                    actions.forEach(function (action) {
-                        if (!_.includes(definedActions, action)) {
-                            action = action.substring(0, action.indexOf('('));
-                            customItems.push(action);
-                        }
-                    });
-                }
-                return customItems;
-            }
-
-            /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#translateVariableObject
              * @methodOf wm.widgets.live.LiveWidgetUtils
@@ -682,15 +656,6 @@ WM.module('wm.widgets.live')
                     'Four Column': 4
                 };
                 return layoutObj[layout] || 1;
-            }
-
-            /*function to update script link visibility*/
-            function toggleActionMessage(selectedItem, actionsList, isField, eventType, value) {
-                if (isField && eventType) {
-                    selectedItem[eventType] = value;
-                    return selectedItem.include && !selectedItem.remove && _.includes(selectedItem[eventType], 'Javascript');
-                }
-                return selectedItem.include && !selectedItem.remove && !_.includes(actionsList, selectedItem.action);
             }
 
             /**
@@ -1324,11 +1289,9 @@ WM.module('wm.widgets.live')
                 };
             }
 
-            this.toggleActionMessage        = toggleActionMessage;
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
-            this.getCustomItems             = getCustomItems;
             this.getColumnDef               = getColumnDef;
             this.getButtonDef               = getButtonDef;
             this.getTemplate                = getTemplate;

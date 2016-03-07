@@ -1538,12 +1538,11 @@ WM.module('wm.utils', [])
         }
 
         /*Iterate over events and populate 'Javascript' with appropriate event name and args*/
-        function getNewEventsObject(prefix, events) {
+        function getNewEventsObject(prefix, events, args) {
             var newEventName,
                 newCustomEvent,
                 eventNumber = 0,
-                customEvents = [],
-                args = '($event, $scope)';
+                customEvents = [];
             _.forEach(events, function (event, index) {
                 if (event === 'Javascript') {
                     newCustomEvent = prefix;
