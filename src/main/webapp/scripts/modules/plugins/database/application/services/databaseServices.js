@@ -1276,40 +1276,10 @@ wm.plugins.database.services.DatabaseService = [
                         projectID: params.projectID,
                         dataModelName: params.dataModelName
                     },
-                    data: params.data
+                    data              : params.data,
+                    returnTypeMetadata: params.returnTypeMetadata
                 }, successCallback, failureCallback);
             },
-
-            /**
-             * @ngdoc function
-             * @name wm.database.$DatabaseService#setProcedureMetaData
-             * @methodOf wm.database.$DatabaseService
-             * @function
-             *
-             * @description
-             * Method to set the meta-data for the specified query from the specified database.
-             *
-             * @param {object} params
-             *                 Object containing name of the project, name of the database and query for which meta-data needs to be set.
-             * @param {function=} successCallback
-             *                    Callback function to be triggered on success.
-             * @param {function=} failureCallback
-             *                    Callback function to be triggered on failure.
-             */
-            setProcedureMetaData: function (params, successCallback, failureCallback) {
-
-                BaseService.execute({
-                    target: "Database",
-                    action: "setProcedureMetaData",
-                    urlParams: {
-                        projectID: params.projectID,
-                        dataModelName: params.dataModelName,
-                        procedureName: params.procedureName
-                    },
-                    data: params.data
-                }, successCallback, failureCallback);
-            },
-
             /**
              * @ngdoc function
              * @name wm.database.$DatabaseService#updateProcedure
@@ -1337,7 +1307,8 @@ wm.plugins.database.services.DatabaseService = [
                         dataModelName: params.dataModelName,
                         procedureName: params.procedureName
                     },
-                    data: params.data
+                    data              :params.data,
+                    returnTypeMetadata: params.returnTypeMetadata
                 }, successCallback, failureCallback);
             },
             /**

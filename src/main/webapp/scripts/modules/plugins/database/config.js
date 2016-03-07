@@ -190,10 +190,6 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName",
             method: "DELETE"
         },
-        setProcedureMetaData: {
-            url: "services/projects/:projectID/datamodels/:dataModelName/procedures/:procedureName/metadata",
-            method: "POST"
-        },
         executeProcedure: {
             url: "services/projects/:projectID/datamodels/:dataModelName/procedures/execute",
             method: "POST"
