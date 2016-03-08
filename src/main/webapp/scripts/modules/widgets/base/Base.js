@@ -1228,7 +1228,7 @@ WM.module('wm.widgets.base', [])
                         "insertrow": {"type": "boolean", "bindable": "in-out-bound", "showindesigner": true},
                         "readonlygrid": {"type": "boolean", "value": true, "show": false, "bindable": "in-bound"},
                         "showrecordcount": {"type": "boolean", "show": false, "showindesigner": true},
-                        "shownavigation": {"type": "boolean", "value": true, "showindesigner": true},
+                        "navigation": {"type": "list", "options": ["None", "Basic", "Advanced"], "value": "Advanced", "showindesigner": true},
                         "filternullrecords": {"type": "boolean", "value": true},
                         "nodatamessage": {"type": "string", "value": "No data found.", "bindable": "in-out-bound", "showindesigner": true},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-out-bound", "showindesigner": true},

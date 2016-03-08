@@ -536,7 +536,7 @@ WM.module('wm.widgets.basic')
                 scope.widgetProps.aggregationcolumn.disabled = true;
                 scope.widgetProps.aggregation.disabled = true;
                 /*Setting the values to the default*/
-                if (scope.active) {
+                if (scope.widgetid && scope.active) {
                     $rootScope.$emit('update-widget-property', 'aggregation', "");
                     $rootScope.$emit('update-widget-property', 'aggregationcolumn', "");
                     $rootScope.$emit('update-widget-property', 'groupby', "");
@@ -1763,7 +1763,9 @@ WM.module('wm.widgets.basic')
                     columns.push('none');
                 }
                 scope.widgetProps.groupby.options = columns;
-                $rootScope.$emit('update-widget-property', 'groupby', choosenColumn);
+                if (scope.widgetid) {
+                    $rootScope.$emit('update-widget-property', 'groupby', choosenColumn);
+                }
             } else {
                 scope.widgetProps.groupby.widget = 'multiselect';
                 scope.widgetDataset.groupby = columns || [];

@@ -92,8 +92,7 @@
    <example module="wmCore">
        <file name="index.html">
            <div data-ng-controller="Ctrl" class="wm-app" style="height: 100%;">
-               <wm-grid readonlygrid="false" name="grid3" dataset="{{data}}" shownavigation="false" enablesort="false">
-               </wm-grid>
+               <wm-grid readonlygrid="false" name="grid3" dataset="{{data}}" navigation="Advanced" enablesort="false"></wm-grid>
            </div>
        </file>
        <file name="script.js">
@@ -116,7 +115,7 @@ WM.module('wm.widgets.grid')
                 'updaterow': true,
                 'dataset': true,
                 'showheader': true,
-                'shownavigation': true,
+                'navigation': true,
                 'insertrow': true,
                 'show': true,
                 'gridsearch': true,
@@ -180,8 +179,7 @@ WM.module('wm.widgets.grid')
                     '<div class="app-datagrid"></div>' +
                     '<div class="panel-footer clearfix" ng-show="shownavigation || actions.length">' +
                         '<div class="app-datagrid-paginator pull-left">' +
-                            '<wm-datanavigator show="{{show && shownavigation}}" data-ng-class="navigationClass" showrecordcount="{{show && showrecordcount}}">' +
-                            '</wm-datanavigator>' +
+                            '<wm-datanavigator show="{{show && shownavigation}}" data-ng-class="navigationClass" navcontrols="{{navControls}}" showrecordcount="{{show && showrecordcount}}"></wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions pull-right" data-ng-if="actions">' +
                             '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}"' +
@@ -455,8 +453,12 @@ WM.module('wm.widgets.grid')
                                     scope.setDataGridOption('enableSort', newVal);
                                 }
                                 break;
-                            case 'shownavigation':
-                                scope.enablePageNavigation();
+                            case 'navigation':
+                                if (newVal !== 'None') {
+                                    scope.shownavigation = true;
+                                    scope.enablePageNavigation();
+                                }
+                                scope.navControls = newVal;
                                 /*Check for sanity*/
                                 if (CONSTANTS.isStudioMode) {
                                     scope.widgetProps.showrecordcount.show = newVal;
@@ -1728,14 +1730,14 @@ WM.module('wm.widgets.grid')
                             });
                         } else {
                             //For service and static variable update readonly only if its not set on to the grid
-                            if (!$scope.readonlygrid) {
+                            if (!$scope.readonlygrid && $scope.widgetid) {
                                 $rootScope.$emit('update-widget-property', 'readonlygrid', true);
                             }
                         }
                         $scope.widgetProps.readonlygrid.disabled = true;
                     }
                     /* If bound to live filter result, disable grid search. */
-                    if (isBoundToWidget && $scope.binddataset.indexOf('livefilter') !== -1) {
+                    if (isBoundToWidget && $scope.widgetid && _.includes($scope.binddataset, 'livefilter')) {
                         $rootScope.$emit('update-widget-property', 'gridsearch', false);
                         $scope.widgetProps.gridsearch.disabled = true;
                     } else {

@@ -154,17 +154,6 @@ html, body {
   input {
     height: 100%;
   }
-  span.input-group-addon {
-    &.disabled {
-      cursor: not-allowed;
-      &:hover {
-        background-color: initial;
-      }
-      button[disabled="disabled"] {
-        cursor: not-allowed;
-      }
-    }
-  }
   .app-search-button {
     .remove-background();
     border: none;
@@ -1178,7 +1167,7 @@ If the height and width are not specified the video takes the height of the post
 .app-datanavigator {
   position: relative;
   overflow-y: auto;
-  ul.pagination {
+  ul.pagination, ul.pager {
     margin : 0;
     & > li.pagecount > a {
       width: 4em;
