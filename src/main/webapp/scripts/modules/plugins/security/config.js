@@ -112,7 +112,7 @@ wm.plugins.security.constant('SECURITY_URLS', {
             }
         },
         appLogout: {
-            url: "services/security/logout",
+            url: "j_spring_security_logout",
             method: "POST"
         },
         getLoggedInUser: {
