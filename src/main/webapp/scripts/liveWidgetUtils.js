@@ -216,7 +216,7 @@ WM.module('wm.widgets.live')
                     'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
                     'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
                     'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
-                    'byte'       : ['text', 'number', 'select', 'checkboxset', 'radioset'],
+                    'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
                     'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency'],
                     'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency'],
                     'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency'],
@@ -611,6 +611,9 @@ WM.module('wm.widgets.live')
                             'pcDisplay'     : true,
                             'mobileDisplay' : true
                         };
+                        if (Utils.isNumberType(column.type)) {
+                            column.step = fieldObj.scale ? Math.pow(10, fieldObj.scale * -1) : 0;
+                        }
                         column.widget = widgetsMap[column.type || 'custom'][0];
                         if (fieldObj.defaultValue) {
                             column.defaultvalue = getDefaultValue(fieldObj.defaultValue, fieldObj.type);
