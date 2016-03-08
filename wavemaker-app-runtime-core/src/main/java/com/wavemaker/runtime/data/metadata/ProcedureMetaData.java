@@ -21,7 +21,7 @@ public class ProcedureMetaData extends MetaData {
     }
 
     @Override
-    public Object constructMetadata(final List data) {
+    public List<DataObject> constructMetadata(final List data) {
         List<DataObject> dataObjects = new ArrayList<>();
         dataObjects.add(parentDataObject);
         Object object = data.get(0);
