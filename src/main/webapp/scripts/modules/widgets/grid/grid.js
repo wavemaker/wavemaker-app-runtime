@@ -1099,7 +1099,7 @@ WM.module('wm.widgets.grid')
                             wmToaster.show('error', 'ERROR', response.error);
                             Utils.triggerFn(options.error, response);
                         } else {
-                            if ($scope.allowinlineedit && $scope.allowinlineedit !== "false" && options.event) {
+                            if ($scope.gridOptions.allowInlineEditing && $scope.gridOptions.allowInlineEditing !== "false" && options.event) {
                                 var row = WM.element(options.event.target).closest('tr');
                                 $scope.datagridElement.datagrid('hideRowEditMode', row);
                             }
