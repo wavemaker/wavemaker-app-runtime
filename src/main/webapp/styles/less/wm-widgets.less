@@ -721,6 +721,9 @@ html, body {
     table {
       display: inline-table;
     }
+    li:last-child {
+      overflow: visible !important;
+    }
     padding: 0.5em;
   }
   button.btn.btn-default.btn-date {
@@ -741,10 +744,11 @@ html, body {
   .dropdown-menu {
      padding: 0.5em;
      width: auto;
+    li:last-child {
+      overflow: visible !important;
+    }
   }
 }
-
-
 
 /**input required**/
 .app-required-input {
