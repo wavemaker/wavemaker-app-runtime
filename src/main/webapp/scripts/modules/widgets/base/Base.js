@@ -1480,7 +1480,7 @@ WM.module('wm.widgets.base', [])
                         "displayimagesrc": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
-                        "limit": {"type": "number", "value": 5},
+                        "limit": {"type": "number"},
                         "placeholder": {"type": "string", "value": "Search"},
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
