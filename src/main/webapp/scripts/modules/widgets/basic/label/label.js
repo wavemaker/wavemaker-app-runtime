@@ -22,7 +22,7 @@ WM.module('wm.widgets.basic')
                 if (WM.isObject(newVal)) {
                     element.text(JSON.stringify(newVal));
                 } else {
-                    element.html(($sce.trustAs($sce.HTML, (newVal || '').toString()).toString()));
+                    element.html(($sce.trustAs($sce.HTML, (WM.isDefined(newVal) ? newVal : '').toString()).toString()));
                 }
                 break;
             }
