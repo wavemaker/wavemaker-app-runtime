@@ -526,12 +526,11 @@ WM.module('wm.widgets.live')
                     oldClass,
                     newClass,
                     selectedVariable,
-                    fieldObj,
                     eleScope          = $el.scope(),
                     variable          =  Utils.getVariableName($is, eleScope),
                     wp                = $is.widgetProps;
-                /**checking if the height is set on the element then we will enable the overflow**/
 
+                //checking if the height is set on the element then we will enable the overflow
                 switch (key) {
                 case 'height':
                     if (nv) {
@@ -549,11 +548,11 @@ WM.module('wm.widgets.live')
                         wp.groupby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
 
                         // show the match property
-                        if ($is.groupby && nv.propertiesMap) {
+                        if ($is.groupby && $is.groupby !== '' && nv.propertiesMap) {
                             wp.match.show = (getFieldType(nv.propertiesMap, $is.groupby) === 'string');
                         }
 
-                        /*if studio-mode, then update the displayField & dataField in property panel*/
+                        //if studio-mode, then update the displayField & dataField in property panel
                         if (WM.isDefined(nv) && nv !== null && !nv.length) {
                             //Get variable and properties map only on binddataset change
                             if ($is.oldBindDataSet !== $is.binddataset) {
@@ -573,12 +572,21 @@ WM.module('wm.widgets.live')
                             }
                         }
                         // show match property for device variables
-                        if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable' && $is.groupby) {
+                        if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable' && $is.groupby && $is.groupby !== '') {
                             wp.match.show = isFieldTypeString(selectedVariable, $is.groupby);
+                        }
+
+                        if ($is.groupby !== '') {
+                            wp.match.show = false;
                         }
 
                         if (!wp.match.show) {
                             $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
+                        }
+
+                        // empty option selection is included in groupby options.
+                        if (wp.groupby.options) {
+                            wp.groupby.options = [''].concat(wp.groupby.options);
                         }
                     }
                     break;
@@ -597,7 +605,9 @@ WM.module('wm.widgets.live')
                 case 'groupby':
                     selectedVariable = eleScope.Variables[variable];
                     if ($is.widgetid) {
-                        if ($is.dataset) {
+                        if (nv === '') {
+                            wp.match.show = false;
+                        } else if ($is.dataset) {
                             if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
                                 wp.match.show = $rs.dataTypes[selectedVariable.type].fields[$is.groupby].type === 'java.lang.String';
                             } else if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
@@ -607,7 +617,7 @@ WM.module('wm.widgets.live')
                             }
                         }
                         // enablereorder is not shown with groupby
-                        if (nv) {
+                        if (nv && nv !== '') {
                             wp.enablereorder.show = false;
                         }
                         if (!wp.match.show) {
