@@ -33,6 +33,9 @@ WM.module('wm.widgets.basic')
                         'data-ng-model="query"' +
                         ' tabindex="{{tabindex}}"' +
                         ' accesskey="{{shortcutkey}}"' +
+                        ' ng-readonly="readonly" ' +
+                        ' ng-required="required" ' +
+                        ' ng-disabled="disabled" ' +
                         'uib-typeahead="item.wmDisplayLabel for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
@@ -41,13 +44,16 @@ WM.module('wm.widgets.basic')
                         'data-ng-model="query"' +
                         ' accesskey="{{shortcutkey}}"' +
                         ' tabindex="{{tabindex}}"' +
+                        ' ng-readonly="readonly" ' +
+                        ' ng-required="required" ' +
+                        ' ng-disabled="disabled" ' +
                         'uib-typeahead="item for item in itemList | filter:$viewValue:casesensitive | limitTo:limit" ' +
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
-                '<span class="input-group-addon" data-ng-if="dataSetType === \'listOfObjects\' || dataSetType === \'listOfStrings\'" >' +
+                '<span class="input-group-addon" data-ng-class="{\'disabled\': disabled}" data-ng-if="dataSetType === \'listOfObjects\' || dataSetType === \'listOfStrings\'" >' +
                     '<form data-ng-submit="onSubmit({$event: $event, $scope: this})" >' +
-                        '<button title="Search" class="app-search-button wi wi-search" type="submit" ' +
+                        '<button title="Search" data-ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
                             'data-ng-click="onTypeAheadSelect($event, $item, $model, $label)"' +
                         '></button>' +
                     '</form>' +
@@ -60,6 +66,9 @@ WM.module('wm.widgets.basic')
                 '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfObjects\'" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     'data-ng-model="query"' +
                     ' accesskey="{{shortcutkey}}"' +
+                    ' ng-readonly="readonly" ' +
+                    ' ng-required="required" ' +
+                    ' ng-disabled="disabled" ' +
                     'uib-typeahead="item.wmDisplayLabel for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
                     'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     'typeahead-template-url="template/widget/form/searchlist.html"' +
@@ -67,6 +76,9 @@ WM.module('wm.widgets.basic')
                 '<input title="{{hint}}" data-ng-if="dataSetType === \'listOfStrings\'" type="text" class="form-control list-of-strings" placeholder="{{placeholder}}"' +
                     'data-ng-model="query"' +
                     ' accesskey="{{shortcutkey}}"' +
+                    ' ng-readonly="readonly" ' +
+                    ' ng-required="required" ' +
+                    ' ng-disabled="disabled" ' +
                     'uib-typeahead="item for item in itemList | filter:$viewValue:casesensitive | limitTo:limit" ' +
                     'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     'typeahead-template-url="template/widget/form/searchlist.html"' +
@@ -95,7 +107,7 @@ WM.module('wm.widgets.basic')
     })
     .directive('wmSearch', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', '$timeout', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $timeout) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard']),
             notifyFor = {
                 'searchkey': true,
                 'displaylabel': true,

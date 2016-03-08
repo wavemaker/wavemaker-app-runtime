@@ -1492,7 +1492,8 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["input-group-sm", "input-group-lg"]},
                         "casesensitive": {"type": "boolean", "show": "false", "value": false},
                         /* searchbar in mobile-navbar*/
-                        "navsearchbar": {"type": "string", "show": "false"}
+                        "navsearchbar": {"type": "string", "show": "false"},
+                        "readonly": {"type": "boolean", "bindable": "in-bound"}
                     },
                     "wm.chart": {
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},
