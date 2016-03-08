@@ -825,6 +825,8 @@ WM.module('wm.widgets.live')
                             'on-click="' + buttonDef.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
                         element.closest('[data-identifier="livefilter"]').find('.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
                         $compile(element.contents())(scope.parentIsolateScope);
+                        //Removing the default template for the directive
+                        element.remove();
                     }
                 };
             }

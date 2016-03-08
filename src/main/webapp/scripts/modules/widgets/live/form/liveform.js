@@ -1240,6 +1240,8 @@ WM.module('wm.widgets.live')
                             /*append the buttons template to element with class basic-btn-grp*/
                             element.closest('[data-identifier="liveform"]').find('> .basic-btn-grp').append($compile(template)(parentIsolateScope));
                         }
+                        //Removing the default template for the directive
+                        element.remove();
                     }
                 };
             }
