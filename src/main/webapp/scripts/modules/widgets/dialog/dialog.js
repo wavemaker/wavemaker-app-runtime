@@ -128,7 +128,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window) {
+    }]).directive('wmDialogContainer', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", '$window', 'Utils', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $window, Utils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.designdialog", ["wm.basicdialog", "wm.base"]),
             notifyFor = {
@@ -198,7 +198,11 @@ WM.module('wm.widgets.dialog')
             "compile": function () {
                 return {
                     "pre": function (scope) {
+                        scope.__readyQueue = [];
                         scope.widgetProps = widgetProps;
+                        scope.whenReady = function (fn) {
+                            scope.__readyQueue.push(fn);
+                        };
                     },
                     "post": function (scope, element, attrs) {
                         scope = scope || element.isolateScope();
@@ -209,6 +213,10 @@ WM.module('wm.widgets.dialog')
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        while (scope.__readyQueue.length) {
+                            Utils.triggerFn(scope.__readyQueue.shift());
+                        }
                     }
                 };
             }
@@ -275,8 +283,7 @@ WM.module('wm.widgets.dialog')
                             }
                         };
                         if (onOpenedEventName && dialogCtrl && !scope.widgetid) {
-                            /*handles close button click*/
-                            dialogCtrl._OnOpenedHandler(onOpenedEventName);
+                            parentElScope.whenReady(dialogCtrl._OnOpenedHandler.bind(undefined, onOpenedEventName));
                         }
 
                         /* register the property change handler */
