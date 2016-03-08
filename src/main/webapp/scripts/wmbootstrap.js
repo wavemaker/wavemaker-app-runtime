@@ -421,7 +421,11 @@ Application
 
                                 // for the prefab/template bundle type do not wait for the app variables.
                                 if ($rs.isApplicationType) {
-                                    $rs.$watch(':: Variables', deferred.resolve);
+                                    $rs.$watch(':: Variables', function (nv) {
+                                        if (nv) {
+                                            deferred.resolve();
+                                        }
+                                    });
                                 } else {
                                     deferred.resolve();
                                 }

@@ -1,272 +1,273 @@
 /*global WM, _, document*/
 
 WM.module('wm.layouts.page')
-    .directive('wmPage', ['DeviceViewService', 'CONSTANTS', '$rootScope', '$routeParams', 'Utils', '$timeout', 'Variables', 'NavigationVariableService', function (DeviceViewService, CONSTANTS, $rootScope, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
-        'use strict';
+    .directive('wmPage', [
+        'DeviceViewService',
+        'CONSTANTS',
+        '$rootScope',
+        '$routeParams',
+        'Utils',
+        '$timeout',
+        'Variables',
+        'NavigationVariableService',
 
-        var extendVariables = function (scope, variables) {
-            WM.forEach(variables, function (variable, name) {
-                if (!scope.Variables.hasOwnProperty(name)) {
-                    Object.defineProperty(scope.Variables, name, {
-                        configurable: true,
-                        get: function () {
-                            return variable;
-                        }
-                    });
-                }
-            });
-        };
+        function (DeviceViewService, CONSTANTS, $rs, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
+            'use strict';
 
-        return {
-            'restrict': 'E',
-            'replace': true,
-            'transclude': true,
-            'template': '<div data-role="pageContainer" class="app-page container" data-ng-class="layoutClass" wmtransclude></div>',
-            'compile': function () {
-                return {
-                    'pre': function (scope, element, attrs) {
-                        var pageName = (!$rootScope.isPrefabTemplate && scope.prefabname) || ($rootScope.isPrefabTemplate && "Main") || attrs.ngController.replace('PageController', ''),
-                            variableScope = CONSTANTS.isStudioMode && !scope.prefabname && !scope.$parent.partialname ? $rootScope.domScope : scope,
+            function extendVariables($s, variables) {
+                var _Variables = $s.Variables;
+                _.forEach(variables, function (variable, name) {
+                    if (!_Variables.hasOwnProperty(name)) {
+                        Object.defineProperty(_Variables, name, {
+                            'configurable': true,
+                            'get' : function () {
+                                return variable;
+                            }
+                        });
+                    }
+                });
+            }
+
+            return {
+                'restrict'  : 'E',
+                'replace'   : true,
+                'transclude': true,
+                'template'  : '<div data-role="pageContainer" class="app-page container" data-ng-class="layoutClass" wmtransclude></div>',
+                'link'      :  {
+                    'pre': function ($s, $el, attrs) {
+                        var pageName,
+                            variableScope,
                             containerScope,
                             count,
                             subView;
 
-                        if (CONSTANTS.isRunMode) {
-                            scope.Variables = {};
-                            scope.Widgets = {};
-                            /* only expose the widgets of the active page to rootScope */
-                            if (!scope.$parent.partialname && !scope.prefabname) {
-                                $rootScope.Widgets = scope.Widgets;
-                                $rootScope.$activePageEl = element;
-                            }
-                            if (scope.$parent.partialname) {
-                                /* get partial page container's scope */
-                                containerScope = scope.$parent.Widgets && scope.$parent.Widgets[scope.$parent.partialcontainername];
 
-                                /* expose partial's Widgets to its container's scope (to be visible to parent) */
+                        pageName = (!$rs.isPrefabTemplate && $s.prefabname)
+                                        || ($rs.isPrefabTemplate && 'Main')
+                                        || attrs.ngController.replace('PageController', '');
+
+                        variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
+
+                        if (CONSTANTS.isRunMode) {
+                            $s.Variables = {};
+                            $s.Widgets   = {};
+                            // only expose the widgets of the active page to rootScope
+                            if (!$s.$parent.partialname && !$s.prefabname) {
+                                $rs.Widgets       = $s.Widgets;
+                                $rs.$activePageEl = $el;
+                            }
+                            if ($s.$parent.partialname) {
+                                // get partial page container's scope
+                                containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
+
+                                // expose partial's Widgets to its container's scope (to be visible to parent)
                                 if (containerScope) {
-                                    containerScope.Widgets = scope.Widgets;
+                                    containerScope.Widgets = $s.Widgets;
                                 }
                             }
 
-                            if ($routeParams.name === $rootScope.activePageName) {
-                                document.title = attrs.pagetitle || $rootScope.activePageName + ' - ' + $rootScope.projectName;
+                            // update the title of the application
+                            if ($routeParams.name === $rs.activePageName) {
+                                document.title = attrs.pagetitle || $rs.activePageName + ' - ' + $rs.projectName;
                             }
                         }
 
                         if (CONSTANTS.isStudioMode) {
-                            containerScope = scope.$parent.Widgets && scope.$parent.Widgets[scope.$parent.partialcontainername];
+                            containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
                             if (containerScope && WM.isDefined(containerScope.Widgets)) {
-                                scope.Widgets = {};
-                                containerScope.Widgets = scope.Widgets;
+                                containerScope.Widgets = $s.Widgets = {};
                             }
                         }
                         // define registerPageContainer and onPageContainerLoad methods in Run Mode.
-                        if (!scope.registerPageContainer && CONSTANTS.isRunMode) {
+                        if (!$s.registerPageContainer && CONSTANTS.isRunMode) {
                             count = 0;
 
-                            scope.layout = {
-                                'leftSection': false,
+                            $s.layout = {
+                                'leftSection' : false,
                                 'rightSection': false,
-                                'header': false,
-                                'footer': false,
-                                'search': false
+                                'header'      : false,
+                                'footer'      : false,
+                                'search'      : false
                             };
 
-                            scope.onPageLoad = function () {
+                            $s.onPageLoad = function () {
                                 // if the count is zero(means the page is ready), trigger update method of DeviceViewService
                                 if (!count) {
                                     //trigger the onPageReady method
-                                    if (scope.hasOwnProperty('onPageReady')) {
-                                        Utils.triggerFn(scope.onPageReady);
+                                    if ($s.hasOwnProperty('onPageReady')) {
+                                        Utils.triggerFn($s.onPageReady);
                                     }
 
                                     /* if subview element names found (appended with page-name after a '.'), navigate to the view element */
                                     if ($routeParams && $routeParams.name) {
-                                        subView = $routeParams.name.split(".");
+                                        subView = $routeParams.name.split('.');
                                         if (subView.length > 1) {
                                             NavigationVariableService.goToView(subView.pop());
                                         }
                                     }
 
-                                    /* update layout after the page is rendered */
+                                    // update layout after the page is rendered
+                                    $s.layout.search       = $el.find('[data-role="page-header"] .app-search');
+                                    $s.layout.leftSection  = $el.find('[data-role="page-left-panel"]').length > 0;
+                                    $s.layout.rightSection = $el.find('[data-role="page-right-panel"]').length > 0;
 
-                                    scope.layout.search = element.find('[data-role="page-header"] .app-search');
-                                    scope.layout.leftSection = element.find('[data-role="page-left-panel"]').length > 0;
-                                    scope.layout.rightSection = element.find('[data-role="page-right-panel"]').length > 0;
                                     // update the device after some delay
                                     $timeout(function () {
-                                        DeviceViewService.update(element, scope.layout.leftSection, scope.layout.rightSection, scope.layout.search);
-                                        $rootScope.$emit('page-ready');
+                                        DeviceViewService.update($el, $s.layout.leftSection, $s.layout.rightSection, $s.layout.search);
+                                        $rs.$emit('page-ready');
                                     });
                                 }
                             };
 
                             // increment the counter when a pageContainer is registered
-                            scope.registerPagePart = function () {
+                            $s.registerPagePart = function () {
                                 count++;
                             };
 
-                            scope.onPagePartLoad = function () {
+                            $s.onPagePartLoad = function () {
                                 --count; // decrement the counter when the a pageContainer is ready
-                                scope.onPageLoad();
+                                $s.onPageLoad();
                             };
 
-                            /* if specified, call handle route function in the page.js */
-                            if (WM.isFunction(scope.handleRoute)) {
-                                /*gather all the routeParams, send them as arguments to the fn except first element, as first element is pageName */
-                                scope.handleRoute.apply(undefined, _.values($routeParams).slice(1));
+                            // if specified, call handle route function in the page.js
+                            if (WM.isFunction($s.handleRoute)) {
+                                // gather all the routeParams, send them as arguments to the fn except first element, as first element is pageName
+                                $s.handleRoute.apply(undefined, _.values($routeParams).slice(1));
                             }
                         }
 
-                        /* register the page variables */
+                        // register the page variables
                         Variables.getPageVariables(pageName, function (variables) {
                             Variables.register(pageName, variables, true, variableScope);
 
-                            /* expose partial page's Variabes to its container's scope (to be visible to parent) */
+                            // expose partial page's Variabes to its container's scope (to be visible to parent)
                             if (containerScope) {
-                                containerScope.Variables = scope.Variables;
+                                containerScope.Variables = $s.Variables;
                             }
 
-                            /* if app variables loaded, extend page variables with them */
-                            if ($rootScope.Variables) {
-                                extendVariables(variableScope, $rootScope.Variables);
-                                /* if specified, call page variables ready function in the page.js */
-                                Utils.triggerFn(scope.onPageVariablesReady);
-                            } else {
-                                /* listen to the page-variables-ready event */
-                                element.on('$destroy', $rootScope.$on('on-app-variables-ready', function (event, appVariables) {
-                                    extendVariables(variableScope, $rootScope.Variables);
-                                    /* if specified, call app variables ready function in the app.js */
-                                    Utils.triggerFn(scope.$root.onAppVariablesReady, appVariables);
-                                    /* if specified, call page variables ready function in the page.js */
-                                    Utils.triggerFn(scope.onPageVariablesReady);
-                                }));
-                            }
+                            // App Variables must be ready by this time.
+                            extendVariables(variableScope, $rs.Variables);
+                            // if specified, call page variables ready function in the page.js
+                            Utils.triggerFn($rs.onAppVariablesReady, $rs.Variables);
+                            Utils.triggerFn($s.onPageVariablesReady);
                         });
                     },
-                    'post': function (scope, element, attrs) {
+                    'post': function ($s, $el, attrs) {
                         var handlers = [];
                         //check if the view is run mode then initialize the mobile behavior
                         if (CONSTANTS.isRunMode) {
-                            /* register session timeout handler */
-                            handlers.push($rootScope.$on("on-sessionTimeout", function () {
-                                Utils.triggerFn(scope.onSessionTimeout);
-                            }));
+                            // register session timeout handler
+                            handlers.push($rs.$on('on-sessionTimeout', $s.onSessionTimeout));
 
-                            Utils.triggerFn(scope.onPageLoad);
-                            element.on('$destroy', function () {
-                                /*destroy variables*/
-                                Variables.unload(attrs.ngController.replace('PageController', ''), scope);
+                            Utils.triggerFn($s.onPageLoad);
+                            $el.on('$destroy', function () {
+                                // destroy variables
+                                Variables.unload(attrs.ngController.replace('PageController', ''), $s);
                                 handlers.forEach(Utils.triggerFn);
                             });
                         }
                     }
-                };
-            }
-        };
-    }])
-    .directive('wmPartial', ['CONSTANTS', '$rootScope', 'Utils', 'Variables', function (CONSTANTS, $rootScope, Utils, Variables) {
-        'use strict';
-
-        var extendVariables = function (scope, variables) {
-            WM.forEach(variables, function (variable, name) {
-                if (!scope.Variables.hasOwnProperty(name)) {
-                    Object.defineProperty(scope.Variables, name, {
-                        configurable: true,
-                        get: function () {
-                            return variable;
-                        }
-                    });
                 }
-            });
-        };
+            };
+        }
+    ])
+    .directive('wmPartial', [
+        'CONSTANTS',
+        '$rootScope',
+        'Utils',
+        'Variables',
 
+        function (CONSTANTS, $rs, Utils, Variables) {
+            'use strict';
 
-        return {
-            'restrict': 'E',
-            'replace': true,
-            'transclude': true,
-            'template': '<section  data-role="partial" class="app-partial clearfix" wmtransclude></section>',
-            'compile': function () {
-                return {
-                    'pre': function (scope, element, attrs) {
-                        var pageName = attrs.ngController.replace('PageController', ''),
-                            variableScope = CONSTANTS.isStudioMode && !scope.prefabname && !scope.$parent.partialname ? $rootScope.domScope : scope,
+            function extendVariables($s, variables) {
+                var _Variables = $s.Variables;
+                _.forEach(variables, function (variable, name) {
+                    if (!_Variables.hasOwnProperty(name)) {
+                        Object.defineProperty(_Variables, name, {
+                            'configurable': true,
+                            'get': function () {
+                                return variable;
+                            }
+                        });
+                    }
+                });
+            }
+
+            return {
+                'restrict'   : 'E',
+                'replace'    : true,
+                'transclude' : true,
+                'template'   : '<section data-role="partial" class="app-partial clearfix" wmtransclude></section>',
+                'link'       : {
+                    'pre': function ($s, $el, attrs) {
+                        var pageName,
+                            variableScope,
                             containerScope;
+
+                        pageName      = attrs.ngController.replace('PageController', '');
+                        variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
+
                         if (CONSTANTS.isRunMode) {
-                            scope.Widgets = {};
-                            scope.Variables = {};
+                            $s.Widgets   = {};
+                            $s.Variables = {};
 
-                            /* get partial container's scope */
-                            containerScope = scope.$parent.Widgets && scope.$parent.Widgets[scope.$parent.partialcontainername];
+                            // get partial container's scope
+                            containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
 
-                            /* expose partial's Widgets to its container's scope (to be visible to parent) */
+                            // expose partial's Widgets to its container's scope (to be visible to parent)
                             if (containerScope) {
-                                containerScope.Widgets = scope.Widgets;
+                                containerScope.Widgets = $s.Widgets;
                             }
                         }
 
                         if (CONSTANTS.isStudioMode) {
-                            containerScope = scope.$parent.Widgets && scope.$parent.Widgets[scope.$parent.partialcontainername];
+                            containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
                             if (containerScope && WM.isDefined(containerScope.Widgets)) {
-                                scope.Widgets = {};
-                                containerScope.Widgets = scope.Widgets;
+                                containerScope.Widgets = $s.Widgets = {};
                             }
                         }
 
                         Variables.getPageVariables(pageName, function (variables) {
                             Variables.register(pageName, variables, true, variableScope);
 
-                            /* expose partial's Variables to its container's scope (to be visible to parent) */
+                            // expose partial's Variables to its container's scope (to be visible to parent)
                             if (CONSTANTS.isRunMode && containerScope) {
-                                containerScope.Variables = scope.Variables;
+                                containerScope.Variables = $s.Variables;
                             }
 
-                            if ($rootScope.Variables) {
-                                extendVariables(scope, $rootScope.Variables);
-                                if (CONSTANTS.isRunMode && scope.hasOwnProperty('onPageVariablesReady')) {
-                                    Utils.triggerFn(scope.onPageVariablesReady, scope.Variables);
-                                }
-                            } else {
-                                /* listen to the page-variables-ready event */
-                                element.on('$destroy', $rootScope.$on('on-app-variables-ready', function (event, appVariables) {
-                                    extendVariables(scope, $rootScope.Variables);
-                                    /* if specified, call app variables ready function in the app.js */
-                                    Utils.triggerFn(scope.$root.onAppVariablesReady, appVariables);
-                                    if (CONSTANTS.isRunMode && scope.hasOwnProperty('onPageVariablesReady')) {
-                                        Utils.triggerFn(scope.$root.onAppVariablesReady, appVariables);
-                                        Utils.triggerFn(scope.onPageVariablesReady);
-                                    }
-                                }));
+                            extendVariables($s, $rs.Variables);
+                            Utils.triggerFn($rs.onAppVariablesReady, $rs.Variables);
+                            if (CONSTANTS.isRunMode && $s.hasOwnProperty('onPageVariablesReady')) {
+                                Utils.triggerFn($s.onPageVariablesReady, $s.Variables);
                             }
                         });
                     },
-                    'post': function (scope, element, attrs) {
+                    'post': function ($s, $el, attrs) {
 
                         var handlers = [];
                         //check if the view is run mode then initialize the mobile behavior
                         if (CONSTANTS.isRunMode) {
-                            /* register session timeout handler */
-                            handlers.push($rootScope.$on("on-sessionTimeout", function () {
-                                Utils.triggerFn(scope.onSessionTimeout);
+                            // register session timeout handler
+                            handlers.push($rs.$on('on-sessionTimeout', function () {
+                                Utils.triggerFn($s.onSessionTimeout);
                             }));
                             // trigger onPageReady method if it is defined in the controller of partial
-                            if (scope.hasOwnProperty('onPageReady')) {
-                                Utils.triggerFn(scope.onPageReady);
+                            if ($s.hasOwnProperty('onPageReady')) {
+                                Utils.triggerFn($s.onPageReady);
                             }
-                            /* canvasTree will listen for this event and will hide itself upon occurrence of it */
-                            element.on('$destroy', function () {
-                                /* destroy loaded variables */
-                                Variables.unload(attrs.ngController.replace('PageController', ''), scope);
+                            // canvasTree will listen for this event and will hide itself upon occurrence of it
+                            $el.on('$destroy', function () {
+                                // destroy loaded variables
+                                Variables.unload(attrs.ngController.replace('PageController', ''), $s);
                                 handlers.forEach(Utils.triggerFn);
                             });
                         }
                     }
-                };
-            }
-        };
-    }]);
+                }
+            };
+        }
+    ]);
 
 /**
  * @ngdoc directive
