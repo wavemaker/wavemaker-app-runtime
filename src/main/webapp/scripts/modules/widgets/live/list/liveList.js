@@ -14,11 +14,17 @@ WM.module('wm.widgets.live')
                                 '<span>{{title}}</span>' +
                             '</h4>' +
                         '</div>' +
+                        '<nav class="app-datanavigator" data-ng-if="navigation === \'Inline\'" >' +
+                            '<ul class="pager"><li class="previous" data-ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
+                        '</nav>'+
                         '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
-                                'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
+                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
+                        '<nav class="app-datanavigator" data-ng-if="navigation === \'Inline\'">' +
+                            '<ul class="pager"><li class="next" data-ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
+                        '</nav>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                        '<div class="panel-footer" data-ng-if="navigation !== \'None\'">' +
+                        '<div class="panel-footer" data-ng-if="navigation !== \'None\'" data-ng-show="navigation !== \'Inline\'">' +
                             '<wm-datanavigator showrecordcount="true" navcontrols="{{navControls}}"></wm-datanavigator>' +
                         '</div>' +
                     '</div>'
@@ -69,7 +75,8 @@ WM.module('wm.widgets.live')
                 NAVIGATION = {
                     'BASIC'    : 'Basic',
                     'ADVANCED' : 'Advanced',
-                    'SCROLL'   : 'Scroll'
+                    'SCROLL'   : 'Scroll',
+                    'INLINE'   : 'Inline'
                 };
 
             /* to return the bootstrap classes for the <li> w.r.t no. of items per row */
@@ -212,6 +219,16 @@ WM.module('wm.widgets.live')
 
             function setFetchInProgress($is, inProgress) {
                 $is.$liScope.fetchInProgress = inProgress;
+            }
+
+            // click event handler for nav buttons.
+            function navigatePage($is, $el, action, $event) {
+                var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
+                    navigator      = $dataNavigator.isolateScope();
+
+                navigator.navigatePage(action, $event);
+                $is.isDisablePrevious = navigator.isFirstPage();
+                $is.isDisableNext     = navigator.isLastPage();
             }
 
             function bindScrollEvt($is, $el) {
@@ -492,6 +509,16 @@ WM.module('wm.widgets.live')
                 $is.navControls = NAVIGATION.BASIC;
             }
 
+            function enableInlineNavigation($is) {
+                var widgetProps       = $is.widgetProps;
+                $is.navControls       = NAVIGATION.INLINE;
+                $is.isDisablePrevious = true;
+                // hides itemsperrow property in studio mode.
+                if ($is.widgetid) {
+                    widgetProps.itemsperrow.show = false;
+                }
+            }
+
             function enableAdvancedNavigation($is) {
                 $is.navControls = NAVIGATION.ADVANCED;
             }
@@ -505,6 +532,9 @@ WM.module('wm.widgets.live')
                 switch (type) {
                 case NAVIGATION.BASIC:
                     enableBasicNavigation($is);
+                    break;
+                case NAVIGATION.INLINE:
+                    enableInlineNavigation($is);
                     break;
                 case NAVIGATION.ADVANCED:
                     enableAdvancedNavigation($is);
@@ -919,6 +949,7 @@ WM.module('wm.widgets.live')
                         }, true);
                     }
 
+                    $is.navigatePage = navigatePage.bind(undefined, $is, $el);
                     setupEvtHandlers($is, $el, attrs);
                 }
                 /* register the property change handler */

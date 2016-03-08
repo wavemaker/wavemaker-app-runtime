@@ -1053,6 +1053,39 @@ body.modal-open {
   }
 }
 .app-livelist {
+  > nav.app-datanavigator {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .app-datanavigator + .app-livelist-container {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100%;
+    white-space: nowrap;
+    .app-list-item {
+      white-space: normal;
+    }
+    .app-list-item-group {
+        ul {
+          display: inline-table;
+          > li {
+            display: inline-block;
+            vertical-align: middle;
+          }
+          .app-list-item-header {
+            display: table-cell;
+            text-align: center;
+            width: 10%;
+            white-space: normal;
+          }
+        }
+    }
+
+  }
+  ul {
+    position: relative;
+    width: 100%;
+  }
   .app-label {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1089,12 +1122,6 @@ body.modal-open {
   .no-data-msg {
     text-align: center;
   }
-}
-
-
-.app-livelist ul {
-  position: relative;
-  width: 100%;
 }
 .app-iframe {
   position: relative;
