@@ -233,11 +233,6 @@ Application
                         });
                 }
 
-                function initAppVariables($s) {
-                    var deferred = $q.defer();
-                    return deferred.promise;
-                }
-
                 /**
                  * Updates the loggedInUser Static Variable with current logged in user's details
                  * if security disabled, user not authenticated, it is reset.
@@ -422,6 +417,22 @@ Application
                                 // for the prefab/template bundle type do not wait for the app variables.
                                 if ($rs.isApplicationType) {
                                     $rs.$watch(':: Variables', function (nv) {
+                                        if (nv) {
+                                            deferred.resolve();
+                                        }
+                                    });
+                                } else {
+                                    deferred.resolve();
+                                }
+
+                                return deferred.promise;
+                            }],
+                            'appLocale': ['$q', '$rootScope', function ($q, $rs) {
+                                var deferred = $q.defer();
+
+                                // for the prefab/template bundle type do not wait for the app locale.
+                                if ($rs.isApplicationType) {
+                                    $rs.$watch(':: selectedLocale', function (nv) {
                                         if (nv) {
                                             deferred.resolve();
                                         }

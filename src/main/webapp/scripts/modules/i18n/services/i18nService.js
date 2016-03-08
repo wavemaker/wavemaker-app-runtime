@@ -337,7 +337,7 @@ WM.module('i18n')
             function loadAppLocaleBundle(content) {
                 var path = _appLocaleRootPath + _selectedLocale + '.json';
                 // load the localeBundle
-                $http
+                return $http
                     .get(path)
                     .success(function (response) {
                         // extend the $rs.locale object with the response json
@@ -376,6 +376,7 @@ WM.module('i18n')
                     .then(loadComponentLocaleBundles)
                     .then(loadAppLocaleBundle)
                     .then(function () {
+                        $rs.selectedLocale = _selectedLocale;
                         if (emitEvent) {
                             $rs.$emit('locale-change');
                         }
