@@ -33,6 +33,14 @@ module.exports = function (grunt) {
                 ]
             }
         },
+        concurrent: {
+            target1: [
+                'uglify:min-mangle-true',
+                'uglify:min-mangle-false-studio',
+                'uglify:min-mangle-false-application',
+                'cssmin'
+            ]
+        },
         less: {
             dev: {
                 files: {
@@ -559,8 +567,7 @@ module.exports = function (grunt) {
         'less',
         'concat',
         'concat:wm-loader',
-        'uglify',
-        'cssmin',
+        'concurrent:target1',
         'copy'
     ]);
 
