@@ -27,6 +27,21 @@ WM.module('wm.layouts.containers')
                 };
 
             function getNodes($is, nv) {
+                var nodes = [];
+                if (WM.isString(nv)) {
+                    nv = _.trim(nv);
+                    if (nv) {
+                        nodes = nv.split(',').map(function (item) {
+                            return {
+                                'label': _.trim(item)
+                            };
+                        });
+                    }
+                } else if (WM.isArray(nv)) {
+                    nodes = nv;
+                } else if (WM.isObject(nv)) {
+                    nodes = [nv];
+                }
                 /* re-initialize the property values */
                 if ($is.newcolumns) {
                     $is.newcolumns   = false;
@@ -43,9 +58,9 @@ WM.module('wm.layouts.containers')
                     });
                 }
                 if ($is.widgetid && nv) { // when the widget is inside canvas
-                    $is.keys = WidgetUtilService.updatePropertyPanelOptions(nv.data || nv, nv.propertiesMap, $is);
+                    $is.keys = WidgetUtilService.updatePropertyPanelOptions(nv.data || nv, nv.propertiesMap, $is).terminals;
                 }
-                return $is.keys;
+                return nodes;
             }
             function constructNav($el, $is) {
                 $el.empty();
