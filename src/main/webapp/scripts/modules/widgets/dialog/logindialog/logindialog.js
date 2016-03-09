@@ -38,7 +38,7 @@ WM.module('wm.widgets.dialog')
                     dialog = '<wm-logindialog-container on-submit="' + onsubmit + '" on-success="' + onsuccess + '" on-error="' + onerror + '">' + dialog + '</wm-logindialog-container>';
                     transcludedContent = dialog;
                     id = attrs.name;
-                    return '<script type="text/ng-template" id="' + id + '">' + transcludedContent + "</script>";
+                    return '<script type="text/ng-template" id="' + id + '" login-dialog="true">' + transcludedContent + "</script>";
                 }
                 return $templateCache.get("template/widget/dialog/logindialog.html");
             },

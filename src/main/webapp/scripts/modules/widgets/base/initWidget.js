@@ -67,7 +67,14 @@ WM.module('wm.widgets.base')
             function handleDialogShowHideActions($s, dialogName, show) {
                 if (show) {
                     // Pass the scope of the controller. if the controller scope is not found, dialog will be compiled with the rootScope.
+
+                    // if the dialog is of type login, use rootScope instead of the scope passed
+                    if (WM.element('script[id="' + dialogName + '"]').attr('login-dialog')) {
+                        $s = $rs;
+                    }
+
                     DialogService.showDialog(dialogName, {'scope': $s.ctrlScope || $s});
+
                 } else {
                     DialogService.hideDialog(dialogName);
                 }
