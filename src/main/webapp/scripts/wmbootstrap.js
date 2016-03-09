@@ -340,6 +340,11 @@ Application
                     Variables.initAppVariables(undefined, function (appVariables) {
                         appVariablesLoaded = true;
                         var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
+
+                        //Assume supported locale as 'en' when supportedLocale variable is missing
+                        if (!supportedLocale) {
+                            supportedLocale = {'en' : 'English'};
+                        }
                         initI18nService(_.keys(supportedLocale), _WM_APP_PROPERTIES.defaultLanguage);
                         updateLoggedInUserVariable().
                             then(function () {
