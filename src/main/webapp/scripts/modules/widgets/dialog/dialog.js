@@ -221,7 +221,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogheader', ["PropertiesFactory", "DialogService", "WidgetUtilService", "LOCAL_CONSTANTS", "$templateCache", function (PropertiesFactory, DialogService, WidgetUtilService, LOCAL_CONSTANTS, $templateCache) {
+    }]).directive('wmDialogheader', ["PropertiesFactory", "DialogService", "WidgetUtilService", "LOCAL_CONSTANTS", "$templateCache", "CONSTANTS", function (PropertiesFactory, DialogService, WidgetUtilService, LOCAL_CONSTANTS, $templateCache, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.base"]),
             notifyFor = {
@@ -282,8 +282,13 @@ WM.module('wm.widgets.dialog')
                                 dialogCtrl._CloseButtonHandler(onCloseEventName);
                             }
                         };
+
                         if (onOpenedEventName && dialogCtrl && !scope.widgetid) {
-                            parentElScope.whenReady(dialogCtrl._OnOpenedHandler.bind(undefined, onOpenedEventName));
+                            if (CONSTANTS.isRunMode) {
+                                parentElScope.whenReady(dialogCtrl._OnOpenedHandler.bind(undefined, onOpenedEventName));
+                            } else {
+                                dialogCtrl._OnOpenedHandler(onOpenedEventName);
+                            }
                         }
 
                         /* register the property change handler */
