@@ -52,7 +52,7 @@ WM.module('wm.widgets.form')
 
                 if (!isWidgetInsideCanvas) {
 
-                    updateon = tAttrs.updateon || 'blur';
+                    updateon = (tAttrs.updateon || 'blur') + ' change ';
                     debounce = tAttrs.updatedelay || 0;
                     allowInvalid = tAttrs.allowinvalid === 'true';
 
