@@ -1478,7 +1478,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string, object", "widget": "string", "bindable": "in-out-bound"},
                         "scopedataset": {"type": "string"},
                         "query": {"type": "string", "bindable": "out-bound"},
-                        "searchkey": {"type": "string", "widget": "list", "options": [""], "bindable": "in-bound", "datasetfilter" : "terminals"},
+                        "searchkey": {"type": "list", "widget": "multiselect", "options": [""], "bindable": "in-bound", "datasetfilter" : "terminals"},
                         "displaylabel": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "displayimagesrc": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
@@ -2481,6 +2481,15 @@ WM.module('wm.widgets.base', [])
                 }
             }
 
+            //Updates options based on the widget of the property
+            function updateOptions(scope, name, prop, options) {
+                if (prop.widget === 'multiselect' && scope.widgetDataset) {
+                    scope.widgetDataset[name] = options;
+                } else {
+                    prop.options = options;
+                }
+            }
+
             /**
              * @ngdoc function
              * @name wm.widgets.form.FormWidgetUtils#updatePropertyPanelOptions
@@ -2499,7 +2508,8 @@ WM.module('wm.widgets.base', [])
                 var keys,
                     allKeys = [],
                     filter,
-                    ALLFIELDS = ['All Fields'];
+                    ALLFIELDS = ['All Fields'],
+                    options;
                 /* on binding of data*/
                 if (dataset && WM.isObject(dataset)) {
                     dataset = dataset[0] || dataset;
@@ -2529,24 +2539,27 @@ WM.module('wm.widgets.base', [])
                 }
                 if (keys) {
                     allKeys = _.union(keys.objects, keys.terminals);
-                    _.forEach(scope.widgetProps, function (prop) {
+                    _.forEach(scope.widgetProps, function (prop, name) {
                         filter = prop.datasetfilter;
                         if (filter) {
                             switch (filter) {
                             case 'all':
-                                prop.options = allKeys;
+                                options = allKeys;
                                 break;
                             case 'objects':
-                                prop.options = keys.objects;
+                                options = keys.objects;
                                 break;
                             case 'terminals':
-                                prop.options = keys.terminals;
+                                options = keys.terminals;
                                 break;
                             }
                             if (prop.allfields) {
-                                prop.options = ALLFIELDS.concat(prop.options);
+                                options = ALLFIELDS.concat(options);
                             }
-                            prop.options = [''].concat(prop.options);
+                            if (prop.widget !== 'multiselect') {
+                                options = [''].concat(options);
+                            }
+                            updateOptions(scope, name, prop, options);
                         }
                     });
                 }
