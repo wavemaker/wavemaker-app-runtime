@@ -523,7 +523,7 @@ Application
                         supportedLocale;
 
                     if ($rs._appNavEvt) {
-                        $rs._appNavEvt.widgetName = $rs._appNavEvt.target.closest('[init-widget]').name;
+                        $rs._appNavEvt.widgetName = WM.element($rs._appNavEvt.target).closest('[init-widget]').attr('name');
                     }
 
                     Utils.triggerFn($rs.onBeforePageLoad, {'requested': $cRoute.params.name, 'last': _.get($pRoute, 'params.name')}, $rs._appNavEvt);
