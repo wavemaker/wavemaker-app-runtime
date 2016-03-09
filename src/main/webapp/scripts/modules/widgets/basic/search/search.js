@@ -98,8 +98,8 @@ WM.module('wm.widgets.basic')
             return _.filter(entries, function (entry) {
                 var a = entry[key], b = val;
                 if (!casesensitive) {
-                    a = a && a.toLowerCase();
-                    b = b && b.toLowerCase();
+                    a = a && a.toString().toLowerCase();
+                    b = b && b.toString().toLowerCase();
                 }
                 return _.includes(a, b);
             });
@@ -347,6 +347,11 @@ WM.module('wm.widgets.basic')
                             element.find('input').val('');
                             scope.showClosebtn = false;
                         };
+
+                        //Watch to set input value on change of data value
+                        scope.$watch('datavalue', function (newVal) {
+                            element.find('input').val(newVal || '');
+                        });
 
                         // set the searchquery if the datavalue exists.
                         if (CONSTANTS.isRunMode) {
