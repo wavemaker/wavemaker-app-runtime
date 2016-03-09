@@ -148,7 +148,9 @@ WM.module('wm.widgets.form')
                         }
                     },
                     'post': function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element),
+                            isCurrentDate    = false,
+                            CURRENT_DATE     = 'CURRENT_DATE';
 
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
@@ -174,6 +176,9 @@ WM.module('wm.widgets.form')
                          *  */
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
+                                if (scope.widgetid && isCurrentDate) {
+                                    return CURRENT_DATE;
+                                }
                                 var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
                                 this.timestamp = timestamp;
                                 if (this.outputformat === "timestamp") {
@@ -186,17 +191,14 @@ WM.module('wm.widgets.form')
                             },
                             set: function (val) {
                                 var timestamp;
-                                if (scope._nativeMode) {
-                                    if (val) {
-                                        /*set the proxymodel and timestamp if val exists*/
-                                        timestamp = getTimeStamp(val);
-                                        this._proxyModel = new Date(timestamp);
-                                        this.timestamp = timestamp;
-                                    } else {
-                                        this._proxyModel = undefined;
-                                    }
+                                isCurrentDate = val === CURRENT_DATE;
+                                if (isCurrentDate) {
+                                    this._proxyModel = new Date();
+                                } else if (val) {
+                                    timestamp = getTimeStamp(val);
+                                    this._proxyModel = new Date(timestamp);
                                 } else {
-                                    this._proxyModel = val ? new Date(getTimeStamp(val)) : undefined;
+                                    this._proxyModel = undefined;
                                 }
                             }
                         });
@@ -207,23 +209,9 @@ WM.module('wm.widgets.form')
                         scope.excludeDates = function (date, mode) {
                             return mode === 'day' && _.includes(scope.proxyExcludeDates, FormWidgetUtils.getTimestampFromDate(date));
                         };
-
-                        /*set the default value*/
-                        if (!attrs.datavalue && !attrs.scopedatavalue) {
-                            if (scope._nativeMode) {
-                                /*prevDate is used to keep a copy of prev selected date*/
-                                scope._prevDate = scope._proxyModel = new Date();
-                                scope.timestamp = getTimeStamp(scope._proxyModel);
-                            } else {
-                                scope._model_ = Date.now();
-                            }
-                        }
                         /*if datavalue exists set the model*/
-                        if (attrs.datavalue) {
+                        if (attrs.datavalue && !_.startsWith(attrs.datavalue, 'bind:')) {
                             scope._model_ = attrs.datavalue;
-                            if (scope._nativeMode) {
-                                scope._proxyModel = new Date(attrs.datavalue);
-                            }
                         }
                     }
                 };

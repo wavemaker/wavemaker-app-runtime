@@ -384,7 +384,7 @@ WM.module('wm.widgets.base')
                 isSelect     = flg  = $el.is('select');
                 isNumberType = flg  = !flg && $el.is('input[type=number], .app-currency, .app-slider, .app-ratings');
                 isCheckbox   = flg  = !flg && $el.is('.app-checkbox');
-                isDate              = !flg && $el.is('input[type=date]');
+                isDate              = !flg && $el.is('input[type=date]') && !$el.hasClass('app-dateinput');
 
                 function parseDataValue(val) {
                     var modifiedVal = val,

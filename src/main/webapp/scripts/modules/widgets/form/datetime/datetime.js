@@ -33,7 +33,7 @@ WM.module('wm.widgets.form')
             ' data-ng-disabled="disabled" ' +
             ' data-ng-change="updateModel();_onChange({$event: $event, $scope: this});"> '
             );
-    }]).directive('wmDatetime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'FormWidgetUtils', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils) {
+    }]).directive('wmDatetime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'FormWidgetUtils', '$interval', 'CONSTANTS', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils, $interval, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.datetime', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -208,16 +208,29 @@ WM.module('wm.widgets.form')
                         }
                     },
                     post: function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element),
+                        var onPropertyChange  = propertyChangeHandler.bind(undefined, scope, element),
+                            CURRENT_DATETIME  = 'CURRENT_DATE',
+                            isCurrentDateTime = false,
+                            timeInterval,
                             setModels = function (val) {
                                 var dateTime;
                                 if (val) {
-                                    dateTime = parseDateTime(val);
-                                    if (dateTime.getTime()) {
+                                    if (isCurrentDateTime) {
+                                        dateTime = new Date();
                                         scope._proxyModel = scope._timeModel = dateTime.getTime();
-                                        scope._dateModel  = new Date(scope._proxyModel);
+                                        scope._dateModel = new Date(scope._proxyModel);
+                                        if (scope.widgetid) {
+                                            scope._displayModel = $filter('date')(scope._proxyModel, scope.datepattern);
+                                            return;
+                                        }
                                     } else {
-                                        scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
+                                        dateTime = parseDateTime(val);
+                                        if (dateTime.getTime()) {
+                                            scope._proxyModel = scope._timeModel = dateTime.getTime();
+                                            scope._dateModel = new Date(scope._proxyModel);
+                                        } else {
+                                            scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
+                                        }
                                     }
                                 } else {
                                     scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
@@ -286,6 +299,9 @@ WM.module('wm.widgets.form')
                          *  */
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
+                                if (scope.widgetid && isCurrentDateTime) {
+                                    return CURRENT_DATETIME;
+                                }
                                 if (!scope._nativeMode) {
                                     return this._proxyModel;
                                 }
@@ -301,11 +317,15 @@ WM.module('wm.widgets.form')
                             },
                             set: function (val) {
                                 var dateTime;
+                                isCurrentDateTime = val === CURRENT_DATETIME;
                                 if (scope._nativeMode) {
                                     if (val) {
-                                        dateTime = parseDateTime(val);
+                                        if (isCurrentDateTime) {
+                                            dateTime = new Date();
+                                        } else {
+                                            dateTime = parseDateTime(val);
+                                        }
                                         this._proxyModel = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
-                                        this.timestamp = this._proxyModel.getTime();
                                     } else {
                                         this._proxyModel = undefined;
                                     }
@@ -323,24 +343,19 @@ WM.module('wm.widgets.form')
                         scope.excludeDates = function (date) {
                             return _.includes(scope.proxyExcludeDates, FormWidgetUtils.getTimestampFromDate(date));
                         };
-
-                        /*Set the model if datavalue doesnt exists*/
-                        if (!attrs.datavalue && !attrs.scopedatavalue) {
-                            if (scope._nativeMode) {
-                                scope._prevDateTime = scope._proxyModel = new Date();
-                                scope.timestamp = scope._proxyModel.getTime();
-                            } else {
-                                scope._model_ = Date.now();
-                            }
-                        }
-
                         /*Set the model if datavalue exists*/
-                        if (attrs.datavalue) {
+                        if (attrs.datavalue  && !_.startsWith(attrs.datavalue, 'bind:')) {
                             scope._model_ = attrs.datavalue;
-                            if (scope._nativeMode) {
-                                scope._proxyModel = new Date(attrs.datavalue);
+                            if (attrs.datavalue === CURRENT_DATETIME && CONSTANTS.isRunMode) {
+                                scope.disabled = true;
+                                timeInterval = $interval(function () {
+                                    scope._model_ = new Date();
+                                }, 1000);
                             }
                         }
+                        scope.$on('$destroy', function () {
+                            $interval.cancel(timeInterval);
+                        });
                     }
                 };
             }

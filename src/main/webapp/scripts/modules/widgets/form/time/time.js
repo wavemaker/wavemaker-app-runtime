@@ -32,7 +32,7 @@ WM.module('wm.widgets.form')
             ' data-ng-disabled="disabled" ' +
             ' data-ng-change="updateModel();_onChange({$event: $event, $scope: this})"> '
             );
-    }]).directive('wmTime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'Utils', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, Utils) {
+    }]).directive('wmTime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'Utils', '$interval', 'CONSTANTS', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, Utils, $interval, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.time', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
@@ -155,11 +155,18 @@ WM.module('wm.widgets.form')
                     },
                     post: function (scope, element, attrs) {
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element),
+                            isCurrentTime = false,
+                            CURRENT_TIME = 'CURRENT_TIME',
+                            timeInterval,
                             setProxyModel = function (val) {
                                 var dateTime;
                                 if (val) {
-                                    dateTime = Utils.getValidDateObject(val);
-                                    scope._proxyModel = WM.isDate(dateTime) ? dateTime : undefined;
+                                    if (isCurrentTime) {
+                                        scope._proxyModel = new Date();
+                                    } else {
+                                        dateTime = Utils.getValidDateObject(val);
+                                        scope._proxyModel = WM.isDate(dateTime) ? dateTime : undefined;
+                                    }
                                 } else {
                                     scope._proxyModel = undefined;
                                 }
@@ -209,6 +216,9 @@ WM.module('wm.widgets.form')
 
                         Object.defineProperty(scope, '_model_', {
                             get: function () {
+                                if (scope.widgetid && isCurrentTime) {
+                                    return CURRENT_TIME;
+                                }
                                 var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
                                 this.timestamp = timestamp;
                                 if (this.outputformat === "timestamp") {
@@ -221,12 +231,16 @@ WM.module('wm.widgets.form')
                             },
                             set: function (val) {
                                 var dateTime;
+                                isCurrentTime = val === CURRENT_TIME;
                                 if (scope._nativeMode) {
                                     if (val) {
-                                        dateTime = Utils.getValidDateObject(val);
+                                        if (isCurrentTime) {
+                                            dateTime = new Date();
+                                        } else {
+                                            dateTime = Utils.getValidDateObject(val);
+                                        }
                                         /*set the proxymodel and timestamp*/
                                         this._proxyModel = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
-                                        this.timestamp = this._proxyModel.getTime();
                                     } else {
                                         this._proxyModel = undefined;
                                     }
@@ -237,24 +251,19 @@ WM.module('wm.widgets.form')
                             }
                         });
 
-                        /*set the model if datavalue doesnt exist*/
-                        if (!attrs.datavalue && !attrs.scopedatavalue) {
-                            if (scope._nativeMode) {
-                                scope._proxyModel = new Date();
-                                scope.timestamp = scope._proxyModel.getTime();
-                            } else {
-                                scope._model_ = Date.now();
-                            }
-                        }
-
                         /*set the model if datavalue exists */
-                        if (attrs.datavalue) {
-                            if (scope._nativeMode) {
-                                scope._proxyModel = new Date(attrs.datavalue);
-                            }
+                        if (attrs.datavalue  && !_.startsWith(attrs.datavalue, 'bind:')) {
                             scope._model_ = attrs.datavalue;
+                            if (attrs.datavalue === CURRENT_TIME && CONSTANTS.isRunMode) {
+                                scope.disabled = true;
+                                timeInterval = $interval(function () {
+                                    scope._model_ = new Date();
+                                }, 1000);
+                            }
                         }
-
+                        scope.$on('$destroy', function () {
+                            $interval.cancel(timeInterval);
+                        });
                     }
                 };
             }
