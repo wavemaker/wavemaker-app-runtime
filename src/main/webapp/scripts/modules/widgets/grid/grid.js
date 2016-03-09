@@ -1040,8 +1040,10 @@ WM.module('wm.widgets.grid')
                         $scope.$root.$safeApply($scope);
                         return;
                     }
+                    // Know if user wants to delete the row
+                    var isDelConfirmed = $scope.confirmdelete ? confirm($scope.confirmdelete) : true;
                     /* delete if user confirm to delete*/
-                    if (confirm($scope.confirmdelete)) {
+                    if (isDelConfirmed) {
                         var variable = $scope.gridElement.scope().Variables[$scope.variableName];
                         if (!variable) {
                             return;
