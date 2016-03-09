@@ -13,7 +13,8 @@ import com.wavemaker.studio.common.WMRuntimeException;
  */
 public class ProcedureMetaData extends MetaData {
 
-    public static final String LIST_SUFFIX = "_list";
+    public static final String CURSOR_TYPE_PREFIX = "com.types.CURSOR.";
+
     private DataObject parentDataObject;
 
     public ProcedureMetaData(final String parentDataObjectName) {
@@ -52,7 +53,7 @@ public class ProcedureMetaData extends MetaData {
         if (value instanceof List) {
             final DataObject.Element element = new DataObject.Element();
             element.setName(key);
-            final String typeRef = key + LIST_SUFFIX;
+            final String typeRef = CURSOR_TYPE_PREFIX + key;
             element.setTypeRef(typeRef);
             element.setIsList(true);
             parentDataObject.getElement().add(element);
