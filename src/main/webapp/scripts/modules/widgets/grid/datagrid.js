@@ -1666,7 +1666,7 @@ $.widget('wm.datagrid', {
             this.setStatus('nodata');
         } else {
             this.dataStatus.state = this.dataStatus.state || 'loading';
-            this.dataStatus.message = this.dataStatus.message || this.dataStates.loading;
+            this.dataStatus.message = this.dataStatus.message || this.options.dataStates.loading;
             this.setStatus(this.dataStatus.state, this.dataStatus.message);
         }
         this.gridBody = this.gridElement.find('tbody');
