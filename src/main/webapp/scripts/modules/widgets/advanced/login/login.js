@@ -107,7 +107,7 @@ WM.module("wm.widgets.advanced")
                                     loginDetails = {
                                         'username'   : $userName.val(),
                                         'password'   : $password.val(),
-                                        'rememberme' : $rememberMe.val()
+                                        'rememberme' : $rememberMe
                                     };
                                     element.scope().Variables.loginVariable.login({loginInfo: loginDetails}, onSuccess, onError);
                                 } else {
