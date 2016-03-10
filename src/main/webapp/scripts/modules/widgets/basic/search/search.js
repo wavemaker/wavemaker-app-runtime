@@ -51,7 +51,7 @@ WM.module('wm.widgets.basic')
                         'typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                         'typeahead-template-url="template/widget/form/searchlist.html"' +
                     '>' +
-                '<span class="input-group-addon" data-ng-class="{\'disabled\': disabled}" data-ng-if="dataSetType === \'listOfObjects\' || dataSetType === \'listOfStrings\'" >' +
+                '<span class="input-group-addon" data-ng-class="{\'disabled\': disabled}" data-ng-if="showSearchIcon" >' +
                     '<form data-ng-submit="onSubmit({$event: $event, $scope: this})" >' +
                         '<button title="Search" data-ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
                             'data-ng-click="onTypeAheadSelect($event, $item, $model, $label)"' +
@@ -117,7 +117,8 @@ WM.module('wm.widgets.basic')
                 'displaylabel': true,
                 'dataset': true,
                 'displayimagesrc': true,
-                'active': true
+                'active': true,
+                'type': true
             };
 
         // to filter & set the dataset property of the search widget
@@ -268,6 +269,16 @@ WM.module('wm.widgets.basic')
             });
         }
 
+        //Toggles search icon based on the type of search and dataset type
+        function toggleSearchIcon(scope, type) {
+            if (CONSTANTS.isRunMode) {
+                scope.showSearchIcon = _.includes([type, scope.type], 'search');
+                return;
+            }
+
+            scope.showSearchIcon = type === 'search' && _.includes(['listOfObjects', 'listOfStrings'], scope.dataSetType);
+        }
+
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
@@ -286,6 +297,9 @@ WM.module('wm.widgets.basic')
                 if (scope.widgetid && newVal) {
                     updatePropertyPanelOptions(scope.dataset, scope);
                 }
+                break;
+            case 'type':
+                toggleSearchIcon(scope, newVal);
                 break;
             }
         }

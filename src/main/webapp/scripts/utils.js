@@ -121,7 +121,8 @@ WM.module('wm.utils', [])
                 'select'      : true,
                 'checkboxset' : true,
                 'radioset'    : true,
-                'switch'      : true
+                'switch'      : true,
+                'typeahead'   : true
             },
             daysOptions = [{
                 'name': 'Sunday',

@@ -1495,7 +1495,8 @@ WM.module('wm.widgets.base', [])
                         "casesensitive": {"type": "boolean", "show": "false", "value": false},
                         /* searchbar in mobile-navbar*/
                         "navsearchbar": {"type": "string", "show": "false"},
-                        "readonly": {"type": "boolean", "bindable": "in-bound"}
+                        "readonly": {"type": "boolean", "bindable": "in-bound"},
+                        "type": {"type": "string", "widget": "list", "options": ["search", "typeahead"], "value": "search"}
                     },
                     "wm.chart": {
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},

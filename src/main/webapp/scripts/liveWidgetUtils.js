@@ -210,25 +210,25 @@ WM.module('wm.widgets.live')
              */
             function getFieldTypeWidgetTypesMap() {
                 var fieldTypeWidgetTypeMap = {
-                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency'],
-                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency'],
-                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
-                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
-                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
-                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
-                    'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency'],
-                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency'],
-                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency'],
-                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency'],
-                    'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset'],
-                    'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset'],
-                    'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset'],
-                    'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset'],
-                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select'],
-                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch'],
-                    'clob'       : ['text', 'number', 'select', 'textarea', 'richtext'],
-                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime']
+                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'typeahead'],
+                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'typeahead'],
+                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
+                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
+                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
+                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
+                    'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
+                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'typeahead'],
+                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency', 'typeahead'],
+                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'typeahead'],
+                    'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset', 'typeahead'],
+                    'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset', 'typeahead'],
+                    'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset', 'typeahead'],
+                    'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset', 'typeahead'],
+                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select', 'typeahead'],
+                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch', 'typeahead'],
+                    'clob'       : ['text', 'number', 'select', 'textarea', 'richtext', 'typeahead'],
+                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext', 'typeahead'],
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'typeahead']
                 };
                 return fieldTypeWidgetTypeMap;
             }
@@ -472,6 +472,11 @@ WM.module('wm.widgets.live')
                 var additionalFields = 'currency="{{formFields[' + index + '].currency}}"';
                 return getDefaultTemplate('currency', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value', additionalFields);
             }
+
+            function getSearchTemplate(fieldDef, index) {
+                var additionalFields = 'scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" type="typeahead" displaylabel="{{formFields[' + index + '].displaylabel}}"';
+                return getDefaultTemplate('search', fieldDef, index, '', '', 'Search', additionalFields);
+            }
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getHiddenTemplate
@@ -560,6 +565,9 @@ WM.module('wm.widgets.live')
                     break;
                 case 'currency':
                     template += getCurrencyTemplate(fieldDef, index);
+                    break;
+                case 'typeahead':
+                    template += getSearchTemplate(fieldDef, index);
                     break;
                 default:
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
@@ -925,6 +933,10 @@ WM.module('wm.widgets.live')
                 case 'currency':
                     baseProperties      = 'wm.currency';
                     extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors'];
+                    break;
+                case 'typeahead':
+                    baseProperties      = 'wm.search';
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
                     break;
                 default:
                     baseProperties      = 'wm.text';
