@@ -899,11 +899,11 @@ WM.module('wm.widgets.live')
                     break;
                 case 'checkboxset':
                     baseProperties      = 'wm.checkboxset';
-                    extendedProperties  = ['wm.base', 'wm.booleaneditors'];
+                    extendedProperties  = ['wm.base', 'wm.booleaneditors', 'wm.base.editors.dataseteditors'];
                     break;
                 case 'radioset':
                     baseProperties      = 'wm.radioset';
-                    extendedProperties  = ['wm.base', 'wm.booleaneditors'];
+                    extendedProperties  = ['wm.base', 'wm.booleaneditors', 'wm.base.editors.dataseteditors'];
                     break;
                 case 'date':
                     baseProperties      = 'wm.date';

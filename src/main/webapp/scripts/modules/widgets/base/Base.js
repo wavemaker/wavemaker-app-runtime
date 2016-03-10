@@ -2484,7 +2484,8 @@ WM.module('wm.widgets.base', [])
 
             //Updates options based on the widget of the property
             function updateOptions(scope, name, prop, options) {
-                if (prop.widget === 'multiselect' && scope.widgetDataset) {
+                if (prop.widget === 'multiselect') {
+                    scope.widgetDataset = scope.widgetDataset || {};
                     scope.widgetDataset[name] = options;
                 } else {
                     prop.options = options;
@@ -2509,7 +2510,7 @@ WM.module('wm.widgets.base', [])
                 var keys,
                     allKeys = [],
                     filter,
-                    ALLFIELDS = ['All Fields'],
+                    ALLFIELDS = 'All Fields',
                     options;
                 /* on binding of data*/
                 if (dataset && WM.isObject(dataset)) {
@@ -2538,11 +2539,14 @@ WM.module('wm.widgets.base', [])
                     scope.displayfield = '';
                     scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': ALLFIELDS, 'displayfield': ''});
                 }
-                if (keys) {
-                    allKeys = _.union(keys.objects, keys.terminals);
-                    _.forEach(scope.widgetProps, function (prop, name) {
-                        filter = prop.datasetfilter;
-                        if (filter) {
+                keys = keys || {};
+                allKeys = _.union(keys.objects, keys.terminals);
+                _.forEach(scope.widgetProps, function (prop, name) {
+                    filter = prop.datasetfilter;
+                    if (filter) {
+                        if (_.isEmpty(keys)) {
+                            options = [];
+                        } else {
                             switch (filter) {
                             case 'all':
                                 options = allKeys;
@@ -2555,15 +2559,15 @@ WM.module('wm.widgets.base', [])
                                 break;
                             }
                             if (prop.allfields) {
-                                options = ALLFIELDS.concat(options);
+                                options = [ALLFIELDS].concat(options);
                             }
                             if (prop.widget !== 'multiselect') {
                                 options = [''].concat(options);
                             }
-                            updateOptions(scope, name, prop, options);
                         }
-                    });
-                }
+                        updateOptions(scope, name, prop, options);
+                    }
+                });
                 return keys;
             }
 

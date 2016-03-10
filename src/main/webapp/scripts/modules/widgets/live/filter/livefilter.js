@@ -422,12 +422,13 @@ WM.module('wm.widgets.live')
                                         columns,
                                         aliasColumn,
                                         fieldColumn,
-                                        widgetTypes = ['select', 'radioset', 'checkboxset'],
+                                        dataSetWidgetTypes = Utils.getDataSetWidgets(),
+                                        emptySupportWidgets = ['select', 'radioset'],
                                         isEnableEmptyFilter = getEnableEmptyFilter(scope.enableemptyfilter),
                                         emptyOption = {};
 
                                     fieldColumn = variable.getModifiedFieldName(filterField.field);
-                                    if (_.includes(widgetTypes, filterField.widget) && !filterField.tempDataset) {
+                                    if (dataSetWidgetTypes[filterField.widget] && !filterField.tempDataset) {
                                         if (filterField.isRelated) {
                                             tableName = filterField.lookupType;
                                             columns = filterField.lookupField;
@@ -457,7 +458,7 @@ WM.module('wm.widgets.live')
                                             "prefabName": variable.prefabName
                                         }, function (data) {
                                             filterField.dataset = [];
-                                            if (isEnableEmptyFilter && filterField.widget !== 'checkboxset' && !filterField.isRange) {
+                                            if (isEnableEmptyFilter && _.includes(emptySupportWidgets, filterField.widget) && !filterField.isRange) {
                                                 emptyOption[FILTER_CONSTANTS.LABEL_KEY]   = FILTER_CONSTANTS.EMPTY_KEY;
                                                 emptyOption[FILTER_CONSTANTS.LABEL_VALUE] = FILTER_CONSTANTS.EMPTY_VALUE;
                                                 filterField.dataset.push(emptyOption);
@@ -471,8 +472,13 @@ WM.module('wm.widgets.live')
                                                     filterField.dataset.push(option);
                                                 }
                                             });
-                                            filterField.displayfield = FILTER_CONSTANTS.LABEL_VALUE;
-                                            filterField.datafield    = FILTER_CONSTANTS.LABEL_KEY;
+                                            filterField.datafield = FILTER_CONSTANTS.LABEL_KEY;
+                                            if (filterField.widget === 'typeahead') {
+                                                filterField.searchkey    = FILTER_CONSTANTS.LABEL_VALUE;
+                                                filterField.displaylabel = FILTER_CONSTANTS.LABEL_VALUE;
+                                            } else {
+                                                filterField.displayfield = FILTER_CONSTANTS.LABEL_VALUE;
+                                            }
                                         });
                                     }
                                 });

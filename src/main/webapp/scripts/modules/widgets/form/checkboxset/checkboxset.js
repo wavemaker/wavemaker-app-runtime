@@ -148,7 +148,7 @@ WM.module('wm.widgets.form')
         /* checks if the given value object is in the given model array of objects */
         function valueInModel(model, value, dataObject) {
             /*If the value is in model, return true*/
-            if (model && model.indexOf(value) !== -1) {
+            if (_.includes(model, value)) {
                 return true;
             }
             /*If model is equal to value, return true*/
