@@ -189,7 +189,9 @@ WM.module('wm.widgets.grid')
             },
             'compile': function (tElement, tAttr) {
                 var contextEl = tElement.context,
-                    showHeader;
+                    showHeader,
+                    showNavigation;
+
                 /*Backward compatibility to support "gridnoheader".*/
                 if (tAttr.gridnoheader) {
                     contextEl.removeAttribute('gridnoheader');
@@ -200,6 +202,21 @@ WM.module('wm.widgets.grid')
                         contextEl.setAttribute('showheader', showHeader);
                     }
                 }
+
+
+                // backward compatibility for shownavigation
+                if (tAttr.shownavigation) {
+                    contextEl.removeAttribute('shownavigation');
+                    showNavigation = tAttr.shownavigation === 'true' || tAttr.shownavigation === true;
+
+                    delete tAttr.shownavigation;
+
+                    if (!tAttr.navigation) {
+                        tAttr.navigation = showNavigation ? 'Advanced' : 'None';
+                        contextEl.setAttribute('navigation', tAttr.navigation);
+                    }
+                }
+
                 /*Backward compatibility to support "readonlygrid".*/
                 if (WM.isUndefined(tAttr.readonlygrid)) {
                     tAttr.readonlygrid = false;
