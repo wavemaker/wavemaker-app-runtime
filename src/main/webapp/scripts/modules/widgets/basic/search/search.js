@@ -89,19 +89,23 @@ WM.module('wm.widgets.basic')
     }])
     .filter('_custom_search_filter', function () {
         'use strict';
-        return function (entries, key, val, casesensitive) {
+        return function (entries, keys, val, casesensitive) {
             // filter the entries based on the $is.searchkey and the input
-            if (!key) {
+            if (!keys) {
                 return entries;
             }
 
+            keys = keys.split(',');
+
             return _.filter(entries, function (entry) {
-                var a = entry[key], b = val;
-                if (!casesensitive) {
-                    a = a && a.toString().toLowerCase();
-                    b = b && b.toString().toLowerCase();
-                }
-                return _.includes(a, b);
+                return keys.some(function (key) {
+                    var a = entry[key], b = val;
+                    if (!casesensitive) {
+                        a = a && a.toString().toLowerCase();
+                        b = b && b.toString().toLowerCase();
+                    }
+                    return _.includes(a, b);
+                });
             });
         };
     })
@@ -307,6 +311,7 @@ WM.module('wm.widgets.basic')
                 return {
                     'pre': function (scope) {
                         scope.widgetProps = widgetProps;
+                        scope.widgetDataset = {};
                     },
                     'post': function (scope, element, attrs) {
 
