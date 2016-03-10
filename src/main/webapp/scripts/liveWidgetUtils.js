@@ -784,6 +784,9 @@ WM.module('wm.widgets.live')
                     template = '',
                     wdgtProperties = scope.widgetProps,
                     compileField = function () {
+                        if (!scope.widgetid) {
+                            return;
+                        }
                         /*On changing of a property in studio mode, generate the template again so that change is reflected*/
                         template = getTemplate(parentScope.formFields[index], index);
                         element.html(template);
