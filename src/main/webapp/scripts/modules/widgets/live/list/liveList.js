@@ -500,10 +500,22 @@ WM.module('wm.widgets.live')
                 $is.oldbinddataset = $is.binddataset;
             }
 
-            function resetNavigation($is) {
+            function resetNavigation($is, attrs, type) {
                 $is.navControls = undefined;
                 $is.infScroll   = false;
                 if ($is.widgetid) {
+                    var markupManagerService,
+                        markup,
+                        $element;
+
+                    markupManagerService = Utils.getService('MarkupManagerService');
+                    markup               = markupManagerService.getMarkup();
+                    $element             = markup.find('[name=' + attrs.name + ']');
+                    if (type === 'Inline') {
+                        $element.attr('listclass', 'list-inline').removeAttr('itemclass');
+                    } else {
+                        $element.attr({'listclass': 'list-group', 'itemclass': 'list-group-item'});
+                    }
                     $is.widgetProps.itemsperrow.show = true;
                 }
             }
@@ -530,8 +542,8 @@ WM.module('wm.widgets.live')
                 $is.infScroll = true;
             }
 
-            function onNavigationTypeChange($is, type) {
-                resetNavigation($is);
+            function onNavigationTypeChange($is, attrs, type) {
+                resetNavigation($is, attrs, type);
                 switch (type) {
                 case NAVIGATION.BASIC:
                     enableBasicNavigation($is);
@@ -632,7 +644,7 @@ WM.module('wm.widgets.live')
                     break;
                 case 'navigation':
                     if (CONSTANTS.isStudioMode) {
-                        onNavigationTypeChange($is, nv);
+                        onNavigationTypeChange($is, attrs, nv);
                     }
                     break;
                 case 'groupby':
@@ -984,7 +996,7 @@ WM.module('wm.widgets.live')
                     // for legacy applications
                     $is.navigation = NAVIGATION.ADVANCED;
                 }
-                onNavigationTypeChange($is, $is.navigation);
+                onNavigationTypeChange($is, attrs, $is.navigation);
 
                 WidgetUtilService.postWidgetCreate($is, $el, attrs);
             }
