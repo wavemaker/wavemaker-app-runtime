@@ -503,6 +503,9 @@ WM.module('wm.widgets.live')
             function resetNavigation($is) {
                 $is.navControls = undefined;
                 $is.infScroll   = false;
+                if ($is.widgetid) {
+                    $is.widgetProps.itemsperrow.show = true;
+                }
             }
 
             function enableBasicNavigation($is) {
@@ -510,12 +513,12 @@ WM.module('wm.widgets.live')
             }
 
             function enableInlineNavigation($is) {
-                var widgetProps       = $is.widgetProps;
+
                 $is.navControls       = NAVIGATION.INLINE;
                 $is.isDisablePrevious = true;
                 // hides itemsperrow property in studio mode.
                 if ($is.widgetid) {
-                    widgetProps.itemsperrow.show = false;
+                    $is.widgetProps.itemsperrow.show = false;
                 }
             }
 
