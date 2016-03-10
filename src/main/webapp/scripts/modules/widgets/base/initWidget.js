@@ -519,7 +519,7 @@ WM.module('wm.widgets.base')
                         if (isName) {
                             if (attrs.widgetid) { // widget is inside the canvas
                                 $rs.$emit('name-change', attrs.widgetid, nv, ov, $is);
-                            } else if ($s.Widgets) { // widget may be inside canvas inside a page container or in run mode.
+                            } else if ($s.Widgets && attrs.name) { // widget may be inside canvas inside a page container or in run mode.
                                 $s.Widgets[attrs.name] = $is;
                             }
                         }

@@ -583,7 +583,7 @@ WM.module('wm.widgets.live')
              */
             function translateVariableObject(rawObject, scope) {
                 var translatedObj = [],
-                    columnArray = rawObject.propertiesMap.columns,
+                    columnArray = rawObject.propertiesMap ? rawObject.propertiesMap.columns : undefined,
                     fieldNames = [],
                     widgetsMap = getFieldTypeWidgetTypesMap();
 
