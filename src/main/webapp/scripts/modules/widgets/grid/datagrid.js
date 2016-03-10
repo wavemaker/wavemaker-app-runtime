@@ -1662,9 +1662,11 @@ $.widget('wm.datagrid', {
         var $htm = $(this._getGridTemplate());
         this.gridElement.append($htm);
         // Set proper data status messages after the grid is rendered.
-        if (!this.options.data.length && !this.dataStatus.state.length) {
+        if (!this.options.data.length && this.dataStatus.state === 'nodata') {
             this.setStatus('nodata');
         } else {
+            this.dataStatus.state = this.dataStatus.state || 'loading';
+            this.dataStatus.message = this.dataStatus.message || this.dataStates.loading;
             this.setStatus(this.dataStatus.state, this.dataStatus.message);
         }
         this.gridBody = this.gridElement.find('tbody');
