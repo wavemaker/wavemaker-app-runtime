@@ -73,8 +73,9 @@ Application
             'CONSTANTS',
             'wmSpinner',
             '$timeout',
+            '$route',
 
-            function ($q, Utils, BaseService, $location, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout) {
+            function ($q, Utils, BaseService, $location, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route) {
                 'use strict';
 
                 var prevRoute,
@@ -319,6 +320,10 @@ Application
                                 page = config.homePage;
                             }
                             if ($location.path() === '/' || forcePageLoad) {
+                                //Reload the page when current page and post login landing page are same
+                                if ($location.path() === '/' + page) {
+                                    $route.reload();
+                                }
                                 $location.path(page);
                             }
                             deferred.resolve();

@@ -23,7 +23,8 @@ wm.variables.services.LoginVariableService = ['Variables',
     'CONSTANTS',
     '$location',
     'BaseService',
-    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $rootScope, VARIABLE_CONSTANTS, CONSTANTS, $location, BaseService) {
+    'DialogService',
+    function (Variables, BaseVariablePropertyFactory, SecurityService, Utils, $window, $rootScope, VARIABLE_CONSTANTS, CONSTANTS, $location, BaseService, DialogService) {
         "use strict";
 
         var methods, loginVariableObj, initiateCallback;
@@ -81,6 +82,8 @@ wm.variables.services.LoginVariableService = ['Variables',
                     var redirectUrl = response && response.url ? response.url : 'index.html',
                         appManager = Utils.getService("AppManager"),
                         lastLoggedinUser = SecurityService.getLastLoggedInUser();
+                    //Closing login dialog after successful login
+                    DialogService.close('CommonLoginDialog');
                     if (!CONSTANTS.isRunMode) {
                         return;
                     }
