@@ -1003,6 +1003,11 @@ body.modal-open {
   list-style: none;
   margin: 0;
   padding: 0;
+  &.inline {
+    .app-list-item {
+      display: inline-block;
+    }
+  }
   > ul {
     display: block;
     padding-bottom: 1px; //Fix for unnecessary vertical scrollbar on the list
@@ -1039,12 +1044,6 @@ body.modal-open {
       }
     }
    }
-  &.inline {
-    .app-list-item {
-      display: inline-block;
-    }
-  }
-
   .popover.inline {
     width: 100%;
     position: relative;
@@ -1053,9 +1052,17 @@ body.modal-open {
   }
 }
 .app-livelist {
+  /*for inline styles: start*/
   > nav.app-datanavigator {
     display: table-cell;
     vertical-align: middle;
+    width: 40pt;
+    padding: 5pt;
+  }
+  &.Inline {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
   }
   .app-datanavigator + .app-livelist-container {
     display: table-cell;
@@ -1067,6 +1074,7 @@ body.modal-open {
       width: auto;
       white-space: normal;
     }
+  /*for inline styles: end*/
     .app-list-item-group {
         ul {
           display: inline-table;
