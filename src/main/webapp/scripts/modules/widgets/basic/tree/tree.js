@@ -57,9 +57,6 @@ WM.module('wm.widgets.basic')
             function constructNodes($is, nodes, parent, levels, deep) {
 
                 var $ul           = WM.element('<ul></ul>'),
-                    iconField     = $is.nodeicon     || 'icon',
-                    labelField    = $is.nodelabel    || 'label',
-                    childrenField = $is.nodechildren || 'children',
                     _iconClses    = ICON_CLASSES[$is.treeicons || defaultTreeIconClass],
                     _expr         = CONSTANTS.isRunMode ? $is.datavalue : undefined,
                     _iconCls,
@@ -72,11 +69,11 @@ WM.module('wm.widgets.basic')
 
                 parent.append($ul);
                 nodes.forEach(function (node, idx) {
-                    var $li          = WM.element('<li></li>'),
-                        $iconNode    = WM.element('<i></i>'),
-                        nodeLabel    = node[labelField],
-                        nodeIcon     = node[iconField],
-                        nodeChildren = node[childrenField],
+                    var $li             = WM.element('<li></li>'),
+                        $iconNode       = WM.element('<i></i>'),
+                        nodeLabel       = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'nodelabel'}) || node.label,
+                        nodeIcon        = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'nodeicon'}) || node.icon,
+                        nodeChildren    = WidgetUtilService.getEvaluatedData($is, node, {expressionName: 'nodechildren'}) || node.children,
                         expandCollapseIcon;
 
                     $li.data('nodedata', node)
