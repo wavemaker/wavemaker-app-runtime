@@ -36,11 +36,11 @@ WM.module('wm.widgets.advanced')
             );
 
         $tc.put('template/widget/advanced/carousel/dynamic/carousel.html',
-            '<div class="app-carousel" init-widget wmtransclude apply-styles data-identifier="carousel"></div>'
+            '<div class="app-carousel" init-widget wmtransclude apply-styles data-identifier="carousel" data-ng-show="show"></div>'
             );
 
         $tc.put('template/widget/advanced/carousel/carousel-content.html',
-            '<div class="app-carousel-item item" apply-styles init-widget wmtransclude></div>'
+            '<div class="app-carousel-item item" apply-styles init-widget wmtransclude data-ng-show="show"></div>'
             );
 
     }])

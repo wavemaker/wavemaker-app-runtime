@@ -1757,7 +1757,9 @@ WM.module('wm.widgets.grid')
                     }
                     /* If bound to live filter result, disable grid search. */
                     if (isBoundToWidget && $scope.widgetid && _.includes($scope.binddataset, 'livefilter')) {
-                        $rootScope.$emit('update-widget-property', 'gridsearch', false);
+                        if ($scope.gridsearch) {
+                            $rootScope.$emit('update-widget-property', 'gridsearch', false);
+                        }
                         $scope.widgetProps.gridsearch.disabled = true;
                     } else {
                         $scope.widgetProps.gridsearch.disabled = false;
