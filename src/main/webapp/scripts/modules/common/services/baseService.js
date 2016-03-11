@@ -27,7 +27,7 @@ wm.modules.wmCommon.services.BaseService = [
         /*to store the failed function calls due to 401 error*/
             errorCallStack = [],
             localeObject,
-            serviceCallPatterns = [new RegExp("^services"), new RegExp("j_spring_security_check")],
+            serviceCallPatterns = [new RegExp('^services'), new RegExp('j_spring_security_check'), new RegExp('j_spring_security_logout')],
         /*Function to log actions performed; using the wmLogger*/
             logAction = function (type, message, description) {
                 /*Return if wmLogger does not exist*/
@@ -257,7 +257,9 @@ wm.modules.wmCommon.services.BaseService = [
                 logAction("debug", "SEND_REQUEST_TO_SERVER", config.url);
 
                 if (CONSTANTS.isRunMode && $rootScope.isMobileApplicationType && isServiceCall(config.url)) {
-                    config.url = $rootScope.project.deployedUrl + "/" + config.url;
+                    var deployUrl = $rootScope.project.deployedUrl;
+                    deployUrl += _.last(deployUrl) === '/' ? '' : '/';
+                    config.url =  deployUrl + config.url;
                 }
 
                 /* get a deferred object used to abort the http request */
