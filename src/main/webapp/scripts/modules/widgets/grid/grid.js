@@ -1412,9 +1412,11 @@ WM.module('wm.widgets.grid')
                         /*De-register the watch if it is exists */
                         Utils.triggerFn(navigatorResultWatch);
                         $scope.dataNavigator.dataset = $scope.binddataset;
+
                         if (CONSTANTS.isStudioMode && $scope.variableType === 'wm.ServiceVariable') {
                             return;
                         }
+
                         /*Register a watch on the "result" property of the "dataNavigator" so that the paginated data is displayed in the live-list.*/
                         navigatorResultWatch = $scope.dataNavigator.$watch('result', function (newVal) {
                             /* Check for sanity. */
@@ -1430,6 +1432,8 @@ WM.module('wm.widgets.grid')
                         });
 
                         $scope.dataNavigatorWatched = true;
+
+                        $scope.dataset = [];
                     }
                 }
             };
@@ -1611,6 +1615,7 @@ WM.module('wm.widgets.grid')
                 if (newVal) {
                     if (!$scope.dataNavigatorWatched) {
                         $scope.enablePageNavigation();
+                        return;
                     }
                 } else {
                     $scope.resetPageNavigation();
