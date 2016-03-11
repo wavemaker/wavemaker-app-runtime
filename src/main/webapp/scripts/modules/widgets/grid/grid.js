@@ -724,7 +724,6 @@ WM.module('wm.widgets.grid')
                     /*If serverData has data but is undefined, then return*/
                     if (isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap)) {
                         if (!serverData.data || Utils.isEmptyObject(serverData.data)) {
-                            $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
                             return;
                         }
                         data = serverData.data;
