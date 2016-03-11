@@ -571,6 +571,8 @@ WM.module('wm.widgets.live')
                     oldClass,
                     newClass,
                     selectedVariable,
+                    markup,
+                    $element,
                     eleScope          = $el.scope(),
                     variable          =  Utils.getVariableName($is, eleScope),
                     wp                = $is.widgetProps;
@@ -663,7 +665,13 @@ WM.module('wm.widgets.live')
                         }
                         // enablereorder is not shown with groupby
                         if (nv && nv !== '') {
+                            markup   = Utils.getService('MarkupManagerService').getMarkup();
+                            $element = markup.find('[name=' + attrs.name + ']');
+                            $element.removeAttr('enablereorder');
+                            $is.enablereorder     = false;
                             wp.enablereorder.show = false;
+                        } else {
+                            wp.enablereorder.show = true;
                         }
                         if (!wp.match.show) {
                             $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
