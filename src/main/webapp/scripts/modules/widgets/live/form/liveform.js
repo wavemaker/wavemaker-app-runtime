@@ -518,13 +518,15 @@ WM.module('wm.widgets.live')
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
                         if (((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type])) {
-                            var dateTime = Utils.getValidDateObject(field.value);
-                            if (field.outputformat === 'timestamp' || field.type === 'timestamp') {
-                                dataObject[field.key] = field.value ? dateTime.getTime() : null;
-                            } else if (field.outputformat) {
-                                dataObject[field.key] = $filter('date')(dateTime, field.outputformat);
-                            } else {
-                                dataObject[field.key] = field.value;
+                            if (field.value) {
+                                var dateTime = Utils.getValidDateObject(field.value);
+                                if (field.outputformat === 'timestamp' || field.type === 'timestamp') {
+                                    dataObject[field.key] = field.value ? dateTime.getTime() : null;
+                                } else if (field.outputformat) {
+                                    dataObject[field.key] = $filter('date')(dateTime, field.outputformat);
+                                } else {
+                                    dataObject[field.key] = field.value;
+                                }
                             }
                         } else if (field.type === "blob") {
                             if (isFormDataSupported) {

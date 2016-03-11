@@ -227,7 +227,7 @@ WM.module('wm.widgets.form')
                                 if (!this.outputformat) {
                                     this.outputformat = 'HH:mm:ss';
                                 }
-                                return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : undefined;
+                                return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : '';
                             },
                             set: function (val) {
                                 var dateTime;

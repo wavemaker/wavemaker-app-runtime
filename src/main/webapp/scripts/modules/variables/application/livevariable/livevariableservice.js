@@ -210,8 +210,10 @@ wm.variables.services.$liveVariable = [
                         tableNameToEntityNameMap = {},
                         entityNameToTableNameMap = {},
                         getJavaType = function (javaType) {
-                            if (DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[javaType]) {
-                                return DB_CONSTANTS.DATABASE_DATA_TYPES[DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[javaType].java_type].java_type;
+                            if (DB_CONSTANTS.DATABASE_DATA_TYPES[javaType]) {
+                                javaType = DB_CONSTANTS.DATABASE_DATA_TYPES[javaType].java_type;
+                            } else if (DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[javaType]) {
+                                javaType = DB_CONSTANTS.DATABASE_DATA_TYPES[DB_CONSTANTS.DATABASE_SECONDARY_DATA_TYPES[javaType].java_type].java_type;
                             }
                             return javaType;
                         };
