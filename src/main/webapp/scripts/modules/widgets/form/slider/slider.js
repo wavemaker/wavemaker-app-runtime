@@ -116,7 +116,7 @@ WM.module('wm.widgets.form')
  *                   width="{{width}}"
  *                   height="{{height}}"
  *                   color="{{color}}"
- *                   iconname="{{icon}}">
+ *                   iconclass="{{icon}}">
  *               </wm-slider><br>
  *               <wm-composite>
  *                   <wm-label caption="caption:"></wm-label>

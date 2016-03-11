@@ -63,8 +63,8 @@ WM.module('wm.widgets.form')
                     'pre': function (scope, element, attrs) {
                         //@Deprecated iconname; use iconclass instead
                         if (!attrs.iconclass && attrs.iconname) {
-                            WM.element(tElement.context).attr('iconclass', 'wi wi-' + attrs.iconname);
-                            attrs.iconclass = 'wi wi-' + attrs.iconname;
+                            WM.element(tElement.context).attr('iconclass', 'glyphicon glyphicon-' + attrs.iconname);
+                            attrs.iconclass = 'glyphicon glyphicon-' + attrs.iconname;
                         }
                         /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;

@@ -183,7 +183,7 @@ WM.module('wm.widgets.grid')
                         '</div>' +
                         '<div class="app-datagrid-actions pull-right" data-ng-if="actions">' +
                             '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}"' +
-                                'iconname="{{btn.icon}}" on-click="{{btn.action}}"></wm-button>' +
+                                ' on-click="{{btn.action}}"></wm-button>' +
                         '</div>' +
                     '</div></div>';
             },

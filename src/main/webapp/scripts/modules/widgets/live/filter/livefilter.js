@@ -827,7 +827,7 @@ WM.module('wm.widgets.live')
                         scope.parentIsolateScope.columnsDefCreated = true;
 
                         buttonTemplate = '<wm-button caption="{{buttonArray[' + index + '].displayName}}" show="{{buttonArray[' + index + '].show}}" ' +
-                            'class="{{buttonArray[' + index + '].class}}" iconname="{{buttonArray[' + index + '].iconname}}" iconclass="{{buttonArray[' + index + '].iconclass}}"' +
+                            'class="{{buttonArray[' + index + '].class}}" iconclass="{{buttonArray[' + index + '].iconclass}}"' +
                             'on-click="' + buttonDef.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
                         element.closest('[data-identifier="livefilter"]').find('.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
                         $compile(element.contents())(scope.parentIsolateScope);

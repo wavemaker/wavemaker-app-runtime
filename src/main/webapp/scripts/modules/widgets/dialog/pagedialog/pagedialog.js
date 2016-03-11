@@ -157,7 +157,7 @@ WM.module('wm.widgets.dialog')
         <file name="index.html">
             <div data-ng-controller="Ctrl">
                 <wm-view class="dialog-view">
-                    <wm-pagedialog name="pageDialog" controller="Ctrl" iconname="globe"
+                    <wm-pagedialog name="pageDialog" controller="Ctrl" iconclass="wi wi-globe"
                         content="dropdownMenu"
                         oktext="OK" on-ok="onOkCallBack()" on-close="onCloseCallBack()">
                     </wm-pagedialog>
