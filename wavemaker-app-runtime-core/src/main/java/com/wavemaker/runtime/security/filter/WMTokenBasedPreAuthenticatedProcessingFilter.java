@@ -28,6 +28,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
@@ -43,6 +44,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.wavemaker.runtime.security.token.Token;
 import com.wavemaker.runtime.security.token.WMTokenBasedAuthenticationService;
+import com.wavemaker.studio.common.util.HttpRequestUtils;
 
 /**
  * WMAppTokenBasedPreAuthenticatedProcessingFilter for processing filters that handle pre-authenticated authentication requests, where it is assumed
@@ -65,6 +67,8 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
         ApplicationEventPublisherAware {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WMTokenBasedPreAuthenticatedProcessingFilter.class);
+
+    private static final String ERROR_MESSAGE = "Invalid Token,Failed to authenticate with the given token";
 
     private AuthenticationManager authenticationManager;
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
@@ -103,47 +107,51 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
 
         LOGGER.debug("Checking secure context token: [{}]", SecurityContextHolder.getContext().getAuthentication());
 
+        boolean authenticationAttemptFailure = false;
         if (requiresAuthentication((HttpServletRequest) request)) {
             String token = getTokenFromReq((HttpServletRequest) request);
             if (token != null) {
-                doAuthenticate(token, (HttpServletRequest) request, (HttpServletResponse) response);
+                final boolean authenticationSuccess = doAuthenticate(token, (HttpServletRequest) request, (HttpServletResponse) response);
+                authenticationAttemptFailure = !authenticationSuccess;
             }
         }
 
-        chain.doFilter(request, response);
+        if (!authenticationAttemptFailure) {
+            chain.doFilter(request, response);
+        }
     }
 
-    private void doAuthenticate(final String token, final HttpServletRequest request, final HttpServletResponse response) {
-
-        try {
-            Authentication authentication = wmTokenBasedAuthenticationService.getAuthentication(new Token(token));
-
-            if (authentication == null) {
-                LOGGER.debug("No pre-authenticated principal found in request");
-                return;
-            }
+    private boolean doAuthenticate(final String token, final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        Authentication authentication = wmTokenBasedAuthenticationService.getAuthentication(new Token(token));
+        if (authentication != null) {
             successfulAuthentication(request, response, authentication);
-        } catch (AuthenticationException failed) {
-            unsuccessfulAuthentication(request, response, failed);
-
-            if (!continueFilterChainOnUnsuccessfulAuthentication) {
-                throw failed;
-            }
+            return true;
         }
+        LOGGER.debug("No pre-authenticated principal found for the given token {}", token);
+        HttpRequestUtils.writeJsonErrorResponse(ERROR_MESSAGE, HttpServletResponse.SC_UNAUTHORIZED, response);
+        return false;
     }
 
     private boolean requiresAuthentication(HttpServletRequest request) {
         Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
-        return  currentUser == null;
+        return currentUser == null;
     }
 
     protected String getTokenFromReq(final HttpServletRequest request) {
         String token;
+
+        //extracting token from request param.
         try {
             token = getQueryParamValue(request, WM_AUTH_TOKEN_NAME);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+
+        //extracting token from header
+        if (!StringUtils.isNotBlank(token)) {
+            token = request.getHeader(WM_AUTH_TOKEN_NAME);
+        }
+
         return token;
     }
 
@@ -208,8 +216,9 @@ public class WMTokenBasedPreAuthenticatedProcessingFilter extends GenericFilterB
      *
      * @param continueFilterChainOnUnsuccessfulAuthentication set to {@code true} to allow the request to proceed after a failed authentication.
      */
+    @Deprecated
     public void setContinueFilterChainOnUnsuccessfulAuthentication(boolean continueFilterChainOnUnsuccessfulAuthentication) {
-        continueFilterChainOnUnsuccessfulAuthentication = continueFilterChainOnUnsuccessfulAuthentication;
+        this.continueFilterChainOnUnsuccessfulAuthentication = continueFilterChainOnUnsuccessfulAuthentication;
     }
 
     public void setWmTokenBasedAuthenticationService(final WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService) {

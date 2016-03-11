@@ -129,7 +129,10 @@ public class WMTokenBasedAuthenticationService {
     }
 
     protected Authentication toAuthentication(final WMUser wmUser) {
-        return new UsernamePasswordAuthenticationToken(wmUser.getUsername(), null, wmUser.getAuthorities());
+        if (wmUser != null) {
+            return new UsernamePasswordAuthenticationToken(wmUser.getUsername(), null, wmUser.getAuthorities());
+        }
+        return null;
     }
 
     protected String retrieveUserName(Authentication authentication) {
