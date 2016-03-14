@@ -216,6 +216,7 @@ WM.module('wm.widgets.live')
                     'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
                     'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
                     'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
+                    'long'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'typeahead'],
                     'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
                     'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'typeahead'],
                     'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency', 'typeahead'],
