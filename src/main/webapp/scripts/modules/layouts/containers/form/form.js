@@ -81,8 +81,20 @@ WM.module('wm.layouts.containers')
         }
 
         /*Called by users programatically.*/
-        function resetForm(element) {
+        function resetForm($s, element) {
             resetFormFields(element);
+            _.forEach($s.formFields, function (dataValue) {
+                if (dataValue.type === 'blob') {
+                    WM.element(element).find('[name=' + dataValue.key + ']').val('');
+                    dataValue.href  = '';
+                    dataValue.value = null;
+                } else {
+                    dataValue.value = undefined;
+                }
+            });
+            $s.formdata      = undefined;
+            $s.statusMessage = undefined;
+            $rootScope.$safeApply($s);
         }
 
         function resetFormFields(element) {
@@ -95,12 +107,13 @@ WM.module('wm.layouts.containers')
 
         function bindEvents(scope, element) {
             var params,
-                formData = {},
+                formData,
                 formVariable,
                 fieldTarget,
                 formWidget,
                 field;
             element.on('submit', function (event) {
+                formData     = {};
                 formVariable = element.scope().Variables[scope.formvariable];
                 if (scope.onSubmit || formVariable) {
                     //Get all form fields and prepare form data as key value pairs
@@ -153,11 +166,12 @@ WM.module('wm.layouts.containers')
                             };
                         });
                     }
+                    resetForm(scope, element);
                 }
             });
             /*clear the file uploader in the form*/
             element.bind('reset', function () {
-                resetFormFields(element);
+                resetForm(scope, element);
             });
         }
 
