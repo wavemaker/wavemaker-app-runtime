@@ -1227,6 +1227,13 @@ WM.module('wm.widgets.grid')
                 },
                 isBoundToView = function () {
                     return $scope.dataset.propertiesMap && $scope.dataset.propertiesMap.tableType === 'VIEW';
+                },
+                setImageProperties = function (variableObj) {
+                    if (!variableObj) {
+                        return;
+                    }
+                    $scope.primaryKey     = variableObj.getPrimaryKey();
+                    $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                 };
             $scope.updateFilterVariable = function () {
                 var variable = $scope.gridElement.scope().Variables[$scope.variableName];
@@ -1705,9 +1712,7 @@ WM.module('wm.widgets.grid')
                         if (isBoundToLiveVariable) {
                             $scope.setDataGridOption('searchHandler', searchGrid);
                             $scope.setDataGridOption('sortHandler', sortHandler);
-
-                            $scope.primaryKey = variableObj ? variableObj.getPrimaryKey() : [];
-                            $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
+                            setImageProperties(variableObj);
                         } else if (variableObj.serviceType === 'DataService' && variableObj.controller !== 'ProcedureExecution') {
                             /*Calling the specific search and sort handlers*/
                             $scope.setDataGridOption('sortHandler', sortHandler);
@@ -1723,6 +1728,7 @@ WM.module('wm.widgets.grid')
                     } else if (isBoundToFilter) {
                         /*If the variable is deleted hiding the spinner and showing the no data found message*/
                         $scope.setDataGridOption('sortHandler', sortHandler);
+                        setImageProperties(variableObj);
                     } else if ($scope.binddataset.indexOf('bind:Widgets') === -1) {
                         /*if the grid is not bound to widgets*/
                         /*If the variable is deleted hiding the spinner and showing the no data found message*/
