@@ -16,7 +16,7 @@ WM.module('wm.widgets.advanced')
                         '</div>' +
                         '<div class="modal-footer">' +
                             '<button type="button" class="btn btn-default" data-dismiss="modal" data-ng-click="cancel()">' +
-                                'Continue with existing App.' +
+                                'Skip update' +
                             '</button>' +
                             '<button type="button" class="btn btn-primary" data-ng-hide="downloading" data-ng-click="updateApp()">' +
                                 'Update' +
