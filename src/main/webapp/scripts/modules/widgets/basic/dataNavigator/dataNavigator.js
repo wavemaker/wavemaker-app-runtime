@@ -36,6 +36,9 @@ WM.module("wm.widgets.basic")
                 if (CONSTANTS.isStudioMode && !newVal) {
                     return;
                 }
+                if (CONSTANTS.isRunMode) {
+                    scope.show = newVal ? newVal.dataValue !== '' : false;
+                }
                 scope.setPagingValues(newVal);
                 break;
             }
