@@ -327,9 +327,14 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 method = operationInfo.httpMethod || operationInfo.methodType;
                 url += (variable.prefabName ? '' : '/services') + endPointRelativePath;
-                /*Based on the formData browser will automatically set the content type to 'multipart/form-data' and webkit boundary*/
-                if (operationInfo.consumes && operationInfo.consumes[0] === WS_CONSTANTS.CONTENT_TYPES.MULTIPART_FORMDATA) {
-                    headers['Content-Type'] = undefined;
+                /*Setting appropriate content-Type*/
+                if (!_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, (method || '').toUpperCase())) {
+                    /*Based on the formData browser will automatically set the content type to 'multipart/form-data' and webkit boundary*/
+                    if (operationInfo.consumes && (operationInfo.consumes[0] === WS_CONSTANTS.CONTENT_TYPES.MULTIPART_FORMDATA)) {
+                        headers['Content-Type'] = undefined;
+                    } else {
+                        headers['Content-Type'] = (operationInfo.consumes && operationInfo.consumes[0]) || 'application/json';
+                    }
                 }
 
                 // if the consumes has application/x-www-form-urlencoded and
