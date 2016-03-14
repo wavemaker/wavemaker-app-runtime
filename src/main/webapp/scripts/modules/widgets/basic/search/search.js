@@ -111,7 +111,7 @@ WM.module('wm.widgets.basic')
     })
     .directive('wmSearch', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', '$timeout', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $timeout) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
             notifyFor = {
                 'searchkey': true,
                 'displaylabel': true,
@@ -188,7 +188,7 @@ WM.module('wm.widgets.basic')
             }
 
             // assign all the keys to the options of the search widget
-            if (dataset) {
+            if (CONSTANTS.isStudioMode && WM.isDefined(dataset) && dataset !== null) {
                 WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, scope);
             }
         }
@@ -324,14 +324,30 @@ WM.module('wm.widgets.basic')
             'compile': function () {
                 return {
                     'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
+                        if (CONSTANTS.isStudioMode) {
+                            scope.widgetProps = Utils.getClonedObject(widgetProps);
+                        } else {
+                            scope.widgetProps = widgetProps;
+                        }
                         scope.widgetDataset = {};
                     },
                     'post': function (scope, element, attrs) {
 
+                        var wp;
                         // In Studio mode aways display the input box
                         if (CONSTANTS.isStudioMode) {
                             scope.dataSetType = "listOfStrings";
+                            //Hiding the events as there is no support for them.
+                            if (scope.widgetid) {
+                                wp                   = scope.widgetProps;
+                                wp.onClick.show      = false;
+                                wp.onTap.show        = false;
+                                wp.onMouseenter.show = false;
+                                wp.onMouseleave.show = false;
+                                wp.onFocus.show      = false;
+                                wp.onBlur.show       = false;
+                                wp.onChange.show     = false;
+                            }
                         }
 
                         // register the property change handler
