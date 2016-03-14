@@ -762,6 +762,11 @@ WM.module('wm.utils', [])
             return !!REGEX.VALID_PASSWORD.test(text);
         }
 
+        // Valid field name should not contain any special chars other than _ and $
+        function isValidFieldName(fieldName) {
+            return (/^[0-9a-zA-Z_\$]+$/.test(fieldName));
+        }
+
         function getPropertyNode(prop) {
             return {
                 'type'                : prop.type,
@@ -1760,6 +1765,7 @@ WM.module('wm.utils', [])
         this.isEmptyObject              = isEmptyObject;
         this.isValidEmail               = isValidEmail;
         this.isValidPassword            = isValidPassword;
+        this.isValidFieldName           = isValidFieldName;
         this.resetObjectWithEmptyValues = resetObjectWithEmptyValues;
         this.isImageFile                = isImageFile;
         this.isZipFile                  = isZipFile;
