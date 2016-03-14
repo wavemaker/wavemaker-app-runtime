@@ -1613,7 +1613,7 @@ WM.module('wm.widgets.grid')
                 }
 
                 if (newVal) {
-                    if (!$scope.dataNavigatorWatched) {
+                    if ($scope.shownavigation && !$scope.dataNavigatorWatched) {
                         $scope.enablePageNavigation();
                         return;
                     }
