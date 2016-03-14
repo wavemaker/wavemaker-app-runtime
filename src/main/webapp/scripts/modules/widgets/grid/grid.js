@@ -1423,7 +1423,7 @@ WM.module('wm.widgets.grid')
                             if (WM.isDefined(newVal)) {
                                 $scope.watchVariableDataSet(newVal, $scope.gridElement);
                             }
-                        });
+                        }, true);
                         /*De-register the watch if it is exists */
                         Utils.triggerFn(navigatorMaxResultWatch);
                         /*Register a watch on the "maxResults" property of the "dataNavigator" so that the "pageSize" is displayed in the live-list.*/
