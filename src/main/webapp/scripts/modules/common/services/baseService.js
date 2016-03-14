@@ -188,6 +188,8 @@ wm.modules.wmCommon.services.BaseService = [
                     if (CONSTANTS.isRunMode) {
                         appManager = Utils.getService("AppManager");
                         appManager.handleSessionTimeOut();
+                        /* In runtime, the variable error handler needs to be invoked to hide the spinner */
+                        Utils.triggerFn(failureCallback);
                     } else {
                         handleSessionTimeOut();
                     }
