@@ -1706,9 +1706,7 @@ WM.module('wm.widgets.grid')
                             $scope.setDataGridOption('searchHandler', searchGrid);
                             $scope.setDataGridOption('sortHandler', sortHandler);
 
-                            if ($scope.dataset.propertiesMap && $scope.dataset.propertiesMap.columns) {
-                                $scope.primaryKey = variableObj.getPrimaryKey();
-                            }
+                            $scope.primaryKey = variableObj ? variableObj.getPrimaryKey() : [];
                             $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                         } else if (variableObj.serviceType === 'DataService' && variableObj.controller !== 'ProcedureExecution') {
                             /*Calling the specific search and sort handlers*/
