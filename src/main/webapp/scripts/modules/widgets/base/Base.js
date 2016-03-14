@@ -1478,7 +1478,7 @@ WM.module('wm.widgets.base', [])
                         "datavalue": {"type": "string, object", "widget": "string", "bindable": "in-out-bound"},
                         "scopedataset": {"type": "string"},
                         "query": {"type": "string", "bindable": "out-bound"},
-                        "searchkey": {"type": "list", "widget": "multiselect", "options": [""], "bindable": "in-bound", "datasetfilter" : "terminals"},
+                        "searchkey": {"type": "list", "widget": "selectall", "bindable": "in-bound", "datasetfilter" : "terminals"},
                         "displaylabel": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "displayimagesrc": {"type": "list", "options": [""], "bindable": "in-bound", "bindonly": "expression", "datasetfilter" : "terminals"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
@@ -2511,7 +2511,8 @@ WM.module('wm.widgets.base', [])
                     allKeys = [],
                     filter,
                     ALLFIELDS = 'All Fields',
-                    options;
+                    options,
+                    checkboxsetTypeWidgets = ['multiselect', 'selectall'];
                 /* on binding of data*/
                 if (dataset && WM.isObject(dataset)) {
                     dataset = dataset[0] || dataset;
@@ -2561,7 +2562,7 @@ WM.module('wm.widgets.base', [])
                             if (prop.allfields) {
                                 options = [ALLFIELDS].concat(options);
                             }
-                            if (prop.widget !== 'multiselect') {
+                            if (!_.includes(checkboxsetTypeWidgets, prop.widget)) {
                                 options = [''].concat(options);
                             }
                         }
