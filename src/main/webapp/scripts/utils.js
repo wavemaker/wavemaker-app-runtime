@@ -780,10 +780,11 @@ WM.module('wm.utils', [])
 
         /* fetch the column names and nested column names from the propertiesMap object */
         function fetchPropertiesMapColumns(propertiesMap, namePrefix, options) {
-            var objects = {}, relatedColumnsArr = [], terminals = {}, info;
+            var objects = {}, relatedColumnsArr = [], terminals = {}, info,
+                columns = getClonedObject(propertiesMap.columns);
 
             /* iterated trough the propertiesMap columns of all levels and build object with columns having required configuration*/
-            _.forEach(propertiesMap.columns, function (val) {
+            _.forEach(columns, function (val) {
                 /* if the object is nested type repeat the above process for that nested object through recursively */
                 if (val.isRelated) {
                     if (!val.isPrimaryKey) {
