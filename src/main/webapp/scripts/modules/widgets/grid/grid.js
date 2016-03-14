@@ -271,6 +271,9 @@ WM.module('wm.widgets.grid')
                         iScope.Widgets = elScope.Widgets;
                         iScope.columns = {};
                         iScope.appLocale = $rootScope.appLocale;
+                        $rootScope.$on('locale-change', function () {
+                            iScope.appLocale = $rootScope.appLocale;
+                        });
 
                         Object.defineProperty(iScope, 'selecteditem', {
                             configurable: true
