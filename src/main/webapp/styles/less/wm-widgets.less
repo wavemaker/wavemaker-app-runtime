@@ -1063,6 +1063,15 @@ body.modal-open {
     display: table;
     table-layout: fixed;
     width: 100%;
+    .app-livelist-container {
+      padding: 0;
+      .app-list-item {
+        display: inline-block;
+      }
+    }
+    .app-list-item-group {
+      display: inline-block;
+    }
   }
   .app-datanavigator + .app-livelist-container {
     display: table-cell;
@@ -1073,6 +1082,7 @@ body.modal-open {
     .app-list-item {
       width: auto;
       white-space: normal;
+      float: none;
     }
   /*for inline styles: end*/
     .app-list-item-group {

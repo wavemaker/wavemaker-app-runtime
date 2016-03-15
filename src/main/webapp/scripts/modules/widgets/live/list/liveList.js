@@ -504,18 +504,6 @@ WM.module('wm.widgets.live')
                 $is.navControls = undefined;
                 $is.infScroll   = false;
                 if ($is.widgetid) {
-                    var markupManagerService,
-                        markup,
-                        $element;
-
-                    markupManagerService = Utils.getService('MarkupManagerService');
-                    markup               = markupManagerService.getMarkup();
-                    $element             = markup.find('[name=' + attrs.name + ']');
-                    if (type === 'Inline') {
-                        $element.attr('listclass', 'list-inline').removeAttr('itemclass');
-                    } else {
-                        $element.attr({'listclass': 'list-group', 'itemclass': 'list-group-item'});
-                    }
                     $is.widgetProps.itemsperrow.show = true;
                 }
             }
@@ -780,7 +768,7 @@ WM.module('wm.widgets.live')
                     selectCount = 0,
                     isMultiSelect = false;// Setting to true on first long press
                 /*listen on to the click event for the ul element & get li clicked of the live-list */
-                $el.on('click.wmActive', 'ul.list-group', function (evt) {
+                $el.on('click.wmActive', 'ul.app-livelist-container', function (evt) {
                     /*returning if click event is triggered within 50ms after pressup event occurred*/
                     if (pressStartTimeStamp + 50 > Date.now() || WM.element(evt.target).is('input')) {
                         return;
