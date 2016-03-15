@@ -2977,6 +2977,7 @@ WM.module('wm.widgets.base', [])
                 /* delete the entry from the registry */
                 delete nameIdMap[name];
                 /* delete the entry from the nameIdMap */
+                delete returnObj[name];
             }
 
             /* byId, byName, isValidName methods will be exposed by this service */
@@ -3057,15 +3058,10 @@ WM.module('wm.widgets.base', [])
                 registry[widgetId] = scope;
 
                 /* define a property with the name on service. with this users will be able to access a widget by its name. e.b, Widgets.test */
-                Object.defineProperty(returnObj, newName, {
-                    configurable: true,
-                    get: function () {
-                        return byName(newName);
-                    }
-                });
+                returnObj[newName] = byName(newName);
 
                 /* unregister the widget when it is deleted or when the scope is destroyed */
-                scope.$on("$destroy", function () {
+                scope.$on('$destroy', function () {
                     unregister(scope.name);
                 });
             });
