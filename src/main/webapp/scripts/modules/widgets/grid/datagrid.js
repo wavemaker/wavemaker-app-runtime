@@ -1117,6 +1117,18 @@ $.widget('wm.datagrid', {
         }
         return text;
     },
+    getTextValue: function ($el, colDef, fields) {
+        var text,
+            $ie = $el.find('input');
+        text = this._getValue($ie, fields);
+        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload' && colDef.editWidgetType !== 'text') {
+            text = $el.children().isolateScope().datavalue;
+        }
+        if (colDef.type === 'timestamp' && (!colDef.editWidgetType || colDef.editWidgetType === 'text')) {
+            text = parseInt(text, 10);
+        }
+        return text;
+    },
     isDataModified: function ($editableElements, rowData) {
         var isDataChanged = false,
             self = this;
@@ -1125,10 +1137,10 @@ $.widget('wm.datagrid', {
                 colId = $el.attr('data-col-id'),
                 colDef = self.preparedHeaderData[colId],
                 fields = colDef.field.split('.'),
-                $ie = $el.find('input'),
-                text = self._getValue($ie, fields),
+                text,
                 k,
                 d;
+            text = self.getTextValue($el, colDef, fields);
             if (fields.length === 1) {
                 isDataChanged = !text && rowData[colDef.field] === null ? false : !(rowData[colDef.field] == text);
             } else {
@@ -1250,18 +1262,12 @@ $.widget('wm.datagrid', {
                             colId = $el.attr('data-col-id'),
                             colDef = self.preparedHeaderData[colId],
                             fields = colDef.field.split('.'),
-                            $ie = $el.find('input'),
-                            text = self._getValue($ie, fields),
+                            text,
                             d,
                             k,
                             x;
                         $el.removeClass('datetime-wrapper');
-                        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
-                            text = $el.children().isolateScope().datavalue;
-                        }
-                        if (colDef.type === 'timestamp' && (!colDef.editWidgetType || colDef.editWidgetType === 'text')) {
-                            text = parseInt(text, 10);
-                        }
+                        text = self.getTextValue($el, colDef, fields);
                         if (fields.length === 1) {
                             if (colDef.editWidgetType === 'upload') {
                                 if (isFormDataSupported) {
@@ -1362,9 +1368,13 @@ $.widget('wm.datagrid', {
             var $el = $(this),
                 value = $el.data('originalValue'),
                 originalValue,
-                template;
+                template,
+                text,
+                colDef;
             if (!value) {
-                $el.text($el.find('input').val());
+                colDef = self.preparedHeaderData[$el.attr('data-col-id')];
+                text = self.getTextValue($el, colDef, colDef.field.split('.'));
+                $el.text(text);
             } else {
                 originalValue = value;
                 if (originalValue.template) {
