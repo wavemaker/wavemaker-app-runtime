@@ -166,7 +166,6 @@ WM.module('wm.layouts.containers')
                             };
                         });
                     }
-                    resetForm(scope, element);
                 }
             });
             /*clear the file uploader in the form*/
