@@ -62,7 +62,7 @@ wm.variables.services.LoginVariableService = ['Variables',
                 }
 
                 for (paramKey in loginInfo) {
-                    if (loginInfo.hasOwnProperty(paramKey) && (loginInfo[paramKey] === '' || loginInfo[paramKey] === undefined)) {
+                    if (loginInfo.hasOwnProperty(paramKey) && (loginInfo[paramKey] === '' || loginInfo[paramKey] === undefined) && paramKey !== "rememberme") {
                         errMsg = "Please provide " + paramKey + ".";
                         break;
                     }
