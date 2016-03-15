@@ -1223,7 +1223,7 @@ WM.module('wm.widgets.basic')
                 case 'Area':
                 case 'Cumulative Line':
                 case 'Line':
-                    dataObj = data[0].values[index]._dataObj;
+                    dataObj = data[0]._dataObj;
                     break;
                 case 'Bubble':
                     dataObj = data.data.point[4]._dataObj;
