@@ -715,6 +715,7 @@ $.widget('wm.datagrid', {
         this._prepareData();
         this._render();
         this.setColGroupWidths();
+        this.checkScrollBar();
     },
 
     refreshGrid: function () {
@@ -728,6 +729,7 @@ $.widget('wm.datagrid', {
         this.gridBody.remove();
         this._renderGrid();
         this._reselectColumns();
+        this.checkScrollBar();
     },
 
     /* Inserts a new blank row in the table. */
@@ -747,6 +749,7 @@ $.widget('wm.datagrid', {
             this.attachEventHandlers($row);
             $row.find('.edit-row-button').trigger('click', {operation: 'new'});
             this.updateSelectAllCheckboxState();
+            this.checkScrollBar();
         }
     },
 
@@ -1313,6 +1316,7 @@ $.widget('wm.datagrid', {
                     if (!this.preparedData.length) {
                         this.setStatus('nodata', this.dataStatus.nodata);
                     }
+                    this.checkScrollBar();
                     return;
                 }
                 if ($.isFunction(this.options.setGridEditMode)) {
@@ -1325,6 +1329,7 @@ $.widget('wm.datagrid', {
                 $saveButton.addClass('hidden');
             }
         }
+        this.checkScrollBar();
     },
     cancelEdit: function ($editableElements) {
         var self = this;
@@ -1388,6 +1393,7 @@ $.widget('wm.datagrid', {
             isActiveRow;
         if (isNewRow) {
             $row.remove();
+            this.checkScrollBar();
             return;
         }
         if ($.isFunction(this.options.onRowDelete)) {
@@ -1402,6 +1408,7 @@ $.widget('wm.datagrid', {
                     $row.addClass('active');
                 }
                 $row.removeClass(className);
+                this.checkScrollBar();
             }, e);
         }
     },
@@ -1648,6 +1655,7 @@ $.widget('wm.datagrid', {
                         self.gridHeaderElement.width(newTableWidth);
                         self.gridElement.width(newTableWidth);
                     }
+                    self.checkScrollBar();
                 }
             });
             /*On scroll of the content table, scroll the header*/
@@ -1656,7 +1664,16 @@ $.widget('wm.datagrid', {
             });
         }
     },
-
+    checkScrollBar: function () {
+        var gridContent = this.gridContainer.find('.app-grid-content').get(0),
+            gridHeader = this.gridContainer.find('.app-grid-header');
+        /*If scroll bar is present on the grid content, add padding to the header*/
+        if ((gridContent.scrollHeight > gridContent.clientHeight) && !this.Utils.isMac()) {
+            gridHeader.addClass('sort-visible');
+        } else {
+            gridHeader.removeClass('sort-visible');
+        }
+    },
     /* Renders the table body. */
     _renderGrid: function () {
         var $htm = $(this._getGridTemplate());
