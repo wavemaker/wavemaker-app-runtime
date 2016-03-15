@@ -277,7 +277,7 @@ WM.module('wm.widgets.basic')
                     }
                 } else if (!options.numberFormat) {
                     /*Auto formatting the data when no formating option is chosen*/
-                    formattedData = d3.format('.3s')(d);
+                    formattedData = d3.format('.1s')(d);
                 }
                 return formattedData;
             }
@@ -348,7 +348,7 @@ WM.module('wm.widgets.basic')
 
         /* get the column type definition for the live data-source*/
         function getColumnType(key, columns) {
-            var keys = key.split('.'),
+            var keys = _.split(key, '.'),
                 newKey,
                 i,
                 type;
@@ -1263,7 +1263,7 @@ WM.module('wm.widgets.basic')
 
         /* intializes the chart obejct */
         function initChart(scope, xDomainValues, yDomainValues) {
-            var chart, theme, xValue = {}, yValue = {};
+            var chart, theme, xValue = {}, yValue = {}, colors = [];
             switch (scope.type) {
             case 'Column':
                 chart = nv.models.multiBarChart()
@@ -1402,9 +1402,17 @@ WM.module('wm.widgets.basic')
                 scope.$root.$emit("set-markup-attr", scope.widgetid, {'theme': theme});
             }
 
+            //Support for custom colors if user gives direct string of colors in text box
+            if (WM.isString(scope.customcolors) && scope.customcolors) {
+                colors = scope.customcolors.split(',');
+            }
+            if (WM.isArray(scope.customcolors)) {
+                colors = scope.customcolors;
+            }
+
             chart.showLegend(scope.showlegend)
                 .margin({top: scope.offsettop, right: scope.offsetright, bottom: scope.offsetbottom, left: scope.offsetleft})
-                .color(scope.customcolors || themes[theme].colors);
+                .color(colors.length ? colors : themes[theme].colors);
 
             chart.tooltip.enabled(scope.tooltips);
             /*setting the no data message*/
