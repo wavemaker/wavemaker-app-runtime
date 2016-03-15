@@ -863,7 +863,7 @@ WM.module('wm.widgets.live')
                 var data;
                 $el.find('.app-livelist-container').sortable({
                     'appendTo'    : 'body',
-                    'containment' : '.app-livelist-container',
+                    'containment' : $el.find('.app-livelist-container'),
                     'delay'       : 100,
                     'opacity'     : 0.8,
                     'helper'      : 'clone',
