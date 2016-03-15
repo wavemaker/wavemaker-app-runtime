@@ -290,6 +290,10 @@ wm.variables.services.$liveVariable = [
                                     'defaultValue'       : relatedCol.defaultValue,
                                     'targetTable'        : relation.targetTable
                                 };
+                                /*Removing properties with undefined or null values*/
+                                newColumn = _.omitBy(newColumn, function (value) {
+                                    return _.isUndefined(value) || _.isNull(value);
+                                });
                                 /*If the column is already part of other relation, add readonly flag so that the it is not shown in liveform*/
                                 if (_.intersection(columnsAdded, sourceCols).length) {
                                     newColumn.readonly = true;
@@ -308,21 +312,26 @@ wm.variables.services.$liveVariable = [
                             if (!_.includes(columnsAdded, column.name)) {
                                 var javaType = getJavaType(column.javaType),
                                     isPrimaryKey = _.includes(primaryKeys, column.name),
-                                    isForeignKey = _.includes(foreignKeys, column.name);
-                                tableDetails[tableName].columns.push({
-                                    "fieldName"         : column.fieldName,
-                                    "type"              : javaType,
-                                    "fullyQualifiedType": javaType,
-                                    "columnName"        : column.name,
-                                    "isPrimaryKey"      : isPrimaryKey,
-                                    "notNull"           : !column.nullable,
-                                    "length"            : column.length,
-                                    "precision"         : column.precision,
-                                    "scale"             : column.scale,
-                                    "generator"         : column.generator,
-                                    "isRelated"         : isForeignKey,
-                                    "defaultValue"      : column.defaultValue
+                                    isForeignKey = _.includes(foreignKeys, column.name),
+                                    newColumn = {
+                                        "fieldName"         : column.fieldName,
+                                        "type"              : javaType,
+                                        "fullyQualifiedType": javaType,
+                                        "columnName"        : column.name,
+                                        "isPrimaryKey"      : isPrimaryKey,
+                                        "notNull"           : !column.nullable,
+                                        "length"            : column.length,
+                                        "precision"         : column.precision,
+                                        "scale"             : column.scale,
+                                        "generator"         : column.generator,
+                                        "isRelated"         : isForeignKey,
+                                        "defaultValue"      : column.defaultValue
+                                    };
+                                /*Removing properties with undefined or null values*/
+                                newColumn = _.omitBy(newColumn, function (value) {
+                                    return _.isUndefined(value) || _.isNull(value);
                                 });
+                                tableDetails[tableName].columns.push(newColumn);
                             }
                         });
 
@@ -343,7 +352,6 @@ wm.variables.services.$liveVariable = [
 
                                     /*Check if the current table is same as the table associated with the variable.*/
                                     if (tableName === variableType) {
-                                        setVariableProp(variable, writableVariable, "properties", (variable.properties || []));
                                         /*Add the related table name to the variable.properties attribute so that complete data for the table could be fetched.
                                          * Following are the cases handled.
                                          * 1. Add the related table name only if it has not been added already. This case might arise if there are multiple relations
@@ -358,7 +366,6 @@ wm.variables.services.$liveVariable = [
                                         column.relatedEntityName = tableNameToEntityNameMap[relation.targetTable];
                                         if ((WM.element.inArray(relation.fieldName, variable.properties) === -1)) {
                                             variable.properties.push(relation.fieldName);
-                                            setVariableProp(variable, writableVariable, "relatedTables", (variable.relatedTables || []));
                                             variable.relatedTables.push({
                                                 "columnName": column.fieldName,
                                                 "relationName": relation.fieldName,
@@ -372,7 +379,8 @@ wm.variables.services.$liveVariable = [
                             });
                         });
                     });
-
+                    setVariableProp(variable, writableVariable, 'properties', (variable.properties || []));
+                    setVariableProp(variable, writableVariable, 'relatedTables', (variable.relatedTables || []));
                     tableDetails[variableType].entityName = variable.type;
                     tableDetails[variableType].fullyQualifiedName = variable.package;
                     tableDetails[variableType].tableType = variable.tableType;
@@ -389,7 +397,7 @@ wm.variables.services.$liveVariable = [
                             column.relatedFieldName = column.fieldName + "." + tableDetails[column.relatedTableName].primaryFields[0];
                             if ($rootScope.dataTypes[variable.package]) {
                                 columnDef = $rootScope.dataTypes[variable.package].fields[column.fieldName];
-                                column.isList = columnDef && columnDef.isList;
+                                column.isList = columnDef ? columnDef.isList : false;
                             }
                         }
                     });
