@@ -1400,7 +1400,8 @@ $.widget('wm.datagrid', {
             rowData = this.options.data[rowId],
             isNewRow = rowId >= this.preparedData.length,
             className,
-            isActiveRow;
+            isActiveRow,
+            self = this;
         if (isNewRow) {
             $row.remove();
             this.checkScrollBar();
@@ -1418,7 +1419,7 @@ $.widget('wm.datagrid', {
                     $row.addClass('active');
                 }
                 $row.removeClass(className);
-                this.checkScrollBar();
+                self.checkScrollBar();
             }, e);
         }
     },
