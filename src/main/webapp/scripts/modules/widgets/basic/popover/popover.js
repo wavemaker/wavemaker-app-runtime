@@ -79,7 +79,7 @@ WM.module('wm.widgets.basic')
          * @param child  - element whose events have to be skipped.
          * @constructor
          */
-        function ParentEventListener(parent, child) {
+        function ParentEventListener(parent, child, link) {
             var processEvent = false,
                 objectId = 'parenteventlistener' + new Date().getTime();
             function getEventName(event) {
@@ -91,13 +91,20 @@ WM.module('wm.widgets.basic')
                 child.off(eventName).on(eventName, function () {
                     processEvent = false;
                 });
-                parent.off(eventName).on(eventName, function (event) {
-                    if (processEvent) {
-                        Utils.triggerFn(callBack, event);
-                    } else {
-                        processEvent = true;
-                    }
+                $timeout(function () {
+                    parent.off(eventName).on(eventName, function (event) {
+                        if (link[0].contains(event.target)) {
+                            if (processEvent) {
+                                Utils.triggerFn(callBack, event);
+                            } else {
+                                processEvent = true;
+                            }
+                        } else {
+                            Utils.triggerFn(callBack, event);
+                        }
+                    });
                 });
+
             };
             /* turns off event listening */
             this.off = function (event) {
@@ -125,10 +132,10 @@ WM.module('wm.widgets.basic')
                     'width': -arrowDims.width / 2,
                     'height': -arrowDims.height / 2
                 },
-                pagePosition = WM.element('.app-page').offset(),
+                pagePosition = WM.element(popoverEle).offsetParent().offset(),
                 popoverPosition = {
-                    'left' : targetPosition.left + tipOffset.width - pagePosition.left,
-                    'top'  : targetPosition.top + tipOffset.height - pagePosition.top
+                    'left' : targetPosition.left + tipOffset.width - pagePosition.left - $(window).scrollLeft(),
+                    'top'  : targetPosition.top + tipOffset.height - pagePosition.top - $(window).scrollTop()
                 };
             if (placement === 'left' || placement === 'right') {
                 if (placement === 'left') {
@@ -204,8 +211,17 @@ WM.module('wm.widgets.basic')
                 popoverEle = $compile($templateCache.get('template/widget/basic/popover.html'))(popoverScope),
                 pageClickListener,
                 dialogEle;
+            if (popoverScope.popoverautoclose) {
+                WM.element('.app-popover').each(function () {
+                    var _scope = WM.element(this).data('linkScope');
+                    if (_scope) {
+                        _scope.togglePopover({});
+                    }
+                });
+            }
             page.append(popoverEle);
             popoverEle.show();
+            popoverEle.data('linkScope', scope);
             //check if inline content
             if (isInlineContent) {
                 transcludeFn(element.scope(), function (clone) {
@@ -235,7 +251,7 @@ WM.module('wm.widgets.basic')
             //check if the popover is inside the dialog and get the dialog element.
             dialogEle = WM.element('.modal-dialog');
             if (popoverScope.popoverautoclose) {
-                pageClickListener = dialogEle.length === 0 ? new ParentEventListener(page, popoverEle) : new ParentEventListener(dialogEle, popoverEle);
+                pageClickListener = new ParentEventListener(WM.element(window), popoverEle, element);
                 pageClickListener.on('click', function (event) {
                     Utils.triggerFn(onClose, event);
                 });
