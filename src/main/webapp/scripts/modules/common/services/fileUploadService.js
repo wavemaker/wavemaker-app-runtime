@@ -23,7 +23,7 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
     /* prepares file object */
     function FileTransferObject(file, transferFn, promise, abortFn) {
         this.name = file.name;
-        this.size = file.size;
+        this.size = file.size || '';
         this.status = FILE_UPLOAD_STATUSES.QUEUED;
         this.start = function () {
             if (this.status === FILE_UPLOAD_STATUSES.QUEUED) {
