@@ -470,7 +470,7 @@ WM.module('wm.widgets.form')
 
                                 // open the imagepicker view if contenttype is image.
                                 if (scope.contenttype === DEVICE_CONTENTTYPES.IMAGE) {
-                                    DeviceMediaService.imagePicker().then(function (files) {
+                                    DeviceMediaService.imagePicker(scope.multiple).then(function (files) {
                                         uploadFiles(files, scope, uploadOptions);
                                     });
                                     return;
@@ -538,21 +538,6 @@ WM.module('wm.widgets.form')
                                 break;
                             case 'contenttype':
                                 scope.chooseFilter = newVal.split(" ").join(",");
-
-                                if (scope.widgetid) {
-                                    // add plugins depending on the contenttype.
-                                    switch (newVal) {
-                                        case DEVICE_CONTENTTYPES.AUDIO :
-                                            ProjectService.addCordovaPlugins($rootScope.project.id, ['MEDIAPICKER']);
-                                            break;
-                                        case DEVICE_CONTENTTYPES.IMAGE :
-                                            ProjectService.addCordovaPlugins($rootScope.project.id, ['IMAGEPICKER']);
-                                            break;
-                                        case DEVICE_CONTENTTYPES.VIDEO :
-                                            ProjectService.addCordovaPlugins($rootScope.project.id, ['CAMERA', 'CAPTURE']);
-                                            break;
-                                    }
-                                }
                                 break;
                             case 'service':
                                 if (isStudioMode) {
