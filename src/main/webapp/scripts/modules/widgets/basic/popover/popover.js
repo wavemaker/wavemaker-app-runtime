@@ -88,8 +88,9 @@ WM.module('wm.widgets.basic')
             /* add callback to invoke when the event occurs */
             this.on = function (event, callBack) {
                 var eventName = getEventName(event);
-                child.off(eventName).on(eventName, function () {
+                child.off(eventName).on(eventName, function (event) {
                     processEvent = false;
+                    event.stopPropagation();
                 });
                 $timeout(function () {
                     parent.off(eventName).on(eventName, function (event) {
