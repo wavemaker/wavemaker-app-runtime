@@ -252,6 +252,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/angular-ui-bootstrap/ui-bootstrap-tpls.js',
                         '<%= config.components %>/moment/moment.js',
                         '<%= config.components %>/fullcalendar/fullcalendar.js',
+                        '<%= config.components %>/angular-ui-mask/js/mask.min.js',
                         '<%= config.components %>/angular-ui-calendar/calendar.js',
                         '<%= config.components %>/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.js',
                         '<%= config.components %>/rangy/rangy-core.js',

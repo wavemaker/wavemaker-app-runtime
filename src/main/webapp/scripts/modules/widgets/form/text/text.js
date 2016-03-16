@@ -23,7 +23,8 @@ WM.module('wm.widgets.form')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.text', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard']),
             notifyFor = {
                 'type': true,
-                'autocomplete': true
+                'autocomplete': true,
+                'displayformat': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -35,6 +36,9 @@ WM.module('wm.widgets.form')
                 break;
             case 'autocomplete':
                 (newVal === true || newVal === 'true') ? element.removeAttr(key) : element.attr(key, 'off');
+                break;
+            case 'displayformat':
+                scope.placeholder = newVal ? '' : scope.placeholder;
                 break;
             }
         }
@@ -68,6 +72,10 @@ WM.module('wm.widgets.form')
 
                     if (tAttrs.hasOwnProperty('maxvalue')) {
                         template.attr('max', '{{maxvalue}}');
+                    }
+
+                    if (tAttrs.hasOwnProperty('displayformat')) {
+                        template.attr('ui-mask', '{{displayformat}}');
                     }
                 }
                 return template[0].outerHTML;
