@@ -17,13 +17,13 @@ WM.module('wm.widgets.live')
                         '<nav class="app-datanavigator" data-ng-if="navigation === \'Inline\'" >' +
                             '<ul class="pager"><li class="previous" data-ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
                         '</nav>'+
-                        '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" data-ng-class="listclass" wmtransclude ' +
+                        '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" data-ng-show="!noDataFound" data-ng-class="listclass" wmtransclude ' +
                                  'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
+                        '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
                         '<nav class="app-datanavigator" data-ng-if="navigation === \'Inline\'">' +
                             '<ul class="pager"><li class="next" data-ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                         '</nav>' +
-                        '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
                         '<div class="panel-footer" data-ng-if="navigation !== \'None\'" data-ng-show="navigation !== \'Inline\'">' +
                             '<wm-datanavigator showrecordcount="true" navcontrols="{{navControls}}"></wm-datanavigator>' +
                         '</div>' +
