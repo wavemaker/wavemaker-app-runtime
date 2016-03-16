@@ -6,9 +6,13 @@ wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
         'use strict';
 
         // image picker for device.
-        function imagePicker() {
+        function imagePicker(multiple) {
             var deferred = $q.defer(),
-                filesObj = [];
+                filesObj = [],
+                maxImg = 1;
+            if (multiple) {
+                maxImg = 10;
+            }
             window.plugins.imagePicker.getPictures(
                 function (files) {
                     // on success of pictures selection
@@ -22,7 +26,8 @@ wm.variables.services.DeviceMediaService = ['$q', '$cordovaCamera', 'Utils',
                 },
                 deferred.reject,
                 {
-                    'mediaType' : 0  // allows picture selection
+                    mediaType : 0,  // allows picture selection
+                    maxImages: maxImg
                 }
             );
             return deferred.promise;
