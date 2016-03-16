@@ -298,6 +298,7 @@ WM.module('wm.widgets.live')
                 case 'double':
                 case 'big_decimal':
                     return 0.01;
+                case 'long':
                 case 'integer':
                     return 1;
                 default:
