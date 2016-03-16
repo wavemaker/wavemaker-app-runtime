@@ -286,7 +286,7 @@ WM.module('wm.widgets.form')
             }
         }
 
-        /* Checking if the selected file is valid for the choosen filter type */
+        // Checking if the selected file is valid for the choosen filter type
         function isValidFile(filename, contenttype, extensionName, isMobileType) {
             var isValid,
                 contentTypes;
@@ -295,23 +295,23 @@ WM.module('wm.widgets.form')
             }
             contentTypes = contenttype.split(',');
 
-            if (_.includes(contentTypes, 'image/*')) {
+            if (_.includes(contentTypes, 'image/*') || (_.includes(contentTypes, 'image') && isMobileType)) {
                 isValid = Utils.isImageFile(filename);
-                /*If one of the content type chosen is image/* and user uploads image it is valid file*/
+                //If one of the content type chosen is image and user uploads image it is valid file
                 if (isValid) {
                     return isValid;
                 }
             }
-            if (_.includes(contentTypes, 'audio/*')) {
+            if (_.includes(contentTypes, 'audio/*') || (_.includes(contentTypes, 'audio') && isMobileType)) {
                 isValid = Utils.isAudioFile(filename);
-                /*If one of the content type chosen is audio/* and user uploads audio it is valid file*/
+                //If one of the content type chosen is audio/* and user uploads audio it is valid file
                 if (isValid) {
                     return isValid;
                 }
             }
             if (_.includes(contentTypes, 'video/*') || (_.includes(contentTypes, 'video') && isMobileType)) {
                 isValid = Utils.isVideoFile(filename);
-                /*If one of the content type chosen is video/* and user uploads video it is valid file*/
+                //If one of the content type chosen is video/* and user uploads video it is valid file
                 if (isValid) {
                     return isValid;
                 }
@@ -470,7 +470,7 @@ WM.module('wm.widgets.form')
 
                                 // open the imagepicker view if contenttype is image.
                                 if (scope.contenttype === DEVICE_CONTENTTYPES.IMAGE) {
-                                    DeviceMediaService.imagePicker().then(function(files) {
+                                    DeviceMediaService.imagePicker().then(function (files) {
                                         uploadFiles(files, scope, uploadOptions);
                                     });
                                     return;
@@ -588,7 +588,7 @@ WM.module('wm.widgets.form')
 
     }])
     /* custom filter returns the filesize along with units */
-    .filter('filesize', ['wmToaster', 'Utils', function () {
+    .filter('filesize', ['Utils', function (Utils) {
         'use strict';
         var units = [
             'bytes',
@@ -601,7 +601,7 @@ WM.module('wm.widgets.form')
 
         return function (bytes, precision) {
             if (isNaN(parseFloat(bytes)) || !isFinite(bytes)) {
-                return '?';
+                return Utils.isMobile() ? '' : '?';
             }
             var unit = 0;
             while (bytes >= 1024) {
