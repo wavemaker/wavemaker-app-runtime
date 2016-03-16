@@ -173,7 +173,7 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$compile', '$timeout', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'VARIABLE_CONSTANTS', '$servicevariable', 'CONSTANTS', 'DialogService', 'FileUploadService', 'FileSelectorService', function (PropertiesFactory, $templateCache, WidgetUtilService, $compile, $timeout, wmToaster, Utils, Variables, ServiceFactory, $rootScope, VARIABLE_CONSTANTS, $servicevariable, CONSTANTS, DialogService, FileUploadService, FileSelectorService) {
+    .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$compile', '$timeout', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'VARIABLE_CONSTANTS', '$servicevariable', 'CONSTANTS', 'DialogService', 'FileUploadService', 'FileSelectorService', 'DeviceMediaService', 'ProjectService', function (PropertiesFactory, $templateCache, WidgetUtilService, $compile, $timeout, wmToaster, Utils, Variables, ServiceFactory, $rootScope, VARIABLE_CONSTANTS, $servicevariable, CONSTANTS, DialogService, FileUploadService, FileSelectorService, DeviceMediaService, ProjectService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.fileupload', ['wm.base', 'wm.base.editors', 'wm.base.events.successerror']),
             selectedUploadTypePath,
@@ -194,6 +194,12 @@ WM.module('wm.widgets.form')
                 'MULTIPLE_SELECT'   : "Drop your files here.",
                 'UPLOAD'            : 'Upload',
                 'SELECT'            : 'Select'
+            },
+            DEVICE_CONTENTTYPES = {
+                'IMAGE'   : 'image',
+                'VIDEO'   : 'video',
+                'AUDIO'   : 'audio',
+                'FILES'   : 'files'
             },
             FILESIZE_MB = 1048576;
 
@@ -281,7 +287,7 @@ WM.module('wm.widgets.form')
         }
 
         /* Checking if the selected file is valid for the choosen filter type */
-        function isValidFile(filename, contenttype, extensionName) {
+        function isValidFile(filename, contenttype, extensionName, isMobileType) {
             var isValid,
                 contentTypes;
             if (!contenttype) {
@@ -303,7 +309,7 @@ WM.module('wm.widgets.form')
                     return isValid;
                 }
             }
-            if (_.includes(contentTypes, 'video/*')) {
+            if (_.includes(contentTypes, 'video/*') || (_.includes(contentTypes, 'video') && isMobileType)) {
                 isValid = Utils.isVideoFile(filename);
                 /*If one of the content type chosen is video/* and user uploads video it is valid file*/
                 if (isValid) {
@@ -323,9 +329,14 @@ WM.module('wm.widgets.form')
                 MAXFILEUPLOAD_SIZE = parseInt(scope.maxfilesize, 10) * FILESIZE_MB || FILESIZE_MB,
                 MAX_FILE_UPLOAD_FORMATTED_SIZE = (scope.maxfilesize || '1') + 'MB';
 
+            // if contenttype is files for mobile projects.
+            if (scope.chooseFilter === DEVICE_CONTENTTYPES.FILES) {
+                scope.chooseFilter = '';
+            }
+
             _.forEach($files, function (file) {
                 /* check for the file content type before uploading */
-                if (!isValidFile(file.name, scope.chooseFilter, scope.getFileExtension(file.name))) {
+                if (!isValidFile(file.name, scope.chooseFilter, scope.getFileExtension(file.name), scope._isMobileType)) {
                     Utils.triggerFn(scope.onError);
                     wmToaster.show('error', 'Expected a ' + scope.contenttype + ' file');
                     return;
@@ -383,6 +394,12 @@ WM.module('wm.widgets.form')
                         scope.widgetProps = widgetProps;
                         scope._isMobileType = $rootScope.isMobileApplicationType;
                         scope._isCordova = CONSTANTS.hasCordova;
+
+                        // contenttype options specific to mobile application.
+                        if (scope._isMobileType && CONSTANTS.isStudioMode) {
+                            scope.widgetProps.contenttype.options = ['image', 'audio', 'video', 'files'];
+                            scope.widgetProps.contenttype.widget  = 'list';
+                        }
                     },
 
                     post: function (scope, element, attrs) {
@@ -450,7 +467,32 @@ WM.module('wm.widgets.form')
                         if (CONSTANTS.hasCordova) {
                             scope.openFileSelector = function () {
                                 var uploadOptions = {formName: scope.formName};
-                                /* open the file selector */
+
+                                // open the imagepicker view if contenttype is image.
+                                if (scope.contenttype === DEVICE_CONTENTTYPES.IMAGE) {
+                                    DeviceMediaService.imagePicker().then(function(files) {
+                                        uploadFiles(files, scope, uploadOptions);
+                                    });
+                                    return;
+                                }
+
+                                // open the audiopicker view if contenttype is image.
+                                if (scope.contenttype === DEVICE_CONTENTTYPES.AUDIO) {
+                                    DeviceMediaService.audioPicker(scope.multiple).then(function(files) {
+                                       uploadFiles(files, scope, uploadOptions);
+                                    });
+                                    return;
+                                }
+
+                                //// open the videopicker view if contenttype is image.
+                                if (scope.contenttype === DEVICE_CONTENTTYPES.VIDEO && Utils.isIphone()) {
+                                    DeviceMediaService.videoPicker().then(function(files) {
+                                        uploadFiles(files, scope, uploadOptions);
+                                    });
+                                    return;
+                                }
+
+                                // open the file selector if contenttype is files.
                                 FileSelectorService.open({multiple: scope.multiple}, function (files) {
                                     /* check if the files are having not more than maxfilesize */
                                     files = getValidFiles(files, scope);
@@ -496,6 +538,21 @@ WM.module('wm.widgets.form')
                                 break;
                             case 'contenttype':
                                 scope.chooseFilter = newVal.split(" ").join(",");
+
+                                if (scope.widgetid) {
+                                    // add plugins depending on the contenttype.
+                                    switch (newVal) {
+                                        case DEVICE_CONTENTTYPES.AUDIO :
+                                            ProjectService.addCordovaPlugins($rootScope.project.id, ['MEDIAPICKER']);
+                                            break;
+                                        case DEVICE_CONTENTTYPES.IMAGE :
+                                            ProjectService.addCordovaPlugins($rootScope.project.id, ['IMAGEPICKER']);
+                                            break;
+                                        case DEVICE_CONTENTTYPES.VIDEO :
+                                            ProjectService.addCordovaPlugins($rootScope.project.id, ['CAMERA', 'CAPTURE']);
+                                            break;
+                                    }
+                                }
                                 break;
                             case 'service':
                                 if (isStudioMode) {

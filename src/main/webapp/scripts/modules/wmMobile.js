@@ -10,3 +10,4 @@ WM.module('wm.mobile', []);
 //Mock MobileVariableService
 wm.variables.services.DeviceVariableService = WM.noop;
 wm.variables.services.FileSelectorService = WM.noop;
+wm.variables.services.DeviceMediaService = WM.noop;
