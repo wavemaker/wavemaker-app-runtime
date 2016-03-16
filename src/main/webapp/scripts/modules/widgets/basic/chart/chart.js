@@ -557,12 +557,6 @@ WM.module('wm.widgets.basic')
             return ((isGroupByEnabled(scope.groupby) && scope.aggregation !== "none" && scope.aggregationcolumn)) || isGroupByEnabled(scope.groupby) || scope.orderby;
         }
 
-        /*Checks if the column type choosen is of number type*/
-        function isNumberType(dataType) {
-            var numberTypes = ['integer', 'float', 'number', 'big_decimal', 'big_integer', 'double', 'short'];
-            return (numberTypes.indexOf(dataType) !== -1);
-        }
-
         /*Gets the value by parsing upto the leaf node*/
         function getLeafNodeVal(key, dataObj) {
             var keys = key.split('.'),
@@ -585,7 +579,7 @@ WM.module('wm.widgets.basic')
         function getxAxisVal(scope, dataObj, xKey, index) {
             var value = getLeafNodeVal(xKey, dataObj);
             /*If x axis is other than number type then add indexes*/
-            if (isLineTypeChart(scope.type) && !isNumberType(scope.xAxisDataType)) {
+            if (isLineTypeChart(scope.type) && !Utils.isNumberType(scope.xAxisDataType)) {
                 /*Verification to get the unique data keys */
                 scope.xDataKeyArr.push(value);
                 return index;
@@ -1160,7 +1154,7 @@ WM.module('wm.widgets.basic')
 
             for (i = 0; i < columns.length && defaultColumns.length <= 2; i += 1) {
                 type = columns[i].type;
-                if (!columns[i].isRelated && (isNumberType(type))) {
+                if (!columns[i].isRelated && (Utils.isNumberType(type))) {
                     defaultColumns.push(columns[i].fieldName);
                 } else if (type === 'string' && !stringColumn) {
                     stringColumn = columns[i].fieldName;
@@ -1721,7 +1715,7 @@ WM.module('wm.widgets.basic')
                 /*Iterating through all the columns and fetching the numeric and non primary key columns*/
                 WM.forEach(Object.keys(columns), function (key) {
                     type = columns[key].type;
-                    if (isNumberType(type)) {
+                    if (Utils.isNumberType(type)) {
                         scope.numericColumns.push(key);
                     }
                     /*Hiding only table's primary key*/

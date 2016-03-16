@@ -470,17 +470,6 @@ wm.variables.services.$liveVariable = [
                                 }) : parseInt(fieldValue, 10);
                                 filterCondition = getFilterCondition(filterCondition);
                                 break;
-                            case 'big_decimal':
-                            case 'big_integer':
-                            case 'character':
-                            case 'double':
-                            case 'float':
-                            case 'boolean':
-                            case 'short':
-                            case 'byte':
-                            case 'time':
-                                filterCondition = getFilterCondition(filterCondition);
-                                break;
                             case 'date':
                             case 'datetime':
                                 fieldValue      = getDateInDefaultFormat(fieldValue, fieldType);
@@ -500,6 +489,7 @@ wm.variables.services.$liveVariable = [
                                 }
                                 break;
                             default:
+                                filterCondition = getFilterCondition(filterCondition);
                                 break;
                             }
                             attributeName = getAttributeName(fieldName);
