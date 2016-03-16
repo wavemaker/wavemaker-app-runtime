@@ -210,8 +210,7 @@ WM.module('wm.widgets.basic')
                 popoverScope = createPopoverScope(element),
                 page = $rootScope.$activePageEl,
                 popoverEle = $compile($templateCache.get('template/widget/basic/popover.html'))(popoverScope),
-                pageClickListener,
-                dialogEle;
+                pageClickListener;
             if (popoverScope.popoverautoclose) {
                 WM.element('.app-popover').each(function () {
                     var _scope = WM.element(this).data('linkScope');
@@ -228,6 +227,7 @@ WM.module('wm.widgets.basic')
                 transcludeFn(element.scope(), function (clone) {
                     popoverEle.find('> .popover-content').append(clone);
                 });
+                Utils.triggerFn(onOpen);
             } else {
                 /**
                  * When the page content is ready, copy the widgets and variables to the scope.
@@ -249,8 +249,6 @@ WM.module('wm.widgets.basic')
                 popoverEle.removeClass('invisible');
                 shiftFocusToChild(popoverEle);
             });
-            //check if the popover is inside the dialog and get the dialog element.
-            dialogEle = WM.element('.modal-dialog');
             if (popoverScope.popoverautoclose) {
                 pageClickListener = new ParentEventListener(WM.element(window), popoverEle, element);
                 pageClickListener.on('click', function (event) {
