@@ -31,7 +31,8 @@
         "ngCordova":"v0.1.24-alpha",
         "ng-cordova-oauth":"0.2.3",
         "ng-websocket": "v0.2.1",
-        "wavicon": "https://github.com/wavemaker/wavicon.git#v1.0.4"
+        "wavicon": "https://github.com/wavemaker/wavicon.git#v1.0.4",
+        "angular-ui-mask": "1.8.1"
     },
     "resolutions": {
         "d3": "v3.5.14",
@@ -75,6 +76,12 @@
                 "dist/textAngular-sanitize.min.js",
                 "dist/textAngular.min.js",
                 "dist/textAngular-rangy.min.js"
+            ]
+        },
+      "angular-ui-mask": {
+            "js": [
+                "dist/mask.js",
+                "dist/mask.min.js"
             ]
         },
         "ocLazyLoad": {

@@ -371,13 +371,13 @@ WM.module('wm.widgets.live')
                     allowInvalidAttr = fieldDef.widget === 'number' ? ' allowinvalid=true ' : '';
                 additionalFields = additionalFields || '';
                 if (fieldDef.isRange) {
-                    fieldDef.placeholder = fieldDef.placeholder || minPlaceholderDefault;
-                    fieldDef.maxPlaceholder = fieldDef.maxPlaceholder || maxPlaceholderDefault;
+                    fieldDef.placeholder = fieldDef.displayformat ? '' : (fieldDef.placeholder || minPlaceholderDefault);
+                    fieldDef.maxPlaceholder = fieldDef.displayformat ? '' : (fieldDef.maxPlaceholder || maxPlaceholderDefault);
                     template = template +
                         '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].minValue" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition +  additionalFields + '></' +  widgetName + '></div>' +
                         '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-6' : 'col-sm-6') + '"><' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].maxValue" placeholder="{{formFields[' + index + '].maxPlaceholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '></div>';
                 } else {
-                    fieldDef.placeholder = fieldDef.placeholder || defaultPlaceholder;
+                    fieldDef.placeholder = fieldDef.displayformat ? '' : (fieldDef.placeholder || defaultPlaceholder);
                     template = template + '<' + widgetName + ' ' +  getFormFields(fieldDef, index, widgetType) + ' scopedatavalue="formFields[' + index + '].value" placeholder="{{formFields[' + index + '].placeholder}}" readonly="{{!isUpdateMode || formFields[' + index + '].readonly}}"' + allowInvalidAttr + updateModeCondition + additionalFields + '></' +  widgetName + '>';
                 }
                 return template;
