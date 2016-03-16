@@ -27,7 +27,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.util.StringUtils;
 
@@ -54,7 +53,6 @@ public class WMTokenBasedAuthenticationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WMTokenBasedAuthenticationService.class);
 
-    public static final String DELIMITER = ":";
     public static final int DEFAULT_VALIDITY_SECONDS = 1800;
     public static final String DEFAULT_KEY = "WM_TOKEN";
 
@@ -83,7 +81,7 @@ public class WMTokenBasedAuthenticationService {
 
         String signatureValue = makeTokenSignature(expiryTime, username);
 
-        Token token = new Token(encodeToken(new String[]{username, Long.toString(expiryTime), signatureValue}));
+        Token token = new Token(signatureValue);
 
         WMUser wmUser = toWMUser(successfulAuthentication);
         persistentAuthTokenRepository.addToken(token.getWmAuthToken(), wmUser);
@@ -166,27 +164,5 @@ public class WMTokenBasedAuthenticationService {
     private boolean isInstanceOfUserDetails(Authentication authentication) {
         return authentication.getPrincipal() instanceof UserDetails;
     }
-
-    protected String encodeToken(String[] cookieTokens) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < cookieTokens.length; i++) {
-            sb.append(cookieTokens[i]);
-
-            if (i < cookieTokens.length - 1) {
-                sb.append(DELIMITER);
-            }
-        }
-
-        String value = sb.toString();
-
-        sb = new StringBuilder(new String(Base64.encode(value.getBytes())));
-
-        while (sb.charAt(sb.length() - 1) == '=') {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-
-        return sb.toString();
-    }
-
 
 }
