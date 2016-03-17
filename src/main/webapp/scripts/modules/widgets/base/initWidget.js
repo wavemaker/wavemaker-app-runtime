@@ -735,6 +735,11 @@ WM.module('wm.widgets.base')
                         return Utils.findValueOf(datum, restExpr);
                     });
 
+                    // If resulting structure is an array of array, flatten it
+                    if (WM.isArray(formattedData[0])) {
+                        formattedData = _.flatten(formattedData);
+                    }
+
                     listenerFn(formattedData, oldVal);
                 }
             }
@@ -790,10 +795,6 @@ WM.module('wm.widgets.base')
                 }
 
                 if (isArrayTypeExpr(watchExpr)) {
-                    if (CONSTANTS.isStudioMode) {
-                        listenerFn();
-                        return;
-                    }
                     //Check each match is pageable and replace dataSet[$i] with dataSet.content[$i]
                     watchExpr = watchExpr.replace(regExp, function (match, key) {
                         variableObject = _.get($s.Variables, key);

@@ -517,7 +517,7 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
 
                             /* update the dataset */
-                            variable.dataSet = serviceModel;
+                            variable.dataSet = variable.isList ? [serviceModel] : serviceModel;
                             /*pass the data prepared to the success callback function*/
                             Utils.triggerFn(success, serviceModel);
                         });

@@ -1426,10 +1426,6 @@ WM.module('wm.widgets.grid')
                         Utils.triggerFn(navigatorResultWatch);
                         $scope.dataNavigator.dataset = $scope.binddataset;
 
-                        if (CONSTANTS.isStudioMode && $scope.variableType === 'wm.ServiceVariable') {
-                            return;
-                        }
-
                         /*Register a watch on the "result" property of the "dataNavigator" so that the paginated data is displayed in the live-list.*/
                         navigatorResultWatch = $scope.dataNavigator.$watch('result', function (newVal) {
                             /* Check for sanity. */
@@ -1445,8 +1441,7 @@ WM.module('wm.widgets.grid')
                         });
 
                         $scope.dataNavigatorWatched = true;
-
-                        $scope.dataset = [];
+                        $scope.dataset = undefined;
                     }
                 }
             };
@@ -1555,15 +1550,16 @@ WM.module('wm.widgets.grid')
                 }
             };
             $scope.isDataValid = function () {
-                var error;
+                var error,
+                    dataset = $scope.dataset || {};
 
                 /*In case "data" contains "error" & "errorMessage", then display the error message in the grid.*/
-                if ($scope.dataset.error) {
-                    error = $scope.dataset.error;
+                if (dataset.error) {
+                    error = dataset.error;
                 }
-                if ($scope.dataset.data && $scope.dataset.data.error) {
-                    if ($scope.dataset.data.errorMessage) {
-                        error = $scope.dataset.data.errorMessage;
+                if (dataset.data && dataset.data.error) {
+                    if (dataset.data.errorMessage) {
+                        error = dataset.data.errorMessage;
                     }
                 }
                 if (error) {

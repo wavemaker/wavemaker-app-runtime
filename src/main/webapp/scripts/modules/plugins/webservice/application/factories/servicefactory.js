@@ -240,7 +240,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         if ((operation.tags[0] === "QueryExecutionController" || operation.tags[0] === "ProcedureExecutionController") && dbOperationName !== "wm_custom" && dbOperationName !== "wm_custom_update") {
                             returnType = serviceObj.name + dbOperationName + "rtnType";
                             schemaObject = operation.responses['200'].schema;
-                            isList = schemaObject.$ref === "#/definitions/Page";
+                            isList = (schemaObject.$ref === "#/definitions/Page") || schemaObject.type === 'array' || schemaObject[IS_LIST_KEY];
                         } else if (operation.responses && operation.responses['200'].schema) {
                             schemaObject = operation.responses['200'].schema;
                             typeArgumentsObject = schemaObject["x-WM-TYPE_ARGUMENTS"];
