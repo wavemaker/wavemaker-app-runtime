@@ -1205,6 +1205,10 @@ If the height and width are not specified the video takes the height of the post
   height: 100px;
   overflow: auto;
   position: relative;
+  //View inside prefab should have lower z-index
+  .app-view {
+    z-index: 1000;
+  }
 }
 
 /* class used to adjust height of container for prefab project in run mode */
