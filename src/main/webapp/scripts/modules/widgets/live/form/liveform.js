@@ -941,7 +941,7 @@ WM.module('wm.widgets.live')
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
                         function initDependency(widgetname) {
-                            var dependsonWidget = scope.$root.Widgets[widgetname],
+                            var dependsonWidget = scope.Widgets[widgetname],
                                 eventChangeHandler;
                             if (dependsonWidget) {
                                 scope.subscribedWidget = dependsonWidget;
