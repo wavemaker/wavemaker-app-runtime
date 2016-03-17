@@ -677,8 +677,8 @@ wm.plugins.security.services.SecurityService = [
              * @param {function} failureCallback to be called on failure
              */
 
-            getRolesConfig: function (projectID, successCallback, failureCallback) {
-                if (!_rolesConfig) {
+            getRolesConfig: function (projectID, forceReload, successCallback, failureCallback) {
+                if (forceReload || !_rolesConfig.length) {
                     BaseService.send({
                         target: 'Security',
                         action: 'getRolesConfig',
