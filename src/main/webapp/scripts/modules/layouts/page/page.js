@@ -239,10 +239,12 @@ WM.module('wm.layouts.page')
                                 containerScope.Variables = $s.Variables;
                             }
 
-                            extendVariables($s, $rs.Variables);
-                            Utils.triggerFn($rs.onAppVariablesReady, $rs.Variables);
-                            if (CONSTANTS.isRunMode && $s.hasOwnProperty('onPageVariablesReady')) {
-                                Utils.triggerFn($s.onPageVariablesReady, $s.Variables);
+                            if ($rs.Variables) {
+                                extendVariables($s, $rs.Variables);
+                            } else {
+                                $el.on('$destroy', $rs.$on('on-app-variables-ready', function () {
+                                    extendVariables($s, $rs.Variables);
+                                }));
                             }
                         });
                     },
