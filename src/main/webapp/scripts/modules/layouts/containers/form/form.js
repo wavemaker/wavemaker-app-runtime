@@ -193,7 +193,7 @@ WM.module('wm.layouts.containers')
 
                         if (!scope.widgetid) {
                             bindEvents(scope, element);
-                            scope.resetForm = resetForm.bind(undefined, element);
+                            scope.resetForm = resetForm.bind(undefined, scope, element);
                         }
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
