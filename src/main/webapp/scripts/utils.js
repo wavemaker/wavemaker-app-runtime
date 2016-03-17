@@ -1208,8 +1208,9 @@ WM.module('wm.utils', [])
                 return false;
             }
             try {
+                var parsedIntValue = parseInt(content);
                 /*obtaining json from editor content string*/
-                return WM.isObject(content) ? content : JSON.parse(content);
+                return WM.isObject(content) || !isNaN(parsedIntValue) ? content : JSON.parse(content);
             } catch (e) {
                 /*terminating execution if new variable object is not valid json.*/
                 return false;
