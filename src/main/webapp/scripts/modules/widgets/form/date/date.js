@@ -146,29 +146,9 @@ WM.module('wm.widgets.form')
                         if ($rs.isMobileApplicationType) {
                             scope._nativeMode = true;
                         }
-                    },
-                    'post': function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element),
-                            isCurrentDate    = false,
+
+                        var isCurrentDate    = false,
                             CURRENT_DATE     = 'CURRENT_DATE';
-
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-                        scope._onClick = _onClick.bind(undefined, scope);
-
-                        /*update the model when the device date is changed*/
-                        scope.updateModel = function () {
-                            scope._model_ = FormWidgetUtils.getUpdatedModel(scope.mindate, scope.maxdate, scope._model_, scope._proxyModel, scope._prevDate);
-                            scope._prevDate = scope._model_;
-                        };
-
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                            scope._model_ = '';
-                        };
 
                         /* _model_ acts as a converter for _proxyModel
                          * read operation of _model_/datavalue will return epoch format of the date
@@ -202,6 +182,29 @@ WM.module('wm.widgets.form')
                                 }
                             }
                         });
+                    },
+                    'post': function (scope, element, attrs) {
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
+
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        scope._onClick = _onClick.bind(undefined, scope);
+
+                        /*update the model when the device date is changed*/
+                        scope.updateModel = function () {
+                            scope._model_ = FormWidgetUtils.getUpdatedModel(scope.mindate, scope.maxdate, scope._model_, scope._proxyModel, scope._prevDate);
+                            scope._prevDate = scope._model_;
+                        };
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            //TODO implement custom reset logic here
+                            scope._model_ = '';
+                        };
+
+
 
                         scope.excludeDays = function (date, mode) {
                             return mode === 'day' && _.includes(attrs.excludedays, date.getDay());
