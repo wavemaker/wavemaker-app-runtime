@@ -727,6 +727,7 @@ WM.module('wm.widgets.grid')
                     /*If serverData has data but is undefined, then return*/
                     if (isBoundToLiveVariableRoot || WM.isDefined(serverData.propertiesMap)) {
                         if (!serverData.data || Utils.isEmptyObject(serverData.data)) {
+                            $scope.datagridElement.datagrid('setStatus', 'nodata', $scope.nodatamessage);
                             return;
                         }
                         data = serverData.data;
@@ -878,7 +879,8 @@ WM.module('wm.widgets.grid')
                         "ignoreCase": true,
                         "scope": $scope.gridElement.scope()
                     }, function (data, propertiesMap, pagingOptions) {
-                        $scope.serverData = data;
+                        $scope.serverData = [];
+                        $scope.serverData.data = data;
                         /*Check for sanity*/
                         if ($scope.dataNavigator) {
                             $scope.dataNavigator.dataset = {
@@ -940,7 +942,8 @@ WM.module('wm.widgets.grid')
                             }, function (data, propertiesMap, pagingOptions) {
                                 /*Navigate to the first page upon sorting.*/
                                 $scope.dataNavigator.navigatePage("first");
-                                $scope.serverData = data;
+                                $scope.serverData      = [];
+                                $scope.serverData.data = data;
                                 /*Check for sanity*/
                                 if ($scope.dataNavigator) {
                                     $scope.dataNavigator.dataset = {
@@ -2052,7 +2055,8 @@ WM.module('wm.widgets.grid')
                         'page': $scope.dataNavigator ? $scope.dataNavigator.currentPage : 1,
                         'scope': $scope.gridElement.scope()
                     }, function (data) {
-                        $scope.serverData = data;
+                        $scope.serverData      = []
+                        $scope.serverData.data = data;
                         setGridData($scope.serverData);
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
