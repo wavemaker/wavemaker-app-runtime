@@ -253,7 +253,17 @@ body {
         }
       }
     }
-
+  }
+  /*********************application content vertical scroll fix********************/
+  .app-top-nav + .app-content {
+    @media (min-width: 768px){
+      .calc('height', ~"calc(100% - 13.6em)");
+    }
+  }
+  .app-header + .app-content {
+    @media (min-width: 768px){
+      .calc('height', ~"calc(100% - 9.3em)");
+    }
   }
   /*********************application left panel********************/
   .app-left-panel {

@@ -111,7 +111,6 @@ WM.module('wm.layouts.page')
                                             NavigationVariableService.goToView(subView.pop());
                                         }
                                     }
-
                                     // update layout after the page is rendered
                                     $s.layout.search       = $el.find('[data-role="page-header"] .app-search');
                                     $s.layout.leftSection  = $el.find('[data-role="page-left-panel"]').length > 0;
