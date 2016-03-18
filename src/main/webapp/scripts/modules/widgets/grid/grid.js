@@ -1453,7 +1453,7 @@ WM.module('wm.widgets.grid')
 
                         $scope.dataNavigatorWatched = true;
                         $scope.__fullData = $scope.dataset;
-                        $scope.dataset    = undefined;
+                        $scope.dataset    = [];
                     }
                 }
             };
