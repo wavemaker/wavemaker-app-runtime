@@ -28,6 +28,9 @@ WM.module('wm.layouts.page')
                 });
             }
 
+
+            var appVariableReadyFired = false;
+
             return {
                 'restrict'  : 'E',
                 'replace'   : true,
@@ -151,7 +154,11 @@ WM.module('wm.layouts.page')
                             // App Variables must be ready by this time.
                             extendVariables(variableScope, $rs.Variables);
                             // if specified, call page variables ready function in the page.js
-                            Utils.triggerFn($rs.onAppVariablesReady, $rs.Variables);
+                            if (!appVariableReadyFired) {
+                                Utils.triggerFn($rs.onAppVariablesReady, $rs.Variables);
+                                appVariableReadyFired = true;
+                            }
+
                             Utils.triggerFn($s.onPageVariablesReady);
                         });
                     },
