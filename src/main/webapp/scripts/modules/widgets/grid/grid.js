@@ -1232,7 +1232,7 @@ WM.module('wm.widgets.grid')
                     return details;
                 },
                 isBoundToView = function () {
-                    return $scope.dataset.propertiesMap && $scope.dataset.propertiesMap.tableType === 'VIEW';
+                    return $scope.dataset && $scope.dataset.propertiesMap && $scope.dataset.propertiesMap.tableType === 'VIEW';
                 },
                 setImageProperties = function (variableObj) {
                     if (!variableObj) {
@@ -1976,7 +1976,7 @@ WM.module('wm.widgets.grid')
                     /*Do not select the item if skip selection item is specified*/
                     if (!skipSelectItem) {
                         $timeout(function () {
-                            $scope.selectItem(row, $scope.dataset.data);
+                            $scope.selectItem(row, $scope.dataset && $scope.dataset.data);
                         }, null, false);
                     }
                 });
