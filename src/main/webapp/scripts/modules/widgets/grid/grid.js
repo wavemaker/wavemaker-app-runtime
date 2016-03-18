@@ -1004,7 +1004,13 @@ WM.module('wm.widgets.grid')
                 },
                 /*Function to handle both sort and search operations if bound to service/static variable*/
                 handleOperation = function (searchSortObj, e, type) {
-                    var data = WM.copy($scope.dataset);
+                    var data;
+                    if ($scope.shownavigation) {
+                        data = Utils.getClonedObject($scope.__fullData);
+                    } else {
+                        data = Utils.getClonedObject($scope.dataset);
+                    }
+
                     //Storing in global variables for further use
                     //While sorting previously stored search obj(current search) is used.And viceversa
                     if (type === 'search') {
@@ -1016,8 +1022,12 @@ WM.module('wm.widgets.grid')
                     data = getSearchResult(data, currentSearch);
                     data = getSortResult(data, currentSort);
                     $scope.serverData = data;
-                    $scope.dataNavigator.dataset = data;
-                    setGridData($scope.serverData);
+                    if ($scope.shownavigation) {
+                        $scope.dataNavigator.dataset = data;
+                    } else {
+                        setGridData($scope.serverData);
+                    }
+
                     if (type === 'sort') {
                         //Calling 'onSort' event
                         $scope.onSort({$event: e, $data: $scope.serverData});
@@ -1442,8 +1452,8 @@ WM.module('wm.widgets.grid')
                         });
 
                         $scope.dataNavigatorWatched = true;
-
-                        $scope.dataset = [];
+                        $scope.__fullData = $scope.dataset;
+                        $scope.dataset    = undefined;
                     }
                 }
             };
@@ -2051,7 +2061,8 @@ WM.module('wm.widgets.grid')
                         'page': $scope.dataNavigator ? $scope.dataNavigator.currentPage : 1,
                         'scope': $scope.gridElement.scope()
                     }, function (data) {
-                        $scope.serverData = data;
+                        $scope.serverData      = [];
+                        $scope.serverData.data = data;
                         setGridData($scope.serverData);
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
