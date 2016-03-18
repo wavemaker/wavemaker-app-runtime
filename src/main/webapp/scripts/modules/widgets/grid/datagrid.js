@@ -955,9 +955,9 @@ $.widget('wm.datagrid', {
         }
         $input = $(customTag);
         if ($input.attr('type') === 'checkbox') {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     },
     /* Marks the first row as selected. */
     selectFirstRow: function (value) {
