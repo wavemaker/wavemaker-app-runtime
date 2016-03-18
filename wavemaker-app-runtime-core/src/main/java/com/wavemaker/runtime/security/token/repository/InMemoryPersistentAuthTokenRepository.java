@@ -23,10 +23,6 @@ import com.wavemaker.runtime.security.WMUser;
  */
 public class InMemoryPersistentAuthTokenRepository extends AbstractPersistentAuthTokenRepository<String, WMUser> {
 
-    public InMemoryPersistentAuthTokenRepository() {
-        super();
-    }
-
     public InMemoryPersistentAuthTokenRepository(final int tokenValiditySeconds) {
         super(tokenValiditySeconds);
     }

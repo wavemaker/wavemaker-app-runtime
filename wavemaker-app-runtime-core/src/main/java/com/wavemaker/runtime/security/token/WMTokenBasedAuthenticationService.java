@@ -20,6 +20,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -58,13 +60,24 @@ public class WMTokenBasedAuthenticationService {
 
     private int tokenValiditySeconds = DEFAULT_VALIDITY_SECONDS;
     private String key = DEFAULT_KEY;
-    private PersistentAuthTokenRepository<String, WMUser> persistentAuthTokenRepository = new InMemoryPersistentAuthTokenRepository(tokenValiditySeconds);
+    private PersistentAuthTokenRepository<String, WMUser> persistentAuthTokenRepository;
 
     public WMTokenBasedAuthenticationService() {
     }
 
     public WMTokenBasedAuthenticationService(int tokenValiditySeconds) {
         this.tokenValiditySeconds = tokenValiditySeconds;
+    }
+
+    public WMTokenBasedAuthenticationService(PersistentAuthTokenRepository<String, WMUser> tokenRepository) {
+        this.persistentAuthTokenRepository = tokenRepository;
+    }
+
+    @PostConstruct
+    protected void init() {
+        if (persistentAuthTokenRepository == null) {
+            persistentAuthTokenRepository = new InMemoryPersistentAuthTokenRepository(tokenValiditySeconds);
+        }
     }
 
     public Token generateToken(Authentication successfulAuthentication) {

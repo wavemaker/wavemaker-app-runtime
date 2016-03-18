@@ -13,15 +13,10 @@ import com.google.common.cache.CacheBuilder;
 public abstract class AbstractPersistentAuthTokenRepository<I, T extends UserDetails> implements
         PersistentAuthTokenRepository<I, T> {
     public static final TimeUnit SECONDS = TimeUnit.SECONDS;
-    public static final int DEFAULT_VALIDITY_SECONDS = 1800;
 
-    private int tokenValiditySeconds = DEFAULT_VALIDITY_SECONDS;
+    private int tokenValiditySeconds;
 
     private Cache<I, T> tokenVsWMUser;
-
-    public AbstractPersistentAuthTokenRepository() {
-
-    }
 
     public AbstractPersistentAuthTokenRepository(final int tokenValiditySeconds) {
         this.tokenValiditySeconds = tokenValiditySeconds;
