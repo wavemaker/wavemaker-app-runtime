@@ -2061,8 +2061,7 @@ WM.module('wm.widgets.grid')
                         'page': $scope.dataNavigator ? $scope.dataNavigator.currentPage : 1,
                         'scope': $scope.gridElement.scope()
                     }, function (data) {
-                        $scope.serverData      = [];
-                        $scope.serverData.data = data;
+                        $scope.serverData = data;
                         setGridData($scope.serverData);
                     }, function (error) {
                         wmToaster.show('error', 'ERROR', error);
