@@ -772,7 +772,6 @@ WM.module('wm.utils', [])
                 'type'                : prop.type,
                 'isPrimaryKey'        : prop.isPrimaryKey,
                 'generator'           : prop.generator,
-                'disableInlineEditing': prop.disableInlineEditing,
                 'isRelatedPk'         : prop.isRelatedPk
             };
         }
@@ -787,9 +786,6 @@ WM.module('wm.utils', [])
             _.forEach(columns, function (val) {
                 /* if the object is nested type repeat the above process for that nested object through recursively */
                 if (val.isRelated) {
-                    if (!val.isPrimaryKey) {
-                        val.disableInlineEditing = 'true';
-                    }
                     if (val.isList) {
                         return;
                     }
@@ -802,12 +798,8 @@ WM.module('wm.utils', [])
             });
             _.forEach(relatedColumnsArr, function (val) {
                 _.forEach(val.columns, function (col) {
-                    if (!col.isPrimaryKey) {
-                        col.disableInlineEditing = 'true';
-                    } else {
-                        if (val.isRelated && col.isPrimaryKey) {
-                            col.isRelatedPk = 'true';
-                        }
+                    if (col.isPrimaryKey && val.isRelated) {
+                        col.isRelatedPk = 'true';
                     }
                 });
 

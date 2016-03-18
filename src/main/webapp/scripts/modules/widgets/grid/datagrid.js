@@ -516,33 +516,34 @@ $.widget('wm.datagrid', {
     _getEditableTemplate: function ($el, colDef, cellText, rowId) {
         if (colDef.editWidgetType) {
             var template,
-                formName;
+                formName,
+                dataValue = cellText ? 'datavalue="' + cellText + '"' : '';
             switch (colDef.editWidgetType) {
             case 'select':
                 cellText = cellText || '';
-                template =  '<wm-select datavalue="' + cellText + '" dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '"></wm-select>';
+                template =  '<wm-select ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '"></wm-select>';
                 break;
             case 'date':
                 $el.addClass('datetime-wrapper');
-                template = '<wm-date datavalue="' + cellText + '"></wm-date>';
+                template = '<wm-date ' + dataValue + '></wm-date>';
                 break;
             case 'time':
                 $el.addClass('datetime-wrapper');
-                template = '<wm-time datavalue="' + cellText + '"></wm-time>';
+                template = '<wm-time ' + dataValue + '></wm-time>';
                 break;
             case 'datetime':
                 $el.addClass('datetime-wrapper');
-                template = '<wm-datetime datavalue="' + cellText + '" outputformat="yyyy-MM-ddTHH:mm:ss"></wm-datetime>';
+                template = '<wm-datetime ' + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss"></wm-datetime>';
                 break;
             case 'checkbox':
-                template = '<wm-checkbox datavalue="' + cellText + '" height="10px"></wm-checkbox>';
+                template = '<wm-checkbox ' + dataValue + ' height="10px"></wm-checkbox>';
                 break;
             case 'number':
-                template = '<wm-text type="number" datavalue="' + cellText + '"></wm-text>';
+                template = '<wm-text type="number" ' + dataValue + '></wm-text>';
                 break;
             case 'textarea':
                 cellText = cellText || '';
-                template = '<wm-textarea datavalue="' + cellText + '"></wm-textarea>';
+                template = '<wm-textarea ' + dataValue + '></wm-textarea>';
                 break;
             case 'upload':
                 formName = colDef.field + '_' + rowId;
@@ -550,13 +551,10 @@ $.widget('wm.datagrid', {
                 template = '<form name="' + formName + '"><input class="file-upload" type="file" name="' + colDef.field + '"/></form>';
                 break;
             default:
-                template = '<wm-text datavalue="' + cellText + '"></wm-text>';
+                template = '<wm-text ' + dataValue + '></wm-text>';
                 break;
             }
             return this.options.compileTemplateInGridScope(template);
-        }
-        if (this.Utils.isDefined(colDef.customExpression)) {
-            return colDef.customExpression;
         }
         return '<input class="editable form-control app-textbox" type="text" value=""/>';
     },
@@ -787,13 +785,16 @@ $.widget('wm.datagrid', {
     /*Set the default widths for the colgroup*/
     setColGroupWidths : function () {
         if (this.options.showHeader) {
-            var headerCols = this.gridHeaderElement.find('col'),
+            var self = this,
+                headerCols = this.gridHeaderElement.find('col'),
                 bodyCols = this.gridElement.find('col');
             this.gridHeaderElement.find('th').each(function (index) {
                 /***setting the header col width based on the content width***/
                 var $header = $(this),
-                    width = $header.width();
-                width = $header.hasClass('grid-col-small') ? 30 : (width > 50 ? width : 50); //Keep width as 30 for checkbox and radio; columnSanity check to prevent width being too small
+                    width = $header.width(),
+                    id = $header.attr('data-col-id'),
+                    colDef = self.preparedHeaderData[id];
+                width = $header.hasClass('grid-col-small') ? 30 : (width > 50 ? width : (colDef.width || 50)); //Keep width as 30 for checkbox and radio; columnSanity check to prevent width being too small
                 $(headerCols[index]).css('width', width);
                 $(bodyCols[index]).css('width', width);
             });
@@ -940,14 +941,17 @@ $.widget('wm.datagrid', {
         }
     },
 
-    _isCustomExpressionNonEditable: function (customTag) {
+    _isCustomExpressionNonEditable: function (customTag, $el) {
         var $input;
         if (!customTag) {
             return false;
         }
         //Check if expression is provided for custom tag.
         if (_.includes(customTag, '{{') && _.includes(customTag, '}}')) {
-            return true;
+            if ($($el.html()).length) {
+                return true;
+            }
+            return false;
         }
         $input = $(customTag);
         if ($input.attr('type') === 'checkbox') {
@@ -1174,7 +1178,8 @@ $.widget('wm.datagrid', {
             isDataChanged = false,
             formData,
             isFormDataSupported,
-            multipartData;
+            multipartData,
+            firstEditableEle;
         if (e.data.action === 'edit') {
             if ($.isFunction(this.options.beforeRowUpdate)) {
                 this.options.beforeRowUpdate(rowData, e);
@@ -1194,11 +1199,8 @@ $.widget('wm.datagrid', {
                     id = $el.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id],
                     editableTemplate,
-                    customExp,
-                    originalTemplate,
-                    compiledTemplate,
                     value;
-                if (!(colDef.readonly || (self._isCustomExpressionNonEditable(colDef.customExpression) && !colDef.editWidgetType) || colDef.disableInlineEditing)) {
+                if (!colDef.readonly) {
                     if (options && options.operation === 'new') {
                         value = colDef.defaultvalue;
                     } else {
@@ -1209,21 +1211,18 @@ $.widget('wm.datagrid', {
                     if (!(colDef.customExpression || colDef.formatpattern)) {
                         $el.addClass('cell-editing').html(editableTemplate).data('originalText', value);
                         $el.find('input').val(cellText);
+                        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
+                            $el.children().isolateScope().datavalue = cellText;
+                        }
                     } else {
-                        if (colDef.formatpattern) {
-                            $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
-                            // Put the original value while editing, not the formatted value.
-                            $el.find('input').val(rowData[colDef.field] || self._getColumnValue(colDef, rowData));
-                        } else if (colDef.customExpression) {
-                            customExp = colDef.customExpression;
-                            originalTemplate = customExp;
-                            compiledTemplate = self.options.getCompiledTemplate(customExp, rowData, colDef, true);
-                            $el.addClass('cell-editing editable-expression').data('originalValue', {'template': originalTemplate, 'rowData': _.cloneDeep(rowData), 'colDef': colDef});
-                            if (colDef.editWidgetType) {
-                                $el.html(editableTemplate);
-                            } else {
-                                $el.html(compiledTemplate);
-                            }
+                        if (self._isCustomExpressionNonEditable(colDef.customExpression, $el)) {
+                            $el.addClass('cell-editing editable-expression').data('originalValue', {'template': colDef.customExpression, 'rowData': _.cloneDeep(rowData), 'colDef': colDef});
+                        }
+                        $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
+                        // Put the original value while editing, not the formatted value.
+                        $el.find('input').val(rowData[colDef.field] || self._getColumnValue(colDef, rowData));
+                        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
+                            $el.children().isolateScope().datavalue = rowData[colDef.field] || self._getColumnValue(colDef, rowData);
                         }
                     }
                 }
@@ -1234,7 +1233,16 @@ $.widget('wm.datagrid', {
             $cancelButton.removeClass('hidden');
             $saveButton.removeClass('hidden');
             $editableElements = $row.find('td.cell-editing');
-            $($editableElements).find('input').focus();
+            if ($editableElements) {
+                firstEditableEle = $($editableElements).first().find('input');
+                if (!firstEditableEle.length) {
+                    firstEditableEle = $($editableElements).first().find('textarea');
+                }
+                if (!firstEditableEle.length) {
+                    firstEditableEle = $($editableElements).first().find('select');
+                }
+                firstEditableEle.focus();
+            }
             $editableElements.on('click', function (e) {
                 e.stopPropagation();
             });

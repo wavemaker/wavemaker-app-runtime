@@ -1926,7 +1926,6 @@ WM.module('wm.widgets.grid')
                                 columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
                             }
                         }
-                        columnDef.disableInlineEditing = columns[columnDef.field].disableInlineEditing;
                     }
                     //For readonly grid each field should be checked on readonly
                     if ($scope.readonlygrid) {
@@ -2180,7 +2179,7 @@ WM.module('wm.widgets.grid')
                                 'displayName': attrs.caption,
                                 'pcDisplay': (attrs.pcdisplay === "1" || attrs.pcdisplay === "true"),
                                 'mobileDisplay': (attrs.mobiledisplay === "1" || attrs.mobiledisplay === "true"),
-                                'width': attrs.width || '*',
+                                'width': attrs.width,
                                 'textAlignment': textAlignment,
                                 'backgroundColor': backgroundColor,
                                 'textColor': textColor,
@@ -2235,7 +2234,6 @@ WM.module('wm.widgets.grid')
                                 columnDef.customExpression = '<a ng-if="columnValue != null" class="col-md-9" target="_blank" data-ng-href="{{contentBaseUrl + row[primaryKey] + \'/content/\'+ colDef.field}}"><i class="wm-icon wm-icon24 wi wi-file"></i></a>';
                             }
                         }
-                        columnDef.disableInlineEditing = attrs.disableInlineEditing === 'true';
                         /* push the fieldDef in the object meant to have all fields */
                         index = scope.$parent.fullFieldDefs.push(columnDef) - 1;
                         /* Backward compatibility for widgetType */

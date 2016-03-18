@@ -713,12 +713,16 @@ WM.module('wm.widgets.live')
                 var value,
                     unit,
                     width,
-                    height;
+                    height,
+                    getValue = function (val) {
+                        val =  parseInt(val, 10);
+                        return isNaN(val) ? '' : val;
+                    };
                 switch (type) {
                 case 'width':
                     /*extract the width and width unit from width*/
                     width = column.width || '';
-                    value = parseInt(width, 10) || '';
+                    value = getValue(width);
                     unit = width.indexOf('%') === -1 ? 'px' : '%';
 
                     column.widthValue = value;
@@ -727,7 +731,7 @@ WM.module('wm.widgets.live')
                 case 'height':
                     /*extract the width and width unit from width*/
                     height = column.height || '';
-                    value = parseInt(height, 10) || '';
+                    value = getValue(height);
                     unit = height.indexOf('%') === -1 ? 'px' : '%';
 
                     column.heightValue = value;
@@ -751,7 +755,7 @@ WM.module('wm.widgets.live')
                 /*if width is given and a number set it*/
                 switch (type) {
                 case 'width':
-                    if (column.widthValue && !isNaN(column.widthValue)) {
+                    if (WM.isDefined(column.widthValue) && !isNaN(column.widthValue)) {
                         column.width = column.widthValue + column.widthUnit;
                     } else if (!column.widthValue || (!column.widthValue.length && Utils.stringStartsWith(column.width, column.widthValue))) {
                         /* Reset the width to default value when the widthValue is cleared from the UI. */
@@ -761,7 +765,7 @@ WM.module('wm.widgets.live')
                     column.widthUnit = undefined;
                     break;
                 case 'height':
-                    if (column.heightValue && !isNaN(column.heightValue)) {
+                    if (WM.isDefined(column.heightValue) && !isNaN(column.heightValue)) {
                         column.height = column.heightValue + column.heightUnit;
                     } else if (!column.heightValue || (!column.heightValue.length && Utils.stringStartsWith(column.width, column.heightValue))) {
                         /* Reset the height to default value when the heightValue is cleared from the UI. */
