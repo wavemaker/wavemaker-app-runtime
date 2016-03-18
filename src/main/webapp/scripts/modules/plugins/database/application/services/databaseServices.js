@@ -14,7 +14,8 @@
  * - {@link wm.database.$DatabaseService#methods_exportDB exportDB}
  * - {@link wm.database.$DatabaseService#methods_getAllDataModels getAllDataModels}
  * - {@link wm.database.$DatabaseService#methods_getDataModel getDataModel}
- * - {@link wm.database.$DatabaseService#methods_createDataModel createDataModel}
+ * - {@link wm.database.$DatabaseService#methods_createDatabase createDatabase}
+ * - {@link wm.database.$DatabaseService#methods_createService createService}
  * - {@link wm.database.$DatabaseService#methods_deleteDataModel deleteDataModel}
  * - {@link wm.database.$DatabaseService#methods_saveDataModel saveDataModel}
  * - {@link wm.database.$DatabaseService#methods_applyDataModel applyDataModel}
@@ -446,32 +447,142 @@ wm.plugins.database.services.DatabaseService = [
             },
             /**
              * @ngdoc function
-             * @name wm.database.$DatabaseService#createDataModel
+             * @name wm.database.$DatabaseService#createDatabase
              * @methodOf wm.database.$DatabaseService
              * @function
              *
              * @description
-             * Method to create a datamodel with the specified name.
+             * Method to create a database with the specified name.
              *
-             * @param {string} projectID
-             *                 ID of the Project.
-             * @param {string} dataModelName
-             *                 Name of the database.
+             * @param {object} params
+             *                 Object containing name of the project, name of the database and connection settings.
              * @param {function=} successCallback
              *                    Callback function to be triggered on success.
              * @param {function=} failureCallback
              *                    Callback function to be triggered on failure.
              */
 
-            createDataModel: function (projectID, dataModelName, successCallback, failureCallback) {
+            createDatabase: function (params, successCallback, failureCallback) {
 
                 BaseService.execute({
                     target: "Database",
-                    action: "createDataModel",
+                    action: "createDatabase",
                     urlParams: {
-                        projectID: projectID
+                        projectID: params.projectID
                     },
-                    data: dataModelName
+                    data: params.data
+                }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#createService
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to create a database with the specified name.
+             *
+             * @param {object} params
+             *                 Object containing name of the project, name of the database and connection settings.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            createDatabase: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "createDatabase",
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.data
+                }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#createService
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to create a database with the specified name.
+             *
+             * @param {object} params
+             *                 Object containing name of the project, name of the database and connection settings.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            createDatabase: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "createDatabase",
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.data
+                }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#createService
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to create a database with the specified name.
+             *
+             * @param {object} params
+             *                 Object containing name of the project, name of the database and connection settings.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            createDatabase: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "createDatabase",
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.data
+                }, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#createService
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to create a datamodel with the specified name.
+             *
+             *@param {object} params
+             *                 Object containing name of the project, name of the database and connection settings.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            createService: function (params, successCallback, failureCallback) {
+
+                BaseService.execute({
+                    target: "Database",
+                    action: "createService",
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.data
                 }, successCallback, failureCallback);
             },
             /**
@@ -495,7 +606,7 @@ wm.plugins.database.services.DatabaseService = [
 
                 BaseService.execute({
                     target: "Database",
-                    action: "deleteDataModel",
+                    action: "deleteService",
                     urlParams: {
                         projectID: params.projectID,
                         dataModelName: params.dataModelName

@@ -23,11 +23,11 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         importDB: {
-            url: "services/projects/:projectID/database/import",
+            url: "services/projects/:projectID/database/services/import",
             method: "POST"
         },
         reImportDB: {
-            url: "services/projects/:projectID/database/reimport?serviceId=:serviceId",
+            url: "services/projects/:projectID/database/services/:serviceId/reimport",
             method: "POST"
         },
         exportDB: {
@@ -52,12 +52,16 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/datamodels/:dataModelName?isdraft=:isdraft",
             method: "GET"
         },
-        createDataModel: {
-            url: "services/projects/:projectID/datamodels",
+        createDatabase: {
+            url: "services/projects/:projectID/database",
             method: "POST"
         },
-        deleteDataModel: {
-            url: "services/projects/:projectID/datamodels/:dataModelName",
+        createService: {
+            url: "services/projects/:projectID/database/services",
+            method: "POST"
+        },
+        deleteService: {
+            url: "services/projects/:projectID/database/services/:dataModelName",
             method: "DELETE"
         },
         saveDataModel: {
@@ -65,7 +69,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         applyDataModel: {
-            url: "services/projects/:projectID/database/update?serviceId=:serviceId",
+            url: "services/projects/:projectID/database/services/:serviceId/update",
             method: "POST"
         },
         revertDataModel: {
@@ -281,11 +285,11 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "GET"
         },
         getConnectionProperties: {
-            url: "services/projects/:projectID/database/connectionproperties?serviceId=:serviceId",
+            url: "services/projects/:projectID/database/services/:serviceId/properties",
             method: "GET"
         },
         updateConnectionProperties: {
-            url: "services/projects/:projectID/database/connectionproperties?serviceId=:serviceId",
+            url: "services/projects/:projectID/database/services/:serviceId/properties",
             method: "PUT"
         }
     }
@@ -309,6 +313,7 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "PASSWORD": "{WM_CLOUD_MYSQL_PASSWORD}"
         }
     },
+    "NON_EDITABLE_DATABASE_SYSTEMS": ['HSQLDB', 'DB2', 'Other'],
     "PERMISSIONS": {
         "DEFAULT": {
             "CREATE": true,
