@@ -1093,7 +1093,7 @@ WM.module('wm.widgets.grid')
                             $scope.$emit('on-row-delete', row);
 
                             $scope.onRecordDelete();
-                            $scope.updateFilterVariable();
+                            $scope.updateVariable();
                             if ($scope.deletemessage) {
                                 wmToaster.show("success", "SUCCESS", $scope.deletemessage);
                             }
@@ -1139,7 +1139,7 @@ WM.module('wm.widgets.grid')
                             }
                             wmToaster.show('success', 'SUCCESS', 'Record added successfully');
                             $scope.initiateSelectItem('last', response, $scope.primaryKey);
-                            $scope.updateFilterVariable();
+                            $scope.updateVariable();
                             Utils.triggerFn(options.success, response);
                         }
                     }, function (error) {
@@ -1179,7 +1179,7 @@ WM.module('wm.widgets.grid')
                             $scope.operationType = "";
                             wmToaster.show('success', 'SUCCESS', 'Record updated successfully');
                             $scope.initiateSelectItem('current', response, $scope.primaryKey);
-                            $scope.updateFilterVariable();
+                            $scope.updateVariable();
                             Utils.triggerFn(options.success, response);
                         }
                     }, function (error) {
@@ -1248,10 +1248,10 @@ WM.module('wm.widgets.grid')
                     $scope.primaryKey     = variableObj.getPrimaryKey();
                     $scope.contentBaseUrl = ((variableObj.prefabName !== "" && variableObj.prefabName !== undefined) ? "prefabs/" + variableObj.prefabName : "services") + '/' + variableObj.liveSource + '/' + variableObj.type + '/';
                 };
-            $scope.updateFilterVariable = function () {
+            $scope.updateVariable = function () {
                 var variable = $scope.gridElement.scope().Variables[$scope.variableName];
                 /*If grid is bound to filter, update the variable dataset*/
-                if (variable && $scope.isBoundToFilter) {
+                if (variable && ($scope.isBoundToFilter || !$scope.shownavigation)) {
                     variable.update({
                         'type': 'wm.LiveVariable'
                     }, WM.noop);
