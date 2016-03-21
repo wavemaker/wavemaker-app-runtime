@@ -794,7 +794,7 @@ wm.variables.services.$liveVariable = [
                     callBackScope = (options.scope && options.scope.$$childTail) ? options.scope.$$childTail : {};
                 }
 
-                // EVENT: ON _BEFORE_UPDATE
+                // EVENT: ON_BEFORE_UPDATE
                 if (CONSTANTS.isRunMode) {
                     var preventCall = initiateCallback(VARIABLE_CONSTANTS.EVENT.BEFORE_UPDATE, variableDetails, callBackScope, variableDetails.inputFields);
                     if (preventCall === false) {
@@ -951,6 +951,15 @@ wm.variables.services.$liveVariable = [
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.RESULT, variableDetails, callBackScope, response);
                             // EVENT: ON_SUCCESS
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.SUCCESS, variableDetails, callBackScope, response);
+                            if (variableDetails.operation !== "read") {
+                                // EVENT: ON_PREPARESETDATA
+                                var newDataSet = initiateCallback(VARIABLE_CONSTANTS.EVENT.PREPARE_SETDATA, variableDetails, callBackScope, response);
+                                if (newDataSet) {
+                                    //setting newDataSet as the response to service variable onPrepareSetData
+                                    response = newDataSet;
+                                }
+                                variableDetails.dataSet = response
+                            }
                             // EVENT: ON_CAN_UPDATE
                             variableDetails.canUpdate = true;
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variableDetails, callBackScope, response);
