@@ -948,8 +948,13 @@ $.widget('wm.datagrid', {
         }
         //Check if expression is provided for custom tag.
         if (_.includes(customTag, '{{') && _.includes(customTag, '}}')) {
-            if ($($el.html()).length) {
-                return true;
+            //If user gives an invalid expression, return false
+            try {
+                if ($($el.html()).length) {
+                    return true;
+                }
+            } catch (e) {
+                return false;
             }
             return false;
         }
@@ -1210,9 +1215,11 @@ $.widget('wm.datagrid', {
                     // TODO: Use some other selector. Input will fail for other types.
                     if (!(colDef.customExpression || colDef.formatpattern)) {
                         $el.addClass('cell-editing').html(editableTemplate).data('originalText', value);
-                        $el.find('input').val(cellText);
-                        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
-                            $el.children().isolateScope().datavalue = cellText;
+                        if (!options || options.operation !== 'new') {
+                            $el.find('input').val(cellText);
+                            if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
+                                $el.children().isolateScope().datavalue = cellText;
+                            }
                         }
                     } else {
                         if (self._isCustomExpressionNonEditable(colDef.customExpression, $el)) {
@@ -1220,9 +1227,11 @@ $.widget('wm.datagrid', {
                         }
                         $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
                         // Put the original value while editing, not the formatted value.
-                        $el.find('input').val(rowData[colDef.field] || self._getColumnValue(colDef, rowData));
-                        if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
-                            $el.children().isolateScope().datavalue = rowData[colDef.field] || self._getColumnValue(colDef, rowData);
+                        if (!options || options.operation !== 'new') {
+                            $el.find('input').val(rowData[colDef.field] || self._getColumnValue(colDef, rowData));
+                            if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
+                                $el.children().isolateScope().datavalue = rowData[colDef.field] || self._getColumnValue(colDef, rowData);
+                            }
                         }
                     }
                 }
@@ -1399,6 +1408,7 @@ $.widget('wm.datagrid', {
         $editButton.removeClass('hidden');
         $cancelButton.addClass('hidden');
         $saveButton.addClass('hidden');
+        this.checkScrollBar();
     },
     /* Deletes a row. */
     deleteRow: function (e) {
