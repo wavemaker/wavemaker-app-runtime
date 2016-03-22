@@ -18,7 +18,8 @@ WM.module('wm.widgets.advanced')
         '$locale',
         'CONSTANTS',
         'Utils',
-        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils) {
+        '$rootScope',
+        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils, $rs) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 notifyFor = {
@@ -99,6 +100,36 @@ WM.module('wm.widgets.advanced')
                     scope.calendarOptions.calendar.selectable = newVal;
                     break;
                 }
+            }
+
+            /**
+             * Returns the data-type for properties in the widget.
+             * Pushes the meta data against these types in $rs.dataTypes, as $rs.dataTypes will be referred for the data-types returned.
+             * @param $is
+             * @param prop
+             * @returns {*}
+             */
+            function getPropertyType($is, prop) {
+                var type,
+                    types = $rs.dataTypes;
+
+                switch (prop) {
+                case 'selecteddates':
+                case 'currentview':
+                    type = $is.widgettype + '_' + prop;
+                    types[type] = {
+                        'fields': {
+                            'start': {
+                                'type': 'date, datetime, number, string'
+                            },
+                            'end': {
+                                'type': 'date, datetime, number, string'
+                            }
+                        }
+                    };
+                    break;
+                }
+                return type;
             }
 
             return {
@@ -240,6 +271,9 @@ WM.module('wm.widgets.advanced')
                             scope.redraw = function () {
                                 element.children().first().fullCalendar('render');
                             };
+
+                            // To be used by binding dialog to construct tree against exposed properties for the widget
+                            scope.getPropertyType = getPropertyType.bind(undefined, scope);
                             /* register the property change handler */
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 

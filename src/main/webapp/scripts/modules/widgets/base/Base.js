@@ -13,6 +13,11 @@ WM.module('wm.widgets.base', [])
      * @description
      * The `PropertiesFactory` contains properties of all the widgets in the studio and
      * provides utility methods for getting a specific widget's property
+
+     * NOTE: an attribute 'getTypeFrom' for some properties is utilized by binding dialog(bindTreeUtils.js) to determine the resultant type for the property dynamically
+     * the property's type can be dependent on
+     *  - another property, e.g. for grid, 'selecteditem' property's type is dependent on the 'dataset' property
+     *  - an expression, can be defined and evaluated in the isolateScope of widget.
      */
     .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'Utils', function (WIDGET_CONSTANTS, CONSTANTS, Utils) {
         "use strict";
@@ -370,7 +375,7 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "object, array", "bindable": "in-bound", "widget": "string", "value": "node1, node2, node3"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
+                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "class": {"type": "string"},
                         "treeicons": {"type": "list", "widget": "list", "options": ["folder", "plus-minus", "circle-plus-minus", "chevron", "menu", "triangle", "expand-collapse"]},
                         "nodelabel": {"type": "string", "widget": "list", "datasetfilter" : "terminals", "bindable": "in-bound", "bindonly": "expression"},
@@ -515,8 +520,8 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "multiselect": {"type": "boolean"},
-                        "selecteddates": {"type": "object", "widget": "string", "bindable": "in-out-bound"},
-                        "currentview": {"type": "object", "widget": "string", "bindable": "in-out-bound"},
+                        "selecteddates": {"type": "object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('selecteddates')"},
+                        "currentview": {"type": "object", "widget": "string", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('currentview')"},
                         "calendartype": {"type": "list", "options": ["basic", "agenda"], "value": "basic"},
                         "view": {"type": "list", "options": ["month", "week", "day"], "value": "month"},
                         "controls": {"type": "list", "options": ["navigation", "today", "month", "week", "day"], "value": "navigation, today, month, week, day", "widget": "selectall"},
@@ -635,7 +640,7 @@ WM.module('wm.widgets.base', [])
                         "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
-                        "datavalue": {"type": "string", "bindable": "in-out-bound", "show": false},
+                        "datavalue": {"type": "string", "bindable": "in-out-bound", "show": false, "getTypeFrom": "dataset"},
                         "scopedatavalue": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
@@ -699,7 +704,7 @@ WM.module('wm.widgets.base', [])
                         "onBlur": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
-                        "datavalue": {"type": "string, array", "bindable": "in-out-bound", "show": false, "widget": "string"},
+                        "datavalue": {"type": "string, array", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "scopedatavalue": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "value": "Option 1, Option 2, Option 3"},
                         "usekeys": {"type": "boolean"},
@@ -711,7 +716,7 @@ WM.module('wm.widgets.base', [])
                         "autofocus": {"type": "boolean"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "scopedatavalue": {"type": "string"},
-                        "datavalue": {"type": "string, number, boolean, date, time, object", "bindable": "in-out-bound", "widget": "string"},
+                        "datavalue": {"type": "string, number, boolean, date, time, object", "bindable": "in-out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "scopedataset": {"type": "string"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "allownone": {"type": "boolean"},
@@ -1173,7 +1178,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "rowdata": {"type": "string"},
                         "formdata": {"type": "object", "bindable": "in-bound", "widget": "string"},
-                        "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string"},
+                        "dataoutput": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "novalidate": {"type": "boolean", "value": true, "showindesigner": true},
                         "show": {"type": "boolean", "value": true},
@@ -1234,7 +1239,7 @@ WM.module('wm.widgets.base', [])
                         "nodatamessage": {"type": "string", "value": "No data found.", "bindable": "in-out-bound", "showindesigner": true},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-out-bound", "showindesigner": true},
                         "deletemessage": {"type": "string", "value": "Record deleted successfully", "bindable": "in-out-bound", "show": false, "showindesigner": false},
-                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
+                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "spacing": {"type": "list", "options": ["normal", "condensed"], "value": "normal"},
 
@@ -1271,7 +1276,7 @@ WM.module('wm.widgets.base', [])
                         "contenttype": {"type": "list", "widget" : "list-picker", "options": ["image/*", "audio/*", "video/*", ".txt", ".zip", ".rar", ".js", ".json", ".xls", ".xlsx", ".pdf", ".csv", ".xml", ".doc", ".docx", ".log", ".rtf", ".bmp", ".gif", ".jpe", ".jpg", ".jpeg", ".tif", ".tiff", ".pbm", ".png", ".ico", "mp3", ".ogg", ".webm", ".wma", ".3gp", ".wav", "mp4", ".ogg", ".webm", ".wmv", ".mpeg", ".mpg", ".avi"]},
                         "fileuploadmessage": {"type": "string", "bindable": "in-out-bound", "value": "You can also browse for files"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "uploadedFiles": {"type": "array", "bindable": "in-out-bound"},
+                        "uploadedFiles": {"type": "array", "bindable": "in-out-bound", "getTypeFrom": "expr:getPropertyType('uploadedFiles')"},
                         "selectedFiles": {"type": "array, file", "bindable": "in-out-bound", "show" : "false"},
                         "mode": {"type": "list", "options": ["Upload", "Select"], "value": "Upload"},
                         "destination": {"type": "string", "widget": "fileupload-relativepath", "bindable": "in-out-bound", "value": "", "info": "/resources/uploads/"},
@@ -1431,7 +1436,7 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "selectionlimit": {"type": "number", "bindable": "in-bound"},
                         "itemsperrow": {"type": "list", "options": ["1", "2", "3", "4", "6", "12"], "value": "1"},
-                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
+                        "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"]},
@@ -1460,7 +1465,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "advancedsettings": {"type": "button", "hidelabel": true, "iconclass": "settings"},
-                        "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
+                        "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false", "getTypeFrom": "dataset"},
                         "pagesize": {"type": "number", "value": 20},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_radio", "show": false},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "value": "wi wi-filter-list", "pattern": classRegex},
@@ -1592,7 +1597,7 @@ WM.module('wm.widgets.base', [])
                         "opacity": {"type": "string", "widget": "slider"},
                         "cursor": {"type": "list", "options": ["crosshair", "default", "e-resize", "help", "move", "n-resize", "ne-resize", "nw-resize", "pointer", "progress", "s-resize", "se-resize", "sw-resize", "text", "wait", "w-resize"]},
                         "zindex": {"type": "string", "pattern": zindexRegex},
-                        "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string"},
+                        "selecteditem": {"type": "object", "bindable": "out-bound", "widget": "string", "getTypeFrom": "dataset"},
                         "onTransform": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"}
@@ -1601,7 +1606,7 @@ WM.module('wm.widgets.base', [])
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "showrecordcount": {"type": "boolean", "value": false},
-                        "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false"},
+                        "result": {"type": "object", "bindable": "out-bound", "widget": "string", "show": "false", "getTypeFrom": "dataset"},
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["pagination-sm", "pagination-lg"]}

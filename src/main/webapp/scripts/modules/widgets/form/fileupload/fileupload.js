@@ -376,6 +376,24 @@ WM.module('wm.widgets.form')
             return caption;
         }
 
+        /**
+         * Returns the data-type for properties in the widget.
+         * For 'uploadedFiles', the type is dependent on the Variable against the service and operation selected
+         * @param $is
+         * @param prop
+         * @returns {*}
+         */
+        function getPropertyType($is, prop) {
+            var variable, type;
+            switch (prop) {
+            case 'uploadedFiles':
+                variable = Variables.filterByVariableKeys({'service' : $is.service, 'operation' : $is.operation, 'category' : 'wm.ServiceVariable'}, true)[0];
+                type = variable && variable.type;
+                break;
+            }
+            return type;
+        }
+
         return {
             restrict: 'E',
             replace: true,
@@ -562,6 +580,8 @@ WM.module('wm.widgets.form')
                                 break;
                             }
                         }
+                        // To be used by binding dialog to construct tree against exposed properties for the widget
+                        scope.getPropertyType = getPropertyType.bind(undefined, scope);
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
 
