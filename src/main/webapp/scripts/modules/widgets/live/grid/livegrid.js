@@ -193,7 +193,7 @@ WM.module('wm.widgets.live')
                                         scope.grid.onRecordDelete();
                                         break;
                                     }
-                                    scope.grid.updateFilterVariable();
+                                    scope.grid.updateVariable();
                                     if (scope.isLayoutDialog) {
                                         /*if new form is to be shown after update or insert, don't close the dialog*/
                                         if (newForm) {

@@ -988,7 +988,7 @@ WM.module('wm.widgets.grid')
                 },
                 /*Returns data filtered using searchObj*/
                 getSearchResult = function (data, searchObj) {
-                    if (searchObj) {
+                    if (searchObj && searchObj.field !== '') {
                         data = _.filter(data, function (obj) {
                             return _.includes(obj[searchObj.field], searchObj.value);
                         });
@@ -1441,7 +1441,13 @@ WM.module('wm.widgets.grid')
                         navigatorResultWatch = $scope.dataNavigator.$watch('result', function (newVal) {
                             /* Check for sanity. */
                             if (WM.isDefined(newVal)) {
-                                $scope.watchVariableDataSet(newVal, $scope.gridElement);
+                                if (WM.isArray(newVal)) {
+                                    $scope.dataset = [].concat(newVal);
+                                } else if (WM.isObject(newVal)) {
+                                    $scope.dataset = WM.extend({}, newVal);
+                                } else {
+                                    $scope.dataset = newVal;
+                                }
                             }
                         }, true);
                         /*De-register the watch if it is exists */
