@@ -426,10 +426,6 @@ WM.module('wm.widgets.basic')
                 numFormat = axis + "numberformat",
                 digits = axis + "digits",
                 dateFormat = axis + "dateformat";
-            /* return in case of pie/donut chart and x axis return*/
-            if (isPieType(scope.type) && axis === 'x') {
-                return;
-            }
 
             /* get column type */
             if (scope.dataset && scope.dataset.propertiesMap) {
@@ -477,7 +473,11 @@ WM.module('wm.widgets.basic')
 
         /* enables/disables the aggregation function property */
         function toggleAggregationState(scope) {
-            scope.widgetProps.aggregation.disabled = !(isGroupByEnabled(scope.groupby));
+            var isGroupByChecked = isGroupByEnabled(scope.groupby);
+            scope.widgetProps.aggregation.disabled = !isGroupByEnabled;
+            if (!isGroupByChecked) {
+                scope.isVisuallyGrouped = false; //resetting isVisuallyGrouped flag to false when groupby property is empty
+            }
             /* enables/disables the aggregation column property*/
             toggleAggregationColumnState(scope);
         }
@@ -997,7 +997,7 @@ WM.module('wm.widgets.basic')
                 scope.chartData = groupingDetails.isVisuallyGrouped ? getGroupedData(scope, chartData, groupingDetails.visualGroupingColumn) : chartData;
 
                 Utils.triggerFn(callback);
-            });
+            }, _.noop);
         }
 
         /* Applying the font related styles for the chart*/
@@ -1522,7 +1522,9 @@ WM.module('wm.widgets.basic')
                 xnumberformat = scope.xnumberformat,
                 ynumberformat = scope.ynumberformat,
                 xaxislabel,
-                yaxislabel;
+                yaxislabel,
+                xformatOptions = {},
+                yformatOptions = {};
             if (isAxisDomainValid(scope, 'x')) {
                 xDomainValues = scope.binddataset ? getXMinMaxValues(datum[0]) : { 'min' : {'x': 1},  'max' : {'x' : 5}};
             }
@@ -1553,6 +1555,22 @@ WM.module('wm.widgets.basic')
             /* get the chart obejct */
             chart = initChart(scope, xDomainValues, yDomainValues);
 
+            xformatOptions =  {
+                'dateFormat'  : scope.xdateformat,
+                'numberFormat': xnumberformat,
+                'format'      : xFormat,
+                'isXaxis'     : true,
+                'xDataKeyArr' : scope.xDataKeyArr
+            };
+
+            yformatOptions =  {
+                'dateFormat'  : scope.ydateformat,
+                'numberFormat': ynumberformat,
+                'format'      : yFormat,
+                'isXaxis'     : false,
+                'xDataKeyArr' : scope.xDataKeyArr
+            };
+
             if (!isPieType(scope.type)) {
                 /*Setting the labels if they are specified explicitly or taking the axiskeys chosen*/
                 xaxislabel = scope.xaxislabel || scope.xaxisdatakey || 'x caption';
@@ -1570,38 +1588,25 @@ WM.module('wm.widgets.basic')
                 chart.xAxis
                     .axisLabelDistance(scope.xaxislabeldistance)
                     .tickFormat(function (d) {
-                        return formatData(scope, d, scope.xAxisDataType, {
-                            dateFormat: scope.xdateformat,
-                            numberFormat: xnumberformat,
-                            format: xFormat,
-                            isXaxis: true,
-                            xDataKeyArr: scope.xDataKeyArr
-                        });
+                        return formatData(scope, d, scope.xAxisDataType, xformatOptions);
                     });
                 chart.yAxis
                     .axisLabelDistance(scope.yaxislabeldistance)
                     .tickFormat(function (d) {
-                        return formatData(scope, d, scope.yAxisDataType, {
-                            dateFormat: scope.ydateformat,
-                            numberFormat: ynumberformat,
-                            format: yFormat,
-                            isXaxis: false,
-                            xDataKeyArr: scope.xDataKeyArr
-                        });
+                        return formatData(scope, d, scope.yAxisDataType, yformatOptions);
                     });
+                if (isBarChart(scope.type)) {
+                    chart.valueFormat(function (d) {
+                        return formatData(scope, d, scope.yAxisDataType, yformatOptions);
+                    });
+                }
             } else {
                 /*In case of pie/donut chart formatting the values of it*/
                 if (scope.labeltype === "percent") {
                     chart.valueFormat(d3.format('%'));
                 } else {
                     chart.valueFormat(function (d) {
-                        return formatData(scope, d, scope.yAxisDataType, {
-                            dateFormat: scope.ydateformat,
-                            numberFormat: ynumberformat,
-                            format: yFormat,
-                            isXaxis: false,
-                            xDataKeyArr: scope.xDataKeyArr
-                        });
+                        return formatData(scope, d, scope.yAxisDataType, yformatOptions);
                     });
                 }
             }
@@ -1614,13 +1619,7 @@ WM.module('wm.widgets.basic')
                     if (scope.labeltype === 'percent') {
                         yValue = d3.format('.3s')(key.data.y);
                     } else if (scope.labeltype === 'value') {
-                        yValue = formatData(scope, key.data.y, scope.yAxisDataType, {
-                            dateFormat: scope.ydateformat,
-                            numberFormat: ynumberformat,
-                            format: yFormat,
-                            isXaxis: false,
-                            xDataKeyArr: scope.xDataKeyArr
-                        });
+                        yValue = formatData(scope, key.data.y, scope.yAxisDataType, yformatOptions);
                     }
                     return "<div class='nvtooltip xy-tooltip nv-pointer-events-none'>" +
                                 "<table>" +
