@@ -115,12 +115,13 @@ wm.plugins.security.services.SecurityService = [
              * 2. enforceIndexHtml - it signifies whether default login or custom login page to be used.
              * 3. useSSL - it depicts whether secure socket layer to be used or not.
              * 4. sslPort - if useSSL is true then the value of this parameter to be used. This is invalid in SaaS.
-             * 5. dataSourceType - It indicates which Security Provider to be use. Generally, it is chosen from following 5 Security Providers:
-             * a) Demo
-             * b) Database
-             * c) LDAP
-             * d) Active Directory
-             * e) CAS
+             * 5. authProviders - Its a set containing the Security AUth providers in use. Each element can have one of the following values
+             *      - DEMO
+             *      - DATABASE
+             *      - LDAP
+             *      - AD
+             *      - CAS
+             *      - CUSTOM
              *
              * @param {string} projectID project id
              * @param {function} successCallback to be called on success
