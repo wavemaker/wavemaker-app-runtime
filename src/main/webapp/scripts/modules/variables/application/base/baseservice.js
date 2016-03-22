@@ -1087,7 +1087,7 @@ wm.variables.services.Variables = [
                         if (isEventCallbackVariable(curVariable.category)) {
                             /*checking if current variable name is not equal to the variable name provided.*/
                             if (!variableName || curVariableName !== variableName) {
-                                variableArray.push(namesOnly ? curVariableName : {name: curVariableName, type: curVariable.category});
+                                variableArray.push(namesOnly ? curVariableName : {name: curVariableName, category: curVariable.category});
                             }
                         }
                     });
