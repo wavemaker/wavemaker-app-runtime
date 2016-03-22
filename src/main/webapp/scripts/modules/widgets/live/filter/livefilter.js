@@ -292,7 +292,7 @@ WM.module('wm.widgets.live')
                                 'displayname'       :   Utils.prettifyLabel(column.fieldName),
                                 'widget'            :   fieldTypeWidgetTypeMap[column.type][0],
                                 'isRange'           :   false,
-                                'filterOn'          :   column.fieldName,
+                                'filterOn'          :   '',
                                 'lookupType'        :   '',
                                 'lookupField'       :   '',
                                 'minPlaceholder'    :   '',
@@ -413,35 +413,64 @@ WM.module('wm.widgets.live')
                             scope.getActiveLayout = function () {
                                 return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout);
                             };
-
+                            /*Function to set the dataSet of the fields */
+                            function setFieldDataSet(filterField, data, aliasColumn) {
+                                var emptySupportWidgets = ['select', 'radioset'],
+                                    isEnableEmptyFilter = getEnableEmptyFilter(scope.enableemptyfilter),
+                                    emptyOption         = {};
+                                filterField.dataset = [];
+                                if (isEnableEmptyFilter && _.includes(emptySupportWidgets, filterField.widget) && !filterField.isRange) {
+                                    /*If empty option is selected, push an empty object in to dataSet*/
+                                    emptyOption[FILTER_CONSTANTS.LABEL_KEY]   = FILTER_CONSTANTS.EMPTY_KEY;
+                                    emptyOption[FILTER_CONSTANTS.LABEL_VALUE] = FILTER_CONSTANTS.EMPTY_VALUE;
+                                    filterField.dataset.push(emptyOption);
+                                }
+                                _.each(data.content, function (key) {
+                                    var value  = key[aliasColumn],
+                                        option = {};
+                                    if (value !== null && value !== '') {
+                                        option[FILTER_CONSTANTS.LABEL_KEY]   = value;
+                                        option[FILTER_CONSTANTS.LABEL_VALUE] = value;
+                                        filterField.dataset.push(option);
+                                    }
+                                });
+                                filterField.datafield = FILTER_CONSTANTS.LABEL_KEY;
+                                if (filterField.widget === 'typeahead') { //For search widget, set search key and display label
+                                    filterField.searchkey    = FILTER_CONSTANTS.LABEL_VALUE;
+                                    filterField.displaylabel = FILTER_CONSTANTS.LABEL_VALUE;
+                                } else {
+                                    filterField.displayfield = FILTER_CONSTANTS.LABEL_VALUE;
+                                }
+                            }
+                            /*Function to fetch the data for dataset widgets*/
                             function updateAllowedValues() {
                                 var variable = scope.Variables[scope.variableName];
-                                WM.forEach(scope.formFields, function (filterField) {
+                                if (!variable) {
+                                    return;
+                                }
+                                _.forEach(scope.formFields, function (filterField) {
                                     var query,
                                         tableName,
                                         columns,
                                         aliasColumn,
                                         fieldColumn,
-                                        dataSetWidgetTypes = Utils.getDataSetWidgets(),
-                                        emptySupportWidgets = ['select', 'radioset'],
-                                        isEnableEmptyFilter = getEnableEmptyFilter(scope.enableemptyfilter),
-                                        emptyOption = {};
+                                        dataSetWidgetTypes = Utils.getDataSetWidgets();
 
                                     fieldColumn = variable.getModifiedFieldName(filterField.field);
                                     if (dataSetWidgetTypes[filterField.widget] && !filterField.tempDataset) {
                                         if (filterField.isRelated) {
-                                            tableName = filterField.lookupType;
-                                            columns = filterField.lookupField;
+                                            tableName   = filterField.lookupType;
+                                            columns     = filterField.lookupField;
                                             aliasColumn = columns.replace('.', '_');
-                                            query = QueryBuilder.getQuery({
-                                                "tableName": tableName,
-                                                "columns": [" DISTINCT " + columns + " AS " + aliasColumn]
+                                            query       = QueryBuilder.getQuery({
+                                                'tableName' : tableName,
+                                                'columns'   : [' DISTINCT ' + columns + ' AS ' + aliasColumn]
                                             });
                                         } else {
                                             aliasColumn = fieldColumn;
-                                            query = QueryBuilder.getQuery({
-                                                "tableName": scope.result.propertiesMap.entityName,
-                                                "columns": [" DISTINCT " + fieldColumn + " AS " + filterField.field]
+                                            query       = QueryBuilder.getQuery({
+                                                'tableName' : scope.result.propertiesMap.entityName,
+                                                'columns'   : [' DISTINCT ' + fieldColumn + ' AS ' + filterField.field]
                                             });
                                         }
                                         /* Sending size = 500 because we want to populate all data values in widgets
@@ -450,40 +479,66 @@ WM.module('wm.widgets.live')
                                          * more than 100. So this size will need to change once backend is fixed to
                                          * return all records instead of max 100 records in this case. */
                                         QueryBuilder.executeQuery({
-                                            "databaseName": variable.liveSource,
-                                            "query": query,
-                                            "page": 1,
-                                            "size": 500,
-                                            "nativeSql": false,
-                                            "prefabName": variable.prefabName
+                                            'databaseName' : variable.liveSource,
+                                            'query'        : query,
+                                            'page'         : 1,
+                                            'size'         : 500,
+                                            'nativeSql'    : false,
+                                            'prefabName'   : variable.prefabName
                                         }, function (data) {
-                                            filterField.dataset = [];
-                                            if (isEnableEmptyFilter && _.includes(emptySupportWidgets, filterField.widget) && !filterField.isRange) {
-                                                emptyOption[FILTER_CONSTANTS.LABEL_KEY]   = FILTER_CONSTANTS.EMPTY_KEY;
-                                                emptyOption[FILTER_CONSTANTS.LABEL_VALUE] = FILTER_CONSTANTS.EMPTY_VALUE;
-                                                filterField.dataset.push(emptyOption);
-                                            }
-                                            _.each(data.content, function (key) {
-                                                var value = key[aliasColumn],
-                                                    option = {};
-                                                if (value !== null && value !== '') {
-                                                    option[FILTER_CONSTANTS.LABEL_KEY]   = value;
-                                                    option[FILTER_CONSTANTS.LABEL_VALUE] = value;
-                                                    filterField.dataset.push(option);
-                                                }
-                                            });
-                                            filterField.datafield = FILTER_CONSTANTS.LABEL_KEY;
-                                            if (filterField.widget === 'typeahead') {
-                                                filterField.searchkey    = FILTER_CONSTANTS.LABEL_VALUE;
-                                                filterField.displaylabel = FILTER_CONSTANTS.LABEL_VALUE;
-                                            } else {
-                                                filterField.displayfield = FILTER_CONSTANTS.LABEL_VALUE;
+                                            setFieldDataSet(filterField, data, aliasColumn);
+                                        });
+                                    }
+                                });
+                            }
+                            /*Function to retrieve the data of the cascading filter, when filterOnField option is given*/
+                            function applyFilterOnField() {
+                                var variable           = scope.Variables[scope.variableName],
+                                    dataSetWidgetTypes = Utils.getDataSetWidgets();
+                                if (!variable) {
+                                    return;
+                                }
+                                _.forEach(scope.formFields, function (filterField) {
+                                    var index,
+                                        filterOn = filterField.filterOn;
+                                    if (!dataSetWidgetTypes[filterField.widget] || filterField.tempDataset) {
+                                        return;
+                                    }
+                                    if (filterOn && filterOn !== '' && filterOn !== filterField.field) {
+                                        index = _.findIndex(scope.formFields, function (field) {
+                                            return field.field === filterOn;
+                                        });
+                                        scope.$watch('formFields[' + index + '].value', function (newVal, oldVal) {
+                                            var filterFields = {},
+                                                query,
+                                                fieldColumn;
+                                            if (newVal !== oldVal) {
+                                                filterFields = newVal ? [{
+                                                    'column' : [filterOn],
+                                                    'value'  : newVal
+                                                }] : [];
+                                                fieldColumn = variable.getModifiedFieldName(filterField.field);
+                                                query       = QueryBuilder.getQuery({
+                                                    'tableName'    : scope.result.propertiesMap.entityName,
+                                                    'columns'      : [' DISTINCT ' + fieldColumn + ' AS ' + filterField.field],
+                                                    'filterFields' : filterFields
+                                                });
+
+                                                QueryBuilder.executeQuery({
+                                                    'databaseName' : variable.liveSource,
+                                                    'query'        : query,
+                                                    'page'         : 1,
+                                                    'size'         : 500,
+                                                    'nativeSql'    : false,
+                                                    'prefabName'   : variable.prefabName
+                                                }, function (data) {
+                                                    setFieldDataSet(filterField, data, fieldColumn);
+                                                });
                                             }
                                         });
                                     }
                                 });
                             }
-
                             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
                             function propertyChangeHandler(key, newVal, oldVal) {
                                 switch (key) {
@@ -549,6 +604,7 @@ WM.module('wm.widgets.live')
                                         }
                                         /* call method to update allowed values for select type filter fields */
                                         updateAllowedValues();
+                                        applyFilterOnField();
                                     } else if (!newVal && CONSTANTS.isStudioMode) { /*Clear the variables when the live-filter has not been bound.*/
                                         //element.empty();
                                         scope.variableName = '';
@@ -620,6 +676,7 @@ WM.module('wm.widgets.live')
                                     }
                                     /*To get dataset up on saving designer dialog for fields with widget type as checkboxsex, radioset */
                                     updateAllowedValues();
+                                    applyFilterOnField();
                                     scope.filterConstructed = true;
                                 }
                             }));
@@ -674,7 +731,7 @@ WM.module('wm.widgets.live')
                             columnsDef = new scope.FilterField(),
                             columnsDefProps = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
                                 'field'             : attrs.field || attrs.binding,
-                                'filterOn'          : attrs.filterOn || attrs.field || attrs.binding,
+                                'filterOn'          : attrs.filterOn,
                                 'isRange'           : attrs.isRange === "true" || attrs.isRange === true,
                                 'isRelated'         : attrs.isRelated === "true" || attrs.isRelated === true,
                                 'lookupType'        : attrs.lookupType,
