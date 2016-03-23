@@ -635,6 +635,11 @@ WM.module('wm.widgets.grid')
                         scope.reRender = function () {
                             scope.datagridElement.datagrid(scope.gridOptions);
                         };
+                        scope.redraw = function () {
+                            $timeout(function () {
+                                scope.datagridElement.datagrid('checkScrollBar');
+                            });
+                        };
                     }
                 };
             }
