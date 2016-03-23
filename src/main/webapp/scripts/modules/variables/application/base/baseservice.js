@@ -248,15 +248,27 @@ wm.variables.services.Variables = [
             processVariablePostBindUpdate = function (nodeName, nodeVal, variable, noUpdate) {
                 if (variable.category === "wm.LiveVariable") {
                     if (variable.operation === "read") {
-                        variable.filterFields[nodeName] = {
-                            'value': nodeVal
-                        };
+                        if (nodeName === 'dataBinding') {
+                            WM.forEach(nodeVal, function (val, key) {
+                                variable.filterFields[key] = {
+                                    'value': val
+                                };
+                            });
+                        } else {
+                            variable.filterFields[nodeName] = {
+                                'value': nodeVal
+                            };
+                        }
                         /* if auto-update set for the variable with read operation only, get its data */
                         if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable.update) && !noUpdate) {
                             variable.update();
                         }
                     } else {
-                        variable.inputFields[nodeName] = nodeVal;
+                        if (nodeName === 'dataBinding') {
+                            variable.inputFields = nodeVal;
+                        } else {
+                            variable.inputFields[nodeName] = nodeVal;
+                        }
                         /* if auto-update set for the variable with read operation only, get its data */
                         if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable[variable.operation + 'Record']) && !noUpdate) {
                             Utils.triggerFn(variable[variable.operation + 'Record']);
@@ -451,7 +463,7 @@ wm.variables.services.Variables = [
                  */
                 if (WM.isArray(variable.dataBinding)) {
                     var bindMap = variable.dataBinding,
-                        root = variable.category === "wm.Variable" ? "dataSet": "dataBinding";
+                        root = variable.category === "wm.Variable" ? "dataSet" : "dataBinding";
                     variable.dataBinding = {};
                     if (bindMap[0] && WM.isArray(bindMap[0].fields)) {
                         /* old projects(without migration): dataBinding is a recursive map of binding objects */
