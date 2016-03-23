@@ -15,7 +15,6 @@
  */
 package com.wavemaker.runtime.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -32,15 +31,14 @@ import org.springframework.web.bind.annotation.*;
 import com.wavemaker.runtime.WMAppContext;
 import com.wavemaker.runtime.data.dao.procedure.WMProcedureExecutor;
 import com.wavemaker.runtime.data.dao.query.WMQueryExecutor;
+import com.wavemaker.runtime.data.metadata.DataObject;
+import com.wavemaker.runtime.data.metadata.ProcedureMetaData;
+import com.wavemaker.runtime.data.metadata.QueryMetaData;
 import com.wavemaker.runtime.data.model.CustomProcedure;
 import com.wavemaker.runtime.data.model.CustomQuery;
 import com.wavemaker.runtime.data.model.ProcedureResponse;
 import com.wavemaker.runtime.data.model.QueryResponse;
 import com.wavemaker.runtime.data.util.DataServiceUtils;
-import com.wavemaker.runtime.data.util.ProceduresUtils;
-import com.wavemaker.runtime.data.metadata.DataObject;
-import com.wavemaker.runtime.data.metadata.ProcedureMetaData;
-import com.wavemaker.runtime.data.metadata.QueryMetaData;
 import com.wavemaker.studio.common.util.PropertiesFileUtils;
 import com.wavemaker.studio.common.wrapper.StringWrapper;
 
@@ -93,7 +91,7 @@ public class AppRuntimeController {
 
                 QueryResponse queryResponse = new QueryResponse();
                 queryResponse.setPages(pageResponse);
-                queryResponse.setMetaData((Map)new QueryMetaData().constructMetadata(pageResponse.getContent()));
+                queryResponse.setMetaData((Map) new QueryMetaData().constructMetadata(pageResponse.getContent()));
                 return queryResponse;
             }
         });
@@ -122,12 +120,8 @@ public class AppRuntimeController {
             }
 
             private List<DataObject> buildMetaData(final List<Object> response) {
-
-                if (ProceduresUtils.hasOutParam(customProcedure.getProcedureParams())) {
-                    String metaDataName = PROCEDURE_PARENT_DATA_OBJECT_NAME.replaceAll("\\{serviceId\\}", serviceId);
-                    return new ProcedureMetaData(metaDataName).constructMetadata(response);
-                }
-                return new ArrayList<>();
+                String metaDataName = PROCEDURE_PARENT_DATA_OBJECT_NAME.replaceAll("\\{serviceId\\}", serviceId);
+                return new ProcedureMetaData(metaDataName).constructMetadata(response);
             }
         });
     }
