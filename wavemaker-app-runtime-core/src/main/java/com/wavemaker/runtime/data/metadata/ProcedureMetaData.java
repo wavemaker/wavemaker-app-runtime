@@ -25,17 +25,16 @@ public class ProcedureMetaData extends MetaData {
     public List<DataObject> constructMetadata(final List data) {
         List<DataObject> dataObjects = new ArrayList<>();
         dataObjects.add(parentDataObject);
-        Object object = data.get(0);
-        if (object != null) {
-            if (object instanceof Map) {
-                constructDataObjectsForMap(parentDataObject, (Map) object, dataObjects);
-            } else {
-                throw new WMRuntimeException("Find unsupported object type " + object.getClass().getName() + " to generate procedure metadata");
-            }
-        } else {
-            throw new WMRuntimeException("Failed to generate procedure metadata for the given response");
+        if (data.size() == 0) {
+            return dataObjects;
         }
-        return dataObjects;
+        Object object = data.get(0);
+        if (object instanceof Map) {
+            constructDataObjectsForMap(parentDataObject, (Map) object, dataObjects);
+            return dataObjects;
+        } else {
+            throw new WMRuntimeException("Find unsupported object type " + object.getClass().getName() + " to generate procedure metadata");
+        }
     }
 
     private void constructDataObjectsForMap(final DataObject parentDataObject, final Map map, List<DataObject> dataObjects) {
@@ -58,7 +57,7 @@ public class ProcedureMetaData extends MetaData {
             element.setIsList(true);
             parentDataObject.getElement().add(element);
             List list = (List) value;
-            if (list.get(0) != null && list.get(0) instanceof Map) {
+            if (list.size() != 0 && list.get(0) instanceof Map) {
                 DataObject dataObject = new DataObject();
                 dataObject.setName(typeRef);
                 dataObject.setJavaType(typeRef);
