@@ -24,7 +24,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
 
         /* make events compatible to select widget options */
         _.forEach(Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), function (event) {
-            variableEventOptions.push({'name': event, 'type': 'Default'});
+            variableEventOptions.push({'name': event, 'category': 'Default'});
         });
 
         result = {
