@@ -23,20 +23,20 @@ WM.module('wm.widgets.advanced')
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 notifyFor = {
-                    'dataset': true,
-                    'height': true,
-                    'controls': true,
+                    'dataset'     : true,
+                    'height'      : true,
+                    'controls'    : true,
                     'calendartype': true,
-                    'view': true,
-                    'multiselect': true
+                    'view'        : true,
+                    'multiselect' : true
                 },
                 defaultHeaderOptions = {
-                    'left': 'prev next today',
+                    'left'  : 'prev next today',
                     'center': 'title',
-                    'right': 'month basicWeek basicDay'
+                    'right' : 'month basicWeek basicDay'
                 },
                 VIEW_TYPES = {
-                    'BASIC': 'basic',
+                    'BASIC' : 'basic',
                     'AGENDA': 'agenda'
                 };
 
@@ -69,21 +69,34 @@ WM.module('wm.widgets.advanced')
                     WM.extend(scope.calendarOptions.calendar.header, {'left': left, 'right': right});
                 }
             }
+            //to calculate the height for the event limit and parsing the value when it is percentage based.
+            function calculateHeight(calendar, element) {
+                var parentHeight      = element.parent().attr('height'),
+                    elHeight          = element.attr('height'),
+                    computedHeight;
+                if (_.includes(elHeight, '%')) {
+                    computedHeight = (parentHeight * Number(elHeight.replace(/\%/g, ''))) / 100;
+                } else {
+                    computedHeight = parseInt(elHeight);
+                }
+                calendar.views.month.eventLimit = parseInt(computedHeight / 200) + 1;
+                return computedHeight;
+            }
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler(scope, key, newVal) {
+            function propertyChangeHandler(scope, element, key, newVal) {
                 var calendar = scope.calendarOptions.calendar;
                 switch (key) {
                 case 'dataset':
                     scope.eventSources.length = 0;
                     newVal = WM.isArray(newVal) ? newVal : [];
 
-                    if(_.intersection(_.keys(newVal[0]), ['allDay','start','end']).length === 3){
+                    if (_.intersection(_.keys(newVal[0]), ['allDay', 'start', 'end']).length === 3) {
                         scope.eventSources.push(newVal);
                     }
                     break;
                 case 'height':
-                    calendar.height = parseInt(newVal, 10);
+                    calendar.height = calculateHeight(calendar, element);
                     break;
                 case 'controls':
                 case 'calendartype':
@@ -97,7 +110,7 @@ WM.module('wm.widgets.advanced')
                     }
                     break;
                 case 'multiselect':
-                    scope.calendarOptions.calendar.selectable = newVal;
+                    calendar.selectable = newVal;
                     break;
                 }
             }
@@ -136,13 +149,13 @@ WM.module('wm.widgets.advanced')
                 'restrict': 'E',
                 'replace': true,
                 'scope': {
-                    "scopedataset": '=?',
-                    "onEventdrop": "&",
-                    "onEventresize": "&",
-                    "onEventclick": "&",
-                    "onViewrender": "&",
-                    "onSelect": "&",
-                    "onEventrender": "&"
+                    'scopedataset'  : '=?',
+                    'onEventdrop'   : '&',
+                    'onEventresize' : '&',
+                    'onEventclick'  : '&',
+                    'onViewrender'  : '&',
+                    'onSelect'      : '&',
+                    'onEventrender' : '&'
                 },
                 'template': function (tElement, tAttrs) {
                     var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/calendar.html', tElement, tAttrs));
@@ -157,15 +170,16 @@ WM.module('wm.widgets.advanced')
                 'compile': function () {
                     return {
                         'pre': function (scope) {
-                            scope.widgetProps = widgetProps;
-                            scope.events = [];
-                            scope.eventSources = [scope.events];
+                            scope.widgetProps   = widgetProps;
+                            scope.events        = [];
+                            scope.eventSources  = [scope.events];
                         },
                         'post': function (scope, element, attrs) {
-                            var handlers = [],
-                                headerOptions = Utils.getClonedObject(defaultHeaderOptions),
+                            var handlers        = [],
+                                headerOptions   = Utils.getClonedObject(defaultHeaderOptions),
                                 uiCalScope,
-                                oldData;
+                                oldData,
+                                eleHeight       = element.attr('height');
 
                             function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
                                 var fn = scope[method] || WM.noop;
@@ -173,6 +187,7 @@ WM.module('wm.widgets.advanced')
                             }
                             function eventClickProxy(event, jsEvent, view) {
                                 scope.onEventclick({$event: jsEvent, $data: event, $view: view});
+                                onSelectProxy(event.start, moment(event.end).add(1, 'days'), jsEvent, view);
                             }
                             function viewRenderProxy(view) {
                                 scope.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
@@ -182,9 +197,30 @@ WM.module('wm.widgets.advanced')
                                 /*unable to pass jsEvent in angular expression, hence ignoring*/
                                 scope.onEventrender({$event: {}, $data: event, $view: view});
                             }
+                            function setSelectedData(start, end) {
+                                var filteredDates   = [],
+                                    dataset         = scope.dataset;
+                                if (dataset.data) {
+                                   dataset = dataset.data;
+                                }
+                                _.forEach(dataset, function (value) {
+                                    if (!value.start) {
+                                        return;
+                                    }
+                                    var eventDate   = moment(new Date(value.start)).format('MM/DD/YYYY'),
+                                        startDate   = moment(new Date(start)).format('MM/DD/YYYY'),
+                                        endDate     = moment(new Date(end)).format('MM/DD/YYYY'),
+                                        eventExists = moment(eventDate).isSameOrAfter(startDate) && moment(eventDate).isBefore(endDate);
+                                    if (eventExists) {
+                                        filteredDates.push(value);
+                                    }
+                                });
+                                return filteredDates;
+                            }
                             function onSelectProxy(start, end, jsEvent, view) {
                                 scope.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
-                                scope.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view});
+                                scope.selecteddata  = setSelectedData(start, end);
+                                scope.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view, $data: scope.selecteddata});
                             }
                             function onEventdropProxy(event, delta, revertFunc, jsEvent, ui, view) {
                                 scope.onEventdrop({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
@@ -197,24 +233,29 @@ WM.module('wm.widgets.advanced')
                             }
                             scope.calendarOptions = {
                                 calendar: {
-                                    height: parseInt(scope.height, 10),
-                                    editable: true,
-                                    selectable: false,
-                                    header: headerOptions,
-                                    eventDrop: onEventdropProxy,
-                                    eventResizeStart: onEventChangeStart,
-                                    eventDragStart: onEventChangeStart,
-                                    eventResize: onEventresizeProxy,
-                                    eventClick: eventClickProxy,
-                                    select: onSelectProxy,
-                                    eventRender: eventRenderProxy,
-                                    viewRender: viewRenderProxy,
-                                    dayNames: $locale.DATETIME_FORMATS.DAY,
-                                    dayNamesShort: $locale.DATETIME_FORMATS.SHORTDAY
+                                    'height'          : parseInt(scope.height, 10),
+                                    'editable'        : true,
+                                    'selectable'      : false,
+                                    'header'          : headerOptions,
+                                    'eventDrop'       : onEventdropProxy,
+                                    'eventResizeStart': onEventChangeStart,
+                                    'eventDragStart'  : onEventChangeStart,
+                                    'eventResize'     : onEventresizeProxy,
+                                    'eventClick'      : eventClickProxy,
+                                    'select'          : onSelectProxy,
+                                    'eventRender'     : eventRenderProxy,
+                                    'viewRender'      : viewRenderProxy,
+                                    'dayNames'        : $locale.DATETIME_FORMATS.DAY,
+                                    'dayNamesShort'   : $locale.DATETIME_FORMATS.SHORTDAY,
+                                    'views'           : {
+                                        'month': {
+                                            'eventLimit': 0
+                                        }
+                                    }
                                 }
                             };
                             scope.$root.$on('locale-change', function () {
-                                scope.calendarOptions.calendar.dayNames = $locale.DATETIME_FORMATS.DAY;
+                                scope.calendarOptions.calendar.dayNames      = $locale.DATETIME_FORMATS.DAY;
                                 scope.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
                             });
 
@@ -242,7 +283,6 @@ WM.module('wm.widgets.advanced')
                             /* Change View */
                             /*scope.changeView = function (view, calendar) {
                             };*/
-
                             /* Render Tooltip */
                             scope.eventRender = function (event, element) {
                                 element.attr({'tooltip': event.title, 'tooltip-append-to-body': true});
@@ -256,6 +296,7 @@ WM.module('wm.widgets.advanced')
                                 }
                                 // find the isolateScope of the ui-calendar element
                                 uiCalScope = element.children().first().isolateScope();
+
                                 // define the redraw method. Accordion/tabs will trigger this
                                 scope.redraw = _.debounce(function () {
                                     // destroy the calendar and re-initialize
@@ -275,7 +316,7 @@ WM.module('wm.widgets.advanced')
                             // To be used by binding dialog to construct tree against exposed properties for the widget
                             scope.getPropertyType = getPropertyType.bind(undefined, scope);
                             /* register the property change handler */
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         }
@@ -362,43 +403,43 @@ WM.module('wm.widgets.advanced')
         </file>
         <file name="script.js">
             function Ctrl($scope) {
-                $scope.placeholder="Select a date";
+                $scope.placeholder = 'Select a date';
                 $scope.f = function (event, scope) {
                     $scope.currentDate = scope.datavalue;
                 }
                 $scope.events = [
                     {
-                        "title": "All Day Event",
-                        "start": "Fri May 06 2015 00:00:00 GMT+0530 (India Standard Time)"
+                        'title' : 'All Day Event',
+                        'start' : 'Fri May 06 2015 00:00:00 GMT+0530 (India Standard Time)'
                     },
                     {
-                        "title": "Long Event",
-                        "start": "Fri May 04 2015 00:00:00 GMT+0530 (India Standard Time)",
-                        "end": "Fri May 21 2015 00:00:00 GMT+0530 (India Standard Time)"
+                        'title' : 'Long Event',
+                        'start' : 'Fri May 04 2015 00:00:00 GMT+0530 (India Standard Time)',
+                        'end'   : 'Fri May 21 2015 00:00:00 GMT+0530 (India Standard Time)'
                     },
                     {
-                        "id": 999,
-                        "title": "Repeating Event",
-                        "start": "Fri May 01 2015 00:00:00 GMT+0530 (India Standard Time)",
-                        "allDay": false
+                        'id'    : 999,
+                        'title' : 'Repeating Event',
+                        'start' : 'Fri May 01 2015 00:00:00 GMT+0530 (India Standard Time)',
+                        'allDay': false
                     },
                     {
-                        "id": 999,
-                        "title": "Repeating Event",
-                        "start": "Fri May 01 2015 00:00:00 GMT+0530 (India Standard Time)",
-                        "allDay": false
+                        'id'    : 999,
+                        'title' : 'Repeating Event',
+                        'start' : 'Fri May 01 2015 00:00:00 GMT+0530 (India Standard Time)',
+                        'allDay': false
                     },
                     {
-                        "title": "Birthday Party",
-                        "start": "Fri May 06 2015 00:00:00 GMT+0530 (India Standard Time)",
-                        "end": "Fri May 09 2015 00:00:00 GMT+0530 (India Standard Time)",
-                        "allDay": false
+                        'title' : 'Birthday Party',
+                        'start' : 'Fri May 06 2015 00:00:00 GMT+0530 (India Standard Time)',
+                        'end'   : 'Fri May 09 2015 00:00:00 GMT+0530 (India Standard Time)',
+                        'allDay': false
                     },
                     {
-                        "title": "Click for Google",
-                        "start": "Fri May 23 2015 00:00:00 GMT+0530 (India Standard Time)",
-                        "end": "Fri May 24 2015 00:00:00 GMT+0530 (India Standard Time)",
-                        "url": "http://google.com/"
+                        'title' : 'Click for Google',
+                        'start' : 'Fri May 23 2015 00:00:00 GMT+0530 (India Standard Time)',
+                        'end'   : 'Fri May 24 2015 00:00:00 GMT+0530 (India Standard Time)',
+                        'url'   : 'http://google.com/'
                     }
                 ]
             }
