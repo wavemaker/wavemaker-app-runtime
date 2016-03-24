@@ -1719,6 +1719,16 @@ WM.module('wm.utils', [])
         }
         // expose the methods on the service instance.
 
+        function sort(collection, key) {
+            return _.sortBy(collection, function (item) {
+                if (item) {
+                    return key
+                        ? ((item[key] && item[key].toLowerCase) ? item[key].toLowerCase() : item[key]) //object
+                        : item.toLowerCase ? item.toLowerCase() : item; //array
+                }
+            });
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -1822,4 +1832,5 @@ WM.module('wm.utils', [])
         this.getVariableDetails         = getVariableDetails;
         this.getMatchModes              = getMatchModes;
         this.updateTmplAttrs            = updateTmplAttrs;
+        this.sort                       = sort;
     }]);

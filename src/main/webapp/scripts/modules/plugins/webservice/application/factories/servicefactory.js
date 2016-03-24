@@ -83,6 +83,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
 
                 /* Fetch the available web/data services for the current project*/
                 WebService.listServicesWithType(urlParams, function (response) {
+                    response = Utils.sort(response, 'name');
                     /*clean the array before inserting the fetched services*/
                     services = [];
 
@@ -131,6 +132,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 /*invoking a service to get the operations that a particular service has and it's
                  * parameters to create a unique url pattern*/
                 WebService.retrieveServiceOperations(urlParams, function (response) {
+                    response.paths = Utils.sort(response.paths, 'x-WM-COMPLETE_PATH');
                     serviceDefMap[serviceId] = response;
                     /*while loop is used so that any requests that come when the response is being served; are also handled.*/
                     while (true) {
