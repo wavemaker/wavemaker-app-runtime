@@ -594,6 +594,9 @@ WM.module('wm.widgets.grid')
                         handlers.push(scope.$watch('binddataset', function (newVal, oldVal) {
                             if (newVal !== oldVal) {
                                 scope.dataNavigatorWatched = false;
+                                if (scope.dataNavigator) {
+                                    scope.dataNavigator.result = undefined;
+                                }
                             }
                         }));
 
