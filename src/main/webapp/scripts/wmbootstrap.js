@@ -159,6 +159,8 @@ Application
                         // TODO: remove prevRoute variable when 403 page is implemented
                         wmToaster.show('error', $rs.appLocale.LABEL_ACCESS_DENIED || 'Access Denied', $rs.appLocale.LABEL_FORBIDDEN_MESSAGE || 'The requested resource access/action is forbidden.');
                         $location.path(prevRoute);
+                    } else {
+                        Utils.triggerFn(onError);
                     }
                 }
 
@@ -224,14 +226,18 @@ Application
                 }
 
                 function loadCommonPage($s) {
-                    var pageName = 'Common';
-                    return loadPage(pageName)
+                    var pageName = 'Common',
+                        deferred = $q.defer();
+                    loadPage(pageName)
                         .then(function (content) {
                             Variables.setPageVariables(pageName, content.variables);
                             var $html = WM.element(Utils.processMarkup(content.html));
                             WM.element('#wm-common-content').append($html);
                             $compile($html)($s);
-                        });
+                            deferred.resolve();
+                        }, deferred.resolve);
+
+                    return deferred.promise;
                 }
 
                 /**
