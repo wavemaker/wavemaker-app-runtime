@@ -710,10 +710,9 @@ WM.module('wm.widgets.base')
                 $rs.$evalAsync(function () {
                     while (watchers.length) {
                         watcher = watchers.shift();
-                        if (!watcher.$s || watcher.$s.$$destroyed) {
-                            return;
+                        if (watcher.$s && !watcher.$s.$$destroyed) {
+                            watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
                         }
-                        watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
                     }
                 });
             }
