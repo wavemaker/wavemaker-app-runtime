@@ -372,9 +372,9 @@ wm.modules.wmCommon.services.BaseService = [
             handleSessionTimeOut = function () {
                 if (!isUnAuthorized) {
                     var dialogId = CONSTANTS.isStudioMode ? 'sessionTimeOutDialog' : 'CommonLoginDialog';
-                    if(!CONSTANTS.isStudioMode) {
+                    if (!CONSTANTS.isStudioMode) {
                         Utils.triggerFn($rootScope.onSessionTimeout);
-                        $rootScope.$emit("on-sessionTimeout");
+                        $rootScope.$emit('on-sessionTimeout');
                     }
                     $rootScope.isStudioDisabled = false;
                     DialogService.closeAllDialogs();
@@ -383,6 +383,11 @@ wm.modules.wmCommon.services.BaseService = [
                             OnLogin: function () {
                                 return function () {
                                     executeErrorCallStack();
+
+                                    if (CONSTANTS.isStudioMode) {
+                                        $rootScope.$emit('wms:unblock-wsm');
+                                    }
+
                                     DialogService.hideDialog(dialogId);
                                 };
 
