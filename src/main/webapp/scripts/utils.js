@@ -1123,15 +1123,16 @@ WM.module('wm.utils', [])
             options = options || {};
 
             var node = {
-                    'id'         : nodeId,
-                    'label'      : options.label,
-                    'collapsed'  : options.collapsed,
-                    'class'      : options.class,
-                    'active'     : options.active,
-                    'props'      : options.nodeProps,
-                    'isDeletable': options.isDeletable,
-                    'title'      : options.title,
-                    'onDelete'   : options.onDelete
+                    'id'            : nodeId,
+                    'label'         : options.label,
+                    'collapsed'     : options.collapsed,
+                    'class'         : options.class,
+                    'active'        : options.active,
+                    'props'         : options.nodeProps,
+                    'isDeletable'   : options.isDeletable,
+                    'title'         : options.title,
+                    'onDelete'      : options.onDelete,
+                    'hasChildren'   : options.hasChildren
                 },
                 parentIndex,
                 parentStartIndex,
