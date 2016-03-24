@@ -114,18 +114,6 @@ WM.module('wm.widgets.form')
 
             }
         }
-        /* checks if the given value object is in the given model array of objects */
-        function valueInModel(model, value, dataObject) {
-            if (!WM.isDefined(model)) {
-                return false;
-            }
-            /*If model is equal to value, return true*/
-            if (model === value) {
-                return true;
-            }
-            /*If the dataobject is equal in model, return true*/
-            return (WM.equals(model, dataObject));
-        }
 
         return {
             'restrict': 'E',
@@ -163,13 +151,21 @@ WM.module('wm.widgets.form')
                                 constructRadioSet(scope, element, scope.scopedataset);
                             }
                         });
+                        /* checks if the given value object is in the given model array of objects */
+                        scope.valueInModel = function (model, value, dataObject) {
+                            if (!WM.isDefined(model)) {
+                                return false;
+                            }
+                            /*If model is equal to value, return true*/
+                            if (model === value) {
+                                return true;
+                            }
+                            /*If the dataobject is equal in model, return true*/
+                            return (WM.equals(model, dataObject));
+                        };
                         /*Watch on the model, to check or uncheck the values of checkboxset*/
                         scope.$watch('_model_', function () {
-                            if (scope.dataKeys && scope.checkedValues) {
-                                _.forEach(scope.dataKeys, function (dataKey) {
-                                    scope.checkedValues[dataKey] = valueInModel(scope._model_, dataKey, scope.dataObject[dataKey]);
-                                });
-                            }
+                            FormWidgetUtils.updatedCheckedValues(scope);
                         }, false);
 
                         /*Called from form reset when users clicks on form reset*/

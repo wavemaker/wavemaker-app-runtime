@@ -204,7 +204,7 @@ WM.module('wm.widgets.base', [])
 
                     "wm.base.editors.dataseteditors": {
                         "startupdate": {"type": "boolean"},
-                        "scopedataset": {"type": "list", "options": []},
+                        "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "datasetfilter" : "terminals", "allfields" : true},
                         "displayfield": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},

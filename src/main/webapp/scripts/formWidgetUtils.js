@@ -86,6 +86,29 @@ WM.module('wm.widgets.form')
                     break;
                 }
             }
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#updatedCheckedValues
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to update the checked values, which selects/ de-selects the values in radioset/ checkboxset
+             *
+             * @param {object} scope isolate scope of the widget
+             */
+            function updatedCheckedValues(scope) {
+                if (scope.dataKeys && scope.checkedValues) {
+                    var model = scope._model_,
+                        dataObj = WM.isArray(scope.dataObject) ? {} : scope.dataObject;
+                    if (scope._widgettype === 'wm-checkboxset' && WM.isString(model) && model !== '') {
+                        model = model.split(',');
+                    }
+                    _.forEach(scope.dataKeys, function (dataKey) {
+                        scope.checkedValues[dataKey] = scope.valueInModel(model, dataKey, dataObj[dataKey]);
+                    });
+                }
+            }
 
             /**
              * @ngdoc function
@@ -124,6 +147,7 @@ WM.module('wm.widgets.form')
                     /*getting the dataKeys for creating the option texts*/
                     scope.dataKeys = Object.keys(scope.dataObject);
                 }
+                updatedCheckedValues(scope);
             }
 
 
@@ -514,5 +538,6 @@ WM.module('wm.widgets.form')
             this.getTimestampFromDate           = getTimestampFromDate;
             this.getProxyExcludeDates           = getProxyExcludeDates;
             this.getUpdatedModel                = getUpdatedModel;
+            this.updatedCheckedValues           = updatedCheckedValues;
         }
     ]);

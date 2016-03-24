@@ -145,22 +145,6 @@ WM.module('wm.widgets.form')
                 break;
             }
         }
-        /* checks if the given value object is in the given model array of objects */
-        function valueInModel(model, value, dataObject) {
-            /*If the value is in model, return true*/
-            if (_.includes(model, value)) {
-                return true;
-            }
-            /*If model is equal to value, return true*/
-            if (model === value) {
-                return true;
-            }
-            /*If the dataobject is present in model, return true*/
-            return (dataObject && WM.isArray(model) && model.some(function (el) {
-                return WM.equals(dataObject, el);
-            }));
-        }
-
         return {
             'restrict': 'E',
             'scope': {
@@ -198,18 +182,25 @@ WM.module('wm.widgets.form')
                                 }
                             }, true);
                         }
+                        /* checks if the given value object is in the given model array of objects */
+                        scope.valueInModel = function (model, value, dataObject) {
+                            /*If the value is in model, return true*/
+                            if (_.includes(model, value)) {
+                                return true;
+                            }
+                            /*If model is equal to value, return true*/
+                            if (model === value) {
+                                return true;
+                            }
+                            /*If the dataobject is present in model, return true*/
+                            return (dataObject && WM.isArray(model) && model.some(function (el) {
+                                return WM.equals(dataObject, el);
+                            }));
+                        };
+
                         /*Watch on the model, to check or uncheck the values of checkboxset*/
                         scope.$watch('_model_', function () {
-                            if (scope.dataKeys && scope.checkedValues) {
-                                var model = scope._model_,
-                                    dataObj = WM.isArray(scope.dataObject) ? {} : scope.dataObject;
-                                if (WM.isString(model) && model !== '') {
-                                    model = model.split(',');
-                                }
-                                _.forEach(scope.dataKeys, function (dataKey) {
-                                    scope.checkedValues[dataKey] = valueInModel(model, dataKey, dataObj[dataKey]);
-                                });
-                            }
+                            FormWidgetUtils.updatedCheckedValues(scope);
                         }, false);
 
                         /*Called from form reset when users clicks on form reset*/
