@@ -15,14 +15,14 @@ WM.module('wm.widgets.live')
                             '</h4>' +
                         '</div>' +
                         '<nav class="app-datanavigator" data-ng-if="navigation === \'Inline\'" >' +
-                            '<ul class="pager"><li class="previous" data-ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
-                        '</nav>'+
+                            '<ul class="pager"><li class="previous" data-ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
+                        '</nav>' +
                         '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" data-ng-show="!noDataFound" data-ng-class="listclass" wmtransclude ' +
                                  'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                         '</ul>' +
                         '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
                         '<nav class="app-datanavigator" data-ng-if="navigation === \'Inline\'">' +
-                            '<ul class="pager"><li class="next" data-ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
+                            '<ul class="pager"><li class="next" data-ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" data-ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                         '</nav>' +
                         '<div class="panel-footer" data-ng-if="navigation !== \'None\'" data-ng-show="navigation !== \'Inline\'">' +
                             '<wm-datanavigator showrecordcount="true" navcontrols="{{navControls}}"></wm-datanavigator>' +
@@ -221,15 +221,6 @@ WM.module('wm.widgets.live')
                 $is.$liScope.fetchInProgress = inProgress;
             }
 
-            // click event handler for nav buttons.
-            function navigatePage($is, $el, action, $event) {
-                var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
-                    navigator      = $dataNavigator.isolateScope();
-
-                navigator.navigatePage(action, $event);
-                $is.isDisablePrevious = navigator.isFirstPage();
-                $is.isDisableNext     = navigator.isLastPage();
-            }
 
             function bindScrollEvt($is, $el) {
                 var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
@@ -436,11 +427,11 @@ WM.module('wm.widgets.live')
 
                     binddataset = $is.binddataset;
                     Utils.triggerFn($is._watchers.dataset);
-
+                    $is.dataNavigator = undefined;
                     $timeout(function () {
                         $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]');
                         dataNavigator = $dataNavigator.isolateScope();
-
+                        $is.dataNavigator = dataNavigator;
                         dataNavigator.pagingOptions = {
                             maxResults: $is.pagesize || 20
                         };
@@ -500,7 +491,7 @@ WM.module('wm.widgets.live')
                 $is.oldbinddataset = $is.binddataset;
             }
 
-            function resetNavigation($is, attrs, type) {
+            function resetNavigation($is) {
                 $is.navControls = undefined;
                 $is.infScroll   = false;
                 if ($is.widgetid) {
@@ -515,7 +506,6 @@ WM.module('wm.widgets.live')
             function enableInlineNavigation($is) {
 
                 $is.navControls       = NAVIGATION.INLINE;
-                $is.isDisablePrevious = true;
                 // hides itemsperrow property in studio mode.
                 if ($is.widgetid) {
                     $is.widgetProps.itemsperrow.show = false;
@@ -530,8 +520,8 @@ WM.module('wm.widgets.live')
                 $is.infScroll = true;
             }
 
-            function onNavigationTypeChange($is, attrs, type) {
-                resetNavigation($is, attrs, type);
+            function onNavigationTypeChange($is, type) {
+                resetNavigation($is);
                 switch (type) {
                 case NAVIGATION.BASIC:
                     enableBasicNavigation($is);
@@ -634,7 +624,7 @@ WM.module('wm.widgets.live')
                     break;
                 case 'navigation':
                     if (CONSTANTS.isStudioMode) {
-                        onNavigationTypeChange($is, attrs, nv);
+                        onNavigationTypeChange($is, nv);
                     }
                     break;
                 case 'groupby':
@@ -969,8 +959,6 @@ WM.module('wm.widgets.live')
                             }
                         }, true);
                     }
-
-                    $is.navigatePage = navigatePage.bind(undefined, $is, $el);
                     setupEvtHandlers($is, $el, attrs);
                 }
                 /* register the property change handler */
@@ -992,7 +980,7 @@ WM.module('wm.widgets.live')
                     // for legacy applications
                     $is.navigation = NAVIGATION.ADVANCED;
                 }
-                onNavigationTypeChange($is, attrs, $is.navigation);
+                onNavigationTypeChange($is, $is.navigation);
 
                 WidgetUtilService.postWidgetCreate($is, $el, attrs);
             }
