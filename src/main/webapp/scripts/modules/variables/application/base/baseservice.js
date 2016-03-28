@@ -271,7 +271,7 @@ wm.variables.services.Variables = [
                         }
                         /* if auto-update set for the variable with read operation only, get its data */
                         if (variable.autoUpdate && !WM.isUndefined(nodeVal) && WM.isFunction(variable[variable.operation + 'Record']) && !noUpdate) {
-                            Utils.triggerFn(variable[variable.operation + 'Record']);
+                            variable[variable.operation + 'Record']();
                         }
                     }
                 } else if (variable.category === "wm.ServiceVariable") {
