@@ -1000,8 +1000,11 @@ WM.module('wm.widgets.grid')
                 /*Returns data filtered using searchObj*/
                 getSearchResult = function (data, searchObj) {
                     if (searchObj && searchObj.field !== '') {
+                        var searchVal = _.toString(searchObj.value).toLowerCase(),
+                            currentVal;
                         data = _.filter(data, function (obj) {
-                            return _.includes(obj[searchObj.field], searchObj.value);
+                            currentVal = _.toString(_.get(obj, searchObj.field)).toLowerCase(); //If `int` converting to `string`
+                            return _.includes(currentVal, searchVal);
                         });
                     }
                     return data;
