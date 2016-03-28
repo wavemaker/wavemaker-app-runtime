@@ -43,7 +43,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
                     {"target": "eventStart", "type": "string", "dataBinding": true},
                     {"target": "eventEnd", "type": "string", "dataBinding": true}
                 ],
-                requriedCordovaPlugins: ['CALENDAR'],
+                requiredCordovaPlugins: ['CALENDAR'],
                 invoke : function (variable, options, success, error) {
                     var createEventOptions = {
                         title: variable.eventTitle,
@@ -63,7 +63,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
                     {"target": "eventStart", "type": "string", "dataBinding": true},
                     {"target": "eventEnd", "type": "string", "dataBinding": true}
                 ],
-                requriedCordovaPlugins: ['CALENDAR'],
+                requiredCordovaPlugins: ['CALENDAR'],
                 invoke : function (variable, options, success, error) {
                     var removeEventOptions = {
                         newTitle: variable.eventTitle,
@@ -85,7 +85,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCalendar', func
                     {"target": "eventEnd", "type": "string", "dataBinding": true},
                     {"target": "startUpdate", "type": "boolean"}
                 ],
-                requriedCordovaPlugins: ['CALENDAR'],
+                requiredCordovaPlugins: ['CALENDAR'],
                 invoke : function (variable, options, success, error) {
                     var listEventOptions = {
                         title: variable.eventTitle,

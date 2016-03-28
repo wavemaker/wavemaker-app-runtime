@@ -22,7 +22,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaContacts', func
         operations = {
             getContacts : {
                 model : [event],
-                requriedCordovaPlugins: ['CONTACTS'],
+                requiredCordovaPlugins: ['CONTACTS'],
                 properties : [
                     {"target": "startUpdate", "type": "boolean", "value": ""},
                     {"target": "contactFilter", "type": "string", "value": "", "dataBinding": true}

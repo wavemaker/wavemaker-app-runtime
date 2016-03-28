@@ -40,7 +40,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                     },
                     timestamp: 0
                 },
-                requriedCordovaPlugins: ['GEOLOCATION'],
+                requiredCordovaPlugins: ['GEOLOCATION'],
                 properties: [
                     {"target": "startUpdate", "type": "boolean", "value": ""},
                     {"target": "geolocationHighAccuracy", "type": "boolean", "value": true, "dataBinding": true},
@@ -95,7 +95,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                     isOnline: true,
                     isOffline: false
                 },
-                requriedCordovaPlugins: ['NETWORK'],
+                requiredCordovaPlugins: ['NETWORK'],
                 properties: [
                     {"target": "autoUpdate", "type": "boolean", "value": true},
                     {"target": "startUpdate", "type": "boolean", "value": ""},
@@ -113,7 +113,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaNetwork', '$cor
                 properties: [
                     {"target": "vibrationtime", "type": "number", "value": 2, "dataBinding": true}
                 ],
-                requriedCordovaPlugins: ['VIBRATE'],
+                requiredCordovaPlugins: ['VIBRATE'],
                 invoke: function (variable) {
                     var vibrationTimeOptions = {
                         time: variable.vibrationtime * 1000

@@ -15,7 +15,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cord
                 {"target": "imageTargetWidth", "type": "number", "dataBinding": true},
                 {"target": "imageTargetHeight", "type": "number", "dataBinding": true}
             ],
-            requriedCordovaPlugins: ['CAMERA', 'CAPTURE'],
+            requiredCordovaPlugins: ['CAMERA', 'CAPTURE'],
             invoke: function(variable, options, success, error) {
                 var cameraOptions = {
                     quality           : variable.imageQuality,
@@ -38,7 +38,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaCamera', '$cord
                 videoPath: ''
             },
             properties: [],
-            requriedCordovaPlugins: ['CAMERA', 'CAPTURE'],
+            requiredCordovaPlugins: ['CAMERA', 'CAPTURE'],
             invoke: function(variable, options, success, error) {
                 var videoOptions = {
                     limit   : 1

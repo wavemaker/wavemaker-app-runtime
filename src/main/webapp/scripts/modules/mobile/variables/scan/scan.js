@@ -9,7 +9,7 @@ WM.module('wm.variables').run(['DeviceVariableService', '$cordovaBarcodeScanner'
                 format : "TEXT",
                 cancelled : false
             },
-            requriedCordovaPlugins: ['BARCODE_SCANNER'],
+            requiredCordovaPlugins: ['BARCODE_SCANNER'],
             properties : [],
             invoke: function (variable, options, success, error) {
                 $cordovaBarcodeScanner.scan().then(function (data) {
