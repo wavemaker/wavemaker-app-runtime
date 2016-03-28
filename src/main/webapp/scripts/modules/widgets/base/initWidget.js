@@ -717,7 +717,7 @@ WM.module('wm.widgets.base')
                 });
             }
 
-            _registerWatchers = _.debounce(registerWatchers, 50);
+            _registerWatchers = _.debounce(registerWatchers);
 
             function arrayConsumer(listenerFn, allowPageable, restExpr, newVal, oldVal) {
                 var data = newVal,
