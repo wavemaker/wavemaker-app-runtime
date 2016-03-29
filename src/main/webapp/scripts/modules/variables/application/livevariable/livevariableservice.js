@@ -1213,14 +1213,6 @@ wm.variables.services.$liveVariable = [
 
                     return targetObj;
                 },
-                getModifiedFieldName: function (variable, fieldName) {
-                    var primaryKey = variable.getPrimaryKey(),
-                        modifiedFieldName = fieldName;
-                    if (variable.isCompositeKey(primaryKey) && (variable.isNoPrimaryKey(primaryKey) || primaryKey.indexOf(fieldName) !== -1)) {
-                        modifiedFieldName = 'id.' + fieldName;
-                    }
-                    return modifiedFieldName;
-                },
                 getRelatedTableData: function (variable, columnName, options, success, error) {
                     var projectID = $rootScope.project.id || $rootScope.projectName,
                         resultProperties = {
@@ -1386,9 +1378,6 @@ wm.variables.services.$liveVariable = [
                 },
                 setFilter: function (key, val) {
                     return methods.setFilter(this, key, val);
-                },
-                getModifiedFieldName: function (fieldName) {
-                    return methods.getModifiedFieldName(this, fieldName);
                 },
                 getRelatedTableData: function (columnName, options, success, error) {
                     return methods.getRelatedTableData(this, columnName, options, success, error);
