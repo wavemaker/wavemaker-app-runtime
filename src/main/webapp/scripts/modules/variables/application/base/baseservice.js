@@ -21,7 +21,8 @@ wm.variables.services.Variables = [
     "DialogService",
     "$timeout",
     "Utils",
-    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils) {
+    "BindingManager",
+    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager) {
         "use strict";
 
         /**
@@ -390,7 +391,7 @@ wm.variables.services.Variables = [
                     targetObj = rootNode;
                 }
                 if (Utils.stringStartsWith(obj.value, "bind:")) {
-                    scope.$watch(obj.value.replace("bind:", ""), function (newVal, oldVal) {
+                    BindingManager.register(scope, obj.value.replace("bind:", ""), function (newVal, oldVal) {
                         if ((newVal === oldVal && WM.isUndefined(newVal)) || (WM.isUndefined(newVal) && (!WM.isUndefined(oldVal) || !WM.isUndefined(targetObj[targetNodeKey])))) {
                             return;
                         }
@@ -399,7 +400,7 @@ wm.variables.services.Variables = [
                             targetObj[targetNodeKey] = newVal;
                             processVariablePostBindUpdate(targetNodeKey, newVal, variable);
                         }
-                    }, true);
+                    }, {'deepWatch': true});
                 } else if (WM.isDefined(obj.value)) {
                     /* sanity check, user can bind parent nodes to non-object values, so child node bindings may fail */
                     if (targetObj) {
@@ -511,14 +512,16 @@ wm.variables.services.Variables = [
                 scope.Variables = self.variableCollection[scope.$id];
 
                 /* extend scope variables with app variables, in studio mode */
-                if (CONSTANTS.isStudioMode && context !== VARIABLE_CONSTANTS.OWNER.APP) {
+                if (context !== VARIABLE_CONSTANTS.OWNER.APP) {
                     WM.forEach(self.variableCollection[$rootScope.$id], function (variable, name) {
-                        Object.defineProperty(scope.Variables, name, {
-                            configurable: true,
-                            get: function () {
-                                return variable;
-                            }
-                        });
+                        if (!scope.Variables.hasOwnProperty(name)) {
+                            Object.defineProperty(scope.Variables, name, {
+                                configurable: true,
+                                get: function () {
+                                    return variable;
+                                }
+                            });
+                        }
                     });
                 }
                 WM.forEach(self.variableCollection[scope.$id], function (variable, name) {

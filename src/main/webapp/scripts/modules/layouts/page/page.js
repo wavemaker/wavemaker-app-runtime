@@ -14,21 +14,6 @@ WM.module('wm.layouts.page')
         function (DeviceViewService, CONSTANTS, $rs, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
             'use strict';
 
-            function extendVariables($s, variables) {
-                var _Variables = $s.Variables;
-                _.forEach(variables, function (variable, name) {
-                    if (!_Variables.hasOwnProperty(name)) {
-                        Object.defineProperty(_Variables, name, {
-                            'configurable': true,
-                            'get' : function () {
-                                return variable;
-                            }
-                        });
-                    }
-                });
-            }
-
-
             var appVariableReadyFired = false;
 
             return {
@@ -150,8 +135,6 @@ WM.module('wm.layouts.page')
                                 containerScope.Variables = $s.Variables;
                             }
 
-                            // App Variables must be ready by this time.
-                            extendVariables(variableScope, $rs.Variables);
                             // if specified, call page variables ready function in the page.js
                             if (!appVariableReadyFired) {
                                 Utils.triggerFn($rs.onAppVariablesReady, $rs.Variables);
@@ -188,20 +171,6 @@ WM.module('wm.layouts.page')
 
         function (CONSTANTS, $rs, Utils, Variables) {
             'use strict';
-
-            function extendVariables($s, variables) {
-                var _Variables = $s.Variables;
-                _.forEach(variables, function (variable, name) {
-                    if (!_Variables.hasOwnProperty(name)) {
-                        Object.defineProperty(_Variables, name, {
-                            'configurable': true,
-                            'get': function () {
-                                return variable;
-                            }
-                        });
-                    }
-                });
-            }
 
             return {
                 'restrict'   : 'E',
@@ -243,14 +212,6 @@ WM.module('wm.layouts.page')
                             // expose partial's Variables to its container's scope (to be visible to parent)
                             if (CONSTANTS.isRunMode && containerScope) {
                                 containerScope.Variables = $s.Variables;
-                            }
-
-                            if ($rs.Variables) {
-                                extendVariables($s, $rs.Variables);
-                            } else {
-                                $el.on('$destroy', $rs.$on('on-app-variables-ready', function () {
-                                    extendVariables($s, $rs.Variables);
-                                }));
                             }
                         });
                     },
