@@ -26,12 +26,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.WeakHashMap;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.LRUMap;
 import org.apache.commons.logging.LogFactory;
 import org.hsqldb.DatabaseManager;
 import org.hsqldb.lib.HsqlTimer;
@@ -39,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cglib.proxy.Enhancer;
 
-import com.mysql.jdbc.AbandonedConnectionCleanupThread;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.sun.jndi.ldap.Connection;
 import com.sun.jndi.ldap.LdapClient;
 import com.sun.jndi.ldap.LdapPoolManager;
@@ -137,7 +134,7 @@ public class CleanupListener implements ServletContextListener {
             if (klass != null && klass.getClassLoader() == this.getClass().getClassLoader()) {
                 //Shutdown the thread only if the class is loaded by web-app
                 logger.info("Shutting down mysql AbandonedConnectionCleanupThread");
-                AbandonedConnectionCleanupThread.shutdown();
+                klass.getMethod("shutdown").invoke(null);
             }
         } catch (Throwable e) {
             logger.warn("Failed to shutdown mysql thread {}", className, e);
