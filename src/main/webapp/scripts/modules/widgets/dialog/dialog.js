@@ -284,7 +284,7 @@ WM.module('wm.widgets.dialog')
                         };
 
                         if (onOpenedEventName && dialogCtrl && !scope.widgetid) {
-                            if (CONSTANTS.isRunMode) {
+                            if (CONSTANTS.isRunMode && parentElScope.whenReady) {
                                 parentElScope.whenReady(dialogCtrl._OnOpenedHandler.bind(undefined, onOpenedEventName));
                             } else {
                                 dialogCtrl._OnOpenedHandler(onOpenedEventName);
