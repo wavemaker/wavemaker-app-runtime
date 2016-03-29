@@ -15,13 +15,11 @@
  */
 package com.wavemaker.runtime.security.provider.ldap;
 
-import java.util.Set;
-
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
 /**
- * @author Frankie Fu
+ * @author Arjun Sahasranam
  */
 public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
 
@@ -29,12 +27,5 @@ public class LdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator {
     public LdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase) {
         super(contextSource, groupSearchBase);
     }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public Set getGroupMembershipRoles(String userDn, String username) {
-        return super.getGroupMembershipRoles(userDn, username);
-    }
-
 
 }

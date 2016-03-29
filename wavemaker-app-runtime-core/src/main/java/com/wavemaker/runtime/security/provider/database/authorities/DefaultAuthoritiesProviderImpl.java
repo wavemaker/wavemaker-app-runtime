@@ -3,7 +3,6 @@ package com.wavemaker.runtime.security.provider.database.authorities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Query;
@@ -30,7 +29,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     @PostConstruct
     protected void init() {
-        if(authoritiesByUsernameQuery.contains(LOGGED_IN_USERNAME)) {
+        if (authoritiesByUsernameQuery.contains(LOGGED_IN_USERNAME)) {
             authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace(LOGGED_IN_USERNAME, "?");
         }
     }
@@ -106,10 +105,16 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     private List<GrantedAuthority> getAuthorities(List<Object> content, String... params) {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        String roleParam = "";
+        if (params.length == 2) {
+            roleParam = params[1];
+        } else {
+            roleParam = params[0];
+        }
         if (content.size() > 0) {
-            final Map<String, Object> resultMap = (Map) content.get(0);
-            for (Map.Entry<String, Object> entry : resultMap.entrySet()) {
-                String role = String.valueOf(resultMap.get(params[1]));
+            for (Object o : content) {
+                final Map<String, Object> resultMap = (Map) o;
+                String role = String.valueOf(resultMap.get(roleParam));
                 SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(getRolePrefix() + role);
                 grantedAuthorities.add(simpleGrantedAuthority);
             }
