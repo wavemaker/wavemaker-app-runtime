@@ -5,7 +5,7 @@
 /* "DialogController" is the controller to handle onOk, onCancel, onClose events for all Dialogs. */
 
 WM.module('wm.widgets.dialog')
-    .controller('DialogController', function ($scope, DialogService, Utils, $rootScope) {
+    .controller('DialogController', function ($scope, DialogService, Utils, $rootScope, CONSTANTS) {
         "use strict";
         /* handles all types of events for dialog*/
         var handleEvent = function (eventName, hideDialog, callBack, callbackParams) {
@@ -16,9 +16,19 @@ WM.module('wm.widgets.dialog')
                 Utils.triggerFn(callBack, callbackParams);
                 return;
             }
-            if (callBack && WM.isFunction(callBack())) { /*Studio Dialogs without individual templates do not have a "(" in the eventName.
-            callBack() will return a reference to the actual callback.*/
-                Utils.triggerFn(callBack(), callbackParams);
+
+            // Studio Dialogs without individual templates do not have a "(" in the eventName. callBack() will return a reference to the actual callback.
+            if (callBack) {
+                if (CONSTANTS.isStudioMode) {
+                    if (WM.isFunction(callBack())) {
+                        Utils.triggerFn(callBack(), callbackParams);
+                    }
+                } else {
+                    if (WM.isFunction(callBack)) {
+                        Utils.triggerFn(callBack, callbackParams);
+                    }
+                }
+
             } else if (eventName.indexOf('.show') > -1) {
                 DialogService.showDialog(eventName.slice(0, eventName.indexOf('.show')));
             } else if (eventName.indexOf('.hide') > -1) {
