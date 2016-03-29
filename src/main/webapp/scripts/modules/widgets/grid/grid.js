@@ -913,8 +913,8 @@ WM.module('wm.widgets.grid')
                 },
                 sortHandler = function (sortObj, e) {
                     var filterFields,
-                        variable = $scope.gridElement.scope().Variables[$scope.variableName],
-                        fieldName = variable.category === 'wm.LiveVariable' ? variable.getModifiedFieldName(sortObj.field) : sortObj.field,
+                        variable    = $scope.gridElement.scope().Variables[$scope.variableName],
+                        fieldName   = sortObj.field,
                         sortOptions = fieldName + ' ' + sortObj.direction;
                     /* Update the sort info for passing to datagrid */
                     $scope.gridOptions.sortInfo.field = sortObj.field;
