@@ -1241,13 +1241,20 @@ WM.module('wm.utils', [])
 
             var ctrlOrMetaKey = isAppleProduct ? event.metaKey : event.ctrlKey,
                 altKey = event.altKey;
+
             if (isAppleProduct) {
                 if (event.which === 8) {
                     return 'DELETE';
                 }
+                if (event.metaKey && event.which === 91) { // check for cmd + f in mac for db search
+                    return 'DB-FIND';
+                }
             } else {
                 if (event.which === 46) {
                     return 'DELETE';
+                }
+                if (event.ctrlKey && event.which === 70) { // check for ctrl+f for db search
+                    return 'DB-FIND';
                 }
             }
 
