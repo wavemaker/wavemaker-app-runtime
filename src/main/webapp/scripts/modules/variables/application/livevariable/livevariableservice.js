@@ -1229,9 +1229,11 @@ wm.variables.services.$liveVariable = [
                             "maxResults": options.maxResults || 100
                         },
                         relatedTable = _.find(variable.relatedTables, function (table) {
-                            /*Comparing column name to support the old projects*/
-                            return table.relationName === columnName || table.columnName === columnName;
-                        });
+                            return table.relationName === columnName || table.columnName === columnName; //Comparing column name to support the old projects
+                        }),
+                        selfRelatedCols = _.map(_.filter(variable.relatedTables, function (o) { //Find out the self related columns
+                            return o.type === variable.type;
+                        }), 'relationName');
                     /* if orderBy properties is set, append it to the resultProperties */
                     if (variable.orderBy) {
                         resultProperties.orderBy = variable.orderBy.split(',');
@@ -1245,7 +1247,10 @@ wm.variables.services.$liveVariable = [
                         "size": resultProperties.maxResults,
                         "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl
                     }, function (response) {
-                        Utils.triggerFn(success, response.content);
+                        /*Remove the self related columns from the data. As backend is restricting the self related column to one level, In liveform select, dataset and datavalue object
+                        * equality does not work. So, removing the self related columns to acheive the quality*/
+                        var data = _.map(response.content, function (o) { return _.omit(o, selfRelatedCols); });
+                        Utils.triggerFn(success, data);
                     }, function (errMsg) {
                         Utils.triggerFn(error, errMsg);
                     });

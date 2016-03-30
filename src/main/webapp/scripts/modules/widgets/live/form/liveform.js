@@ -527,6 +527,8 @@ WM.module('wm.widgets.live')
                                 } else {
                                     dataObject[field.key] = field.value;
                                 }
+                            } else {
+                                dataObject[field.key] = undefined;
                             }
                         } else if (field.type === "blob") {
                             if (isFormDataSupported) {
@@ -542,9 +544,7 @@ WM.module('wm.widgets.live')
                                 }
                             }
                         } else if (field.type === "list") {
-                            if (field.value) {
-                                dataObject[field.key] = field.value;
-                            }
+                            dataObject[field.key] = field.value || undefined;
                         } else {
                             dataObject[field.key] = field.value;
                         }
