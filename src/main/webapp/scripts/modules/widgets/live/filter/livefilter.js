@@ -171,7 +171,7 @@ WM.module('wm.widgets.live')
                                 matchMode,
                                 minValue = filterField._minValue,
                                 maxvalue = filterField._maxValue,
-                                colName = variable.getModifiedFieldName(filterField.field);
+                                colName  = filterField.field;
                             /* if field is part of a related entity, column name will be 'entity.fieldName' */
                             if (filterField.isRelated) {
                                 colName += '.' + filterField.lookupField;
@@ -456,7 +456,7 @@ WM.module('wm.widgets.live')
                                         fieldColumn,
                                         dataSetWidgetTypes = Utils.getDataSetWidgets();
 
-                                    fieldColumn = variable.getModifiedFieldName(filterField.field);
+                                    fieldColumn = filterField.field;
                                     if (dataSetWidgetTypes[filterField.widget] && !filterField.tempDataset) {
                                         if (filterField.isRelated) {
                                             tableName   = filterField.lookupType;
