@@ -1726,12 +1726,12 @@ WM.module('wm.utils', [])
         }
         // expose the methods on the service instance.
 
-        function sort(collection, key) {
+        function sort(collection, key, caseSensitive) {
             return _.sortBy(collection, function (item) {
                 if (item) {
                     return key
-                        ? ((item[key] && item[key].toLowerCase) ? item[key].toLowerCase() : item[key]) //object
-                        : item.toLowerCase ? item.toLowerCase() : item; //array
+                        ? ((item[key] && !caseSensitive && item[key].toLowerCase) ? item[key].toLowerCase() : item[key]) //object
+                        : !caseSensitive && item.toLowerCase ? item.toLowerCase() : item; //array
                 }
             });
         }
