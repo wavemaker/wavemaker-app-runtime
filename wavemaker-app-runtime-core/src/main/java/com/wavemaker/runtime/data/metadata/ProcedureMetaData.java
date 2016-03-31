@@ -49,7 +49,7 @@ public class ProcedureMetaData extends MetaData {
     private void constructElement(final Map.Entry entry, final DataObject parentDataObject, final List<DataObject> dataObjects) {
         String key = (String) entry.getKey();
         Object value = entry.getValue();
-        if (value instanceof List) {
+        if (value != null && value instanceof List) {
             final DataObject.Element element = new DataObject.Element();
             element.setName(key);
             final String typeRef = CURSOR_TYPE_PREFIX + key;
@@ -67,7 +67,8 @@ public class ProcedureMetaData extends MetaData {
             final DataObject.Element element = new DataObject.Element();
             element.setName(key);
             element.setIsList(false);
-            element.setTypeRef(value.getClass().getName());
+            final String typeRef = (value == null) ? String.class.getName() : value.getClass().getName();
+            element.setTypeRef(typeRef);
             parentDataObject.getElement().add(element);
         }
     }
