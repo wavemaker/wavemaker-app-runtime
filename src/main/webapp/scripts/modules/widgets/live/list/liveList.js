@@ -324,7 +324,7 @@ WM.module('wm.widgets.live')
                         return data[$is.groupby];
                     });
 
-                    liTemplateWrapper_start += '<li ng-repeat="item in _groupData' +  groupkey + ' track by $index" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                    liTemplateWrapper_start += '<li ng-repeat="item in _groupData' +  groupkey + ' track by $index" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true);
 
@@ -772,11 +772,16 @@ WM.module('wm.widgets.live')
                 $rs.$emit('wm-event', $is.name, name);
             }
 
+            function checkSelectionLimit($is, count) {
+                return (!$is.selectionlimit || count < $is.selectionlimit);
+            }
+
             function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
-                    $hammerEl     = new Hammer($el[0], {}),
-                    selectCount   = 0,
-                    isMultiSelect = false; // Setting to true on first long press
+                    $hammerEl = new Hammer($el[0], {}),
+                    selectCount = 0,
+                    isMultiSelect = false;// Setting to true on first long press
+
                 // listen on to the click event for the ul element & get li clicked of the live-list
                 $el.on('click.wmActive', 'ul.app-livelist-container', function (evt) {
                     // returning if click event is triggered within 50ms after pressup event occurred
@@ -786,21 +791,54 @@ WM.module('wm.widgets.live')
                     evt.stopPropagation();
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
                         $liScope = $li && $li.scope(),
-                        isActive = $li.hasClass('active');
+                        isActive = $li.hasClass('active'),
+                        first,
+                        last,
+                        $liItems;
+
+                    $is.firstSelectedItem = $is.firstSelectedItem || $li;
+                    // Setting selectCount value based number of items selected.
+                    selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
                     if ($liScope) {
-                        if (isMultiSelect) {
-                            if (!$is.selectionlimit || selectCount < $is.selectionlimit || $li.hasClass('active')) {
+                        if (isMultiSelect && $rs.isMobileApplicationType) {
+                            if (checkSelectionLimit(selectCount) || $li.hasClass('active')) {
                                 $li.toggleClass('active');
-                                selectCount += (isActive ? -1 : 1);
-                                isMultiSelect = selectCount > 0; //Setting 'isMultiSelect' to false if no items are selected
+                                isMultiSelect = selectCount !== 0;//Setting 'isMultiSelect' to false if no items are selected
+                            } else {
+                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                            }
+                        } else if (evt.ctrlKey || evt.metaKey) {
+                            if (checkSelectionLimit(selectCount) || $li.hasClass('active')) {
+                                $is.lastSelectedItem = $is.firstSelectedItem = $li;
+                                $li.toggleClass('active');
+                            } else {
+                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                            }
+                        } else if (evt.shiftKey) {
+                            $liItems = $el.find('li.app-list-item');
+                            first    = $liItems.index($li);
+                            last     = $liItems.index($is.firstSelectedItem);
+
+                            // if first is greater than last, then swap values
+                            if (first > last) {
+                                last = [first, first = last][0];
+                            }
+                            if (checkSelectionLimit(last - first)) {
+                                $el.find('li.active').removeClass('active');
+                                _.forEach($liItems, function (element, index) {
+                                    if (index >= first && index <= last) {
+                                        WM.element($liItems[index]).addClass('active');
+                                    }
+                                });
+                                $is.lastSelectedItem = $li;
                             } else {
                                 Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                             }
                         } else {
-                            selectCount = 0;
-                            if (!isActive) {
+                            if (!isActive || selectCount > 1) {
                                 $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
                                 $li.addClass('active');
+                                $is.lastSelectedItem = $is.firstSelectedItem = $li;
                             }
                             // trigger $apply, as 'click' or 'tap' is out of angular-scope
                             if (attrs.onClick) {
@@ -812,6 +850,51 @@ WM.module('wm.widgets.live')
                         }
                     }
                     $rs.$safeApply($is);
+                });
+
+                $el.on('keydown', 'li.app-list-item', function (evt) {
+                    var $liItems,
+                        presentIndex,
+                        firstIndex,
+                        keyPressed;
+
+                    function setIndexValues() {
+                        $liItems     = $el.find('li.app-list-item');
+                        presentIndex = $liItems.index($is.lastSelectedItem);
+                        firstIndex   = $liItems.index($is.firstSelectedItem);
+                        selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
+                    }
+
+                    keyPressed = Utils.getActionFromKey(evt);
+                    if (keyPressed === 'SHIFT+UP' || keyPressed === 'SHIFT+LEFT') {
+                        setIndexValues();
+                        if (presentIndex > 0) {
+                            if ((presentIndex === firstIndex || presentIndex < firstIndex) && checkSelectionLimit(selectCount)) {
+                                $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]).toggleClass('active');
+                            } else if (presentIndex > firstIndex) {
+                                WM.element($liItems[presentIndex]).toggleClass('active');
+                                $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]);
+                            } else {
+                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                            }
+                        }
+                        $is.lastSelectedItem.focus();
+                        $rs.$safeApply($is);
+                    } else if (keyPressed === 'SHIFT+RIGHT' || keyPressed === 'SHIFT+DOWN') {
+                        setIndexValues();
+                        if (presentIndex < $liItems.length - 1) {
+                            if ((presentIndex === firstIndex || presentIndex > firstIndex) && checkSelectionLimit(selectCount)) {
+                                $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]).toggleClass('active');
+                            } else if (presentIndex < firstIndex) {
+                                WM.element($liItems[presentIndex]).toggleClass('active');
+                                $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]);
+                            } else {
+                                Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
+                            }
+                        }
+                        $is.lastSelectedItem.focus();
+                        $rs.$safeApply($is);
+                    }
                 });
 
                 // listen on to the dblclick event for the ul element & get li dblclicked of the live-list
@@ -830,11 +913,9 @@ WM.module('wm.widgets.live')
                 });
 
                 $hammerEl.on('pressup', function (evt) {
-                    if (!isMultiSelect) {
-                        selectCount = 0;
+                    if (!isMultiSelect && $rs.isMobileApplicationType) {
                         var $li = WM.element(evt.target).closest('li.app-list-item');
                         $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
-                        selectCount += 1;
                         $li.addClass('active'); // adding active class to current selectedItem
                         isMultiSelect = true;
                         $rs.$safeApply($is);
@@ -959,7 +1040,7 @@ WM.module('wm.widgets.live')
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
-                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
                         liTemplateWrapper_end   = '></li><li ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin"></i> loading...</li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
 
@@ -1002,6 +1083,7 @@ WM.module('wm.widgets.live')
                 }
                 onNavigationTypeChange($is, $is.navigation);
 
+                checkSelectionLimit.bind(undefined, $is);
                 WidgetUtilService.postWidgetCreate($is, $el, attrs);
             }
 

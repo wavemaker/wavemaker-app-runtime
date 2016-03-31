@@ -1240,7 +1240,8 @@ WM.module('wm.utils', [])
         function getActionFromKey(event) {
 
             var ctrlOrMetaKey = isAppleProduct ? event.metaKey : event.ctrlKey,
-                altKey = event.altKey;
+                shiftKey      = event.shiftKey,
+                altKey        = event.altKey;
 
             if (isAppleProduct) {
                 if (event.which === 8) {
@@ -1274,6 +1275,17 @@ WM.module('wm.utils', [])
                     return 'PASTE';
                 case 90:
                     return event.shiftKey ? 'REDO' : 'UNDO';
+                }
+            } else if (shiftKey) {
+                switch (event.which) {
+                case 37:
+                    return 'SHIFT+LEFT';
+                case 38:
+                    return 'SHIFT+UP';
+                case 39:
+                    return 'SHIFT+RIGHT';
+                case 40:
+                    return 'SHIFT+DOWN';
                 }
             } else {
                 switch (event.which) {
