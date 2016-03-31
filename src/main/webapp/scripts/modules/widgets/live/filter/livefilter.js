@@ -190,8 +190,9 @@ WM.module('wm.widgets.live')
                                 }
                                 if (WM.isDefined(fieldValue)) {
                                     formFields[colName] = {
-                                        'value': fieldValue,
-                                        'matchMode': matchMode
+                                        'value'     : fieldValue,
+                                        'matchMode' : matchMode,
+                                        'logicalOp' : 'AND'
                                     };
                                 }
                             } else {
@@ -240,7 +241,8 @@ WM.module('wm.widgets.live')
                                     } else if (filterField.type === 'string') { //Only for string types, custom match modes are enabled
                                         formFields[colName].matchMode = matchMode || filterField.matchmode || variable.matchMode;
                                     }
-                                    formFields[colName].value = fieldValue;
+                                    formFields[colName].value     = fieldValue;
+                                    formFields[colName].logicalOp = 'AND';
                                 }
                             }
                         });

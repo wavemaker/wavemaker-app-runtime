@@ -433,7 +433,7 @@ wm.variables.services.$liveVariable = [
                     };
                 /*get the filter fields from the variable*/
                 _.each(variable.filterFields, function (value, key) {
-                    if (!options.filterFields || (options.filterFields && !options.filterFields[key])) {
+                    if (!options.filterFields || !options.filterFields[key] || options.filterFields[key].logicalOp === 'AND') {
                         value.fieldName = key;
                         if (getFieldType(value) === 'string') {
                             value.filterCondition = DB_CONSTANTS.DATABASE_MATCH_MODES[variable.matchMode];

@@ -875,7 +875,8 @@ WM.module('wm.widgets.grid')
                     if (searchObj.field) {
                         currentSearch = searchObj;
                         filterFields[searchObj.field] = {
-                            'value': searchObj.value
+                            'value'     : searchObj.value,
+                            'logicalOp' : 'AND'
                         };
                     }
 
