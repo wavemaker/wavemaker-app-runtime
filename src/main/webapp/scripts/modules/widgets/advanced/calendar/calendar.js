@@ -19,7 +19,8 @@ WM.module('wm.widgets.advanced')
         'CONSTANTS',
         'Utils',
         '$rootScope',
-        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils, $rs) {
+        '$timeout',
+        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils, $rs, $timeout) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 notifyFor = {
@@ -296,13 +297,6 @@ WM.module('wm.widgets.advanced')
                                 }
                                 // find the isolateScope of the ui-calendar element
                                 uiCalScope = element.children().first().isolateScope();
-
-                                // define the redraw method. Accordion/tabs will trigger this
-                                scope.redraw = _.debounce(function () {
-                                    // destroy the calendar and re-initialize
-                                    uiCalScope.destroy();
-                                    uiCalScope.init();
-                                }, 50);
                             }
 
                             scope.$on('$destroy', function () {
@@ -310,7 +304,9 @@ WM.module('wm.widgets.advanced')
                             });
 
                             scope.redraw = function () {
-                                element.children().first().fullCalendar('render');
+                                $timeout(function () {
+                                    element.children().first().fullCalendar('render');
+                                });
                             };
 
                             // To be used by binding dialog to construct tree against exposed properties for the widget
