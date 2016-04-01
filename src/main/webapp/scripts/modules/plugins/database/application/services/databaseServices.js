@@ -1521,7 +1521,7 @@ wm.plugins.database.services.DatabaseService = [
              * Method to get types map having sql and java types.
              *
              * @param {object} params
-             *                 Object containing project id.
+             *                 Object containing project id and dataModelName.
              * @param {function=} successCallback
              *                    Callback function to be triggered on success.
              * @param {function=} failureCallback
@@ -1533,7 +1533,8 @@ wm.plugins.database.services.DatabaseService = [
                     target: "Database",
                     action: "getTypesMap",
                     urlParams: {
-                        projectID: params.projectID
+                        projectID    : params.projectID,
+                        dataModelName: params.dataModelName
                     }
                 }, successCallback, failureCallback);
             },

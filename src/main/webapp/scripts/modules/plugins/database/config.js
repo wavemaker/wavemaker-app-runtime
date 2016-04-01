@@ -133,7 +133,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "DELETE"
         },
         getTypesMap: {
-            url: "services/projects/:projectID/services/typesmap",
+            url: "services/projects/:projectID/database/services/:dataModelName/typesmap",
             method: "GET"
         },
 
