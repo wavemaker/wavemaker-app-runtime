@@ -7,28 +7,30 @@ WM.module('wm.widgets.live')
         'use strict';
 
         $tc.put('template/widget/list.html',
-                    '<div class="app-livelist panel" data-ng-class="navigation" init-widget live-actions apply-styles="shell" data-ng-show="show">' +
-                        '<div class="form-header panel-heading" data-ng-if="title">' +
-                            '<h4 class="panel-title">' +
-                                '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
-                                '<span>{{title}}</span>' +
-                            '</h4>' +
-                        '</div>' +
-                        '<nav class="app-datanavigator" data-ng-if="navigation === \'Inline\'" >' +
-                            '<ul class="pager"><li class="previous" data-ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
-                        '</nav>' +
-                        '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" data-ng-show="!noDataFound" data-ng-class="listclass" wmtransclude ' +
-                                 'data-ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
-                        '</ul>' +
-                        '<div class="no-data-msg" data-ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
-                        '<nav class="app-datanavigator" data-ng-if="navigation === \'Inline\'">' +
-                            '<ul class="pager"><li class="next" data-ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" data-ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
-                        '</nav>' +
-                        '<div class="panel-footer" data-ng-if="navigation !== \'None\'" data-ng-show="navigation !== \'Inline\'">' +
-                            '<wm-datanavigator showrecordcount="true" navcontrols="{{navControls}}"></wm-datanavigator>' +
-                        '</div>' +
-                    '</div>'
-                );
+                '<div class="app-livelist panel" ng-class="navigation" init-widget live-actions apply-styles="shell" ng-show="show">' +
+                    '<div class="form-header panel-heading" ng-if="title">' +
+                        '<h4 class="panel-title">' +
+                            '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
+                            '<span>{{title}}</span>' +
+                        '</h4>' +
+                    '</div>' +
+                    '<nav class="app-datanavigator" ng-if="navigation === \'Inline\'" >' +
+                        '<ul class="pager"><li class="previous" ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" ' +
+                            'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
+                    '</nav>' +
+                    '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" ng-show="!noDataFound" ng-class="listclass" wmtransclude ' +
+                             'ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
+                    '</ul>' +
+                    '<div class="no-data-msg" ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
+                    '<nav class="app-datanavigator" ng-if="navigation === \'Inline\'">' +
+                        '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
+                            'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
+                    '</nav>' +
+                    '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="navigation !== \'Inline\'">' +
+                        '<wm-datanavigator showrecordcount="true" navcontrols="{{navControls}}"></wm-datanavigator>' +
+                    '</div>' +
+                '</div>'
+            );
 
     }])
     .controller('listController', [
@@ -65,11 +67,11 @@ WM.module('wm.widgets.live')
                 liTemplateWrapper_start,
                 liTemplateWrapper_end,
                 notifyFor = {
-                    'dataset'        : true,
-                    'height'         : true,
-                    'groupby'        : true,
-                    'navigation'     : CONSTANTS.isStudioMode,
-                    'itemsperrow'    : CONSTANTS.isStudioMode
+                    'dataset'     : true,
+                    'height'      : true,
+                    'groupby'     : true,
+                    'navigation'  : CONSTANTS.isStudioMode,
+                    'itemsperrow' : CONSTANTS.isStudioMode
                 },
                 directiveDefn,
                 NAVIGATION = {
@@ -79,7 +81,7 @@ WM.module('wm.widgets.live')
                     'INLINE'   : 'Inline'
                 };
 
-            /* to return the bootstrap classes for the <li> w.r.t no. of items per row */
+            // to return the bootstrap classes for the <li> w.r.t no. of items per row
             function getRowClass(itemsperrow) {
                 if (!itemsperrow) {
                     return undefined;
@@ -99,15 +101,15 @@ WM.module('wm.widgets.live')
                 return variables[variableName];
             }
 
-            /* update the selectedItem dataType onchange of bindDataSet*/
+            // update the selectedItem dataType onchange of bindDataSet
             function updateSelectedItemDataType($is, variable) {
                 if (variable) {
-                    /* set the variable type info to the live-list selected-entry type, so that type matches to the variable for which variable is created*/
+                    // set the variable type info to the live-list selected-entry type, so that type matches to the variable for which variable is created
                     $is.widgetProps.selecteditem.type = variable.type;
                 }
             }
 
-            /*to get the list of columns from the dataSet/scopeDataSet*/
+            // to get the list of columns from the dataSet/scopeDataSet
             function getColumnsFromDataSet(dataset) {
                 if (WM.isObject(dataset)) {
                     if (WM.isArray(dataset) && WM.isObject(dataset[0])) {
@@ -118,7 +120,7 @@ WM.module('wm.widgets.live')
                 return [];
             }
 
-            /*to get list of all the columns from the properties-map */
+            // to get list of all the columns from the properties-map
             function getColumnsFromPropertiesMap(propertiesMap) {
                 if (propertiesMap && propertiesMap.columns) {
                     //populating the column definition in the columns
@@ -144,9 +146,9 @@ WM.module('wm.widgets.live')
                     details,
                     isBoundToSelectedItemSubset = _.includes($is.binddataset, 'selecteditem.');
 
-                dataSetParts = $is.binddataset.split('.');
+                dataSetParts    = $is.binddataset.split('.');
                 refVariableName = Utils.getVariableName($is);
-                refVariable = getVariable($is, refVariableName);
+                refVariable     = getVariable($is, refVariableName);
 
                 relFieldName = isBoundToSelectedItemSubset && dataSetParts[3];
 
@@ -161,13 +163,13 @@ WM.module('wm.widgets.live')
                     relFieldType = fields[relFieldName].type;
                     details.relFieldType = relFieldType;
                 } else {
-                    /* When binddataset is of the format: bind:Widgets.widgetName.selecteditem */
+                    // When binddataset is of the format: bind:Widgets.widgetName.selecteditem
                     details.fields = fields;
                 }
                 return details;
             }
 
-            /* Fetch column bindings for the live list in case it is bound to a widget. */
+            //* Fetch column bindings for the live list in case it is bound to a widget.
             function fetchDynamicColumns($is) {
                 var fields = [],
                     result;
@@ -175,7 +177,7 @@ WM.module('wm.widgets.live')
                 if (result.fields) {
                     fields = result.fields;
                 } else if (result.relFieldType) {
-                    /*Invoke the function to fetch sample data-structure for the field.*/
+                    //Invoke the function to fetch sample data-structure for the field.
                     fields = $servicevariable.getServiceModel({
                         typeRef: result.relFieldType,
                         variable: result.refVariable
@@ -194,12 +196,12 @@ WM.module('wm.widgets.live')
                 }
 
                 if (!columns || !columns.length) {
-                    /* If live list is bound to a widget, fetch the columns accordingly. */
+                    // If live list is bound to a widget, fetch the columns accordingly.
                     if (_.includes($is.binddataset, 'bind:Widgets.')) {
                         columns = fetchDynamicColumns($is);
                     }
                 }
-                /* emit event to modify the liveList template*/
+                // emit event to modify the liveList template
                 $rs.$emit('livelist-template-modified', {
                     'widgetName' : $is.name,
                     'bindDataset': $is.binddataset,
@@ -212,7 +214,7 @@ WM.module('wm.widgets.live')
                 if (variableObj) {
                     var isBoundToLiveVariable = (variableObj.category === 'wm.LiveVariable'),
                         isBoundToQueryServiceVariable = (variableObj.category === 'wm.ServiceVariable') && (variableObj.serviceType === 'DataService');
-                    /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
+                    // Make the "pageSize" property hidden so that no editing is possible for live and query service variables
                     $is.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
                 }
             }
@@ -224,12 +226,16 @@ WM.module('wm.widgets.live')
 
             function bindScrollEvt($is, $el) {
                 var $dataNavigator = $el.find('> .panel-footer > [data-identifier=datanavigator]'),
-                    navigator = $dataNavigator.isolateScope();
+                    navigator      = $dataNavigator.isolateScope(),
+                    lastScrollTop  = 0;
 
                 $el.find('> ul')
                     .children()
                     .first()
                     .scrollParent(false)
+                    .each(function () {
+                        lastScrollTop = this.scrollTop;
+                    })
                     .off('scroll.livelist')
                     .on('scroll.livelist', function (evt) {
                         var target = evt.target,
@@ -243,8 +249,9 @@ WM.module('wm.widgets.live')
                         totalHeight  = target.scrollHeight;
                         scrollTop    = target.scrollTop;
 
-                        if (totalHeight * 0.9 < scrollTop + clientHeight) {
-                            $rs.$safeApply($is, function () {
+                        if ((lastScrollTop < scrollTop) && (totalHeight * 0.9 < scrollTop + clientHeight)) {
+                            WM.element(this).off('scroll.livelist');
+                            $rs.$evalAsync(function () {
                                 setFetchInProgress($is, true);
                                 navigator.navigatePage('next');
                                 if (navigator.isLastPage()) {
@@ -252,6 +259,8 @@ WM.module('wm.widgets.live')
                                 }
                             });
                         }
+
+                        lastScrollTop = scrollTop;
                     });
             }
 
@@ -306,7 +315,7 @@ WM.module('wm.widgets.live')
                 _.each(groupedLiData, function (groupedData, groupkey) {
                     liTemplateWrapper_start  = '';
                     liTemplateWrapper_end    = '></li></ul></li>';
-                    liTemplateWrapper_start +=  '<li class="app-list-item-group clearfix"><ul class="list-group" data-ng-class="listclass"><li class="app-list-item-header list-item"><h4>' + groupkey + '</h4></li>';
+                    liTemplateWrapper_start +=  '<li class="app-list-item-group clearfix"><ul class="list-group" ng-class="listclass"><li class="app-list-item-header list-item"><h4>' + groupkey + '</h4></li>';
 
                     groupkey = groupkey.replace(regex, '');
 
@@ -315,7 +324,7 @@ WM.module('wm.widgets.live')
                         return data[$is.groupby];
                     });
 
-                    liTemplateWrapper_start += '<li data-ng-repeat="item in _groupData' +  groupkey + ' track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ';
+                    liTemplateWrapper_start += '<li ng-repeat="item in _groupData' +  groupkey + ' track by $index" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
 
                     $liTemplate = prepareLITemplate(listCtrl.$get('listTemplate'), attrs, true);
 
@@ -324,21 +333,27 @@ WM.module('wm.widgets.live')
                 });
             }
 
-            /** With given data, creates list items and updates the markup*/
+            // With given data, creates list items and updates the markup
             function updateFieldDefs($is, $el, data, attrs, listCtrl) {
-                var unbindWatcher,
-                    _s = $is.$liScope,
-                    fieldDefs = _s.fieldDefs;
+                var unbindWatcher, _s, fieldDefs;
+
+                _s        = $is.$liScope;
+                fieldDefs = _s.fieldDefs;
 
                 if ($is.infScroll) {
                     if (WM.isUndefined(fieldDefs)) {
                         _s.fieldDefs = fieldDefs = [];
                     }
+
+                    if ($is.dataNavigator.isFirstPage()) {
+                        _s.fieldDefs.length = 0;
+                    }
+
                     _.forEach(data, function (item) {
                         fieldDefs.push(item);
                     });
 
-                    $timeout(function () {
+                    $rs.$evalAsync(function () {
                         setFetchInProgress($is, false);
                         if (fieldDefs.length) {
                             bindScrollEvt($is, $el);
@@ -358,7 +373,7 @@ WM.module('wm.widgets.live')
                     $is.selecteditem = undefined;
                 }
 
-                /* In run mode, making the first element selected, if flag is set */
+                // In run mode, making the first element selected, if flag is set
                 if ($is.selectfirstitem) {
                     unbindWatcher = $is.$watch(function () {
                         var items = $el.find('.list-group li.app-list-item:first-of-type');
@@ -366,7 +381,7 @@ WM.module('wm.widgets.live')
                             $rs.$safeApply($is, function () {
                                 $timeout(function () {
                                     var item = items.first();
-                                    /*If item has active class already, no need to click again*/
+                                    // If item has active class already, no need to click again
                                     if (!item.hasClass('active')) {
                                         item.click();
                                     }
@@ -395,7 +410,7 @@ WM.module('wm.widgets.live')
                         }
                     }
 
-                    /*If the data is a pageable object, then display the content.*/
+                    // If the data is a pageable object, then display the content.
                     if (WM.isObject(nv) && Utils.isPageable(nv)) {
                         nv = nv.content;
                     }
@@ -423,7 +438,10 @@ WM.module('wm.widgets.live')
                 var $dataNavigator, // dataNavigator element
                     dataNavigator,  // dataNavigator scope
                     binddataset;
+
                 if ($is.navControls || $is.infScroll) {
+
+                    _.set($is, '$liScope.fieldDefs', undefined);
 
                     binddataset = $is.binddataset;
                     Utils.triggerFn($is._watchers.dataset);
@@ -542,18 +560,19 @@ WM.module('wm.widgets.live')
                 return (DeviceVariableService.getFieldType(variable, fieldName) === 'string');
             }
 
-            /** In case of run mode, the field-definitions will be generated from the markup*/
-            /* Define the property change handler. This function will be triggered when there is a change in the widget property */
+            /* In case of run mode, the field-definitions will be generated from the markup
+             * Define the property change handler. This function will be triggered when there is a change in the widget property
+             */
             function propertyChangeHandler($is, $el, attrs, listCtrl, key, nv, ov) {
                 var doNotRemoveTemplate,
+                    selectedVariable,
                     oldClass,
                     newClass,
-                    selectedVariable,
                     markup,
                     $element,
-                    eleScope          = $el.scope(),
-                    variable          =  Utils.getVariableName($is, eleScope),
-                    wp                = $is.widgetProps;
+                    eleScope = $el.scope(),
+                    variable = Utils.getVariableName($is, eleScope),
+                    wp       = $is.widgetProps;
 
                 //checking if the height is set on the element then we will enable the overflow
                 switch (key) {
@@ -685,19 +704,19 @@ WM.module('wm.widgets.live')
 
                 // evt handlers will be created by isolateScope. redefine them on $liScope.
                 WM.extend($liScope, {
-                    'onClick'               : $is.onClick,
-                    'onDblclick'            : $is.onDblclick,
-                    'onTap'                 : $is.onTap,
-                    'onDoubletap'           : $is.onDoubletap,
-                    'onMouseenter'          : $is.onMouseenter,
-                    'onMouseleave'          : $is.onMouseleave,
-                    'onEnterkeypress'       : $is.onEnterkeypress,
-                    'onSetrecord'           : $is.onSetrecord,
-                    'itemclass'             : $is.itemclass,
-                    'itemsPerRowClass'      : getRowClass(attrs.itemsperrow),
-                    'addRow'                : $is.addRow,
-                    'updateRow'             : $is.updateRow,
-                    'deleteRow'             : $is.deleteRow
+                    'onClick'          : $is.onClick,
+                    'onDblclick'       : $is.onDblclick,
+                    'onTap'            : $is.onTap,
+                    'onDoubletap'      : $is.onDoubletap,
+                    'onMouseenter'     : $is.onMouseenter,
+                    'onMouseleave'     : $is.onMouseleave,
+                    'onEnterkeypress'  : $is.onEnterkeypress,
+                    'onSetrecord'      : $is.onSetrecord,
+                    'itemclass'        : $is.itemclass,
+                    'itemsPerRowClass' : getRowClass(attrs.itemsperrow),
+                    'addRow'           : $is.addRow,
+                    'updateRow'        : $is.updateRow,
+                    'deleteRow'        : $is.deleteRow
                 });
 
                 return $liScope;
@@ -707,11 +726,11 @@ WM.module('wm.widgets.live')
                 var tmpl = liTemplateWrapper_start;
 
                 if (attrs.hasOwnProperty('onMouseenter')) {
-                    tmpl += ' data-ng-mouseenter="onMouseenter({$event: $event, $scope: this})" ';
+                    tmpl += ' ng-mouseenter="onMouseenter({$event: $event, $scope: this})" ';
                 }
 
                 if (attrs.hasOwnProperty('onMouseleave')) {
-                    tmpl += ' data-ng-mouseleave="onMouseleave({$event: $event, $scope: this})" ';
+                    tmpl += ' ng-mouseleave="onMouseleave({$event: $event, $scope: this})" ';
                 }
 
                 tmpl += liTemplateWrapper_end;
@@ -746,7 +765,7 @@ WM.module('wm.widgets.live')
                 });
                 return items;
             }
-            //Triggers event to update or delete list item
+            // Triggers event to update or delete list item
             function triggerWMEvent($is, evt, name) {
                 $is.selecteditem = WM.element(evt.delegateTarget).item;
                 $rs.$safeApply($is);
@@ -755,12 +774,12 @@ WM.module('wm.widgets.live')
 
             function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
-                    $hammerEl = new Hammer($el[0], {}),
-                    selectCount = 0,
-                    isMultiSelect = false;// Setting to true on first long press
-                /*listen on to the click event for the ul element & get li clicked of the live-list */
+                    $hammerEl     = new Hammer($el[0], {}),
+                    selectCount   = 0,
+                    isMultiSelect = false; // Setting to true on first long press
+                // listen on to the click event for the ul element & get li clicked of the live-list
                 $el.on('click.wmActive', 'ul.app-livelist-container', function (evt) {
-                    /*returning if click event is triggered within 50ms after pressup event occurred*/
+                    // returning if click event is triggered within 50ms after pressup event occurred
                     if (pressStartTimeStamp + 50 > Date.now() || WM.element(evt.target).is('input')) {
                         return;
                     }
@@ -773,7 +792,7 @@ WM.module('wm.widgets.live')
                             if (!$is.selectionlimit || selectCount < $is.selectionlimit || $li.hasClass('active')) {
                                 $li.toggleClass('active');
                                 selectCount += (isActive ? -1 : 1);
-                                isMultiSelect = selectCount > 0;//Setting 'isMultiSelect' to false if no items are selected
+                                isMultiSelect = selectCount > 0; //Setting 'isMultiSelect' to false if no items are selected
                             } else {
                                 Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                             }
@@ -783,7 +802,7 @@ WM.module('wm.widgets.live')
                                 $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
                                 $li.addClass('active');
                             }
-                            /*trigger $apply, as 'click' or 'tap' is out of angular-scope*/
+                            // trigger $apply, as 'click' or 'tap' is out of angular-scope
                             if (attrs.onClick) {
                                 Utils.triggerFn($liScope.onClick, {$event: evt, $scope: $liScope});
                             }
@@ -795,12 +814,12 @@ WM.module('wm.widgets.live')
                     $rs.$safeApply($is);
                 });
 
-                /*listen on to the dblclick event for the ul element & get li dblclicked of the live-list */
+                // listen on to the dblclick event for the ul element & get li dblclicked of the live-list
                 $el.on('dblclick.wmActive', 'ul', function (evt) {
                     var $li = WM.element(evt.target).closest('li.app-list-item'),
                         $liScope = $li && $li.scope();
 
-                    /*trigger $apply, as 'dblclick' or 'doubleTap' is out of angular-scope*/
+                    // trigger $apply, as 'dblclick' or 'doubleTap' is out of angular-scope
                     if (attrs.onDblclick) {
                         Utils.triggerFn($liScope.onDblclick, {$event: evt, $scope: $liScope});
                     }
@@ -906,7 +925,7 @@ WM.module('wm.widgets.live')
                     }
                 });
             }
-            /*Based on the given item, find the index of the list item*/
+            //Based on the given item, find the index of the list item
             function getItemIndex(listItems, item) {
                 var matchIndex;
                 listItems.each(function (index) {
@@ -919,7 +938,7 @@ WM.module('wm.widgets.live')
                 });
                 return matchIndex;
             }
-            /*Select or delselect the live list item*/
+            // Select or delselect the live list item
             function toggleSelectedItem($el, item, isSelect) {
                 var listItems = $el.find('.list-group li.app-list-item'),
                     itemIndex = WM.isNumber(item) ? item : getItemIndex(listItems, item),
@@ -940,8 +959,8 @@ WM.module('wm.widgets.live')
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
-                        liTemplateWrapper_start = '<li data-ng-repeat="item in fieldDefs track by $index" class="app-list-item" data-ng-class="[itemsPerRowClass, itemclass]" ';
-                        liTemplateWrapper_end   = '></li><li data-ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin"></i> loading...</li>';
+                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                        liTemplateWrapper_end   = '></li><li ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin"></i> loading...</li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
 
                         $el.find('> [data-identifier=list]').append($liTemplate);
@@ -962,15 +981,15 @@ WM.module('wm.widgets.live')
                     }
                     setupEvtHandlers($is, $el, attrs);
                 }
-                /* register the property change handler */
+
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
 
                 defineSelectedItemProp($is, $el, []);
-                /* Select the given item*/
+                // Select the given item
                 $is.selectItem = function (item) {
                     toggleSelectedItem($el, item, true);
                 };
-                /* deselect the given item*/
+                // deselect the given item
                 $is.deselectItem = function (item) {
                     toggleSelectedItem($el, item, false);
                 };
