@@ -330,14 +330,14 @@ WM.module('wm.widgets.live')
                     dateTypes = ['date', 'datetime'],
                     textTypes = ['text', 'password', 'textarea'],
                     evtTypes = getEventTypes(),
-                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset'];
+                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'name'];
                 Object.keys(fieldDef).forEach(function (field) {
                     if (_.includes(excludeProperties, field)) {
                         return;
                     }
                     if (fieldDef[field]) {
                         if (field === 'key' || field === 'field') {
-                            fields += ' name="{{formFields[' + index + '].' + field + '}}"';
+                            fields += ' name="' + fieldDef[field] + '_formWidget"';
                         } else if (field === 'widgetid') {
                             fields += ' widgetid="' + fieldDef.widgetid + '_' + fieldDef.name + '"';
                         } else if (field === 'permitted') {
@@ -798,14 +798,18 @@ WM.module('wm.widgets.live')
                     template = '',
                     wdgtProperties = scope.widgetProps,
                     compileField = function () {
-                        if (!scope.widgetid) {
+                        if (!scope.widgetid && key !== 'show') { //No need to compile widget again in runmode except for show property
                             return;
                         }
                         /*On changing of a property in studio mode, generate the template again so that change is reflected*/
                         template = getTemplate(parentScope.formFields[index], index);
                         element.html(template);
                         $compile(element.contents())(parentScope);
-                    };
+                    },
+                    formWidget = parentScope.Widgets[scope.name + '_formWidget'];
+                if (formWidget) {
+                    formWidget[key] = newVal; //Set the property on the form widget inside the form field widget
+                }
                 switch (key) {
                 case 'dataset':
                     /*if studio-mode, then update the displayField & dataField in property panel for dataset widgets*/
@@ -831,8 +835,11 @@ WM.module('wm.widgets.live')
                         Utils.getService('LiveWidgetsMarkupManager').updateFieldMarkup({'formName': parentScope.name, 'fieldName': scope.name});
                         element.parents('[widgettype="wm-gridcolumn"]').removeClass('hide');
                     }
+                    parentScope.formFields[index][key] = newVal;
                     compileField();
                     break;
+                case 'disabled':
+                case 'readonly':
                 case 'required':
                     parentScope.formFields[index][key] = newVal;
                     compileField();

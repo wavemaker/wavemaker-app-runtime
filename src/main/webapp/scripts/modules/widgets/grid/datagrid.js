@@ -1734,6 +1734,7 @@ $.widget('wm.datagrid', {
         if (key === 'height') {
             this.gridContainer.find('.app-grid-content').css(key, value);
         }
+        this.checkScrollBar();
     },
     /*Change the column header title. function will be called if display name changes in runmode*/
     setColumnProp: function (fieldName, property, val) {
