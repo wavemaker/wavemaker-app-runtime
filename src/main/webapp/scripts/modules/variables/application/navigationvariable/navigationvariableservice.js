@@ -39,7 +39,7 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                             NavigationService.goToPage(pageName, {
                                 transition  : variable.pageTransitions,
                                 $event      : options.$event,
-                                params      : options.params
+                                urlParams   : options.urlParams
                             });
                             sourceScope.$root.$safeApply(sourceScope);
                         } catch (ignore) {
@@ -62,9 +62,10 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                     /* if view name found, call routine to navigate to it */
                     if (viewName) {
                         NavigationService.goToView(viewName, {
-                            page        : pageName,
+                            pageName    : pageName,
                             transition  : variable.pageTransitions,
-                            $event      : options.$event
+                            $event      : options.$event,
+                            urlParams   : options.urlParams
                         });
                     }
                 }

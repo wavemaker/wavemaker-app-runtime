@@ -195,7 +195,7 @@ wm.modules.wmCommon.services.NavigationService = [
             options = options || {};
             var location = '#/' + pageName,
                 viewName = options.viewName,
-                queryParams = options.params || {},
+                queryParams = options.urlParams || {},
                 strQueryParams = '';
 
             _.each(queryParams, function (value, key) {
@@ -244,7 +244,8 @@ wm.modules.wmCommon.services.NavigationService = [
                 this.goToPage(pageName, {
                     viewName    : viewName,
                     $event      : $event,
-                    transition  : transition
+                    transition  : transition,
+                    urlParams   : options.urlParams
                 });
                 listenOnce('page-ready', function () {
                     goToView(WM.element(parentSelector).find('[name="' + viewName + '"]'), viewName);
