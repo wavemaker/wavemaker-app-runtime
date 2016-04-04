@@ -56,9 +56,10 @@ WM.module('wm.widgets.live')
                         post: function (scope, element, attrs) {
                             var handlers = [],
                                 liveGridOptions = {
-                                    'allowInlineEditing': false,
-                                    'multiselect': false,
-                                    'allowAddNewRow': false
+                                    'allowInlineEditing' : false,
+                                    'multiselect'        : false,
+                                    'allowAddNewRow'     : false,
+                                    'setGridEditMode'    : ''
                                 };
                             /* For row delete , set the row fields to the gridform */
                             liveGridOptions.onRowDelete = function (row, callBackFn) {

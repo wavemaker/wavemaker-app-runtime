@@ -475,7 +475,7 @@ WM.module('wm.widgets.live')
                 };
                 $scope.setReadonlyFields = function () {
                     $scope.formFields.forEach(function (column) {
-                        if (column.primaryKey) {
+                        if (column.primaryKey && !column.isRelated) {
                             column.readonly = true;
                         }
                     });
@@ -1132,8 +1132,8 @@ WM.module('wm.widgets.live')
                             }
                             parentIsolateScope.setDefaultValueToValue(columnDef);
                             parentIsolateScope.setFieldVal(columnDef);
-                            if (scope.operationType === 'update') {
-                                scope.setReadonlyFields();
+                            if (parentIsolateScope.operationType === 'update') {
+                                parentIsolateScope.setReadonlyFields();
                             }
                         }
 

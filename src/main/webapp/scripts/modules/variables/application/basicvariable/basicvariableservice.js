@@ -64,7 +64,7 @@ wm.variables.services.BasicVariableService = [
                 },
                 setItem: function (variable, index, value) {
                     /* check param sanity */
-                    if (!index || !value || !variable.isList) {
+                    if (!WM.isDefined(index) || !WM.isDefined(value) || !variable.isList) {
                         return variable.dataSet;
                     }
 
