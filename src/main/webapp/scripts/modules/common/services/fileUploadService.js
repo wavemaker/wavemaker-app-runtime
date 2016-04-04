@@ -104,6 +104,7 @@ wm.modules.wmCommon.services.FileUploadService =  ['$rootScope', 'Utils', '$q', 
         xhr.addEventListener('load', defer.resolve.bind(defer));
         xhr.addEventListener('error', defer.reject.bind(defer));
         xhr.open('POST', url);
+        xhr.setRequestHeader('Accept', '*/*');
         return new FileTransferObject(file, xhr.send.bind(xhr, fd), defer.promise, xhr.abort.bind(xhr));
     }
 
