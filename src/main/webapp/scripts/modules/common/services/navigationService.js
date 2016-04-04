@@ -186,19 +186,34 @@ wm.modules.wmCommon.services.NavigationService = [
          * Navigates to the page.
          *
          * @param {string} pageName Name of the page.
-         * @param {string} transition Page-transition applied to the page.
-         * @param {string} viewName Name of the view within the page.
+         * @param {object} options object having following optional params
+         *                  - transition, Page-transition applied to the page
+         *                  - viewName Name of the view within the page
+         *                  - $event initiator event
          */
-        this.goToPage = function (pageName, transition, viewName, $event) {
-            nextTransitionToApply = transition || '';
+        this.goToPage = function (pageName, options) {
+            options = options || {};
+            var location = '#/' + pageName,
+                viewName = options.viewName,
+                queryParams = options.params || {},
+                strQueryParams = '';
 
-            var _location = '#/' + pageName;
+            _.each(queryParams, function (value, key) {
+                if (!strQueryParams) {
+                    strQueryParams += '?';
+                } else {
+                    strQueryParams += '&';
+                }
+                strQueryParams += key + '=' + value;
+            });
+
+            nextTransitionToApply = options.transition || '';
             if (viewName) {
-                _location +=  '.' + viewName;
+                location +=  '.' + viewName;
             }
 
-            $rs._appNavEvt   = $event;
-            $window.location = _location;
+            $rs._appNavEvt   = options.$event;
+            $window.location = location + strQueryParams;
         };
 
         /**
@@ -211,15 +226,26 @@ wm.modules.wmCommon.services.NavigationService = [
          * Navigates to the view.
          *
          * @param {string} pageName Name of the page.
-         * @param {string} viewName Name of the view within the page.
-         * @param {string} transition Page-transition applied to the page.
+         * @param {object} options object having following optional params
+         *                  - viewName Name of the view within the page
+         *                  - pageName Name of the page where view exists, not required if view in current page
+         *                  - transition Page-transition applied to the page
+         *                  - $event initiator event
          */
-        this.goToView = function (pageName, viewName, transition, $event) {
+        this.goToView = function (viewName, options) {
+            options = options || {};
+            var pageName = options.pageName,
+                transition = options.transition || '',
+                $event = options.$event;
 
             if (!pageName || pageName === $rs.activePageName || isPartialWithNameExists(pageName)) {
                 goToView(WM.element(parentSelector).find('[name="' + viewName + '"]'), viewName);
             } else {
-                this.goToPage(pageName, transition, viewName, $event);
+                this.goToPage(pageName, {
+                    viewName    : viewName,
+                    $event      : $event,
+                    transition  : transition
+                });
                 listenOnce('page-ready', function () {
                     goToView(WM.element(parentSelector).find('[name="' + viewName + '"]'), viewName);
                 });
@@ -238,7 +264,7 @@ wm.modules.wmCommon.services.NavigationService = [
         this.goToPrevious = function ($event) {
             var lastPage = pageStackObject.getLastPage();
             if (lastPage) {
-                this.goToPage(lastPage.name, undefined, undefined, $event);
+                this.goToPage(lastPage.name, {$event: $event});
                 return true;
             }
             return false;
