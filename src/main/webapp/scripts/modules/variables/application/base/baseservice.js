@@ -22,7 +22,8 @@ wm.variables.services.Variables = [
     "$timeout",
     "Utils",
     "BindingManager",
-    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager) {
+    "MetaDataFactory",
+    function ($rootScope, BaseVariablePropertyFactory, ProjectService, FileService, VariableService, CONSTANTS, VARIABLE_CONSTANTS, DialogService, $timeout, Utils, BindingManager, MetaDataFactory) {
         "use strict";
 
         /**
@@ -732,12 +733,15 @@ wm.variables.services.Variables = [
             *  The properties are fetched from the baseFactory.
             */
             extendVariables = function (variables) {
-                /* extend the variables with all properties not found in the variable */
+                // extend the variables with all properties not found in the variable
                 WM.forEach(variables, function (variable, name) {
                     variables[name] = WM.extend(BaseVariablePropertyFactory.getProperties(variable.category), variable);
-                    /* removing dataSet for live variable */
+                    // removing dataSet for live variable
                     if (!runMode && variable.category === "wm.LiveVariable") {
                         variables[name].dataSet = {"dataValue": ""};
+                    } else if (variable.category === "wm.ServiceVariable" && runMode) {
+                        // Attaching service operation info to variables if in run mode
+                        variables[name]._wmServiceOperationInfo = MetaDataFactory.getByOperationId(variable.operationId);
                     }
                 });
 
@@ -757,15 +761,7 @@ wm.variables.services.Variables = [
 
                     /* extend and update the app variables only if freshly loaded */
                     if (freshVariables) {
-                        appVariables = extendVariables(appVariables);
-
-                        /* store the global variables collection */
-                        self.variableCollection[VARIABLE_CONSTANTS.OWNER.APP] = appVariables;
-                        pageScopeMap[VARIABLE_CONSTANTS.OWNER.APP] = $rootScope;
-                        updateContextVariables(VARIABLE_CONSTANTS.OWNER.APP, $rootScope);
-
-                        /* emit an event to specify app-variables are loaded */
-                        $rootScope.$emit('on-app-variables-ready', appVariables);
+                        register(VARIABLE_CONSTANTS.OWNER.APP, appVariables, true, $rootScope);
                     }
 
                     /* check for sanity of success call back and call it */
@@ -1045,20 +1041,20 @@ wm.variables.services.Variables = [
                 return generateUniqueName(category);
             },
 
-            /* registers a variable collection in the specified namespace */
+            // registers a variable collection in the specified namespace
             register = function (nameSpace, variables, loadValuesInStudio, scope) {
-                /* extend the variables with properties from basefactory */
+                // extend the variables with properties from basefactory
                 variables = extendVariables(variables);
 
-                /* store the variables in provided namespace */
+                // store the variables in provided namespace
                 pageScopeMap[nameSpace] = scope;
                 self.variableCollection = self.variableCollection || {};
                 self.variableCollection[nameSpace] = variables;
 
-                /* update the variable values in RUN mode */
+                // update the variable values in RUN mode
                 if (loadValuesInStudio || runMode) {
                     updateContextVariables(nameSpace, scope);
-                    /* emit an event to specify variables are loaded */
+                    // emit an event to specify variables are loaded
                     $rootScope.$emit('on-' + nameSpace + '-variables-ready', variables);
                 }
             },
@@ -1974,17 +1970,14 @@ wm.variables.services.Variables = [
                     variableOwner = (createdVariable.owner === VARIABLE_CONSTANTS.OWNER.PAGE) ? $rootScope.activePageName : null;
 
                     /*Set the "service" and "operation" properties of the service-variable.*/
-                    createdVariable.service = variableDetails.service;
-                    createdVariable.operation = variableDetails.operation;
+                    createdVariable.service       = variableDetails.service;
+                    createdVariable.operation     = variableDetails.operation;
                     createdVariable.operationType = variableDetails.operationType;
-                    createdVariable.serviceType = variableDetails.serviceType;
-                    createdVariable.category = variableCategory;
-                    createdVariable.isDefault = true;
-                    createdVariable.type = variableDetails.returnType;
-
-                    if (variableDetails.wmServiceOperationInfo) {
-                        createdVariable.wmServiceOperationInfo = variableDetails.wmServiceOperationInfo;
-                    }
+                    createdVariable.operationId   = variableDetails.operationId;
+                    createdVariable.serviceType   = variableDetails.serviceType;
+                    createdVariable.category      = variableCategory;
+                    createdVariable.isDefault     = true;
+                    createdVariable.type          = variableDetails.returnType;
 
                     /* insert sample param values if provided */
                     bindMapCollection = createdVariable.dataBinding;

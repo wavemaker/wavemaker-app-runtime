@@ -333,7 +333,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 }
                 url = $rootScope.project.deployedUrl;
 
-                if (variable.prefabName && VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable.wmServiceOperationInfo) {
+                if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable._wmServiceOperationInfo) {
                     /* if it is a prefab variable (used in a normal project), modify the url */
                     url += "/prefabs/" + variable.prefabName;
                     target = "invokePrefabRestService";
@@ -417,8 +417,8 @@ wm.variables.services.$servicevariable = ['Variables',
                     dataParams.push(param);
                 });
 
-                if (VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
-                    methodInfo = Utils.getClonedObject(variable.wmServiceOperationInfo);
+                if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable._wmServiceOperationInfo) {
+                    methodInfo = Utils.getClonedObject(variable._wmServiceOperationInfo);
                     if (methodInfo.parameters) {
                         methodInfo.parameters.forEach(function (param) {
                             param.sampleValue = inputFields[param.name];
@@ -459,7 +459,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     };
                 }
 
-                if (variable.prefabName && VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) === -1) {
+                if (variable.prefabName && REST_SUPPORTED_SERVICES.indexOf(serviceType) === -1) {
                 /* if it is a prefab variable (used in a normal project), modify the url */
                     params.url += "/prefabs/" + variable.prefabName;
                     params.target = "invokePrefabRestService";
@@ -484,7 +484,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     return;
                 }
 
-                if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
+                if (REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable._wmServiceOperationInfo) {
                     /* Here we are invoking JavaService through the new REST api (old classes implementation removed, older projects migrated with new changes for corresponding service variable) */
                     variable.promise = WebService.invokeJavaService(params, function (response) {
                         processSuccessResponse(response, variable, callBackScope, options, success, error);
@@ -579,6 +579,7 @@ wm.variables.services.$servicevariable = ['Variables',
                                     continue;
                                 }
                                 operationInfo.httpMethod = opType;
+                                operationInfo.operationId = operation.operationId;
                                 operationInfo.name = selectedOperation;
                                 operationInfo.relativePath = (path[BASE_PATH_KEY] || "") + path[RELATIVE_PATH_KEY];
                                 /*saving the request mime type only if it is explicitly mentioned used in the file upload widget to decide the mime type from swagger path object*/
@@ -629,6 +630,25 @@ wm.variables.services.$servicevariable = ['Variables',
                     }
                     /*pass the data prepared to the success callback function*/
                     Utils.triggerFn(success, operationInfo);
+                }, function (errMsg) {
+                    /*handle error response*/
+                    Utils.triggerFn(error, errMsg);
+                }, forceReload);
+            },
+        //Function to get operationId for the operation
+            getOperationId = function (selectedOperation, selectedService, success, error, forceReload) {
+                var operationId;
+                ServiceFactory.getServiceDef(selectedService, function (response) {
+                    _.forEach(response.paths, function (path) {
+                        _.forEach(supportedOperations, function (op) {
+                            if (_.get(path, [op, WS_CONSTANTS.OPERATION_NAME_KEY]) === selectedOperation) {
+                                operationId = _.get(path, [op, 'operationId']);
+                            }
+                            return !operationId;
+                        });
+                        return !operationId;
+                    });
+                    Utils.triggerFn(success, operationId);
                 }, function (errMsg) {
                     /*handle error response*/
                     Utils.triggerFn(error, errMsg);
@@ -796,13 +816,14 @@ wm.variables.services.$servicevariable = ['Variables',
         BaseVariablePropertyFactory.register('wm.ServiceVariable', serviceVariableObj, ['wm.Variable'], methods);
 
         return {
-            getServiceModel: function (params) {
+            getServiceModel           : function (params) {
                 var model = {};
                 prepareServiceModel(params.typeRef, model, null, params.variable);
 
                 return model;
             },
-            getServiceOperationInfo: getServiceOperationInfo,
+            getServiceOperationInfo   : getServiceOperationInfo,
+            getOperationId            : getOperationId,
             constructRestRequestParams: constructRestRequestParams
         };
     }];

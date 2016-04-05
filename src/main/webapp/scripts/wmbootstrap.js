@@ -497,6 +497,7 @@ Application
             'Variables',
             'CONSTANTS',
             'wmSpinner',
+            'MetaDataFactory',
 
             //do not remove the below lines
             'BasicVariableService',
@@ -508,7 +509,7 @@ Application
             'LogoutVariableService',
             'TimerVariableService',
 
-            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner) {
+            function ($s, $rs, ProjectService, i18nService, Utils, AppManager, SecurityService, Variables, CONSTANTS, wmSpinner, MetaDataFactory) {
                 'use strict';
 
                 var projectID      = ProjectService.getId(), // ProjectID will always be at the same index in the URL
@@ -578,6 +579,9 @@ Application
                  */
                 if ($rs.isApplicationType) {
                     AppManager.isDeviceReady()
+                        .then(function () {
+                            return MetaDataFactory.load();
+                        })
                         .then(function () {
                             return AppManager.loadCommonPage($s);
                         }).then(function () {

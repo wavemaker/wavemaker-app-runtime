@@ -92,6 +92,10 @@ wm.variables.constant('VARIABLE_SERVICE_URLS', {
         movePageVariables: {
             url: 'services/projects/:projectId/pages/:pageName/variables/move',
             method: 'POST'
+        },
+        getServiceOpInfo: {
+            url: 'services/servicedefs',
+            method: 'GET'
         }
     }
 });
