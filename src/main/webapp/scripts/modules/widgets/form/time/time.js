@@ -36,15 +36,14 @@ WM.module('wm.widgets.form')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.time', ['wm.base', 'wm.base.editors.abstracteditors', 'wm.base.datetime']),
             notifyFor = {
-                'readonly': true,
-                'disabled': true,
-                'autofocus': true,
-                'timestamp': true,
-                'timepattern': true
+                'readonly'    : true,
+                'disabled'    : true,
+                'autofocus'   : true,
+                'timepattern' : true
             };
 
         if ($rs.isMobileApplicationType) {
-            widgetProps.hourstep.show = false;
+            widgetProps.hourstep.show   = false;
             widgetProps.minutestep.show = false;
         }
 
@@ -56,7 +55,7 @@ WM.module('wm.widgets.form')
             }
         }
 
-        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
+        function propertyChangeHandler(scope, element, key, newVal) {
             var inputEl = element.find('input'),
                 buttonEl = element.find('button');
             switch (key) {
@@ -69,12 +68,6 @@ WM.module('wm.widgets.form')
                 break;
             case 'autofocus':
                 inputEl.first().attr(key, newVal);
-                break;
-            case 'timestamp':
-                /*Single equal is used not to update model if newVal and oldVal have same values with string and integer types*/
-                if (newVal != oldVal) {
-                    scope._model_ = newVal;
-                }
                 break;
             case 'timepattern':
                 scope.showseconds = _.includes(newVal, 'ss');
@@ -158,14 +151,29 @@ WM.module('wm.widgets.form')
                             isCurrentTime = false,
                             CURRENT_TIME = 'CURRENT_TIME',
                             timeInterval,
+                        //Function to set/ cancel the timer based on the model passed
+                            setTimeInterval = function (cancel) { //Cancel the existing timer
+                                if (cancel) {
+                                    $interval.cancel(timeInterval);
+                                    return;
+                                }
+                                //Check if timer already exists. If time interval doesn't exist or state is canceled, create new timer
+                                if (!timeInterval || timeInterval.$$state.value === 'canceled') {
+                                    timeInterval = $interval(function () {
+                                        scope._model_ = CURRENT_TIME; //Update the model every 1 sec
+                                    }, 1000);
+                                }
+                            },
                             setProxyModel = function (val) {
                                 var dateTime;
                                 if (val) {
                                     if (isCurrentTime) {
                                         scope._proxyModel = new Date();
+                                        setTimeInterval();
                                     } else {
                                         dateTime = Utils.getValidDateObject(val);
                                         scope._proxyModel = WM.isDate(dateTime) ? dateTime : undefined;
+                                        setTimeInterval(true);
                                     }
                                 } else {
                                     scope._proxyModel = undefined;
@@ -236,8 +244,10 @@ WM.module('wm.widgets.form')
                                     if (val) {
                                         if (isCurrentTime) {
                                             dateTime = new Date();
+                                            setTimeInterval();
                                         } else {
                                             dateTime = Utils.getValidDateObject(val);
+                                            setTimeInterval(true);
                                         }
                                         /*set the proxymodel and timestamp*/
                                         this._proxyModel = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
@@ -256,13 +266,11 @@ WM.module('wm.widgets.form')
                             scope._model_ = attrs.datavalue;
                             if (attrs.datavalue === CURRENT_TIME && CONSTANTS.isRunMode) {
                                 scope.disabled = true;
-                                timeInterval = $interval(function () {
-                                    scope._model_ = new Date();
-                                }, 1000);
+                                setTimeInterval();
                             }
                         }
                         scope.$on('$destroy', function () {
-                            $interval.cancel(timeInterval);
+                            setTimeInterval(true);
                         });
                     }
                 };
