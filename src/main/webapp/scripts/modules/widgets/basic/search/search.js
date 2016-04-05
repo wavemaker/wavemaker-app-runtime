@@ -365,7 +365,7 @@ WM.module('wm.widgets.basic')
                             $event.data = {'item': $item, 'model': $model, 'label': $label, 'query': element.find('input').val()};
 
                             // set selected item on widget's exposed property
-                            scope.datavalue = (scope.datafield && scope.datafield !== 'All Fields') ? $item[scope.datafield] : $item;
+                            scope.datavalue = (scope.datafield && scope.datafield !== 'All Fields') ? ($item  && $item[scope.datafield]) : $item;
 
                             // call user 'onSubmit' fn
                             scope.onSubmit({$event: $event, $scope: scope});
