@@ -20,6 +20,7 @@
  * - {@link wm.database.$DatabaseService#methods_saveDataModel saveDataModel}
  * - {@link wm.database.$DatabaseService#methods_applyDataModel applyDataModel}
  * - {@link wm.database.$DatabaseService#methods_revertDataModel revertDataModel}
+ * - {@link wm.database.$DatabaseService#methods_getDataModelDiff getDataModelDiff}
  * - {@link wm.database.$DatabaseService#methods_getAllEntities getAllEntities}
  * - {@link wm.database.$DatabaseService#methods_getEntity getEntity}
  * - {@link wm.database.$DatabaseService#methods_createEntity createEntity}
@@ -53,8 +54,9 @@ wm.plugins.database.services.DatabaseService = [
     "Utils",
     "WebService",
     "$window",
+    "$q",
 
-    function ($rootScope, BaseService, BaseServiceManager, CONSTANTS, Utils, WebService, $window) {
+    function ($rootScope, BaseService, BaseServiceManager, CONSTANTS, Utils, WebService, $window, $q) {
         'use strict';
 
         var initiateAction = function (action, params, successCallback, failureCallback) {
@@ -582,7 +584,8 @@ wm.plugins.database.services.DatabaseService = [
                     urlParams: {
                         projectID: params.projectID,
                         serviceId: params.dataModelName
-                    }
+                    },
+                    data: params.data
                 }, successCallback, failureCallback);
             },
             /**
@@ -614,6 +617,31 @@ wm.plugins.database.services.DatabaseService = [
                 }, successCallback, failureCallback);
             },
 
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#getDataModelDiff
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to get the datamodel diff i.e., diff of datamodel in external database and draftmodel.
+             *
+             * @param {object} params
+             *                 Object containing name of the project and name of the datamodel.
+             */
+
+            getDataModelDiff: function (params) {
+                var deferred = $q.defer();
+                BaseService.execute({
+                    target: "Database",
+                    action: "dataModelDiff",
+                    urlParams: {
+                        projectID: params.projectID,
+                        serviceId: params.dataModelName
+                    }
+                }, deferred.resolve, deferred.reject);
+                return deferred.promise;
+            },
 
             /**
              * @ngdoc function

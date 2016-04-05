@@ -76,6 +76,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/datamodels/:dataModelName/revert",
             method: "POST"
         },
+        dataModelDiff: {
+            url: "services/projects/:projectID/database/services/:serviceId/changes",
+            method: "GET"
+        },
 
         /*Entities related services*/
 
