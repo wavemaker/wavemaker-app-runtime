@@ -121,13 +121,14 @@ WM.module('wm.prefabs')
         function (PrefabManager, Utils, $compile, PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout, WIDGET_CONSTANTS, $rs, DialogService, PrefabService, debugModePrefabResourceInterceptor) {
             'use strict';
 
-            var prefabDefaultProps = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
-                depsMap = {},
+            var prefabDefaultProps   = PropertiesFactory.getPropertiesOf('wm.prefabs', ['wm.base']),
+                depsMap              = {},
+                prefabWidgetPropsMap = {},
+                prefabMethodsMap     = {},
+                propsSkipList        = ['width', 'height', 'show', 'animation'],
                 propertyGroups,
                 propertiesGroup,
-                eventsGroup,
-                prefabWidgetPropsMap = {},
-                prefabMethodsMap = {};
+                eventsGroup;
 
             if (CONSTANTS.isStudioMode) {
                 (function () {
@@ -173,6 +174,18 @@ WM.module('wm.prefabs')
                         'name'           : $is.prefabname + '_' + 'properties',
                         'parent'         : 'properties',
                         'properties'     : prefabProperties
+                    }, {
+                        'boundPrefabName': $is.prefabname,
+                        'name'           : $is.prefabname + '_' + 'layout',
+                        'displayKey'     : 'LABEL_PROPERTYGROUP_LAYOUT',
+                        'parent'         : 'properties',
+                        'properties'     : ['width', 'height']
+                    }, {
+                        'boundPrefabName': $is.prefabname,
+                        'name'           : $is.prefabname + '_' + 'behavior',
+                        'displayKey'     : 'LABEL_PROPERTYGROUP_BEHAVIOR',
+                        'parent'         : 'properties',
+                        'properties'     : ['show', 'animation']
                     });
 
                     eventsGroup.subGroups.push({
@@ -203,14 +216,11 @@ WM.module('wm.prefabs')
                     }
 
                     if (CONSTANTS.isStudioMode) {
-                        var found = propertyGroups.some(function (group) {
-                            return group.properties.indexOf(key) !== -1;
-                        });
 
-                        if (!found) {
-                            if (prop.type === 'event') {
-                                prefabEvents.push(key);
-                            } else {
+                        if (prop.type === 'event') {
+                            prefabEvents.push(key);
+                        } else {
+                            if (!_.includes(propsSkipList, key)) {
                                 prefabProperties.push(key);
                             }
                         }
