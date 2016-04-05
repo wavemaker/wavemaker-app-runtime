@@ -1058,6 +1058,28 @@ WM.module('wm.widgets.base', [])
                         "animation": {"type": "list", "options": animationOptions},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "panel-default", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
+                    'wm.layouts.card': {
+                        "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
+                        "subheading": {"type": "string", "value": "Sub Heading",  "bindable": "in-bound"},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
+                        "iconurl": {"type": "string", "bindable": "in-bound"},
+                        "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
+                        "margin": {"type": "string", "widget": "box"},
+                        "margintop": {"type": "string", "pattern": numberRegex},
+                        "marginbottom": {"type": "string", "pattern": numberRegex},
+                        "marginright": {"type": "string", "pattern": numberRegex},
+                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "picturesource": {"type": "string", "value": "", "bindable": "in-out-bound"},
+                        "picturetitle": {"type": "string", "bindable": "in-bound"},
+                        /*Events*/
+                        "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onMouseleave": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "animation": {"type": "list", "options": animationOptions},
+                        "class": {"type": "string", "pattern": classRegex}
+                    },
                     'wm.layouts.container': {
                         "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
                         "margin": {"type": "string", "widget": "box"},
@@ -1699,12 +1721,12 @@ WM.module('wm.widgets.base', [])
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
                 {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
-                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild", "gridsearch", "searchlabel"], "parent": "properties"},
+                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
-                {"name": "display", "properties": ["picturesource", "modal", "vertical"], "parent": "properties"},
+                {"name": "display", "properties": ["picturesource", "modal", "vertical", "avatar"], "parent": "properties"},
                 {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "minvalue", "maxvalue", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},
                 {"name": "output", "properties": ["outputformat"], "parent": "properties"},
@@ -2111,7 +2133,7 @@ WM.module('wm.widgets.base', [])
                 ' on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect ' +
                 ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius ' +
                 ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight ' +
-                ' opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource textalign textdecoration verticalalign visibility ' +
+                ' opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource avatar textalign textdecoration verticalalign visibility ' +
                 ' whitespace wordbreak zindex bordertop borderright borderbottom borderleft borderunit paddingtop paddingright paddingbottom paddingleft' +
                 ' paddingunit margintop marginright marginbottom marginleft marginunit fontsize fontunit show hint caption animation backgroundimage iconposition iconclass';
 
@@ -2923,7 +2945,8 @@ WM.module('wm.widgets.base', [])
                             'wm-header',
                             'wm-left-panel',
                             'wm-right-panel',
-                            'wm-top-nav'
+                            'wm-top-nav',
+                            'wm-card'
                         ];
                     } else {
                         types = types.split(",");
