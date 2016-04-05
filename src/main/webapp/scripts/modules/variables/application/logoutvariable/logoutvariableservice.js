@@ -36,7 +36,9 @@ wm.variables.services.LogoutVariableService = ['Variables',
                     variableEvents = VARIABLE_CONSTANTS.EVENTS,
                     callBackScope,
                     logoutErrorMessage = "No authenticated user to logout.",
-                    handleError;
+                    handleError,
+                    redirectPage,
+                    appManager;
 
                 /* get the callback scope for the variable based on its owner */
                 if (variableOwner === "App") {
@@ -64,8 +66,7 @@ wm.variables.services.LogoutVariableService = ['Variables',
                             $rootScope.isUserAuthenticated = false;
                             Utils.triggerFn(success);
                             if (variable.useDefaultSuccessHandler) {
-                                var redirectPage = variable.redirectTo,
-                                    appManager;
+                                redirectPage = variable.redirectTo;
                                 /* backward compatibility (index.html/login.html may be present in older projects) */
                                 if (!redirectPage || redirectPage === "login.html" || redirectPage === "index.html") {
                                     redirectPage = "";
