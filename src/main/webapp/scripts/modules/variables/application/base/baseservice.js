@@ -474,6 +474,10 @@ wm.variables.services.Variables = [
                     } else {
                         /* new projects with flat bind map */
                         bindMap.forEach(function (node) {
+                            /* for static variable change the binding with target 'dataBinding' to 'dataSet', as the results have to reflect directly in the dataSet */
+                            if (variable.category === "wm.Variable" && node.target === 'dataBinding') {
+                                node.target = 'dataSet';
+                            }
                             processBindObject(node, scope, root, variable);
                         });
                     }
