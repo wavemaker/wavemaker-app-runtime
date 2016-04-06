@@ -333,7 +333,7 @@ WM.module('wm.widgets.basic')
                     },
                     'post': function (scope, element, attrs) {
 
-                        var wp;
+                        var wp, searchItem;
                         // In Studio mode aways display the input box
                         if (CONSTANTS.isStudioMode) {
                             scope.dataSetType = "listOfStrings";
@@ -361,6 +361,9 @@ WM.module('wm.widgets.basic')
                                 $item = Utils.getClonedObject($item);
                                 delete $item.wmImgSrc;
                             }
+                            //store the previous item to make the button click functional
+                            $item = searchItem = $item || (scope.datavalue === searchItem[scope.datafield] ? searchItem : undefined);
+
                             // add the selected object to the event.data and send to the user
                             $event.data = {'item': $item, 'model': $model, 'label': $label, 'query': element.find('input').val()};
 
