@@ -557,9 +557,6 @@ WM.module('wm.widgets.form')
                                 break;
                             case 'contenttype':
                                 scope.chooseFilter = newVal.split(" ").join(",");
-                                if (isStudioMode && $rootScope.isMobileApplicationType && !$rootScope.isTemplateBundleType) {
-                                    $rootScope.$emit('addPluginForContentType', newVal);
-                                }
                                 break;
                             case 'service':
                                 if (isStudioMode && !$rootScope.isTemplateBundleType) {
