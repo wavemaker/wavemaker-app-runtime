@@ -801,14 +801,14 @@ WM.module('wm.widgets.live')
                     selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
                     if ($liScope) {
                         if (isMultiSelect && $rs.isMobileApplicationType) {
-                            if (checkSelectionLimit(selectCount) || $li.hasClass('active')) {
+                            if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
                                 $li.toggleClass('active');
                                 isMultiSelect = selectCount !== 0;//Setting 'isMultiSelect' to false if no items are selected
                             } else {
                                 Utils.triggerFn($is.onSelectionlimitexceed, {$event: evt, $scope: $is});
                             }
                         } else if (evt.ctrlKey || evt.metaKey) {
-                            if (checkSelectionLimit(selectCount) || $li.hasClass('active')) {
+                            if (checkSelectionLimit($is, selectCount) || $li.hasClass('active')) {
                                 $is.lastSelectedItem = $is.firstSelectedItem = $li;
                                 $li.toggleClass('active');
                             } else {
@@ -823,7 +823,7 @@ WM.module('wm.widgets.live')
                             if (first > last) {
                                 last = [first, first = last][0];
                             }
-                            if (checkSelectionLimit(last - first)) {
+                            if (checkSelectionLimit($is, last - first)) {
                                 $el.find('li.active').removeClass('active');
                                 _.forEach($liItems, function (element, index) {
                                     if (index >= first && index <= last) {
@@ -869,7 +869,7 @@ WM.module('wm.widgets.live')
                     if (keyPressed === 'SHIFT+UP' || keyPressed === 'SHIFT+LEFT') {
                         setIndexValues();
                         if (presentIndex > 0) {
-                            if ((presentIndex === firstIndex || presentIndex < firstIndex) && checkSelectionLimit(selectCount)) {
+                            if ((presentIndex === firstIndex || presentIndex < firstIndex) && checkSelectionLimit($is, selectCount)) {
                                 $is.lastSelectedItem = WM.element($liItems[presentIndex - 1]).toggleClass('active');
                             } else if (presentIndex > firstIndex) {
                                 WM.element($liItems[presentIndex]).toggleClass('active');
@@ -883,7 +883,7 @@ WM.module('wm.widgets.live')
                     } else if (keyPressed === 'SHIFT+RIGHT' || keyPressed === 'SHIFT+DOWN') {
                         setIndexValues();
                         if (presentIndex < $liItems.length - 1) {
-                            if ((presentIndex === firstIndex || presentIndex > firstIndex) && checkSelectionLimit(selectCount)) {
+                            if ((presentIndex === firstIndex || presentIndex > firstIndex) && checkSelectionLimit($is, selectCount)) {
                                 $is.lastSelectedItem = WM.element($liItems[presentIndex + 1]).toggleClass('active');
                             } else if (presentIndex < firstIndex) {
                                 WM.element($liItems[presentIndex]).toggleClass('active');
@@ -1083,7 +1083,6 @@ WM.module('wm.widgets.live')
                 }
                 onNavigationTypeChange($is, $is.navigation);
 
-                checkSelectionLimit.bind(undefined, $is);
                 WidgetUtilService.postWidgetCreate($is, $el, attrs);
             }
 
