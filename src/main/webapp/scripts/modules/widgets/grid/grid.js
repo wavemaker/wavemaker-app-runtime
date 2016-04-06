@@ -1769,7 +1769,7 @@ WM.module('wm.widgets.grid')
                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                 if (CONSTANTS.isStudioMode) {
                     /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
-                    $scope.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
+                    $scope.widgetProps.pagesize.show = !(isBoundToLiveVariable || (isBoundToQueryServiceVariable && variableObj.controller !== 'ProcedureExecution'));
                     $scope.widgetProps.multiselect.show = $scope.isPartOfLiveGrid ? false : $scope.widgetProps.multiselect.show;
                     $scope.widgetProps.multiselect.showindesigner = $scope.isPartOfLiveGrid ? false : $scope.widgetProps.multiselect.showindesigner;
                     /* In Studio, disabling readonlygrid property if bound to a service variable or view */
