@@ -396,6 +396,7 @@ WM.module('wm.widgets.form')
 
         return {
             restrict: 'E',
+            priority: 10,
             replace: true,
             scope: {
                 'onSelect': '&',
@@ -556,9 +557,12 @@ WM.module('wm.widgets.form')
                                 break;
                             case 'contenttype':
                                 scope.chooseFilter = newVal.split(" ").join(",");
+                                if (isStudioMode && $rootScope.isMobileApplicationType && !$rootScope.isTemplateBundleType) {
+                                    $rootScope.$emit('addPluginForContentType', newVal);
+                                }
                                 break;
                             case 'service':
-                                if (isStudioMode) {
+                                if (isStudioMode && !$rootScope.isTemplateBundleType) {
                                     if (scope.service === CONSTANT_FILE_SERVICE && !scope.operation) {
                                         scope.operation = 'uploadFile';
                                     }
