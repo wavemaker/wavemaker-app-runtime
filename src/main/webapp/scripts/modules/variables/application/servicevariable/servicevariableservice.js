@@ -235,14 +235,17 @@ wm.variables.services.$servicevariable = ['Variables',
                 // EVENT: ON_CAN_UPDATE
                 initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, response);
             },
+
         /*function to create the params to invoke the java service. creating the params and the corresponding
         * url to invoke based on the type of the parameter*/
-            constructRestRequestParams = function (operationInfo, serviceType, variable) {
+            constructRestRequestParams = function (operationInfo, variable) {
                 var queryParams = '',
-                    endPointRelativePath = operationInfo.relativePath || '/',
+                    endPointRelativePath = operationInfo.basePath ? operationInfo.basePath + (operationInfo.relativePath || '/') : operationInfo.relativePath || '/',
                     headers = {},
+                    variable = variable || {},
                     requestBody,
                     url,
+                    requiredParamMissing = false,
                     target,
                     pathParamRex,
                     invokeParams,
@@ -258,7 +261,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     formData = new FormData();
                 }
                 /* loop through all the parameters */
-                WM.forEach(operationInfo.parameters, function (param) {
+                _.forEach(operationInfo.parameters, function (param) {
                     var paramValue = param.sampleValue;
                     if (WM.isDefined(paramValue) && paramValue !== '') {
                         switch (param.parameterType.toUpperCase()) {
@@ -314,12 +317,23 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
                             break;
                         }
+                    } else if (param.required) {
+                        requiredParamMissing = param.name || param.id;
+                        return false;
                     }
                 });
-
+                if (requiredParamMissing) {
+                    return {
+                        'error': {
+                            'type': 'required_field_missing',
+                            'field': requiredParamMissing,
+                            'message': 'Required field : "' + requiredParamMissing + '" missing'
+                        }
+                    };
+                }
                 url = $rootScope.project.deployedUrl;
 
-                if (variable.prefabName && VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(serviceType) !== -1 && variable.wmServiceOperationInfo) {
+                if (variable.prefabName && VARIABLE_CONSTANTS.REST_SUPPORTED_SERVICES.indexOf(variable.serviceType) !== -1 && variable.wmServiceOperationInfo) {
                     /* if it is a prefab variable (used in a normal project), modify the url */
                     url += "/prefabs/" + variable.prefabName;
                     target = "invokePrefabRestService";
@@ -420,7 +434,11 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
                         });
                     }
-                    params = constructRestRequestParams(methodInfo, serviceType, variable);
+                    params = constructRestRequestParams(methodInfo, variable);
+                    if (params.error && params.error.message) {
+                        processErrorResponse(params.error.message, variable, callBackScope, error);
+                        return;
+                    }
                 } else if (serviceType === SERVICE_TYPE_REST) {
                     dataParams = [service, operation, Utils.getClonedObject(inputFields)];
 
@@ -784,6 +802,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 return model;
             },
-            getServiceOperationInfo: getServiceOperationInfo
+            getServiceOperationInfo: getServiceOperationInfo,
+            constructRestRequestParams: constructRestRequestParams
         };
     }];
