@@ -13,17 +13,19 @@ WM.module('wm.layouts.containers')
         '$timeout',
         '$routeParams',
         'CONSTANTS',
+        'FormWidgetUtils',
 
-        function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $timeout, $routeParams, CONSTANTS) {
+        function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $timeout, $routeParams, CONSTANTS, FormWidgetUtils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.layouts']),
                 notifyFor = {
-                    'dataset': true,
-                    'scopedataset': true,
-                    'itemicon': true,
-                    'itemlabel': true,
-                    'itemlink': true,
-                    'itemchildren': true
+                    'dataset'      : true,
+                    'scopedataset' : true,
+                    'itemicon'     : true,
+                    'itemlabel'    : true,
+                    'itemlink'     : true,
+                    'itemchildren' : true,
+                    'orderby'      : true
                 };
 
             function getNodes($is, nv) {
@@ -38,6 +40,7 @@ WM.module('wm.layouts.containers')
                         });
                     }
                 } else if (WM.isArray(nv)) {
+                    nv = FormWidgetUtils.getOrderedDataSet(nv, $is.orderby);
                     nodes = nv;
                 } else if (WM.isObject(nv)) {
                     nodes = [nv];
@@ -160,6 +163,7 @@ WM.module('wm.layouts.containers')
                 case 'itemlabel':
                 case 'itemlink':
                 case 'itemchildren':
+                case 'orderby':
                     constructNav($el, $is);
                     break;
                 }

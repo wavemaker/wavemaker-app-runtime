@@ -16,12 +16,13 @@ WM.module('wm.widgets.form')
         /*getting widget properties for the specific widget*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.radioset', ['wm.base', 'wm.booleaneditors', 'wm.base.editors.dataseteditors']),
             notifyFor = {
-                'dataset': true,
-                'displayfield': true,
-                'datafield': true,
-                'usekeys': true,
-                'selectedvalue': true,
-                'disabled': true
+                'dataset'       : true,
+                'displayfield'  : true,
+                'datafield'     : true,
+                'usekeys'       : true,
+                'selectedvalue' : true,
+                'disabled'      : true,
+                'orderby'       : true
             };
 
         /*function to assign the values to the model variable based on the selectedvalue as provided.*/
@@ -98,6 +99,7 @@ WM.module('wm.widgets.form')
             case 'displayfield':
             case 'datafield':
             case 'usekeys':
+            case 'orderby':
                 if (CONSTANTS.isRunMode || !isBoundToServiceVariable) {
                     /*generating the radioset based on the values provided*/
                     constructRadioSet(scope, element, dataSet);

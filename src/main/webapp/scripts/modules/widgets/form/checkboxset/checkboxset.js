@@ -22,7 +22,8 @@ WM.module('wm.widgets.form')
                 'datafield'     : true,
                 'usekeys'       : true,
                 'selectedvalues': true,
-                'disabled'      : true
+                'disabled'      : true,
+                'orderby'      : true
             };
 
         /*function to assign the values to the model variable based on the selectedvalue as provided.*/
@@ -132,6 +133,7 @@ WM.module('wm.widgets.form')
             case 'displayfield':
             case 'datafield':
             case 'usekeys':
+            case 'orderby':
                 if (CONSTANTS.isRunMode || !isBoundToServiceVariable) {
                     constructCheckboxSet(scope, element, dataSet);
                 }

@@ -23,8 +23,9 @@ WM.module('wm.widgets.form')
     .directive('wmSwitch', [
         'PropertiesFactory',
         'WidgetUtilService',
+        'FormWidgetUtils',
 
-        function (PropertiesFactory, WidgetUtilService) {
+        function (PropertiesFactory, WidgetUtilService, FormWidgetUtils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.switch', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
@@ -104,6 +105,7 @@ WM.module('wm.widgets.form')
                     scope.datasetType = COMMA_SEP_STRING;
                 } else if (WM.isObject(dataset)) { // array or object
                     if (WM.isArray(dataset)) { // array
+                        dataset = FormWidgetUtils.getOrderedDataSet(dataset, scope.orderby);
                         if (WM.isString(dataset[0])) { // array of strings
                             options = dataset.map(trim).map(toOptionsObjFromString);
                             scope.datasetType = ARRAY_STRINGS;

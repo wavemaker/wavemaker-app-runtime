@@ -109,7 +109,7 @@ WM.module('wm.widgets.basic')
             });
         };
     })
-    .directive('wmSearch', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', '$timeout', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $timeout) {
+    .directive('wmSearch', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', 'Utils', '$timeout', 'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $timeout, FormWidgetUtils) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
             notifyFor = {
@@ -146,6 +146,7 @@ WM.module('wm.widgets.basic')
                 var dataSet = Utils.getClonedObject(data);
                 // if data-set is an array, show the 'listOfObjects' mode
                 if (WM.isArray(dataSet)) {
+                    dataSet = FormWidgetUtils.getOrderedDataSet(dataSet, scope.orderby);
                     // check if dataSet contains list of objects, then switch to 'listOfObjects', else display 'default'
                     if (WM.isObject(dataSet[0])) {
                         scope.dataSetType = 'listOfObjects';
