@@ -94,7 +94,8 @@ $.widget('wm.datagrid', {
             'resizable': false,
             'selectable': false,
             'readonly': true,
-            'style': 'text-align: center;'
+            'style': 'width: 30px; text-align: center;',
+            'textAlignment': 'center'
         },
         'radio': {
             'field': 'radio',
@@ -105,7 +106,8 @@ $.widget('wm.datagrid', {
             'resizable': false,
             'selectable': false,
             'readonly': true,
-            'style': 'text-align: center;'
+            'style': 'width: 30px; text-align: center;',
+            'textAlignment': 'center'
         },
         'rowIndex': {
             'field': 'rowIndex',
@@ -115,7 +117,8 @@ $.widget('wm.datagrid', {
             'searchable': false,
             'selectable': false,
             'readonly': true,
-            'style': 'text-align: left;'
+            'style': 'text-align: left;',
+            'textAlignment': 'left'
         }
     },
     Utils: {
@@ -380,7 +383,7 @@ $.widget('wm.datagrid', {
 
     /* Returns the table cell template. */
     _getColumnTemplate: function (row, colId, colDef) {
-        var classes = this.options.cssClassNames.tableCell + ' ' + colDef.class,
+        var classes = this.options.cssClassNames.tableCell + ' ' + (colDef.class || ''),
             ngClass = colDef.ngclass || '',
             htm = '<td class="' + classes + '" data-col-id="' + colId + '" style="text-align: ' + colDef.textAlignment + ';"',
             colExpression = colDef.customExpression,
@@ -1012,6 +1015,9 @@ $.widget('wm.datagrid', {
 
     /* Checks the header checkbox if all table checkboxes are checked, else unchecks it. */
     updateSelectAllCheckboxState: function () {
+        if (!this.options.showHeader) {
+            return;
+        }
         var $headerCheckbox = this.gridHeader.find('th input:checkbox'),
             $tbody = this.gridElement.find('tbody'),
             checkedItemsLength = $tbody.find('tr:visible input:checkbox:checked').length,
@@ -1562,9 +1568,15 @@ $.widget('wm.datagrid', {
 
     /* Renders the table header. */
     _renderHeader: function () {
-        var $colgroup = $(this._getHeaderTemplate().colgroup),
-            $header = $(this._getHeaderTemplate().header),
-            self = this;
+        var headerTemplate = this._getHeaderTemplate(),
+            $colgroup      = $(headerTemplate.colgroup),
+            self           = this,
+            $header;
+        if (!this.options.showHeader) {
+            this.gridElement.append($colgroup);
+            return;
+        }
+        $header   = $(headerTemplate.header);
         function toggleSelectAll(e) {
             var $checkboxes = $('tbody tr:visible td input:checkbox:not(:disabled)', self.gridElement),
                 checked = this.checked;
@@ -1584,7 +1596,7 @@ $.widget('wm.datagrid', {
         }
         /*For mobile view, append header to the main table only*/
         if (this.options.isMobile) {
-            this.gridElement.append($header);
+            this.gridElement.append($colgroup).append($header);
             this.gridHeader = this.gridElement.find('thead');
         } else {
             /**Append the colgroup to the header and the body.
@@ -1692,9 +1704,7 @@ $.widget('wm.datagrid', {
         this.element.append(this.gridContainer);
         this.dataStatusContainer = $(statusContainer);
         this.gridContainer.append(this.dataStatusContainer);
-        if (this.options.showHeader) {
-            this._renderHeader();
-        }
+        this._renderHeader();
         if (this.options.enableSearch) {
             this._renderSearch();
         }
