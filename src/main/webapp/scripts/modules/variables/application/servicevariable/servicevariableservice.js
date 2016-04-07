@@ -499,7 +499,9 @@ wm.variables.services.$servicevariable = ['Variables',
                     ServiceFactory.getServiceOperations(service, function () {
                         ServiceFactory.getServiceOperationParams(service, operation, function (response) {
                             var typeRef = response['return'].typeRef,
-                                fieldValue = startNode ? startNode.substring(variable.name.length + 1, startNode.length) : startNode;
+                                fieldValue = startNode ? startNode.substring(variable.name.length + 1, startNode.length) : startNode,
+                                variableTypeNode,
+                                transformationCols;
                             serviceModel = {};
 
                             variable.type = variable.type || typeRef;
@@ -508,12 +510,22 @@ wm.variables.services.$servicevariable = ['Variables',
                             /* prepare sample data-structure for the service */
                             prepareServiceModel(variable.type, serviceModel, fieldValue, variable);
 
-                            /* check for transformation columns in variable */
+                            /*
+                             * check for transformation columns in variable
+                             * if found, push a new type node for 'wmTransformedData' in the dataTypes with the transformationColumns
+                             */
                             if (variable.transformationColumns) {
                                 serviceModel['wmTransformedData'] = {};
                                 WM.forEach(variable.transformationColumns, function (columnName) {
                                     serviceModel['wmTransformedData'][columnName] = '';
                                 });
+                                variableTypeNode = $rootScope.dataTypes[variable.type];
+                                transformationCols = variable.transformationColumns;
+                                variableTypeNode.fields['wmTransformedData'] = {'type': variable.service + '.wmTransformedData'};
+                                $rootScope.dataTypes[variable.service + '.wmTransformedData'] = {
+                                    'service': variable.service,
+                                    'fields': _.zipObject(transformationCols, _.fill(Array(transformationCols.length), {'type':'string, number, date, datetime'}))
+                                };
                             }
 
                             /* update the dataset */
