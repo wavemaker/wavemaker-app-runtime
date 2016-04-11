@@ -15,17 +15,23 @@ WM.module("wm.widgets.basic")
                     '<li data-ng-class="{\'disabled\':isDisableLast}"><a title="Go to End" name="last" href="javascript:void(0);" aria-label="Last" data-ng-click="navigatePage(\'last\', $event)"><i class="wi wi-fast-forward"></i></a></li>' +
                     '<li data-ng-if="showrecordcount" class="totalcount disabled"><a>Total Records: {{dataSize}}</a></li>' +
                 '</ul>' +
-                '<ul class="pager" data-ng-if="navcontrols === \'Basic\'">' +
+                '<ul class="pager" data-ng-if="navcontrols === \'Pager\'">' +
                     '<li class="previous" data-ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true">&larr;</span> Previous</a></li>' +
                     '<li class="next" data-ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'next\', $event)">Next <span aria-hidden="true">&rarr;</span></a></li>' +
                 '</ul>' +
+                '<div class="basic" data-ng-if="navcontrols === \'Basic\'">' +
+                    '<uib-pagination items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ng-disabled="false"' +
+                            ' boundary-links="boundarylinks" force-ellipses="forceellipses" direction-links="directionlinks" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>' +
+                    '<ul data-ng-if="showrecordcount" class="pagination"><li class="totalcount disabled"><a>Total Records: {{dataSize}}</a></li></ul>' +
+                '</div>' +
             '</nav>'
             );
     }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'Variables', '$rootScope', 'wmToaster', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, Variables, $rootScope, wmToaster, CONSTANTS) {
         "use strict";
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.datanavigator', ['wm.base', 'wm.base.editors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.datanavigator', ['wm.base', 'wm.base.editors', 'wm.base.navigation']),
             notifyFor = {
-                'dataset': true
+                'dataset'    : true,
+                'navigation' : true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -40,6 +46,9 @@ WM.module("wm.widgets.basic")
                     scope.show = newVal ? newVal.dataValue !== '' : false;
                 }
                 scope.setPagingValues(newVal);
+                break;
+            case 'navigation':
+                scope.navcontrols = newVal;
                 break;
             }
         }
@@ -364,6 +373,10 @@ WM.module("wm.widgets.basic")
                     $scope.goToPage(event);
                 };
 
+                $scope.pageChanged = function () {
+                    $scope.goToPage();
+                };
+
                 /*Function to navigate to the respective pages.*/
                 $scope.navigatePage = function (index, event, isRefresh, callback) {
 
@@ -407,9 +420,8 @@ WM.module("wm.widgets.basic")
                     'pre': function (scope) {
                         scope.widgetProps = widgetProps;
                         /*Set the "allowPageable" flag in the scope to indicate that the data-navigator accepts Pageable objects.*/
-                        scope.allowPageable = true;
-
-                        scope.navcontrols = 'Advanced';
+                        scope.allowPageable  = true;
+                        scope.navcontrols    = 'Basic';
                     },
                     'post': function (scope, element, attrs) {
 

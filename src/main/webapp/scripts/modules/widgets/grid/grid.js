@@ -105,7 +105,7 @@
 WM.module('wm.widgets.grid')
     .directive('wmGrid', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$controller', 'CONSTANTS', '$rootScope', '$timeout', 'Utils', 'LiveWidgetUtils', function (PropertiesFactory, WidgetUtilService, $compile, $controller, CONSTANTS, $rootScope, $timeout, Utils, LiveWidgetUtils) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.editors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.editors', 'wm.base.navigation']),
             gridColumnMarkup = '',
             notifyFor = {
                 'width': true,
@@ -179,7 +179,7 @@ WM.module('wm.widgets.grid')
                     '<div class="app-datagrid"></div>' +
                     '<div class="panel-footer clearfix" ng-show="shownavigation || actions.length">' +
                         '<div class="app-datagrid-paginator pull-left">' +
-                            '<wm-datanavigator show="{{show && shownavigation}}" data-ng-class="navigationClass" navcontrols="{{navControls}}" showrecordcount="{{show && showrecordcount}}"></wm-datanavigator>' +
+                            '<wm-datanavigator show="{{show && shownavigation}}" data-ng-class="navigationClass" navcontrols="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions pull-right" data-ng-if="actions">' +
                             '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}"' +

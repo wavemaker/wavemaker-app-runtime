@@ -27,7 +27,7 @@ WM.module('wm.widgets.live')
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
                     '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="navigation !== \'Inline\'">' +
-                        '<wm-datanavigator showrecordcount="true" navcontrols="{{navControls}}"></wm-datanavigator>' +
+                        '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navcontrols="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                     '</div>' +
                 '</div>'
             );
@@ -63,7 +63,7 @@ WM.module('wm.widgets.live')
         function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService) {
             'use strict';
 
-            var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events']),
+            var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.navigation']),
                 liTemplateWrapper_start,
                 liTemplateWrapper_end,
                 notifyFor = {
@@ -78,7 +78,8 @@ WM.module('wm.widgets.live')
                     'BASIC'    : 'Basic',
                     'ADVANCED' : 'Advanced',
                     'SCROLL'   : 'Scroll',
-                    'INLINE'   : 'Inline'
+                    'INLINE'   : 'Inline',
+                    'PAGER'    : 'Pager'
                 };
 
             // to return the bootstrap classes for the <li> w.r.t no. of items per row
@@ -534,6 +535,10 @@ WM.module('wm.widgets.live')
                 $is.navControls = NAVIGATION.ADVANCED;
             }
 
+            function enablePagerNavigation($is) {
+                $is.navControls = NAVIGATION.PAGER;
+            }
+
             function enableInfiniteScroll($is) {
                 $is.infScroll = true;
             }
@@ -552,6 +557,9 @@ WM.module('wm.widgets.live')
                     break;
                 case NAVIGATION.SCROLL:
                     enableInfiniteScroll($is);
+                    break;
+                case NAVIGATION.PAGER:
+                    enablePagerNavigation($is);
                     break;
                 }
             }
