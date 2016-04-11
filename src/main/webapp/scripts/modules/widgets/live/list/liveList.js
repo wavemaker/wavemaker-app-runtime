@@ -569,9 +569,10 @@ WM.module('wm.widgets.live')
                     newClass,
                     markup,
                     $element,
-                    eleScope = $el.scope(),
-                    variable = Utils.getVariableName($is, eleScope),
-                    wp       = $is.widgetProps;
+                    eleScope    = $el.scope(),
+                    variable    = Utils.getVariableName($is, eleScope),
+                    wp          = $is.widgetProps,
+                    stringType  = 'java.lang.String';
 
                 //checking if the height is set on the element then we will enable the overflow
                 switch (key) {
@@ -652,7 +653,7 @@ WM.module('wm.widgets.live')
                             wp.match.show = false;
                         } else if ($is.dataset) {
                             if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
-                                wp.match.show = $rs.dataTypes[selectedVariable.type].fields[$is.groupby].type === 'java.lang.String';
+                                wp.match.show = _.get($rs, ['dataTypes', selectedVariable.type, 'fields', $is.groupby, 'type'], stringType) === stringType;
                             } else if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
                                 wp.match.show = isFieldTypeString(selectedVariable, $is.groupby);
                             } else {
@@ -972,7 +973,9 @@ WM.module('wm.widgets.live')
                         $dragEl     = WM.element(this);
                         newIndex    = ui.item.index();
                         oldIndex    = $dragEl.data('oldIndex');
-                        data        = data || Utils.getClonedObject($is.dataset.data);
+                        if (!data) {
+                            data = WM.isArray($is.dataset) ? Utils.getClonedObject($is.dataset) : Utils.getClonedObject($is.dataset.data);
+                        }
                         draggedItem = _.pullAt(data, oldIndex)[0];
 
                         data.splice(newIndex, 0, draggedItem);
