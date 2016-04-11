@@ -86,14 +86,18 @@ WM.module('wm.widgets.advanced')
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler(scope, element, key, newVal) {
-                var calendar = scope.calendarOptions.calendar;
+                var calendar = scope.calendarOptions.calendar,
+                    eleScope = element.scope(),
+                    variable = Utils.getVariableName(scope, eleScope);
                 switch (key) {
                 case 'dataset':
-                    scope.eventSources.length = 0;
-                    newVal = WM.isArray(newVal) ? newVal : [];
+                    if (CONSTANTS.isRunMode || eleScope.Variables[variable].category !== 'wm.ServiceVariable') {
+                        scope.eventSources.length = 0;
+                        newVal = WM.isArray(newVal) ? newVal : [];
 
-                    if (_.intersection(_.keys(newVal[0]), ['allDay', 'start', 'end']).length === 3) {
-                        scope.eventSources.push(newVal);
+                        if (_.intersection(_.keys(newVal[0]), ['allDay', 'start', 'end']).length === 3) {
+                            scope.eventSources.push(newVal);
+                        }
                     }
                     break;
                 case 'height':
@@ -188,7 +192,6 @@ WM.module('wm.widgets.advanced')
                             }
                             function eventClickProxy(event, jsEvent, view) {
                                 scope.onEventclick({$event: jsEvent, $data: event, $view: view});
-                                onSelectProxy(event.start, moment(event.end).add(1, 'days'), jsEvent, view);
                             }
                             function viewRenderProxy(view) {
                                 scope.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
