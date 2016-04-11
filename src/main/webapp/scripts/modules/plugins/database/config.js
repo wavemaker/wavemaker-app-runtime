@@ -22,6 +22,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/database/testConnection",
             method: "POST"
         },
+        testDatabase: {
+            url: "services/projects/:projectID/database/testDatabase",
+            method: "POST"
+        },
         importDB: {
             url: "services/projects/:projectID/database/services/import",
             method: "POST"

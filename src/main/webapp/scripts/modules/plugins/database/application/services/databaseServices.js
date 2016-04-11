@@ -186,6 +186,32 @@ wm.plugins.database.services.DatabaseService = [
             },
 
             /**
+             * Internal function
+             * @name wm.database.$DatabaseService#testDatabase
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to test connection while creation of database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the database.
+             */
+
+            testDatabase: function (params) {
+                var deferred = $q.defer();
+                BaseService.execute({
+                    target: "Database",
+                    action: "testDatabase",
+                    urlParams: {
+                        "projectID": params.projectID
+                    },
+                    data : params.data
+                }, deferred.resolve, deferred.reject);
+                return deferred.promise;
+            },
+
+            /**
              * @ngdoc function
              * @name wm.database.$DatabaseService#importDB
              * @methodOf wm.database.$DatabaseService
