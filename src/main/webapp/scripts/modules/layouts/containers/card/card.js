@@ -24,9 +24,9 @@ WM.module('wm.layouts.containers')
                 '<div ng-transclude="footer"></div>' +
             '</div>'
             );
-        $templateCache.put('template/layout/container/card-content.html', '<div apply-styles="shell" init-widget wmtransclude page-container class="card-block card-content" ng-class="[borderTop, borderBottom]"></div>');
+        $templateCache.put('template/layout/container/card-content.html', '<div apply-styles="container" init-widget page-container class="card-block card-content" ng-class="[borderTop, borderBottom]"><div page-container-target wmtransclude></div></div>');
         $templateCache.put('template/layout/container/card-footer.html', '<div apply-styles="container" init-widget wmtransclude page-container-target class="card-block card-footer border-radius-bottom" ng-class="borderTop"></div>');
-        $templateCache.put('template/layout/container/card-actions.html', '<div apply-styles="shell" init-widget wmtransclude page-container class="card-block" ng-class="[borderTop, borderBottom]"></div>');
+        $templateCache.put('template/layout/container/card-actions.html', '<div apply-styles="container" init-widget wmtransclude page-container class="card-block" ng-class="[borderTop, borderBottom]"></div>');
     }])
     .directive('wmCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
