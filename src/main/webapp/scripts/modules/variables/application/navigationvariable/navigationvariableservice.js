@@ -18,57 +18,79 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
     /* properties of a basic variable - should contain methods applicable on this particular object */
     var methods = {
             navigate: function (variable, options) {
+                /* sanity checking */
+                if (Utils.isEmptyObject(variable)) {
+                    return;
+                }
+
                 var pageName,
                     viewName,
                     operation,
-                    sourceScope;
+                    sourceScope,
+                    passThroughUrl,
+                    urlParams;
 
-                /* sanity checking */
-                if (!Utils.isEmptyObject(variable)) {
-                    operation = variable.operation;
-                    sourceScope = options.scope || $rootScope;
-                    pageName = (variable.dataBinding && variable.dataBinding.pageName) || variable.pageName;
+                operation           = variable.operation;
+                sourceScope         = options.scope || $rootScope;
+                pageName            = (variable.dataBinding && variable.dataBinding.pageName) || variable.pageName;
+                passThroughUrl      = WM.isDefined(options.passThroughUrl) ? options.passThroughUrl : variable.passThroughUrl;
+                variable.dataSet    = options.data || variable.dataSet;
+                urlParams           = passThroughUrl ? variable.dataSet : urlParams;
 
-                    /*if operation is goToPage, navigate to the pageName*/
-                    switch (operation) {
-                    case 'goToPreviousPage':
-                        NavigationService.goToPrevious();
-                        break;
-                    case 'gotoPage':
-                        try {
-                            NavigationService.goToPage(pageName, {
-                                transition  : variable.pageTransitions,
-                                $event      : options.$event,
-                                urlParams   : options.urlParams
-                            });
-                            sourceScope.$root.$safeApply(sourceScope);
-                        } catch (ignore) {
-                        }
-                        break;
-                    case 'gotoView':
-                        viewName = (variable.dataBinding && variable.dataBinding.viewName) || variable.viewName;
-                        break;
-                    case 'gotoTab':
-                        viewName = (variable.dataBinding && variable.dataBinding.tabName) || variable.tabName;
-                        break;
-                    case 'gotoAccordion':
-                        viewName = (variable.dataBinding && variable.dataBinding.accordionName) || variable.accordionName;
-                        break;
-                    case 'gotoSegment':
-                        viewName = (variable.dataBinding && variable.dataBinding.segmentName) || variable.segmentName;
-                        break;
-                    }
-
-                    /* if view name found, call routine to navigate to it */
-                    if (viewName) {
-                        NavigationService.goToView(viewName, {
-                            pageName    : pageName,
+                /* if operation is goToPage, navigate to the pageName */
+                switch (operation) {
+                case 'goToPreviousPage':
+                    NavigationService.goToPrevious();
+                    break;
+                case 'gotoPage':
+                    try {
+                        NavigationService.goToPage(pageName, {
                             transition  : variable.pageTransitions,
                             $event      : options.$event,
-                            urlParams   : options.urlParams
+                            urlParams   : urlParams
                         });
-                    }
+                        sourceScope.$root.$safeApply(sourceScope);
+                    } catch (ignore) {}
+                    break;
+                case 'gotoView':
+                    viewName = (variable.dataBinding && variable.dataBinding.viewName) || variable.viewName;
+                    break;
+                case 'gotoTab':
+                    viewName = (variable.dataBinding && variable.dataBinding.tabName) || variable.tabName;
+                    break;
+                case 'gotoAccordion':
+                    viewName = (variable.dataBinding && variable.dataBinding.accordionName) || variable.accordionName;
+                    break;
+                case 'gotoSegment':
+                    viewName = (variable.dataBinding && variable.dataBinding.segmentName) || variable.segmentName;
+                    break;
                 }
+
+                /* if view name found, call routine to navigate to it */
+                if (viewName) {
+                    NavigationService.goToView(viewName, {
+                        pageName    : pageName,
+                        transition  : variable.pageTransitions,
+                        $event      : options.$event,
+                        urlParams   : options.urlParams
+                    });
+                }
+            },
+            getProperty: function (variable, prop) {
+                return variable[prop];
+            },
+            setProperty: function (variable, prop, value) {
+                variable[prop] = value;
+                return variable[prop];
+            },
+            getData: function (variable) {
+                return variable.dataSet;
+            },
+            setData: function (variable, value, passThroughUrl) {
+                if (WM.isDefined(passThroughUrl)) {
+                    variable.passThroughUrl = passThroughUrl;
+                }
+                return methods.setProperty(variable, 'dataSet', value);
             }
         },
         basicVariableObj = {
@@ -76,6 +98,18 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                 options        = options || {};
                 options.scope  = options.scope  || this.activeScope;
                 methods.navigate(this, options);
+            },
+            setProperty: function (prop, value) {
+                return methods.setProperty(this, prop, value);
+            },
+            getProperty: function (prop, value) {
+                return methods.getProperty(this, prop, value);
+            },
+            getData: function () {
+                return methods.getData(this);
+            },
+            setData: function (value, passThroughUrl) {
+                return methods.setData(this, value, passThroughUrl);
             }
         };
 
