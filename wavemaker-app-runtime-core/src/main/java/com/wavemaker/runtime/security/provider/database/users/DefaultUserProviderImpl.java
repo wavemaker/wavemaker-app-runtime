@@ -68,26 +68,22 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
         usersByUsernameQuery = usersByUsernameQuery.replace("?", "\'" + username + "\'");
         if (isHql()) {
             final Query query = session.createQuery(usersByUsernameQuery);
-            QueryHelper.setResultTransformer(query);
             final List list = query.list();
-            String[] params = {"0", "1", "2", "3"};
-            return getWmUser(list, params);
+            return getWmUser(list);
         } else {
             final Query query = session.createSQLQuery(usersByUsernameQuery);
-            QueryHelper.setResultTransformer(query);
             final List list = query.list();
-            String[] params = {"USERID", "USERNAME", "C3", "PASSWORD"};
-            return getWmUser(list, params);
+            return getWmUser(list);
         }
     }
 
-    private WMUser getWmUser(List<Object> content, String... params) {
+    private WMUser getWmUser(List<Object> content) {
         if (content.size() > 0) {
-            final Map<String, Object> resultMap = (Map) content.get(0);
-            int userId = (Integer) resultMap.get(params[0]);
-            String password = String.valueOf(resultMap.get(params[1]));
-            int enabled = (Integer) resultMap.get(params[2]);
-            String userName = String.valueOf(resultMap.get(params[3]));
+            Object[] resultMap = (Object[]) content.get(0);
+            int userId = (Integer) resultMap[0];
+            String password = String.valueOf(resultMap[1]);
+            int enabled = (Integer) resultMap[2];
+            String userName = String.valueOf(resultMap[3]);
             int tenantId = -1;
             long loginTime = System.currentTimeMillis();
             boolean isEnabled = enabled == 1 ? true : false;
