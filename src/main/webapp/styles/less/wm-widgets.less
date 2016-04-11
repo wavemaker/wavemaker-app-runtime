@@ -409,6 +409,24 @@ html, body {
             }
         }
     }
+    .popover-title ~ .popover-content {
+      .calc('height', ~"calc(100% - 3em)");
+    }
+    &.bottom {
+      .arrow-color:after {
+        border-bottom-color: #f7f7f7 !important;
+      }
+    }
+    &.right {
+      .arrow-color:after {
+        border-right-color: #f7f7f7 !important;
+      }
+    }
+    &.left {
+      .arrow-color:after {
+        border-left-color: #f7f7f7 !important;
+      }
+    }
 }
 .wm-app .app-popover.popover{
   max-width : none;

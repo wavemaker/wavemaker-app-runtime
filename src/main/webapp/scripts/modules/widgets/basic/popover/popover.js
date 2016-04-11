@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
 
         $templateCache.put('template/widget/basic/popover.html',
                 '<div class="app-popover popover invisible {{class}} {{popoverplacement}}" data-ng-style="{width : popoverwidth, height : popoverheight}">' +
-                    '<div class="arrow" data-ng-show="popoverarrow"></div>' +
+                    '<div class="arrow" ng-class="{\'arrow-color\': title}" data-ng-show="popoverarrow"></div>' +
                     '<h3 class="popover-title" data-ng-if="title">{{title}}</h3>' +
                     '<wm-container class="popover-content" content="{{content}}"></wm-container>' +
                 '</div>');
