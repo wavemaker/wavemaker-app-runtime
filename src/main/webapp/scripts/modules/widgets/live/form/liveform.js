@@ -1161,7 +1161,7 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (!CONSTANTS.isRunMode || columnDef.show) {
-                            template = LiveWidgetUtils.getTemplate(columnDef, index);
+                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentIsolateScope.captionposition);
                             element.html(template);
                             $compile(element.contents())(parentIsolateScope);
                         } else {

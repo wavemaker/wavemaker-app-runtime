@@ -834,7 +834,7 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (!CONSTANTS.isRunMode || columnsDef.show) {
-                            template = LiveWidgetUtils.getTemplate(columnsDef, index);
+                            template = LiveWidgetUtils.getTemplate(columnsDef, index, parentIsolateScope.captionposition);
                             element.html(template);
                             $compile(element.contents())(parentIsolateScope);
                         } else {

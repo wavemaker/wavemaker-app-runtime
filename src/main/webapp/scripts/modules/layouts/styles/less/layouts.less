@@ -477,10 +477,6 @@ body {
     &.align-right .app-label {
       text-align: right;
     }
-    &.position-top .app-label {
-      display: block;
-      width: 100%;
-    }
     &.position-left {
       direction: ltr;
     }
@@ -554,6 +550,15 @@ body {
     width: 1px;
     height: 1px;
   }
+  }
+
+  .app-form {
+    &.position-top {
+      .control-label {
+        display: block;
+        width: 100%;
+      }
+    }
   }
 
   .app-liveform-dialog {
