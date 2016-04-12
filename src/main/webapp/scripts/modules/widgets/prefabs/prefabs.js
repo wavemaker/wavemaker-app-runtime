@@ -132,7 +132,8 @@ WM.module('wm.prefabs')
 
             if (CONSTANTS.isStudioMode) {
                 (function () {
-                    var groups = PropertiesFactory.getPropertyGroups();
+                    var groups = PropertiesFactory.getPropertyGroups(),
+                        basicPropsSubGrp;
 
                     propertyGroups = groups.filter(function (group) {
 
@@ -145,6 +146,11 @@ WM.module('wm.prefabs')
                         return !!group.parent;
                     });
 
+                    basicPropsSubGrp = _.find(propertiesGroup.subGroups, function (subGroup) {
+                        return !subGroup.name;
+                    });
+
+                    propsSkipList = propsSkipList.concat(basicPropsSubGrp.properties);
                 }());
             }
 
@@ -262,14 +268,14 @@ WM.module('wm.prefabs')
                 'scope'   : {'prefabname': '@'},
                 'replace' : true,
                 'template':
-                    '<section  data-role="prefab" init-widget class="app-prefab" ' +
-                        'data-ng-style="{' +
+                    '<section data-role="prefab" init-widget class="app-prefab" ' +
+                        'ng-style="{' +
                             'width:width, height:height,' +
                             'marginBottom: marginbottom + marginunit, ' +
                             'marginLeft: marginleft + marginunit, ' +
                             'marginRight: marginright + marginunit, ' +
                             'marginTop: margintop + marginunit ' +
-                        '}" data-ng-show="show">' +
+                        '}" ng-show="show">' +
                     '</section>',
                 'link': {
                     'pre': function ($is, $el, attrs) {
