@@ -7,13 +7,11 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/time.html',
             '<div class="app-timeinput input-group dropdown" uib-dropdown init-widget has-model apply-styles role="input"' +
                 ' title="{{hint}}" ' +
-                ' data-ng-model="_proxyModel"' + /* _proxyModel is a private variable inside this scope */
-                ' data-ng-show="show" ' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})" >' +
+                ' ng-show="show" >' +
                 '<input class="form-control app-textbox display-input" data-ng-model="_timeModel" accesskey="{{shortcutkey}}" ng-change="updateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
                 '<div uib-dropdown is-open="isOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
-                        '<uib-timepicker hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds"></uib-timepicker>' +
+                        '<uib-timepicker ng-model="_proxyModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></uib-timepicker>' +
                     '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
@@ -211,6 +209,11 @@ WM.module('wm.widgets.form')
                             } else {
                                 this._proxyModel = undefined;
                             }
+                        };
+                        /*Function to be called on click of time picker*/
+                        scope.selectTime = function (event) {
+                            scope._model_ = scope._proxyModel;
+                            scope._onChange({$event: event, $scope: scope});
                         };
                         /* handle initial readonly/disabled values */
                         $timeout(function () {
