@@ -1000,11 +1000,15 @@ WM.module('wm.widgets.grid')
                 },
                 /*Returns data filtered using searchObj*/
                 getSearchResult = function (data, searchObj) {
-                    if (searchObj && searchObj.field !== '') {
+                    if (searchObj) {
                         var searchVal = _.toString(searchObj.value).toLowerCase(),
                             currentVal;
                         data = _.filter(data, function (obj) {
-                            currentVal = _.toString(_.get(obj, searchObj.field)).toLowerCase(); //If `int` converting to `string`
+                            if (searchObj.field) {
+                                currentVal = _.toString(_.get(obj, searchObj.field)).toLowerCase(); //If `int` converting to `string`
+                            } else {
+                                currentVal = _.values(obj).join(' ').toLowerCase(); //If field is not there, search on all the columns
+                            }
                             return _.includes(currentVal, searchVal);
                         });
                     }
@@ -1611,6 +1615,7 @@ WM.module('wm.widgets.grid')
                     isBoundToSelectedItemSubset,
                     isBoundToServiceVariableSelectedItem,
                     isBoundToQueryServiceVariable,
+                    isBoundToProcedureServiceVariable,
                     isBoundToFilter,
                     columns,
                     isPageable = false,
@@ -1621,14 +1626,13 @@ WM.module('wm.widgets.grid')
                 result = Utils.getValidJSON(newVal);
 
                 /*Reset the values to undefined so that they are calculated each time.*/
-                isBoundToLiveVariable = undefined;
-                isBoundToLiveVariableRoot = undefined;
-                isBoundToServiceVariable = undefined;
-                isBoundToStaticVariable = undefined;
-                isBoundToQueryServiceVariable = undefined;
-                isBoundToFilter = undefined;
+                isBoundToLiveVariable                = undefined;
+                isBoundToLiveVariableRoot            = undefined;
+                isBoundToServiceVariable             = undefined;
+                isBoundToStaticVariable              = undefined;
+                isBoundToFilter                      = undefined;
                 isBoundToServiceVariableSelectedItem = undefined;
-                $scope.gridVariable = '';
+                $scope.gridVariable                  = '';
                 /* Always set newcolumns equal to value of redrawColumns coming from datamodel design controller. */
                 if (CONSTANTS.isStudioMode && WM.isDefined($scope.$parent) && $scope.$parent.redrawColumns) {
                     $scope.newcolumns = $scope.$parent.redrawColumns;
@@ -1738,16 +1742,22 @@ WM.module('wm.widgets.grid')
                             $scope.binddataset.indexOf('selecteditem') === -1;
                         isBoundToServiceVariable = $scope.variableType === 'wm.ServiceVariable';
                         isBoundToStaticVariable = $scope.variableType === 'wm.Variable';
-                        isBoundToQueryServiceVariable = isBoundToServiceVariable && (variableObj.serviceType === 'DataService');
+                        if (isBoundToServiceVariable && variableObj.serviceType === 'DataService') {
+                            isBoundToProcedureServiceVariable = variableObj.controller === 'ProcedureExecution';
+                            isBoundToQueryServiceVariable     = variableObj.controller === 'QueryExecution';
+                        }
 
                         if (isBoundToLiveVariable) {
                             $scope.setDataGridOption('searchHandler', searchGrid);
                             $scope.setDataGridOption('sortHandler', sortHandler);
                             setImageProperties(variableObj);
-                        } else if (variableObj.serviceType === 'DataService' && variableObj.controller !== 'ProcedureExecution') {
+                        } else if (isBoundToQueryServiceVariable) {
                             /*Calling the specific search and sort handlers*/
                             $scope.setDataGridOption('sortHandler', sortHandler);
-                        } else if (variableObj.serviceType !== 'DataService') {
+                        } else if (isBoundToProcedureServiceVariable) {
+                            $scope.setDataGridOption('searchHandler', handleOperation);
+                            $scope.setDataGridOption('sortHandler', handleOperation);
+                        } else {
                             /*Calling the specific search and sort handlers*/
                             $scope.setDataGridOption('searchHandler', handleOperation);
                             if (isPageable) {
@@ -1769,7 +1779,7 @@ WM.module('wm.widgets.grid')
                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                 if (CONSTANTS.isStudioMode) {
                     /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
-                    $scope.widgetProps.pagesize.show = !(isBoundToLiveVariable || (isBoundToQueryServiceVariable && variableObj.controller !== 'ProcedureExecution'));
+                    $scope.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
                     $scope.widgetProps.multiselect.show = $scope.isPartOfLiveGrid ? false : $scope.widgetProps.multiselect.show;
                     $scope.widgetProps.multiselect.showindesigner = $scope.isPartOfLiveGrid ? false : $scope.widgetProps.multiselect.showindesigner;
                     /* In Studio, disabling readonlygrid property if bound to a service variable or view */
