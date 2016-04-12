@@ -2149,29 +2149,29 @@ WM.module('wm.widgets.base', [])
 
             function onScopeValueChangeProxy(scope, element, attrs, key, newVal, oldVal) {
 
-                if (key === "placeholder" || key === "type") {
+                if (key === 'placeholder' || key === 'type') {
                     if (element.is('input') || element.is('textarea')) {
                         attrs.$set(key, newVal);
                     } else {
                         element.find('input').attr(key, newVal);
                     }
-                } else if (key === "backgroundimage") {
+                } else if (key === 'backgroundimage') {
                     scope.picturesource = Utils.getBackGroundImageUrl(newVal);
-                } else if (key === "backgroundcolor") {
+                } else if (key === 'backgroundcolor') {
                     /* setting background image as none when background color is set. This is done because background
                     gradients are set as background image and have precedence over background color.*/
-                    if (!scope.picturesource) {
-                        scope.picturesource = 'none';
+                    if (!attrs.picturesource) {
+                        scope.picturesource = undefined;
                     }
-                } else if (key === "class") {
+                } else if (key === 'class') {
                     element.removeClass(oldVal).addClass(newVal);
-                } else if (key === "name") {
-                    attrs.$set("name", newVal);
-                } else if (key === "showindevice") {
+                } else if (key === 'name') {
+                    attrs.$set('name', newVal);
+                } else if (key === 'showindevice') {
                     /*Apply the corresponding classes only in runMode*/
                     if (CONSTANTS.isRunMode) {
                         var newValues = newVal ? newVal.split(',') : newVal;
-                        if (WM.element.inArray("all", newValues) === 0) {
+                        if (WM.element.inArray('all', newValues) === 0) {
                             WM.forEach(deviceSizeArray.all.classToRemove, function (device) {
                                 element.removeClass(device + scope.widgetProps.showindevice.displaytype || 'block');
                             });
@@ -2182,10 +2182,10 @@ WM.module('wm.widgets.base', [])
                             });
                         }
                     }
-                } else if (key === "animation") {
+                } else if (key === 'animation') {
                     /*add the animated class only in the run mode since it will break the ui in design mode*/
                     if (CONSTANTS.isRunMode) {
-                        element.addClass("animated " + newVal);
+                        element.addClass('animated ' + newVal);
                     }
                 }
 
