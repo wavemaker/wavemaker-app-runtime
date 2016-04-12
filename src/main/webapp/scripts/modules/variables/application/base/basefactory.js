@@ -171,14 +171,14 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
-                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties"},
+                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties", "bindable": true},
                 {"name": "spinner", "properties": ["spinnerContext", "spinnerMessage"], "parent": "properties"},
 
                 /* properties under data tab */
-                {"name": "Inputs", "properties": ["dataBinding"], "parent": "data"},
-                {"name": "inputfields", "properties": ["dataSet", "dataBinding"], "parent": "data"},
-                {"name": "filterfields", "properties": ["dataSet"], "parent": "data"},
-                {"name": "bindings", "properties": [], "parent": "data"},
+                {"name": "Inputs", "properties": [], "parent": "data", "bindable": true},
+                {"name": "inputfields", "properties": [], "parent": "data", "bindable": true},
+                {"name": "filterfields", "properties": [], "parent": "data", "bindable": true},
+                {"name": "bindings", "properties": [], "parent": "data", "bindable": true},
                 {"name": "dataTransformation", "properties": ["transformationRequired", "columnField", "dataField"], "parent": "data"},
 
                 /* properties under events tab */
