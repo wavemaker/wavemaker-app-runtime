@@ -794,6 +794,11 @@ WM.module('wm.widgets.base')
                 }
 
                 if (isArrayTypeExpr(watchExpr)) {
+                    // In design mode array type expressions(in live list template) are not to be evaluated
+                    if (CONSTANTS.isStudioMode && !config.acceptsArray) {
+                        listenerFn();
+                        return;
+                    }
                     //Check each match is pageable and replace dataSet[$i] with dataSet.content[$i]
                     watchExpr = watchExpr.replace(regExp, function (match, key) {
                         variableObject = _.get($s.Variables, key);
