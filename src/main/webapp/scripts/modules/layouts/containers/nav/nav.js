@@ -143,14 +143,6 @@ WM.module('wm.layouts.containers')
                     if (variable && variable.category === 'wm.LiveVariable') {
                         nv = nv.data;
                     }
-
-                    if (CONSTANTS.isStudioMode) {
-                        if (variable && variable.type) {
-                            $is.widgetProps.selecteditem.type = 'object, ' + variable.type;
-                        } else {
-                            $is.widgetProps.selecteditem.type = 'object';
-                        }
-                    }
                     // do not break here. continue with the next steps.
                 case 'scopedataset':
                     $is.nodes = getNodes($is, nv);

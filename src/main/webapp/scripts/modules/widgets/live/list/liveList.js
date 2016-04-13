@@ -102,14 +102,6 @@ WM.module('wm.widgets.live')
                 return variables[variableName];
             }
 
-            // update the selectedItem dataType onchange of bindDataSet
-            function updateSelectedItemDataType($is, variable) {
-                if (variable) {
-                    // set the variable type info to the live-list selected-entry type, so that type matches to the variable for which variable is created
-                    $is.widgetProps.selecteditem.type = variable.type;
-                }
-            }
-
             // to get the list of columns from the dataSet/scopeDataSet
             function getColumnsFromDataSet(dataset) {
                 if (WM.isObject(dataset)) {
@@ -488,7 +480,6 @@ WM.module('wm.widgets.live')
                     }
                 }
                 handlePageSizeDisplay($is, variable);
-                updateSelectedItemDataType($is, variable);
             }
 
             function runMode_onDataSetChange($is, $el, nv, attrs, listCtrl) {

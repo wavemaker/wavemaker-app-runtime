@@ -1731,8 +1731,6 @@ WM.module('wm.widgets.grid')
                     variableObj = elScope.Variables && elScope.Variables[$scope.variableName];
 
                     if (variableObj && isBoundToVariable) {
-                        /* set the variable type info to the grid selecteditem type (for reflection while binding to grid.selecteditem)*/
-                        $scope.widgetProps.selecteditem.type = 'object, ' + variableObj.type;
                         $scope.variableType = variableObj.category;
 
                         /*Check if the variable is a liveVariable*/
