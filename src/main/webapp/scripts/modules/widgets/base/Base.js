@@ -217,7 +217,8 @@ WM.module('wm.widgets.base', [])
                         "maxsize": {"type": "number", "value": 3, "show": false},
                         "boundarylinks": {"type": "boolean", "value": false, "show": false},
                         "forceellipses": {"type": "boolean", "value": true, "show": false},
-                        "directionlinks": {"type": "boolean", "value": true, "show": false}
+                        "directionlinks": {"type": "boolean", "value": true, "show": false},
+                        "navigationalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align", "value": "left"}
                     },
                     "wm.base.events": {
                         "onTap": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1270,6 +1271,7 @@ WM.module('wm.widgets.base', [])
                         "readonlygrid": {"type": "boolean", "value": true, "show": false, "bindable": "in-bound"},
                         "showrecordcount": {"type": "boolean", "show": false, "showindesigner": true},
                         "navigation": {"type": "list", "options": ["None", "Basic", "Pager", "Advanced"], "value": "Basic", "showindesigner": true},
+                        "navigationalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align", "value": "left", "showindesigner": true},
                         "filternullrecords": {"type": "boolean", "value": true},
                         "nodatamessage": {"type": "string", "value": "No data found.", "bindable": "in-out-bound", "showindesigner": true},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-out-bound", "showindesigner": true},
@@ -1755,7 +1757,7 @@ WM.module('wm.widgets.base', [])
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                     "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation","animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "shortcutkey", "showcaptions", "multiselect", "radioselect", "enablesort", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "updateon", "updatedelay"], "parent": "properties"},
-                {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount"], "parent": "properties"},
+                {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex"], "parent": "properties"},
                 {"name": "caption", "properties": ["captionalign", "captionposition", "captionsize", "mineditorwidth"], "parent": "properties"},

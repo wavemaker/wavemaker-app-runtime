@@ -178,10 +178,10 @@ WM.module('wm.widgets.grid')
                     '<div class="panel-heading" data-ng-if="title"><h3 class="panel-title">{{title}}</h3></div>' +
                     '<div class="app-datagrid"></div>' +
                     '<div class="panel-footer clearfix" ng-show="shownavigation || actions.length">' +
-                        '<div class="app-datagrid-paginator pull-left">' +
-                            '<wm-datanavigator show="{{show && shownavigation}}" data-ng-class="navigationClass" navcontrols="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
+                        '<div class="app-datagrid-paginator">' +
+                            '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" data-ng-class="navigationClass" navcontrols="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '</div>' +
-                        '<div class="app-datagrid-actions pull-right" data-ng-if="actions">' +
+                        '<div class="app-datagrid-actions" data-ng-if="actions.length">' +
                             '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}"' +
                                 ' on-click="{{btn.action}}"></wm-button>' +
                         '</div>' +

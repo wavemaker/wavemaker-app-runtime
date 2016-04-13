@@ -27,7 +27,7 @@ WM.module('wm.widgets.live')
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
                     '</nav>' +
                     '<div class="panel-footer" ng-if="navigation !== \'None\'" ng-show="navigation !== \'Inline\'">' +
-                        '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navcontrols="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
+                        '<wm-datanavigator showrecordcount="{{show && showrecordcount}}" navigationalign="{{navigationalign}}" navcontrols="{{navControls}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                     '</div>' +
                 '</div>'
             );
