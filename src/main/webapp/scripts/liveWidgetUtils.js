@@ -507,7 +507,8 @@ WM.module('wm.widgets.live')
                     fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
                     labelLayout,
                     controlLayout;
-                    //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
+                captionPosition = captionPosition || 'top';
+                //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
                 if (fieldDef.readonly && fieldDef.generator === 'identity') {
                     fieldDef.placeholder = fieldDef.placeholder || '';
                 }
