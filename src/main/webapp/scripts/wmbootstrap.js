@@ -205,7 +205,9 @@ Application
                         _sl         = supportedLocale,
                         _dl;
 
-                    _dl = _.intersection(_acceptLang, _sl)[0] || defaultLocale || 'en';
+                    _acceptLang.push(defaultLocale);
+
+                    _dl = _.intersection(_acceptLang, _sl)[0] || 'en';
 
                     // if the supportedLocale is not available set it to defaultLocale
                     _sl = _sl || [_dl];
