@@ -78,6 +78,7 @@ WM.module('wm.mobile', ['wm.variables', 'wm.layouts', 'wm.widgets', 'ngCordova',
             //This is for preview page
             window.onmessage = function (msg) {
                 var data = Utils.isIE9() ? JSON.parse(msg.data) : msg.data;
+                $rootScope.selectedViewPort = data.device;
                 if (WM.isObject(data) && data.key === 'switch-device') {
                     applyOSTheme(data.device.os);
                 }

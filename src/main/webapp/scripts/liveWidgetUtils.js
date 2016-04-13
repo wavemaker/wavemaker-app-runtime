@@ -501,21 +501,35 @@ WM.module('wm.widgets.live')
              * @description
              * return template based on widgetType for liveFilter and liveForm.
              */
-            function getTemplate(fieldDef, index) {
+            function getTemplate(fieldDef, index, captionPosition) {
                 var template = '',
                     widgetType,
-                    fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap();
+                    fieldTypeWidgetTypeMap = getFieldTypeWidgetTypesMap(),
+                    labelLayout,
+                    controlLayout;
                     //Set 'Readonly field' placeholder for fields which are readonly and contain generated values if the user has not given any placeholder
                 if (fieldDef.readonly && fieldDef.generator === 'identity') {
                     fieldDef.placeholder = fieldDef.placeholder || '';
+                }
+
+                if (captionPosition === 'top' && ($rs.selectedViewPort || Utils.isAndroid())) {
+                    if ($rs.selectedViewPort.os === 'android' || !$rs.isMobileApplicationType || Utils.isAndroid()) { //Is android or not a mobile application
+                        labelLayout = controlLayout = 'col-xs-12';
+                    } else if ($rs.isMobileApplicationType) { //Is a mobile application and not android
+                        labelLayout   = 'col-xs-4';
+                        controlLayout = 'col-xs-8';
+                    }
+                } else {
+                    labelLayout   = $rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3';
+                    controlLayout = $rs.isMobileApplicationType ? 'col-xs-8' : 'col-sm-9';
                 }
                 //Construct the template based on the Widget Type, if widget type is not set refer to the fieldTypeWidgetTypeMap
                 widgetType = fieldDef.widget || fieldTypeWidgetTypeMap[fieldDef.type][0];
                 widgetType = widgetType.toLowerCase();
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
-                    '<wm-label class="control-label ' + ($rs.isMobileApplicationType ? 'col-xs-4' : 'col-sm-3') + '" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
-                    '<div class="' + ($rs.isMobileApplicationType ? 'col-xs-8' : 'col-sm-9') + ' {{formFields[' + index + '].class}}">' +
+                    '<wm-label class="control-label ' + labelLayout + '" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
+                    '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
 
                 switch (widgetType) {
@@ -802,7 +816,7 @@ WM.module('wm.widgets.live')
                             return;
                         }
                         /*On changing of a property in studio mode, generate the template again so that change is reflected*/
-                        template = getTemplate(parentScope.formFields[index], index);
+                        template = getTemplate(parentScope.formFields[index], index, parentScope.captionposition);
                         element.html(template);
                         $compile(element.contents())(parentScope);
                     },
