@@ -89,12 +89,12 @@ WM.module('wm.widgets.dialog')
                         scope.widgetProps = widgetProps;
                     },
                     "post": function (scope, element, attrs) {
-                        function onSuccess() {
+                        function onSuccess(event) {
                             element.trigger("success");
                             scope.onSuccess({$event: event, $scope: scope});
                         }
 
-                        function onError(error) {
+                        function onError(event, error) {
                             scope.loginMessage = scope.$parent.loginMessage = {
                                 type: 'error',
                                 caption: scope.errormessage || error
@@ -147,8 +147,8 @@ WM.module('wm.widgets.dialog')
                                         if (lastLoggedinUser && curUser !== lastLoggedinUser) {
                                             $window.location = $window.location.pathname;
                                         }
-                                        Utils.triggerFn(onSuccess);
-                                    }, onError);
+                                        Utils.triggerFn(onSuccess, event);
+                                    }, onError.bind(undefined, event));
                                 } else {
                                     if (loginBtnClickFn) {
                                         loginBtnClickFn({$event: event, $scope: scope});
@@ -156,7 +156,7 @@ WM.module('wm.widgets.dialog')
                                     if (submitFn.indexOf('(') !== -1) {
                                         scope.onSubmit({$event: event, $scope: scope});
                                     } else {
-                                        scope.$root.$emit('invoke-service', submitFn, {scope: element.scope(), mode: 'dialog'}, onSuccess, onError);
+                                        scope.$root.$emit('invoke-service', submitFn, {scope: element.scope(), mode: 'dialog'}, onSuccess.bind(undefined, event), onError.bind(undefined, event));
                                     }
                                 }
                             };
