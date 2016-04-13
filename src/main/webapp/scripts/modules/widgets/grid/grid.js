@@ -255,6 +255,14 @@ WM.module('wm.widgets.grid')
 
                 return {
                     'pre': function (iScope, element) {
+
+                        iScope.$on('security:before-child-remove', function (evt, childScope, childEl, childAttrs) {
+                            evt.stopPropagation();
+                            if (childAttrs.key === 'addNewRow') {
+                                iScope._doNotAddNew = true;
+                            }
+                        });
+
                         if (CONSTANTS.isStudioMode) {
                             iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
@@ -485,6 +493,9 @@ WM.module('wm.widgets.grid')
                                 }
                                 break;
                             case 'insertrow':
+                                if (scope._doNotAddNew) {
+                                    return;
+                                }
                                 scope.insertrow = (newVal === true || newVal === 'true');
                                 addNewRowButtonIndex = getObjectIndexInArray('key', 'addNewRow', scope.actions);
                                 if (scope.insertrow) {
