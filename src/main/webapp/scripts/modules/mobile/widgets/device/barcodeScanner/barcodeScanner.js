@@ -9,7 +9,7 @@ WM.module('wm.widgets.advanced')
             'use strict';
 
             $tc.put('template/widget/advanced/barcodeScanner.html',
-                '<button class="btn app-barcode" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openBarcodeScanner()" >' +
+                '<button type="button" class="btn app-barcode" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openBarcodeScanner()" >' +
                 '<i class="{{iconclass}}" data-ng-style="{\'font-size\':iconsize}"></i> ' +
                 '<span class="btn-caption">{{caption}}</span> '+
                 '</button>'

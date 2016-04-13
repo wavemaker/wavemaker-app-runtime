@@ -9,7 +9,7 @@ WM.module('wm.widgets.advanced')
             'use strict';
 
             $tc.put('template/widget/advanced/camera.html',
-                    '<button class="btn app-camera" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openCamera()" >' +
+                    '<button type="button" class="btn app-camera" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openCamera()" >' +
                         '<i class="{{iconclass}}" data-ng-style="{\'font-size\':iconsize}"></i> ' +
                         '<span class="btn-caption">{{caption}}</span>' +
                     '</button>'
