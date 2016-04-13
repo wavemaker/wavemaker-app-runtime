@@ -595,7 +595,7 @@ WM.module('wm.widgets.live')
 
                     selectedVariable = eleScope.Variables[variable];
 
-                    if ($is.widgetid) {
+                    if ($is.widgetid && WM.isDefined(nv) && nv !== null) {
                         // set the groupby options
                         wp.groupby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
 
@@ -605,7 +605,7 @@ WM.module('wm.widgets.live')
                         }
 
                         //if studio-mode, then update the displayField & dataField in property panel
-                        if (WM.isDefined(nv) && nv !== null && !nv.length) {
+                        if (!nv.length) {
                             //Get variable and properties map only on binddataset change
                             if ($is.oldBindDataSet !== $is.binddataset) {
                                 if (!WM.isString(nv)) {
