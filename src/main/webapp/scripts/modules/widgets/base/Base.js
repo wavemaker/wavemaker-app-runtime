@@ -1072,8 +1072,8 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "panel-default", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     'wm.layouts.card': {
-                        "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
-                        "subheading": {"type": "string", "value": "Sub Heading",  "bindable": "in-bound"},
+                        "heading": {"type": "string", "bindable": "in-bound"},
+                        "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconurl": {"type": "string", "bindable": "in-bound"},
                         "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},

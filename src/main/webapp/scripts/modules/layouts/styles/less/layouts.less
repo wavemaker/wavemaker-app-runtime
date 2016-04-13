@@ -174,76 +174,99 @@ body {
 ********************************************************************************/
 
 .app-card {
+  position: relative;
   &.card {
-    position: relative;
-    display: block;
     margin-bottom: .2rem;
     background-color: #fff;
-    border: 1px solid rgb(229, 229, 229);
-    border-radius: .25rem;
-    font-weight: 400;
-    .card-header {
-      &:first-child {
-        border-radius: .25rem .25rem 0 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    .app-label {
+      &:not(.text-muted) {
+        color: inherit;
       }
+    }
+    .app-card-header {
+      display: table;
+      width: 100%;
       padding: .75rem 1.25rem;
-      background-color: #f5f5f5;
-      border-bottom: 1px solid rgb(229, 229, 229);
-      .avatar {
-        display: table;
-        height: 65px;
+      background-color: rgba(0,0,0,0.05);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      .app-card-avatar {
+        display: table-cell;
+        height: 32pt;
+        width: 32pt;
         text-align: center;
-        > span {
-          display: table-cell;
-          vertical-align: middle;
+        vertical-align: top;
+        img {
+          max-width: 100%;
+          max-height: 100%;
+        }
+        .app-icon {
+          font-size: 30pt;
         }
       }
-      .heading {
-        padding-left: 8px;
-        .title {
-          font-size: 1.5em;
-          margin: 8.5px 0;
-        }
-        p {
-          margin: 0 0 8.5px;
-        }
+      .app-card-header-text {
+        display: table-cell;
+        vertical-align: top;
+        padding-left: 0.5em;
       }
     }
-    .border-radius-top {
-      border-radius: .25rem .25rem 0 0;
+    .card-heading {
+      font-size: 1.5em;
+      letter-spacing: .005em;
+      margin: 0;
     }
-    .border-radius-bottom {
-      border-bottom-right-radius: .25rem;
-      border-bottom-left-radius: .25rem;
+
+    .card-subheading {
+      font-size: 1em;
+      letter-spacing: .010em;
+      margin: 0;
     }
-    .card-picture {
+    .app-card-image {
       width: 100%;
       position: relative;
-      .title {
+      overflow: hidden;
+      .card-image-headline {
         position: absolute;
         bottom: 0;
         left: 0;
         padding: 0 1.25rem;
-        color: white;
+        color: #fff;
         font-size: 1.5em;
       }
     }
-    .card-block {
+    .app-card-content {
       position: relative;
       padding: 1.25rem .5rem .5rem 1.25rem;
-      &.card-content {
-        min-height: 4em;
-        position: relative;
+    }
+    .app-card-actions {
+      position: relative;
+      padding-left: .75em;
+      padding-right: .75em;
+      .btn {
+        padding-left: 8px;
+        padding-right: 8px;
       }
-      &.card-footer {
-        position: relative;
-        padding: .75rem 1.25rem;
-        background-color: rgb(233, 232, 248);
-        border-top: 1px solid rgb(229, 229, 229);
-        &:last-child {
-          border-radius: 0 0 .25rem .25rem;
-        }
+      .app-icon {
+        font-size: 18pt;
+        vertical-align: middle;
       }
+
+    }
+    .app-card-footer {
+      position: relative; padding: .75rem 1.25rem;
+      background-color: rgba(0,0,0,0.05);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .card-title {
+      margin-bottom: .75rem;
+      font-size: 1.5em;
+      width: 100%;
+      font-weight: bold;
+    }
+    .card-text {
+      margin-bottom: 1rem;
+      font-size: 1em;
+      width: 100%;
     }
   }
 }
@@ -396,7 +419,7 @@ body {
     }
   }
 
-/********************************* Navbar classes *****************************/
+  /********************************* Navbar classes *****************************/
   .app-navbar {
     .container-fluid .navbar-header .navbar-toggle{
       i {
@@ -413,7 +436,7 @@ body {
       }
     }
   }
-/********************************* Nav classes *****************************/
+  /********************************* Nav classes *****************************/
   .app-nav {
     position: relative;
     min-height: 20px;
@@ -435,7 +458,7 @@ body {
     }
   }
 
-/*********************************************************************************************************************/
+  /*********************************************************************************************************************/
   /***********************************grid styles***********************************************************************/
   /*********************************************************************************************************************/
   .app-grid-layout {
@@ -461,12 +484,12 @@ body {
     position: relative;
     border-collapse: separate;
     > .panel-body {
-        padding: 4px 4px 0 4px;
+      padding: 4px 4px 0 4px;
     }
     .app-label {
-        overflow-x: hidden;
-        text-overflow: ellipsis;
-        word-break: break-word;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
     }
     &.align-left .app-label {
       text-align: left;
@@ -537,19 +560,19 @@ body {
           width: auto;
         }
       }
-  }
+    }
 
-  .full-width {
-    width: 100%;
-  }
-  .full-height {
-    height: 100%;
-  }
+    .full-width {
+      width: 100%;
+    }
+    .full-height {
+      height: 100%;
+    }
 
-  .hidden-form-elements {
-    width: 1px;
-    height: 1px;
-  }
+    .hidden-form-elements {
+      width: 1px;
+      height: 1px;
+    }
   }
 
   .app-form {
@@ -979,18 +1002,18 @@ body {
 }
 /************************** APP CAROUSEL ***************************************/
 .app-carousel{
-    position : relative;
-    overflow : hidden;
-    div.carousel-inner{
-        height : 100%;
-        .item{
-            overflow : hidden;
-            height : 100%;
-        }
+  position : relative;
+  overflow : hidden;
+  div.carousel-inner{
+    height : 100%;
+    .item{
+      overflow : hidden;
+      height : 100%;
     }
-    .carousel {
-      height: inherit;
-    }
+  }
+  .carousel {
+    height: inherit;
+  }
 }
 /**********************************Template classes****************************************************************/
 /**************************************************************************************************/
@@ -1074,7 +1097,7 @@ body {
       }
     }
   }
-/********button classes ***/
+  /********button classes ***/
   .btn-transparent {
     background: transparent !important;
     border: none !important;
@@ -1085,7 +1108,7 @@ body {
     padding: 0.45em 0.75em;
     height: auto;
     > * {
-    vertical-align: middle;
+      vertical-align: middle;
     }
   }
   /********for buttons, anchors with icon on top****/
@@ -1104,7 +1127,7 @@ body {
       font-weight: normal;
     }
   }
-/********for buttons, anchors with icon on right****/
+  /********for buttons, anchors with icon on right****/
   .btn[icon-position = "right"], a[icon-position = "right"] {
     clear: both;
     > i {
@@ -1138,82 +1161,82 @@ body {
   }
 
   /************** Fixing widgets when Position Right is applied on the parent ****************/
-    .position-right {
-      //Switch widget
-      .app-switch {
-        float: right;
-        .btn-group {
-          direction: ltr;
-        }
-      }
-
-      //Common styles for Radio, Checkbox, Radioset & Checkboxset widgets
-      .app-radioset, .app-checkboxset {
+  .position-right {
+    //Switch widget
+    .app-switch {
+      float: right;
+      .btn-group {
         direction: ltr;
       }
+    }
 
-      .radio, .checkbox, .radio-inline,  .checkbox-inline {
-        label {
+    //Common styles for Radio, Checkbox, Radioset & Checkboxset widgets
+    .app-radioset, .app-checkboxset {
+      direction: ltr;
+    }
+
+    .radio, .checkbox, .radio-inline,  .checkbox-inline {
+      label {
+        text-align: right;
+      }
+
+      .caption {
+        margin-right: 1.5em;
+      }
+
+      input[type="radio"], input[type="checkbox"] {
+        right: 0;
+      }
+
+      //Reset position from left hand side
+      &.col-md-push-3 {
+        left: 0;
+      }
+    }
+
+    //Datetime, date & time widgets
+    .app-datetime, .app-date, .app-timeinput {
+      .dropdown-menu {
+        left: 0 !important; /*!important is used to overwrite the inline styles*/
+        white-space: normal; /*In order to prevent the UI from breaking*/
+      }
+    }
+
+    //Tab Widget
+    .app-tabs {
+      .nav {
+        &.nav-tabs {
           text-align: right;
-        }
-
-        .caption {
-          margin-right: 1.5em;
-        }
-
-        input[type="radio"], input[type="checkbox"] {
-          right: 0;
-        }
-
-        //Reset position from left hand side
-        &.col-md-push-3 {
-          left: 0;
-        }
-      }
-
-      //Datetime, date & time widgets
-      .app-datetime, .app-date, .app-timeinput {
-        .dropdown-menu {
-          left: 0 !important; /*!important is used to overwrite the inline styles*/
-          white-space: normal; /*In order to prevent the UI from breaking*/
-        }
-      }
-
-      //Tab Widget
-      .app-tabs {
-        .nav {
-          &.nav-tabs {
-            text-align: right;
-          }
-        }
-      }
-
-      .app-toggle {
-        float: right;
-      }
-
-      .app-slider {
-        text-align: right; /*IE9 support*/
-        .range-input {
-          margin-top: 0.5em;
-        }
-      }
-
-      .app-fileupload {
-        float: right;
-
-        .app-button-wrapper {
-          float: right;
         }
       }
     }
 
-    //Angular UI bootstrap 1.1.0 related styles.
-    .ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left};
-    .uib-datepicker .uib-title{width:100%;}
-    .uib-day button,.uib-month button,.uib-year button{min-width:100%;}
-    .uib-datepicker-popup.dropdown-menu{display:block;}
-    .uib-button-bar{padding:10px 9px 2px;}
-    .uib-time input{width:50px;}
-    [uib-typeahead-popup].dropdown-menu{display:block;}
+    .app-toggle {
+      float: right;
+    }
+
+    .app-slider {
+      text-align: right; /*IE9 support*/
+      .range-input {
+        margin-top: 0.5em;
+      }
+    }
+
+    .app-fileupload {
+      float: right;
+
+      .app-button-wrapper {
+        float: right;
+      }
+    }
   }
+
+  //Angular UI bootstrap 1.1.0 related styles.
+  .ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left};
+  .uib-datepicker .uib-title{width:100%;}
+  .uib-day button,.uib-month button,.uib-year button{min-width:100%;}
+  .uib-datepicker-popup.dropdown-menu{display:block;}
+  .uib-button-bar{padding:10px 9px 2px;}
+  .uib-time input{width:50px;}
+  [uib-typeahead-popup].dropdown-menu{display:block;}
+}
