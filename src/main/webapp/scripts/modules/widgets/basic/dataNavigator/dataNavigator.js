@@ -6,7 +6,7 @@ WM.module("wm.widgets.basic")
         "use strict";
         $templateCache.put("template/widget/datanavigator.html",
             '<nav data-identifier="datanavigator" class="app-datanavigator clearfix text-{{navigationalign}}" data-ng-show="show" init-widget apply-styles>' +
-                '<ul class="pagination {{class}}" data-ng-if="navcontrols === \'Advanced\'">' +
+                '<ul class="pagination advanced {{class}}" data-ng-if="navcontrols === \'Advanced\'">' +
                     '<li data-ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" data-ng-click="navigatePage(\'first\', $event)"><i class="wi wi-fast-backward"></i></a></li>' +
                     '<li data-ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" data-ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-step-backward"></i></a></li>' +
                     '<li class="pagecount disabled"><a><input title="Current Page" type="number" data-ng-disabled="isDisableCurrent" data-ng-model="dn.currentPage" ng-model-options="{updateOn: \'change blur\'}" data-ng-change="onModelChange($event)" class="form-control" /></a></li>' +
@@ -19,9 +19,9 @@ WM.module("wm.widgets.basic")
                     '<li class="previous" data-ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true">&larr;</span> Previous</a></li>' +
                     '<li class="next" data-ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'next\', $event)">Next <span aria-hidden="true">&rarr;</span></a></li>' +
                 '</ul>' +
-                '<uib-pagination data-ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ng-disabled="false"' +
+                '<uib-pagination class="basic" data-ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ng-disabled="false"' +
                         ' boundary-links="boundarylinks" force-ellipses="forceellipses" direction-links="directionlinks" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>' +
-                '<ul data-ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basic"><a>Total Records: {{dataSize}}</a></li></ul>' +
+                '<ul data-ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>Total Records: {{dataSize}}</a></li></ul>' +
             '</nav>'
             );
     }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'Variables', '$rootScope', 'wmToaster', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, Variables, $rootScope, wmToaster, CONSTANTS) {
