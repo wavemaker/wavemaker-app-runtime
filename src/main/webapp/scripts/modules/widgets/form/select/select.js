@@ -145,6 +145,7 @@ WM.module('wm.widgets.form')
                 scope.selectOptions = [];
                 /*check if dataset is array*/
                 if (WM.isArray(dataset)) {
+                    dataset = FormWidgetUtils.getOrderedDataSet(dataset, scope.orderby);
                     /*filter the dataSet based on datafield & displayfield*/
                     dataset = parseDataSet(dataset, scope);
                     /* if dataSet is an array of objects, convert it to object */

@@ -40,7 +40,7 @@ WM.module('wm.widgets.form')
                 '</li>'
             );
     }])
-    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'Utils', 'CONSTANTS', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, Utils, CONSTANTS) {
+    .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'Utils', 'CONSTANTS', 'FormWidgetUtils', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, Utils, CONSTANTS, FormWidgetUtils) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base.editors', 'wm.menu.dataProps']),
@@ -72,6 +72,7 @@ WM.module('wm.widgets.form')
                     };
                 });
             } else if (WM.isArray(newVal)) {
+                newVal = FormWidgetUtils.getOrderedDataSet(newVal, scope.orderby);
                 if (WM.isObject(newVal[0])) {
                     transformFn = function (item) {
                         var children = (WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemchildren'}) || item.children);

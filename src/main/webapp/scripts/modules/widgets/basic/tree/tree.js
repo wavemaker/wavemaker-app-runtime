@@ -9,8 +9,9 @@ WM.module('wm.widgets.basic')
         '$timeout',
         'Utils',
         'CONSTANTS',
+        'FormWidgetUtils',
 
-        function (PropertiesFactory, $rs, WidgetUtilService, $timeout, Utils, CONSTANTS) {
+        function (PropertiesFactory, $rs, WidgetUtilService, $timeout, Utils, CONSTANTS, FormWidgetUtils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.tree', ['wm.base', 'wm.base.editors']),
@@ -20,7 +21,8 @@ WM.module('wm.widgets.basic')
                     'treeicons'    : true,
                     'nodelabel'    : true,
                     'nodeicon'     : true,
-                    'nodechildren' : true
+                    'nodechildren' : true,
+                    'orderby'      : true
                 },
                 defaultTreeIconClass = 'plus-minus',
                 ICON_CLASSES = {
@@ -133,6 +135,7 @@ WM.module('wm.widgets.basic')
                         });
                     }
                 } else if (WM.isArray(newVal)) {
+                    newVal = FormWidgetUtils.getOrderedDataSet(newVal, $is.orderby);
                     nodes = newVal;
                 } else if (WM.isObject(newVal)) {
                     nodes = [newVal];
@@ -215,6 +218,7 @@ WM.module('wm.widgets.basic')
                 case 'nodeicon':
                 case 'nodelabel':
                 case 'nodechildren':
+                case 'orderby':
                     $is.renderTree($el, $is, attrs);
                     break;
                 case 'treeicons':

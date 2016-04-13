@@ -150,6 +150,32 @@ WM.module('wm.widgets.form')
                 updatedCheckedValues(scope);
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#getOrderedDataSet
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to get the ordered dataset based on the given orderby
+             *
+             * @param {object} dataset dataset on which sort is to be performed
+             * @param {string} orderby orderby having field and directions
+             */
+            function getOrderedDataSet(dataset, orderby) {
+                if (!orderby) {
+                    return dataset;
+                }
+                var items      = _.split(orderby, ','),
+                    fields     = [],
+                    directions = [];
+                _.forEach(items, function (obj) {
+                    var item = _.split(obj, ':');
+                    fields.push(item[0]);
+                    directions.push(item[1]);
+                });
+                return _.orderBy(dataset, fields, directions);
+            }
 
             /**
              * @ngdoc function
@@ -177,6 +203,7 @@ WM.module('wm.widgets.form')
 
                 /*parsing the dataSet only if it is an array*/
                 if (WM.isArray(dataSet)) {
+                    dataSet = getOrderedDataSet(dataSet, scope.orderby);
                     /*if only keys of the object within dataset value needs to be used.*/
                     if (useKeys) {
                         data = {};
@@ -539,5 +566,6 @@ WM.module('wm.widgets.form')
             this.getProxyExcludeDates           = getProxyExcludeDates;
             this.getUpdatedModel                = getUpdatedModel;
             this.updatedCheckedValues           = updatedCheckedValues;
+            this.getOrderedDataSet              = getOrderedDataSet;
         }
     ]);

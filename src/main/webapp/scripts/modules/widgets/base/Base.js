@@ -208,7 +208,8 @@ WM.module('wm.widgets.base', [])
                         "datafield": {"type": "list", "options": ["All Fields"], "datasetfilter" : "terminals", "allfields" : true},
                         "displayfield": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
-                        "displaytype": {"type": "list", "options": ["Currency", "Date", "Number", "Text", "Time"]}
+                        "displaytype": {"type": "list", "options": ["Currency", "Date", "Number", "Text", "Time"]},
+                        "orderby": {"type": "list", "widget": "order-by"}
                     },
                     "wm.base.navigation": {
                         "navigation": {"type": "list", "options": ["Basic", "Pager", "Advanced"], "value": "Basic"},
@@ -350,7 +351,8 @@ WM.module('wm.widgets.base', [])
                         "scopedataset": {"type": "string"},
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "displayfield": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
-                        "tabindex": {"type": "string", "value": "0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "orderby": {"type": "list", "widget": "order-by"}
                     },
                     "wm.menu": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
@@ -368,7 +370,8 @@ WM.module('wm.widgets.base', [])
                         "linktarget": {"type": "list", "options": ["_blank", "_parent", "_self", "_top"], "value": "_blank", "widget": "datalist"},
                         "tabindex": {"type": "string", "value": "0"},
                         "animateitems": {"type": "list", "options": ['', 'slide', 'fade', 'scale']},
-                        "shortcutkey": {"type": "string"}
+                        "shortcutkey": {"type": "string"},
+                        "orderby": {"type": "list", "widget": "order-by"}
                     },
 
                     "wm.menu.dataProps": {
@@ -390,7 +393,8 @@ WM.module('wm.widgets.base', [])
                         "nodechildren": {"type": "string", "widget": "list", "datasetfilter" : "objects", "bindable": "in-bound", "bindonly": "expression"},
                         "tabindex": {"type": "string", "value": "0"},
                         "levels": {"type": "number", "value": 0, "min": "0", "max": "10", "step": "1"},
-                        "datavalue": {"type": "string", "bindable": "in-bound", "ignoreGetterSetters": true, "widget": "tree-datavalue"}
+                        "datavalue": {"type": "string", "bindable": "in-bound", "ignoreGetterSetters": true, "widget": "tree-datavalue"},
+                        "orderby": {"type": "list", "widget": "order-by"}
                     },
 
                     "wm.text": {
@@ -964,7 +968,8 @@ WM.module('wm.widgets.base', [])
                         "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file'} } }], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]},
+                        "orderby": {"type": "list", "widget": "order-by"}
                     },
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1532,7 +1537,8 @@ WM.module('wm.widgets.base', [])
                         /* searchbar in mobile-navbar*/
                         "navsearchbar": {"type": "string", "show": "false"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
-                        "type": {"type": "string", "widget": "list", "options": ["search", "typeahead"], "value": "search"}
+                        "type": {"type": "string", "widget": "list", "options": ["search", "typeahead"], "value": "search"},
+                        "orderby": {"type": "list", "widget": "order-by"}
                     },
                     "wm.chart": {
                         "height": {"type": "string", value: "210px", "pattern": dimensionRegex},
@@ -1682,7 +1688,7 @@ WM.module('wm.widgets.base', [])
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "pollinterval": {"type": "number"},
                         "displayformat": {"type": "list", "options": ["percentage", "absolute"], "value": "percentage"},
-                        "type": {"type": "list", "options": ["default", "default-striped", "success", "success-striped", "info", "info-striped", "warning", "warning-striped", "danger", "danger-striped"], "value": "default"},
+                        "type": {"type": "list", "options": ["default", "default-striped", "success", "success-striped", "info", "info-striped", "warning", "warning-striped", "danger", "danger-striped"], "value": "default", "bindable": "in-bound"},
 
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
