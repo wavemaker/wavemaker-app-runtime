@@ -27,15 +27,15 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                     viewName,
                     operation,
                     sourceScope,
-                    passThroughUrl,
+                    isDataQueryParam,
                     urlParams;
 
                 operation           = variable.operation;
                 sourceScope         = options.scope || $rootScope;
                 pageName            = (variable.dataBinding && variable.dataBinding.pageName) || variable.pageName;
-                passThroughUrl      = WM.isDefined(options.passThroughUrl) ? options.passThroughUrl : variable.passThroughUrl;
+                isDataQueryParam      = WM.isDefined(options.isDataQueryParam) ? options.isDataQueryParam : variable.isDataQueryParam;
                 variable.dataSet    = options.data || variable.dataSet;
-                urlParams           = passThroughUrl ? variable.dataSet : urlParams;
+                urlParams           = isDataQueryParam ? variable.dataSet : urlParams;
 
                 /* if operation is goToPage, navigate to the pageName */
                 switch (operation) {
@@ -86,9 +86,9 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
             getData: function (variable) {
                 return variable.dataSet;
             },
-            setData: function (variable, value, passThroughUrl) {
-                if (WM.isDefined(passThroughUrl)) {
-                    variable.passThroughUrl = passThroughUrl;
+            setData: function (variable, value, isDataQueryParam) {
+                if (WM.isDefined(isDataQueryParam)) {
+                    variable.isDataQueryParam = isDataQueryParam;
                 }
                 return methods.setProperty(variable, 'dataSet', value);
             }
@@ -108,8 +108,8 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
             getData: function () {
                 return methods.getData(this);
             },
-            setData: function (value, passThroughUrl) {
-                return methods.setData(this, value, passThroughUrl);
+            setData: function (value, isDataQueryParam) {
+                return methods.setData(this, value, isDataQueryParam);
             }
         };
 
