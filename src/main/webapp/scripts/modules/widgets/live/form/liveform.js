@@ -1161,7 +1161,7 @@ WM.module('wm.widgets.live')
                             }
                         }
                         if (!CONSTANTS.isRunMode || columnDef.show) {
-                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentIsolateScope.captionposition || element.parent().closest('[widgettype="wm-form"]').isolateScope().captionposition);
+                            template = LiveWidgetUtils.getTemplate(columnDef, index, parentIsolateScope.captionposition || element.parent().closest('.app-form').isolateScope().captionposition);
                             element.html(template);
                             $compile(element.contents())(parentIsolateScope);
                         } else {
