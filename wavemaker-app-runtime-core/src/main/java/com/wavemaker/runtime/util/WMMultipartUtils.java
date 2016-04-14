@@ -207,16 +207,19 @@ public class WMMultipartUtils {
     public static <T> DownloadResponse buildDownloadResponseForBlob(T instance, String fieldName, HttpServletRequest httpServletRequest, boolean download) {
         DownloadResponse downloadResponse = new DownloadResponse();
         try {
+            String filename = httpServletRequest.getParameter("filename");
+            if(StringUtils.isBlank(filename)) {
+                filename = fieldName + new Random().nextInt(99);
+            }
             byte[] bytes = getBlobBytes(instance, fieldName);
             downloadResponse.setContents(new ByteArrayInputStream(bytes));
             downloadResponse.setContentType(getMatchingContentType(bytes, httpServletRequest));
-            downloadResponse.setFileName(fieldName + new Random().nextInt(99));
+            downloadResponse.setFileName(filename);
             downloadResponse.setInline(!download);
         } catch (IOException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new WMRuntimeException("Failed to prepare response for fieldName" + fieldName, e);
         }
         return downloadResponse;
-
     }
 
     private static <T> byte[] getBlobBytes(final T instance, final String fieldName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, IOException {
