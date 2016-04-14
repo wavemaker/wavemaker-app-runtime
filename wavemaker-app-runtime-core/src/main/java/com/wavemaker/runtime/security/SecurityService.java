@@ -15,9 +15,7 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,12 +72,6 @@ public class SecurityService {
             }
         }
         return securityEnabled;
-    }
-
-    public RoleConfig getLandingPageForRole(String role) {
-        WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(
-                WMAppSecurityConfig.class);
-        return wmAppSecurityConfig.getRoleMap().get(role);
     }
 
     public LoginConfig getLoginConfig() {
@@ -206,6 +198,37 @@ public class SecurityService {
         return roleNames.toArray(new String[0]);
     }
 
+    /**
+     * If authentication is null then it returns empty String array. If not then it will retrieve the authority and process the roleName in the spring format before returning and then return.
+     *
+     * @return String array with roles or empty depending on authentication object.
+     */
+    public String getUserLandingPage() {
+        String landingPage = null;
+
+        String[] userRoles = getUserRoles();
+        if (userRoles.length > 0) {
+            WMAppSecurityConfig wmAppSecurityConfig = WMAppContext.getInstance().getSpringBean(WMAppSecurityConfig.class);
+            Map<String, RoleConfig> roleMap = wmAppSecurityConfig.getRoleMap();
+
+            if(userRoles.length == 1) {
+                landingPage = roleMap.get(userRoles[0]).getLandingPage();
+            } else {
+                Iterator<Map.Entry<String, RoleConfig>> roleEntryIterator = roleMap.entrySet().iterator();
+                while (roleEntryIterator.hasNext() && landingPage == null){
+                    Map.Entry<String, RoleConfig> roleEntry = roleEntryIterator.next();
+                    for (int i = 0; i < userRoles.length; i++) {
+                        if(userRoles[i].equals(roleEntry.getKey())) {
+                            landingPage = roleEntry.getValue().getLandingPage();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return landingPage;
+    }
+
     private static Authentication getAuthenticatedAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication instanceof AnonymousAuthenticationToken ? null : authentication;
@@ -274,14 +297,8 @@ public class SecurityService {
             userInfo = new UserInfo();
             userInfo.setUserId(getUserId());
             userInfo.setUserName(getUserName());
-            final String[] userRoles = getUserRoles();
-            userInfo.setUserRoles(userRoles);
-            if (userRoles.length > 0) {
-                final RoleConfig landingPageForRole = getLandingPageForRole(userRoles[0]);
-                if (landingPageForRole != null) {
-                    userInfo.setLandingPage(landingPageForRole.getLandingPage());
-                }
-            }
+            userInfo.setUserRoles(getUserRoles());
+            userInfo.setLandingPage(getUserLandingPage());
         }
 
         SecurityInfo securityInfo = new SecurityInfo();
