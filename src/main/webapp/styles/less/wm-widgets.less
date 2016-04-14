@@ -1262,6 +1262,68 @@ If the height and width are not specified the video takes the height of the post
       border-left: 0;
     }
   }
+  ul.pagination {
+    &.basic {
+      > li {
+        > a {
+          color: inherit;
+          background-color: transparent;
+          border-width: 0;
+        }
+        &.active, &:hover {
+          > a {
+            background-color: transparent;
+            border-bottom-width: 3px;
+            &:hover {
+              background-color: transparent;
+              border-bottom-width: 3px;
+              color: inherit;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+      .pagination-prev, .pagination-next, .pagination-first, .pagination-last {
+        a {
+          padding: 0;
+          font-size: 0;
+        }
+        a:before {
+          font-family: "wavicon";
+          font-size: 16pt;
+          vertical-align: initial;
+          width: 16pt;
+          height: 16pt;
+          position: relative;
+        }
+      }
+      .pagination-prev a:before {
+        content: "\f143";
+      }
+      .pagination-next a:before {
+        content: "\f145";
+      }
+      .pagination-first a:before {
+        content: "\f134";
+      }
+      .pagination-last a:before {
+        content: "\f135";
+      }
+    }
+    &.active {
+      background-color: transparent;
+      border-bottom-width: 2px;
+    }
+  }
+  li {
+    &.totalcount.basiccount {
+      > a {
+        color: inherit;
+        background-color: transparent;
+        border-width: 0;
+      }
+    }
+  }
 }
 /********************************************************************************
 *********************************Grid classes **********************************
