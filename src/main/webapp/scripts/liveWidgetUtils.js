@@ -513,8 +513,8 @@ WM.module('wm.widgets.live')
                     fieldDef.placeholder = fieldDef.placeholder || '';
                 }
 
-                if (captionPosition === 'top' && ($rs.selectedViewPort || Utils.isAndroid())) {
-                    if ($rs.selectedViewPort.os === 'android' || !$rs.isMobileApplicationType || Utils.isAndroid()) { //Is android or not a mobile application
+                if (captionPosition === 'top') {
+                    if (($rs.selectedViewPort && $rs.selectedViewPort.os === 'android') || !$rs.isMobileApplicationType || Utils.isAndroid()) { //Is android or not a mobile application
                         labelLayout = controlLayout = 'col-xs-12';
                     } else if ($rs.isMobileApplicationType) { //Is a mobile application and not android
                         labelLayout   = 'col-xs-4';
