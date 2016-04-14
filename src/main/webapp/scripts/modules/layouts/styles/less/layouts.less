@@ -176,9 +176,10 @@ body {
 .app-card {
   position: relative;
   &.card {
-    margin-bottom: .2rem;
+    margin: .2rem;
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0.2rem 0.3rem 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
     .app-label {
       &:not(.text-muted) {
         color: inherit;
@@ -196,9 +197,10 @@ body {
         width: 32pt;
         text-align: center;
         vertical-align: top;
+        padding-top: .75rem;
         img {
-          max-width: 100%;
-          max-height: 100%;
+          width: 24pt;
+          height: 24pt;
         }
         .app-icon {
           font-size: 30pt;
@@ -208,6 +210,7 @@ body {
         display: table-cell;
         vertical-align: top;
         padding-left: 0.5em;
+        padding-top: .75rem;
       }
     }
     .card-heading {
@@ -240,8 +243,7 @@ body {
     }
     .app-card-actions {
       position: relative;
-      padding-left: .75em;
-      padding-right: .75em;
+      padding: 0 .75em .75em;
       .btn {
         padding-left: 8px;
         padding-right: 8px;

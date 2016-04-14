@@ -9,7 +9,7 @@ WM.module('wm.layouts.containers')
                 '<div class="app-card-header" ng-show="heading || subheading || iconclass || iconurl">' +
                     '<div class="app-card-avatar" ng-show="iconclass || iconurl">' +
                         '<i class="app-icon {{iconclass}}" ng-if="showIcon"></i>' +
-                        '<wm-picture picturesource="{{iconurl}}" ng-if="showImage"></wm-picture>' +
+                        '<wm-picture shape="circle" picturesource="{{iconurl}}" ng-if="showImage"></wm-picture>' +
                     '</div>' +
                     '<div class="app-card-header-text">' +
                         '<h4 class="card-heading">{{heading}}</h4>' +
