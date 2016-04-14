@@ -16,8 +16,9 @@ WM.module('wm.widgets.live')
         '$liveVariable',
         'CONSTANTS',
         'WidgetUtilService',
+        'Variables',
 
-        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService) {
+        function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables) {
             'use strict';
             var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
                 eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
@@ -1335,6 +1336,106 @@ WM.module('wm.widgets.live')
                 };
             }
 
+            function fetchReferenceDetails($scope) {
+                var bindDataSetSplit,
+                    referenceWidgetName,
+                    referenceWidget,
+                    referenceBindDataSet,
+                    referenceVariableName,
+                    relatedFieldName,
+                    relatedFieldType,
+                    fields,
+                    details,
+                    referenceVariable,
+                    isBoundToSelectedItemSubset = $scope.binddataset.indexOf('selecteditem.') !== -1;
+
+                bindDataSetSplit = $scope.binddataset.split('.');
+                referenceWidgetName = bindDataSetSplit[1];
+                referenceWidget = $scope.Widgets[referenceWidgetName];
+                referenceBindDataSet = referenceWidget.binddataset;
+
+                /*the binddataset comes as bind:Variables.VariableName.dataset.someOther*/
+                referenceVariableName = referenceBindDataSet.replace('bind:Variables.', '');
+                referenceVariableName = referenceVariableName.substr(0, referenceVariableName.indexOf('.'));
+
+                referenceVariable = Variables.getVariableByName(referenceVariableName);
+                relatedFieldName = isBoundToSelectedItemSubset && bindDataSetSplit[3];
+                fields = (referenceVariable !== null) && $rs.dataTypes &&
+                    $rs.dataTypes[referenceVariable.package || referenceVariable.type].fields;
+                details = {
+                    'referenceVariableName': referenceVariableName,
+                    'referenceWidget': referenceWidget,
+                    'referenceVariable': referenceVariable,
+                    'relatedFieldName': relatedFieldName
+                };
+                /* If binddataset is of the format: bind:Widgets.widgetName.selecteditem.something,
+                 * i.e. widget is bound to a subset of selected item, get type of that subset.*/
+                if (relatedFieldName && fields) {
+                    relatedFieldType = fields[relatedFieldName].type;
+                    details['relatedFieldType'] = relatedFieldType;
+                } else {
+                    /* When binddataset is of the format: bind:Widgets.widgetName.selecteditem */
+                    details['fields'] = fields;
+                }
+                return details;
+            }
+            function fetchDynamicData($scope, success, error) {
+                var reference,
+                    referenceVariableKey,
+                    watchSelectedItem,
+                    referenceVariable;
+
+                /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
+                reference = fetchReferenceDetails($scope);
+
+                /*Check if a watch is not registered on selectedItem.*/
+                if (!$scope.selectedItemWatched) {
+                    watchSelectedItem = reference.referenceWidget.$watch('selecteditem', function (newVal, oldVal) {
+
+                        $scope.selectedItemWatched = true;
+
+                        /*Check for sanity of newVal.*/
+                        /*Check for sanity of newVal.*/
+                        if (newVal && !WM.equals(newVal, oldVal)) {
+
+                            referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
+                            /*Check if "referenceVariableKey" has already been computed.*/
+                            if (!referenceVariableKey && referenceVariable && referenceVariable.category === 'wm.LiveVariable') {
+                                /*Invoke the function to get the primary key.*/
+                                referenceVariableKey = referenceVariable.getPrimaryKey();
+
+                                /*If the there is a single primary key, fetch the first element of the array.*/
+                                if (referenceVariableKey.length === 1) {
+                                    referenceVariableKey = referenceVariableKey[0];
+                                }
+
+                                /*De-register the watch on selected item.*/
+                                watchSelectedItem();
+
+                                /*Register a watch on the primary key field of the selected item.*/
+                                reference.referenceWidget.$watch('selecteditem.' + referenceVariableKey, function (newVal) {
+                                    /*Check for sanity.*/
+                                    if (newVal) {
+                                        /*Invoke the function to update the related data of the variable for the specified relatedFieldName.*/
+                                    }
+                                    referenceVariable.updateRelatedData({
+                                        'id': reference.referenceWidget.selecteditem[referenceVariableKey],
+                                        'relatedFieldName': reference.relatedFieldName
+                                    }, function (data) {
+                                        /*Check for sanity of data.*/
+                                        if (WM.isDefined(data)) {
+                                            Utils.triggerFn(success, data);
+                                        }
+                                    }, function (err) {
+                                        Utils.triggerFn(error, err);
+                                    });
+                                });
+                            }
+                        }
+                    }, true);
+                }
+            }
+
             this.getEventTypes              = getEventTypes;
             this.getDefaultValue            = getDefaultValue;
             this.getLiveWidgetButtons       = getLiveWidgetButtons;
@@ -1353,6 +1454,8 @@ WM.module('wm.widgets.live')
             this.preProcessFields           = preProcessFields;
             this.setColumnConfig            = setColumnConfig;
             this.fetchPropertiesMapColumns  = fetchPropertiesMapColumns;
+            this.fetchDynamicData           = fetchDynamicData;
+            this.fetchReferenceDetails      = fetchReferenceDetails;
         }
     ])
     .directive('liveActions', ['Utils', 'wmToaster', '$rootScope', function (Utils, wmToaster, $rs) {

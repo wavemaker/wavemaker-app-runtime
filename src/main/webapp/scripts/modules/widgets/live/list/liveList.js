@@ -59,8 +59,9 @@ WM.module('wm.widgets.live')
         '$servicevariable',
         '$timeout',
         'DeviceVariableService',
+        'LiveWidgetUtils',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.navigation']),
@@ -1062,6 +1063,13 @@ WM.module('wm.widgets.live')
                             }
                         }, true);
                     }
+                    $is.$watch('binddataset', function (newVal) {
+                        if (_.includes(newVal, 'selecteditem.')) {
+                            LiveWidgetUtils.fetchDynamicData($is, function(data){
+                                onDataSetChange($is, $el, undefined, data, attrs, listCtrl);
+                            });
+                        }
+                    });
                     setupEvtHandlers($is, $el, attrs);
                 }
 
