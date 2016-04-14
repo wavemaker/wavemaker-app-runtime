@@ -241,7 +241,7 @@ WM.module('wm.utils', [])
 
         /*function to get variable name bound to an element*/
         function getVariableName(iScope, scope) {
-            if (iScope.binddataset) {
+            if (iScope && iScope.binddataset) {
                 var variableName,
                     widgetScope,
                     widgetName,
