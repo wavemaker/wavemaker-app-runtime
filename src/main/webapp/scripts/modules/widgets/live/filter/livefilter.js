@@ -98,7 +98,6 @@ WM.module('wm.widgets.live')
                             }
                         });
                         /*Setting result to the default data*/
-                        $scope.orderBy = '';
                         $scope.filter();
                     };
                     $scope.applyFilter = function (options) {
@@ -126,8 +125,8 @@ WM.module('wm.widgets.live')
                             emptyFilterOptions = $scope.enableemptyfilter.split(',');
                         options = options || {};
                         page = options.page || page;
-                        orderBy = options.orderBy || "";
-                        $scope.orderBy = options.orderBy;
+                        orderBy = options.orderBy || $scope.orderBy || '';
+                        $scope.orderBy = orderBy; //Store the order by in scope. This can be used to retain the sort after filtering
                         /* Copy the values to be sent to the user as '$data' before servicecall */
                         _.each($scope.formFields, function (field) {
                             if (!field.isRange) {
