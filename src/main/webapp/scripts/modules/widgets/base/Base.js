@@ -21,25 +21,22 @@ WM.module('wm.widgets.base', [])
      */
     .factory('PropertiesFactory', ['WIDGET_CONSTANTS', 'CONSTANTS', 'Utils', function (WIDGET_CONSTANTS, CONSTANTS, Utils) {
         "use strict";
-        /**
-         * TODO: fetch the properties from the config-properties.json
-         */
 
         var widgetEventOptions = Utils.getClonedObject(WIDGET_CONSTANTS.EVENTS_OPTIONS), /*A copy of the variable to preserve the actual value.*/
             showInDeviceOptions = [{
                 'name': 'All',
                 'value': 'all'
             }, {
-                'name': 'Extra Small',
+                'name': 'Mobile',
                 'value': 'xs'
             }, {
-                'name': 'Small',
+                'name': 'Tab',
                 'value': 'sm'
             }, {
-                'name': 'Medium',
+                'name': 'Laptop',
                 'value': 'md'
             }, {
-                'name': 'Large',
+                'name': 'Large Screen',
                 'value': 'lg'
             }],
             daysOptions    = Utils.getDaysOptions(),
