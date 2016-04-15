@@ -148,7 +148,7 @@ WM.module('wm.widgets.base')
                                 var trimmedFnName = fnName.trim();
                                 if (!_.includes(trimmedFnName, '(') && !_.includes(trimmedFnName, '=')) {
                                     overrideFlg = true;
-                                    return '$root._handleAppCustomEvent($s, ' + isAnchor + ', $event, "' + trimmedFnName + '")';
+                                    return '$rs._handleAppCustomEvent($s, ' + isAnchor + ', $event, "' + trimmedFnName + '")';
                                 }
                                 return trimmedFnName;
                             })
@@ -161,9 +161,11 @@ WM.module('wm.widgets.base')
                             $is[evtName] = function (locals) {
                                 locals = locals || {};
                                 locals.iScope = $is;
-                                locals.$s  = $s;
+                                locals.$s     = $s;
+                                locals.$rs    = $rs;
 
                                 var retVal = getParentMethod($s, locals);
+
                                 $rs.$safeApply($s);
                                 return retVal;
                             };
