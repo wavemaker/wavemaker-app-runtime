@@ -1,7 +1,7 @@
 package com.wavemaker.runtime.security.provider.database.users;
 
+import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.security.WMUser;
 import com.wavemaker.runtime.security.WMUserDetails;
 import com.wavemaker.runtime.security.provider.database.AbstractDatabaseSupport;
@@ -82,7 +81,15 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
             Object[] resultMap = (Object[]) content.get(0);
             int userId = (Integer) resultMap[0];
             String password = String.valueOf(resultMap[1]);
-            int enabled = (Integer) resultMap[2];
+            // MYSQL returns BigInteger. Enabled cloumn shoulld be introduced or "1" should be removed.
+            int enabled = 0;
+            final Object column3 = resultMap[2];
+            if (column3 instanceof Integer) {
+                enabled = (Integer) column3;
+            } else if (column3 instanceof BigInteger) {
+                final BigInteger bigInteger = (BigInteger) column3;
+                enabled = bigInteger.intValue();
+            }
             String userName = String.valueOf(resultMap[3]);
             int tenantId = -1;
             long loginTime = System.currentTimeMillis();
