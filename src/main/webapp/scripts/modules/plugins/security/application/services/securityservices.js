@@ -156,8 +156,15 @@ wm.plugins.security.services.SecurityService = [
              * @param {object} generalOptions general options
              */
 
-            setGeneralOptions: function (generalOptions) {
-                _generalOptions = generalOptions;
+            setGeneralOptions: function (params, successCallback, failureCallback) {
+                BaseService.send({
+                    target: 'Security',
+                    action: 'setGeneralOptions',
+                    urlParams: {
+                        projectID: params.projectID
+                    },
+                    data: params.config
+                }, successCallback, failureCallback);
             },
 
             /**

@@ -24,6 +24,10 @@ wm.plugins.security.constant('SECURITY_URLS', {
             url: "services/projects/:projectID/securityservice/general",
             method: "GET"
         },
+        setGeneralOptions: {
+            url: "services/projects/:projectID/securityservice/general",
+            method: "POST"
+        },
         configDemo: {
             url: "services/projects/:projectID/securityservice/providers/demo",
             method: "POST"
