@@ -20,7 +20,6 @@
         "nvd3": "https://github.com/novus/nvd3.git#v1.8.2",
         "placeholders": "4.0.1",
         "socialbyway": "https://github.com/Imaginea/SocialByWay.git",
-        "xdomain": "0.7.5",
         "ocLazyLoad": "https://github.com/ocombe/ocLazyLoad.git#1.0.9",
         "lodash": "https://github.com/lodash/lodash.git#4.5.0",
         "hammerjs": "2.0.6",
