@@ -2064,7 +2064,6 @@ WM.module('wm.widgets.base', [])
                     "pre": function (scope, element, attrs) {
                         var userRoles   = $rootScope.userRoles || [],
                             widgetRoles = attrs.accessroles ? attrs.accessroles.split(",") : [],
-                            parentIScope,
                             clonedElement;
 
                         if (hasAccessToWidget(widgetRoles, userRoles)) {
@@ -2073,14 +2072,8 @@ WM.module('wm.widgets.base', [])
                             element.replaceWith(clonedElement);
                             $compile(clonedElement)(scope);
                         } else {
-
-                            parentIScope = element.closest('[init-widget]').isolateScope();
-
-                            // notify the parent widget about this change.
-                            if (parentIScope) {
-                                parentIScope.$emit('security:before-child-remove', scope, element, attrs);
-                            }
-
+                            // notify the widget about this change.
+                            scope.$emit('security:before-child-remove', scope, element, attrs);
                             element.remove();
                         }
                     }
