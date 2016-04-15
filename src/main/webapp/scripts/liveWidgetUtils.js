@@ -320,7 +320,7 @@ WM.module('wm.widgets.live')
                     caption += ' | date:formFields[' + index + '].datepattern ||  \'yyyy-MM-dd\'';
                 } else if (type === 'select') {
                     caption =  'formFields[' + index + '].isRelated ? getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield) : formFields[' + index + '].value';
-                } else if (type === 'rating') {
+                } else if (type === 'rating' || type === 'upload') {
                     caption = '';
                 }
                 return '{{' + caption + '}}';

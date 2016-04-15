@@ -542,6 +542,7 @@ WM.module('wm.widgets.live')
                                 if ($scope.operationType !== 'delete') {
                                     formData.append(field.key, document.forms[formName][field.key].files[0]);
                                 }
+                                dataObject[field.key] = dataObject[field.key] !== null ? '' : null;
                             }
                         } else if (field.type === "list") {
                             dataObject[field.key] = field.value || undefined;
