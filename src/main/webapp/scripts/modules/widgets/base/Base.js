@@ -822,13 +822,15 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "value": "400", "pattern": dimensionRegex},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value": "wi wi-globe", "pattern": classRegex},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
-                        "closable": {"type": "boolean", "value": true}
+                        "closable": {"type": "boolean", "value": true},
+                        "showactions": {"type": "boolean", "value": true}
                     },
                     "wm.pagedialog": {
                         "title": {"type": "string", "value": "Page Content", "bindable": "in-bound"},
                         "oktext": {"type": "string", "value": "OK", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "value" : "wi wi-file", "pattern": classRegex},
-                        "closable": {"type": "boolean", "value": true}
+                        "closable": {"type": "boolean", "value": true},
+                        "showactions": {"type": "boolean", "value": true}
                     },
                     "wm.logindialog": {
                         "height": {"type": "string", "show": false, "pattern": dimensionRegex},
@@ -1749,7 +1751,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "help", "properties": ["helptext"], "parent": "properties"},
                 {"name": "behavior", "properties": ["defaultview", "defaultmode", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "readonlygrid", "scrolldelay", "scrollamount", "direction",
                     "multiple", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "enablefullscreen",
-                    "lock", "freeze", "autoscroll", "closable", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
+                    "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                     "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation","animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",

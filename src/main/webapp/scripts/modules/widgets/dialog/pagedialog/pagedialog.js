@@ -8,7 +8,7 @@ WM.module('wm.widgets.dialog')
             '<div class="app-dialog modal-dialog app-page-dialog" dialogclass init-widget data-ng-show="show" page-container  data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
                 '<wm-dialogheader iconclass={{iconclass}}  closable="{{closable}}" caption={{title}}  iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
                 '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target></div>' +
-                '<div class="app-dialog-footer modal-footer">' +
+                '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
                     '<wm-button  class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                 '</div>' +
             '</div></div>'
@@ -18,8 +18,7 @@ WM.module('wm.widgets.dialog')
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.pagedialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
             notifyFor = {
                 'height': true,
-                'width' : true,
-                'closable': true
+                'width' : true
             };
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, element, key, newVal) {

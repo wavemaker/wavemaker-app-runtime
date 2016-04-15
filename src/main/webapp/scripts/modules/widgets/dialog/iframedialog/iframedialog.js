@@ -10,7 +10,7 @@ WM.module('wm.widgets.dialog')
                 '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
                     '<wm-iframe iframesrc="{{iframeurl}}" wm-widget-overlay height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
                 '</div>' +
-                '<div class="app-dialog-footer modal-footer">' +
+                '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
                     '<wm-button class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
                 '</div>' +
             '</div></div>'
@@ -21,8 +21,7 @@ WM.module('wm.widgets.dialog')
             notifyFor = {
                 'url': true,
                 'height': true,
-                'width' : true,
-                'closable': true
+                'width' : true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */

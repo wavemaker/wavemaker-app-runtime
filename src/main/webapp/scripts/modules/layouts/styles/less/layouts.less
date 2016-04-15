@@ -35,6 +35,11 @@ body {
   background: #fff;
   .app-dialog {
     z-index: 1000;
+    &.app-page-dialog {
+      .app-dialog-body {
+        padding: 0;
+      }
+    }
   }
   &.active-container {
     z-index: 1015;
