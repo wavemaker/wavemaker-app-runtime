@@ -212,6 +212,30 @@ wm.plugins.database.services.DatabaseService = [
             },
 
             /**
+             * Internal function
+             * @name wm.database.$DatabaseService#testJarRequired
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to test if jar is required for the selected database.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & type of the database.
+             */
+
+            testJarRequired: function (params) {
+                return BaseService.execute({
+                    target: "Database",
+                    action: "testJarRequired",
+                    urlParams: {
+                        'projectID': params.projectID,
+                        'dbType'   : params.dbType
+                    }
+                });
+            },
+
+            /**
              * @ngdoc function
              * @name wm.database.$DatabaseService#importDB
              * @methodOf wm.database.$DatabaseService

@@ -26,6 +26,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "services/projects/:projectID/database/testDatabase",
             method: "POST"
         },
+        testJarRequired : {
+            url: "services/projects/:projectID/database/testDriver?dbType=:dbType",
+            method: "GET"
+        },
         importDB: {
             url: "services/projects/:projectID/database/services/import",
             method: "POST"
@@ -320,6 +324,42 @@ wm.plugins.database.constant('DB_CONSTANTS', {
             "USERNAME": "{WM_CLOUD_MYSQL_USERNAME}",
             "PASSWORD": "{WM_CLOUD_MYSQL_PASSWORD}"
         }
+    },
+    "DRIVER_VERSIONS": {
+        "Oracle": [
+            {
+                "DB_VERSION": "Oracle 12.1 or 12cR1",
+                "DRIVER_VERSION": "ojdbc7.jar",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "Oracle 11.2 or 11gR2",
+                "DRIVER_VERSION": "ojdbc6.jar",
+                "URL": ""
+            }
+        ],
+        "SQLServer": [
+            {
+                "DB_VERSION": " Microsoft JDBC Driver 6.0 for SQL Server",
+                "DRIVER_VERSION": "Driver 6.0",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "Microsoft JDBC Driver 4.2 for SQL Server",
+                "DRIVER_VERSION": "Driver 4.2",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "Microsoft JDBC Driver 4.1 for SQL Server",
+                "DRIVER_VERSION": "Driver 4.1",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "Microsoft JDBC Driver 4.0 for SQL Server",
+                "DRIVER_VERSION": "Driver 4.0",
+                "URL": ""
+            }
+        ]
     },
     "NON_EDITABLE_DATABASE_SYSTEMS": ['HSQLDB', 'DB2', 'Other'],
     "PERMISSIONS": {
