@@ -245,7 +245,7 @@ public class WMPageableHandlerMethodArgumentResolver implements HandlerMethodArg
                 : defaultOrFallback.getPageSize();
 
         // Limit lower bound
-        pageSize = pageSize < 1 ? defaultOrFallback.getPageSize() : pageSize;
+        pageSize = pageSize < 1 ? maxPageSize : pageSize;
         // Limit upper bound
         pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
 
