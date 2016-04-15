@@ -850,7 +850,7 @@ WM.module('wm.widgets.base', [])
                         "iconclass": {"type": "string", "value": "fa fa-spinner", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconsize": {"type": "string", "pattern": dimensionRegex},
                         "image": {"type": "string", "bindable": "in-bound"},
-                        "imagewidth": {"type": "string", "value":"20px"},
+                        "imagewidth": {"type": "string", "value": "20px"},
                         "imageheight": {"type": "string"},
                         "animation" : {"type": "list", "value": "spin", "options": spinnerAnimationOptions},
                         "type" : {"type": "list", "value": "icon", "options": ["image", "icon"]},
@@ -1481,7 +1481,7 @@ WM.module('wm.widgets.base', [])
                         "navigation": {"type": "list", "options": ["None", "Basic", "Pager", "Inline", "Advanced", "Scroll"], "value": "None"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default","panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "groupby": {"type": "list", "show": true},
                         "match": {"type": "list", "options": ["alphabet", "word"], "show": false, "value": "word"}
                     },
@@ -1732,7 +1732,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "properties", "parent": "", "show": true, "feature": "project.editor.design.basic"},
                 {"name": "styles", "parent": "", "show": true, "feature": "project.editor.design.style"},
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
-                {"name": "mobile", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
+                {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
                 {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings"], "parent": "properties"},
                 {"name": "layout", "properties": ["width", "height", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
@@ -1754,7 +1754,7 @@ WM.module('wm.widgets.base', [])
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
-                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation","animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
+                    "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "shortcutkey", "showcaptions", "multiselect", "radioselect", "enablesort", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "updateon", "updatedelay"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
@@ -1779,7 +1779,7 @@ WM.module('wm.widgets.base', [])
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onActionsclick",
                     "onBeforeSegmentChange", "onSegmentChange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
-                {"name": "devicesize", "properties": ["showindevice"], "parent": "mobile"},
+                {"name": "devicesize", "properties": ["showindevice"], "parent": "device"},
                 {"name": "imageproperties", "properties": ["imagetargetwidth", "imagetargetheight", "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
             ];
         }
