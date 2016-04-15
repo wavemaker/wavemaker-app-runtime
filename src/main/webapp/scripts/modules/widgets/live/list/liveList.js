@@ -1056,13 +1056,6 @@ WM.module('wm.widgets.live')
                         configureDnD($el, $is);
                     }
 
-                    if (attrs.scopedataset) {
-                        $is.$watch('scopedataset', function (nv) {
-                            if (nv && !$is.dataset) {
-                                updateFieldDefs($is, $el, nv);
-                            }
-                        }, true);
-                    }
                     $is.$watch('binddataset', function (newVal) {
                         if (_.includes(newVal, 'selecteditem.')) {
                             LiveWidgetUtils.fetchDynamicData($is, function(data){
@@ -1094,6 +1087,18 @@ WM.module('wm.widgets.live')
                 onNavigationTypeChange($is, $is.navigation);
 
                 WidgetUtilService.postWidgetCreate($is, $el, attrs);
+
+                if (CONSTANTS.isRunMode) {
+                    if (attrs.scopedataset) {
+                        _.defer(function () {
+                            $is.$watch('scopedataset', function (nv) {
+                                if (nv && !$is.dataset) {
+                                    updateFieldDefs($is, $el, nv);
+                                }
+                            }, true);
+                        });
+                    }
+                }
             }
 
             function compileFn($tEl, tAttrs) {

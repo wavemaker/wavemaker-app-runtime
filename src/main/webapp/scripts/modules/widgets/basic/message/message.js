@@ -1,4 +1,4 @@
-/*global WM */
+/*global WM, _ */
 /*Directive for message */
 
 WM.module('wm.widgets.basic')
@@ -136,17 +136,17 @@ WM.module('wm.widgets.basic')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, attrs), scope, notifyFor);
 
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching model attribute to the data for the message element.*/
-                        if (!scope.widgetid) {
-                            if (attrs.scopedataset) {
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        // fields defined in scope: {} MUST be watched explicitly
+                        // watching model attribute to the data for the message element.
+                        if (attrs.scopedataset && !scope.widgetid) {
+                            _.defer(function () {
                                 scope.$watch('scopedataset', function (newVal) {
                                     setDataSet(newVal, scope);
                                 });
-                            }
+                            });
                         }
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
             }

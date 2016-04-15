@@ -315,6 +315,8 @@ WM.module('wm.widgets.basic')
                                 $is.datavalue = attrs.datavalue.replace('bind:', '');
                             }
 
+                            WidgetUtilService.postWidgetCreate($is, $el, attrs);
+
                             if (!$is.widgetid && attrs.scopedataset) {
                                 $timeout(function () {
                                     $is.$watch('scopedataset', function (newVal) {
@@ -322,8 +324,6 @@ WM.module('wm.widgets.basic')
                                     }, true);
                                 }, 0);
                             }
-
-                            WidgetUtilService.postWidgetCreate($is, $el, attrs);
                         }
                     };
                 }

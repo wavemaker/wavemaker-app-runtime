@@ -175,15 +175,6 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching scopedataset attribute to create options for the checkboxset element.*/
-                        if (!attrs.widgetid && attrs.scopedataset) {
-                            scope.$watch('scopedataset', function () {
-                                if (scope.scopedataset) {
-                                    scope.dataset = scope.scopedataset;
-                                }
-                            }, true);
-                        }
                         /* checks if the given value object is in the given model array of objects */
                         scope.valueInModel = function (model, value, dataObject) {
                             /*If the value is in model, return true*/
@@ -211,6 +202,18 @@ WM.module('wm.widgets.form')
                         };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        /* fields defined in scope: {} MUST be watched explicitly */
+                        /*watching scopedataset attribute to create options for the checkboxset element.*/
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            _.defer(function () {
+                                scope.$watch('scopedataset', function () {
+                                    if (scope.scopedataset) {
+                                        scope.dataset = scope.scopedataset;
+                                    }
+                                }, true);
+                            });
+                        }
                     }
                 };
             }

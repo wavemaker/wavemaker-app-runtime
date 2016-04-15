@@ -305,12 +305,6 @@ WM.module('wm.widgets.advanced')
                         /* This function is called onMouseleave of the rating widget */
                         iScope.onMouseleave = onMouseout.bind(undefined, iScope, attrs, $el);
 
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching scopedataset attribute to create options for the select element.*/
-                        if (!attrs.widgetid) {
-                            iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, $el));
-                        }
-
                         /*  This function is called when the rating widget is focused  */
                         iScope.onFocus = function () {
                             iScope.isFocused = true;
@@ -352,6 +346,15 @@ WM.module('wm.widgets.advanced')
 
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, attrs), iScope, notifyFor);
                         WidgetUtilService.postWidgetCreate(iScope, $el, attrs);
+
+
+                        /* fields defined in scope: {} MUST be watched explicitly */
+                        /*watching scopedataset attribute to create options for the select element.*/
+                        if (!attrs.widgetid) {
+                            _.defer(function () {
+                                iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, $el));
+                            });
+                        }
 
                     }
                 };

@@ -375,12 +375,6 @@ WM.module('wm.widgets.basic')
                             scope.onSubmit({$event: $event, $scope: scope});
                         };
 
-                        /* fields defined in scope: {} MUST be watched explicitly
-                            watching model attribute to the data for the search element.*/
-                        scope.$watch('scopedataset', function (newVal) {
-                            setDataSet(newVal, scope);
-                        });
-
                         // this functions clears the input value
                         scope.clearText = function () {
                             element.find('input').val('');
@@ -401,6 +395,16 @@ WM.module('wm.widgets.basic')
                         }
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                         element.removeAttr('tabindex');
+
+                        /* fields defined in scope: {} MUST be watched explicitly
+                         watching model attribute to the data for the search element.*/
+                        if (attrs.scopedataset) {
+                            _.defer(function () {
+                                scope.$watch('scopedataset', function (newVal) {
+                                    setDataSet(newVal, scope);
+                                });
+                            });
+                        }
                     }
                 };
             }

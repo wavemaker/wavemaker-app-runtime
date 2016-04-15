@@ -86,6 +86,7 @@ WM.module('wm.layouts.containers')
                         var onPropertyChange = propertyChangeHandler.bind(undefined, scope);
                         /* Register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
                         if (CONSTANTS.isRunMode && attrs.scopedataset) {
                             $timeout(function () {
@@ -94,7 +95,6 @@ WM.module('wm.layouts.containers')
                                 }, true);
                             }, 0);
                         }
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };
             }

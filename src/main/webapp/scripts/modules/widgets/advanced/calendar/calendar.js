@@ -292,15 +292,6 @@ WM.module('wm.widgets.advanced')
                                 element.attr({'tooltip': event.title, 'tooltip-append-to-body': true});
                                 $compile(element)(scope);
                             };
-                            if (CONSTANTS.isRunMode) {
-                                if (attrs.scopedataset) {
-                                    handlers.push(scope.$watch('scopedataset', function (newVal) {
-                                        scope.eventSources.push(newVal);
-                                    }, true));
-                                }
-                                // find the isolateScope of the ui-calendar element
-                                uiCalScope = element.children().first().isolateScope();
-                            }
 
                             scope.$on('$destroy', function () {
                                 handlers.forEach(Utils.triggerFn);
@@ -318,6 +309,18 @@ WM.module('wm.widgets.advanced')
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                            if (CONSTANTS.isRunMode) {
+                                if (attrs.scopedataset) {
+                                    _.defer(function () {
+                                        handlers.push(scope.$watch('scopedataset', function (newVal) {
+                                            scope.eventSources.push(newVal);
+                                        }, true));
+                                    });
+                                }
+                                // find the isolateScope of the ui-calendar element
+                                uiCalScope = element.children().first().isolateScope();
+                            }
                         }
                     };
                 }

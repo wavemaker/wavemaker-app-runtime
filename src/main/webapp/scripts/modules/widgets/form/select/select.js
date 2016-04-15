@@ -284,13 +284,6 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, element, attrs), iScope, notifyFor);
 
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching scopedataset attribute to create options for the select element.*/
-                        if (!attrs.widgetid) {
-                            iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
-                            iScope.$watch('_model_', updateModelProxy.bind(undefined, iScope));
-                        }
-
                         /*decorate onChange function*/
                         iScope.onChangeProxy = onChangeProxy.bind(undefined, iScope);
 
@@ -302,6 +295,15 @@ WM.module('wm.widgets.form')
 
                         /*Executing WidgetUtilService method to initialize the widget with the essential configurations.*/
                         WidgetUtilService.postWidgetCreate(iScope, element, attrs);
+
+                        /* fields defined in scope: {} MUST be watched explicitly */
+                        /*watching scopedataset attribute to create options for the select element.*/
+                        if (!attrs.widgetid) {
+                            _.defer(function () {
+                                iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
+                                iScope.$watch('_model_', updateModelProxy.bind(undefined, iScope));
+                            });
+                        }
                     }
                 };
             }

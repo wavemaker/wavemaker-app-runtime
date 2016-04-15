@@ -626,15 +626,6 @@ WM.module('wm.widgets.grid')
 
                         defineSelectedItemProp(scope, []);
 
-                        if (CONSTANTS.isRunMode) {
-                            handlers.push(scope.$watch('scopedataset', function (newVal) {
-                                if (newVal && !scope.dataset) {
-                                    /* decide new column defs required based on existing column defs for the grid */
-                                    scope.newcolumns = !scope.columnDefsExists();
-                                    scope.createGridColumns(newVal);
-                                }
-                            }));
-                        }
                         if (WM.isDefined(scope.allowinlineedit)) {
                             if (!scope.allowinlineedit || scope.allowinlineedit === 'false') {
                                 scope.datagridElement.datagrid('option', {
@@ -656,6 +647,18 @@ WM.module('wm.widgets.grid')
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
                             /*Set the default widths for the colgroup after rendering the grid*/
                             scope.datagridElement.datagrid('setColGroupWidths');
+
+                            if (CONSTANTS.isRunMode && attrs.scopedataset) {
+                                _.defer(function () {
+                                    handlers.push(scope.$watch('scopedataset', function (newVal) {
+                                        if (newVal && !scope.dataset) {
+                                            /* decide new column defs required based on existing column defs for the grid */
+                                            scope.newcolumns = !scope.columnDefsExists();
+                                            scope.createGridColumns(newVal);
+                                        }
+                                    }));
+                                });
+                            }
                         }, 0, false);
 
                         //Will be called after setting grid column property.

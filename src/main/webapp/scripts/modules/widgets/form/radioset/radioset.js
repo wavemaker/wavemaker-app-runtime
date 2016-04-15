@@ -144,15 +144,7 @@ WM.module('wm.widgets.form')
                         scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching scopedataset attribute to create options for the checkboxset element.*/
-                        scope.$watch('scopedataset', function () {
-                            if (scope.scopedataset) {
-                                /*generating the radioset based on the values provided*/
-                                constructRadioSet(scope, element, scope.scopedataset);
-                            }
-                        });
+                        
                         /* checks if the given value object is in the given model array of objects */
                         scope.valueInModel = function (model, value, dataObject) {
                             if (!WM.isDefined(model)) {
@@ -176,6 +168,17 @@ WM.module('wm.widgets.form')
                         };
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        /* fields defined in scope: {} MUST be watched explicitly */
+                        /*watching scopedataset attribute to create options for the checkboxset element.*/
+                        if (attrs.scopedataset) {
+                            _.defer(function () {
+                                scope.$watch('scopedataset', function () {
+                                    /*generating the radioset based on the values provided*/
+                                    constructRadioSet(scope, element, scope.scopedataset);
+                                });
+                            });
+                        }
                     }
                 };
             }

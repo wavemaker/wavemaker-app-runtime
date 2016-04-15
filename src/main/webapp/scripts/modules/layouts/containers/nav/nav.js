@@ -210,6 +210,8 @@ WM.module('wm.layouts.containers')
                         var onPropertyChange = propertyChangeHandler.bind(undefined, $el.scope(), $is, $el);
 
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
+                        WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                        
                         if (!$is.widgetid && attrs.scopedataset) {
                             $timeout(function () {
                                 $is.$watch('scopedataset', function (nv) {
@@ -217,7 +219,6 @@ WM.module('wm.layouts.containers')
                                 });
                             }, 0, true);
                         }
-                        WidgetUtilService.postWidgetCreate($is, $el, attrs);
                     }
                 }
             };

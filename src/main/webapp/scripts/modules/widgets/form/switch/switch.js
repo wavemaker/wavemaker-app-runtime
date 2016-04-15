@@ -1,4 +1,4 @@
-/*global WM */
+/*global WM, _ */
 /*Directive for switch */
 
 WM.module('wm.widgets.form')
@@ -157,15 +157,6 @@ WM.module('wm.widgets.form')
 
                             scope.options = [];
 
-                            /* fields defined in scope: {} MUST be watched explicitly */
-
-                            if (!scope.widgetid && attrs.scopedataset) {
-                                scope.$watch('scopedataset', function (newVal) {
-                                    /*generating the radioset based on the values provided*/
-                                    updateSwitchOptions(scope, element, newVal);
-                                });
-                            }
-
                             scope.selectOptAtIndex = function ($index) {
                                 var opt = scope.options[$index];
                                 if (scope.datasetType === ARRAY_OBJECTS) {
@@ -221,6 +212,17 @@ WM.module('wm.widgets.form')
 
                             WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+
+                            /* fields defined in scope: {} MUST be watched explicitly */
+                            if (!scope.widgetid && attrs.scopedataset) {
+                                _.defer(function () {
+                                    scope.$watch('scopedataset', function (newVal) {
+                                        /*generating the radioset based on the values provided*/
+                                        updateSwitchOptions(scope, element, newVal);
+                                    });
+                                });
+                            }
                         }
                     };
                 }
