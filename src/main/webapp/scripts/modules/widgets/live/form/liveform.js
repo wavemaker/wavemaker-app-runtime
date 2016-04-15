@@ -1050,6 +1050,7 @@ WM.module('wm.widgets.live')
                         scope.required = columnDef.required;
                         scope.readonly = columnDef.readonly;
                         scope.disabled = columnDef.disabled;
+                        scope.multiple = columnDef.multiple;
                         //For normal form is update mode won't be set on parent scope, set it explicitly based on isupdatemode attribute
                         if (scope.isupdatemode === 'true') {
                             parentIsolateScope.isUpdateMode = true;

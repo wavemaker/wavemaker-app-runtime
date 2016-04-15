@@ -262,7 +262,7 @@ WM.module('wm.widgets.live')
                 columnDef.widget = widgetType; /*Widget type support for older projects*/
                 columnDef.primaryKey = attrs.primaryKey === 'true' || attrs.primaryKey === true;
                 columnDef.readonly = attrs.readonly === 'false' ? false : (attrs.readonly === 'readonly' || attrs.readonly === 'true' || attrs.readonly);
-                columnDef.multiple = attrs.multiple === 'true' || attrs.multiple === true;
+                columnDef.multiple = attrs.multiple === 'false' ? false :  (attrs.multiple === 'multiple' || attrs.multiple === 'true' || attrs.multiple);
                 columnDef.class = attrs.class || '';
                 columnDef.required = attrs.required === 'false' ? false : (attrs.required === 'required' || attrs.required === 'true' || attrs.required);
                 columnDef.show = attrs.show === 'false' ? false : (attrs.show === '1' || attrs.show === 'true' || attrs.show);
