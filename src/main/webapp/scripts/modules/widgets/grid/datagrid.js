@@ -1265,7 +1265,7 @@ $.widget('wm.datagrid', {
                                 formData.append(colDef.field, document.forms[$el.attr('form-name')][colDef.field].files[0]);
                             }
                         } else {
-                            if (text) {
+                            if (WM.isDefined(text) && text !== null) {
                                 _.set(rowData, colDef.field, text);
                             }
                         }
