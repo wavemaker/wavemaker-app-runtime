@@ -20,7 +20,7 @@ WM.module('wm.widgets.form')
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
                 '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default btn-date"><i class="wi wi-calendar"></i></button>' +
+                    '<button type="button" class="btn btn-default btn-date"><i class="app-icon wi wi-calendar"></i></button>' +
                 '</span>' +
             '</div>'
             );
