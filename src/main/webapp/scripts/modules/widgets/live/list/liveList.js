@@ -824,7 +824,7 @@ WM.module('wm.widgets.live')
                                 last = [first, first = last][0];
                             }
                             if (checkSelectionLimit($is, last - first)) {
-                                $el.find('li.active').removeClass('active');
+                                $el.find('li.app-list-item.active').removeClass('active');
                                 _.forEach($liItems, function (element, index) {
                                     if (index >= first && index <= last) {
                                         WM.element($liItems[index]).addClass('active');
@@ -836,7 +836,7 @@ WM.module('wm.widgets.live')
                             }
                         } else {
                             if (!isActive || selectCount > 1) {
-                                $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
+                                $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
                                 $li.addClass('active');
                                 $is.lastSelectedItem = $is.firstSelectedItem = $li;
                             }
@@ -915,7 +915,7 @@ WM.module('wm.widgets.live')
                 $hammerEl.on('pressup', function (evt) {
                     if (!isMultiSelect && $rs.isMobileApplicationType) {
                         var $li = WM.element(evt.target).closest('li.app-list-item');
-                        $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
+                        $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
                         $li.addClass('active'); // adding active class to current selectedItem
                         isMultiSelect = true;
                         $rs.$safeApply($is);
@@ -997,7 +997,7 @@ WM.module('wm.widgets.live')
                         return items;
                     },
                     set: function (items) {
-                        $el.find('li.active').removeClass('active'); // removing active class from previous selectedItem
+                        $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
                         if (_.isArray(items)) {
                             _.forEach(items, function (item) {
                                 $is.selectItem(item);

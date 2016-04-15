@@ -19,7 +19,7 @@ WM.module("wm.widgets.basic")
                     '<li class="previous" data-ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true"><i class="wi wi-chevron-left"></i></span> Previous</a></li>' +
                     '<li class="next" data-ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'next\', $event)">Next <span aria-hidden="true"><i class="wi wi-chevron-right"></i></span></a></li>' +
                 '</ul>' +
-                '<uib-pagination class="basic" data-ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ng-disabled="false"' +
+                '<uib-pagination class="basic" data-ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ' +
                         ' boundary-links="boundarylinks" force-ellipses="forceellipses" direction-links="directionlinks" previous-text="." next-text="." first-text="." last-text="."></uib-pagination>' +
                 '<ul data-ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>Total Records: {{dataSize}}</a></li></ul>' +
             '</nav>'

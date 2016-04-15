@@ -2210,34 +2210,34 @@ WM.module('wm.widgets.base', [])
                     });
             }
 
+            function triggerInitValueChange($is, $el, attrs) {
+                _.keys($is._initState)
+                    .forEach(function (key) {
+                        var value = $is[key];
+                        if (WM.isDefined(value)) {
+                            onScopeValueChangeProxy($is, $el, attrs, key, value);
+                        }
+                    });
+                $is._isInitialized = true;
+                if (!$is.__onTransclude) {
+                    Utils.triggerFn($is.onReady, $is, $el, attrs);
+                }
+            }
+
             /*
              This method will handle the initialization stuff when called from widget's (directive) post method.
              1. assign a name to a widget
              2. cleanupMarkup -- removes few attributes from the markup
              3. triggers onScopeValueChange function for the initial state of the widget(default values and attributes specified on the element).
              */
-            function postWidgetCreate(scope, element, attrs) {
-                cleanupMarkup(element);
+            function postWidgetCreate($is, $el, attrs) {
+                _.defer(cleanupMarkup, $el);
 
-                if (!scope || !scope._initState) {
+                if (!$is || !$is._initState) {
                     return;
                 }
 
-                function triggerInitValueChange() {
-                    Object.keys(scope._initState)
-                        .forEach(function (key) {
-                            var value = scope[key];
-                            if (WM.isDefined(value)) {
-                                onScopeValueChangeProxy(scope, element, attrs, key, value);
-                            }
-                        });
-                    scope._isInitialized = true;
-                    if (!scope.__onTransclude) {
-                        Utils.triggerFn(scope.onReady, scope, element, attrs);
-                    }
-                }
-
-                triggerInitValueChange();
+                _.defer(triggerInitValueChange, $is, $el, attrs);
             }
 
             /* find the scope of the controller using the scope passed */
