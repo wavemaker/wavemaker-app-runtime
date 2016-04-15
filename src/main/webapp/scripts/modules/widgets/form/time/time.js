@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
                 '<span class="input-group-btn dropdown-toggle">' +
-                    '<button type="button" class="btn btn-default btn-time"><i class="wi wi-access-time"></i></button>' +
+                    '<button type="button" class="btn btn-default btn-time"><i class="app-icon wi wi-access-time"></i></button>' +
                 '</span>' +
             '</div>'
             );
