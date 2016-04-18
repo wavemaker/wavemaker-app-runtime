@@ -508,6 +508,94 @@ html, body {
   .range-input {
     display: inline-block;
   }
+
+/***slider customization***/
+
+  @wm-slider-track: #d5cebc;
+  @wm-slider-thumb: #5b89db;
+
+  input[type='range'], input[type='range']::-webkit-slider-runnable-track, input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+  }
+  input[type='range'] {
+    color: @wm-slider-thumb;
+    border: solid 0 transparent;
+    background-color: transparent;
+    border-width: 0 1em;
+    padding: 0;
+    width: 100%;
+    height: 2.5em;
+    opacity: .65;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      opacity: .99;
+    }
+    &::-webkit-slider-runnable-track {
+    position: relative;
+    height: 1.25em;
+    background: linear-gradient(@wm-slider-track, @wm-slider-track) no-repeat;
+    background-size: 100% 0.2em;
+    }
+
+    &::-webkit-slider-thumb {
+    position: relative;
+    margin-top: -0.6em;
+    border-radius: 50%;
+    background: currentColor;
+    width: 1.25em;
+    height: 1.25em;
+    }
+
+    /*firefox hack */
+    &::-moz-range-track {
+    height: 1.25em;
+    background: linear-gradient(@wm-slider-track, @wm-slider-track) no-repeat;
+    background-size: 100% 0.2em;
+    }
+
+    &::-moz-range-progress {
+    height: 1.25em;
+    box-shadow: inset 0 0.2em currentColor;
+    }
+    &::-moz-range-thumb {
+    border: none;
+    border-radius: 50%;
+    background: currentColor;
+    transform: translateY(-.58em);
+    width: 1.25em;
+    height: 1.25em;
+    }
+
+    /* ie 10+ hack */
+    &::-ms-track {
+    margin-left: 0.625em;
+    border: none;
+    height: 1.25em;
+    background: linear-gradient(@wm-slider-track, @wm-slider-track) no-repeat;
+    background-size: 100% 0.2em;
+    color: transparent;
+    }
+
+    &::-ms-fill-lower {
+    height: 1.25em;
+    box-shadow: inset 0 0.2em currentColor;
+    background: linear-gradient(transparent 0.125em, transparent 0.125em) no-repeat;
+    }
+
+    &::-ms-thumb {
+    border: none;
+    border-radius: 50%;
+    background: currentColor;
+    width: 1.25em;
+    height: 1.25em;
+    transform: translate(1px, -.58em);
+    }
+    &::-ms-tooltip {
+    display: none;
+    }
+  }
 }
 
 /*label*/
