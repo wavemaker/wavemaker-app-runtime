@@ -1797,7 +1797,7 @@ WM.module('wm.widgets.basic')
                 variableObj = elScope.Variables && elScope.Variables[variableName];
                 /*setting the flag for the live variable in the scope for the checks*/
                 scope.isLiveVariable = variableObj && variableObj.category === 'wm.LiveVariable';
-                scope.axisoptions = WidgetUtilService.extractDataSetFields(scope.dataset, scope.dataset.propertiesMap, {'sort' : true});
+                scope.axisoptions = WidgetUtilService.extractDataSetFields(scope.dataset, scope.dataset && scope.dataset.propertiesMap, {'sort' : true});
 
                 /*If binded to a live variable feed options to the aggregation and group by*/
                 if (scope.isLiveVariable && CONSTANTS.isStudioMode) {
@@ -1828,12 +1828,12 @@ WM.module('wm.widgets.basic')
                     modifyAxesOptions(scope);
                 }
 
-                if (newVal.filterFields) {
+                if (newVal && newVal.filterFields) {
                     scope.filterFields = newVal.filterFields;
                 }
 
                 /* plotchart for only valid data and only after bound variable returns data */
-                if (scope.chartData.length && !scope.variableInflight) {
+                if (scope.chartData && scope.chartData.length && !scope.variableInflight) {
                     plotChartProxy(scope, element);
                 }
                 break;
