@@ -1181,7 +1181,20 @@ $.widget('wm.datagrid', {
                     id = $el.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id],
                     editableTemplate,
-                    value;
+                    value,
+                //Set the values to the generated input elements
+                    setInputValue = function (value) {
+                        if (!options || options.operation !== 'new') {
+                            //For widgets, set the datavalue. Upload uses html file upload. So, no need to set value
+                            if (colDef.editWidgetType) {
+                                if (colDef.editWidgetType === 'upload') {
+                                    return;
+                                }
+                                $el.children().isolateScope().datavalue = value;
+                            }
+                            $el.find('input').val(value);
+                        }
+                    };
                 if (!colDef.readonly) {
                     if (options && options.operation === 'new') {
                         value = colDef.defaultvalue;
@@ -1192,24 +1205,14 @@ $.widget('wm.datagrid', {
                     // TODO: Use some other selector. Input will fail for other types.
                     if (!(colDef.customExpression || colDef.formatpattern)) {
                         $el.addClass('cell-editing').html(editableTemplate).data('originalText', value);
-                        if (!options || options.operation !== 'new') {
-                            $el.find('input').val(cellText);
-                            if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
-                                $el.children().isolateScope().datavalue = cellText;
-                            }
-                        }
+                        setInputValue(cellText);
                     } else {
                         if (self._isCustomExpressionNonEditable(colDef.customExpression, $el)) {
                             $el.addClass('cell-editing editable-expression').data('originalValue', {'template': colDef.customExpression, 'rowData': _.cloneDeep(rowData), 'colDef': colDef});
                         }
                         $el.addClass('cell-editing editable-expression').html(editableTemplate).data('originalText', cellText);
                         // Put the original value while editing, not the formatted value.
-                        if (!options || options.operation !== 'new') {
-                            $el.find('input').val(_.get(rowData, colDef.field));
-                            if (colDef.editWidgetType && colDef.editWidgetType !== 'upload') {
-                                $el.children().isolateScope().datavalue = _.get(rowData, colDef.field);
-                            }
-                        }
+                        setInputValue(_.get(rowData, colDef.field));
                     }
                 }
             });
@@ -1263,6 +1266,7 @@ $.widget('wm.datagrid', {
                             if (isFormDataSupported) {
                                 multipartData = true;
                                 formData.append(colDef.field, document.forms[$el.attr('form-name')][colDef.field].files[0]);
+                                _.set(rowData, colDef.field, _.get(rowData, colDef.field) === null ? null : '');
                             }
                         } else {
                             if (WM.isDefined(text) && text !== null) {
