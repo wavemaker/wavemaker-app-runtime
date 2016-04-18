@@ -114,7 +114,6 @@ wm.plugins.database.services.QueryBuilder = [
                         if (response.errors) {
                             Utils.triggerFn(error, response);
                         } else {
-                            $liveVariable.processResponse(response.content);
                             Utils.triggerFn(success, response);
                         }
                     }, function (response) {

@@ -73,30 +73,44 @@ wm.variables.services.$liveVariable = [
                 }
                 return formatDate(value);
             },
-        /* Function to process the response data if it contains composite keys. */
-            processResponse = function (responseData) {
+            // Generate the URL based on the primary keys and their values
+            getCompositeIDURL = function (primaryKeysData) {
+                var compositeId = '';
+                //Loop over the "compositeKeysData" and construct the "compositeId".
+                _.forEach(primaryKeysData, function (paramValue, paramName) {
+                    compositeId += paramName + "=" + encodeURIComponent(paramValue) + "&";
+                });
+                compositeId = compositeId.slice(0, -1);
+                return compositeId;
+            },
+            // Construct the URL for blob columns and set it in the data, so that widgets can use this
+            processBlobColumns = function (responseData, variable) {
                 if (!responseData) {
                     return;
                 }
-                var formatData = function (rowData) {
-                    _.each(rowData, function (value, key) {
-                        var tempData;
-                        if (WM.isObject(value)) {
-                            /*If the table has a composite key, key data will be wrapped in an object with the key "id".
-                             * Hence, the data is formatted to remove the extra key and merge it into the content.*/
-                            if (key === 'id') {
-                                tempData = rowData.id;
-                                delete rowData.id;
-                                WM.extend(rowData, tempData);
-                                return;
-                            }
-                            /*If the value is an object, check if id object is present in this object*/
-                            formatData(value);
+                var blobCols = _.map(_.filter(variable.propertiesMap.columns, {'type': 'blob'}), 'fieldName'),
+                    href,
+                    primaryKeys;
+                if (_.isEmpty(blobCols)) {
+                    return;
+                }
+                href        = ((variable.prefabName !== '' && variable.prefabName !== undefined) ? 'prefabs/' + variable.prefabName : 'services') + '/' + variable.liveSource + '/' + variable.type + '/';
+                primaryKeys = variable.propertiesMap.primaryFields || variable.propertiesMap.primaryKeys;
+                _.forEach(responseData, function (data) {
+                    _.forEach(blobCols, function (col) {
+                        var compositeKeysData = {};
+                        if (data[col] === null) {
+                            return;
+                        }
+                        if (variable.isCompositeKey(primaryKeys)) {
+                            primaryKeys.forEach(function (key) {
+                                compositeKeysData[key] = data[key];
+                            });
+                            data[col] = href + 'composite-id/content/' + col + '?' + getCompositeIDURL(compositeKeysData);
+                        } else {
+                            data[col] = href + data[_.join(primaryKeys)] + '/content/' + col;
                         }
                     });
-                };
-                responseData.forEach(function (rowData) {
-                    formatData(rowData);
                 });
             },
             /*function to fetch the column list of a related field*/
@@ -596,8 +610,7 @@ wm.variables.services.$liveVariable = [
                         return;
                     }
 
-                    processResponse(response.content);
-
+                    processBlobColumns(response.content, variable);
                     dataObj.data = response.content;
                     dataObj.pagingOptions = {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults};
 
@@ -907,12 +920,7 @@ wm.variables.services.$liveVariable = [
                     default:
                         break;
                     }
-                    compositeId = '';
-                    /* Loop over the "compositeKeysData" and construct the "compositeId".*/
-                    WM.forEach(options.compositeKeysData, function (paramValue, paramName) {
-                        compositeId += paramName + "=" + encodeURIComponent(paramValue) + "&";
-                    });
-                    compositeId = compositeId.slice(0, -1);
+                    compositeId = getCompositeIDURL(options.compositeKeysData);
                 }
                 dbName = variableDetails.liveSource;
 
@@ -1406,7 +1414,6 @@ wm.variables.services.$liveVariable = [
 
         return {
             reset: reset,
-            processResponse: processResponse,
             /**
              * @ngdoc method
              * @name $Variables#getRelatedColumnsList
