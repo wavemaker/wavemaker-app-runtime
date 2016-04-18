@@ -105,10 +105,6 @@ WM.module('wm.widgets.form')
             var dataSet,
                 isBoundToServiceVariable;
 
-            if (key === 'dataset' && WM.isString(newVal) && newVal.length) {
-                scope.dataset = newVal = newVal.split(',').map(function (val) { return val.trim(); });
-            }
-
             dataSet = scope.dataset;
 
             /*Checking if widget is bound to service variable*/

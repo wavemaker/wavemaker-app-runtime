@@ -1186,6 +1186,15 @@ WM.module('wm.widgets.live')
                             _.pullAt(parentIsolateScope.formFields, _.indexOf(parentIsolateScope.formFields, columnDef));
                         });
                         WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope, undefined);
+
+                        Object.defineProperty(scope, 'datavalue', {
+                            get: function () {
+                                return _.get(parentIsolateScope, ['formFields', [index], 'value']);
+                            },
+                            set: function (val) {
+                                _.set(parentIsolateScope, ['formFields', [index], 'value'], val);
+                            }
+                        });
                     }
                 };
             }
