@@ -7,10 +7,10 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/fileupload.html',
-                '<div data-ng-show="show" class="app-fileupload" init-widget apply-styles="shell" role="input">' +
+                '<div data-ng-show="show" class="app-fileupload" init-widget role="input">' +
                     /* drag and drop files UI in web */
                     '<div data-ng-show="multiple" class="app-multi-file-upload" data-ng-if="!_isMobileType">' +
-                        '<div class="drop-box" drag-files="onFileSelect($event,$files)">' +
+                        '<div class="drop-box" drag-files="onFileSelect($event,$files)" apply-styles>' +
                             '<i class="{{iconclass}}"/>' +
                             '<div class="message">' +
                                 '<label data-ng-bind="caption"></label>' +
@@ -28,7 +28,7 @@ WM.module('wm.widgets.form')
                             /* support for file upload in Mobileapp in its runmode (Web) */
                                 '<input class="file-input" type="file" name="files" data-ng-if="multiple" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" data-ng-disabled="disabled" multiple>' +
                                 '<input class="file-input" type="file" name="files" data-ng-if="!multiple" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" data-ng-disabled="disabled">' +
-                                '<button class="app-button btn btn-default">' +
+                                '<button class="app-button btn btn-default" apply-styles>' +
                                     '<i class="{{iconclass}}"></i> ' +
                                     '<span>{{caption}}</span>' +
                                 '</button>' +
@@ -37,12 +37,12 @@ WM.module('wm.widgets.form')
                         '<div class="app-files-upload-status single"></div>' +
                     '</div>' +
                     /* support for file upload in Mobile Application (device) */
-                    '<button data-ng-if="_isCordova" class="app-button btn btn-default" data-ng-click="openFileSelector()" data-ng-disabled="disabled">' +
+                    '<button data-ng-if="_isCordova" class="app-button btn btn-default" data-ng-click="openFileSelector()" data-ng-disabled="disabled" apply-styles>' +
                         '<i class="{{iconclass}}"></i> ' +
                         '<span>{{caption}}</span>' +
                     '</button>' +
                     /* list of selectedfiles UI */
-                    '<ul class="list-group file-upload" data-ng-style="{height: height, overflow: overflow}" data-ng-if="selectedFiles.length > 0 && mode === \'Select\'" >' +
+                    '<ul class="list-group file-upload" data-ng-style="{height: filelistheight, overflow: overflow}" data-ng-if="selectedFiles.length > 0 && mode === \'Select\'" >' +
                         '<li class="list-group-item file-upload-status container" data-ng-repeat="ft in selectedFiles" >' +
                             '<div class="media upload-file-list">' +
                                 '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}"></div>' +
@@ -54,7 +54,7 @@ WM.module('wm.widgets.form')
                         '</li>' +
                     '</ul>' +
                     /* list of uploadedfiles UI */
-                    '<ul class="list-group file-upload"  data-ng-style="{height: height, overflow: overflow}" data-ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
+                    '<ul class="list-group file-upload"  data-ng-style="{height: filelistheight, overflow: overflow}" data-ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
                         '<li class="list-group-item file-upload-status container {{ft.status}}" data-ng-hide="ft.status === \'abort\'" data-ng-repeat="ft in fileTransfers | filter : {status : \'!abort\'}" >' +
                             '<div class="media upload-file-list">' +
                                 '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}">' +
@@ -173,7 +173,7 @@ WM.module('wm.widgets.form')
             }
         };
     }])
-    .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$compile', '$timeout', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'VARIABLE_CONSTANTS', '$servicevariable', 'CONSTANTS', 'DialogService', 'FileUploadService', 'FileSelectorService', 'DeviceMediaService', 'ProjectService', function (PropertiesFactory, $templateCache, WidgetUtilService, $compile, $timeout, wmToaster, Utils, Variables, ServiceFactory, $rootScope, VARIABLE_CONSTANTS, $servicevariable, CONSTANTS, DialogService, FileUploadService, FileSelectorService, DeviceMediaService, ProjectService) {
+    .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'CONSTANTS', 'FileUploadService', 'FileSelectorService', 'DeviceMediaService', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, wmToaster, Utils, Variables, ServiceFactory, $rootScope, CONSTANTS, FileUploadService, FileSelectorService, DeviceMediaService, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.fileupload', ['wm.base', 'wm.base.editors', 'wm.base.events.successerror']),
             selectedUploadTypePath,
@@ -271,6 +271,12 @@ WM.module('wm.widgets.form')
 
         /* upload success callback , called when upload is sucess */
         function onUploadSuccess(scope, event) {
+            // if post call failure because of 403 forbidden error,
+            if (event.target.status === 403) {
+                scope.uploadedFiles = [];
+                onUploadError(scope, event);
+                return;
+            }
             if (window.FormData) { // Check for IE9
                 var response = getSuccessResponse(event);
                 if (response) {
@@ -497,15 +503,15 @@ WM.module('wm.widgets.form')
 
                                 // open the audiopicker view if contenttype is image.
                                 if (scope.contenttype === DEVICE_CONTENTTYPES.AUDIO) {
-                                    DeviceMediaService.audioPicker(scope.multiple).then(function(files) {
-                                       uploadFiles(files, scope, uploadOptions);
+                                    DeviceMediaService.audioPicker(scope.multiple).then(function (files) {
+                                        uploadFiles(files, scope, uploadOptions);
                                     });
                                     return;
                                 }
 
                                 //// open the videopicker view if contenttype is image.
                                 if (scope.contenttype === DEVICE_CONTENTTYPES.VIDEO && Utils.isIphone()) {
-                                    DeviceMediaService.videoPicker().then(function(files) {
+                                    DeviceMediaService.videoPicker().then(function (files) {
                                         uploadFiles(files, scope, uploadOptions);
                                     });
                                     return;
@@ -586,7 +592,9 @@ WM.module('wm.widgets.form')
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler, scope, notifyFor);
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        $timeout(function () {
+                            WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        });
                     }
                 };
             }
