@@ -164,7 +164,10 @@ wm.plugins.security.services.SecurityService = [
                         projectID: params.projectID
                     },
                     data: params.config
-                }, successCallback, failureCallback);
+                }, function () {
+                    _generalOptions = params.config;
+                    Utils.triggerFn(successCallback);
+                }, failureCallback);
             },
 
             /**
