@@ -212,7 +212,10 @@ public class SecurityService {
             Map<String, RoleConfig> roleMap = wmAppSecurityConfig.getRoleMap();
 
             if(userRoles.length == 1) {
-                landingPage = roleMap.get(userRoles[0]).getLandingPage();
+                final RoleConfig roleConfig = roleMap.get(userRoles[0]);
+                if(roleConfig != null){
+                    landingPage = roleConfig.getLandingPage();
+                }
             } else {
                 Iterator<Map.Entry<String, RoleConfig>> roleEntryIterator = roleMap.entrySet().iterator();
                 while (roleEntryIterator.hasNext() && landingPage == null){
