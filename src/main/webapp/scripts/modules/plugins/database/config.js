@@ -340,23 +340,43 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         ],
         "SQLServer": [
             {
-                "DB_VERSION": " Microsoft JDBC Driver 6.0 for SQL Server",
+                "DB_VERSION": "SQL Server 2005",
                 "DRIVER_VERSION": "Driver 6.0",
                 "URL": ""
             },
             {
-                "DB_VERSION": "Microsoft JDBC Driver 4.2 for SQL Server",
-                "DRIVER_VERSION": "Driver 4.2",
+                "DB_VERSION": "SQL Server 2008",
+                "DRIVER_VERSION": "Driver 6.0",
                 "URL": ""
             },
             {
-                "DB_VERSION": "Microsoft JDBC Driver 4.1 for SQL Server",
-                "DRIVER_VERSION": "Driver 4.1",
+                "DB_VERSION": "SQL Server 2008R2",
+                "DRIVER_VERSION": "Driver 6.0",
                 "URL": ""
             },
             {
-                "DB_VERSION": "Microsoft JDBC Driver 4.0 for SQL Server",
-                "DRIVER_VERSION": "Driver 4.0",
+                "DB_VERSION": "SQL Server 2012",
+                "DRIVER_VERSION": "Driver 6.0",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "Azure SQL Database",
+                "DRIVER_VERSION": "Driver 6.0",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "PDW 2008R2 AU34",
+                "DRIVER_VERSION": "Driver 6.0",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "SQL Server 2014",
+                "DRIVER_VERSION": "Driver 6.0",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "SQL Server 2016",
+                "DRIVER_VERSION": "Driver 6.0",
                 "URL": ""
             }
         ]
