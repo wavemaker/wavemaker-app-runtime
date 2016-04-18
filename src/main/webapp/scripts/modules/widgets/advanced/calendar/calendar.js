@@ -91,10 +91,9 @@ WM.module('wm.widgets.advanced')
                     variable = Utils.getVariableName(scope, eleScope);
                 switch (key) {
                 case 'dataset':
-                    if (CONSTANTS.isRunMode || eleScope.Variables[variable].category !== 'wm.ServiceVariable') {
-                        scope.eventSources.length = 0;
+                    scope.eventSources.length = 0;
+                    if (CONSTANTS.isRunMode || (variable && eleScope.Variables[variable].category !== 'wm.ServiceVariable')) {
                         newVal = WM.isArray(newVal) ? newVal : [];
-
                         if (_.intersection(_.keys(newVal[0]), ['allDay', 'start', 'end']).length === 3) {
                             scope.eventSources.push(newVal);
                         }
@@ -204,9 +203,10 @@ WM.module('wm.widgets.advanced')
                             function setSelectedData(start, end) {
                                 var filteredDates   = [],
                                     dataset         = scope.dataset;
-                                if (dataset.data) {
-                                   dataset = dataset.data;
+                                if (!dataset) {
+                                    return;
                                 }
+                                dataset = dataset.data || dataset;
                                 _.forEach(dataset, function (value) {
                                     if (!value.start) {
                                         return;
