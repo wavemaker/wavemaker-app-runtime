@@ -1105,14 +1105,21 @@ WM.module('wm.widgets.live')
                                 var boundVariable = elScope.Variables[parentIsolateScope.variableName || Utils.getVariableNameFromExpr(parentIsolateScope.binddataset)];
                                 boundVariable.getRelatedTableData(columnDef.key, {}, function (response) {
                                     var primaryKeys = boundVariable.getRelatedTablePrimaryKeys(columnDef.key, {scope: elScope}),
-                                        relatedFormField = parentIsolateScope.formFields[index];
+                                        relatedFormField = parentIsolateScope.formFields[index],
+                                        displayField;
                                     relatedFormField.datafield = 'All Fields';
                                     relatedFormField.dataset = response;
                                     if (primaryKeys.length > 0) {
-                                        relatedFormField.displayfield = primaryKeys[0];
-                                        return;
+                                        displayField = primaryKeys[0];
+                                    } else {
+                                        displayField = _.head(_.keys(_.get({}, '[0]')));
                                     }
-                                    relatedFormField.displayfield = response && _.keys(response[0]) && _.keys(response[0])[0];
+                                    if (relatedFormField.widget === 'typeahead') { //For search widget, set search key and display label
+                                        relatedFormField.searchkey    = displayField;
+                                        relatedFormField.displaylabel = displayField;
+                                    } else {
+                                        relatedFormField.displayfield = displayField;
+                                    }
                                 });
                             });
                         }
@@ -1187,14 +1194,16 @@ WM.module('wm.widgets.live')
                         });
                         WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope, undefined);
 
-                        Object.defineProperty(scope, 'datavalue', {
-                            get: function () {
-                                return _.get(parentIsolateScope, ['formFields', [index], 'value']);
-                            },
-                            set: function (val) {
-                                _.set(parentIsolateScope, ['formFields', [index], 'value'], val);
-                            }
-                        });
+                        if (!scope.hasOwnProperty('datavalue')) {
+                            Object.defineProperty(scope, 'datavalue', {
+                                get: function () {
+                                    return _.get(parentIsolateScope, ['formFields', [index], 'value']);
+                                },
+                                set: function (val) {
+                                    _.set(parentIsolateScope, ['formFields', [index], 'value'], val);
+                                }
+                            });
+                        }
                     }
                 };
             }

@@ -856,14 +856,16 @@ WM.module('wm.widgets.live')
                         });
                         WidgetUtilService.registerPropertyChangeListener(LiveWidgetUtils.fieldPropertyChangeHandler.bind(undefined, scope, element, attrs, parentIsolateScope, index), scope, undefined);
 
-                        Object.defineProperty(scope, 'datavalue', {
-                            get: function () {
-                                return _.get(parentIsolateScope, ['formFields', [index], 'value']);
-                            },
-                            set: function (val) {
-                                _.set(parentIsolateScope, ['formFields', [index], 'value'], val);
-                            }
-                        });
+                        if (!scope.hasOwnProperty('datavalue')) {
+                            Object.defineProperty(scope, 'datavalue', {
+                                get: function () {
+                                    return _.get(parentIsolateScope, ['formFields', [index], 'value']);
+                                },
+                                set: function (val) {
+                                    _.set(parentIsolateScope, ['formFields', [index], 'value'], val);
+                                }
+                            });
+                        }
                     }
                 };
             }

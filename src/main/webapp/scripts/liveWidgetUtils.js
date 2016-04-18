@@ -20,10 +20,11 @@ WM.module('wm.widgets.live')
 
         function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables) {
             'use strict';
-            var keyEventsWidgets = ['number', 'text', 'select', 'password', 'textarea'],
-                eventTypes = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
-                allEventTypes = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
-                defaultNgClassesConfig = {'className': '', 'condition': ''};
+            var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
+                eventTypes             = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
+                allEventTypes          = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
+                defaultNgClassesConfig = {'className': '', 'condition': ''},
+                isDataSetWidgets       = Utils.getDataSetWidgets();
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#formatBooleanValue
@@ -318,7 +319,7 @@ WM.module('wm.widgets.live')
                     caption += ' | date:formFields[' + index + '].timepattern ||  \'hh:mm a\'';
                 } else if (type === 'date') {
                     caption += ' | date:formFields[' + index + '].datepattern ||  \'yyyy-MM-dd\'';
-                } else if (type === 'select') {
+                } else if (isDataSetWidgets[type]) {
                     caption =  'formFields[' + index + '].isRelated ? getDisplayExpr(formFields[' + index + '].value, formFields[' + index + '].displayexpression || formFields[' + index + '].displayfield) : formFields[' + index + '].value';
                 } else if (type === 'rating' || type === 'upload') {
                     caption = '';
@@ -810,7 +811,6 @@ WM.module('wm.widgets.live')
             function fieldPropertyChangeHandler(scope, element, attrs, parentScope, index, key, newVal) {
                 var variable,
                     eleScope = element.scope(),
-                    isDataSetWidgets = Utils.getDataSetWidgets(),
                     template = '',
                     wdgtProperties = scope.widgetProps,
                     compileField = function () {

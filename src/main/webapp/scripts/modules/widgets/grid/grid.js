@@ -179,7 +179,7 @@ WM.module('wm.widgets.grid')
                     '<div class="app-datagrid"></div>' +
                     '<div class="panel-footer clearfix" ng-show="shownavigation || actions.length">' +
                         '<div class="app-datagrid-paginator">' +
-                            '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" data-ng-class="navigationClass" navcontrols="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
+                            '<wm-datanavigator show="{{show && shownavigation}}" navigationalign="{{navigationalign}}" data-ng-class="navigationClass" navigation="{{navControls}}" showrecordcount="{{show && showrecordcount}}" maxsize="{{maxsize}}" boundarylinks="{{boundarylinks}}" forceellipses="{{forceellipses}}" directionlinks="{{directionlinks}}"></wm-datanavigator>' +
                         '</div>' +
                         '<div class="app-datagrid-actions" data-ng-if="actions.length">' +
                             '<wm-button ng-repeat="btn in actions" caption="{{btn.displayName}}" show="{{btn.show}}" class="{{btn.class}}" iconclass="{{btn.iconclass}}"' +
