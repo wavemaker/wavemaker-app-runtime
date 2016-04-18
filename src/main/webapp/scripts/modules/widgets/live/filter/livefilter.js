@@ -237,7 +237,7 @@ WM.module('wm.widgets.live')
                                     if (matchMode) {
                                         formFields[colName].matchMode = matchMode;
                                         fieldValue = undefined;
-                                    } else if (filterField.type === 'string') { //Only for string types, custom match modes are enabled
+                                    } else if (filterField.type === 'string' || filterField.isRelated) { //Only for string types and related fields, custom match modes are enabled.
                                         formFields[colName].matchMode = matchMode || filterField.matchmode || variable.matchMode;
                                     }
                                     formFields[colName].value     = fieldValue;
