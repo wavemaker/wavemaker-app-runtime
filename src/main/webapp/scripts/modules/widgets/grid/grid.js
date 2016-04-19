@@ -610,17 +610,21 @@ WM.module('wm.widgets.grid')
                                 }
                             }
                             //In run mode, If grid is bound to selecteditem subset, dataset is undefined and dataset watch will not be triggered. So, set the dataset to empty value
-                            if (CONSTANTS.isRunMode && _.includes(newVal, 'selecteditem.')) {
-                                LiveWidgetUtils.fetchDynamicData(scope, function (data) {
-                                    /*Check for sanity of data.*/
-                                    if (WM.isDefined(data)) {
-                                        scope.dataNavigatorWatched = true;
-                                        scope.dataset = data;
-                                        if (scope.dataNavigator) {
-                                            scope.dataNavigator.dataset = data;
+                            if (_.includes(newVal, 'selecteditem.')) {
+                                if (CONSTANTS.isRunMode) {
+                                    LiveWidgetUtils.fetchDynamicData(scope, function (data) {
+                                        /*Check for sanity of data.*/
+                                        if (WM.isDefined(data)) {
+                                            scope.dataNavigatorWatched = true;
+                                            scope.dataset = data;
+                                            if (scope.dataNavigator) {
+                                                scope.dataNavigator.dataset = data;
+                                            }
                                         }
-                                    }
-                                });
+                                    });
+                                } else {
+                                    scope.datagridElement.datagrid('setStatus', 'error', $rootScope.locale.MESSAGE_GRID_CANNOT_LOAD_DATA_IN_STUDIO);
+                                }
                             }
                         }));
 
