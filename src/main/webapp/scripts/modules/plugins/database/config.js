@@ -39,7 +39,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             method: "POST"
         },
         exportDB: {
-            url: "services/projects/:projectID/database/export",
+            url: "services/projects/:projectID/database/services/:serviceId/export",
             method: "POST"
         },
         loadModelInfo: {

@@ -329,28 +329,30 @@ wm.plugins.database.services.DatabaseService = [
 
             exportDB: function (params, successCallback, failureCallback) {
 
-                BaseService.execute({
-                    target: "Database",
-                    action: "exportDB",
+                return BaseService.execute({
+                    target: 'Database',
+                    action: 'exportDB',
                     data: {
-                        "serviceId": params.serviceId,
-                        "username": params.username,
-                        "password": params.password,
-                        "url": params.url,
-                        "schemaName": params.schemaName,
-                        "schemaFilter": params.schemaFilter,
-                        "driverClass": params.driverClass,
-                        "dialect": params.dialect,
-                        "revengNamingStrategyClassName": params.revengNamingStrategyClassName,
-                        "impersonateUser": false,
-                        "overwrite": params.overwrite,
-                        "dbType": params.dbType,
-                        "host": params.host,
-                        "port": params.port,
-                        "dbName": params.dbName
+                        'serviceId'                     : params.serviceId,
+                        'username'                      : params.username,
+                        'password'                      : params.password,
+                        'url'                           : params.url,
+                        'schemaName'                    : params.schemaName,
+                        'schemaFilter'                  : params.schemaFilter,
+                        'driverClass'                   : params.driverClass,
+                        'dialect'                       : params.dialect,
+                        'revengNamingStrategyClassName' : params.revengNamingStrategyClassName,
+                        'impersonateUser'               : false,
+                        'overwrite'                     : params.overwrite,
+                        'dbType'                        : params.dbType,
+                        'host'                          : params.host,
+                        'port'                          : params.port,
+                        'dbName'                        : params.dbName,
+                        'packageName'                   : params.packageName
                     },
                     urlParams: {
-                        "projectID": params.projectID
+                        'projectID'                     : params.projectID,
+                        'serviceId'                     : params.serviceId
                     }
                 }, successCallback, failureCallback);
             },
