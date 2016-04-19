@@ -215,12 +215,10 @@ WM.module('wm.widgets.form')
 
 
                             /* fields defined in scope: {} MUST be watched explicitly */
-                            if (!scope.widgetid && attrs.scopedataset) {
-                                _.defer(function () {
-                                    scope.$watch('scopedataset', function (newVal) {
-                                        /*generating the radioset based on the values provided*/
-                                        updateSwitchOptions(scope, element, newVal);
-                                    });
+                            if (!attrs.widgetid && attrs.scopedataset) {
+                                scope.$watch('scopedataset', function (newVal) {
+                                    /*generating the radioset based on the values provided*/
+                                    updateSwitchOptions(scope, element, newVal);
                                 });
                             }
                         }

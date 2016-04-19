@@ -10,12 +10,11 @@ WM.module('wm.layouts.containers')
         'WidgetUtilService',
         '$rootScope',
         '$compile',
-        '$timeout',
         '$routeParams',
         'CONSTANTS',
         'FormWidgetUtils',
 
-        function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $timeout, $routeParams, CONSTANTS, FormWidgetUtils) {
+        function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $routeParams, CONSTANTS, FormWidgetUtils) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.layouts']),
                 notifyFor = {
@@ -211,13 +210,11 @@ WM.module('wm.layouts.containers')
 
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
-                        
-                        if (!$is.widgetid && attrs.scopedataset) {
-                            $timeout(function () {
-                                $is.$watch('scopedataset', function (nv) {
-                                    onPropertyChange('scopedataset', nv);
-                                });
-                            }, 0, true);
+
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            $is.$watch('scopedataset', function (nv) {
+                                onPropertyChange('scopedataset', nv);
+                            });
                         }
                     }
                 }

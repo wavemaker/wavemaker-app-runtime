@@ -299,10 +299,10 @@ WM.module('wm.widgets.form')
                         /* fields defined in scope: {} MUST be watched explicitly */
                         /*watching scopedataset attribute to create options for the select element.*/
                         if (!attrs.widgetid) {
-                            _.defer(function () {
+                            if (attrs.scopedataset) {
                                 iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
-                                iScope.$watch('_model_', updateModelProxy.bind(undefined, iScope));
-                            });
+                            }
+                            iScope.$watch('_model_', updateModelProxy.bind(undefined, iScope));
                         }
                     }
                 };

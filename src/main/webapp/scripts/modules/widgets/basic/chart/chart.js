@@ -2058,11 +2058,9 @@ WM.module('wm.widgets.basic')
                             /* fields defined in scope: {} MUST be watched explicitly */
                             /*watching scopedataset attribute to plot chart for the element.*/
                             if (attrs.scopedataset) {
-                                _.defer(function () {
-                                    scope.$watch("scopedataset", function (newVal) {
-                                        scope.chartData = newVal || scope.chartData;
-                                        plotChartProxy(scope, element);
-                                    });
+                                scope.$watch("scopedataset", function (newVal) {
+                                    scope.chartData = newVal || scope.chartData;
+                                    plotChartProxy(scope, element);
                                 });
                             }
                         } else {

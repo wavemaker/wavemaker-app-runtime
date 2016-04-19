@@ -202,13 +202,11 @@ WM.module('wm.widgets.form')
                         /* fields defined in scope: {} MUST be watched explicitly */
                         /*watching scopedataset attribute to create options for the checkboxset element.*/
                         if (!attrs.widgetid && attrs.scopedataset) {
-                            _.defer(function () {
-                                scope.$watch('scopedataset', function () {
-                                    if (scope.scopedataset) {
-                                        scope.dataset = scope.scopedataset;
-                                    }
-                                }, true);
-                            });
+                            scope.$watch('scopedataset', function () {
+                                if (scope.scopedataset) {
+                                    scope.dataset = scope.scopedataset;
+                                }
+                            }, true);
                         }
                     }
                 };

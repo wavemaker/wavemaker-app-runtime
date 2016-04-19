@@ -79,7 +79,6 @@ WM.module('wm.layouts.containers')
             'compile': function () {
                 return {
                     'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
                         scope.widgetProps = widgetProps;
                     },
                     'post': function (scope, element, attrs) {
@@ -88,12 +87,10 @@ WM.module('wm.layouts.containers')
                         WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
-                        if (CONSTANTS.isRunMode && attrs.scopedataset) {
-                            $timeout(function () {
-                                scope.$watch('scopedataset', function (newVal) {
-                                    onPropertyChange('scopedataset', newVal);
-                                }, true);
-                            }, 0);
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            scope.$watch('scopedataset', function (newVal) {
+                                onPropertyChange('scopedataset', newVal);
+                            }, true);
                         }
                     }
                 };
