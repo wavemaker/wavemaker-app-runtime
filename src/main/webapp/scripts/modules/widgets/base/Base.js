@@ -1083,6 +1083,8 @@ WM.module('wm.widgets.base', [])
                         "marginleft": {"type": "string", "pattern": numberRegex},
                         "picturesource": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "picturetitle": {"type": "string", "bindable": "in-bound"},
+                        "imagewidth": {"type": "string", "value": "100%"},
+                        "imageheight": {"type": "string", "value": "200"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
