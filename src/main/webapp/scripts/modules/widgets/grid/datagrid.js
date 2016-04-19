@@ -1117,10 +1117,12 @@ $.widget('wm.datagrid', {
     },
     getTextValue: function ($el, colDef, fields) {
         var text,
-            $ie = $el.find('input');
+            $ie       = $el.find('input'),
+            dataValue;
         text = this._getValue($ie, fields);
         if (colDef.editWidgetType && colDef.editWidgetType !== 'upload' && colDef.editWidgetType !== 'text') {
-            text = $el.children().isolateScope().datavalue;
+            dataValue = $el.children().isolateScope().datavalue;
+            text = dataValue === '' ? undefined : dataValue; //Empty value is set from the grid cell. So, set it back to undefined.
         }
         if (colDef.type === 'timestamp' && (!colDef.editWidgetType || colDef.editWidgetType === 'text')) {
             text = parseInt(text, 10);

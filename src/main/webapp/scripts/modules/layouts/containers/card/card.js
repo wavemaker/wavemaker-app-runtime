@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/card.html',
-            '<div init-widget class="app-card card" ng-show="show" apply-styles="shell" wm-navigatable-element="true">' +
+            '<div init-widget class="app-card card" ng-show="show" apply-styles="shell" wm-navigatable-element="true" ng-style="{height:height}">' +
                 '<div class="app-card-header" ng-show="heading || subheading || iconclass || iconurl">' +
                     '<div class="app-card-avatar" ng-show="iconclass || iconurl">' +
                         '<i class="app-icon {{iconclass}}" ng-if="showIcon"></i>' +
@@ -16,8 +16,8 @@ WM.module('wm.layouts.containers')
                         '<h5 class="card-subheading text-muted">{{subheading}}</h5>' +
                     '</div>' +
                 '</div>' +
-                '<div class="app-card-image" ng-if="picturesource">' +
-                    '<wm-picture class="card-image" width="100%" picturesource="{{picturesource}}" class="{{!(heading || subheading || iconclass || iconurl) ? \'border-radius-top\' : \'\'}}"></wm-picture>' +
+                '<div class="app-card-image" ng-if="picturesource" ng-style="{\'height\':imageheight}">' +
+                    '<wm-picture class="card-image" ng-style="{width:imagewidth, height:imageheight}" picturesource="{{picturesource}}" class="{{!(heading || subheading || iconclass || iconurl) ? \'border-radius-top\' : \'\'}}"></wm-picture>' +
                     '<h5 class="card-image-headline">{{picturetitle}}</h5>' +
                 '</div>' +
                 '<div ng-transclude="content"></div>' +
