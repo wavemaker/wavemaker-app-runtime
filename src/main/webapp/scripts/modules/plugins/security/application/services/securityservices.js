@@ -170,6 +170,10 @@ wm.plugins.security.services.SecurityService = [
                 }, failureCallback);
             },
 
+            cacheGeneralOptions: function (generalOptions) {
+                _generalOptions = generalOptions;
+            },
+
             /**
              * @ngdoc function
              * @name wm.security.$SecurityService#configDemo
