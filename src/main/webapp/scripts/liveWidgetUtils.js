@@ -1372,10 +1372,10 @@ WM.module('wm.widgets.live')
                  * i.e. widget is bound to a subset of selected item, get type of that subset.*/
                 if (relatedFieldName && fields) {
                     relatedFieldType = fields[relatedFieldName].type;
-                    details['relatedFieldType'] = relatedFieldType;
+                    details.relatedFieldType = relatedFieldType;
                 } else {
                     /* When binddataset is of the format: bind:Widgets.widgetName.selecteditem */
-                    details['fields'] = fields;
+                    details.fields = fields;
                 }
                 return details;
             }
@@ -1384,40 +1384,40 @@ WM.module('wm.widgets.live')
                     referenceVariableKey,
                     watchSelectedItem,
                     referenceVariable;
-
                 /*Invoke the function to fetch the reference variable details when a grid2 is bound to another grid1 and grid1 is bound to a variable.*/
                 reference = fetchReferenceDetails($scope);
 
                 /*Check if a watch is not registered on selectedItem.*/
-                if (!$scope.selectedItemWatched) {
-                    watchSelectedItem = reference.referenceWidget.$watch('selecteditem', function (newVal, oldVal) {
+                if ($scope.selectedItemWatched) {
+                    return;
+                }
+                watchSelectedItem = reference.referenceWidget.$watch('selecteditem', function (newVal, oldVal) {
 
-                        $scope.selectedItemWatched = true;
+                    $scope.selectedItemWatched = true;
 
-                        /*Check for sanity of newVal.*/
-                        /*Check for sanity of newVal.*/
-                        if (newVal && !WM.equals(newVal, oldVal)) {
+                    /*Check for sanity of newVal.*/
+                    /*Check for sanity of newVal.*/
+                    if (newVal && !WM.equals(newVal, oldVal)) {
 
-                            referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
-                            /*Check if "referenceVariableKey" has already been computed.*/
-                            if (!referenceVariableKey && referenceVariable && referenceVariable.category === 'wm.LiveVariable') {
-                                /*Invoke the function to get the primary key.*/
-                                referenceVariableKey = referenceVariable.getPrimaryKey();
+                        referenceVariable = Variables.getVariableByName(reference.referenceVariableName);
+                        /*Check if "referenceVariableKey" has already been computed.*/
+                        if (!referenceVariableKey && referenceVariable && referenceVariable.category === 'wm.LiveVariable') {
+                            /*Invoke the function to get the primary key.*/
+                            referenceVariableKey = referenceVariable.getPrimaryKey();
 
-                                /*If the there is a single primary key, fetch the first element of the array.*/
-                                if (referenceVariableKey.length === 1) {
-                                    referenceVariableKey = referenceVariableKey[0];
-                                }
+                            /*If the there is a single primary key, fetch the first element of the array.*/
+                            if (referenceVariableKey.length === 1) {
+                                referenceVariableKey = referenceVariableKey[0];
+                            }
 
-                                /*De-register the watch on selected item.*/
-                                watchSelectedItem();
+                            /*De-register the watch on selected item.*/
+                            watchSelectedItem();
 
-                                /*Register a watch on the primary key field of the selected item.*/
-                                reference.referenceWidget.$watch('selecteditem.' + referenceVariableKey, function (newVal) {
-                                    /*Check for sanity.*/
-                                    if (newVal) {
-                                        /*Invoke the function to update the related data of the variable for the specified relatedFieldName.*/
-                                    }
+                            /*Register a watch on the primary key field of the selected item.*/
+                            reference.referenceWidget.$watch('selecteditem.' + referenceVariableKey, function (newVal) {
+                                /*Check for sanity.*/
+                                if (newVal) {
+                                    /*Invoke the function to update the related data of the variable for the specified relatedFieldName.*/
                                     referenceVariable.updateRelatedData({
                                         'id': reference.referenceWidget.selecteditem[referenceVariableKey],
                                         'relatedFieldName': reference.relatedFieldName
@@ -1429,11 +1429,15 @@ WM.module('wm.widgets.live')
                                     }, function (err) {
                                         Utils.triggerFn(error, err);
                                     });
-                                });
-                            }
+                                } else {
+                                    Utils.triggerFn(success, {});
+                                }
+                            });
                         }
-                    }, true);
-                }
+                    } else {
+                        Utils.triggerFn(success, {});
+                    }
+                }, true);
             }
 
             this.getEventTypes              = getEventTypes;
