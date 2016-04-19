@@ -77,6 +77,7 @@ WM.module('wm.widgets.live')
                 directiveDefn,
                 NAVIGATION = {
                     'BASIC'    : 'Basic',
+                    'CLASSIC'  : 'Classic',
                     'ADVANCED' : 'Advanced',
                     'SCROLL'   : 'Scroll',
                     'INLINE'   : 'Inline',
@@ -523,8 +524,8 @@ WM.module('wm.widgets.live')
                 }
             }
 
-            function enableAdvancedNavigation($is) {
-                $is.navControls = NAVIGATION.ADVANCED;
+            function enableClassicNavigation($is) {
+                $is.navControls = NAVIGATION.CLASSIC;
             }
 
             function enablePagerNavigation($is) {
@@ -545,7 +546,8 @@ WM.module('wm.widgets.live')
                     enableInlineNavigation($is);
                     break;
                 case NAVIGATION.ADVANCED:
-                    enableAdvancedNavigation($is);
+                case NAVIGATION.CLASSIC:
+                    enableClassicNavigation($is);
                     break;
                 case NAVIGATION.SCROLL:
                     enableInfiniteScroll($is);
@@ -643,6 +645,10 @@ WM.module('wm.widgets.live')
                     }
                     break;
                 case 'navigation':
+                    if (nv === 'Advanced') { //Support for older projects where navigation type was advanced instead of clasic
+                        $is.navigation = 'Classic';
+                        return;
+                    }
                     if (CONSTANTS.isStudioMode) {
                         onNavigationTypeChange($is, nv);
                     }
@@ -1082,7 +1088,7 @@ WM.module('wm.widgets.live')
                 // process the navigation type before the dataset is set.
                 if (attrs.hasOwnProperty('shownavigation') && (attrs.shownavigation === 'true')) {
                     // for legacy applications
-                    $is.navigation = NAVIGATION.ADVANCED;
+                    $is.navigation = NAVIGATION.BASIC;
                 }
                 onNavigationTypeChange($is, $is.navigation);
 
@@ -1188,7 +1194,7 @@ WM.module('wm.widgets.live')
  * @param {number=} pagesize
  *                  This property sets the number of items to show in the drop-down list.
  * @param {string=} navigation
- *                  Possible values are `None`, `Advanced`, `Scroll`. <br>
+ *                  Possible values are `None`, `Classic`, `Scroll`. <br>
  *                  Navigation controls will be displayed based on the selected value.
  * @param {string=} on-click
  *                  Callback function which will be triggered when the widget is clicked.
