@@ -60,8 +60,9 @@ WM.module('wm.widgets.live')
         '$timeout',
         'DeviceVariableService',
         'LiveWidgetUtils',
+        'FormWidgetUtils',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils , $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.navigation']),
@@ -288,10 +289,7 @@ WM.module('wm.widgets.live')
                     ALPHABET = 'alphabet',
                     OTHERS = 'Others';
 
-                $el.find('> [data-identifier=list]').empty();
-
-                // groups the fields based on the groupby value.
-                groupedLiData = _.groupBy(_s.fieldDefs, function (liData) {
+                function groupDataByField(liData) {
                     var concatStr = Utils.findValueOf(liData, $is.groupby);
 
                     if (WM.isUndefined(concatStr)) {
@@ -304,7 +302,17 @@ WM.module('wm.widgets.live')
                     }
 
                     return concatStr;
-                });
+                }
+
+                $el.find('> [data-identifier=list]').empty();
+
+                // groups the fields based on the groupby value.
+                if (_.includes($is.groupby, '(')) {
+                    var groupDataByUserDefinedFn = _s[$is.groupby.split('(')[0]];
+                    groupedLiData = _.groupBy(_s.fieldDefs, groupDataByUserDefinedFn);
+                } else {
+                    groupedLiData = _.groupBy(_s.fieldDefs, groupDataByField);
+                }
 
                 // append data to li based on the grouped data.
                 _.each(groupedLiData, function (groupedData, groupkey) {
@@ -359,7 +367,7 @@ WM.module('wm.widgets.live')
                 }
 
                 if ($is.groupby && $is.groupby !== '') {
-                    _s.fieldDefs = _.sortBy(_s.fieldDefs, $is.groupby);
+                    _s.fieldDefs = FormWidgetUtils.getOrderedDataSet(_s.fieldDefs, $is.orderby);
                     addListElements(_s, $el, $is, attrs, listCtrl);
                 }
 
@@ -592,10 +600,10 @@ WM.module('wm.widgets.live')
 
                     if ($is.widgetid && WM.isDefined(nv) && nv !== null) {
                         // set the groupby options
-                        wp.groupby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
+                        wp.groupby.options = wp.orderby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
 
                         // show the match property
-                        if ($is.groupby && $is.groupby !== '' && nv.propertiesMap) {
+                        if ($is.groupby && $is.groupby !== '' && nv.propertiesMap && !(_.includes($is.groupby, '('))) {
                             wp.match.show = (getFieldType(nv.propertiesMap, $is.groupby) === 'string');
                         }
 
@@ -633,7 +641,23 @@ WM.module('wm.widgets.live')
 
                         // empty option selection is included in groupby options.
                         if (wp.groupby.options) {
-                            wp.groupby.options = [''].concat(wp.groupby.options);
+                            var groupbyOptions = [{
+                                'name'      : 'Javascript',
+                                'category'  : 'Script'
+                            }];
+                            if ($is.groupby && _.includes($is.groupby, '(')) {
+                                groupbyOptions.push({
+                                    'name'      : $is.groupby,
+                                    'category'  : 'Script'
+                                });
+                            }
+                            _.forEach(wp.groupby.options, function (option) {
+                                groupbyOptions.push({
+                                    'name'      : option,
+                                    'category'  : 'Fields'
+                                });
+                            });
+                            wp.groupby.options = groupbyOptions;
                         }
                     }
                     break;
@@ -658,7 +682,7 @@ WM.module('wm.widgets.live')
                     if ($is.widgetid) {
                         if (nv === '') {
                             wp.match.show = false;
-                        } else if ($is.dataset) {
+                        } else if ($is.dataset && $is.groupby !== 'Javascript' && !_.includes($is.groupby, '(')) {
                             if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
                                 wp.match.show = _.get($rs, ['dataTypes', selectedVariable.type, 'fields', $is.groupby, 'type'], stringType) === stringType;
                             } else if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
@@ -674,6 +698,11 @@ WM.module('wm.widgets.live')
                             $element.removeAttr('enablereorder');
                             $is.enablereorder     = false;
                             wp.enablereorder.show = false;
+                            if (nv === 'Javascript') {
+                                wp.groupby.isGroupBy = true;
+                            } else {
+                                wp.groupby.isGroupBy = false;
+                            }
                         } else {
                             wp.enablereorder.show = true;
                         }

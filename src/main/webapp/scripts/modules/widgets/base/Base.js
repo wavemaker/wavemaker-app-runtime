@@ -1485,8 +1485,9 @@ WM.module('wm.widgets.base', [])
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
-                        "groupby": {"type": "list", "show": true},
-                        "match": {"type": "list", "options": ["alphabet", "word"], "show": false, "value": "word"}
+                        "groupby": {"type": "list", "show": true, "widget": "list-typeahead"},
+                        "match": {"type": "list", "options": ["alphabet", "word"], "show": false, "value": "word"},
+                        "orderby": {"type": "list", "widget": "order-by"}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
