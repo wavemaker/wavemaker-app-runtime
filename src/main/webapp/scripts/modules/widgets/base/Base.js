@@ -2237,7 +2237,7 @@ WM.module('wm.widgets.base', [])
                     return;
                 }
 
-                _.defer(triggerInitValueChange, $is, $el, attrs);
+                triggerInitValueChange($is, $el, attrs);
             }
 
             /* find the scope of the controller using the scope passed */

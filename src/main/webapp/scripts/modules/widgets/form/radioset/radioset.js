@@ -171,12 +171,10 @@ WM.module('wm.widgets.form')
 
                         /* fields defined in scope: {} MUST be watched explicitly */
                         /*watching scopedataset attribute to create options for the checkboxset element.*/
-                        if (attrs.scopedataset) {
-                            _.defer(function () {
-                                scope.$watch('scopedataset', function () {
-                                    /*generating the radioset based on the values provided*/
-                                    constructRadioSet(scope, element, scope.scopedataset);
-                                });
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            scope.$watch('scopedataset', function () {
+                                /*generating the radioset based on the values provided*/
+                                constructRadioSet(scope, element, scope.scopedataset);
                             });
                         }
                     }

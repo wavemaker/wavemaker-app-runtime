@@ -1,4 +1,4 @@
-/*global WM,_ */
+/*global WM,_,moment */
 /*Directive for Calendar */
 
 WM.module('wm.widgets.advanced')
@@ -78,9 +78,9 @@ WM.module('wm.widgets.advanced')
                 if (_.includes(elHeight, '%')) {
                     computedHeight = (parentHeight * Number(elHeight.replace(/\%/g, ''))) / 100;
                 } else {
-                    computedHeight = parseInt(elHeight);
+                    computedHeight = parseInt(elHeight, 10);
                 }
-                calendar.views.month.eventLimit = parseInt(computedHeight / 200) + 1;
+                calendar.views.month.eventLimit = parseInt(computedHeight / 200, 10) + 1;
                 return computedHeight;
             }
 
@@ -182,9 +182,7 @@ WM.module('wm.widgets.advanced')
                         'post': function (scope, element, attrs) {
                             var handlers        = [],
                                 headerOptions   = Utils.getClonedObject(defaultHeaderOptions),
-                                uiCalScope,
-                                oldData,
-                                eleHeight       = element.attr('height');
+                                oldData;
 
                             function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
                                 var fn = scope[method] || WM.noop;
@@ -310,16 +308,10 @@ WM.module('wm.widgets.advanced')
 
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
-                            if (CONSTANTS.isRunMode) {
-                                if (attrs.scopedataset) {
-                                    _.defer(function () {
-                                        handlers.push(scope.$watch('scopedataset', function (newVal) {
-                                            scope.eventSources.push(newVal);
-                                        }, true));
-                                    });
-                                }
-                                // find the isolateScope of the ui-calendar element
-                                uiCalScope = element.children().first().isolateScope();
+                            if (!attrs.widgetid && attrs.scopedataset) {
+                                handlers.push(scope.$watch('scopedataset', function (newVal) {
+                                    scope.eventSources.push(newVal);
+                                }, true));
                             }
                         }
                     };

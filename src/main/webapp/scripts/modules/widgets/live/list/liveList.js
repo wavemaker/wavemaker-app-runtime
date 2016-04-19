@@ -1088,16 +1088,12 @@ WM.module('wm.widgets.live')
 
                 WidgetUtilService.postWidgetCreate($is, $el, attrs);
 
-                if (CONSTANTS.isRunMode) {
-                    if (attrs.scopedataset) {
-                        _.defer(function () {
-                            $is.$watch('scopedataset', function (nv) {
-                                if (nv && !$is.dataset) {
-                                    updateFieldDefs($is, $el, nv);
-                                }
-                            }, true);
-                        });
-                    }
+                if (!attrs.widgetid && attrs.scopedataset) {
+                    $is.$watch('scopedataset', function (nv) {
+                        if (nv && !$is.dataset) {
+                            updateFieldDefs($is, $el, nv);
+                        }
+                    }, true);
                 }
             }
 

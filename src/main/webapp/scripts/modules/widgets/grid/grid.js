@@ -649,15 +649,13 @@ WM.module('wm.widgets.grid')
                             scope.datagridElement.datagrid('setColGroupWidths');
 
                             if (CONSTANTS.isRunMode && attrs.scopedataset) {
-                                _.defer(function () {
-                                    handlers.push(scope.$watch('scopedataset', function (newVal) {
-                                        if (newVal && !scope.dataset) {
-                                            /* decide new column defs required based on existing column defs for the grid */
-                                            scope.newcolumns = !scope.columnDefsExists();
-                                            scope.createGridColumns(newVal);
-                                        }
-                                    }));
-                                });
+                                handlers.push(scope.$watch('scopedataset', function (newVal) {
+                                    if (newVal && !scope.dataset) {
+                                        /* decide new column defs required based on existing column defs for the grid */
+                                        scope.newcolumns = !scope.columnDefsExists();
+                                        scope.createGridColumns(newVal);
+                                    }
+                                }));
                             }
                         }, 0, false);
 

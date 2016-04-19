@@ -350,10 +350,8 @@ WM.module('wm.widgets.advanced')
 
                         /* fields defined in scope: {} MUST be watched explicitly */
                         /*watching scopedataset attribute to create options for the select element.*/
-                        if (!attrs.widgetid) {
-                            _.defer(function () {
-                                iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, $el));
-                            });
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, $el));
                         }
 
                     }

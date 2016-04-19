@@ -398,11 +398,9 @@ WM.module('wm.widgets.basic')
 
                         /* fields defined in scope: {} MUST be watched explicitly
                          watching model attribute to the data for the search element.*/
-                        if (attrs.scopedataset) {
-                            _.defer(function () {
-                                scope.$watch('scopedataset', function (newVal) {
-                                    setDataSet(newVal, scope);
-                                });
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            scope.$watch('scopedataset', function (newVal) {
+                                setDataSet(newVal, scope);
                             });
                         }
                     }

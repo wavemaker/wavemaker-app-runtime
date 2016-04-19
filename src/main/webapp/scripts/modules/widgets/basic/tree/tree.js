@@ -317,12 +317,10 @@ WM.module('wm.widgets.basic')
 
                             WidgetUtilService.postWidgetCreate($is, $el, attrs);
 
-                            if (!$is.widgetid && attrs.scopedataset) {
-                                $timeout(function () {
-                                    $is.$watch('scopedataset', function (newVal) {
-                                        onPropertyChange('scopedataset', newVal);
-                                    }, true);
-                                }, 0);
+                            if (!attrs.widgetid && attrs.scopedataset) {
+                                $is.$watch('scopedataset', function (newVal) {
+                                    onPropertyChange('scopedataset', newVal);
+                                }, true);
                             }
                         }
                     };
