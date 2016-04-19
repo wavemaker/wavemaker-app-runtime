@@ -209,7 +209,7 @@ WM.module('wm.widgets.base', [])
                         "orderby": {"type": "list", "widget": "order-by"}
                     },
                     "wm.base.navigation": {
-                        "navigation": {"type": "list", "options": ["Basic", "Pager", "Advanced"], "value": "Basic"},
+                        "navigation": {"type": "list", "options": ["Basic", "Pager", "Classic"], "value": "Basic"},
                         "showrecordcount": {"type": "boolean"},
                         "maxsize": {"type": "number", "value": 3, "show": false},
                         "boundarylinks": {"type": "boolean", "value": false, "show": false},
@@ -1271,7 +1271,7 @@ WM.module('wm.widgets.base', [])
                         "insertrow": {"type": "boolean", "bindable": "in-out-bound", "showindesigner": true},
                         "readonlygrid": {"type": "boolean", "value": true, "show": false, "bindable": "in-bound"},
                         "showrecordcount": {"type": "boolean", "show": false, "showindesigner": true},
-                        "navigation": {"type": "list", "options": ["None", "Basic", "Pager", "Advanced"], "value": "Basic", "showindesigner": true},
+                        "navigation": {"type": "list", "options": ["None", "Basic", "Pager", "Classic"], "value": "Basic", "showindesigner": true},
                         "navigationalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align", "value": "left", "showindesigner": true},
                         "filternullrecords": {"type": "boolean", "value": true},
                         "nodatamessage": {"type": "string", "value": "No data found.", "bindable": "in-out-bound", "showindesigner": true},
@@ -1481,7 +1481,7 @@ WM.module('wm.widgets.base', [])
                         "itemclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "media"]},
                         "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "list-inline", "media-list"]},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "value": "", "pattern": classRegex},
-                        "navigation": {"type": "list", "options": ["None", "Basic", "Pager", "Inline", "Advanced", "Scroll"], "value": "None"},
+                        "navigation": {"type": "list", "options": ["None", "Basic", "Pager", "Inline", "Classic", "Scroll"], "value": "None"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},

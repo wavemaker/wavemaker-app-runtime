@@ -6,7 +6,7 @@ WM.module("wm.widgets.basic")
         "use strict";
         $templateCache.put("template/widget/datanavigator.html",
             '<nav data-identifier="datanavigator" class="app-datanavigator clearfix text-{{navigationalign}}" data-ng-show="show" init-widget apply-styles>' +
-                '<ul class="pagination advanced {{class}}" data-ng-if="navcontrols === \'Advanced\'">' +
+                '<ul class="pagination advanced {{class}}" data-ng-if="navcontrols === \'Classic\'">' +
                     '<li data-ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" data-ng-click="navigatePage(\'first\', $event)"><i class="wi wi-first-page"></i></a></li>' +
                     '<li data-ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" data-ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li>' +
                     '<li class="pagecount disabled"><a><input title="Current Page" type="number" data-ng-disabled="isDisableCurrent" data-ng-model="dn.currentPage" ng-model-options="{updateOn: \'change blur\'}" data-ng-change="onModelChange($event)" class="form-control" /></a></li>' +
@@ -46,6 +46,10 @@ WM.module("wm.widgets.basic")
                 scope.setPagingValues(newVal);
                 break;
             case 'navigation':
+                if (newVal === 'Advanced') { //Support for older projects where navigation type was advanced instead of clasic
+                    scope.navigation = 'Classic';
+                    return;
+                }
                 scope.navcontrols = newVal;
                 break;
             }

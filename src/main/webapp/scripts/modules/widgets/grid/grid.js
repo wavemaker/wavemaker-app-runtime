@@ -92,7 +92,7 @@
    <example module="wmCore">
        <file name="index.html">
            <div data-ng-controller="Ctrl" class="wm-app" style="height: 100%;">
-               <wm-grid readonlygrid="false" name="grid3" dataset="{{data}}" navigation="Advanced" enablesort="false"></wm-grid>
+               <wm-grid readonlygrid="false" name="grid3" dataset="{{data}}" navigation="Basic" enablesort="false"></wm-grid>
            </div>
        </file>
        <file name="script.js">
@@ -212,7 +212,7 @@ WM.module('wm.widgets.grid')
                     delete tAttr.shownavigation;
 
                     if (!tAttr.navigation) {
-                        tAttr.navigation = showNavigation ? 'Advanced' : 'None';
+                        tAttr.navigation = showNavigation ? 'Basic' : 'None';
                         contextEl.setAttribute('navigation', tAttr.navigation);
                     }
                 }
@@ -482,6 +482,10 @@ WM.module('wm.widgets.grid')
                                 }
                                 break;
                             case 'navigation':
+                                if (newVal === 'Advanced') { //Support for older projects where navigation type was advanced instead of clasic
+                                    scope.navigation = 'Classic';
+                                    return;
+                                }
                                 if (newVal !== 'None') {
                                     scope.shownavigation = true;
                                     scope.enablePageNavigation();
