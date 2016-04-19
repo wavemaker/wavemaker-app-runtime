@@ -2,7 +2,6 @@ package com.wavemaker.runtime.security.provider.database.authorities;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Query;
@@ -13,7 +12,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import com.wavemaker.runtime.data.dao.util.QueryHelper;
 import com.wavemaker.runtime.security.provider.database.AbstractDatabaseSupport;
 
 /**
@@ -88,33 +86,28 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
 
     private List<GrantedAuthority> getGrantedAuthoritiesByHQL(Session session, String authoritiesByUsernameQuery) {
         final Query query = session.createQuery(authoritiesByUsernameQuery);
-        QueryHelper.setResultTransformer(query);
         final List list = query.list();
-        String[] params = {"0", "1"};
-        return getAuthorities(list, params);
+        return getAuthorities(list);
     }
 
     private List<GrantedAuthority> getGrantedAuthoritiesByNativeSql(
             final Session session, final String authoritiesByUsernameQuery) {
         final Query query = session.createSQLQuery(authoritiesByUsernameQuery);
-        QueryHelper.setResultTransformer(query);
         final List list = query.list();
-        String[] params = {"USERID", "ROLE"};
-        return getAuthorities(list, params);
+        return getAuthorities(list);
     }
 
-    private List<GrantedAuthority> getAuthorities(List<Object> content, String... params) {
+    private List<GrantedAuthority> getAuthorities(List<Object> content) {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        String roleParam = "";
-        if (params.length == 2) {
-            roleParam = params[1];
-        } else {
-            roleParam = params[0];
-        }
         if (content.size() > 0) {
             for (Object o : content) {
-                final Map<String, Object> resultMap = (Map) o;
-                String role = String.valueOf(resultMap.get(roleParam));
+                Object[] result = (Object[]) o;
+                String role = null;
+                if (result.length == 1) {
+                    role = String.valueOf(result[0]);
+                } else {
+                    role = String.valueOf(result[1]);
+                }
                 SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(getRolePrefix() + role);
                 grantedAuthorities.add(simpleGrantedAuthority);
             }
