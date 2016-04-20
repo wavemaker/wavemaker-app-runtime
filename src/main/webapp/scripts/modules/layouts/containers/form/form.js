@@ -79,30 +79,35 @@ WM.module('wm.layouts.containers')
                 break;
             }
         }
-
-        /*Called by users programatically.*/
-        function resetForm($s, element) {
-            resetFormFields(element);
-            _.forEach($s.formFields, function (dataValue) {
-                if (dataValue.type === 'blob') {
-                    WM.element(element).find('[name=' + dataValue.key + ']').val('');
-                    dataValue.href  = '';
-                    dataValue.value = null;
-                } else {
-                    dataValue.value = undefined;
-                }
-            });
-            $s.formdata      = undefined;
-            $s.statusMessage = undefined;
-            $rootScope.$safeApply($s);
-        }
-
         function resetFormFields(element) {
             var eleScope = element.scope();
             element.find('[role="input"]').each(function () {
                 WM.element(this).isolateScope().reset();
             });
             $rootScope.$safeApply(eleScope);
+        }
+        /*Called by users programatically.*/
+        function resetForm($s, element) {
+            resetFormFields(element);
+            if ($s.formFields) {
+                _.forEach($s.formFields, function (dataValue) {
+                    if (dataValue.type === 'blob') {
+                        WM.element(element).find('[name=' + dataValue.key + ']').val('');
+                        dataValue.href  = '';
+                        dataValue.value = null;
+                    } else {
+                        dataValue.value = undefined;
+                    }
+                });
+            } else {
+                //Get all form fields and reset the values
+                element.find('[data-role="form-field"]').each(function () {
+                    WM.element(this).isolateScope().datavalue = undefined;
+                });
+            }
+            $s.formdata      = undefined;
+            $s.statusMessage = undefined;
+            $rootScope.$safeApply($s);
         }
 
         function bindEvents(scope, element) {
@@ -155,10 +160,12 @@ WM.module('wm.layouts.containers')
                     if (formVariable && formVariable.category === 'wm.ServiceVariable') {
                         formVariable.setInput(formData);
                         formVariable.update({}, function () {
-                            scope.statusMessage = {
-                                'type'   : 'success',
-                                'caption': scope.postmessage
-                            };
+                            if (scope.postmessage) {
+                                scope.statusMessage = {
+                                    'type'    : 'success',
+                                    'caption' : scope.postmessage
+                                };
+                            }
                         }, function (errMsg) {
                             scope.statusMessage = {
                                 'type'   : 'error',
