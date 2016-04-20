@@ -335,9 +335,9 @@ WM.module('wm.widgets.basic')
                     'post': function (scope, element, attrs) {
 
                         var wp, searchItem;
+                        scope.dataSetType = 'listOfStrings';
                         // In Studio mode aways display the input box
                         if (CONSTANTS.isStudioMode) {
-                            scope.dataSetType = "listOfStrings";
                             //Hiding the events as there is no support for them.
                             if (scope.widgetid) {
                                 wp                   = scope.widgetProps;
