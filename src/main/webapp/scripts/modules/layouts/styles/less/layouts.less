@@ -1019,8 +1019,29 @@ body {
       height : 100%;
     }
   }
-  .carousel {
+  &.carousel {
     height: inherit;
+  }
+  .carousel-control {
+    .wi-chevron-left, .wi-chevron-right {
+      position: absolute;
+      top: 50%;
+      z-index: 5;
+      display: inline-block;
+      margin-top: -10px;
+      font-size: 32pt;
+    }
+    .wi-chevron-right {
+      right: 50%;
+    }
+    .wi-chevron-left {
+      left: 50%;
+    }
+  }
+  .carousel-indicators {
+    li {
+      border-color: #ccc !important;
+    }
   }
 }
 /**********************************Template classes****************************************************************/
