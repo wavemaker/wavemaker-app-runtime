@@ -9,9 +9,11 @@ WM.module('wm.layouts.containers')
                     '<div class="panel-heading" data-ng-class="helpClass">' +
                         '<h3 class="panel-title">' +
                             '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="expandCollapsePanel()">' +
-                                '<i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i>' +
-                                '<span class="heading">{{title}}</span>' +
-                                '<span class="description">{{description}}</span>' +
+                                '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
+                                '<div class="pull-left">' +
+                '<div class="heading">{{title}}</div>' +
+                '<div class="description">{{subheading}}</div>' +
+                                 '</div>' +
                             '</a>' +
                             '<div class="panel-actions">' +
                                 '<span data-ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
@@ -78,13 +80,19 @@ WM.module('wm.layouts.containers')
                     this.footer = footer;
                 };
             },
-            'compile': function () {
+            'compile': function (tElement) {
                 return {
-                    'pre': function (iScope) {
+                    'pre': function (iScope, element, attrs) {
                         if (CONSTANTS.isStudioMode) {
                             iScope.widgetProps = Utils.getClonedObject(widgetProps);
                         } else {
                             iScope.widgetProps = widgetProps;
+                        }
+                        //handle the backward compatibility for description attributes
+                        if (attrs.description && !attrs.subheading) {
+                            iScope.subheading = attrs.subheading = attrs.description;
+                            WM.element(tElement.context).attr('subheading', iScope.subheading);
+                            delete attrs.description;
                         }
                     },
                     'post': function (scope, element, attrs, panelCtrl) {
@@ -138,7 +146,6 @@ WM.module('wm.layouts.containers')
                         scope.closePanel = function () {
                             scope.show = false;
                         };
-
                         /* register the property change handler */
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);

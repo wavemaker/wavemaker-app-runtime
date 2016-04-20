@@ -12,7 +12,7 @@ WM.module('wm.layouts.containers')
             );
 
         $templateCache.put('template/layout/container/accordion-header.html',
-                '<div class="panel-heading" data-ng-click="pane.togglePane()" init-widget apply-styles="container">' +
+                '<div class="panel-heading clearfix" data-ng-click="pane.togglePane()" init-widget apply-styles="container">' +
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0);" class="accordion-toggle" wmtransclude></a>' +
                     '</h3>' +
@@ -172,12 +172,18 @@ WM.module('wm.layouts.containers')
             'transclude': true,
             'template': $templateCache.get('template/layout/container/accordion-header.html'),
             'require': '^wmAccordionpane',
-            'compile': function () {
+            'compile': function (tElement) {
                 return {
-                    'pre': function (scope) {
+                    'pre': function (scope, element, attrs) {
                         scope.widgetProps = widgetProps;
                         if (scope.widgetProps.show) {
                             delete scope.widgetProps.show;// show property should be handled from pane.
+                        }
+                        //handle the backward compatibility for description attributes
+                        if (attrs.description && !attrs.subheading) {
+                            scope.subheading = attrs.subheading = attrs.description;
+                            WM.element(tElement.context).attr('subheading', scope.subheading);
+                            delete attrs.description;
                         }
                     },
                     'post': function (scope, element, attrs, paneCtrl) {
@@ -186,9 +192,9 @@ WM.module('wm.layouts.containers')
 
                         if (transcludeTarget.children().length === 0) { /* if there is no transcluded content, use the default template for the header */
                             template =
-                                '<i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i>' +
-                                '<span class="heading" data-ng-bind-html="heading"></span>' +
-                                '<span class="description" data-ng-bind-html="description"></span>';
+                                '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
+                                '<div class="pull-left"><div class="heading" data-ng-bind-html="heading"></div>' +
+                                '<div class="description" data-ng-bind-html="subheading"></div></div>';
                             transcludeTarget.append($compile(template)(scope));
                         }
                         scope.pane = paneCtrl.getPaneScope();
@@ -203,7 +209,6 @@ WM.module('wm.layouts.containers')
                                 paneCtrl.registerCallback('onCollapse', attrs._onCollapse || attrs.onCollapse);
                             }
                         }
-
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
                 };

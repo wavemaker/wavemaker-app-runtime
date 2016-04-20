@@ -1039,7 +1039,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.panel': {
                         "title": {"type": "string", "value": "Title", "bindable": "in-bound"},
-                        "description": {"type": "string", "bindable": "in-bound", "widget": "textarea"},
+                        "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "collapsible": {"type": "boolean"},
                         "enablefullscreen": {"type": "boolean"},
@@ -1399,7 +1399,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.accordionheader": {
                         "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
-                        "description": {"type": "string", "bindable": "in-bound", "widget": "textarea"},
+                        "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
