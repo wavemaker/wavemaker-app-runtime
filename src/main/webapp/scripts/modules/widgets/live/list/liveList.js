@@ -774,7 +774,10 @@ WM.module('wm.widgets.live')
             }
             // Triggers event to update or delete list item
             function triggerWMEvent($is, evt, name) {
-                $is.selecteditem = WM.element(evt.delegateTarget).item;
+                var $li = WM.element(evt.target).parents('li.app-list-item');
+                if (!_.isEmpty($li)) {
+                    $is.selecteditem = $li.scope().item;
+                }
                 $rs.$safeApply($is);
                 $rs.$emit('wm-event', $is.name, name);
             }
