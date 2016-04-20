@@ -101,12 +101,16 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         if (content.size() > 0) {
             for (Object o : content) {
-                Object[] result = (Object[]) o;
-                String role = null;
-                if (result.length == 1) {
-                    role = String.valueOf(result[0]);
+                Object role = null;
+                if (o instanceof Object[]) {
+                    Object[] result = (Object[]) o;
+                    if (result.length == 1) {
+                        role = String.valueOf(result[0]);
+                    } else {
+                        role = String.valueOf(result[1]);
+                    }
                 } else {
-                    role = String.valueOf(result[1]);
+                    role = o;
                 }
                 SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(getRolePrefix() + role);
                 grantedAuthorities.add(simpleGrantedAuthority);

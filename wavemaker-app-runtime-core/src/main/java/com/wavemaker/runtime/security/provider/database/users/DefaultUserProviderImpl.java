@@ -79,7 +79,7 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
     private WMUser getWmUser(List<Object> content) {
         if (content.size() > 0) {
             Object[] resultMap = (Object[]) content.get(0);
-            int userId = (Integer) resultMap[0];
+            String userId = String.valueOf(resultMap[0]);
             String password = String.valueOf(resultMap[1]);
             // MYSQL returns BigInteger. Enabled cloumn shoulld be introduced or "1" should be removed.
             int enabled = 0;
@@ -94,7 +94,7 @@ public class DefaultUserProviderImpl extends AbstractDatabaseSupport implements 
             int tenantId = -1;
             long loginTime = System.currentTimeMillis();
             boolean isEnabled = enabled == 1 ? true : false;
-            return new WMUser(String.valueOf(userId), userName, password, userName, tenantId,
+            return new WMUser(userId, userName, password, userName, tenantId,
                     Boolean.valueOf(isEnabled), true, true,
                     true, AuthorityUtils.NO_AUTHORITIES, loginTime);
         }
