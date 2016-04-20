@@ -617,7 +617,7 @@ WM.module('wm.widgets.live')
                 };
 
                 $scope.setFieldVal = function (fieldDef) {
-                    var dataObj = $scope.rowdata, primaryKey, href, primaryKeys;
+                    var dataObj = $scope.rowdata || $scope.formdata, primaryKey, href, primaryKeys;
                     if (!dataObj) {
                         return;
                     }
@@ -982,7 +982,7 @@ WM.module('wm.widgets.live')
                                             scope.isUpdateMode = false;
                                             break;
                                         case 'delete':
-                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject(scope.subscribedWidget.selecteditem)});
+                                            scope.subscribedWidget.call('delete', {"row": scope.constructDataObject(scope.formFields)});
                                             break;
                                         }
                                     }
