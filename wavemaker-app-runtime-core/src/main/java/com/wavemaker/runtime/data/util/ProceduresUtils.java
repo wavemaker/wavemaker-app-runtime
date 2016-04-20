@@ -16,6 +16,8 @@
 package com.wavemaker.runtime.data.util;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.wavemaker.runtime.data.model.CustomProcedureParam;
 import com.wavemaker.runtime.data.model.ProcedureParamType;
@@ -23,7 +25,12 @@ import com.wavemaker.runtime.data.model.ProcedureParamType;
 /**
  * @Author: sowmyad
  */
-public  class ProceduresUtils {
+public class ProceduresUtils {
+
+    public static String PARAM = "{param}";
+    public static final String PROCEDURE_PARAM_PATTERN = "(\\:"+ PARAM +")([\\s]*)(,|$)";;
+    public static final String PROCEDURE_PARAM_REPLACE_STRING = "?";
+
     public static boolean hasOutParam(List<CustomProcedureParam> customProcedureParams) {
         for (CustomProcedureParam customProcedureParam : customProcedureParams) {
             if (hasOutParamType(customProcedureParam)) {
@@ -33,8 +40,38 @@ public  class ProceduresUtils {
         return false;
     }
 
-    public  static boolean hasOutParamType(CustomProcedureParam procedureParam){
+    public static boolean hasOutParamType(CustomProcedureParam procedureParam) {
         return procedureParam.getProcedureParamType().equals(ProcedureParamType.IN_OUT) || procedureParam.getProcedureParamType().equals(ProcedureParamType.OUT);
+    }
+
+    /**
+     * Converts jdbc equivalent procedure string
+     * eg , call exampleProcedure :sampleId,:sampleFirstName,:sampleLastName
+     * convert it to : call exampleProcedure ?,?,?
+     *
+     * @param procedureStr procedure string
+     * @param namedParams list of the named procedure parameters
+     * @return jdbc compliance procedure.
+     */
+    public static String jdbcComplianceProcedure(final String procedureStr, final String[] namedParams) {
+        String targetProcedureString = procedureStr;
+        for (String namedParam : namedParams) {
+            String procedurePattern = PROCEDURE_PARAM_PATTERN.replace(PARAM, namedParam);
+            targetProcedureString = replaceProcedureParam(targetProcedureString, procedurePattern);
+        }
+        return targetProcedureString;
+    }
+
+    private static String replaceProcedureParam(final String procedureString, final String procedurePattern) {
+        final Pattern pattern = Pattern.compile(procedurePattern);
+        final Matcher matcher = pattern.matcher(procedureString);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            final String value = PROCEDURE_PARAM_REPLACE_STRING + matcher.group(3);
+            matcher.appendReplacement(sb, value);
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
 }

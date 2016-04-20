@@ -54,9 +54,9 @@ import com.wavemaker.studio.common.util.StringUtils;
 import com.wavemaker.studio.common.util.TypeConversionUtils;
 
 public class WMProcedureExecutorImpl implements WMProcedureExecutor {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
     private static final String CURSOR = "cursor";
-    private static final Logger logger = LoggerFactory.getLogger(WMProcedureExecutorImpl.class);
     private HibernateTemplate template = null;
     private String serviceId = null;
     private ProcedureModel procedureModel = null;
@@ -85,14 +85,14 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             ClassLoader webAppClassLoader = WMProcedureExecutorImpl.class.getClassLoader();
             resourceStream = contextClassLoader.getResourceAsStream(serviceId + "-procedures.mappings.json");
             if (resourceStream != null) {
-                logger.info("Using the file {}-procedures.mappings.json from context classLoader {}", serviceId, contextClassLoader);
+                LOGGER.info("Using the file {}-procedures.mappings.json from context classLoader {}", serviceId, contextClassLoader);
             } else {
-                logger.warn("Could not find {}-procedures.mappings.json in context classLoader {}", serviceId, contextClassLoader);
+                LOGGER.warn("Could not find {}-procedures.mappings.json in context classLoader {}", serviceId, contextClassLoader);
                 resourceStream = webAppClassLoader.getResourceAsStream(serviceId + "-procedures.mappings.json");
                 if (resourceStream != null) {
-                    logger.warn("Using the file {}-procedures.mappings.json from webApp classLoader {}", serviceId, webAppClassLoader);
+                    LOGGER.warn("Using the file {}-procedures.mappings.json from webApp classLoader {}", serviceId, webAppClassLoader);
                 } else {
-                    logger.warn("Could not find {}-procedures.mappings.json in webApp classLoader {} also", serviceId, webAppClassLoader);
+                    LOGGER.warn("Could not find {}-procedures.mappings.json in webApp classLoader {} also", serviceId, webAppClassLoader);
                     throw new WMRuntimeException(serviceId + "-procedures.mappings.json file is not found in either of webAppClassLoader or contextClassLoader");
                 }
             }
@@ -153,7 +153,9 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
 
             SQLQuery sqlProcedure = session.createSQLQuery(procedureStr);
             String[] namedParams = sqlProcedure.getNamedParameters();
-            CallableStatement callableStatement = conn.prepareCall(getJDBCConvertedString(procedureStr, namedParams));
+            final String jdbcComplianceProcedure = ProceduresUtils.jdbcComplianceProcedure(procedureStr, namedParams);
+            LOGGER.info("JDBC converted procedure {}", jdbcComplianceProcedure);
+            CallableStatement callableStatement = conn.prepareCall(jdbcComplianceProcedure);
 
             List<Integer> outParams = new ArrayList<Integer>();
             for (int position = 0; position < customParams.size(); position++) {
@@ -255,14 +257,6 @@ public class WMProcedureExecutorImpl implements WMProcedureExecutor {
             typeCode = typeName.equals("String") ? Types.VARCHAR : (Integer) Types.class.getField(typeName.toUpperCase()).get(null);
         }
         return typeCode;
-    }
-
-    private String getJDBCConvertedString(String procedureStr, String[] namedParams) {
-        String targetString = procedureStr;
-        for (String namedParam : namedParams) {
-            targetString = targetString.replace(":" + namedParam, "?");
-        }
-        return targetString;
     }
 
     private List<CustomProcedureParam> prepareParams(List<CustomProcedureParam> customProcedureParams) {

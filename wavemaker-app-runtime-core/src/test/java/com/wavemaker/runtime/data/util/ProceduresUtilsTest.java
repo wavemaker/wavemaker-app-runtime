@@ -15,19 +15,17 @@
  */
 package com.wavemaker.runtime.data.util;
 
-import com.wavemaker.runtime.data.model.CustomProcedure;
-import com.wavemaker.runtime.data.util.ProceduresUtils;
-import com.wavemaker.runtime.data.model.ProcedureParamType;
-import com.wavemaker.runtime.data.model.CustomProcedureParam;
-
+import java.util.ArrayList;
+import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.wavemaker.runtime.data.model.CustomProcedureParam;
+import com.wavemaker.runtime.data.model.ProcedureParamType;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 
 
 /**
@@ -71,7 +69,45 @@ public class ProceduresUtilsTest {
 
     }
 
+    public void jdbcComplianceProcedure()
+    {
+        final String procedure1 = "sp_create_workorder_detail\n" +
+                ":workorder,\n" +
+                ":workorderType,\n" +
+                ":typeid,\n" +
+                ":workorder1,\n";
+        final String jdbcComplianceProcedure1 = "sp_create_workorder_detail\n" +
+                "?,\n" +
+                "?,\n" +
+                "?,\n" +
+                "?,\n";
 
+        final String procedure2 = "sp_create_workorder_detail    :workorder,:workorderType,:typeid,:workorder1";
+        final String jdbcComplianceProcedure2 = "sp_create_workorder_detail    ?,?,?,?";
+
+        final String procedure3 = "sp_create_workorder_detail :workorder   ,:workorderType,:typeid,   :workorder1";
+        final String jdbcComplianceProcedure3 ="sp_create_workorder_detail ?,?,?,   ?";
+
+        final String procedure4 = "sp_create_workorder_detail :workorderType,:typeid,   :workorder1,:workorder   ";
+        final String jdbcComplianceProcedure4= "sp_create_workorder_detail ?,?,   ?,?";
+
+        final String procedure5 = "sp_create_workorder_detail :workorderType,:workorder  ,:typeid,   :workorder1";
+        final String jdbcComplianceProcedure5= "sp_create_workorder_detail ?,?,?,   ?";
+
+        final String procedure6 = "sp_create_workorder_detail :workorderType,:workorder,:typeid,   :workorder1";
+        final String jdbcComplianceProcedure6= "sp_create_workorder_detail ?,?,?,   ?";
+
+        final String namedParam [] = {"workorder","workorderType","typeid","workorder1"};
+
+        Assert.assertEquals(jdbcComplianceProcedure1,ProceduresUtils.jdbcComplianceProcedure(procedure1,namedParam));
+        Assert.assertEquals(jdbcComplianceProcedure2,ProceduresUtils.jdbcComplianceProcedure(procedure2,namedParam));
+        Assert.assertEquals(jdbcComplianceProcedure3,ProceduresUtils.jdbcComplianceProcedure(procedure3,namedParam));
+        Assert.assertEquals(jdbcComplianceProcedure4,ProceduresUtils.jdbcComplianceProcedure(procedure4,namedParam));
+        Assert.assertEquals(jdbcComplianceProcedure5,ProceduresUtils.jdbcComplianceProcedure(procedure5,namedParam));
+        Assert.assertEquals(jdbcComplianceProcedure6,ProceduresUtils.jdbcComplianceProcedure(procedure6,namedParam));
+
+
+    }
 
 }
 
