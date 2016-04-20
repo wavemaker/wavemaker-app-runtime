@@ -1373,8 +1373,9 @@ If the height and width are not specified the video takes the height of the post
           background-color: transparent;
           border-width: 0;
         }
-        &.active, &:hover {
+        &.active, &:hover, &:focus{
           > a {
+            color: inherit;
             background-color: transparent;
             border-bottom-width: 3px;
             &:hover {
