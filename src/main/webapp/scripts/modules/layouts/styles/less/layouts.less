@@ -66,24 +66,26 @@ body {
     overflow: inherit;
     .panel-icon {
       margin-right: 0.5em;
+      margin-top: 0.4em;
     }
     .panel-title{
       display: table;
       width: 100%;
+      .heading {
+        font-size: 1.3em;
+      }
       > a {
         text-decoration: none;
         display: table-cell;
+        vertical-align: top;
       }
-    }
-    .description {
-      font-style: italic;
-      margin: 0 0.5em;
     }
     .panel-actions{
       margin-right: 0.2em;
       white-space: nowrap;
       display: table-cell;
       text-align: right;
+      vertical-align: top;
       .app-menu .app-button, .panel-action {
         .app-anchor {
           color: inherit;
