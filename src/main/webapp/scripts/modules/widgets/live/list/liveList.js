@@ -375,6 +375,8 @@ WM.module('wm.widgets.live')
                     $is.noDataFound = true;
                     $is.selecteditem = undefined;
                 }
+                // deselect all the selected items on data change.
+                $el.find('li.app-list-item.active').removeClass('active');
 
                 // In run mode, making the first element selected, if flag is set
                 if ($is.selectfirstitem) {
