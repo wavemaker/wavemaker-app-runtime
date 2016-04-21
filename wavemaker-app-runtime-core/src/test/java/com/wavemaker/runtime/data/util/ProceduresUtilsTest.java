@@ -97,6 +97,12 @@ public class ProceduresUtilsTest {
         final String procedure6 = "sp_create_workorder_detail :workorderType,:workorder,:typeid,   :workorder1";
         final String jdbcComplianceProcedure6= "sp_create_workorder_detail ?,?,?,   ?";
 
+        final String procedure7 = "sp_create_workorder_detail (:workorder)";
+        final String jdbcComplianceProcedure7= "sp_create_workorder_detail (?)";
+
+        final String procedure8 = "sp_create_workorder_detail (:workordertype,:workorder   , :workorderNo)";
+        final String jdbcComplianceProcedure8= "sp_create_workorder_detail (:workordertype,?, :workorderNo)";
+
         final String namedParam [] = {"workorder","workorderType","typeid","workorder1"};
 
         Assert.assertEquals(jdbcComplianceProcedure1,ProceduresUtils.jdbcComplianceProcedure(procedure1,namedParam));
@@ -105,8 +111,14 @@ public class ProceduresUtilsTest {
         Assert.assertEquals(jdbcComplianceProcedure4,ProceduresUtils.jdbcComplianceProcedure(procedure4,namedParam));
         Assert.assertEquals(jdbcComplianceProcedure5,ProceduresUtils.jdbcComplianceProcedure(procedure5,namedParam));
         Assert.assertEquals(jdbcComplianceProcedure6,ProceduresUtils.jdbcComplianceProcedure(procedure6,namedParam));
+        Assert.assertEquals(jdbcComplianceProcedure7,ProceduresUtils.jdbcComplianceProcedure(procedure7,namedParam));
+        Assert.assertEquals(jdbcComplianceProcedure8,ProceduresUtils.jdbcComplianceProcedure(procedure8,namedParam));
 
 
+    }
+
+    public static void main(String[] args) {
+        new ProceduresUtilsTest().jdbcComplianceProcedure();
     }
 
 }
