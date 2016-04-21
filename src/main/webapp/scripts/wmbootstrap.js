@@ -440,6 +440,13 @@ Application
                                         }
                                     });
                                 } else {
+                                    /* tempalteBundle project will not have variables,
+                                     * widgets having code like scope.Variables[variableName] will throw console errors.
+                                     * Just to avoid the console errors, initialize the Variables to an empty object.
+                                     */
+                                    if ($rs.isTemplateBundleType) {
+                                        $rs.Variables = {};
+                                    }
                                     deferred.resolve();
                                 }
 
