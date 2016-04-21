@@ -518,7 +518,7 @@ WM.module('wm.widgets.live')
                                                     'column' : [filterOn],
                                                     'value'  : newVal
                                                 }] : [];
-                                                fieldColumn = variable.getModifiedFieldName(filterField.field);
+                                                fieldColumn = filterField.field;
                                                 query       = QueryBuilder.getQuery({
                                                     'tableName'    : scope.result.propertiesMap.entityName,
                                                     'columns'      : [' DISTINCT ' + fieldColumn + ' AS ' + filterField.field],
