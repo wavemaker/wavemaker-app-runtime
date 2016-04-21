@@ -1493,7 +1493,8 @@ WM.module('wm.widgets.live')
                         'row': options.row,
                         'prevData': options.prevData,
                         'multipartData': options.multipartData,
-                        'transform': true
+                        'transform': true,
+                        'rowData': options.rowData
                     };
 
                 variable.updateRecord(dataObject, function (response) {

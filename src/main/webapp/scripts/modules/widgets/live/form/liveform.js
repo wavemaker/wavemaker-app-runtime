@@ -515,6 +515,7 @@ WM.module('wm.widgets.live')
                         formData = new FormData();
                     }
                     formFields.forEach(function (field) {
+                        var files;
                         /*collect the values from the fields and construct the object*/
                         /*Format the output of date time widgets to the given output format*/
                         if (((field.widget && $scope.isDateTimeWidgets[field.widget]) || $scope.isDateTimeWidgets[field.type])) {
@@ -532,15 +533,16 @@ WM.module('wm.widgets.live')
                             }
                         } else if (field.type === "blob") {
                             if (isFormDataSupported) {
-                                $scope.multipartData = true;
+                                files =  _.get(document.forms, [formName, field.key, 'files']);
                                 /*Display an error message if no file is selected and simply return.*/
                                 //if (document.forms[formName].file.files.length === 0) {
                                 /*Handle if file not selected*/
                                 //}
                                 /*1. Append the uploaded script file.
                                  * 2. Append the connection properties.*/
-                                if ($scope.operationType !== 'delete') {
-                                    formData.append(field.key, document.forms[formName][field.key].files[0]);
+                                if ($scope.operationType !== 'delete' && files) {
+                                    $scope.multipartData = true;
+                                    formData.append(field.key, files[0]);
                                 }
                                 dataObject[field.key] = dataObject[field.key] !== null ? '' : null;
                             }
@@ -951,6 +953,7 @@ WM.module('wm.widgets.live')
                                         /* handle operation change */
                                         switch (eventName) {
                                         case 'create':
+                                            scope.operationType = 'insert';
                                             scope.isSelected = true;
                                             scope.rowdata = '';
                                             /*In case of dialog layout set the previous data Array before clearing off*/
@@ -964,6 +967,7 @@ WM.module('wm.widgets.live')
                                             }
                                             break;
                                         case 'update':
+                                            scope.operationType = 'update';
                                             scope.isSelected = true;
                                             /*In case of dialog layout set the previous data Array before clearing off*/
                                             if (scope.isLayoutDialog) {
@@ -982,6 +986,7 @@ WM.module('wm.widgets.live')
                                             scope.isUpdateMode = false;
                                             break;
                                         case 'delete':
+                                            scope.operationType = 'delete';
                                             scope.subscribedWidget.call('delete', {"row": scope.constructDataObject(scope.formFields)});
                                             break;
                                         }
