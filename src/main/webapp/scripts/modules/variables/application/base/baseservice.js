@@ -999,7 +999,8 @@ wm.variables.services.Variables = [
            /* function to check if variable with specified name exists in the collection*/
             isExists = function (variableName, caseSensitive) {
                 var variables = self.variableCollection,
-                    arrOfVariables = _.union(_.keys(variables[VARIABLE_CONSTANTS.OWNER.APP]), _.keys(variables[$rootScope.activePageName]));
+                    arrOfVariables;
+                arrOfVariables = $rootScope.isPrefabTemplate ? _.keys(variables[MAIN_PAGE]) :  _.union(_.keys(variables[VARIABLE_CONSTANTS.OWNER.APP]), _.keys(variables[$rootScope.activePageName]));
                 return Utils.isDuplicateName(arrOfVariables, variableName, caseSensitive);
             },
 
@@ -1365,10 +1366,10 @@ wm.variables.services.Variables = [
                     varParamCounter,
                     currentVarParam,
                     filteredVariables = [],
-                    defaultContextArray = [VARIABLE_CONSTANTS.OWNER.APP, $rootScope.activePageName];
+                    defaultContextArray = $rootScope.isPrefabTemplate ? [MAIN_PAGE] : [VARIABLE_CONSTANTS.OWNER.APP, $rootScope.activePageName];
 
                 if (variableParams.owner) {
-                    variableOwner = (variableParams.owner === VARIABLE_CONSTANTS.OWNER.APP) ? VARIABLE_CONSTANTS.OWNER.APP : $rootScope.activePageName;
+                    variableOwner = $rootScope.isPrefabTemplate ? MAIN_PAGE : (variableParams.owner === VARIABLE_CONSTANTS.OWNER.APP) ? VARIABLE_CONSTANTS.OWNER.APP : $rootScope.activePageName;
                 }
 
                 /*function to find the variables which match the all the keys in the object map provided*/
@@ -2024,7 +2025,7 @@ wm.variables.services.Variables = [
                 filteredVariables.forEach(function (variable) {
                     /*calling delete variable on each of the matching variables*/
                     if (variable.owner === VARIABLE_CONSTANTS.OWNER.PAGE) {
-                        owner = $rootScope.activePageName;
+                        owner = $rootScope.isPrefabTemplate ? MAIN_PAGE : $rootScope.activePageName;
                     }
                     deleteVariable(variable.name, owner);
                 });
