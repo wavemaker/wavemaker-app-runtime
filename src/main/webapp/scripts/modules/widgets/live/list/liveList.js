@@ -679,6 +679,7 @@ WM.module('wm.widgets.live')
                         return;
                     }
                     if (CONSTANTS.isStudioMode) {
+                        wp.showrecordcount.show = !_.includes(['Pager', 'Inline', 'Scroll', 'None'], nv);
                         onNavigationTypeChange($is, nv);
                     }
                     break;

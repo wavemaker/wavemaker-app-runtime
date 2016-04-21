@@ -493,7 +493,7 @@ WM.module('wm.widgets.grid')
                                 scope.navControls = newVal;
                                 /*Check for sanity*/
                                 if (CONSTANTS.isStudioMode) {
-                                    scope.widgetProps.showrecordcount.show = newVal;
+                                    scope.widgetProps.showrecordcount.show = scope.widgetProps.showrecordcount.showindesigner = !_.includes(['None', 'Pager'], newVal);
                                 }
                                 break;
                             case 'insertrow':

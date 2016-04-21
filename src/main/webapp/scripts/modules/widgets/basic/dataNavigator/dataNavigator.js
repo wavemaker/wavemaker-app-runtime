@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM, _ */
 /*Directive for DataNavigator */
 
 WM.module("wm.widgets.basic")
@@ -50,6 +50,11 @@ WM.module("wm.widgets.basic")
                     scope.navigation = 'Classic';
                     return;
                 }
+
+                if (scope.widgetid) {
+                    scope.widgetProps.showrecordcount.show = (newVal !== 'Pager');
+                }
+
                 scope.navcontrols = newVal;
                 break;
             }
