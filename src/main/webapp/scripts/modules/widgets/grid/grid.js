@@ -649,7 +649,7 @@ WM.module('wm.widgets.grid')
                                 });
                             }
                         }
-
+                        scope.shownavigation = scope.navigation !== 'None';
                         $timeout(function () {
                             scope.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
@@ -1431,7 +1431,7 @@ WM.module('wm.widgets.grid')
 
             /*Function to enable page navigation for the grid.*/
             $scope.enablePageNavigation = function () {
-                if ($scope.dataset) {
+                if ($scope.dataset && _.get($scope.dataset, 'dataValue') !== '') {
                     /*Check for sanity*/
                     if ($scope.dataNavigator) {
 
