@@ -137,11 +137,11 @@ module.exports = function (grunt) {
                         dest: '<%= config.mobile %>/styles/css/images'
                     },
                     {
-                        src : '<%= config.tmp %>/scripts/wm-libs.min.js',
+                        src : '<%= config.tmp %>/scripts/wm-application-libs.min.js',
                         dest : '<%= config.application %>/scripts/wm-libs.min.js'
                     },
                     {
-                        src : '<%= config.tmp %>/scripts/wm-libs.min.js',
+                        src : '<%= config.tmp %>/scripts/wm-mobile-libs.min.js',
                         dest : '<%= config.mobile %>/scripts/wm-libs.min.js'
                     },
                     {
@@ -184,7 +184,8 @@ module.exports = function (grunt) {
                     sourceMap: false
                 },
                 files: {
-                    '<%= config.tmp %>/scripts/wm-libs.min.js': ['<%= config.tmp %>/scripts/wm-libs.min.js'],
+                    '<%= config.tmp %>/scripts/wm-application-libs.min.js': ['<%= config.tmp %>/scripts/wm-application-libs.min.js'],
+                    '<%= config.tmp %>/scripts/wm-mobile-libs.min.js': ['<%= config.tmp %>/scripts/wm-mobile-libs.min.js'],
                     '<%= config.application %>/scripts/placeholders.min.js': ['<%= config.application %>/scripts/placeholders.min.js']
                 }
             },
@@ -239,12 +240,37 @@ module.exports = function (grunt) {
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js',
                         '<%= config.scripts %>/wmbootstrap.js'
                     ],
-                    '<%= config.tmp %>/scripts/wm-libs.min.js': [
+                    '<%= config.tmp %>/scripts/wm-application-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
                         '<%= config.components %>/jquery-ui/js/jquery-ui.js',
                         '<%= config.components %>/socialbyway/js/socialbyway.v1.01-beta.js',
                         '<%= config.components %>/socialbyway/js/socialbyway.ui.v1.01-beta.js',
+                        '<%= config.components %>/angular/angular.js',
+                        '<%= config.components %>/angular-route/angular-route.js',
+                        '<%= config.components %>/angular-animate/angular-animate.js',
+                        '<%= config.components %>/angular-toaster/toaster.js',
+                        '<%= config.components %>/angular-ui-bootstrap/ui-bootstrap-tpls.js',
+                        '<%= config.components %>/moment/moment.js',
+                        '<%= config.components %>/fullcalendar/fullcalendar.js',
+                        '<%= config.components %>/angular-ui-mask/js/mask.min.js',
+                        '<%= config.components %>/angular-ui-calendar/calendar.js',
+                        '<%= config.components %>/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.js',
+                        '<%= config.components %>/rangy/rangy-core.js',
+                        '<%= config.components %>/textAngular/js/textAngular-rangy.min.js',
+                        '<%= config.components %>/textAngular/js/textAngular-sanitize.min.js',
+                        '<%= config.components %>/textAngular/js/textAngular.min.js',
+                        '<%= config.components %>/d3/d3.js',
+                        '<%= config.components %>/nvd3/nv.d3.js',
+                        '<%= config.components %>/ocLazyLoad/ocLazyLoad.min.js',
+                        '<%= config.components %>/hammerjs/hammer.js',
+                        '<%= config.scripts %>/modules/gestures/gestures.js',
+                        '<%= config.scripts %>/modules/base64/base64.js'
+                    ],
+                    '<%= config.tmp %>/scripts/wm-mobile-libs.min.js': [
+                        '<%= config.components %>/lodash/lodash.js',
+                        '<%= config.components %>/jquery/jquery.js',
+                        '<%= config.components %>/jquery-ui/js/jquery-ui.js',
                         '<%= config.components %>/angular/angular.js',
                         '<%= config.components %>/angular-route/angular-route.js',
                         '<%= config.components %>/angular-animate/angular-animate.js',
