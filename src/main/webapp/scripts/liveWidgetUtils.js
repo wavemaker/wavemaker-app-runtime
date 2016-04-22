@@ -772,7 +772,7 @@ WM.module('wm.widgets.live')
                 /*if width is given and a number set it*/
                 switch (type) {
                 case 'width':
-                    if (WM.isDefined(column.widthValue) && !isNaN(column.widthValue)) {
+                    if (WM.isDefined(column.widthValue) && column.widthValue !== '' && !isNaN(column.widthValue)) {
                         column.width = column.widthValue + column.widthUnit;
                     } else if (!column.widthValue || (!column.widthValue.length && Utils.stringStartsWith(column.width, column.widthValue))) {
                         /* Reset the width to default value when the widthValue is cleared from the UI. */
@@ -782,7 +782,7 @@ WM.module('wm.widgets.live')
                     column.widthUnit = undefined;
                     break;
                 case 'height':
-                    if (WM.isDefined(column.heightValue) && !isNaN(column.heightValue)) {
+                    if (WM.isDefined(column.heightValue) && column.heightValue !== '' && !isNaN(column.heightValue)) {
                         column.height = column.heightValue + column.heightUnit;
                     } else if (!column.heightValue || (!column.heightValue.length && Utils.stringStartsWith(column.width, column.heightValue))) {
                         /* Reset the height to default value when the heightValue is cleared from the UI. */

@@ -2118,7 +2118,7 @@ WM.module('wm.widgets.grid')
                             textAlignment = attrs.textalignment || 'left',
                             backgroundColor = attrs.backgroundcolor || '',
                             textColor = attrs.textcolor || '',
-                            width = attrs.width || '',
+                            width = attrs.width === 'px' ?  '' : (attrs.width || ''),
                             styleDef = 'width: ' + width +
                                 '; background-color: ' + backgroundColor +
                                 '; color: ' + textColor + ';',
@@ -2129,7 +2129,7 @@ WM.module('wm.widgets.grid')
                                 'displayName': attrs.caption,
                                 'pcDisplay': (attrs.pcdisplay === "1" || attrs.pcdisplay === "true"),
                                 'mobileDisplay': (attrs.mobiledisplay === "1" || attrs.mobiledisplay === "true"),
-                                'width': attrs.width,
+                                'width': width,
                                 'textAlignment': textAlignment,
                                 'backgroundColor': backgroundColor,
                                 'textColor': textColor,

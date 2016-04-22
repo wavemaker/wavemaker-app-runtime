@@ -618,7 +618,7 @@ $.widget('wm.datagrid', {
                     if (isObject(text) && !isArray) {
                         text = text[key];
                     } else if (isArray) {
-                        text = text[key][0];
+                        text = text[key] && text[key][0];
                     } else {
                         text = undefined;
                         break;
