@@ -1137,10 +1137,13 @@ body {
     }
   }
   /********button classes ***/
-  .btn-transparent {
+  .btn.btn-transparent {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    &:hover {
+      color: initial;
+    }
   }
   .btn.btn-rounded {
     border-radius: 500px;
