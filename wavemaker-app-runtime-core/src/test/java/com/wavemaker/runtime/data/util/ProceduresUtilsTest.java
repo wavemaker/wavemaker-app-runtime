@@ -86,13 +86,13 @@ public class ProceduresUtilsTest {
         final String jdbcComplianceProcedure2 = "sp_create_workorder_detail    ?,?,?,?";
 
         final String procedure3 = "sp_create_workorder_detail :workorder   ,:workorderType,:typeid,   :workorder1";
-        final String jdbcComplianceProcedure3 ="sp_create_workorder_detail ?,?,?,   ?";
+        final String jdbcComplianceProcedure3 ="sp_create_workorder_detail ?   ,?,?,   ?";
 
         final String procedure4 = "sp_create_workorder_detail :workorderType,:typeid,   :workorder1,:workorder   ";
-        final String jdbcComplianceProcedure4= "sp_create_workorder_detail ?,?,   ?,?";
+        final String jdbcComplianceProcedure4= "sp_create_workorder_detail ?,?,   ?,?   ";
 
         final String procedure5 = "sp_create_workorder_detail :workorderType,:workorder  ,:typeid,   :workorder1";
-        final String jdbcComplianceProcedure5= "sp_create_workorder_detail ?,?,?,   ?";
+        final String jdbcComplianceProcedure5= "sp_create_workorder_detail ?,?  ,?,   ?";
 
         final String procedure6 = "sp_create_workorder_detail :workorderType,:workorder,:typeid,   :workorder1";
         final String jdbcComplianceProcedure6= "sp_create_workorder_detail ?,?,?,   ?";
@@ -101,7 +101,10 @@ public class ProceduresUtilsTest {
         final String jdbcComplianceProcedure7= "sp_create_workorder_detail (?)";
 
         final String procedure8 = "sp_create_workorder_detail (:workordertype,:workorder   , :workorderNo)";
-        final String jdbcComplianceProcedure8= "sp_create_workorder_detail (:workordertype,?, :workorderNo)";
+        final String jdbcComplianceProcedure8= "sp_create_workorder_detail (:workordertype,?   , :workorderNo)";
+
+        final String procedure9 = "update Register set name=:workorder where city=:workorderType and age =:typeid";
+        final String jdbcComplianceProcedure9= "update Register set name=? where city=? and age =?";
 
         final String namedParam [] = {"workorder","workorderType","typeid","workorder1"};
 
@@ -113,6 +116,7 @@ public class ProceduresUtilsTest {
         Assert.assertEquals(jdbcComplianceProcedure6,ProceduresUtils.jdbcComplianceProcedure(procedure6,namedParam));
         Assert.assertEquals(jdbcComplianceProcedure7,ProceduresUtils.jdbcComplianceProcedure(procedure7,namedParam));
         Assert.assertEquals(jdbcComplianceProcedure8,ProceduresUtils.jdbcComplianceProcedure(procedure8,namedParam));
+        Assert.assertEquals(jdbcComplianceProcedure9,ProceduresUtils.jdbcComplianceProcedure(procedure9,namedParam));
 
 
     }

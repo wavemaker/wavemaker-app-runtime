@@ -28,7 +28,7 @@ import com.wavemaker.runtime.data.model.ProcedureParamType;
 public class ProceduresUtils {
 
     public static String PARAM = "{param}";
-    public static final String PROCEDURE_PARAM_PATTERN = "(\\:"+ PARAM +")([\\s]*)([\\)]?)(,|$)";
+    public static final String PROCEDURE_PARAM_PATTERN = "(\\:"+ PARAM +")([\\s*,]|[\\s*|,]|[\\s*\\)?]|[\\s*|\\)?]|$)";
     public static final String PROCEDURE_PARAM_REPLACE_STRING = "?";
 
     public static boolean hasOutParam(List<CustomProcedureParam> customProcedureParams) {
@@ -67,7 +67,7 @@ public class ProceduresUtils {
         final Matcher matcher = pattern.matcher(procedureString);
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
-            final String value = PROCEDURE_PARAM_REPLACE_STRING + matcher.group(3) + matcher.group(4);
+            final String value = PROCEDURE_PARAM_REPLACE_STRING + matcher.group(2);
             matcher.appendReplacement(sb, value);
         }
         matcher.appendTail(sb);
