@@ -550,7 +550,7 @@ WM.module('wm.widgets.live')
                                         fieldTypeWidgetTypeMap = LiveWidgetUtils.getFieldTypeWidgetTypesMap(),
                                         elScope = element.scope();
                                     /*If properties map is populated and if columns are presented for filter construction*/
-                                    if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
+                                    if (newVal && newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                         if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns) || !WM.equals(newVal.data, oldVal.data)) {
                                             /* old data cached to avoid live variable data's effect on filter.
                                              * The filter is not depending on variable's data, as filter is making explicit call through QUERY

@@ -754,7 +754,7 @@ WM.module('wm.widgets.live')
                             switch (key) {
                             case "dataset":
                                 /*Process the dataset if only the data is an array*/
-                                if (newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
+                                if (newVal && newVal.propertiesMap && WM.isArray(newVal.propertiesMap.columns)) {
                                     if (!oldVal || !oldVal.propertiesMap || !WM.equals(newVal.propertiesMap.columns, oldVal.propertiesMap.columns)) {
                                         tempVarName = Utils.getVariableNameFromExpr(scope.binddataset);
                                         if (scope.variableName && (tempVarName !== scope.variableName)) {
