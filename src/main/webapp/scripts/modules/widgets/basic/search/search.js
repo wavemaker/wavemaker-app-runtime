@@ -219,6 +219,11 @@ WM.module('wm.widgets.basic')
                 }
             }
 
+            // if query is empty string, then datavalue will be empty.
+            if (inputVal === '') {
+                scope.datavalue = '';
+            }
+
             scope.$evalAsync(function () {
                 scope.showClosebtn = (inputVal !== '');
             });
@@ -380,11 +385,6 @@ WM.module('wm.widgets.basic')
                             element.find('input').val('');
                             scope.showClosebtn = false;
                         };
-
-                        //Watch to set input value on change of data value
-                        scope.$watch('datavalue', function (newVal) {
-                            element.find('input').val(newVal || '');
-                        });
 
                         // set the searchquery if the datavalue exists.
                         if (CONSTANTS.isRunMode) {
