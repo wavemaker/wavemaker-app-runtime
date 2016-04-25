@@ -77,7 +77,7 @@ public class DefaultAuthoritiesProviderImpl extends AbstractDatabaseSupport impl
     private List<GrantedAuthority> getGrantedAuthorities(final Session session, final String username) {
         String authoritiesByUsernameQuery = getAuthoritiesByUsernameQuery();
         authoritiesByUsernameQuery = authoritiesByUsernameQuery.replace("?", "\'" + username + "\'");
-        if (isRolesByQuery() || !isHql()) {
+        if (!isHql()) {
             return getGrantedAuthoritiesByNativeSql(session, authoritiesByUsernameQuery);
         } else {
             return getGrantedAuthoritiesByHQL(session, authoritiesByUsernameQuery);
