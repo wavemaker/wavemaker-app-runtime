@@ -80,7 +80,7 @@ WM.module('wm.widgets.form')
                 }
             }
 
-            function updateHighlighter(scope, element) {
+            function updateHighlighter(scope, element, skipAnimation) {
                 var handler = element.find('span.app-switch-overlay'),
                     left,
                     index = scope.selected.index;
@@ -88,9 +88,13 @@ WM.module('wm.widgets.form')
                     index = -1;
                 }
                 left = index * scope.btnwidth;
-                handler.animate({
-                    left: left + '%'
-                }, 300);
+                if (skipAnimation) {
+                    handler.css('left', left + '%');
+                } else {
+                    handler.animate({
+                        left: left + '%'
+                    }, 300);
+                }
             }
 
             function updateSwitchOptions(scope, element, dataset) {
@@ -123,7 +127,7 @@ WM.module('wm.widgets.form')
                 scope.options = options;
 
                 setSelectedValue(scope);
-                updateHighlighter(scope, element);
+                updateHighlighter(scope, element, true);
             }
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
@@ -197,7 +201,7 @@ WM.module('wm.widgets.form')
 
                             scope.$watch('_model_', function () {
                                 setSelectedValue(scope);
-                                updateHighlighter(scope, element);
+                                updateHighlighter(scope, element, true);
                             });
 
                             scope.selected = {};
