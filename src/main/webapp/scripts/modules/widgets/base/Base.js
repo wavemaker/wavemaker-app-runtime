@@ -974,6 +974,7 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-out-bound"},
+                        "menuiconclass": {"type": "string", "widget": "selecticon", "pattern": classRegex, "value": "wi wi-more-vert"},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "imgsrc": {"type": "string", "bindable": "in-bound"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["navbar-inverse", "navbar-header", "navbar-right", "navbar-left", "navbar-fixed-top", "navbar-fixed-bottom", "navbar-static-top"]}
@@ -1759,7 +1760,7 @@ WM.module('wm.widgets.base', [])
                     "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                     "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
-                    "morebuttoniconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "shortcutkey", "showcaptions", "multiselect", "radioselect", "enablesort", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "updateon", "updatedelay"], "parent": "properties"},
+                    "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "shortcutkey", "showcaptions", "multiselect", "radioselect", "enablesort", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "updateon", "updatedelay"], "parent": "properties"},
                 {"name": "navigation", "properties": ["navigation", "shownavigation", "showrecordcount", "navigationalign"], "parent": "properties"},
                 {"name": "searchproperties", "properties": ["searchbuttoniconclass", "searchbuttonlabel", "searchplaceholder"], "parent": "properties"},
                 {"name": "datagrid", "properties": ["showrowindex"], "parent": "properties"},

@@ -48,7 +48,7 @@ WM.module('wm.layouts.containers')
                         '<div class="navbar-header"> ' +
                             '<button type="button" class="btn-transparent navbar-toggle collapsed" data-toggle="collapse" ng-click="toggleCollapse()">' +
                                 '<span class="sr-only">Toggle navigation</span>' +
-                                '<i class="wi wi-more-vert"></i>' +
+                                '<i class="{{menuiconclass}}"></i>' +
                             '</button>' +
                             '<a class="navbar-brand" href="#/" data-ng-if="title || imagesrc">' +
                                 '<img data-identifier="img" class="brand-image" alt="{{title}}" width="20" height="20" data-ng-if="imgsrc" data-ng-src="{{imagesrc}}"/>' +

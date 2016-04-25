@@ -47,9 +47,6 @@ WM.module("wm.layouts.device")
                 leftPanelScope && leftPanelScope.collapse();
                 WM.element(roleSelector(HEADER_CLASS_NAME) + " " + classSelector(SEARCH_CONTAINER_CLASS_NAME)).hide();
                 $rootScope.sidebarCollapsed = true;
-            } else {
-                leftPanelScope && leftPanelScope.expand();
-                WM.element(classSelector(SEARCH_CONTAINER_CLASS_NAME)).show().css('display', 'inline-table');
             }
         }
 

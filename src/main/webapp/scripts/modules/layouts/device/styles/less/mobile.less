@@ -265,6 +265,13 @@
     }
 }
 }
+.tab-common(@left-panel-width){
+  .wm-app {
+    .app-left-panel {
+      .mobile-left-panel(@left-panel-width)
+    }
+  }
+}
 
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen
@@ -302,6 +309,7 @@ and (max-width : 320px) {
 and (min-device-width : 768px)
 and (max-device-width : 1024px) {
 /* Styles */
+  .tab-common(90%);
 }
 
 /* iPads (landscape) ----------- */
@@ -310,6 +318,7 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px)
 and (orientation : landscape) {
 /* Styles */
+  .tab-common(20%);
 }
 
 /* iPads (portrait) ----------- */
@@ -318,6 +327,7 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px)
 and (orientation : portrait) {
 /* Styles */
+  .tab-common(90%);
 }
 
 /* Desktops and laptops ----------- */
