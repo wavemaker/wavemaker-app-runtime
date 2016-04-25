@@ -95,7 +95,8 @@ $.widget('wm.datagrid', {
             'selectable': false,
             'readonly': true,
             'style': 'width: 30px; text-align: center;',
-            'textAlignment': 'center'
+            'textAlignment': 'center',
+            'isMultiSelectCol': true
         },
         'radio': {
             'field': 'radio',
@@ -368,10 +369,11 @@ $.widget('wm.datagrid', {
     },
 
     /* Returns the checkbox template. */
-    _getCheckboxTemplate: function (row) {
-        var checked = row.checked ? ' checked' : '',
-            disabled = row.disabed ? ' disabled' : '';
-        return '<input type="checkbox"' + checked + disabled + '/>';
+    _getCheckboxTemplate: function (row, isMultiSelectCol) {
+        var checked        = row.checked ? ' checked' : '',
+            disabled       = row.disabed ? ' disabled' : '',
+            chkBoxName     = isMultiSelectCol ? 'gridMultiSelect' : '';
+        return '<input name="' + chkBoxName + '" type="checkbox"' + checked + disabled + '/>';
     },
 
     /* Returns the radio template. */
@@ -464,7 +466,7 @@ $.widget('wm.datagrid', {
                 htm += '>';
                 switch (colDef.field) {
                 case 'checkbox':
-                    htm += this._getCheckboxTemplate(row);
+                    htm += this._getCheckboxTemplate(row, colDef.isMultiSelectCol);
                     break;
                 case 'radio':
                     htm += this._getRadioTemplate(row);
@@ -1020,7 +1022,7 @@ $.widget('wm.datagrid', {
         }
         var $headerCheckbox = this.gridHeader.find('th input:checkbox'),
             $tbody = this.gridElement.find('tbody'),
-            checkedItemsLength = $tbody.find('tr:visible input:checkbox:checked').length,
+            checkedItemsLength = $tbody.find('tr:visible input[name="gridMultiSelect"]:checkbox:checked').length,
             visibleRowsLength = $tbody.find('tr:visible').length;
 
         if (!visibleRowsLength) {
@@ -1584,7 +1586,7 @@ $.widget('wm.datagrid', {
         }
         $header   = $(headerTemplate.header);
         function toggleSelectAll(e) {
-            var $checkboxes = $('tbody tr:visible td input:checkbox:not(:disabled)', self.gridElement),
+            var $checkboxes = $('tbody tr:visible td input[name="gridMultiSelect"]:checkbox', self.gridElement),
                 checked = this.checked;
             $checkboxes.prop('checked', checked);
             $checkboxes.each(function () {
