@@ -8,11 +8,9 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabs directive */
         $templateCache.put('template/layout/container/tabs.html',
-                '<div class="app-tabs-container" init-widget data-ng-show="show" apply-styles="container">' +
-                    '<div class="app-tabs" tabindex="-1">' +
-                        '<ul class="nav nav-tabs" data-ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
-                        '<div class="tab-content" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
-                    '</div>' +
+                '<div class="app-tabs clearfix" init-widget data-ng-show="show" apply-styles="container" tabindex="-1">' +
+                    '<ul class="nav nav-tabs" data-ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
+                    '<div class="tab-content" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
                 '</div>'
             );
 
@@ -151,7 +149,7 @@ WM.module('wm.layouts.containers')
                     var tabs = scope.tabs,
                         activeTab,
                         tab,
-                        $ul = element.find('> .app-tabs > ul');
+                        $ul = element.find('> ul');
                     /* find the first tab which has isdefaulttab set and make it active.
                      * mark the other tabs as inactive
                      */
@@ -247,13 +245,13 @@ WM.module('wm.layouts.containers')
                     };
 
                     scope.setTabsPosition = function (tabsposition) {
-                        var _tabs = element.find('> .app-tabs > ul.nav-tabs');
+                        var _tabs = element.find('>ul.nav-tabs');
                         element.removeClass('inverted');
                         if (tabsposition === 'bottom' || tabsposition === 'right') {
                             element.addClass('inverted');
-                            element.children('.app-tabs').append(_tabs);
+                            element.append(_tabs);
                         } else {
-                            element.children('.app-tabs').prepend(_tabs);
+                            element.prepend(_tabs);
                         }
                         scope.vertical = (tabsposition === 'left' || tabsposition === 'right');
                     };
@@ -280,7 +278,7 @@ WM.module('wm.layouts.containers')
                             };
                         }
 
-                        element.find('> .app-tabs > ul').on('mousewheel', function (e) {
+                        element.find('> ul').on('mousewheel', function (e) {
                             e.stopPropagation();
                             e.preventDefault();
                             _scrollHeader(e.originalEvent.wheelDelta);
