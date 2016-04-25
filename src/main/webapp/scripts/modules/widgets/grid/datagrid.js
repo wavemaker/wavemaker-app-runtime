@@ -656,6 +656,10 @@ $.widget('wm.datagrid', {
                 selectedColumns.trigger('click');
             }
         }
+        //reset select all checkbox.
+        if (this.options.multiselect) {
+            this.updateSelectAllCheckboxState();
+        }
     },
 
     /* Initializes the grid. */
