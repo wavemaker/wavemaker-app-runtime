@@ -552,7 +552,7 @@ wm.variables.services.Variables = [
                             var obj = variable.dataSet[0],
                                 keys = Object.keys(obj),
                                 isValueEmpty = function (val) {
-                                    return obj[val] === "" || WM.isObject(obj[val]);
+                                    return _.isEmpty(obj[val]);
                                 };
                             if (keys.every(isValueEmpty)) {
                                 variable.dataSet = [];
