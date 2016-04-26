@@ -3,8 +3,6 @@
 *********************************************************************************/
 .app-segmented-control {
   position: relative;
-  display: table;
-  table-layout: fixed;
   overflow: hidden;
   .width-height();
   > .btn-group.btn-group-justified {
@@ -29,15 +27,15 @@
   }
   .app-segments-container {
     .width-height();
-    overflow-x: hidden;
+    overflow: hidden;
     position: relative;
-    display: table-cell;
     > ul {
       .width-height();
       white-space: nowrap;
       margin: 0;
       padding: 0;
       > li.app-segment-content{
+        display: inline-block;
         white-space: normal;
         .width-height();
         padding-top: 50px;
