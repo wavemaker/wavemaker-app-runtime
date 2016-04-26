@@ -24,7 +24,8 @@ WM.module('wm.widgets.live')
                     '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" ng-show="!noDataFound" ng-class="listclass" wmtransclude ' +
                              'ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
                     '</ul>' +
-                    '<div class="no-data-msg" ng-show="noDataFound">{{::$root.appLocale.MESSAGE_LIVELIST_NO_DATA}}</div>' +
+                    '<div class="no-data-msg" ng-if="noDataFound">{{nodatamessage}}</div>' +
+                    '<div class="loading-data-msg" ng-if="variableInflight">{{loadingdatamsg}}</div>' +
                     '<nav class="app-datanavigator" ng-if="navigation === \'Inline\'">' +
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
                             'ng-click="dataNavigator.navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li></ul>' +
@@ -63,9 +64,10 @@ WM.module('wm.widgets.live')
         'DeviceVariableService',
         'LiveWidgetUtils',
         'FormWidgetUtils',
+        'Variables',
         '$filter',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, Variables, $filter) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.navigation']),
@@ -495,6 +497,7 @@ WM.module('wm.widgets.live')
                                 variable = getVariable($is, boundVariableName);
                             // data from the live list must have .data filed
                             if (variable && variable.category === 'wm.LiveVariable') {
+                                $is.noDataFound = true;
                                 return;
                             }
                         }
@@ -1186,15 +1189,17 @@ WM.module('wm.widgets.live')
 
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
-                    $liTemplate;
+                    $liTemplate,
+                    variableName;
 
                 $liScope = createChildScope($is, $el, attrs);
                 $is.$liScope = $liScope;
+                $is.variableInflight = false;
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
                         liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
-                        liTemplateWrapper_end   = '></li><li ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin"></i> loading...</li>';
+                        liTemplateWrapper_end   = '></li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
 
                         $el.find('> [data-identifier=list]').append($liTemplate);
@@ -1217,6 +1222,23 @@ WM.module('wm.widgets.live')
                     setupEvtHandlers($is, $el, attrs);
 
                     $is.getWidgets = getWidgets.bind(undefined, $el);
+
+                    $is.noDataFound = $is.binddataset === undefined;
+                    if ($is.binddataset && _.includes($is.binddataset, 'bind:Variables')) {
+                        variableName = Utils.getVariableName($is);
+                        $is.variable = Variables.getVariableByName(variableName);
+
+                        if ($is.variable && _.includes(['wm.ServiceVariable', 'wm.LiveVariable'], $is.variable.category)) {
+                            $is.$watch('variable.canUpdate', function (nv) {
+                                if (nv) {
+                                    $is.variableInflight = false;
+                                } else if (nv === false) {
+                                    $is.noDataFound      = false;
+                                    $is.variableInflight = true;
+                                }
+                            });
+                        }
+                    }
                 }
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);

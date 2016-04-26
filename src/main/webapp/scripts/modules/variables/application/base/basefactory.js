@@ -43,7 +43,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 "wm.ServiceVariable": {
                     "isList": {"hide": true, "required": false},
                     "editJson": {"hide": true, "required": false},
-                    "dataSet": {"type": "string", "value": {dataValue: ""}, "hide": true},
+                    "dataSet": {"type": "string", "value": [], "hide": true},
                     "type": {"hide": true, "required": false},
                     "firstRow": {"type": "number", "value": 0, "disabled": true, "hide": true},
                     "maxResults": {"type": "number", "value": 20, "disabled": true, "hide": true},
