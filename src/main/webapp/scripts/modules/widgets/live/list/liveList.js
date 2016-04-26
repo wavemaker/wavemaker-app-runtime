@@ -366,8 +366,11 @@ WM.module('wm.widgets.live')
                     _s.fieldDefs = data;
                 }
 
-                if ($is.groupby && $is.groupby !== '') {
+                if ($is.orderby && $is.orderby !== '') {
                     _s.fieldDefs = FormWidgetUtils.getOrderedDataSet(_s.fieldDefs, $is.orderby);
+                }
+
+                if ($is.groupby && $is.groupby !== '') {
                     addListElements(_s, $el, $is, attrs, listCtrl);
                 }
 
