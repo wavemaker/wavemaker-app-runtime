@@ -248,6 +248,14 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/:entityName/composite-id?:id",
             method: "PUT"
         },
+        updateMultiPartCompositeTableData: {
+            url: "/:service/:dataModelName/:entityName/composite-id?:id",
+            method: "PUT",
+            headers: {
+                'Content-Type': undefined
+            },
+            transformRequest: WM.identity
+        },
         deleteCompositeTableData: {
             url: "/:service/:dataModelName/:entityName/composite-id?:id",
             method: "DELETE"
