@@ -124,8 +124,10 @@ WM.module("wm.layouts.device")
 
                 if (hasLeftNav) {
                     bindLeftPanelEvents();
+                    //If left nav is present, show the swipe icon (by default it is hidden)
+                    element.find(roleSelector(SWIPE_ELEM_CLASS_NAME)).removeClass('hidden').addClass('visible-xs-inline-block');
                 } else {
-                    //hide the icon
+                    //remove the icon
                     element.find(roleSelector(SWIPE_ELEM_CLASS_NAME)).remove();
                 }
 
