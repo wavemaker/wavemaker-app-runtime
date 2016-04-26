@@ -2023,10 +2023,9 @@ If the height and width are not specified the video takes the height of the post
 *********************************************************************************/
 @app-tabs-border-color: rgba(0,0,0,0.1);
 @app-tabs-bg-color: #FFFFFF;
+
 .app-tabs {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
+
   &.has-transition {
     > .tab-content {
       overflow: hidden;
@@ -2044,13 +2043,15 @@ If the height and width are not specified the video takes the height of the post
       }
     }
   }
+  position: relative;
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+  overflow: hidden;
 
   .nav.nav-tabs {
-    width: 100%;
-    white-space: nowrap;
     overflow: hidden;
-    display: table;
-    table-layout: fixed;
+    white-space: nowrap;
     > li {
       float: none;
       cursor: pointer;
@@ -2083,7 +2084,7 @@ If the height and width are not specified the video takes the height of the post
   .tab-content {
     height: 90%;
     max-width: 100%;
-    .calc('height', ~"calc(100% - 2.2rem)");/***dont remove for changed font sizes**/
+    .calc('height', ~"calc(100% - 2.5em)");
     background-color: @app-tabs-bg-color;
     position: relative;
     overflow: auto;
@@ -2098,8 +2099,6 @@ If the height and width are not specified the video takes the height of the post
         height: 100%;
         width: 100%;
         overflow: inherit;
-        display: table;
-        table-layout: fixed;
       }
     }
   }
