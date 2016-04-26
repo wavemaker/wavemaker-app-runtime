@@ -359,6 +359,8 @@ WM.module('wm.widgets.live')
                             fields += ' textalign="{{formFields[' + index + '].' + field + '}}"';
                         } else if (field === 'ngclass') {
                             fields += ' data-ng-class="{{formFields[' + index + '].' + field + '}}"';
+                        } else if (field === 'checkedvalue' || field === 'uncheckedvalue') {
+                            fields += ' ' + field + '="' + fieldDef[field] + '"';
                         } else {
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
                         }
