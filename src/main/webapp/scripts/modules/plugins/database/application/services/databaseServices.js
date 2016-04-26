@@ -1761,6 +1761,25 @@ wm.plugins.database.services.DatabaseService = [
             updateMultiPartTableData: function (params, successCallback, failureCallback) {
                 return initiateAction("updateMultiPartTableData", params, successCallback, failureCallback);
             },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#updateMultiPartCompositeTableData
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to update data in the composite table having blob column.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & table data to be updated.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+            updateMultiPartCompositeTableData: function (params, successCallback, failureCallback) {
+                return initiateAction("updateMultiPartCompositeTableData", params, successCallback, failureCallback);
+            },
 
             /**
              * @ngdoc function

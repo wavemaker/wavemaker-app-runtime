@@ -911,11 +911,14 @@ wm.variables.services.$liveVariable = [
                 /*Check if "options" have the "compositeKeysData" property.*/
                 if (options.compositeKeysData) {
                     switch (action) {
-                    case "updateTableData":
-                        action = "updateCompositeTableData";
+                    case 'updateTableData':
+                        action = 'updateCompositeTableData';
                         break;
-                    case "deleteTableData":
-                        action = "deleteCompositeTableData";
+                    case 'deleteTableData':
+                        action = 'deleteCompositeTableData';
+                        break;
+                    case 'updateMultiPartTableData':
+                        action = 'updateMultiPartCompositeTableData';
                         break;
                     default:
                         break;
