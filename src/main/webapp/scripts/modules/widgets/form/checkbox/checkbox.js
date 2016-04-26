@@ -55,10 +55,18 @@ WM.module('wm.widgets.form')
                     isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid');
                 checkbox = template.find('input[type=checkbox]');
                 if (tAttrs.checkedvalue) {
-                    checkbox.attr('data-ng-true-value', "'" + tAttrs.checkedvalue + "'");
+                    if (tAttrs.checkedvalue === 'true' || tAttrs.checkedvalue === 'false') {
+                        checkbox.attr('data-ng-true-value', tAttrs.checkedvalue);
+                    } else {
+                        checkbox.attr('data-ng-true-value', "'" + tAttrs.checkedvalue + "'");
+                    }
                 }
                 if (tAttrs.uncheckedvalue) {
-                    checkbox.attr('data-ng-false-value', "'" + tAttrs.uncheckedvalue + "'");
+                    if (tAttrs.checkedvalue === 'true' || tAttrs.checkedvalue === 'false') {
+                        checkbox.attr('data-ng-false-value', tAttrs.uncheckedvalue);
+                    } else {
+                        checkbox.attr('data-ng-false-value', "'" + tAttrs.uncheckedvalue + "'");
+                    }
                 }
                 if (!isWidgetInsideCanvas) {
                     WidgetUtilService.addEventAttributes(template, tAttrs, FormWidgetUtils.getProxyEventsMap());
