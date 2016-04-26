@@ -250,7 +250,7 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
         },
         updateMultiPartCompositeTableData: {
             url: "/:service/:dataModelName/:entityName/composite-id?:id",
-            method: "PUT",
+            method: "POST",
             headers: {
                 'Content-Type': undefined
             },
