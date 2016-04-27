@@ -58,8 +58,16 @@ WM.module('wm.widgets.form')
                 timeString,
                 value;
             if (scope._timeModel || scope._dateModel) {
-                time = scope._timeModel ? new Date(scope._timeModel) : new Date();
-                date = scope._dateModel ? new Date(scope._dateModel) : new Date();
+                if (scope._timeModel) {
+                    time = new Date(scope._timeModel);
+                } else {
+                    time = scope._timeModel = new Date();
+                }
+                if (scope._dateModel) {
+                    date = new Date(scope._dateModel);
+                } else {
+                    date = scope._dateModel = new Date();
+                }
                 dateString = $filter('date')(date, 'yyyy-MM-dd');
                 timeString = $filter('date')(time, 'HH:mm:ss');
                 value = moment(dateString + ' ' + timeString).valueOf();
