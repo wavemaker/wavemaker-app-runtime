@@ -770,7 +770,7 @@ wm.variables.services.$liveVariable = [
                 }
             },
         /* Function to check if specified field is of type date*/
-            getFieldType = function (fieldName, variable) {
+            getFieldType = function (fieldName, variable, relatedField) {
                 var fieldType,
                     columns,
                     result;
@@ -779,6 +779,12 @@ wm.variables.services.$liveVariable = [
                     result = _.find(columns, function (obj) {
                         return obj.fieldName === fieldName;
                     });
+                    // if related field name passed, get its type from columns inside the current field
+                    if (relatedField && result) {
+                        result = _.find(result.columns, function (obj) {
+                            return obj.fieldName === relatedField;
+                        });
+                    }
                     fieldType = result && result.type;
                 }
                 return fieldType;
@@ -845,6 +851,14 @@ wm.variables.services.$liveVariable = [
                                     fieldValue = getDateInDefaultFormat(fieldValue, fieldType);
                                 }
                                 rowObject[fieldName] = fieldValue;
+                            }
+                            // for related entities, clear the blob type fields
+                            if (WM.isObject(fieldValue)) {
+                                WM.forEach(fieldValue, function (val, key) {
+                                    if (getFieldType(fieldName, variableDetails, key) === 'blob') {
+                                        fieldValue[key] = val === null ? val : '';
+                                    }
+                                });
                             }
                         }
                     });
