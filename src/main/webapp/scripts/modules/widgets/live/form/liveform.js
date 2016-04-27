@@ -1120,8 +1120,8 @@ WM.module('wm.widgets.live')
                                         displayField = _.head(_.keys(_.get({}, '[0]')));
                                     }
                                     if (relatedFormField.widget === 'typeahead') { //For search widget, set search key and display label
-                                        relatedFormField.searchkey    = displayField;
-                                        relatedFormField.displaylabel = displayField;
+                                        relatedFormField.searchkey    = relatedFormField.searchkey || displayField;
+                                        relatedFormField.displaylabel = relatedFormField.displaylabel || displayField;
                                     } else {
                                         relatedFormField.displayfield = displayField;
                                     }
