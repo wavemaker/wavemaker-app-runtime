@@ -38,19 +38,16 @@ import com.wavemaker.studio.common.CommonConstants;
 
 public class QueryHelper {
 
+    public static final String EMPTY_SPACE = " ";
+    public static final String ORDER_PROPERTY_SEPARATOR = ",";
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryHelper.class);
-
     private static final String COUNT_QUERY_TEMPLATE = "select count(*) from ({0}) wmTempTable";
     private static final String ORDER_BY_QUERY_TEMPLATE = "select * from ({0}) wmTempTable";
     private static final String SELECT_COUNT1 = "select count(*) ";
-
     private static final String FROM = " FROM ";
     private static final String FROM_HQL = "FROM ";//For a Select (*) hibernate query.
-
     private static final String GROUP_BY = " group by ";
     private static final String ORDER_BY = " order by ";
-    public static final String EMPTY_SPACE_DELIMITER_FOR_QUERY = " ";
-    public static final String ORDER_PROPERTY_SEPARATOR = ",";
 
     public static void configureParameters(Query query, Map<String, Object> params) {
         String[] namedParameters = query.getNamedParameters();
@@ -96,7 +93,8 @@ public class QueryHelper {
                 if (StringUtils.isNotBlank(order.getProperty())) {
                     String direction = (order.getDirection() == null) ? Sort.Direction.ASC.name() : order.getDirection().name();
                     queryWithOrderBy.append(count == 0 ? ORDER_BY : ORDER_PROPERTY_SEPARATOR);
-                    queryWithOrderBy.append(quote(dialect, order.getProperty()) + EMPTY_SPACE_DELIMITER_FOR_QUERY + direction);
+                    final String quotedParam = dialect.quote(quoteWithBackTick(order.getProperty()));
+                    queryWithOrderBy.append(quotedParam + EMPTY_SPACE + direction);
                     count++;
                 }
             }
@@ -105,15 +103,16 @@ public class QueryHelper {
         return queryStr;
     }
 
-    /**
-     * Apply dialect-specific quoting to the the given table property.
-     */
-    public static String quote(Dialect dialect, String name) {
-        if (!StringUtils.isNotBlank(name)) {
-            return null;
+    public static String quoteWithBackTick(final String str) {
+        if (!StringUtils.isNotBlank(str)) {
+            return str;
         }
 
-        return dialect.openQuote() + name + dialect.closeQuote();
+        if (str.charAt(0) != '`') {
+            return new StringBuilder().append("`").append(str).toString();
+        }
+
+        return str;
     }
 
     public static void setResultTransformer(Query query) {
