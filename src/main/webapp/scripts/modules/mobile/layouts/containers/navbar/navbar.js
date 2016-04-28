@@ -6,7 +6,7 @@ WM.module('wm.layouts.containers')
         'use strict';
 
         $tc.put('template/layouts/containers/mobile/navbar.html',
-            '<header data-role="mobile-navbar" init-widget class="app-header app-mobile-navbar {{class}}" ng-show="show" apply-styles>' +
+            '<header data-role="mobile-navbar" init-widget listen-property="dataset" class="app-header app-mobile-navbar {{class}}" ng-show="show" apply-styles>' +
                 '<nav class="navbar" ng-show="!showSearchbar">' +
                     '<div class="mobile-navbar-left">' +
                         '<ul class="nav navbar-nav navbar-left">' +
@@ -82,31 +82,6 @@ WM.module('wm.layouts.containers')
                     'defaultview'    : true
                 };
 
-            // update search-key, display-label in the property panel
-            function updatePropertyPanelOptions(dataset, $is) {
-                var variableKeys = [],
-                    wp           = $is.widgetProps; // widgetProperties
-                // on binding of data
-                if (dataset) {
-                    dataset      = dataset[0] || dataset;
-                    variableKeys = _.keys(dataset);
-                }
-
-                // re-initialize the property values
-                if ($is.newcolumns) {
-                    $is.newcolumns   = false;
-                    $is.searchkey    = '';
-                    $is.displaylabel = '';
-                    $is.datafield    = '';
-                    $is.$root.$emit('set-markup-attr', $is.widgetid, {'searchkey': $is.searchkey, 'datafield': $is.datafield, 'displaylabel': $is.displaylabel});
-                }
-
-                WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, $is);
-                // assign all the keys to the options of the search widget
-              /*  wp.searchkey.options = wp.displaylabel.options = wp.displayimagesrc.options = [''].concat(variableKeys);
-                wp.datafield.options = ['All Fields'].concat(variableKeys);*/
-            }
-
             // update the query and datavalue before submit.
             function onSubmit($is, $el, event) {
                 var $searchEle     = $el.find('.app-mobile-search'),
@@ -168,10 +143,6 @@ WM.module('wm.layouts.containers')
                     $is.imagesrc = Utils.getImageUrl(newVal);
                     break;
                 case 'dataset':
-                    // if studio-mode, then update the search-key, display-label in property panel
-                    if ($is.widgetid) {
-                        updatePropertyPanelOptions((newVal && newVal.data) || newVal, $is);
-                    }
                     $is._dataset = newVal.data;
                     break;
                 case 'defaultview':

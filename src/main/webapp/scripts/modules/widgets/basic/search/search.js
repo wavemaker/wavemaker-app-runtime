@@ -12,7 +12,7 @@ WM.module('wm.widgets.basic')
             '</a>'
             );
         $templateCache.put('template/widget/form/search.html',
-            '<div class="app-search input-group" init-widget has-model' +
+            '<div class="app-search input-group" init-widget has-model listen-property="dataset"' +
                 ' data-ng-show="show"' +
                 ' data-ng-style="{' +
                     ' color: color, ' +
@@ -190,7 +190,7 @@ WM.module('wm.widgets.basic')
 
             // assign all the keys to the options of the search widget
             if (CONSTANTS.isStudioMode && WM.isDefined(dataset) && dataset !== null) {
-                WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, scope);
+                WidgetUtilService.updatePropertyPanelOptions(scope);
             }
         }
 
@@ -290,10 +290,6 @@ WM.module('wm.widgets.basic')
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
             case 'dataset':
-                // if studio-mode, then update the search-key, display-label in property panel
-                if (scope.widgetid) {
-                    updatePropertyPanelOptions(newVal, scope);
-                }
                 // set the datatSet of the widget
                 setDataSet(newVal, scope);
                 break;

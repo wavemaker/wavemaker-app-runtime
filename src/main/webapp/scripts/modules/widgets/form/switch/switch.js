@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
         function ($templateCache) {
             'use strict';
             $templateCache.put('template/widget/form/switch.html',
-                '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles role="input">' +
+                '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles role="input" listen-property="dataset">' +
                     '<div class="btn-group btn-group-justified">' +
                         '<a title="{{opt[displayfield || \'label\']}}" href="javascript:void(0);" role="button" class="btn btn-default" data-ng-disabled="disabled" ' +
                             ' data-ng-repeat="opt in options track by $index" data-ng-class="{\'selected\': selected.index === $index}"' +
@@ -36,18 +36,6 @@ WM.module('wm.widgets.form')
                 ARRAY_STRINGS = 2,
                 ARRAY_OBJECTS = 3,
                 NONE = 0;
-
-            function updatePropertyPanelOptions(dataset, propertiesMap, scope) {
-                WidgetUtilService.updatePropertyPanelOptions(dataset, propertiesMap, scope);
-
-                /* re-initialize the property values */
-                if (scope.newcolumns) {
-                    scope.newcolumns = false;
-                    scope.datafield = '';
-                    scope.displayfield = '';
-                    scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': scope.datafield, 'displayfield': scope.displayfield});
-                }
-            }
 
             function trim(str) {
                 if (WM.isString(str)) {
@@ -134,9 +122,6 @@ WM.module('wm.widgets.form')
             function propertyChangeHandler(scope, element, key, newVal) {
                 switch (key) {
                 case 'dataset':
-                    if (scope.widgetid && WM.isDefined(newVal) && newVal !== null) {
-                        updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
-                    }
                     updateSwitchOptions(scope, element, newVal);
                     break;
                 }

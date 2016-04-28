@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/panel.html',
-                '<div page-container init-widget class="app-panel panel" data-ng-class="[helpClass, {\'fullscreen\':fullscreen}]" data-ng-show="show" apply-styles="shell" wm-navigable-element="true">' +
+                '<div page-container init-widget listen-property="actions" class="app-panel panel" data-ng-class="[helpClass, {\'fullscreen\':fullscreen}]" data-ng-show="show" apply-styles="shell" wm-navigable-element="true">' +
                     '<div class="panel-heading" data-ng-class="helpClass">' +
                         '<h3 class="panel-title">' +
                             '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="expandCollapsePanel()">' +
@@ -53,7 +53,6 @@ WM.module('wm.layouts.containers')
                 break;
             case 'actions':
                 if (CONSTANTS.isStudioMode) {
-                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
                     scope.itemlabel = scope.itemlabel || scope.displayfield;
                 }
                 break;

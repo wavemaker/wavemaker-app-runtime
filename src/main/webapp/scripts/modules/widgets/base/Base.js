@@ -2555,32 +2555,25 @@ WM.module('wm.widgets.base', [])
              * @param {object} scope isolate scope of the widget
              * @param {boolean} removeNull removeNull determines to remove the null values or not from the keys
              */
-            function updatePropertyPanelOptions(dataset, propertiesMap, scope, removeNull) {
+            function updatePropertyPanelOptions(scope) {
                 var keys,
-                    allKeys = [],
                     filter,
-                    ALLFIELDS = 'All Fields',
+                    bindExpr,
+                    typeUtils,
                     options,
-                    checkboxsetTypeWidgets = ['multiselect', 'selectall'];
-                /* on binding of data*/
-                if (dataset && WM.isObject(dataset)) {
-                    dataset = dataset[0] || dataset;
-                    keys = extractDataSetFields(dataset, propertiesMap, {'filter' : 'all'}) || [];
-                }
+                    fieldObjects,
+                    ALLFIELDS               = 'All Fields',
+                    checkboxsetTypeWidgets  = ['multiselect', 'selectall'],
+                    dataSetProp             = _.includes(['wm-panel'], scope.widgettype) ? 'actions' : 'dataset';
 
-                /*removing null values from the variableKeys*/
-                if (removeNull && keys) {
-                    _.forEach(keys.objects, function (variableKey, index) {
-                        if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
-                            keys.objects.splice(index, 1);
-                        }
-                    });
-                    _.forEach(keys.terminals, function (variableKey, index) {
-                        if (dataset[variableKey] === null || WM.isObject(dataset[variableKey])) {
-                            keys.terminals.splice(index, 1);
-                        }
-                    });
-                }
+                bindExpr        = scope['bind' + dataSetProp];
+                typeUtils       = Utils.getService('TypeUtils');
+                fieldObjects    = typeUtils.getFieldObjectsForExpr(bindExpr);
+                keys            = {
+                    'objects'   : _.map(_.filter(fieldObjects, {'type': 'object'}), 'field'),
+                    'terminals' : _.map(_.filter(fieldObjects, {'type': 'terminal'}), 'field')
+                };
+                keys.all        = _.union(keys.objects, keys.terminals);
 
                 /* re-initialize the property values */
                 if (scope.newcolumns) {
@@ -2589,8 +2582,7 @@ WM.module('wm.widgets.base', [])
                     scope.displayfield = '';
                     scope.$root.$emit("set-markup-attr", scope.widgetid, {'datafield': ALLFIELDS, 'displayfield': ''});
                 }
-                keys = keys || {};
-                allKeys = _.union(keys.objects, keys.terminals);
+
                 _.forEach(scope.widgetProps, function (prop, name) {
                     filter = prop.datasetfilter;
                     if (filter) {
@@ -2599,7 +2591,7 @@ WM.module('wm.widgets.base', [])
                         } else {
                             switch (filter) {
                             case 'all':
-                                options = allKeys;
+                                options = keys.all;
                                 break;
                             case 'objects':
                                 options = keys.objects;
@@ -2874,6 +2866,29 @@ WM.module('wm.widgets.base', [])
             return {
                 'link': function ($is, $el, attrs) {
                     WidgetUtilService.registerPropertyChangeListener(onCSSPropertyChange.bind(undefined, $is, $el, attrs), $is, notifyFor);
+                }
+            };
+        }
+    ])
+
+    .directive('listenProperty', [
+        'WidgetUtilService',
+        'CONSTANTS',
+
+        function (WidgetUtilService, CONSTANTS) {
+            'use strict';
+
+            return {
+                'link': function ($is, $el, attrs) {
+                    /* not required for run mode */
+                    if (CONSTANTS.isRunMode) {
+                        return;
+                    }
+                    var property = 'bind' + (attrs.listenProperty || 'dataset');
+
+                    $is.$on('$destroy', $is.$watch(property, function () {
+                        WidgetUtilService.updatePropertyPanelOptions($is);
+                    }));
                 }
             };
         }

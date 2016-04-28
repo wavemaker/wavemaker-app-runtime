@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/radioset.html',
-            '<ul class="app-radioset list-group {{layout}}" init-widget has-model apply-styles role="input"' +
+            '<ul class="app-radioset list-group {{layout}}" init-widget has-model apply-styles role="input" listen-property="dataset"' +
                 ' title="{{hint}}" data-ng-model="_model_" data-ng-show="show"' +
                 ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</ul>'
@@ -84,10 +84,6 @@ WM.module('wm.widgets.form')
             /*Monitoring changes for properties and accordingly handling respective changes.*/
             switch (key) {
             case 'dataset':
-                /*if studio-mode, then update the displayField & dataField in property panel*/
-                if (scope.widgetid && WM.isDefined(newVal) && newVal !== null) {
-                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, true);
-                }
                 /*Displaying no data message when bound to service variable in studio mode*/
                 if (isBoundToServiceVariable && CONSTANTS.isStudioMode) {
                     FormWidgetUtils.appendMessage(element);

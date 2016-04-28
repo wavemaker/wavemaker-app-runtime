@@ -209,9 +209,6 @@ WM.module('wm.widgets.basic')
                 switch (key) {
                 case 'scopedataset':
                 case 'dataset':
-                    if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
-                        WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, $is);
-                    }
                     $is.nodes = getNodes($is, newVal.data || newVal);
                     $is.renderTree($el, $is, attrs);
                     break;
@@ -287,7 +284,7 @@ WM.module('wm.widgets.basic')
                     'scopedataset': '=?',
                     'onSelect': '&'
                 },
-                'template': '<div class="app-tree" init-widget apply-styles="container" data-ng-show="show"></div>',
+                'template': '<div class="app-tree" init-widget apply-styles="container" listen-property="dataset" data-ng-show="show"></div>',
                 'replace': true,
                 'compile': function () {
                     return {

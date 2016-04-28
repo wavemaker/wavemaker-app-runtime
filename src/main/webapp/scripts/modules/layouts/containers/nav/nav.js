@@ -60,7 +60,7 @@ WM.module('wm.layouts.containers')
                     });
                 }
                 if ($is.widgetid && nv) { // when the widget is inside canvas
-                    $is.keys = WidgetUtilService.updatePropertyPanelOptions(nv.data || nv, nv.propertiesMap, $is).terminals;
+                    $is.keys = WidgetUtilService.updatePropertyPanelOptions($is).terminals;
                 }
                 return nodes;
             }
@@ -234,7 +234,7 @@ WM.module('wm.layouts.containers')
                 'replace'   : true,
                 'scope'     : {},
                 'transclude': true,
-                'template'  : '<li init-widget class="app-nav-item" apply-styles="container" wmtransclude></li>',
+                'template'  : '<li init-widget listen-property="dataset" class="app-nav-item" apply-styles="container" wmtransclude></li>',
                 'link'      : {
                     'pre': function ($is) {
                         $is.widgetProps = widgetProps;

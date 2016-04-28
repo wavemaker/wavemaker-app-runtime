@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layouts/containers/mobile/tabbar/tabbar.html',
-            '<div data-role="mobile-tabbar" class="app-tabbar app-top-nav {{class}} {{position}}" init-widget>' +
+            '<div data-role="mobile-tabbar" class="app-tabbar app-top-nav {{class}} {{position}}" init-widget listen-property="dataset">' +
                 '<nav class="navbar navbar-default">' +
                     '<ul class="tab-items nav navbar-nav">' +
                         '<li class="tab-item" data-ng-repeat="item in tabItems" data-ng-show="(tabItems.length == layout.max) || $index+1 < layout.max" >' +
@@ -72,10 +72,6 @@ WM.module('wm.layouts.containers')
         function propertyChangeHandler(scope, element, key, newVal) {
             switch (key) {
             case 'dataset':
-                /*if studio-mode, then update the itemlabel, itemicon, itemlink & itemchildren in property panel*/
-                if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
-                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
-                }
                 if (newVal) {
                     getTabItems(newVal.data || newVal, scope);
                 }

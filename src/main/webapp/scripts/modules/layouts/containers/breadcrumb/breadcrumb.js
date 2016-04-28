@@ -48,10 +48,6 @@ WM.module('wm.layouts.containers')
             case 'scopedataset':
             case 'dataset':
                 dataset = newVal;
-                /*if studio-mode, then update the itemlabel, itemicon, itemlink & itemchildren in property panel*/
-                if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
-                    WidgetUtilService.updatePropertyPanelOptions(dataset.data || dataset, dataset.propertiesMap, scope);
-                }
                 //break statement is intentionally removed for the flow
             case 'itemicon':
             case 'itemlabel':
@@ -69,7 +65,7 @@ WM.module('wm.layouts.containers')
             },
             'transclude': true,
             'template':
-                '<ol class="breadcrumb app-breadcrumb" data-ng-show="show" apply-styles data-element-type="wmBreadCrumb"  init-widget has-model >' +
+                '<ol class="breadcrumb app-breadcrumb" data-ng-show="show" apply-styles data-element-type="wmBreadCrumb"  init-widget has-model listen-property="dataset">' +
                     '<li data-ng-repeat="item in nodes" data-ng-class="{\'active\':$last}">' +
                         '<i class="{{item.icon}}"></i> ' +
                         '<a title="{{item.label}}" href="{{item.link}}" data-ng-if="!$last">{{item.label}}</a>' +

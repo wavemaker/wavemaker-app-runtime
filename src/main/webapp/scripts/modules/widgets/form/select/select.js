@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/select.html',
-            '<select init-widget has-model class="form-control app-select" apply-styles role="input"' +
+            '<select init-widget has-model listen-property="dataset" class="form-control app-select" apply-styles role="input"' +
                 ' data-ng-model="modelProxy"' + /* proxy-object is updated in the onChangeProxy function*/
                 ' title="{{hint}}"' +
                 ' data-ng-show="show"' +
@@ -204,7 +204,6 @@ WM.module('wm.widgets.form')
                         }
                         scope.oldBindDataSet = scope.binddataset;
                     }
-                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
                 }
                 /*creating options for the select element, whenever the property value changes*/
                 createSelectOptions(scope.dataset, scope, element);
@@ -216,7 +215,7 @@ WM.module('wm.widgets.form')
                 /*listening on 'active' property, as losing the properties during page switch*/
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && scope.dataset && newVal) {
-                    WidgetUtilService.updatePropertyPanelOptions(scope.dataset.data || scope.dataset, scope.dataset.propertiesMap, scope, false);
+                    WidgetUtilService.updatePropertyPanelOptions(scope);
                 }
                 break;
             }
@@ -254,7 +253,7 @@ WM.module('wm.widgets.form')
         function scopeDatasetWatcher(scope, element) {
             /*if studio-mode, then update the displayField & dataField in property panel*/
             if (scope.widgetid) {
-                WidgetUtilService.updatePropertyPanelOptions(scope.scopedataset, scope, false);
+                WidgetUtilService.updatePropertyPanelOptions(scope);
             }
             createSelectOptions(scope.scopedataset, scope, element);
         }

@@ -11,7 +11,7 @@ WM.module('wm.layouts.containers')
             '</div>'
         );
         $tc.put('template/widget/medialist.html',
-            '<div class="app-medialist" data-ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget>' +
+            '<div class="app-medialist" data-ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget listen-property="dataset">' +
                 '<ul class="list-unstyled list-inline app-media-thumbnail" wmtransclude></ul>' +
                     '<div class="app-media-fullscreen" data-ng-show="selectedMediaIndex >= 0" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
                         '<wm-mobile-navbar on-backbtnclick="exitFullScreen();" show-leftnav="false" backbuttoniconclass="wi wi-chevron-left" title= "{{selectedMediaIndex+1}}/{{fieldDefs.length}}"></wm-mobile-navbar>' +
@@ -144,9 +144,6 @@ WM.module('wm.layouts.containers')
             function propertyChangeHandler($is, $el, attrs, key, nv, ov) {
                 if (key === 'dataset') {
                     onDataChange($is, $el, nv);
-                    if (CONSTANTS.isStudioMode) {
-                        WidgetUtilService.updatePropertyPanelOptions(nv, nv.propertiesMap, $is);
-                    }
                 }
             }
 

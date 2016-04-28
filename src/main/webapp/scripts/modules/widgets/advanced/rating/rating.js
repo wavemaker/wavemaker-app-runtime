@@ -6,7 +6,7 @@ WM.module('wm.widgets.advanced')
         'use strict';
 
         $templateCache.put('template/widget/advanced/rating.html',
-            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model apply-styles role="input" data-ng-focus="onFocus($event)">' +
+            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model apply-styles role="input" listen-property="dataset" data-ng-focus="onFocus($event)">' +
                 '<div data-ng-if="!readonly" class="rating-style">' +
                     '<label data-ng-class="{active : rate.value <= datavalue}" for="{{$id}}+{{rate.value}}" data-ng-mouseleave="onMouseleave($event, rate)" data-ng-mouseover="onMouseover($event, rate)" data-ng-style="{\'font-size\':iconsize, \'color\': rate.value <= datavalue && iconcolor}" data-ng-repeat="rate in range track by $index" title="{{rate.label || rate.value}}">' +
                         '<input type="radio" id="{{$id}}+{{rate.value}}" data-ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
@@ -233,7 +233,7 @@ WM.module('wm.widgets.advanced')
         function scopeDatasetWatcher(scope, element) {
             /*if studio-mode, then update the displayField & dataField in property panel*/
             if (scope.widgetid) {
-                WidgetUtilService.updatePropertyPanelOptions(scope.scopedataset, scope, false);
+                WidgetUtilService.updatePropertyPanelOptions(scope);
             }
             createRatingOptions(scope.scopedataset, scope, element);
         }
@@ -243,9 +243,6 @@ WM.module('wm.widgets.advanced')
         function propertyChangeHandler(scope, attrs, key, newVal) {
             switch (key) {
             case 'dataset':
-                if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
-                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
-                }
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (WM.isDefined(newVal) && newVal !== null) {
                     //Get variable and properties map only on binddataset change

@@ -840,7 +840,7 @@ WM.module('wm.widgets.live')
                             }
                             scope.oldBindDataSet = scope.binddataset;
                         }
-                        WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope, false);
+                        WidgetUtilService.updatePropertyPanelOptions(scope);
                     }
                     compileField();
                     break;

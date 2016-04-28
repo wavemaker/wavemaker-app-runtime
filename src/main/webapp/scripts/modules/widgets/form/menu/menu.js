@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
-                '<div class="dropdown app-menu" init-widget data-ng-show="show" uib-dropdown role="input" tabindex="-1">' +
+                '<div class="dropdown app-menu" init-widget data-ng-show="show" uib-dropdown role="input" listen-property="dataset" tabindex="-1">' +
                     '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles tabindex="{{tabindex}}" accesskey="{{shortcutkey}}">' +
                     '<i class="app-icon {{iconclass}}"></i>' +
                         ' {{caption}} ' +
@@ -103,10 +103,6 @@ WM.module('wm.widgets.form')
             switch (key) {
             case 'scopedataset':
             case 'dataset':
-                /*if studio-mode, then update the itemlabel, itemicon, itemlink & itemchildren in property panel*/
-                if (CONSTANTS.isStudioMode && WM.isDefined(newVal) && newVal !== null) {
-                    WidgetUtilService.updatePropertyPanelOptions(newVal.data || newVal, newVal.propertiesMap, scope);
-                }
                 scope.itemlabel = scope.itemlabel || scope.displayfield;
                 if (CONSTANTS.isRunMode && newVal) {
                     scope.menuItems = getMenuItems(newVal.data || newVal, scope);
