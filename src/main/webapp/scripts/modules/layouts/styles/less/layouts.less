@@ -1284,6 +1284,13 @@ body {
     }
   }
 
+  // (Reduce width by left and right margin) Fix for horizontal scroll in android devices
+  .app-card {
+    &.card {
+      .calc('width', ~"calc(100% - .4rem)");
+    }
+  }
+
   //Angular UI bootstrap 1.1.0 related styles.
   .ng-animate.item:not(.left):not(.right){-webkit-transition:0s ease-in-out left;transition:0s ease-in-out left};
   .uib-datepicker .uib-title{width:100%;}
