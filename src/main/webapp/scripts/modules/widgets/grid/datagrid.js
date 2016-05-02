@@ -11,6 +11,7 @@ $.widget('wm.datagrid', {
         data: [],
         statusMsg: '',
         colDefs: [],
+        rowActions: [],
         sortInfo: {
             'field': '',
             'direction': ''
@@ -353,21 +354,6 @@ $.widget('wm.datagrid', {
         return null;
     },
 
-    /* Returns the table actions (edit, delete) cell template. */
-    _getRowActionsTemplate: function (colDef) {
-        var htm = '';
-        if (colDef.operations.indexOf('update') !== -1) {
-            htm +=
-                '<button type="button" class="row-action-button edit edit-row-button" title="Edit Row"><i class="wi wi-pencil"></i></button>' +
-                '<button type="button" class="row-action-button save save-edit-row-button hidden" title="Save"><i class="wi wi-done"></i></button>' +
-                '<button type="button" class="row-action-button cancel cancel-edit-row-button hidden" title="Cancel"><i class="wi wi-cancel"></i></button>';
-        }
-        if (colDef.operations.indexOf('delete') !== -1) {
-            htm += '<button type="button" class="row-action-button delete delete-row-button" title="Delete Record"><i class="wi wi-trash"></i></button>';
-        }
-        return htm;
-    },
-
     /* Returns the checkbox template. */
     _getCheckboxTemplate: function (row, isMultiSelectCol) {
         var checked        = row.checked ? ' checked' : '',
@@ -472,7 +458,7 @@ $.widget('wm.datagrid', {
                     htm += this._getRadioTemplate(row);
                     break;
                 case 'rowOperations':
-                    htm += this._getRowActionsTemplate(colDef);
+                    htm += '<span class="actions-column" data-identifier="actionButtons"></span>';
                     break;
                 case 'rowIndex':
                     htm += row.index;
@@ -740,6 +726,7 @@ $.widget('wm.datagrid', {
                 this.setStatus('ready', this.dataStatus.ready);
             }
             this.gridElement.find('tbody.app-datagrid-body').append($row);
+            this._appendRowActions($row);
             this.attachEventHandlers($row);
             $row.find('.edit-row-button').trigger('click', {operation: 'new'});
             this.updateSelectAllCheckboxState();
@@ -886,6 +873,7 @@ $.widget('wm.datagrid', {
         case 'multiselect': // Fallthrough
         case 'showRadioColumn':
         case 'colDefs':
+        case 'rowActions':
         case 'filterNullRecords':
         case 'showRowIndex':
             this.refreshGrid();
@@ -1490,20 +1478,24 @@ $.widget('wm.datagrid', {
                 this.gridHeader.find('.sort-button').on('click', this.sortHandler.bind(this));
             }
         }
-
-
-        if (this.options.allowInlineEditing || (rowOperationsCol && rowOperationsCol.operations.indexOf('update') !== -1)) {
-            $htm.find('.edit-row-button').on('click', {action: 'edit'}, this.toggleEditRow.bind(this));
+        if (this.options.rowActions.length) {
+            $htm.find('.row-action').on('click', {action: 'edit'}, this._handleCustomEvents.bind(this));
             $htm.find('.cancel-edit-row-button').on('click', {action: 'cancel'}, this.toggleEditRow.bind(this));
             $htm.find('.save-edit-row-button').on('click', {action: 'save'}, this.toggleEditRow.bind(this));
-        }
-
-        if (this.options.allowDeleteRow || (rowOperationsCol && rowOperationsCol.operations.indexOf('delete') !== -1)) {
-            deleteRowHandler = this.deleteRowAndUpdateSelectAll;
-            if (!this.options.multiselect) {
-                deleteRowHandler = this.deleteRow;
+        } else {
+            if (this.options.allowInlineEditing || (rowOperationsCol && _.includes(rowOperationsCol.operations, 'update'))) {
+                $htm.find('.edit-row-button').on('click', {action: 'edit'}, this.toggleEditRow.bind(this));
+                $htm.find('.cancel-edit-row-button').on('click', {action: 'cancel'}, this.toggleEditRow.bind(this));
+                $htm.find('.save-edit-row-button').on('click', {action: 'save'}, this.toggleEditRow.bind(this));
             }
-            $htm.find('td .delete-row-button').on('click', deleteRowHandler.bind(this));
+
+            if (this.options.allowDeleteRow || (rowOperationsCol && _.includes(rowOperationsCol.operations, 'delete'))) {
+                deleteRowHandler = this.deleteRowAndUpdateSelectAll;
+                if (!this.options.multiselect) {
+                    deleteRowHandler = this.deleteRow;
+                }
+                $htm.find('td .delete-row-button').on('click', deleteRowHandler.bind(this));
+            }
         }
     },
 
@@ -1681,6 +1673,67 @@ $.widget('wm.datagrid', {
             gridHeader.removeClass('sort-visible');
         }
     },
+
+    //Triggers actual function in scope
+    _handleCustomEvents: function (e, options) {
+        this.options.handleCustomEvents(e, options);
+    },
+
+    //Generates markup for row operations
+    _getRowActionsTemplate: function () {
+        var saveCancelTemplateAdded = false,
+            rowOperationsCol,
+            actionsTemplate = '<span> ',
+            saveCancelTemplate = '<button type="button" class="save row-action-button btn app-button btn-transparent save-edit-row-button hidden" title="Save"><i class="wi wi-done"></i></button> ' +
+                                 '<button type="button" class="cancel row-action-button btn app-button btn-transparent cancel-edit-row-button hidden" title="Cancel"><i class="wi wi-cancel"></i></button> ';
+        if (this.options.rowActions.length) {
+            _.forEach(this.options.rowActions, function (def) {
+                var clsAttr = 'row-action row-action-button app-button btn ' + def.class, ngShowAttr = '';
+                if (def.show === 'true' || def.show === 'false') {
+                    clsAttr += def.show === 'true' ? '' : ' ng-hide ';
+                } else if (_.includes(def.show, 'bind:')) {
+                    ngShowAttr = _.replace(def.show, 'bind:', '');
+                }
+                //Adding 'edit' class if at least one of the action is 'editRow()'
+                if (_.includes(def.action, 'editRow()')) {
+                    clsAttr += ' edit edit-row-button ';
+
+                }
+
+                actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + def.title + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + '>'
+                    + '<i class="app-icon ' + def.iconclass + '"></i><span class="btn-caption">' + def.displayName + '</span></button>';
+                if (_.includes(def.action, 'editRow()')) {
+                    actionsTemplate += !saveCancelTemplateAdded ? saveCancelTemplate : '';
+                    saveCancelTemplateAdded = true;
+                }
+            });
+        } else {
+            //Appending old template for old projects depending on grid level attributes
+            rowOperationsCol = this._getRowActionsColumnDef() || {};
+            if (_.includes(rowOperationsCol.operations, 'update')) {
+                actionsTemplate += '<button type="button" class="row-action-button btn app-button btn-transparent edit edit-row-button" title="Edit Row"><i class="wi wi-pencil"></i></button> ' +
+                    saveCancelTemplate;
+            }
+            if (_.includes(rowOperationsCol.operations, 'delete')) {
+                actionsTemplate += '<button type="button" class="row-action-button btn app-button btn-transparent delete delete-row-button" title="Delete Record"><i class="wi wi-trash"></i></button> ';
+            }
+        }
+        actionsTemplate += '</span>';
+        return actionsTemplate;
+    },
+
+    //Appends row operations markup to grid template
+    _appendRowActions : function ($htm) {
+        var self, template,
+            rowOperationsCol = this._getRowActionsColumnDef();
+        if (this.options.rowActions.length || rowOperationsCol) {
+            self = this;
+            template = self._getRowActionsTemplate();
+            $htm.find("[data-identifier='actionButtons']").each(function () {
+                $(this).empty().append(self.options.compileTemplateInGridScope(template));
+            });
+        }
+    },
     /* Renders the table body. */
     _renderGrid: function () {
         var $htm = $(this._getGridTemplate());
@@ -1695,6 +1748,7 @@ $.widget('wm.datagrid', {
         }
         this.gridBody = this.gridElement.find('tbody');
         this._findAndReplaceCompiledTemplates();
+        this._appendRowActions($htm);
         this.attachEventHandlers($htm);
     },
 

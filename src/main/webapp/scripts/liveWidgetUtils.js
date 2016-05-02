@@ -109,7 +109,7 @@ WM.module('wm.widgets.live')
                             iconclass   :    'wi wi-refresh',
                             action      :    'reset()',
                             displayName :    'Reset',
-                            show        :    true,
+                            show        :    'true',
                             type        :    'button',
                             updateMode  :    true
                         },
@@ -119,7 +119,7 @@ WM.module('wm.widgets.live')
                             iconclass   :   'wi wi-cancel',
                             action      :   'cancel()',
                             displayName :   'Cancel',
-                            show        :   true,
+                            show        :   'true',
                             type        :   'button',
                             updateMode  :   true
                         },
@@ -129,7 +129,7 @@ WM.module('wm.widgets.live')
                             iconclass   :   $rs.isMobileApplicationType ? 'wi wi-done' : 'wi wi-save',
                             action      :   '',
                             displayName :   'Save',
-                            show        :   true,
+                            show        :   'true',
                             type        :   'submit',
                             updateMode  :   true
                         },
@@ -139,7 +139,7 @@ WM.module('wm.widgets.live')
                             iconclass   :   'wi wi-trash',
                             action      :   'delete()',
                             displayName :   'Delete',
-                            show        :   true,
+                            show        :   'true',
                             type        :   'button',
                             updateMode  :   false
                         },
@@ -149,7 +149,7 @@ WM.module('wm.widgets.live')
                             iconclass   :   'wi wi-pencil',
                             action      :   'edit()',
                             displayName :   'Edit',
-                            show        :   true,
+                            show        :   'true',
                             type        :   'button',
                             updateMode  :   false
                         },
@@ -159,7 +159,7 @@ WM.module('wm.widgets.live')
                             iconclass   :   'wi wi-plus',
                             action      :   'new()',
                             displayName :   'New',
-                            show        :   true,
+                            show        :   'true',
                             type        :   'button',
                             updateMode  :   false
                         }
@@ -173,7 +173,7 @@ WM.module('wm.widgets.live')
                             iconclass   :   'wi wi-filter-list',
                             action      :   'filter()',
                             displayName :   'Filter',
-                            show        :   true,
+                            show        :   'true',
                             type        :   'button'
                         },
                         {
@@ -182,19 +182,41 @@ WM.module('wm.widgets.live')
                             iconclass   :   'wi wi-trash',
                             action      :   'clearFilter()',
                             displayName :   'Clear',
-                            show        :   true,
+                            show        :   'true',
                             type        :   'button'
                         }];
                     break;
                 case 'GRID':
                     defaultButtons = [
                         {
-                            'key': 'addNewRow',
+                            'key'        : 'addNewRow',
                             'displayName': 'New',
-                            'iconclass': 'wi wi-plus',
-                            'show': true,
-                            'class': 'btn-primary',
-                            'action': 'addNewRow()'
+                            'iconclass'  : 'wi wi-plus',
+                            'show'       : 'true',
+                            'class'      : 'btn-primary',
+                            'action'     : 'addNewRow()'
+                        }
+                    ];
+                    break;
+                case 'GRIDROW':
+                    defaultButtons = [
+                        {
+                            'key'        : 'updaterow',
+                            'displayName': '',
+                            'title'      : 'Edit',
+                            'iconclass'  : 'wi wi-pencil',
+                            'show'       : 'true',
+                            'class'      : 'btn-transparent',
+                            'action'     : 'editRow()'
+                        },
+                        {
+                            'key'        : 'deleterow',
+                            'displayName': '',
+                            'title'      : 'Delete',
+                            'iconclass'  : 'wi wi-trash',
+                            'show'       : 'true',
+                            'class'      : 'btn-transparent',
+                            'action'     : 'deleteRow()'
                         }
                     ];
                     break;
@@ -282,10 +304,11 @@ WM.module('wm.widgets.live')
             function getButtonDef(attrs) {
                 return {
                     'key'           :   attrs.key || attrs.binding,
-                    'displayName'   :   attrs.displayName || attrs.label || attrs.caption,
-                    'show'          :   attrs.show === '1' || attrs.show === 'true' || attrs.show === true,
+                    'displayName'   :   attrs.displayName || attrs.label || attrs.caption || '',
+                    'show'          :   attrs.show || 'false',
                     'class'         :   attrs.class || '',
                     'iconclass'     :   attrs.iconclass,
+                    'title'         :   _.isUndefined(attrs.title) ? (attrs.displayName || '') : attrs.title,
                     'action'        :   attrs.action,
                     'accessroles'   :   attrs.accessroles || ''
                 };

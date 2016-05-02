@@ -1199,29 +1199,7 @@ wm.variables.services.Variables = [
                     errorVariable;
                 callBackScope = variable.activeScope;
                 if (eventValues) {
-                    _.forEach(eventValues.split(';'), function (eventValue) {
-                        /* if event value is javascript, call the function defined in the callback scope of the variable */
-                        if (eventValue === 'Javascript') {
-                            retVal = Utils.triggerFn(callBackScope[variable.name + event], variable, response);
-                        }
-                        if (_.includes(eventValue, '.show')) {
-                            DialogService.showDialog(eventValue.slice(0, eventValue.indexOf('.show')));
-                            return;
-                        }
-                        if (_.includes(eventValue, '.hide')) {
-                            DialogService.hideDialog(eventValue.slice(0, eventValue.indexOf('.hide')));
-                            return;
-                        }
-                        if (_.includes(eventValue, '(')) {
-                            retVal = Utils.triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], variable, response);
-                        }
-
-                        /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
-                        $timeout(function () {
-                            $rootScope.$emit("invoke-service", eventValue, {scope: callBackScope});
-                            $rootScope.$safeApply(callBackScope);
-                        }, null, false);
-                    });
+                    retVal = Utils.triggerCustomEvents(event, eventValues, callBackScope, response, variable);
                 } else if (event === VARIABLE_CONSTANTS.EVENT.ERROR) {
                     /* in case of error, if no event assigned, handle through default notification variable */
                     errorVariable = getVariableByName(VARIABLE_CONSTANTS.DEFAULT_VAR.NOTIFICATION);

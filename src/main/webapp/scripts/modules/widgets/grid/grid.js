@@ -1,4 +1,4 @@
-/*global WM, wmGrid, confirm, window, wm, _*/
+/*global WM, wmGrid, confirm, window, wm, _, $*/
 /*jslint sub: true */
 /*jslint todo: true */
 
@@ -130,7 +130,6 @@ WM.module('wm.widgets.grid')
                 'nodatamessage': true,
                 'loadingdatamsg': true,
                 'filternullrecords': true,
-                'allowinlineedit': true,
                 'spacing': true
             },
             getObjectIndexInArray = function (key, value, arr) {
@@ -343,26 +342,10 @@ WM.module('wm.widgets.grid')
                         }
 
                         scope.actions = [];
-
-                        /* Event to update "insertrow", "updaterow" and "deleterow" properties based on "readonlygrid" value.
-                         * NOTE: This is not handled in propertyChangeHandler because we have to update these properties only
-                         * when user explicitly clicks readonlygrid checkbox. */
-                        handlers.push($rootScope.$on('grid-action-properties-modified', function (event, scopeId, readonlygrid) {
-                            /* as multiple grid directives will be listening to the event, apply readonlygrid property only for current grid */
-                            if (scope.$id === scopeId) {
-                                scope.deleterow = !readonlygrid;
-                                scope.updaterow = !readonlygrid;
-                                scope.insertrow = !readonlygrid;
-                                $rootScope.$emit('set-markup-attr', scope.widgetid, {
-                                    'insertrow': scope.insertrow,
-                                    'updaterow': scope.updaterow,
-                                    'deleterow': scope.deleterow
-                                });
-                            }
-                        }));
+                        scope.rowActions = [];
 
                         /* event emitted on building new markup from canvasDom */
-                        handlers.push($rootScope.$on('compile-grid-columns', function (event, scopeId, markup) {
+                        handlers.push($rootScope.$on('wms:compile-grid-columns', function (event, scopeId, markup) {
                             /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
                             if (scope.$id === scopeId) {
                                 scope.fullFieldDefs = [];
@@ -376,17 +359,32 @@ WM.module('wm.widgets.grid')
                             }
                         }));
                         /* event emitted whenever grid actions are modified */
-                        handlers.push($rootScope.$on('compile-grid-actions', function (event, scopeId, markup) {
+                        handlers.push($rootScope.$on('wms:compile-grid-actions', function (event, scopeId, markup) {
                             /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
                             if (scope.$id === scopeId) {
                                 scope.actions = [];
                                 $compile(markup)(scope);
                             }
                         }));
+                        /* event emitted whenever grid actions are modified */
+                        handlers.push($rootScope.$on('wms:compile-grid-row-actions', function (event, scopeId, markup, fromDesigner) {
+                            /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
+                            if (scope.$id === scopeId) {
+                                scope.rowActions = [];
+                                $compile(markup)(scope);
+                            }
+                            /*Invoke the function to render the operation columns.*/
+                            scope.renderOperationColumns(fromDesigner);
+                            scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
+                            scope.setDataGridOption('rowActions', Utils.getClonedObject(scope.rowActions));
+                        }));
 
                         /* compile all the markup tags inside the grid, resulting into setting the fieldDefs*/
                         $compile(attrs.gridColumnMarkup)(scope);
-
+                        scope.gridOptions.rowActions = scope.rowActions;
+                        if (scope.rowActions.length && CONSTANTS.isStudioMode) {
+                            scope.renderOperationColumns();
+                        }
                         /*This is expose columns property to user so that he can programatically
                          * use columns to do some custom logic */
                         scope.gridOptions.colDefs.map(function (column) {
@@ -561,14 +559,6 @@ WM.module('wm.widgets.grid')
                                     }
                                     readOnlyGridAttrUpdated = undefined;
                                 }
-                                if (scope.widgetid) { // when the widget is in canvas
-                                    scope.widgetProps.deleterow.show = !newVal;
-                                    scope.widgetProps.updaterow.show = !newVal;
-                                    scope.widgetProps.insertrow.show = !newVal;
-                                    scope.widgetProps.deleterow.showindesigner = !newVal;
-                                    scope.widgetProps.updaterow.showindesigner = !newVal;
-                                    scope.widgetProps.insertrow.showindesigner = !newVal;
-                                }
                                 break;
                             case 'gridclass':
                                 scope.datagridElement.datagrid('option', 'cssClassNames.grid', newVal);
@@ -582,21 +572,6 @@ WM.module('wm.widgets.grid')
                             case 'filternullrecords':
                                 if (CONSTANTS.isStudioMode) {
                                     scope.datagridElement.datagrid('option', 'filterNullRecords', newVal);
-                                }
-                                break;
-                            case 'allowinlineedit':
-                                if (!newVal || newVal === 'false') {
-                                    scope.datagridElement.datagrid('option', {
-                                        'allowInlineEditing': false,
-                                        'multiselect': false,
-                                        'allowAddNewRow': false
-                                    });
-                                } else {
-                                    scope.datagridElement.datagrid('option', {
-                                        'allowInlineEditing': true,
-                                        'multiselect': true,
-                                        'allowAddNewRow': true
-                                    });
                                 }
                                 break;
                             case 'spacing':
@@ -642,22 +617,6 @@ WM.module('wm.widgets.grid')
                         }));
 
                         defineSelectedItemProp(scope, []);
-
-                        if (WM.isDefined(scope.allowinlineedit)) {
-                            if (!scope.allowinlineedit || scope.allowinlineedit === 'false') {
-                                scope.datagridElement.datagrid('option', {
-                                    'allowInlineEditing': false,
-                                    'multiselect': false,
-                                    'allowAddNewRow': false
-                                });
-                            } else {
-                                scope.datagridElement.datagrid('option', {
-                                    'allowInlineEditing': true,
-                                    'multiselect': true,
-                                    'allowAddNewRow': true
-                                });
-                            }
-                        }
                         scope.shownavigation = scope.navigation !== 'None';
                         $timeout(function () {
                             scope.dataNavigator = element.find('[data-identifier=datanavigator]').isolateScope();
@@ -701,7 +660,8 @@ WM.module('wm.widgets.grid')
         "wmToaster",
         "$servicevariable",
         "LiveWidgetUtils",
-        function ($rootScope, $scope, $timeout, $compile, Variables, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils) {
+        "DialogService",
+        function ($rootScope, $scope, $timeout, $compile, Variables, CONSTANTS, Utils, wmToaster, $servicevariable, LiveWidgetUtils, DialogService) {
             'use strict';
             var columnObj = {
                     rowOperationsColumn: {
@@ -1219,7 +1179,7 @@ WM.module('wm.widgets.grid')
             };
 
             /*Function to render the column containing row operations.*/
-            $scope.renderOperationColumns = function () {
+            $scope.renderOperationColumns = function (fromDesigner) {
 
                 /*Return if no fieldDefs are present.*/
                 if (!$scope.fieldDefs.length) {
@@ -1233,14 +1193,16 @@ WM.module('wm.widgets.grid')
                 /*Loop through the "rowOperations"*/
                 WM.forEach(rowOperations, function (field, fieldName) {
                     /* Add it to operations only if the corresponding property is enabled.*/
-                    if ($scope[field.property]) {
+                    if (_.some($scope.rowActions, {'key' : field.property}) || (!fromDesigner && $scope[field.property])) {
                         opConfig[fieldName] = rowOperations[fieldName].config;
                         operations.push(fieldName);
                     }
                 });
 
                 /*Add the column for row operations only if at-least one operation has been enabled.*/
-                if (operations.length) {
+                if ($scope.rowActions.length) {
+                    $scope.fieldDefs.push(columnObj.rowOperationsColumn);
+                } else if (!fromDesigner && operations.length) {
                     columnObj.rowOperationsColumn.operations = operations;
                     columnObj.rowOperationsColumn.opConfig = opConfig;
                     $scope.fieldDefs.push(columnObj.rowOperationsColumn);
@@ -1287,7 +1249,7 @@ WM.module('wm.widgets.grid')
             $scope.gridData = [];
             $scope.gridOptions = {
                 data: Utils.getClonedObject($scope.gridData),
-                colDefs: $scope.fieldDefs,
+                colDefs: Utils.getClonedObject($scope.fieldDefs),
                 startRowIndex: 1,
                 onRowSelect: function (rowData, e) {
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
@@ -1365,6 +1327,24 @@ WM.module('wm.widgets.grid')
                 },
                 afterSort: function () {
                     $rootScope.$safeApply($scope);
+                },
+                //Function to loop through events and trigger
+                handleCustomEvents: function (e, options) {
+                    if (!options) {
+                        var $ele          = WM.element(e.target),
+                            $button       = $ele.closest('button'),
+                            key           = $button.attr('data-action-key'),
+                            events        = _.find($scope.rowActions, {'key' : key}).action || '',
+                            callBackScope = $button.scope(),
+                            $row          = $ele.closest('tr'),
+                            rowId         = $row.attr('data-row-id'),
+                            data          = $scope.gridOptions.data[rowId];
+                        if (events) {
+                            Utils.triggerCustomEvents(e, events, callBackScope, data);
+                        }
+                    } else {
+                        $scope.datagridElement.datagrid('toggleEditRow', e, options);
+                    }
                 }
             };
 
@@ -1908,15 +1888,24 @@ WM.module('wm.widgets.grid')
                 return false;
             };
 
-            $scope.deleteRow = function (row) {
-
-                row = row || $scope.selectedItems[0];
-                deleteRecord(row);
+            $scope.deleteRow = function (evt) {
+                var row;
+                if (evt && evt.target) {
+                    $scope.datagridElement.datagrid('deleteRowAndUpdateSelectAll', evt);
+                } else {
+                    row = evt || $scope.selectedItems[0];
+                    deleteRecord(row);
+                }
             };
 
-            $scope.editRow = function (row) {
-                row = row || $scope.selectedItems[0];
-                $scope.gridOptions.beforeRowUpdate(row);
+            $scope.editRow = function (evt) {
+                var row;
+                if (evt && evt.target) {
+                    $scope.datagridElement.datagrid('toggleEditRow', evt);
+                } else {
+                    row = evt || $scope.selectedItems[0];
+                    $scope.gridOptions.beforeRowUpdate(row);
+                }
             };
 
             $scope.addRow = function () {
@@ -2184,15 +2173,16 @@ WM.module('wm.widgets.grid')
     .directive('wmGridAction', ['CONSTANTS', 'LiveWidgetUtils', function (CONSTANTS, LiveWidgetUtils) {
         'use strict';
         return {
-            "restrict": 'E',
-            "scope": true,
-            "replace": true,
-            "compile": function () {
+            'restrict': 'E',
+            'scope': true,
+            'replace': true,
+            'compile': function () {
                 return {
-                    "post": function (scope, element, attrs) {
+                    'post': function (scope, element, attrs) {
                         /*scope.$parent is defined when compiled with grid scope*/
                         /*element.parent().isolateScope() is defined when compiled with dom scope*/
                         var parentIsolateScope,
+                            $parentElement = element.parent(),
                             buttonDef =  WM.extend(LiveWidgetUtils.getButtonDef(attrs), {
                                 /*iconame support for old projects*/
                                 'icon': attrs.icon
@@ -2201,10 +2191,37 @@ WM.module('wm.widgets.grid')
                         if (CONSTANTS.isRunMode) {
                             parentIsolateScope = scope;
                         } else {
-                            parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="grid"]').isolateScope() || scope.$parent : scope.$parent;
+                            parentIsolateScope = scope.parentIsolateScope = ($parentElement && $parentElement.length > 0) ? $parentElement.closest('[data-identifier="grid"]').isolateScope() || scope.$parent : scope.$parent;
                         }
                         parentIsolateScope.actions = parentIsolateScope.actions || [];
                         parentIsolateScope.actions.push(buttonDef);
+                    }
+                };
+            }
+        };
+    }])
+    .directive('wmGridRowAction', ['CONSTANTS', 'LiveWidgetUtils', function (CONSTANTS, LiveWidgetUtils) {
+        'use strict';
+        return {
+            'restrict': 'E',
+            'scope': true,
+            'replace': true,
+            'compile': function () {
+                return {
+                    'post': function (scope, element, attrs) {
+                        /*scope.$parent is defined when compiled with grid scope*/
+                        /*element.parent().isolateScope() is defined when compiled with dom scope*/
+                        var parentIsolateScope,
+                            buttonDef =  LiveWidgetUtils.getButtonDef(attrs),
+                            $parentElement = element.parent();
+
+                        if (CONSTANTS.isRunMode) {
+                            parentIsolateScope = scope;
+                        } else {
+                            parentIsolateScope = scope.parentIsolateScope = ($parentElement && $parentElement.length > 0) ? $parentElement.closest('[data-identifier="grid"]').isolateScope() || scope.$parent : scope.$parent;
+                        }
+                        parentIsolateScope.rowActions = parentIsolateScope.rowActions || [];
+                        parentIsolateScope.rowActions.push(buttonDef);
                     }
                 };
             }

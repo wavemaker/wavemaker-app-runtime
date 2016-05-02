@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', function ($rootScope, $location, $window, APPCONSTANTS, $sce) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', '$timeout', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, $timeout) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -1747,6 +1747,34 @@ WM.module('wm.utils', [])
                 }
             });
         }
+        //Triggers custom events passed
+        function triggerCustomEvents(event, customEvents, callBackScope, data, variable) {
+            var retVal,
+                firstArg = variable || event;
+            _.forEach(_.split(customEvents, ';'), function (eventValue) {
+                /* if event value is javascript, call the function defined in the callback scope of the variable */
+                if (eventValue === 'Javascript') {
+                    retVal = triggerFn(callBackScope[variable && variable.name + event], firstArg, data);
+                }
+                if (_.includes(eventValue, '.show')) {
+                    DialogService.showDialog(eventValue.slice(0, _.indexOf(eventValue, '.show')));
+                    return;
+                }
+                if (_.includes(eventValue, '.hide')) {
+                    DialogService.hideDialog(eventValue.slice(0, _.indexOf(eventValue, '.hide')));
+                    return;
+                }
+                if (_.includes(eventValue, '(')) {
+                    retVal = triggerFn(callBackScope[eventValue.substring(0, _.indexOf(eventValue, '('))], firstArg, data);
+                }
+                /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
+                $rootScope.$evalAsync(function () {
+                    $rootScope.$emit("invoke-service", eventValue, {scope: callBackScope});
+                    $rootScope.$safeApply(callBackScope);
+                });
+            });
+            return retVal;
+        }
 
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
@@ -1852,4 +1880,5 @@ WM.module('wm.utils', [])
         this.getMatchModes              = getMatchModes;
         this.updateTmplAttrs            = updateTmplAttrs;
         this.sort                       = sort;
+        this.triggerCustomEvents        = triggerCustomEvents;
     }]);

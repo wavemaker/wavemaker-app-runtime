@@ -1599,20 +1599,22 @@ If the height and width are not specified the video takes the height of the post
           }
         }
         td {
+          .actions-column {
+            white-space: nowrap;
+          }
           text-overflow: ellipsis;
           overflow: hidden;
           .row-action-button {
-            border: 0;
-            text-align: center;
-            box-shadow: none;
-            .remove-background();
-            opacity: 0.5;
-            &:hover {
-              .remove-background();
-              opacity: 1;
+            &.btn-transparent {
+              opacity: 0.5;
+              font-size: 12pt;
+              padding: 0 5px;
+              &:hover {
+               opacity: 1;
+              }
             }
             i {
-              font-size: initial;
+              font-size: inherit;
             }
           }
         }
