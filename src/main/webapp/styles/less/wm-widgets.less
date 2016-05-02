@@ -1499,6 +1499,21 @@ If the height and width are not specified the video takes the height of the post
       &.datetime-wrapper {
         overflow: inherit;
       }
+      &.cell-editing {
+        padding: 0;
+        input, select, textarea {
+          border: transparent;
+        }
+        .uib-timepicker input {
+          border: 1px solid #e0e0e0;
+        }
+        form {
+          margin: 7px 0 0 0;
+        }
+        .app-checkbox, form {
+          margin: 7px 0 0 12px;
+        }
+      }
     }
     .grid-col-small {
       width: 2.5em;
