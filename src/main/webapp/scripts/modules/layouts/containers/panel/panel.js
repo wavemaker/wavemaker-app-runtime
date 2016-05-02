@@ -11,8 +11,8 @@ WM.module('wm.layouts.containers')
                             '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="expandCollapsePanel()">' +
                                 '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
                                 '<div class="pull-left">' +
-                '<div class="heading">{{title}}</div>' +
-                '<div class="description">{{subheading}}</div>' +
+                                    '<div class="heading">{{title}}</div>' +
+                                    '<div class="description">{{subheading}}</div>' +
                                  '</div>' +
                             '</a>' +
                             '<div class="panel-actions">' +
