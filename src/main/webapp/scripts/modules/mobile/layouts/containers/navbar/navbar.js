@@ -120,13 +120,16 @@ WM.module('wm.layouts.containers')
             }
 
             // set the show property for the search related properties
-            function enableWidgetProps(wp, bool) {
+            function enableWidgetProps($is, wp, bool) {
                 wp.searchbuttoniconclass.show     = wp.searchbuttonlabel.show =
                     wp.searchplaceholder.show     = wp.scopedatavalue.show    =
                     wp.scopedataset.show          = wp.dataset.show           =
                     wp.searchkey.show             = wp.displaylabel.show      =
                     wp.displayimagesrc.show       = wp.datafield.show         =
                     wp.datavalue.show             =  bool;
+                if ($is.active) {
+                    $is.$emit('wms:refresh-properties-panel');
+                }
             }
 
             // switches the view based on defaultview
@@ -180,7 +183,7 @@ WM.module('wm.layouts.containers')
                     // show the search related properties only if default view is searchview.
                     if ($is.widgetid) {
                         var wp = $is.widgetProps;
-                        enableWidgetProps(wp, newVal === 'searchview');
+                        enableWidgetProps($is, wp, newVal === 'searchview');
                     }
                     break;
                 }
