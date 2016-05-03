@@ -1280,6 +1280,8 @@ WM.module('wm.widgets.base', [])
                         "deletemessage": {"type": "string", "value": "Record deleted successfully", "bindable": "in-out-bound", "show": false, "showindesigner": false},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string", "getTypeFrom": "dataset"},
                         "title": {"type": "string", "bindable": "in-bound"},
+                        "subheading": {"type": "string", "bindable": "in-bound"},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "pattern": classRegex},
                         "spacing": {"type": "list", "options": ["normal", "condensed"], "value": "normal"},
 
                         /* Events */
