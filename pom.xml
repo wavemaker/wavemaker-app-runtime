@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <wavemaker-api-tools.version>1.1.0</wavemaker-api-tools.version>
+        <wavemaker-api-tools.version>2.0</wavemaker-api-tools.version>
 
         <slf4j.version>1.7.12</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
@@ -458,8 +458,8 @@
                 <version>${guava.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.wavemaker</groupId>
-                <artifactId>wavemaker-apidocs-tools-core</artifactId>
+                <groupId>com.wavemaker.tools.apidocs</groupId>
+                <artifactId>wavemaker-tools-apidocs-core</artifactId>
                 <version>${wavemaker-api-tools.version}</version>
                 <exclusions>
                     <exclusion><!-- TODO Doing this as version is different from that found in MANIFEST file in wavemaker-app-runtime-core -->

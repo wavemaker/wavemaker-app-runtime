@@ -55,64 +55,64 @@ public class SwaggerDocUtil {
      * Return Operation from the Path object based on first occurrence in paths
      *
      * @param swagger      : searches in Swagger Object
-     * @param operationUid : search based on operationUid
+     * @param operationId : search based on operationId
      * @return path
      */
-    public static Path getPathByOperationUid(Swagger swagger, String operationUid) {
+    public static Path getPathByOperationId(Swagger swagger, String operationId) {
         for (Map.Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
             for (Operation operation : pathEntry.getValue().getOperations()) {
-                if (operationUid.equals(operation.getOperationUid())) {
+                if (operationId.equals(operation.getOperationId())) {
                     return pathEntry.getValue();
                 }
             }
         }
-        throw new SwaggerException("Operation does not exist with id " + operationUid);
+        throw new SwaggerException("Operation does not exist with id " + operationId);
     }
 
     /**
      * Return Operation from the Swagger object based on first occurrence in paths
      *
      * @param swagger      : searches in Swagger Object
-     * @param operationUid : search based on operationUid
+     * @param operationId : search based on operationId
      * @return Operation
      */
-    public static Operation getOperationByUid(Swagger swagger, String operationUid) {
+    public static Operation getOperationByUid(Swagger swagger, String operationId) {
         for (Map.Entry<String, Path> pathEntry : swagger.getPaths().entrySet()) {
             for (Operation operation : pathEntry.getValue().getOperations()) {
-                if (operationUid.equals(operation.getOperationUid())) {
+                if (operationId.equals(operation.getOperationId())) {
                     return operation;
                 }
             }
         }
-        throw new SwaggerException("Operation does not exist with id " + operationUid);
+        throw new SwaggerException("Operation does not exist with id " + operationId);
     }
 
     /**
-     * Return Operation from the Swagger object based on operationUid in provided endPoint.
+     * Return Operation from the Swagger object based on operationId in provided endPoint.
      *
      * @param swagger      : Searches in Swagger Object
      * @param endPoint     :   search operation in this endPoint
-     * @param operationUid : search based on operationUid
+     * @param operationId : search based on operationId
      * @return Operation
      */
-    public static Operation getOperation(Swagger swagger, String endPoint, String operationUid) {
+    public static Operation getOperation(Swagger swagger, String endPoint, String operationId) {
         Path path = Objects.requireNonNull(swagger.getPaths().get(endPoint), "Endpoint does not exist with id " + endPoint);
         for (Operation operation : path.getOperations()) {
-            if (operationUid.equals(operation.getOperationUid())) {
+            if (operationId.equals(operation.getOperationId())) {
                 return operation;
             }
         }
-        throw new SwaggerException("Operation does not exist with id " + operationUid);
+        throw new SwaggerException("Operation does not exist with id " + operationId);
     }
 
     /**
      * Return method type of the operation in a path
      *
      * @param path         : searches in path object
-     * @param operationUid : search operation based on this id.
+     * @param operationId : search operation based on this id.
      * @return method type
      */
-    public static String getOperationType(Path path, String operationUid) {
+    public static String getOperationType(Path path, String operationId) {
         Operation operationGet = path.getGet();
         Operation operationPost = path.getPost();
         Operation operationDelete = path.getDelete();
@@ -120,25 +120,25 @@ public class SwaggerDocUtil {
         Operation operationPut = path.getPut();
         Operation operationOptions = path.getOptions();
 
-        if (operationGet != null && operationGet.getOperationUid().equals(operationUid)) {
+        if (operationGet != null && operationGet.getOperationId().equals(operationId)) {
             return OperationType.get.name();
         }
-        if (operationPost != null && operationPost.getOperationUid().equals(operationUid)) {
+        if (operationPost != null && operationPost.getOperationId().equals(operationId)) {
             return OperationType.post.name();
         }
-        if (operationDelete != null && operationDelete.getOperationUid().equals(operationUid)) {
+        if (operationDelete != null && operationDelete.getOperationId().equals(operationId)) {
             return OperationType.delete.name();
         }
-        if (operationPatch != null && operationPatch.getOperationUid().equals(operationUid)) {
+        if (operationPatch != null && operationPatch.getOperationId().equals(operationId)) {
             return OperationType.patch.name();
         }
-        if (operationPut != null && operationPut.getOperationUid().equals(operationUid)) {
+        if (operationPut != null && operationPut.getOperationId().equals(operationId)) {
             return OperationType.put.name();
         }
-        if (operationOptions != null && operationOptions.getOperationUid().equals(operationUid)) {
+        if (operationOptions != null && operationOptions.getOperationId().equals(operationId)) {
             return OperationType.options.name();
         }
-        throw new SwaggerException("Operation does not exist with id " + operationUid);
+        throw new SwaggerException("Operation does not exist with id " + operationId);
     }
 
     /**
