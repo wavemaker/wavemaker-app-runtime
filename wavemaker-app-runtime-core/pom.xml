@@ -230,8 +230,8 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.wavemaker</groupId>
-            <artifactId>wavemaker-apidocs-tools-core</artifactId>
+            <groupId>com.wavemaker.tools.apidocs</groupId>
+            <artifactId>wavemaker-tools-apidocs-core</artifactId>
         </dependency>
         <dependency>
             <groupId>net.sf.jmimemagic</groupId>

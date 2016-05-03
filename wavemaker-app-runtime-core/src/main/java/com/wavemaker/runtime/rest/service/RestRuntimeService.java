@@ -15,6 +15,17 @@
  */
 package com.wavemaker.runtime.rest.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.text.StrSubstitutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+
 import com.wavemaker.runtime.helper.SchemaConversionHelper;
 import com.wavemaker.runtime.rest.RestConstants;
 import com.wavemaker.runtime.rest.model.RestRequestInfo;
@@ -30,16 +41,6 @@ import com.wavemaker.tools.apidocs.tools.core.model.ParameterType;
 import com.wavemaker.tools.apidocs.tools.core.model.Path;
 import com.wavemaker.tools.apidocs.tools.core.model.Swagger;
 import com.wavemaker.tools.apidocs.tools.core.model.parameters.Parameter;
-import org.apache.commons.lang3.text.StrSubstitutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Uday Shankar
@@ -105,7 +106,7 @@ public class RestRuntimeService {
         StringBuilder endpointAddressStringBuilder = new StringBuilder(
                 seheme + "://" + swagger.getHost() + swagger
                         .getBasePath() + ((relativePath == null) ? "" : relativePath));
-        String methodType = SwaggerDocUtil.getOperationType(path, operation.getOperationUid());
+        String methodType = SwaggerDocUtil.getOperationType(path, operation.getOperationId());
         restRequestInfo.setMethod(methodType.toUpperCase());
         List<String> consumes = operation.getConsumes();
         if (consumes != null && !consumes.isEmpty()) {
