@@ -84,11 +84,6 @@ WM.module('wm.layouts.page')
                             $s.onPageLoad = function () {
                                 // if the count is zero(means the page is ready), trigger update method of DeviceViewService
                                 if (!count) {
-                                    //trigger the onPageReady method
-                                    if ($s.hasOwnProperty('onPageReady')) {
-                                        Utils.triggerFn($s.onPageReady);
-                                    }
-
                                     /* if subview element names found (appended with page-name after a '.'), navigate to the view element */
                                     if ($routeParams && $routeParams.name) {
                                         subView = $routeParams.name.split('.');
@@ -103,8 +98,15 @@ WM.module('wm.layouts.page')
 
                                     // update the device after some delay
                                     $timeout(function () {
+                                        //trigger the onPageReady method
+                                        if ($s.hasOwnProperty('onPageReady')) {
+                                            Utils.triggerFn($s.onPageReady);
+                                        }
                                         DeviceViewService.update($el, $s.layout.leftSection, $s.layout.rightSection, $s.layout.search);
-                                        $rs.$emit('page-ready');
+                                        $rs.$$postDigest(function () {
+                                            /* triggering the event post digest, so that any expression watches are computed before the same*/
+                                            $rs.$emit('page-ready');
+                                        });
                                     });
                                 }
                             };
