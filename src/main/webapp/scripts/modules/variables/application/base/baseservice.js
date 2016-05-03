@@ -47,6 +47,7 @@ wm.variables.services.Variables = [
          */
         var runMode = CONSTANTS.isRunMode,
             MAIN_PAGE = 'Main',
+            startUpdateQueue = [],
             variableConfig = [
                 {
                     "collectionType": "call",
@@ -563,12 +564,7 @@ wm.variables.services.Variables = [
                             variable.canUpdate = true;
                         }
                         if (!runMode || variable.startUpdate) {
-                            /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                            $timeout(function () {
-                                if (WM.isFunction(variable.update)) {
-                                    variable.update();
-                                }
-                            }, null, false);
+                            startUpdateQueue.push(variable);
                         }
                     } else if (variable.category === "wm.LiveVariable") {
                         migrateOrderBy(variable);
@@ -576,24 +572,7 @@ wm.variables.services.Variables = [
                             variable.canUpdate = true;
                         }
                         if (variable.startUpdate) {
-                            /*
-                            * For variable with operation other than 'read', call respective method in RUN mode
-                            * In studio mode, DB and table related data is to be fetched and saved in the variable
-                            * So, getData is called in STUDIO mode for liva variables with all types of operations
-                            */
-                            if (runMode && variable.operation !== 'read') {
-                                /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                                $timeout(function () {
-                                    variable[variable.operation + 'Record']();
-                                }, null, false);
-                            } else {
-                                /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                                $timeout(function () {
-                                    if (WM.isFunction(variable.update)) {
-                                        variable.update();
-                                    }
-                                }, null, false);
-                            }
+                            startUpdateQueue.push(variable);
                         } else if (!runMode) {
                             /*
                              * In studio mode, DB and table related data is to be fetched and saved in the variable
@@ -609,24 +588,15 @@ wm.variables.services.Variables = [
                         }
                     } else if (variable.category === "wm.LoginVariable") {
                         if (runMode && variable.startUpdate) {
-                            /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                            $timeout(function () {
-                                variable.login();
-                            }, null, false);
+                            startUpdateQueue.push(variable);
                         }
                     } else if (variable.category === "wm.TimerVariable") {
                         if (runMode && variable.autoStart) {
-                            /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                            $timeout(function () {
-                                variable.fire();
-                            }, null, false);
+                            startUpdateQueue.push(variable);
                         }
                     } else if (variable.category === "wm.DeviceVariable") {
                         if (runMode && variable.startUpdate) {
-                            /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                            $timeout(function () {
-                                variable.invoke();
-                            }, null, false);
+                            startUpdateQueue.push(variable);
                         }
                     }
                 });
@@ -1483,6 +1453,49 @@ wm.variables.services.Variables = [
 
         /*Initialize the variable name iterator to the default value.*/
         resetVariableNameIterator();
+
+        /*
+         * The event is emitted on page ready
+         * all the variables with startUpdate flag enabled are triggered here.
+         * This delay is to wait for the widgets to compile so that the same(and app variables) can be consumed as input to the variables.
+         */
+        if (CONSTANTS.isRunMode) {
+            $rootScope.$on('page-ready', function () {
+                var method;
+                _.forEach(startUpdateQueue, function (variable) {
+                    switch (variable.category) {
+                    case 'wm.ServiceVariable':
+                        method = 'update';
+                        break;
+                    case 'wm.LiveVariable':
+                        /*
+                         * For variable with operation other than 'read', call respective method in RUN mode
+                         * In studio mode, DB and table related data is to be fetched and saved in the variable
+                         * So, getData is called in STUDIO mode for liva variables with all types of operations
+                         */
+                        if (variable.operation !== 'read') {
+                            method = variable.operation + 'Record';
+                        } else {
+                            method = 'update';
+                        }
+                        break;
+                    case 'wm.LoginVariable':
+                        method = 'login';
+                        break;
+                    case 'wm.TimerVariable':
+                        method = 'fire';
+                        break;
+                    case 'wm.DeviceVariable':
+                        method = 'invoke';
+                        break;
+                    }
+                    if (WM.isFunction(variable[method])) {
+                        variable[method]();
+                    }
+                });
+                startUpdateQueue = [];
+            });
+        }
 
         /*Check for Studio mode.*/
         if (CONSTANTS.isStudioMode) {
