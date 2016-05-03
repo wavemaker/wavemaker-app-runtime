@@ -1014,12 +1014,10 @@ WM.module('wm.widgets.live')
                             draggedItem,
                             $dragEl;
 
+                        data        = data || Utils.getClonedObject($is.$liScope.fieldDefs);
                         $dragEl     = WM.element(this);
                         newIndex    = ui.item.index();
                         oldIndex    = $dragEl.data('oldIndex');
-                        if (!data) {
-                            data = WM.isArray($is.dataset) ? Utils.getClonedObject($is.dataset) : Utils.getClonedObject($is.dataset.data);
-                        }
                         draggedItem = _.pullAt(data, oldIndex)[0];
 
                         data.splice(newIndex, 0, draggedItem);
