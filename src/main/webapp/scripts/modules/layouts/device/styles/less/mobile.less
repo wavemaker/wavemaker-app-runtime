@@ -3,7 +3,7 @@
 .mobile-left-panel(@left-panel-width){
   display: block;
   height: 100%;
-  width: @left-panel-width;
+  width: @left-panel-width !important;
   overflow: auto;
   transition: left 0.5s  ease-in-out;
   position: fixed;
@@ -62,6 +62,10 @@
       display: table;
       top: 0;
       left: 0;
+      .app-header-menu {
+        display: table-cell;
+        width: 18pt;
+      }
       .app-header-container {
         display:table-cell;
       }
@@ -69,6 +73,8 @@
         font-size: @app-mobile-nav-icon-size;
         text-decoration: none;
         cursor: pointer;
+        display: inline-block;
+        width: 18pt;
         line-height: @app-mobile-nav-height;
         vertical-align: middle;
         color: inherit;
@@ -164,7 +170,7 @@
     }
 
     .app-right-panel {
-      width: 100%;
+      width: 100% !important;
       height: auto;
       display: block;
     }
@@ -264,12 +270,8 @@
     }
 }
 }
-.tab-common(@left-panel-width){
-  .wm-app {
-    .app-left-panel {
-      .mobile-left-panel(@left-panel-width)
-    }
-  }
+.tab-common(@left-panel-width) {
+  .mobile-common(@left-panel-width)
 }
 
 /* Smartphones (portrait and landscape) ----------- */
@@ -308,7 +310,6 @@ and (max-width : 320px) {
 and (min-device-width : 768px)
 and (max-device-width : 1024px) {
 /* Styles */
-  .tab-common(90%);
 }
 
 /* iPads (landscape) ----------- */
@@ -317,7 +318,6 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px)
 and (orientation : landscape) {
 /* Styles */
-  .tab-common(20%);
 }
 
 /* iPads (portrait) ----------- */
@@ -326,7 +326,7 @@ and (min-device-width : 768px)
 and (max-device-width : 1024px)
 and (orientation : portrait) {
 /* Styles */
-  .tab-common(90%);
+  .tab-common(33%)
 }
 
 /* Desktops and laptops ----------- */

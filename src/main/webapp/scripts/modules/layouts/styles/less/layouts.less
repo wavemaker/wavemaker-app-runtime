@@ -1086,6 +1086,13 @@ body {
 
 .wm-app {
   background-color: @app-background-color;
+  //hide the left panel icon by default
+  .app-header-menu, .app-header-action {
+    display: none;
+  }
+  .app-header-action {
+    float: right;
+  }
   /**********************************************************************/
   /********************Overrides for the content classes**************************/
   /**********************************************************************/
