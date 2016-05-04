@@ -562,29 +562,38 @@ wm.variables.services.Variables = [
                     } else if (variable.category === "wm.ServiceVariable") {
                         if (runMode) {
                             variable.canUpdate = true;
-                        }
-                        if (!runMode || variable.startUpdate) {
-                            startUpdateQueue.push(variable);
+                            if (variable.startUpdate) {
+                                startUpdateQueue.push(variable);
+                            }
+                        } else {
+                            //fetching the meta data in design mode always
+                            if (WM.isFunction(variable.update)) {
+                                variable.update();
+                            }
                         }
                     } else if (variable.category === "wm.LiveVariable") {
                         migrateOrderBy(variable);
                         if (runMode) {
                             variable.canUpdate = true;
-                        }
-                        if (variable.startUpdate) {
-                            startUpdateQueue.push(variable);
-                        } else if (!runMode) {
-                            /*
-                             * In studio mode, DB and table related data is to be fetched and saved in the variable
-                             * So, getData is called in STUDIO mode for liva variables with all types of operations
-                             * since startUpdate is unset, table data is not required, hence skipFetchData flag is set
-                             */
-                            $timeout(function () {
-                                /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
-                                if (WM.isFunction(variable.update)) {
-                                    variable.update({skipFetchData: true});
-                                }
-                            }, null, false);
+                            if (variable.startUpdate) {
+                                startUpdateQueue.push(variable);
+                            }
+                        } else {
+                            if (variable.startUpdate && WM.isFunction(variable.update)) {
+                                variable.update();
+                            } else {
+                                /*
+                                 * In studio mode, DB and table related data is to be fetched and saved in the variable
+                                 * So, getData is called in STUDIO mode for liva variables with all types of operations
+                                 * since startUpdate is unset, table data is not required, hence skipFetchData flag is set
+                                 */
+                                $timeout(function () {
+                                    /* keeping the call in a timeout to wait for the widgets to load first and the binding to take effect */
+                                    if (WM.isFunction(variable.update)) {
+                                        variable.update({skipFetchData: true});
+                                    }
+                                }, null, false);
+                            }
                         }
                     } else if (variable.category === "wm.LoginVariable") {
                         if (runMode && variable.startUpdate) {
