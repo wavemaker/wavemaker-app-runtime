@@ -174,7 +174,7 @@ WM.module('wm.widgets.grid')
             "template": function (element) {
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
-                return '<div data-identifier="grid" init-widget data-ng-show="show" title="{{hint}}" class="app-grid app-panel panel panel-default" apply-styles="shell">' +
+                return '<div data-identifier="grid" init-widget data-ng-show="show" title="{{hint}}" class="app-grid app-panel panel" apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +

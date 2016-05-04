@@ -50,7 +50,7 @@ WM.module('wm.widgets.live')
 
                 var expr = (attrs.onBackbtnclick ? ('on-backbtnclick="' + attrs.onBackbtnclick + '"') : '');
 
-                pageTemplate = '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-device-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
+                pageTemplate = '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-device-liveform panel liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
                                 '<wm-mobile-navbar title="{{title}}" ' + expr + '>' +
                                     '<wm-button type="{{btn.type}}" class="navbar-btn btn-primary btn-transparent" data-ng-repeat="btn in buttonArray" caption="" title="{{btn.displayName}}" iconclass="{{btn.iconclass}}" show="{{isUpdateMode && btn.show}}" on-click="{{btn.action}}"></wm-button>' +
                                 '</wm-mobile-navbar>' +
@@ -61,12 +61,15 @@ WM.module('wm.widgets.live')
                                 '<div class="hidden-form-elements"></div>' +
                         '</form>';
 
-                defaultTemplate = '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel panel-default liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
+                defaultTemplate = '<form data-identifier="liveform" init-widget data-ng-show="show" role="form" class="app-liveform panel app-panel liveform-inline align-{{captionalign}} position-{{captionposition}}" data-ng-submit="formSave($event);" autocomplete="autocomplete" apply-styles="shell">' +
                                     '<div data-ng-show="isLayoutDialog"><i class="wm-icon24 wi wi-gear"></i>Live form in dialog mode</div>' +
-                                    '<div class="form-header panel-heading" data-ng-show="!isLayoutDialog" data-ng-if="title">' +
+                                    '<div class="panel-heading" ng-if="title || subheading || iconclass" ng-show="!isLayoutDialog">' +
                                         '<h3 class="panel-title">' +
-                                            '<i data-ng-if="iconclass" class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
-                                            '<span class="form-header-text">{{title}}</span>' +
+                                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
+                                            '<div class="pull-left">' +
+                                                '<div class="heading">{{title}}</div>' +
+                                                '<div class="description">{{subheading}}</div>' +
+                                            '</div>' +
                                         '</h3>' +
                                     '</div>' +
                                     '<div class="form-elements panel-body" data-ng-class="{\'update-mode\': isUpdateMode }" data-ng-show="!isLayoutDialog" apply-styles="inner-shell">' +

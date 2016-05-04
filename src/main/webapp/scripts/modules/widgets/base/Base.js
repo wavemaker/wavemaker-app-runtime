@@ -1069,7 +1069,7 @@ WM.module('wm.widgets.base', [])
                         "onExitfullscreen": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onActionsclick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "panel-default", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     'wm.layouts.card': {
                         "heading": {"type": "string", "bindable": "in-bound"},
@@ -1181,6 +1181,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.form': {
                         "title": {"type": "string",  "bindable": "in-bound"},
+                        "subheading": {"type": "string", "bindable": "in-bound"},
                         "novalidate": {"type": "boolean", "value": false},
                         "autocomplete": {"type": "boolean", "value": true},
                         "action": {"type": "string", "bindable": "in-bound"},
@@ -1195,6 +1196,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "captionsize": {"type": "string"},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "pattern": classRegex},
                         "formdata": {"type": "object", "show": false, "bindable": "out-bound", "widget": "string"},
                         "postmessage": {"type": "string", "value": "Data posted successfully", "bindable": "in-out-bound"},
                         "captionalign": {"type": "list", "options": ["left", "center", "right"], "value": "left"},
@@ -1206,6 +1208,7 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.liveform': {
                         "title": {"type": "string",  "bindable": "in-bound"},
+                        "subheading": {"type": "string", "bindable": "in-bound"},
                         "formlayout": {"type": "switch", "options":  [{"label": "INLINE", "value": "inline"}, {"label": "PAGE", "value": "page"}], "value": "inline", "show" : false, "displayfield": "label", "datafield": "value"},
                         "autocomplete": {"type": "boolean", "value": true, "showindesigner": true},
                         "captionsize": {"type": "string", "value": "", "showindesigner": true},
@@ -1305,7 +1308,8 @@ WM.module('wm.widgets.base', [])
 
                         /* Styles */
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "list-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
-                        "tabindex": {"type": "string", "value": "0"}
+                        "tabindex": {"type": "string", "value": "0"},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     'wm.livegrid': {
                         'formlayout': {"type": "list", "options": ["inline", "dialog"], "value": "inline"}
@@ -1396,7 +1400,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordionpane": {
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
                     },
@@ -1468,6 +1472,7 @@ WM.module('wm.widgets.base', [])
                     "wm.livelist": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "title": {"type": "string", "bindable": "in-bound"},
+                        "subheading": {"type": "string", "bindable": "in-bound"},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "enablereorder": {"type": "boolean"},
                         "accessroles": {"type": "accessrolesselect", "options": roles, "value": EVERYONE},
@@ -1501,6 +1506,7 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.livefilter": {
                         "title": {"type": "string"},
+                        "subheading": {"type": "string", "bindable": "in-bound"},
                         "autocomplete": {"type": "boolean", "value": true, "showindesigner": true},
                         "captionsize": {"type": "string", "value": "", "showindesigner": true},
                         "captionalign": {"type": "string", "options": ["left", "center", "right"], "value": "left", "showindesigner": true, "widget": "icons_align"},

@@ -7,12 +7,15 @@ WM.module('wm.widgets.live')
         'use strict';
 
         $tc.put('template/widget/list.html',
-                '<div class="app-livelist panel" ng-class="navigation" init-widget live-actions apply-styles="shell" ng-show="show">' +
-                    '<div class="form-header panel-heading" ng-if="title">' +
-                        '<h4 class="panel-title">' +
-                            '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
-                            '<span>{{title}}</span>' +
-                        '</h4>' +
+                '<div class="app-livelist panel app-panel" ng-class="navigation" init-widget live-actions apply-styles="shell" ng-show="show">' +
+                    '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
+                        '<h3 class="panel-title">' +
+                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                            '<div class="pull-left">' +
+                                '<div class="heading">{{title}}</div>' +
+                                '<div class="description">{{subheading}}</div>' +
+                            '</div>' +
+                        '</h3>' +
                     '</div>' +
                     '<nav class="app-datanavigator" ng-if="navigation === \'Inline\'" >' +
                         '<ul class="pager"><li class="previous" ng-class="{\'disabled\': dataNavigator.isDisablePrevious}"><a href="javascript:void(0);" ' +
