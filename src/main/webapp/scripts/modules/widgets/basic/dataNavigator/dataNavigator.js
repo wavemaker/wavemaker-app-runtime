@@ -164,7 +164,9 @@ WM.module("wm.widgets.basic")
                         currentPage,
                         pageCount,
                         startIndex,
-                        data;
+                        data,
+                        variable,
+                        variableOptions = {};
 
                     /*Set the default value of the "result" property to the newVal so that the widgets bound to the data-navigator can have the dataSet set properly.*/
                     $scope.result = newVal;
@@ -176,6 +178,8 @@ WM.module("wm.widgets.basic")
                         if ($scope.binddataset.indexOf('bind:Variables.') !== -1) {
                             $scope.variableName = $scope.binddataset.replace('bind:Variables.', '');
                             $scope.variableName = $scope.variableName.substr(0, $scope.variableName.indexOf('.'));
+                            variable = $scope.variableName && $scope.navigatorElement.scope().Variables[$scope.variableName];
+                            variableOptions = variable._options || {};
                         } else if (newVal.isBoundToFilter && newVal.widgetName) {
                             $scope.isBoundToFilter = true;
                             $scope.widgetName = newVal.widgetName;
@@ -187,8 +191,8 @@ WM.module("wm.widgets.basic")
                         if (newVal) {
                             if ($scope.isVariableHasPaging()) {
                                 /*If "filterFields" and "sortOptions" have been set, then set them so that the filters can be retained while fetching data upon page navigation.*/
-                                $scope.filterFields = newVal.filterFields || {};
-                                $scope.sortOptions = newVal.sortOptions || (WM.isArray(newVal.sort) ? getOrderByExpr(newVal.sort) : '');
+                                $scope.filterFields = variableOptions.filterFields || {};
+                                $scope.sortOptions = variableOptions.orderBy || (WM.isArray(newVal.sort) ? getOrderByExpr(newVal.sort) : '');
                                 if (WM.isObject(newVal) && Utils.isPageable(newVal)) {
                                     dataSize = newVal.totalElements;
                                     $scope.checkDataSize(dataSize);

@@ -197,9 +197,9 @@ wm.variables.services.$liveVariable = [
             },
             updateVariableDataset = function (variable, data, propertiesMap, pagingOptions) {
                 variable.dataSet = {
-                    "data": data,
-                    "propertiesMap": propertiesMap,
-                    "pagingOptions": pagingOptions
+                    'data'          : data,
+                    'propertiesMap' : propertiesMap,
+                    'pagingOptions' : pagingOptions
                 };
             },
             setVariableProp = function (variable, writableVariable, propertyName, propertyValue) {
@@ -612,7 +612,7 @@ wm.variables.services.$liveVariable = [
 
                     processBlobColumns(response.content, variable);
                     dataObj.data = response.content;
-                    dataObj.pagingOptions = {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults};
+                    dataObj.pagingOptions = {"dataSize": response ? response.totalElements : null, "maxResults": variable.maxResults, "currentPage": response ? (response.number + 1) : null};
 
                     if (!options.skipDataSetUpdate) {
                         /* get the callback scope for the variable based on its owner */
@@ -641,6 +641,9 @@ wm.variables.services.$liveVariable = [
                             // EVENT: ON_CAN_UPDATE
                             variable.canUpdate = true;
                             initiateCallback(VARIABLE_CONSTANTS.EVENT.CAN_UPDATE, variable, callBackScope, dataObj.data);
+                            variable._options =  variable._options || {};
+                            variable._options.orderBy = options && options.orderBy;
+                            variable._options.filterFields = options && options.filterFields;
                         }
                         /* update the dataSet against the variable */
                         updateVariableDataset(variable, dataObj.data, variable.propertiesMap, dataObj.pagingOptions);

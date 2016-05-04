@@ -908,12 +908,8 @@ WM.module('wm.widgets.grid')
                     }
                 },
                 searchGrid = function (searchObj) {
-
-                    var filterFields,
-                        variable = $scope.gridElement.scope().Variables[$scope.variableName];
-
-                    /*Set the filter fields based on the search options entered.*/
-                    filterFields = {};
+                    var filterFields = {},
+                        variable     = $scope.gridElement.scope().Variables[$scope.variableName];
                     /*Set the filter options only when a field/column has been selected.*/
                     if (searchObj.field) {
                         currentSearch = searchObj;
@@ -924,121 +920,62 @@ WM.module('wm.widgets.grid')
                     }
 
                     variable.update({
-                        "type": "wm.LiveVariable",
-                        "page": 1,
-                        "filterFields": filterFields,
-                        "matchMode": 'anywhere',
-                        "ignoreCase": true,
-                        "scope": $scope.gridElement.scope()
-                    }, function (data, propertiesMap, pagingOptions) {
-                        $scope.serverData = [];
-                        $scope.serverData.data = data;
-                        /*Check for sanity*/
-                        if ($scope.dataNavigator) {
-                            $scope.dataNavigator.dataset = {
-                                "data": data,
-                                "propertiesMap": propertiesMap,
-                                "pagingOptions": pagingOptions,
-                                "filterFields": filterFields,
-                                "variableName": $scope.variableName
-                            };
-
-                            /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
-                            if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
-                                $scope.dataNavigator.navigatePage('prev');
-                            }
-                        }
-                        setGridData($scope.serverData);
-
-                    }, function () {
+                        'type'         : 'wm.LiveVariable',
+                        'page'         : 1,
+                        'filterFields' : filterFields,
+                        'matchMode'    : 'anywhere',
+                        'ignoreCase'   : true,
+                        'scope'        : $scope.gridElement.scope()
+                    }, WM.noop, function () {
                         wmToaster.show('error', 'ERROR', 'No results found.');
-                        setGridData([]);
                     });
                 },
                 sortHandler = function (sortObj, e) {
-                    var filterFields,
-                        variable    = $scope.gridElement.scope().Variables[$scope.variableName],
-                        fieldName   = sortObj.field,
-                        sortOptions = fieldName + ' ' + sortObj.direction;
+                    var filterFields = {},
+                        variable     = $scope.gridElement.scope().Variables[$scope.variableName],
+                        fieldName    = sortObj.field,
+                        sortOptions  = fieldName + ' ' + sortObj.direction;
                     /* Update the sort info for passing to datagrid */
-                    $scope.gridOptions.sortInfo.field = sortObj.field;
+                    $scope.gridOptions.sortInfo.field     = sortObj.field;
                     $scope.gridOptions.sortInfo.direction = sortObj.direction;
+                    if (!sortObj.direction) {
+                        return;
+                    }
+                    $scope.sortInfo = Utils.getClonedObject(sortObj);
 
-                    if (sortObj.direction) {
-                        $scope.sortInfo = Utils.getClonedObject(sortObj);
+                    if ($scope.isBoundToFilter && $scope.widgetName) {
+                        /* if Grid bound to filter, get sorted data through filter widget (with applied filters in place)*/
+                        $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions});
+                    } else if (variable.category === 'wm.LiveVariable') {
                         if ($scope.gridsearch && currentSearch) {
-                            /*Set the filter fields based on the search options entered.*/
-                            filterFields = {};
                             /*Set the filter options only when a field/column has been selected.*/
                             if (currentSearch.field) {
                                 filterFields[currentSearch.field] = {
-                                    'value': currentSearch.value,
-                                    'type': currentSearch.type
+                                    'value' : currentSearch.value,
+                                    'type'  : currentSearch.type
                                 };
                             }
                         }
-
-                        if ($scope.isBoundToFilter && $scope.widgetName) {
-                            /* if Grid bound to filter, get sorted data through filter widget (with applied filters in place)*/
-                            $scope.Widgets[$scope.widgetName].applyFilter({"orderBy": sortOptions});
-                        } else if (variable.category === 'wm.LiveVariable') {
-                            /* else get sorted data through variable */
-                            variable.update({
-                                'type': 'wm.LiveVariable',
-                                'page': 1,
-                                'filterFields': filterFields,
-                                'orderBy': sortOptions,
-                                'matchMode': 'anywhere',
-                                'ignoreCase': true,
-                                'scope': $scope.gridElement.scope()
-                            }, function (data, propertiesMap, pagingOptions) {
-                                /*Navigate to the first page upon sorting.*/
-                                $scope.dataNavigator.navigatePage("first");
-                                $scope.serverData      = [];
-                                $scope.serverData.data = data;
-                                /*Check for sanity*/
-                                if ($scope.dataNavigator) {
-                                    $scope.dataNavigator.dataset = {
-                                        'data': data,
-                                        'propertiesMap': propertiesMap,
-                                        'pagingOptions': pagingOptions,
-                                        'filterFields': filterFields,
-                                        'sortOptions': sortOptions,
-                                        'variableName': $scope.variableName
-                                    };
-
-                                    /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
-                                    if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
-                                        $scope.dataNavigator.navigatePage('prev');
-                                    }
-                                }
-                                setGridData($scope.serverData);
-
-                            }, function (error) {
-                                wmToaster.show('error', 'ERROR', error);
-                            });
-                        } else if (variable.category === "wm.ServiceVariable") {
-                            /* Will be called only in case of Query service variables */
-                            variable.update({
-                                'orderBy': sortOptions,
-                                'page': 1
-                            }, function (data) {
-                                /*Navigate to the first page upon sorting.*/
-                                $scope.serverData = data.content;
-                                /*Check for sanity*/
-                                if ($scope.dataNavigator) {
-                                    $scope.dataNavigator.dataset = data;
-
-                                    /*If the current page does not contain any records due to deletion, then navigate to the previous page.*/
-                                    if ($scope.dataNavigator.pageCount < $scope.dataNavigator.currentPage) {
-                                        $scope.dataNavigator.navigatePage('prev');
-                                    }
-                                }
-                                setGridData($scope.serverData);
-                            }, function (error) {
-                                wmToaster.show('error', 'ERROR', error);
-                            });
-                        }
+                        /* else get sorted data through variable */
+                        variable.update({
+                            'type'         : 'wm.LiveVariable',
+                            'page'         : 1,
+                            'filterFields' : filterFields,
+                            'orderBy'      : sortOptions,
+                            'matchMode'    : 'anywhere',
+                            'ignoreCase'   : true,
+                            'scope'        : $scope.gridElement.scope()
+                        }, WM.noop, function (error) {
+                            wmToaster.show('error', 'ERROR', error);
+                        });
+                    } else if (variable.category === 'wm.ServiceVariable') {
+                        /* Will be called only in case of Query service variables */
+                        variable.update({
+                            'orderBy' : sortOptions,
+                            'page'    : 1
+                        }, WM.noop, function (error) {
+                            wmToaster.show('error', 'ERROR', error);
+                        });
                     }
                 },
                 /*Returns data filtered using searchObj*/
