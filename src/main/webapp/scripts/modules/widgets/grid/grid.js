@@ -2160,6 +2160,8 @@ WM.module('wm.widgets.grid')
                                 'editWidgetType': attrs.editWidgetType,
                                 'dataset': attrs.dataset,
                                 'datafield': attrs.datafield,
+                                'displaylabel': attrs.displaylabel,
+                                'searchkey': attrs.searchkey,
                                 'displayfield': attrs.displayfield,
                                 'defaultvalue': attrs.defaultvalue,
                                 'sortable': attrs.sortable !== 'false',

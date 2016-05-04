@@ -511,6 +511,10 @@ $.widget('wm.datagrid', {
                 cellText = cellText || '';
                 template =  '<wm-select ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '"></wm-select>';
                 break;
+            case 'typeahead':
+                $el.addClass('datetime-wrapper');
+                template =  '<wm-search ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="typeahead"></wm-select>';
+                break;
             case 'date':
                 $el.addClass('datetime-wrapper');
                 template = '<wm-date ' + dataValue + '></wm-date>';
@@ -1328,7 +1332,7 @@ $.widget('wm.datagrid', {
                 value = $el.data('originalValue'),
                 originalValue,
                 template;
-            $el.removeClass('datetime-wrapper');
+            $el.removeClass('datetime-wrapper cell-editing');
             if (!value) {
                 $el.text($el.data('originalText') || '');
             } else {
@@ -1358,6 +1362,7 @@ $.widget('wm.datagrid', {
                 template,
                 text,
                 colDef;
+            $el.removeClass('datetime-wrapper cell-editing');
             if (!value) {
                 colDef = self.preparedHeaderData[$el.attr('data-col-id')];
                 text   = self.getTextValue($el, colDef, colDef.field.split('.'));
