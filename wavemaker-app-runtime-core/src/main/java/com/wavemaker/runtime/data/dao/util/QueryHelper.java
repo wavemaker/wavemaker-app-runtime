@@ -48,6 +48,7 @@ public class QueryHelper {
     private static final String FROM_HQL = "FROM ";//For a Select (*) hibernate query.
     private static final String GROUP_BY = " group by ";
     private static final String ORDER_BY = " order by ";
+    public static final String BACK_TICK = "`";
 
     public static void configureParameters(Query query, Map<String, Object> params) {
         String[] namedParameters = query.getNamedParameters();
@@ -109,7 +110,7 @@ public class QueryHelper {
         }
 
         if (str.charAt(0) != '`') {
-            return new StringBuilder().append("`").append(str).toString();
+            return new StringBuilder().append(BACK_TICK).append(str).append(BACK_TICK).toString();
         }
 
         return str;
