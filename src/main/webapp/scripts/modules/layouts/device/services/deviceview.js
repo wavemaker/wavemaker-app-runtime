@@ -89,7 +89,7 @@ WM.module("wm.layouts.device")
         function bindSearchIconEvent(searchElements) {
 
             WM.forEach(searchElements, function (ele) {
-                var searchEle = WM.element('<a class="visible-xs-inline-block app-header-action wi wi-search"></a>');
+                var searchEle = WM.element('<a class="app-header-action wi wi-search"></a>');
                 WM.element(ele).before(searchEle);
                 //Tap icon to show/hide search box
                 bindTapEvtHandler(searchEle, function () {
@@ -124,9 +124,7 @@ WM.module("wm.layouts.device")
 
                 if (hasLeftNav) {
                     bindLeftPanelEvents();
-                    //If left nav is present, show the swipe icon (by default it is hidden)
-                    element.find(roleSelector(SWIPE_ELEM_CLASS_NAME)).removeClass('hidden').addClass('visible-xs-inline-block');
-                } else {
+               } else {
                     //remove the icon
                     element.find(roleSelector(SWIPE_ELEM_CLASS_NAME)).remove();
                 }
