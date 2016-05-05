@@ -63,7 +63,8 @@ WM.module("wm.widgets.basic")
         return {
             'restrict': 'E',
             'scope': {
-                'onSetrecord': '&'
+                'onSetrecord': '&',
+                'onPaginationchange': '&'
             },
             'replace': true,
             'controller': function ($scope) {
@@ -386,6 +387,11 @@ WM.module("wm.widgets.basic")
 
                 /*Function to navigate to the respective pages.*/
                 $scope.navigatePage = function (index, event, isRefresh, callback) {
+                    if ($scope.$parent.onPaginationchange) {
+                        $scope.$parent.onPaginationchange({$event: event, $scope: this, $index: $scope.dn.currentPage});
+                    } else if ($scope.onPaginationchange) {
+                        $scope.onPaginationchange({$event: event, $scope: this, $index: $scope.dn.currentPage});
+                    }
 
                     /*Convert the current page to a valid page number.*/
                     $scope.dn.currentPage = parseInt($scope.dn.currentPage, 10);
