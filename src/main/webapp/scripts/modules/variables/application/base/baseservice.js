@@ -1036,10 +1036,13 @@ wm.variables.services.Variables = [
 
            /* function to create default non-conflicting name for a variable */
             generateUniqueName = function (category, name, overWrite) {
-                var defaultName;
+                var defaultName,
+                    nameIteratorKey = 'category';
 
                 if (name) {
-                    defaultName = name;
+                    nameIteratorKey = name;
+                    self.variableNameIterator[nameIteratorKey] = self.variableNameIterator[nameIteratorKey] || 0;
+                    defaultName = name + (self.variableNameIterator[nameIteratorKey] || '');
                 } else {
                     defaultName = variableCategoryToNameMap[category] + self.variableNameIterator[category];
                 }
@@ -1049,8 +1052,8 @@ wm.variables.services.Variables = [
                 }
 
                 /* increment the iterator for the category and look for unique name again*/
-                self.variableNameIterator[category] += 1;
-                return generateUniqueName(category);
+                self.variableNameIterator[nameIteratorKey] += 1;
+                return generateUniqueName(category, name);
             },
 
             // registers a variable collection in the specified namespace
@@ -1943,6 +1946,9 @@ wm.variables.services.Variables = [
                     createdVariable.type = variableDetails.table;
                     createdVariable.category = variableCategory;
                     createdVariable.isDefault = true;
+                    createdVariable.maxResults = variableDetails.maxResults;
+                    createdVariable.startUpdate = variableDetails.startUpdate;
+                    createdVariable.autoUpdate = variableDetails.autoUpdate;
 
                     /*adding a property to identify the database-type for the created live-variable*/
                     createdVariable.dbSystem = variableDetails.dbSystem;
@@ -1988,11 +1994,13 @@ wm.variables.services.Variables = [
                     createdVariable.service       = variableDetails.service;
                     createdVariable.operation     = variableDetails.operation;
                     createdVariable.operationType = variableDetails.operationType;
-                    createdVariable.operationId   = variableDetails.operationId;
-                    createdVariable.serviceType   = variableDetails.serviceType;
-                    createdVariable.category      = variableCategory;
-                    createdVariable.isDefault     = true;
-                    createdVariable.type          = variableDetails.returnType;
+                    createdVariable.serviceType = variableDetails.serviceType;
+                    createdVariable.category = variableCategory;
+                    createdVariable.isDefault = true;
+                    createdVariable.maxResults = variableDetails.maxResults;
+                    createdVariable.startUpdate = variableDetails.startUpdate;
+                    createdVariable.autoUpdate = variableDetails.autoUpdate;
+                    createdVariable.type = variableDetails.returnType;
 
                     /* insert sample param values if provided */
                     bindMapCollection = createdVariable.dataBinding;

@@ -1444,7 +1444,8 @@ wm.variables.services.$liveVariable = [
              * @param {object} variable variable
              * @param {string} fieldName fieldName of the column
              */
-            getRelatedColumnsList: getRelatedColumnsList
+            getRelatedColumnsList: getRelatedColumnsList,
+            getTableMetaData: getTableMetaData
         };
     }
 ];
