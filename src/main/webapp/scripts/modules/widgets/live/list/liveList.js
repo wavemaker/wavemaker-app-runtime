@@ -439,6 +439,7 @@ WM.module('wm.widgets.live')
                         updateFieldDefs($is, $el, [], attrs, listCtrl);
                     }
                 }
+                $is._isDataChanged = true;
             }
 
             function setupDataSource($is, $el, nv, attrs, listCtrl) {
@@ -1014,13 +1015,14 @@ WM.module('wm.widgets.live')
                             draggedItem,
                             $dragEl;
 
-                        data        = data || Utils.getClonedObject($is.$liScope.fieldDefs);
+                        data        = $is._isDataChanged ?  Utils.getClonedObject($is.$liScope.fieldDefs) : data;
                         $dragEl     = WM.element(this);
                         newIndex    = ui.item.index();
                         oldIndex    = $dragEl.data('oldIndex');
                         draggedItem = _.pullAt(data, oldIndex)[0];
 
                         data.splice(newIndex, 0, draggedItem);
+                        $is._isDataChanged = false;
                         Utils.triggerFn($is.onReorder, {$event: evt, $data: data });
                         $dragEl.removeData('oldIndex');
                     }
@@ -1084,7 +1086,7 @@ WM.module('wm.widgets.live')
 
                 if (CONSTANTS.isRunMode) {
                     if (!$is.groupby) {
-                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs track by $index" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
+                        liTemplateWrapper_start = '<li ng-repeat="item in fieldDefs" tabindex="0" class="app-list-item" ng-class="[itemsPerRowClass, itemclass]" ';
                         liTemplateWrapper_end   = '></li><li ng-show="fetchInProgress"><i class="fa fa-spinner fa-spin"></i> loading...</li>';
                         $liTemplate             = prepareLITemplate(listCtrl.$get('listTemplate'), attrs);
 
