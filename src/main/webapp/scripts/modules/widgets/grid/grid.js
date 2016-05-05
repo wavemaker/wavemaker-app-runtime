@@ -166,7 +166,8 @@ WM.module('wm.widgets.grid')
                 "onColumnselect": "&",
                 "onColumndeselect": "&",
                 "onEnterkeypress": "&",
-                "onSetrecord": "&"
+                "onSetrecord": "&",
+                "onPaginationchange": "&"
             },
             "replace": true,
             "transclude": false,

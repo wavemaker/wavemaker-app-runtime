@@ -338,7 +338,7 @@ WM.module('wm.widgets.live')
 
             // With given data, creates list items and updates the markup
             function updateFieldDefs($is, $el, data, attrs, listCtrl) {
-                var unbindWatcher, _s, fieldDefs;
+                var unbindWatcher, _s, fieldDefs, variable, isBoundToLV;
 
                 _s        = $is.$liScope;
                 fieldDefs = _s.fieldDefs;
@@ -349,7 +349,12 @@ WM.module('wm.widgets.live')
                     }
 
                     if ($is.dataNavigator.isFirstPage()) {
-                        _s.fieldDefs.length = 0;
+                        variable = getVariable($is, Utils.getVariableName($is));
+                        isBoundToLV = variable && variable.category === 'wm.LiveVariable';
+
+                        if (isBoundToLV) {
+                            _s.fieldDefs.length = 0;
+                        }
                     }
 
                     _.forEach(data, function (item) {
@@ -374,7 +379,7 @@ WM.module('wm.widgets.live')
                     addListElements(_s, $el, $is, attrs, listCtrl);
                 }
 
-                if (!data.length) {
+                if (!_s.fieldDefs.length) {
                     $is.noDataFound = true;
                     $is.selecteditem = undefined;
                 }
@@ -746,19 +751,20 @@ WM.module('wm.widgets.live')
 
                 // evt handlers will be created by isolateScope. redefine them on $liScope.
                 WM.extend($liScope, {
-                    'onClick'          : $is.onClick,
-                    'onDblclick'       : $is.onDblclick,
-                    'onTap'            : $is.onTap,
-                    'onDoubletap'      : $is.onDoubletap,
-                    'onMouseenter'     : $is.onMouseenter,
-                    'onMouseleave'     : $is.onMouseleave,
-                    'onEnterkeypress'  : $is.onEnterkeypress,
-                    'onSetrecord'      : $is.onSetrecord,
-                    'itemclass'        : $is.itemclass,
-                    'itemsPerRowClass' : getRowClass(attrs.itemsperrow),
-                    'addRow'           : $is.addRow,
-                    'updateRow'        : $is.updateRow,
-                    'deleteRow'        : $is.deleteRow
+                    'onClick'               : $is.onClick,
+                    'onDblclick'            : $is.onDblclick,
+                    'onTap'                 : $is.onTap,
+                    'onDoubletap'           : $is.onDoubletap,
+                    'onMouseenter'          : $is.onMouseenter,
+                    'onMouseleave'          : $is.onMouseleave,
+                    'onEnterkeypress'       : $is.onEnterkeypress,
+                    'onSetrecord'           : $is.onSetrecord,
+                    'onPaginationchange'    : $is.onPaginationchange,
+                    'itemclass'             : $is.itemclass,
+                    'itemsPerRowClass'      : getRowClass(attrs.itemsperrow),
+                    'addRow'                : $is.addRow,
+                    'updateRow'             : $is.updateRow,
+                    'deleteRow'             : $is.deleteRow
                 });
 
                 return $liScope;
@@ -1173,6 +1179,7 @@ WM.module('wm.widgets.live')
                     'onMouseleave'          : '&',
                     'onEnterkeypress'       : '&',
                     'onSetrecord'           : '&',
+                    'onPaginationchange'    : '&',
                     'onTap'                 : '&',
                     'onDoubletap'           : '&',
                     'onSelectionlimitexceed': '&'
