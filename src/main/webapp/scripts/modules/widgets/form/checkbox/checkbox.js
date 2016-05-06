@@ -52,22 +52,21 @@ WM.module('wm.widgets.form')
             'template': function (tElement, tAttrs) {
                 var template = WM.element($templateCache.get('template/widget/form/checkbox.html')),
                     checkbox,
-                    isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid');
+                    isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
+                    setTrueFalseValues = function(attr, property) {
+                        var value = tAttrs[attr];
+                        if (value) {
+                            //If boolean type value or value contains quotes, do not add the quotes
+                            if (value === 'true' || value === 'false' || _.includes(value, "'")) {
+                                checkbox.attr(property, value);
+                            } else {
+                                checkbox.attr(property, "'" + value + "'");
+                            }
+                        }
+                    };
                 checkbox = template.find('input[type=checkbox]');
-                if (tAttrs.checkedvalue) {
-                    if (tAttrs.checkedvalue === 'true' || tAttrs.checkedvalue === 'false') {
-                        checkbox.attr('data-ng-true-value', tAttrs.checkedvalue);
-                    } else {
-                        checkbox.attr('data-ng-true-value', "'" + tAttrs.checkedvalue + "'");
-                    }
-                }
-                if (tAttrs.uncheckedvalue) {
-                    if (tAttrs.checkedvalue === 'true' || tAttrs.checkedvalue === 'false') {
-                        checkbox.attr('data-ng-false-value', tAttrs.uncheckedvalue);
-                    } else {
-                        checkbox.attr('data-ng-false-value', "'" + tAttrs.uncheckedvalue + "'");
-                    }
-                }
+                setTrueFalseValues('checkedvalue', 'data-ng-true-value');
+                setTrueFalseValues('uncheckedvalue', 'data-ng-false-value');
                 if (!isWidgetInsideCanvas) {
                     WidgetUtilService.addEventAttributes(template, tAttrs, FormWidgetUtils.getProxyEventsMap());
                     WidgetUtilService.addEventAttributes(checkbox, tAttrs, FormWidgetUtils.getFocusBlurEvents());
