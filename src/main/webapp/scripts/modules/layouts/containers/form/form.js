@@ -4,9 +4,17 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/form.html',
-                '<form role="form" data-ng-show="show" init-widget class="panel app-form" ng-class="[captionAlignClass, captionPositionClass, formClassName]"' +
-                ' autocomplete="autocomplete" apply-styles="shell"' +
-                ' ><div class="panel-heading" data-ng-if="title"><h4 class="form-header panel-title">{{title}}</h4></div>' +
+                '<form role="form" data-ng-show="show" init-widget class="panel app-panel app-form" ng-class="[captionAlignClass, captionPositionClass, formClassName]"' +
+                    ' autocomplete="autocomplete" apply-styles="shell">' +
+                    '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
+                        '<h3 class="panel-title">' +
+                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                            '<div class="pull-left">' +
+                                '<div class="heading">{{title}}</div>' +
+                                '<div class="description">{{subheading}}</div>' +
+                            '</div>' +
+                        '</h3>' +
+                    '</div>' +
                     '<div class="form-body panel-body" apply-styles="inner-shell">' +
                         '<wm-message scopedataset="statusMessage"></wm-message>' +
                         '<div wmtransclude></div>' +

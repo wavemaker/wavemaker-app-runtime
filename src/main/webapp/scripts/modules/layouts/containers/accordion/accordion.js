@@ -8,7 +8,7 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget data-ng-show="show" apply-styles="scrollable-container" data-ng-style="{width:width}"></div>');
 
         $templateCache.put('template/layout/container/accordion-pane.html',
-            '<div class="app-accordion-panel panel panel-default" init-widget wmtransclude data-ng-show="show" wm-navigable-element="true"></div>'
+            '<div class="app-accordion-panel panel" init-widget wmtransclude data-ng-show="show" wm-navigable-element="true"></div>'
             );
 
         $templateCache.put('template/layout/container/accordion-header.html',

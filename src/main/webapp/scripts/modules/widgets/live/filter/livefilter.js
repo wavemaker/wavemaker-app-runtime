@@ -5,14 +5,19 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
-                '<form data-identifier="livefilter" class="app-livefilter panel panel-default clearfix liveform-inline align-{{captionalign}} position-{{captionposition}}" init-widget title="{{hint}}" data-ng-show="show" apply-styles>' +
-                    '<div class="form-header panel-heading" data-ng-if="title"><h3 class="panel-title">' +
-                        '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i>' +
-                        '<span class="form-header-text">{{title}}</span>' +
-                        '<div class="panel-actions">' +
-                            '<button type="button" class="app-icon wi panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'wi-minus\': \'wi-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
-                        '</div>' +
-                    '</h3></div>' +
+                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline align-{{captionalign}} position-{{captionposition}}" init-widget title="{{hint}}" data-ng-show="show" apply-styles>' +
+                    '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
+                        '<h3 class="panel-title">' +
+                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                            '<div class="pull-left">' +
+                                '<div class="heading">{{title}}</div>' +
+                                '<div class="description">{{subheading}}</div>' +
+                            '</div>' +
+                            '<div class="panel-actions">' +
+                                '<button type="button" class="app-icon wi panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'wi-minus\': \'wi-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
+                            '</div>' +
+                        '</h3>' +
+                    '</div>' +
                     '<div data-ng-show="expanded" class="panel-body">' +
                         '<div data-identifier="filter-elements" ng-transclude></div>' +
                         '<div class="hidden-filter-elements"></div>' +
