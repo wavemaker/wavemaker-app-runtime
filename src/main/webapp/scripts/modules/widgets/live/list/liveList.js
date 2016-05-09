@@ -830,6 +830,25 @@ WM.module('wm.widgets.live')
                 return (!$is.selectionlimit || count < $is.selectionlimit);
             }
 
+            function getWidget($el, name, index) {
+                var prefix = 'li.app-list-item',
+                    target;
+
+                if (!WM.isDefined(index)) {
+                    index = $el.find(prefix + '.active:first').index();
+
+                    if (index === -1) {
+                        index = 0;
+                    }
+                }
+
+                target = $el.find(prefix + ':nth-child(' + (index + 1) + ')').find('[init-widget][name="' + name + '"]');
+
+                if (target.isolateScope) {
+                    return target.isolateScope();
+                }
+            }
+
             function setupEvtHandlers($is, $el, attrs) {
                 var pressStartTimeStamp = 0,
                     $hammerEl = new Hammer($el[0], {}),
@@ -916,7 +935,7 @@ WM.module('wm.widgets.live')
                         $liItems     = $el.find('li.app-list-item');
                         presentIndex = $liItems.index($is.lastSelectedItem);
                         firstIndex   = $liItems.index($is.firstSelectedItem);
-                        selectCount = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
+                        selectCount  = WM.isArray($is.selecteditem) ? $is.selecteditem.length : (WM.isObject($is.selecteditem) ? 1 : 0);
                     }
 
                     keyPressed = Utils.getActionFromKey(evt);
@@ -1114,7 +1133,10 @@ WM.module('wm.widgets.live')
                             });
                         }
                     });
+
                     setupEvtHandlers($is, $el, attrs);
+
+                    $is.getWidget = getWidget.bind(undefined, $el);
                 }
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);

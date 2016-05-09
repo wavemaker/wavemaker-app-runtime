@@ -679,6 +679,7 @@ WM.module('wm.widgets.base')
 
                             if (CONSTANTS.isRunMode) {
                                 overrideEventHandlers($is, $s, $el, attrs);
+                                $is.$element = $el; // expose the element ref on the isolateScope
                             }
                         }
                     };
