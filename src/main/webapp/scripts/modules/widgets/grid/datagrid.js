@@ -1109,7 +1109,7 @@ $.widget('wm.datagrid', {
             text = $el.prop('checked').toString();
         } else {
             text = $el.val();
-            $el.text(text || '');
+            $el.text(WM.isDefined(text) ? text : '');
         }
         return text;
     },
@@ -1354,7 +1354,7 @@ $.widget('wm.datagrid', {
             if (!value) {
                 colDef = self.preparedHeaderData[$el.attr('data-col-id')];
                 text   = self.getTextValue($el, colDef, colDef.field.split('.'));
-                $el.text(text || '');
+                $el.text(WM.isDefined(text) ? text : '');
             } else {
                 originalValue = value;
                 if (originalValue.template) {

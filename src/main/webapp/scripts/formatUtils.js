@@ -46,20 +46,21 @@ WM.module('wm.utils')
                 return _val ? _sym + _val : '';
             }
 
-            /* converts epoch or date object to date-string in the given format */
+            // converts epoch or date object to date-string in the given format
             function toDate(data, format) {
                 var timestamp;
-                /* 'null' is to be treated as a special case, If user wants to enter null value, empty string will be passed to the backend */
+                //'null' is to be treated as a special case, If user wants to enter null value, empty string will be passed to the backend
                 if (data === 'null') {
                     return '';
                 }
                 if (!WM.isDefined(data)) {
                     return undefined;
                 }
-                if (!isNaN(data)) {
+                //For data in form of string number ('123'), convert to number (123). And don't parse date objects.
+                if (!WM.isDate(data) && !isNaN(data)) {
                     data = parseInt(data, 10);
                 }
-                /*get the timestamp value. If data is time string, append date string to the time value*/
+                //get the timestamp value. If data is time string, append date string to the time value
                 timestamp = moment(data).valueOf() || moment(new Date().toDateString() + ' ' + data).valueOf();
                 if (timestamp) {
                     if (format === 'timestamp') {
