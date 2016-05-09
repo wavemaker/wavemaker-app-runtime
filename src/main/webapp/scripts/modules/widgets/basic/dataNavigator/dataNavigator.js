@@ -167,7 +167,8 @@ WM.module("wm.widgets.basic")
                         data,
                         variable,
                         variableOptions = {};
-
+                    //Store the data in __fullData. This is used for client side searching with out modifying the actual dataset.
+                    $scope.__fullData = newVal;
                     /*Set the default value of the "result" property to the newVal so that the widgets bound to the data-navigator can have the dataSet set properly.*/
                     $scope.result = newVal;
                     $scope.isBoundToFilter = undefined;
@@ -340,8 +341,8 @@ WM.module("wm.widgets.basic")
                         }
                     } else {
                         startIndex = ($scope.dn.currentPage - 1) * $scope.maxResults;
-                        data = WM.isArray($scope.dataset) ?
-                                $scope.dataset.slice(startIndex, startIndex + $scope.maxResults) : $scope.dataset;
+                        data = WM.isArray($scope.__fullData) ?
+                                $scope.__fullData.slice(startIndex, startIndex + $scope.maxResults) : $scope.__fullData;
                         $scope.result = data;
                         $scope.onPageDataReady(event, data, callback);
                     }

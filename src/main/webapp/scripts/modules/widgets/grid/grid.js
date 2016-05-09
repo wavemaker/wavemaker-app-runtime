@@ -982,7 +982,7 @@ WM.module('wm.widgets.grid')
                     data = getSortResult(data, currentSort);
                     $scope.serverData = data;
                     if ($scope.shownavigation) {
-                        $scope.dataNavigator.dataset = data;
+                        $scope.dataNavigator.setPagingValues(data);
                     } else {
                         setGridData($scope.serverData);
                     }
@@ -1463,7 +1463,10 @@ WM.module('wm.widgets.grid')
                     widgetBindingDetails,
                     relatedTables;
                 $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
-
+                //After the setting the watch on navigator, dataset is triggered with undefined. In this case, return here.
+                if ($scope.dataNavigatorWatched && _.isUndefined(newVal) && $scope.__fullData) {
+                    return;
+                }
                 result = Utils.getValidJSON(newVal);
 
                 /*Reset the values to undefined so that they are calculated each time.*/
