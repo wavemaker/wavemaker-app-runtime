@@ -568,9 +568,7 @@ Application
                 });
 
                 // show the app-spinner on route change start
-                $rs.$on('$routeChangeStart', function () {
-                    AppManager.showPageSwitchSpinner();
-                });
+                $rs.$on('$routeChangeStart', AppManager.showPageSwitchSpinner);
 
                 /*
                  * Following content loaded only application type projects, not template bundles, prefabs

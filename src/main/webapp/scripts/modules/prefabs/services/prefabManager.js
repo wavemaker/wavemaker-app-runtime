@@ -328,16 +328,20 @@ WM.module('wm.prefabs')
 
             /* load the external angular modules required by prefab */
             function loadModules(modules) {
-                var deferred = $q.defer();
+                var deferred = $q.defer(), resolveFn;
 
                 if (!modules || !modules.length) {
                     deferred.resolve();
                 } else {
-                    $ocLazyLoad.load(modules)
-                        .then(function () {
-                            // Why timeout? give some time for the scripts to execute. then load the modules.
-                            $timeout(deferred.resolve, 300, false);
-                        });
+                    resolveFn = _.after(modules.length, function () {
+                        $timeout(deferred.resolve, 200, false);
+                    });
+
+                    _.forEach(modules, function (module) {
+                        $ocLazyLoad.jsLoader(module.files, function () {
+                            $ocLazyLoad.inject(module.name).then(resolveFn);
+                        }, {});
+                    });
                 }
 
                 return deferred.promise;
@@ -583,7 +587,7 @@ WM.module('wm.prefabs')
 
             /**
              * @ngdoc function
-             * @name PrefabManager#loadModules
+             * @name PrefabManager#registerPrefab
              * @methodOf wm.prefab.$PrefabManager
              * @description
              * this function will register a prefab(copy from studio to app/project)
@@ -592,7 +596,7 @@ WM.module('wm.prefabs')
 
             /**
              * @ngdoc function
-             * @name PrefabManager#loadModules
+             * @name PrefabManager#loadAppPrefabConfig
              * @methodOf wm.prefab.$PrefabManager
              * @description
              * this function will load the config.json of app-prefab

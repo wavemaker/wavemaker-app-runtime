@@ -34,7 +34,6 @@ WM.module('wm.widgets.live')
                     '</div>' +
                 '</div>'
             );
-
     }])
     .controller('listController', [
 
@@ -65,7 +64,7 @@ WM.module('wm.widgets.live')
         'LiveWidgetUtils',
         'FormWidgetUtils',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils , $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.navigation']),
@@ -288,9 +287,10 @@ WM.module('wm.widgets.live')
             function addListElements(_s, $el, $is, attrs, listCtrl) {
                 var $liTemplate,
                     groupedLiData,
+                    groupDataByUserDefinedFn,
                     regex    = /[^\w]/g,
                     ALPHABET = 'alphabet',
-                    OTHERS = 'Others';
+                    OTHERS   = 'Others';
 
                 function groupDataByField(liData) {
                     var concatStr = Utils.findValueOf(liData, $is.groupby);
@@ -311,7 +311,7 @@ WM.module('wm.widgets.live')
 
                 // groups the fields based on the groupby value.
                 if (_.includes($is.groupby, '(')) {
-                    var groupDataByUserDefinedFn = _s[$is.groupby.split('(')[0]];
+                    groupDataByUserDefinedFn = _s[$is.groupby.split('(')[0]];
                     groupedLiData = _.groupBy(_s.fieldDefs, groupDataByUserDefinedFn);
                 } else {
                     groupedLiData = _.groupBy(_s.fieldDefs, groupDataByField);
@@ -593,6 +593,7 @@ WM.module('wm.widgets.live')
                     newClass,
                     markup,
                     $element,
+                    groupbyOptions,
                     eleScope    = $el.scope(),
                     variable    = Utils.getVariableName($is, eleScope),
                     wp          = $is.widgetProps,
@@ -654,7 +655,7 @@ WM.module('wm.widgets.live')
 
                         // empty option selection is included in groupby options.
                         if (wp.groupby.options) {
-                            var groupbyOptions = [{
+                            groupbyOptions = [{
                                 'name'      : 'Javascript',
                                 'category'  : 'Script'
                             }];
@@ -1128,7 +1129,7 @@ WM.module('wm.widgets.live')
 
                     $is.$watch('binddataset', function (newVal) {
                         if (_.includes(newVal, 'selecteditem.')) {
-                            LiveWidgetUtils.fetchDynamicData($is, function(data){
+                            LiveWidgetUtils.fetchDynamicData($is, function (data) {
                                 onDataSetChange($is, $el, undefined, data, attrs, listCtrl);
                             });
                         }

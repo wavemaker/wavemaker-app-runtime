@@ -42,7 +42,7 @@
         "jquery-ui": {
             "themes": "themes/base/*.css",
             "themes/images": "themes/base/images/*.*",
-            "js": "jquery-ui.js"
+            "js": ["ui/core.js", "ui/widget.js", "ui/mouse.js", "ui/draggable.js", "ui/droppable.js", "ui/position.js", "ui/resizable.js"]
         },
         "animate.css": {
             ".": ["dist/*.css"]
@@ -73,23 +73,37 @@
         "textAngular": {
             "js": [
                 "dist/textAngular-sanitize.min.js",
-                "dist/textAngular.min.js",
+                "dist/textAngularSetup.js",
+                "dist/textAngular.js",
                 "dist/textAngular-rangy.min.js"
             ]
         },
-      "angular-ui-mask": {
+        "angular-ui-mask": {
             "js": [
                 "dist/mask.js",
                 "dist/mask.min.js"
             ]
         },
         "ocLazyLoad": {
-            ".": [
-                "dist/ocLazyLoad.min.js"
+            "js": [
+                "dist/modules/ocLazyLoad.core.js",
+                "dist/modules/ocLazyLoad.loaders.common.js",
+                "dist/modules/ocLazyLoad.loaders.core.js",
+                "dist/modules/ocLazyLoad.loaders.cssLoader.js",
+                "dist/modules/ocLazyLoad.loaders.jsLoader.js"
             ]
         },
         "wavicon" : {
           ".": "dist/wavicon/android"
+        },
+        "d3": {
+            ".": ["d3.min.js"]
+        },
+        "nvd3": {
+            ".": ["build/nv.d3.min.js", "build/nv.d3.css"]
+        },
+        "fullcalendar": {
+            ".": ["dist/fullcalendar.min.js", "dist/fullcalendar.css"]
         }
     }
 }

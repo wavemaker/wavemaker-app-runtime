@@ -1842,8 +1842,8 @@ WM.module('wm.widgets.base', [])
                             if (!widgetProps[propName]) {
                                 widgetProps[propName] = {};
                             }
-                            Object.keys(propObj).forEach(function (key) {
-                                widgetProps[propName][key] = propObj[key];
+                            _.forEach(propObj, function (val, key) {
+                                widgetProps[propName][key] = val;
                             });
                         });
                 });

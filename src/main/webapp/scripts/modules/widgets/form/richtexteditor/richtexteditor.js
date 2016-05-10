@@ -1,7 +1,6 @@
 /*global WM, Event*/
 /*Directive for richtexteditor */
 
-WM.module('wm.widgets.form').requires = WM.module('wm.widgets.form').requires.concat(['textAngular']);
 WM.module('wm.widgets.form')
     .run(['$templateCache', function ($tc) {
         'use strict';
@@ -17,9 +16,9 @@ WM.module('wm.widgets.form')
         'PropertiesFactory',
         '$templateCache',
         'WidgetUtilService',
-        'taSelection',
+        '$injector',
 
-        function (PropertiesFactory, $tc, WidgetUtilService, taSelection) {
+        function (PropertiesFactory, $tc, WidgetUtilService, $injector) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.richtexteditor', ['wm.base', 'wm.base.editors']),
@@ -59,7 +58,11 @@ WM.module('wm.widgets.form')
 
             function getCursorPosition() {
                 var selection,
-                    retObj;
+                    retObj,
+                    taSelection;
+
+                taSelection = $injector.get('taSelection');
+
                 try {
                     selection  = taSelection.getSelection();
                     retObj     = {

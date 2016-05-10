@@ -1,4 +1,4 @@
-/*global WM, _, wm*/
+/*global WM, _, wm,$*/
 /**
  * @ngdoc directive
  * @name wm.widgets.directive:initWidget
@@ -555,25 +555,25 @@ WM.module('wm.widgets.base')
             }
 
             function defineGetterSettersForProps($is, $s, $el, attrs) {
-                var wp = $is.widgetProps,
+                var wp       = $is.widgetProps,
                     hasModel = attrs.hasOwnProperty('hasModel');
 
-                _.keys(wp)
-                    .filter(function (propName) {
-                        var propDetails = wp[propName];
-                        return !($is.$$isolateBindings[propName] || propDetails.type === EVENT);
-                    })
-                    .forEach(function (propName) {
-                        var propDetails = wp[propName];
-                        defineGetterSettersForProp($is, $s, $el, attrs, hasModel, propName, propDetails);
-                    });
+                _.keys(wp).forEach(function (propName) {
+                    var propDetails = wp[propName];
+
+                    if ($is.$$isolateBindings[propName] || propDetails.type === EVENT) {
+                        return;
+                    }
+
+                    defineGetterSettersForProp($is, $s, $el, attrs, hasModel, propName, propDetails);
+                });
             }
 
             /*
              * Class : FieldDef
              * Discription : FieldDef contains getter and setter methods to get and set fields of widgets
              * */
-            wm.baseClasses.FieldDef = _.noop;
+            wm.baseClasses.FieldDef = function () {};
 
             wm.baseClasses.FieldDef.prototype = {
                 'setProperty' : function (field, newval) {
@@ -658,7 +658,9 @@ WM.module('wm.widgets.base')
                             }
 
                             // delay the setting of binded properties in isolateScope
-                            _.forEach($is._initState, function (propVal, propName) {
+                            _.keys($is._initState).forEach(function (propName) {
+                                var propVal = $is._initState[propName];
+
                                 if (_.startsWith(propVal, 'bind:')) {
                                     delayed.push({'name': propName, 'value': propVal});
                                 } else {
@@ -840,3 +842,121 @@ WM.module('wm.widgets.base')
             this.register = register;
         }
     ]);
+
+(function () {
+    'use strict';
+
+    // if the mode is studio include the textAngular as a dependency.
+    // else define the `terminal` directives from the typeConfigMap and load the dependencies.
+    if ($.__isStudioMode) {
+        WM.module('wm.widgets.form').requires = WM.module('wm.widgets.form').requires.concat(['textAngular']);
+    } else {
+        var baseUri,
+            typeConfigMap,
+            module,
+            directiveFn;
+
+        // get the _cdnUrl_ from the loaded script
+        baseUri = WM.element('head > script[src$="wm-loader.min.js"]').attr('src');
+
+        if (!baseUri) {
+            return;
+        }
+
+        baseUri = baseUri.substring(0, baseUri.indexOf('/wmapp'));
+
+        // typeConfigMap defines the widgetType and dependency map
+        typeConfigMap = {
+            'wm-chart': {
+                'files': [baseUri + '/wmapp/scripts/component-libs/chart.min.js']
+            },
+            'wm-calendar': {
+                'files': [baseUri + '/wmapp/scripts/component-libs/calendar.min.js']
+            },
+            'wm-richtexteditor': {
+                'files': [baseUri + '/wmapp/scripts/component-libs/richTextEditor.min.js'],
+                'name': 'textAngular'
+            }
+        };
+
+        directiveFn = function directiveFn(directiveName, widgetType, $ocLazyLoad, $compile, $injector, Utils) {
+
+            var libsLoaded,
+                inProgress,
+                compileFns = [],
+                delayPageReadyByTypeMap = {};
+
+            function _compile($el, $s) {
+                $compile($el)($s);
+            }
+
+            function _compileWidgets($s) {
+                while (compileFns.length) {
+                    compileFns.shift()();
+                }
+                Utils.triggerFn($s.onPagePartLoad);
+                delayPageReadyByTypeMap[widgetType] = false;
+            }
+
+            function _postLibsLoad($s) {
+                libsLoaded = true;
+                inProgress = false;
+
+                var definitions = $injector.get(directiveName + 'Directive');
+
+                _.remove(definitions, function (defn) {
+                    return defn.name === directiveName && defn.terminal;
+                });
+
+                _compileWidgets($s);
+            }
+
+            return {
+                'restrict': 'E',
+                'terminal': true,
+                'priority': 100,
+                'link': {
+                    'pre': function ($s, $el) {
+                        var compileFn, config;
+
+                        // delay the invocation of onPageReady till all the lazy-widgets are loaded
+                        if (!delayPageReadyByTypeMap[widgetType]) {
+                            delayPageReadyByTypeMap[widgetType] = true;
+                            Utils.triggerFn($s.registerPagePart); // register the widget as page part
+                        }
+
+                        compileFn = _compile.bind(undefined, $el, $s);
+
+                        compileFns.push(compileFn);
+
+                        if (!libsLoaded) {
+                            if (!inProgress) {
+                                inProgress = true;
+                                config = typeConfigMap[widgetType];
+
+                                // load the dependant js files
+                                $ocLazyLoad.jsLoader(config.files, function () {
+                                    if (config.name) { // inject the module
+                                        $ocLazyLoad.inject(config.name).then(_postLibsLoad.bind(undefined, $s), {});
+                                    } else {
+                                        _postLibsLoad($s);
+                                    }
+                                }, {});
+                            }
+                        } else {
+                            _compileWidgets(widgetType);
+                        }
+                    }
+                }
+            };
+        };
+
+        module = WM.module('wm.widgets.base');
+
+        // define the terminal directives
+        _.keys(typeConfigMap).forEach(function (widgetType) {
+            var directiveName = _.camelCase(widgetType);
+            module.directive(directiveName, ['$ocLazyLoad', '$compile', '$injector', 'Utils', directiveFn.bind(undefined, directiveName, widgetType)]);
+        });
+    }
+}());

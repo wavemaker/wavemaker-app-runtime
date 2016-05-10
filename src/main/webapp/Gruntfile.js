@@ -141,6 +141,18 @@ module.exports = function (grunt) {
                         dest : '<%= config.application %>/scripts/wm-libs.min.js'
                     },
                     {
+                        src : '<%= config.tmp %>/scripts/component-libs/chart.min.js',
+                        dest : '<%= config.application %>/scripts/component-libs/chart.min.js'
+                    },
+                    {
+                        src : '<%= config.tmp %>/scripts/component-libs/richTextEditor.min.js',
+                        dest : '<%= config.application %>/scripts/component-libs/richTextEditor.min.js'
+                    },
+                    {
+                        src : '<%= config.tmp %>/scripts/component-libs/calendar.min.js',
+                        dest : '<%= config.application %>/scripts/component-libs/calendar.min.js'
+                    },
+                    {
                         src : '<%= config.tmp %>/scripts/wm-mobile-libs.min.js',
                         dest : '<%= config.mobile %>/scripts/wm-libs.min.js'
                     },
@@ -240,29 +252,47 @@ module.exports = function (grunt) {
                         '<%= config.editor %>/mobile/scripts/mobileruntimeloader.js',
                         '<%= config.scripts %>/wmbootstrap.js'
                     ],
+                    '<%= config.tmp %>/scripts/component-libs/chart.min.js': [
+                        '<%= config.components %>/d3/d3.min.js',
+                        '<%= config.components %>/nvd3/nv.d3.min.js'
+                    ],
+                    '<%= config.tmp %>/scripts/component-libs/richTextEditor.min.js': [
+                        '<%= config.components %>/textAngular/js/textAngular-sanitize.min.js',
+                        '<%= config.components %>/textAngular/js/textAngularSetup.js',
+                        '<%= config.components %>/textAngular/js/textAngular-rangy.min.js',
+                        '<%= config.components %>/textAngular/js/textAngular.js'
+                    ],
+                    '<%= config.tmp %>/scripts/component-libs/calendar.min.js': [
+                        '<%= config.components %>/fullcalendar/fullcalendar.min.js'
+                    ],
                     '<%= config.tmp %>/scripts/wm-application-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
-                        '<%= config.components %>/jquery-ui/js/jquery-ui.js',
-                        '<%= config.components %>/socialbyway/js/socialbyway.v1.01-beta.js',
-                        '<%= config.components %>/socialbyway/js/socialbyway.ui.v1.01-beta.js',
+                        //jQuery-ui -- start
+                        '<%= config.components %>/jquery-ui/js/core.js',
+                        '<%= config.components %>/jquery-ui/js/widget.js',
+                        '<%= config.components %>/jquery-ui/js/mouse.js',
+                        '<%= config.components %>/jquery-ui/js/draggable.js',
+                        '<%= config.components %>/jquery-ui/js/droppable.js',
+                        '<%= config.components %>/jquery-ui/js/position.js',
+                        '<%= config.components %>/jquery-ui/js/resizable.js',
+                        //jQuery-ui -- end
                         '<%= config.components %>/angular/angular.js',
                         '<%= config.components %>/angular-route/angular-route.js',
                         '<%= config.components %>/angular-animate/angular-animate.js',
                         '<%= config.components %>/angular-toaster/toaster.js',
                         '<%= config.components %>/angular-ui-bootstrap/ui-bootstrap-tpls.js',
                         '<%= config.components %>/moment/moment.js',
-                        '<%= config.components %>/fullcalendar/fullcalendar.js',
                         '<%= config.components %>/angular-ui-mask/js/mask.min.js',
                         '<%= config.components %>/angular-ui-calendar/calendar.js',
                         '<%= config.components %>/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.js',
-                        '<%= config.components %>/rangy/rangy-core.js',
-                        '<%= config.components %>/textAngular/js/textAngular-rangy.min.js',
-                        '<%= config.components %>/textAngular/js/textAngular-sanitize.min.js',
-                        '<%= config.components %>/textAngular/js/textAngular.min.js',
-                        '<%= config.components %>/d3/d3.js',
-                        '<%= config.components %>/nvd3/nv.d3.js',
-                        '<%= config.components %>/ocLazyLoad/ocLazyLoad.min.js',
+                        //ocLazyLoad -- start
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.core.js',
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.common.js',
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.core.js',
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.cssLoader.js',
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.jsLoader.js',
+                        //ocLazyLoad -- end
                         '<%= config.components %>/hammerjs/hammer.js',
                         '<%= config.scripts %>/modules/gestures/gestures.js',
                         '<%= config.scripts %>/modules/base64/base64.js'
@@ -270,24 +300,31 @@ module.exports = function (grunt) {
                     '<%= config.tmp %>/scripts/wm-mobile-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
-                        '<%= config.components %>/jquery-ui/js/jquery-ui.js',
+                        //jQuery-ui -- start
+                        '<%= config.components %>/jquery-ui/js/core.js',
+                        '<%= config.components %>/jquery-ui/js/widget.js',
+                        '<%= config.components %>/jquery-ui/js/mouse.js',
+                        '<%= config.components %>/jquery-ui/js/draggable.js',
+                        '<%= config.components %>/jquery-ui/js/droppable.js',
+                        '<%= config.components %>/jquery-ui/js/position.js',
+                        '<%= config.components %>/jquery-ui/js/resizable.js',
+                        //jQuery-ui -- end
                         '<%= config.components %>/angular/angular.js',
                         '<%= config.components %>/angular-route/angular-route.js',
                         '<%= config.components %>/angular-animate/angular-animate.js',
                         '<%= config.components %>/angular-toaster/toaster.js',
                         '<%= config.components %>/angular-ui-bootstrap/ui-bootstrap-tpls.js',
                         '<%= config.components %>/moment/moment.js',
-                        '<%= config.components %>/fullcalendar/fullcalendar.js',
                         '<%= config.components %>/angular-ui-mask/js/mask.min.js',
                         '<%= config.components %>/angular-ui-calendar/calendar.js',
                         '<%= config.components %>/angular-bootstrap-colorpicker/bootstrap-colorpicker-module.js',
-                        '<%= config.components %>/rangy/rangy-core.js',
-                        '<%= config.components %>/textAngular/js/textAngular-rangy.min.js',
-                        '<%= config.components %>/textAngular/js/textAngular-sanitize.min.js',
-                        '<%= config.components %>/textAngular/js/textAngular.min.js',
-                        '<%= config.components %>/d3/d3.js',
-                        '<%= config.components %>/nvd3/nv.d3.js',
-                        '<%= config.components %>/ocLazyLoad/ocLazyLoad.min.js',
+                        //ocLazyLoad -- start
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.core.js',
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.common.js',
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.core.js',
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.cssLoader.js',
+                        '<%= config.components %>/ocLazyLoad/js/ocLazyLoad.loaders.jsLoader.js',
+                        //ocLazyLoad -- end
                         '<%= config.components %>/hammerjs/hammer.js',
                         '<%= config.components %>/ngCordova/ng-cordova.js',
                         '<%= config.components %>/ng-cordova-oauth/ng-cordova-oauth.min.js',
