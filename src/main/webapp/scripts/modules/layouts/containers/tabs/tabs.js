@@ -433,6 +433,7 @@ WM.module('wm.layouts.containers')
                         if (scope.widgetProps.show) {
                             delete scope.widgetProps.show;// show property should be handled from pane.
                         }
+                        delete scope.widgetProps.accessroles; // accessroles property should be handled from pane
                     },
                     'post': function (scope, element, attrs, ctrl) {
                         /* find the target element to append the default template of the tabheader */
@@ -533,6 +534,7 @@ WM.module('wm.layouts.containers')
                         if (CONSTANTS.isStudioMode) {
                             iScope.widgetProps = Utils.getClonedObject(widgetProps);
                             delete iScope.widgetProps.show;// show property should be handled from pane.
+                            delete iScope.widgetProps.accessroles; // accessroles property should be handled from pane
                         } else {
                             iScope.widgetProps = widgetProps;
                         }

@@ -179,6 +179,7 @@ WM.module('wm.layouts.containers')
                         if (scope.widgetProps.show) {
                             delete scope.widgetProps.show;// show property should be handled from pane.
                         }
+                        delete scope.widgetProps.accessroles; // accessroles property should be handled from pane
                         //handle the backward compatibility for description attributes
                         if (attrs.description && !attrs.subheading) {
                             scope.subheading = attrs.subheading = attrs.description;
@@ -233,6 +234,7 @@ WM.module('wm.layouts.containers')
                         if (CONSTANTS.isStudioMode) {
                             iScope.widgetProps = Utils.getClonedObject(widgetProps);
                             delete iScope.widgetProps.show;
+                            delete iScope.widgetProps.accessroles; // accessroles property should be handled from pane
                         } else {
                             iScope.widgetProps = widgetProps;
                         }
