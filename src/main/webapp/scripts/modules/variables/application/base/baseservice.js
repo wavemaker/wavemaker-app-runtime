@@ -454,6 +454,7 @@ wm.variables.services.Variables = [
 
             /* function to update the binding for a variable */
             updateVariableBinding = function (variable, name, scope) {
+                var bindMap, root;
 
                 /* un-register previous watchers, if any */
                 watchers[scope.$id][name] = watchers[scope.$id][name] || [];
@@ -465,8 +466,8 @@ wm.variables.services.Variables = [
                  * old implementation: dataBinding is an object map
                  */
                 if (WM.isArray(variable.dataBinding)) {
-                    var bindMap = variable.dataBinding,
-                        root = variable.category === "wm.Variable" ? "dataSet" : "dataBinding";
+                    bindMap = variable.dataBinding;
+                    root = variable.category === "wm.Variable" ? "dataSet" : "dataBinding";
                     variable.dataBinding = {};
                     if (bindMap[0] && WM.isArray(bindMap[0].fields)) {
                         /* old projects(without migration): dataBinding is a recursive map of binding objects */
@@ -495,6 +496,17 @@ wm.variables.services.Variables = [
                             });
                         }
                         bindVariableField({bindingVal: binding, paramName: param, variable: variable, variableName: name, scope: scope});
+                    });
+                }
+
+                // Process bindings for navigation variable's dataSet
+                if (runMode && variable.category === "wm.NavigationVariable" && WM.isArray(variable.dataSet)) {
+                    bindMap = variable.dataSet;
+                    root = "dataSet";
+                    variable.dataSet = {};
+                    /* new projects with flat bind map */
+                    bindMap.forEach(function (node) {
+                        processBindObject(node, scope, root, variable);
                     });
                 }
             },
@@ -1102,7 +1114,7 @@ wm.variables.services.Variables = [
              */
             cleanseBindings = function (bindings) {
                 _.remove(bindings, function (binding) {
-                    return (WM.isUndefined(binding.value) || binding.value === '')
+                    return (WM.isUndefined(binding.value) || binding.value === '');
                 });
             },
 
@@ -1122,6 +1134,9 @@ wm.variables.services.Variables = [
                     });
 
                     cleanseBindings(variable.dataBinding);
+                    if (variable.category === 'wm.NavigationVariable') {
+                        cleanseBindings(variable.dataSet);
+                    }
                 });
                 return variables;
             },

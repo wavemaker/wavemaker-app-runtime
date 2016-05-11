@@ -10,8 +10,9 @@ WM.module('wm.layouts.page')
         '$timeout',
         'Variables',
         'NavigationVariableService',
+        '$location',
 
-        function (DeviceViewService, CONSTANTS, $rs, $routeParams, Utils, $timeout, Variables, NavigationVariableService) {
+        function (DeviceViewService, CONSTANTS, $rs, $routeParams, Utils, $timeout, Variables, NavigationVariableService, $location) {
             'use strict';
 
             var appVariableReadyFired = false;
@@ -42,6 +43,7 @@ WM.module('wm.layouts.page')
                         if (CONSTANTS.isRunMode) {
                             $s.Variables = {};
                             $s.Widgets   = {};
+                            $rs.pageParams = $s.pageParams = $location.search();
                             // only expose the widgets of the active page to rootScope
                             if (!$s.$parent.partialname && !$s.prefabname) {
                                 $rs.Widgets       = $s.Widgets;
@@ -191,6 +193,7 @@ WM.module('wm.layouts.page')
                         if (CONSTANTS.isRunMode) {
                             $s.Widgets   = {};
                             $s.Variables = {};
+                            $s.pageParams = {};
 
                             // get partial container's scope
                             containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
