@@ -16,13 +16,12 @@ import com.wavemaker.studio.common.servicedef.model.ServiceDefinition;
  */
 
 @RestController
-@RequestMapping(value = "/servicedefs")
 public class ServiceDefinitionController {
 
     @Autowired
     private ServiceDefinitionService serviceDefinitionService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/servicedefs", method = RequestMethod.GET)
     public Map<String, ServiceDefinition> listServiceDefs() {
         return serviceDefinitionService.listServiceDefs();
     }
