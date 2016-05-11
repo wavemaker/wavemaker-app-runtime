@@ -1404,18 +1404,14 @@ WM.module('wm.widgets.base', [])
                     "wm.accordionpane": {
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
-                        "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
-                    },
-                    "wm.accordionheader": {
+                        "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
                         "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "isdefaultpane": {"type": "boolean", "bindable": "in-bound"},
-                        "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "isdefaultpane": {"type": "boolean", "bindable": "in-bound"}
                     },
 
                     "wm.richtexteditor": {
@@ -1443,15 +1439,11 @@ WM.module('wm.widgets.base', [])
                     "wm.tabpane": {
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
-                        "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false}
-                    },
-                    "wm.tabheader": {
+                        "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
                         "heading": {"type": "string", "value": "Tab Title", "bindable": "in-bound"},
                         "paneicon": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "pattern": classRegex},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
-                        "tabindex": {"type": "string", "value": "0"},
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.wizard": {
                         "addchild": {"hidelabel": true, "options": [{"label": "Steps", "widgettype": "wm-wizardstep"}], "widget": "add-widget"},

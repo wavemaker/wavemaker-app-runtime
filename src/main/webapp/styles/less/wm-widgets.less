@@ -2104,11 +2104,16 @@ If the height and width are not specified the video takes the height of the post
     max-width: 100%;
     .calc('height', ~"calc(100% - 2.5em)");
     background-color: @app-tabs-bg-color;
-    position: relative;
     overflow: auto;
     .tab-pane {
+      position: relative;
       height: 100%;
+      min-height: 4em;
       overflow: inherit;
+      display: none;
+      &.active {
+        display: block;
+      }
       .tab-body {
         position: relative;
         border-width: 1px;

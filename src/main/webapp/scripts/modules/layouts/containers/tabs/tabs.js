@@ -10,26 +10,16 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layout/container/tabs.html',
                 '<div class="app-tabs clearfix" init-widget apply-styles="container" tabindex="-1">' +
                     '<ul class="nav nav-tabs" ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
-                    '<div class="tab-content" ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
+                    '<div class="tab-content" ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}"><div class="tab-body" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div></div>' +
                 '</div>'
             );
 
         /* define the template for the tabpane directive */
         $templateCache.put('template/layout/container/tab-pane.html',
-            '<div class="tab-pane" wmtransclude init-widget ng-class="{disabled:disabled}" wm-navigable-element="true"></div>');
-
-        /* define the template for the tabheader directive */
-        $templateCache.put('template/layout/container/tab-header.html',
-            '<li class="tab-header" ng-class="{active: tab.isActive, disabled: tab.disabled}" ng-show="tab.show" data-tab-id="{{tab.widgetid}}" ng-click="tab.select()"  hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);" init-widget role="tab" tabindex="-1">' +
-                '<a href="javascript:void(0);" wmtransclude apply-styles="container" role="button" tabindex="0"></a>' +
-            '</li>');
-
-        /* define the template for the tabcontent directive */
-        $templateCache.put('template/layout/container/tab-content.html',
-            '<div page-container wmtransclude page-container-target class="tab-body" data-tab-id="{{tab.widgetid}}" init-widget apply-styles  tabindex="0"></div>');
+            '<div class="tab-pane" page-container init-widget ng-class="{disabled:disabled, active: isActive}" wm-navigable-element="true"><div page-container-target apply-styles wmtransclude></div></div>');
 
     }])
-    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope) {
+    .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', '$compile', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope, $compile) {
         'use strict';
 
         /* get the properties related to the tabs */
@@ -55,16 +45,28 @@ WM.module('wm.layouts.containers')
             'template': $templateCache.get('template/layout/container/tabs.html'),
             /* define the controller for the tabs directive. tabpane directive will use this. */
             'controller': function ($scope, $element) {
-
+                var $tabHeaderTarget = $element.find('> .nav.nav-tabs');
                 /* array which contains the scopes of the tabpanes */
                 $scope.tabs = [];
+                this.tabIndex = 0;
                 /* this method will register a tabpane with the tabs
                  * save the scope of the tabpane in the tabs array
                  */
                 this.register = function (tabScope) {
                     $scope.tabs.push(tabScope);
                 };
-
+                //Register header element to append to nav-tabs
+                this.registerHeader = function (tabScope) {
+                    tabScope.tabId = this.tabIndex;
+                    tabScope._headerElement.attr('data-tab-id', this.tabIndex);
+                    $tabHeaderTarget.append(tabScope._headerElement);
+                    $compile(tabScope._headerElement)(tabScope);
+                    this.tabIndex++;
+                };
+                //Remove tab header on remove of tab pane
+                this.unRegisterHeader = function (tabScope) {
+                    $tabHeaderTarget.find('[data-tab-id=' + tabScope.tabId + ']').remove();
+                };
                 /*
                  * this method will unregister a tabpane.
                  * remove the scope of the tabpane from the tabs array
@@ -110,9 +112,12 @@ WM.module('wm.layouts.containers')
                     if (tab) {
                         tab._animateIn($element.hasClass('has-transition'));
                     }
-
+                    // In studio mode on click on header set tab-pane as active widget
+                    if (CONSTANTS.isStudioMode) {
+                        $rootScope.$emit('set-active-widget', tab.widgetid);
+                    }
                     // when tabContent is set to display external page, triggering $lazyLoad on select of the tab will render the content.
-                    Utils.triggerFn(tab.tabContent.$lazyLoad);
+                    Utils.triggerFn(tab.$lazyLoad);
                 };
 
                 /* make selectedTab method available to the isolateScope of the tabs directive. */
@@ -134,7 +139,7 @@ WM.module('wm.layouts.containers')
                             if (el.selectedIndex) {
                                 $rootScope.$safeApply($rootScope, function () {
                                     //trigger the select method on selected tab.
-                                    WM.element(el).children().eq(el.selectedIndex).scope().tab.select();
+                                    WM.element(el).children().eq(el.selectedIndex).scope().tab._headerElement.click();
                                 });
                             }
                         };
@@ -156,7 +161,8 @@ WM.module('wm.layouts.containers')
                     tabs.forEach(function (tab) {
                         if (!activeTab) {
                             if (tab.isdefaulttab) {
-                                activeTab = tab;
+                                scope.activeTab = activeTab = tab;
+                                activeTab.isActive = true;
                             }
                         } else {
                             tab.isActive = false;
@@ -169,15 +175,15 @@ WM.module('wm.layouts.containers')
                         Utils.triggerFn(onBeforeSwitchTab);
 
                         if (tab) {
-                            tab.select();
+                            tab._headerElement.click();
                         }
                     }
 
                     /* if isdefaulttab is not set on any of the tabs, then set the first tab as active */
-                    activeTab = activeTab || tabs[0];
-                    /*Set active only if at least one is present*/
+                    scope.activeTab = activeTab = activeTab || tabs[0];
+
                     if (activeTab) {
-                        activeTab.select();
+                        activeTab.isActive = true;
                     }
                     /**
                      * @ngdoc function
@@ -295,9 +301,17 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$parse', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $parse) {
+    .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rs) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base']),
+            $headerEle  = '<li class="tab-header" ng-class="{active: isActive, disabled: disabled}" ng-click="select($event)" role="tab" tabindex="-1">' +
+                            '<a href="javascript:void(0);" role="button" tabindex="0">' +
+                                '<div class="tab-heading">' +
+                                    '<i class="app-icon {{paneicon}}" ng-if="paneicon"></i> ' +
+                                    '<span ng-bind="heading"></span>' +
+                                '</div>' +
+                            '</a>' +
+                          '</li>';
         return {
             'restrict': 'E',
             'scope': {},
@@ -305,59 +319,32 @@ WM.module('wm.layouts.containers')
             'require': '^wmTabs', /* require the controller of the parent directive. i.e, wmTabs */
             'transclude': true,
             'template': $templateCache.get('template/layout/container/tab-pane.html'),
-            /*
-             * define the controller for this directive so that the childs (tabheader, tabcontent) can use this controller for the communication.
-             */
-            'controller': function ($scope, $element) {
-                /* targetContainer for the tab headers */
-                var tabsTarget = $element.closest('.app-tabs').children('.nav-tabs');
-
-                /* this method will be called by the tabheader child */
-                this.registerHead = function (scope) {
-                    /* append the tab header element to the .nav-tabs container */
-                    tabsTarget.append(scope._element); /* scope._element is the reference of the header element */
-                    $scope.tabHead = scope;
-                    return $scope; /* return the scope of tabpane, so that header will be able to listen to the properties on this */
-                };
-
-                /* this method will be called by the tabcontent child */
-                this.registerContent = function (scope) {
-                    $scope.tabContent = scope;
-                    /* return the scope of tabpane, so that content will be able to listen to the properties on this */
-                    return $scope;
-                };
-
-                this.registerCallback = function (name, value) {
-                    if (!name || !value) {
-                        return;
-                    }
-
-                    var fn = $parse(value);
-                    $scope[name] = function (locals) {
-                        locals = locals || {};
-                        locals.$scope = $scope;
-                        return fn($element.scope(), locals);
-                    };
-                };
-            },
             'compile': function () {
                 return {
                     'pre': function (scope) {
                         /* save the reference to widgetProps in scope */
                         scope.widgetProps = widgetProps;
+                        scope.$lazyLoad = WM.noop;
                     },
                     'post': function (scope, element, attrs, ctrl) {
+                        scope._headerElement = WM.element($headerEle);
+                        ctrl.registerHeader(scope);
                         /* register the tabpane with the tabs */
                         ctrl.register(scope);
-
                         /* when the scope is destoryed unregister the tabpane with the tabs */
                         scope.$on('$destroy', function () {
+                            ctrl.unRegisterHeader(scope);
                             ctrl.unregister(scope);
                         });
 
                         /* using this method we will be able to select a tab[i.e, make it active] programatically */
-                        scope.select = function () {
+                        scope.select = function ($event) {
+                            $event.stopPropagation();
+                            $event.preventDefault();
                             if (scope.isActive || scope.disabled) {
+                                if (scope.isActive) {
+                                    $rs.$emit('set-active-widget', scope.widgetid);
+                                }
                                 return;
                             }
 
@@ -375,7 +362,6 @@ WM.module('wm.layouts.containers')
                             var index = element.index(),
                                 $parent = element.parent(),
                                 delta,
-                                tabHeadEl,
                                 ul;
 
                             // when the transition is setup animate the selected tab into the view.
@@ -397,11 +383,10 @@ WM.module('wm.layouts.containers')
                                 element.addClass('active');
                             }
 
-                            tabHeadEl = scope.tabHead._element;
-                            ul = tabHeadEl.parent()[0];
+                            ul = scope._headerElement.parent()[0];
                             // move the tabheader into the viewport
-                            if (tabHeadEl.index()) {
-                                ul.scrollLeft = tabHeadEl.prev()[0].offsetLeft;
+                            if (scope.tabId) {
+                                ul.scrollLeft = scope._headerElement.prev()[0].offsetLeft;
                             } else {
                                 ul.scrollLeft = 0;
                             }
@@ -409,158 +394,6 @@ WM.module('wm.layouts.containers')
 
                         /* initialize the widget */
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
-            }
-        };
-    }])
-    .directive('wmTabheader', ['$compile', 'PropertiesFactory', 'WidgetUtilService', '$templateCache', 'CONSTANTS', function ($compile, PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS) {
-        'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabheader', ['wm.base', 'wm.layouts']);
-
-        return {
-            'restrict': 'E',
-            'scope': {},
-            'replace': true,
-            'require': '^wmTabpane', /* require the controller of the parent directive. i.e, wmTabpane */
-            'transclude': true,
-            'template': $templateCache.get('template/layout/container/tab-header.html'),
-            'compile': function () {
-
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                        if (scope.widgetProps.show) {
-                            delete scope.widgetProps.show;// show property should be handled from pane.
-                        }
-                        delete scope.widgetProps.accessroles; // accessroles property should be handled from pane
-                    },
-                    'post': function (scope, element, attrs, ctrl) {
-                        /* find the target element to append the default template of the tabheader */
-                        var transcludeTarget = element.children('[wmtransclude]'),
-                            template,
-                            $opt;
-
-                        /* if the tabheader is not provided with any content[i.e, no transcluded content] use the default template */
-                        if (transcludeTarget.children().length === 0) {
-                            /* default template for the tabheader */
-                            template =
-                                    '<div class="tab-heading">' +
-                                    '<i class="app-icon {{paneicon}}" ng-if="paneicon"></i> ' +
-                                        '<span ng-bind-html="heading"></span>' +
-                                        '<i ng-click="tab.onClose();" ng-if="tab.closable">&nbsp;</i>' +
-                                    '</div>';
-
-                            /* compile the default tempalte and append it to the target */
-                            template = WM.element(template);
-                            transcludeTarget.append(template);
-                            $compile(template)(scope);
-                        }
-
-                        /*
-                         * save a reference of the tabheader element in the scope. tabpane will use this.
-                         * tabpane will append the tabheader element to .nav-tabs
-                         */
-                        scope._element = element;
-
-                        /*
-                         * register the tabheader with the tab pane
-                         * save the reference of the tabpane's scope in tabheader's scope
-                         */
-                        scope.tab = ctrl.registerHead(scope);
-                        scope.tab.isdefaulttab = scope.isdefaulttab;
-
-                        function _scrollHeader(delta) {
-                            var $ul = element.parent(),
-                                left = $ul[0].scrollLeft,
-                                _delta = -2 * delta;
-                            $ul.animate({scrollLeft: left + _delta}, {'duration': 10});
-                        }
-
-                        if (CONSTANTS.isRunMode) {
-                            // define the functions to scroll the header into the view port on swipe.
-                            scope._onHeaderSwipeLeft = function (e) {
-                                _scrollHeader(e.deltaX);
-                            };
-
-                            scope._onHeaderSwipeRight = function (e) {
-                                _scrollHeader(e.deltaX);
-                            };
-                        } else {
-                            // create an option element and add it to the tabs-list element.
-                            $opt = WM.element('<option ng-bind-html="heading"></option>');
-                            $opt = $compile($opt)(scope);
-                            element.closest('.app-tabs').children('select').append($opt);
-
-                            scope.$on('$destroy', function () {
-                                if ($opt) {
-                                    $opt.remove();
-                                }
-                            });
-                        }
-
-                        if (CONSTANTS.isRunMode) {
-                            if (attrs.onSelect) {
-                                ctrl.registerCallback('onSelect', attrs._onSelect || attrs.onSelect);
-                            }
-
-                            if (attrs.onDeselect) {
-                                ctrl.registerCallback('onDeselect', attrs._onDeselect || attrs.onDeselect);
-                            }
-                        }
-
-                        /* initialize the widget */
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
-            }
-        };
-    }])
-    .directive('wmTabcontent', ['PropertiesFactory', 'WidgetUtilService', '$templateCache', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS, Utils) {
-        'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabcontent', ['wm.base', 'wm.layouts']);
-
-        return {
-            'restrict': 'E',
-            'scope': {},
-            'replace': true,
-            'require': '^wmTabpane', /* require the controller of the parent directive. i.e, wmTabpane */
-            'transclude': true,
-            'template': $templateCache.get('template/layout/container/tab-content.html'),
-            'compile': function () {
-
-                return {
-                    'pre': function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                            delete iScope.widgetProps.show;// show property should be handled from pane.
-                            delete iScope.widgetProps.accessroles; // accessroles property should be handled from pane
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-
-                        // define $lazyLoad method on iScope.
-                        // pageContainer widget will override this.
-                        iScope.$lazyLoad = WM.noop;
-                    },
-                    'post': function (iScope, element, attrs, ctrl) {
-                        /*
-                         * register the tabcontent with the tab pane
-                         * save the reference of the tabpane's scope in tabcontent's scope
-                         */
-                        iScope.tab = ctrl.registerContent(iScope);
-                        // define isActive property on the iScope of tab content.
-                        // this property will be used by page-container directive.
-                        // when content property is set, the page corresponding to the value of content will be loaded on demand.
-                        // if the tab is active (i.e, selected) page will be loaded immediately.
-                        Object.defineProperty(iScope, 'isActive', {
-                            get: function () {
-                                return this.tab.isActive;
-                            }
-                        });
-
-                        /* initialize the widget */
-                        WidgetUtilService.postWidgetCreate(iScope, element, attrs);
                     }
                 };
             }
@@ -624,43 +457,37 @@ WM.module('wm.layouts.containers')
                 <div>Address2: {{address2}}</div>
                 <br>
                 <wm-tabs width="{{width}}" height="{{height}}">
-                    <wm-tabpane>
-                        <wm-tabheader heading="tab1"></wm-tabheader>
-                        <wm-tabcontent>
-                            Content of tab1:<br>
-                            Address1:<br>
-                            <wm-composite>
-                                <wm-label caption="city:"></wm-label>
-                                <wm-text scopedatavalue="address1.city"></wm-text>
-                            </wm-composite>
-                            <wm-composite>
-                                <wm-label caption="state:"></wm-label>
-                                <wm-text scopedatavalue="address1.state"></wm-text>
-                            </wm-composite>
-                            <wm-composite>
-                                <wm-label caption="zip:"></wm-label>
-                                <wm-text scopedatavalue="address1.zip"></wm-text>
-                            </wm-composite>
-                        </wm-tabcontent>
+                    <wm-tabpane heading="tab1">
+                         Content of tab1:<br>
+                         Address1:<br>
+                         <wm-composite>
+                             <wm-label caption="city:"></wm-label>
+                             <wm-text scopedatavalue="address1.city"></wm-text>
+                         </wm-composite>
+                         <wm-composite>
+                             <wm-label caption="state:"></wm-label>
+                             <wm-text scopedatavalue="address1.state"></wm-text>
+                         </wm-composite>
+                         <wm-composite>
+                             <wm-label caption="zip:"></wm-label>
+                             <wm-text scopedatavalue="address1.zip"></wm-text>
+                         </wm-composite>
                     </wm-tabpane>
-                    <wm-tabpane>
-                        <wm-tabheader heading="tab2"></wm-tabheader>
-                        <wm-tabcontent>
-                            Content of tab2:<br>
-                            Address2:<br>
-                            <wm-composite>
-                                <wm-label caption="city:"></wm-label>
-                                <wm-text scopedatavalue="address2.city"></wm-text>
-                            </wm-composite>
-                            <wm-composite>
-                                <wm-label caption="state:"></wm-label>
-                                <wm-text scopedatavalue="address2.state"></wm-text>
-                            </wm-composite>
-                            <wm-composite>
-                                <wm-label caption="zip:"></wm-label>
-                                <wm-text scopedatavalue="address2.zip"></wm-text>
-                            </wm-composite>
-                        </wm-tabcontent>
+                    <wm-tabpane heading="tab2">
+                         Content of tab2:<br>
+                         Address2:<br>
+                         <wm-composite>
+                             <wm-label caption="city:"></wm-label>
+                             <wm-text scopedatavalue="address2.city"></wm-text>
+                        </wm-composite>
+                        <wm-composite>
+                             <wm-label caption="state:"></wm-label>
+                             <wm-text scopedatavalue="address2.state"></wm-text>
+                        </wm-composite>
+                        <wm-composite>
+                             <wm-label caption="zip:"></wm-label>
+                             <wm-text scopedatavalue="address2.zip"></wm-text>
+                         </wm-composite>
                     </wm-tabpane>
                 </wm-tabs>
             </div>
@@ -695,6 +522,23 @@ WM.module('wm.layouts.containers')
  *
  * @param {string=} name
  *                  Name of the tabpane.
+ * @param {string=} heading
+ *                  Title of the header. <br>
+ *                  This property is bindable. <br>
+ *                  Default value: `Tab Title`. <br>
+ *                  This is will be used only when the default template is used.
+ * @param {string=} paneicon
+ *                  Icon which we displayed on the tab-header. <br>
+ *                  This property is bindable. <br>
+ *                  This is will be used only when the default template is used.
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the tab on the web page. <br>
+ *                  Default value: `true`.
+ * @param {boolean=} isdefaulttab
+ *                  isdefaulttab is a bindable property. <br>
+ *                  First tab with `isdefaulttab = true` will be displayed by default.<br>
+ *                  Default value: `false`.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the tab on the web page. <br>
@@ -716,17 +560,11 @@ WM.module('wm.layouts.containers')
                 </div>
                 <br>
                 <wm-tabs>
-                    <wm-tabpane on-select="onTab1Select()" on-deselect="onTab1Deselect()">
-                        <wm-tabheader heading="tab1"></wm-tabheader>
-                        <wm-tabcontent>
-                            Content of tab1:<br>
-                        </wm-tabcontent>
+                    <wm-tabpane on-select="onTab1Select()" on-deselect="onTab1Deselect()" Heading="tab1">
+                        Content for tab1:
                     </wm-tabpane>
-                    <wm-tabpane on-select="onTab2Select()">
-                        <wm-tabheader heading="tab2"></wm-tabheader>
-                        <wm-tabcontent>
-                            Content of tab2:<br>
-                        </wm-tabcontent>
+                    <wm-tabpane on-select="onTab2Select()" Heading="tab2">
+                        Content for tab2:
                     </wm-tabpane>
                 </wm-tabs>
             </div>
@@ -746,140 +584,6 @@ WM.module('wm.layouts.containers')
                    console.log("inside tab2select");
                    $scope.tab2count++;
                }
-            }
-        </file>
-    </example>
- */
-
-/**
- * @ngdoc directive
- * @name wm.layouts.containers.directive:wmTabheader
- * @restrict E
- *
- * @description
- * The `wmTabheader` directive defines tab-header widget. <br>
- * wmTabheader can be used only inside wmTabpane. <br>
- * If there is no transcluded content, default template will be used. <br>
- *
- * Default template:<br>
- * &lt;div class='tab-heading'&gt; <br>
- * &lt;i class='app-icon' ng-show='iconsource' ng-style ='{backgroundImage:iconsource}'&gt;&nbsp;&lt;/i&gt; <br> { {heading} } <br>
- * &lt;i ng-click='tab.onClose();' ng-if='tab.closable'&gt;&nbsp;&lt;/i&gt; <br>
- * &lt;/div&gt;
- *
- * @scope
- *
- * @requires PropertiesFactory
- * @requires $templateCache
- * @requires WidgetUtilService
- * @requires $compile
- * @requires Utils
- *
- * @param {string=} name
- *                  Name of the tabheader.
- * @param {string=} heading
- *                  Title of the header. <br>
- *                  This property is bindable. <br>
- *                  Default value: `Tab Title`. <br>
- *                  This is will be used only when the default template is used.
- * @param {string=} paneicon
- *                  Icon which we displayed on the tab-header. <br>
- *                  This property is bindable. <br>
- *                  This is will be used only when the default template is used.
- * @param {boolean=} show
- *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the tab on the web page. <br>
- *                  Default value: `true`.
- * @param {boolean=} isdefaulttab
- *                  isdefaulttab is a bindable property. <br>
- *                  First tab with `isdefaulttab = true` will be displayed by default.<br>
- *                  Default value: `false`.
- * @param {string=} horizontalalign
- *                  Align the content of the tab-header to left/right/center. <br>
- *                  Default value: `left`.
- * @example
-    <example module="wmCore">
-        <file name="index.html">
-            <div ng-controller="Ctrl" class="wm-app">
-                <br>
-                <wm-tabs>
-                    <wm-tabpane>
-                        <wm-tabheader heading="{{tab1heading}}"></wm-tabheader>
-                        <wm-tabcontent>
-                            Content of tab1:<br>
-                        </wm-tabcontent>
-                    </wm-tabpane>
-                    <wm-tabpane>
-                        <wm-tabheader isdefaulttab="true"><a><wm-label caption="tab2"><wm-label></a></wm-tabheader>
-                        <wm-tabcontent>
-                            Content of tab2:<br>
-                        </wm-tabcontent>
-                    </wm-tabpane>
-                </wm-tabs>
-            </div>
-        </file>
-        <file name="script.js">
-            function Ctrl($scope) {
-               $scope.tab1heading = "Tab1";
-            }
-        </file>
-    </example>
- */
-
-/**
- * @ngdoc directive
- * @name wm.layouts.containers.directive:wmTabcontent
- * @restrict E
- *
- * @description
- * The `wmTabcontent` directive defines tab-content widget. <br>
- * wmTabcontent can be used only inside wmTabpane.
- *
- *
- * @scope
- *
- * @requires PropertiesFactory
- * @requires $templateCache
- * @requires WidgetUtilService
- *
- * @param {string=} name
- *                  Name of the tabs widget.
- * @param {string=} width
- *                  Width of the tabs widget.
- * @param {string=} height
- *                  Height of the tabs widget.
- * @param {boolean=} show
- *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the tabs on the web page. <br>
- *                  Default value: `true`.
- * @param {string=} horizontalalign
- *                  Align the content of the tab to left/right/center. <br>
- *                  Default value: `left`. <br>
- *
- * @example
-    <example module="wmCore">
-        <file name="index.html">
-            <div ng-controller="Ctrl" class="wm-app">
-                <br>
-                <wm-tabs>
-                    <wm-tabpane>
-                        <wm-tabheader heading="{{tab1heading}}"></wm-tabheader>
-                        <wm-tabcontent>
-                            Content of tab1:<br>
-                        </wm-tabcontent>
-                    </wm-tabpane>
-                    <wm-tabpane>
-                        <wm-tabheader isdefaulttab="true"><a><wm-label caption="tab2"></wm-label></a></wm-tabheader>
-                        <wm-tabcontent>
-                            Content of tab2:<br>
-                        </wm-tabcontent>
-                    </wm-tabpane>
-                </wm-tabs>
-            </div>
-        </file>
-        <file name="script.js">
-            function Ctrl($scope) {
-               $scope.tab1heading = "Tab1";
             }
         </file>
     </example>
