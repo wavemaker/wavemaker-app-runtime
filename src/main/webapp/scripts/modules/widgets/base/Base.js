@@ -1255,8 +1255,8 @@ WM.module('wm.widgets.base', [])
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex}
                     },
                     'wm.grid': {
-                        "width": {"value": "100%", "pattern": dimensionRegex},
-                        "height": {"value": "200px", "pattern": dimensionRegex},
+                        "width": {"pattern": dimensionRegex},
+                        "height": {"pattern": dimensionRegex},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "scopedataset": {"type": "string"},
                         "pagesize": {"type": "number"},
