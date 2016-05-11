@@ -131,10 +131,12 @@ WM.module('wm.layouts.containers')
                 if (scope.onSubmit || formVariable) {
                     //Get all form fields and prepare form data as key value pairs
                     element.find('[data-role="form-field"]').each(function () {
+                        var fieldName;
                         field       = WM.element(this).isolateScope().fieldDefConfig;
-                        fieldTarget = field.target.split('.');
-                        if (fieldTarget.length === 1 && !formData[field.name]) {
-                            formData[field.name] = field.value;
+                        fieldTarget = _.split(field.target, '.');
+                        fieldName   = fieldTarget[0] || field.name;
+                        if (fieldTarget.length === 1 && !formData[fieldName]) {
+                            formData[fieldName] = field.value;
                         } else {
                             if (formVariable.category === 'wm.Variable' && !formData[fieldTarget[1]]) {
                                 formData[fieldTarget[1]] = field.value;
@@ -150,7 +152,7 @@ WM.module('wm.layouts.containers')
                     //Form fields wont't contain grid widgets get those using attribute and add to form data
                     element.find('[isFormField="true"]').each(function () {
                         formWidget = WM.element(this).isolateScope();
-                        fieldTarget = formWidget.name.split('.');
+                        fieldTarget = _.split(formWidget.name, '.');
                         if (fieldTarget.length === 1) {
                             formData[formWidget.name] = formWidget.dataset;
                         } else {

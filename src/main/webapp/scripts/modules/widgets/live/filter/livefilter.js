@@ -736,7 +736,7 @@ WM.module('wm.widgets.live')
                             parentIsolateScope = scope.parentIsolateScope,
                             columnsDef = new scope.FilterField(),
                             columnsDefProps = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
-                                'field'             : attrs.field || attrs.binding,
+                                'field'             : attrs.field || attrs.binding ||attrs.name,
                                 'filterOn'          : attrs.filterOn,
                                 'isRange'           : attrs.isRange === "true" || attrs.isRange === true,
                                 'isRelated'         : attrs.isRelated === "true" || attrs.isRelated === true,

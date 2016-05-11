@@ -1044,7 +1044,7 @@ WM.module('wm.widgets.live')
                         parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         isLayoutDialog = parentIsolateScope.isLayoutDialog;
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
-                            'key'    : attrs.key || attrs.binding,
+                            'key'    : attrs.key || attrs.binding || attrs.name,
                             'regexp' : attrs.regexp || ".*"
                         });
                         attrs.isRelated =  attrs.isRelated === "true" || attrs.primaryKey === true;
@@ -1060,7 +1060,7 @@ WM.module('wm.widgets.live')
                         scope.disabled = columnDef.disabled;
                         scope.multiple = columnDef.multiple;
                         //For normal form is update mode won't be set on parent scope, set it explicitly based on isupdatemode attribute
-                        if (scope.isupdatemode === 'true') {
+                        if (scope.isupdatemode === 'true' || element.closest('form.app-form').length) {
                             parentIsolateScope.isUpdateMode = true;
                         }
 
