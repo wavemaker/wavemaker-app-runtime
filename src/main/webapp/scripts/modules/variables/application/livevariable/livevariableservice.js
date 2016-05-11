@@ -563,8 +563,9 @@ wm.variables.services.$liveVariable = [
                         }
 
                         /* update the dataSet against the variable */
-                        updateVariableDataset(variable, emptyArr, variable.propertiesMap);
-
+                        if (!options.skipDataSetUpdate) {
+                            updateVariableDataset(variable, emptyArr, variable.propertiesMap);
+                        }
                         /* If callback function is provided, send the data to the callback.
                          * The same callback if triggered in case of error also. The error-handling is done in grid.js*/
                         Utils.triggerFn(error, response);

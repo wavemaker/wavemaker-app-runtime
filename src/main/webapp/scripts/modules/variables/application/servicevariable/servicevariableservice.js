@@ -218,7 +218,7 @@ wm.variables.services.$servicevariable = ['Variables',
                 }
 
                 /* update the dataset against the variable, if response is non-object, insert the response in 'value' field of dataSet */
-                if (!options.forceRunMode) {
+                if (!options.forceRunMode && !options.skipDataSetUpdate) {
                     variable.dataSet = (!WM.isObject(response)) ? {'value': response} : response;
                 }
 

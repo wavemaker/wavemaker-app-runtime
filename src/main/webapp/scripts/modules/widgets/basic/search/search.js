@@ -35,9 +35,11 @@ WM.module('wm.widgets.basic')
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
-                    ' uib-typeahead="item.wmDisplayLabel || item for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
+                    ' typeahead-loading="_loadingItems" ' +
+                    ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html">' +
+                '<i ng-show="_loadingItems" class="fa fa-refresh wm-search-widget-refresh"></i>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
                     '<form ng-submit="onSubmit({$event: $event, $scope: this})" >' +
                         '<button title="Search" ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
@@ -55,7 +57,7 @@ WM.module('wm.widgets.basic')
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
-                    ' uib-typeahead="item.wmDisplayLabel ||item for item in itemList | _custom_search_filter:searchkey:$viewValue:casesensitive | limitTo:limit" ' +
+            ' uib-typeahead="item.wmDisplayLabel ||item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html">' +
                 '<i class="btn-close wi wi-cancel" ng-show="showClosebtn" ng-click="clearText();"></i>' +
@@ -96,8 +98,13 @@ WM.module('wm.widgets.basic')
         'FormWidgetUtils',
         '$rootScope',
         '$timeout',
+        'Variables',
+        '$filter',
+        '$q',
+        '$servicevariable',
+        'VARIABLE_CONSTANTS',
 
-        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout) {
+        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $servicevariable, VARIABLE_CONSTANTS) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
                 notifyFor = {
@@ -150,15 +157,69 @@ WM.module('wm.widgets.basic')
                 $is.updateModel();
             }
 
+            //returns array of query param names for variable other then page,size,sort
+            function getMappedServiceQueryParams(params) {
+
+                return _.map(_.reject(params, function (param) {
+                    return _.includes(VARIABLE_CONSTANTS.PAGINATION_PARAMS, param.name);
+                }), function (param) {
+                    return param.name;
+                });
+            }
+
+            // this function checks if the variable bound is a live variable or service variable
+            function isVariableUpdateRequired($is, scope) {
+                var variable          = Variables.getVariableByName(Utils.getVariableName($is, scope)),
+                    updateRequiredFor = ['wm.LiveVariable', 'wm.ServiceVariable'];
+
+                return variable && _.includes(updateRequiredFor, variable.category);
+            }
+
+            // this function checks if the variable bound is a service variable
+            function isServiceVariable($is, scope) {
+                var variable = Variables.getVariableByName(Utils.getVariableName($is, scope));
+
+                return variable && 'wm.ServiceVariable' === variable.category;
+            }
+
+            /* This function updates the property options for searchkey, in case of query service variable these options are
+             updated by the input query params that query service variable is expecting.
+             */
+            function updatePropertyOptions($is) {
+                var isBoundVariable      = Utils.stringStartsWith($is.binddataset, 'bind:Variables.'),
+                    parts                = _.split($is.binddataset, /\W/),
+                    variable             = isBoundVariable && Variables.getVariableByName(parts[2]),
+                    queryParams          = [],
+                    searchOptions        = [];
+
+                if (variable && variable.category === 'wm.ServiceVariable') {
+                    $servicevariable.getServiceOperationInfo(variable.operation, variable.service, function (serviceOperationInfo) {
+                        queryParams = serviceOperationInfo.parameters;
+                    });
+                    if (queryParams) {
+                        searchOptions = _.map(getMappedServiceQueryParams(queryParams), function (value) {
+                            return value;
+                        });
+                        _.set($is.widgetProps, 'searchkey.options', searchOptions);
+                    }
+                }
+            }
+
             // to filter & set the dataset property of the search widget
             function setDataSet(data, $is, element) {
                 // sanity check for data availability
                 if (!data) {
+                    // remove the searchkey attr when data set is not defined
+                    $rs.$emit('set-markup-attr', $is.widgetid, {'searchkey': ''});
                     // checking if itemList is available or not
                     if (!$is.itemList) {
                         $is.itemList = [];
                     }
                     return;
+                }
+
+                if (CONSTANTS.isStudioMode && isServiceVariable($is, element.scope())) {
+                    updatePropertyOptions($is); //update searchkey options in case of service variables
                 }
 
                 if (CONSTANTS.isRunMode) {
@@ -196,12 +257,14 @@ WM.module('wm.widgets.basic')
                         return;
                     }
                     $is.formattedDataSet = dataSet;
-                    updateQueryModel($is);
+                    if (!isVariableUpdateRequired($is, element.scope())) {
+                        updateQueryModel($is);
+                    }
                 }
             }
 
             // update search-key, display-label in the property panel
-            function updatePropertyPanelOptions(dataset, $is) {
+            function updatePropertyPanelOptions(dataset, $is, element) {
 
                 // re-initialize the property values
                 if ($is.newcolumns) {
@@ -209,12 +272,15 @@ WM.module('wm.widgets.basic')
                     $is.searchkey = '';
                     $is.displaylabel = '';
                     $is.datafield = '';
-                    $is.$root.$emit('set-markup-attr', $is.widgetid, {'searchkey': $is.searchkey, 'datafield': $is.datafield, 'displaylabel': $is.displaylabel});
+                    $rs.$emit('set-markup-attr', $is.widgetid, {'searchkey': $is.searchkey, 'datafield': $is.datafield, 'displaylabel': $is.displaylabel});
                 }
 
                 // assign all the keys to the options of the search widget
                 if (CONSTANTS.isStudioMode && WM.isDefined(dataset) && dataset !== null) {
                     WidgetUtilService.updatePropertyPanelOptions($is);
+                    if (isServiceVariable($is, element.scope())) {
+                        updatePropertyOptions($is); //update searchkey options in case of service variables
+                    }
                 }
             }
 
@@ -263,7 +329,6 @@ WM.module('wm.widgets.basic')
                 $is.showSearchIcon = type === 'search';
             }
 
-
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
             function propertyChangeHandler($is, element, key, newVal) {
                 switch (key) {
@@ -275,7 +340,7 @@ WM.module('wm.widgets.basic')
                     /*listening on 'active' property, as losing the properties during page switch
                      if studio-mode, then update the displayField & dataField in property panel*/
                     if ($is.widgetid && newVal) {
-                        updatePropertyPanelOptions($is.dataset, $is);
+                        updatePropertyPanelOptions($is.dataset, $is, element);
                     }
                     break;
                 case 'type':
@@ -283,6 +348,143 @@ WM.module('wm.widgets.basic')
                     break;
                 }
             }
+
+            // returns the service variable query params mapped with input values that needs to be sent for variable update
+            function getServiceQueryRequestParams($is, variable, searchValue) {
+                var wmServiceInfo = variable._wmServiceOperationInfo,
+                    queryParams   = wmServiceInfo ? wmServiceInfo.parameters : [],
+                    searchKey     = _.split($is.searchkey, ','),
+                    inputFields   = {};
+
+                //get array of query param names for variable
+                queryParams = getMappedServiceQueryParams(queryParams);
+
+                // check if some param value is already available in databinding and update the inputFields accordingly
+                _.map(variable.dataBinding, function (value, key) {
+                    inputFields[key] = value;
+                });
+
+                // add the query params mentioned in the searchkey to inputFields
+                _.forEach(searchKey, function (value) {
+                    if (_.includes(queryParams, value)) {
+                        inputFields[value] = searchValue;
+                    }
+                });
+
+                return inputFields;
+            }
+            // This function returns the query params depending upon the variable type
+            function getQueryRequestParams($is, variable, searchValue) {
+                var requestParams = {},
+                    searchInputs  = _.split($is.searchkey, ','),
+                    inputFields   = {};
+
+                // setup common request param values
+                requestParams = {
+                    'pagesize'           : $is.pagesize || 20,
+                    'skipDataSetUpdate'  : true //don't update the actual variable dataset
+                };
+                switch (variable.category) {
+                case 'wm.LiveVariable':
+                    //build input request params for live variable
+                    _.forEach(searchInputs, function (colName) {
+                        inputFields[colName] = {
+                            'value': searchValue
+                        };
+                    });
+                    requestParams.filterFields = inputFields;
+                    break;
+                case 'wm.ServiceVariable':
+                    // get request params for service variable
+                    inputFields = getServiceQueryRequestParams($is, variable, searchValue);
+                    requestParams.inputFields = inputFields;
+                    break;
+                default:
+                    break;
+                }
+
+                return requestParams;
+            }
+
+            // this function transform the response data in case it is not an array
+            function getTransformedData(variable, data) {
+                var operationResult = variable.operation + 'Result', //when output is only string it is available as oprationNameResult
+                    tempResponse    = data[operationResult],
+                    tempObj         = {};
+
+                if (tempResponse) { // in case data received is an object with single value as string
+                    _.set(tempObj, operationResult, tempResponse);
+                    data = [tempObj]; //convert data into an array having tempObj
+                }
+
+                return data;
+            }
+
+            // This function fetch the updated variable data in case search widget is bound to some variable
+            function fetchVariableData($is, el, searchValue, $s) {
+                var variable      = Variables.getVariableByName(Utils.getVariableName($is, $s)),  // get the bound variable
+                    requestParams = getQueryRequestParams($is, variable, searchValue), // params to be sent along with variable update call
+                    deferred      = $q.defer();
+
+                if (variable) {
+                    // call variable update
+                    variable.update(requestParams, function handleQuerySuccess(response) {
+                        var data = response.content || response,
+                            expressionArray = _.split($is.binddataset, '.'),
+                            dataExpression  = _.slice(expressionArray, _.indexOf(expressionArray, 'dataSet') + 1).join('.');
+
+                        //if data expression exists, extract the data from the expression path
+                        if (dataExpression) {
+                            data = _.get(data, dataExpression);
+                        }
+                        if (!_.isArray(data)) {
+                            data = getTransformedData(variable, data);
+                        }
+                        // in case of no data received, resolve the promise with empty array
+                        if (!data.length) {
+                            deferred.resolve([]);
+                        } else {
+                            /*passing data to setDataSet method so as to set the transformed data in variable itemList on scope
+                             with which we are resolving the promise
+                             */
+                            setDataSet(data, $is, el, $s);
+                            deferred.resolve($is.itemList);
+                        }
+                    }, function () {
+                        // setting loadingItems to false when some error occurs, so that loading icon is hidden
+                        $is._loadingItems = false;
+                    });
+                }
+                return deferred.promise;
+            }
+
+            // this function checks if dataset is bound to any variable then add typeahead-wait-ms attribute
+            function setQuerySearchAttributes(template, tAttrs) {
+                var inputTpl              = WM.element(template).find('input'),
+                    isBoundToVariable     = Utils.stringStartsWith(tAttrs.dataset, 'bind:Variables.');
+
+                // in case dataSet is bound to variable, add delay of 500ms before the typeahead query kicked-off
+                if (isBoundToVariable && inputTpl) {
+                    inputTpl.attr('typeahead-wait-ms', 500);
+                }
+            }
+
+            // returns the list of options which will be given to search typeahead
+            function _getItems($is, element, searchValue) {
+                var customFilter      = $filter('_custom_search_filter'),
+                    boundDataSet      = $is.binddataset,
+                    $s                = element.scope(),
+                    isBoundToVariable = boundDataSet && Utils.stringStartsWith(boundDataSet, 'bind:Variables.');
+                /* check if search widget is bound to variable(live and service) then get the updated results
+                 otherwise use the local itemList array and return the filtered result as per the search value
+                 */
+                if (isBoundToVariable && isVariableUpdateRequired($is, $s)) {
+                    return fetchVariableData($is, element, searchValue, $s);
+                }
+                // if variable update is not required then filter the local array and return the results
+                return customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive);
+            }
+
 
             return {
                 'restrict': 'E',
@@ -299,6 +501,7 @@ WM.module('wm.widgets.basic')
                         url = 'template/widget/form/search.html';
                     }
                     template = WM.element(WidgetUtilService.getPreparedTemplate(url, tElement, tAttrs));
+                    setQuerySearchAttributes(template, tAttrs);
                     return template[0].outerHTML;
                 },
                 'link': {
@@ -400,6 +603,8 @@ WM.module('wm.widgets.basic')
                                 setDataSet(newVal, $is, element);
                             });
                         }
+                        // returns the list of options which will be given to search typeahead
+                        $is._getItems = _getItems.bind(undefined, $is, element);
                     }
                 }
             };
@@ -497,6 +702,6 @@ WM.module('wm.widgets.basic')
                    }
                ];
             }
-        </file>
-    </example>
+ </file>
+ </example>
  */
