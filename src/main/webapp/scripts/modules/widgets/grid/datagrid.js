@@ -1701,7 +1701,11 @@ $.widget('wm.datagrid', {
                 }
 
                 actionsTemplate += '<button type="button" data-action-key="' + def.key + '" class="' + clsAttr + '" title="' + def.title + '" ' + (ngShowAttr ? ' ng-show="' + ngShowAttr + '"' : '') + '>'
-                    + '<i class="app-icon ' + def.iconclass + '"></i><span class="btn-caption">' + def.displayName + '</span></button>';
+                    + '<i class="app-icon ' + def.iconclass + '"></i>';
+                if (def.displayName) {
+                    actionsTemplate += '<span class="btn-caption">' + def.displayName + '</span>';//Appending display name
+                }
+                actionsTemplate += '</button>';
                 if (_.includes(def.action, 'editRow()')) {
                     actionsTemplate += !saveCancelTemplateAdded ? saveCancelTemplate : '';
                     saveCancelTemplateAdded = true;

@@ -1146,13 +1146,6 @@ WM.module('wm.widgets.grid')
                         Utils.triggerFn(options.error, error);
                     });
                 },
-            /*Function to remove the column containing row operations.*/
-                removeOperationColumns = function () {
-                    var lastColumn = $scope.fieldDefs[$scope.fieldDefs.length - 1];
-                    if (lastColumn.type === 'custom' && lastColumn.field === 'rowOperations') {
-                        $scope.fieldDefs.pop();
-                    }
-                },
                 isBoundToView = function () {
                     return $scope.dataset && $scope.dataset.propertiesMap && $scope.dataset.propertiesMap.tableType === 'VIEW';
                 },
@@ -1185,13 +1178,14 @@ WM.module('wm.widgets.grid')
                 if (!$scope.fieldDefs.length) {
                     return;
                 }
-                /*Invoke the function to remove the column containing row operations.*/
-                removeOperationColumns();
+
+                _.remove($scope.fieldDefs, {type : 'custom', field : 'rowOperations'});//Removing operations column
 
                 var opConfig = {},
-                    operations = [];
+                    operations = [],
+                    insertPosition;
                 /*Loop through the "rowOperations"*/
-                WM.forEach(rowOperations, function (field, fieldName) {
+                _.forEach(rowOperations, function (field, fieldName) {
                     /* Add it to operations only if the corresponding property is enabled.*/
                     if (_.some($scope.rowActions, {'key' : field.property}) || (!fromDesigner && $scope[field.property])) {
                         opConfig[fieldName] = rowOperations[fieldName].config;
@@ -1201,7 +1195,8 @@ WM.module('wm.widgets.grid')
 
                 /*Add the column for row operations only if at-least one operation has been enabled.*/
                 if ($scope.rowActions.length) {
-                    $scope.fieldDefs.push(columnObj.rowOperationsColumn);
+                    insertPosition = $scope.rowactionsposition ? _.toNumber($scope.rowactionsposition) : $scope.fieldDefs.length;
+                    $scope.fieldDefs.splice(insertPosition, 0, columnObj.rowOperationsColumn);
                 } else if (!fromDesigner && operations.length) {
                     columnObj.rowOperationsColumn.operations = operations;
                     columnObj.rowOperationsColumn.opConfig = opConfig;
