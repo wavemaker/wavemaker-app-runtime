@@ -1491,6 +1491,7 @@ WM.module('wm.widgets.base', [])
                         "listclass": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group", "list-inline", "media-list"]},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "value": "", "pattern": classRegex},
                         "navigation": {"type": "list", "options": ["None", "Basic", "Pager", "Inline", "Classic", "Scroll"], "value": "None"},
+                        "navigationalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align", "value": "left"},
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
