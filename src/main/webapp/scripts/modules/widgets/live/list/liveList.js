@@ -831,22 +831,34 @@ WM.module('wm.widgets.live')
                 return (!$is.selectionlimit || count < $is.selectionlimit);
             }
 
-            function getWidget($el, name, index) {
+            function getWidgets($el, name, index) {
                 var prefix = 'li.app-list-item',
-                    target;
+                    $target,
+                    retVal = [];
 
-                if (!WM.isDefined(index)) {
-                    index = $el.find(prefix + '.active:first').index();
-
-                    if (index === -1) {
-                        index = 0;
-                    }
+                if (!WM.isDefined(name)) {
+                    return;
                 }
 
-                target = $el.find(prefix + ':nth-child(' + (index + 1) + ')').find('[init-widget][name="' + name + '"]');
+                if (!WM.isDefined(index)) {
+                    $el.find(prefix + ' [init-widget][name="' + name + '"]')
+                        .each(function () {
+                            $target = WM.element(this);
+                            if ($target.isolateScope) {
+                                retVal.push($target.isolateScope());
+                            }
+                        });
 
-                if (target.isolateScope) {
-                    return target.isolateScope();
+                    return retVal;
+
+                }
+                index = +index || 0;
+                index++;
+
+                $target = $el.find(prefix + ':nth-child(' + index + ')').find('[init-widget][name="' + name + '"]');
+
+                if ($target.length && $target.isolateScope) {
+                    return [$target.isolateScope()];
                 }
             }
 
@@ -1137,7 +1149,7 @@ WM.module('wm.widgets.live')
 
                     setupEvtHandlers($is, $el, attrs);
 
-                    $is.getWidget = getWidget.bind(undefined, $el);
+                    $is.getWidgets = getWidgets.bind(undefined, $el);
                 }
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
