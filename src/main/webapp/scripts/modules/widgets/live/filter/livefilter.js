@@ -73,7 +73,18 @@ WM.module('wm.widgets.live')
                     "onSuccess": "&",
                     "onError": "&"
                 },
-                controller: function ($scope) {
+                controller: function ($scope, $attrs) {
+                    /*
+                     * Extend the properties from the form controller exposed to end user in page script
+                     * Kept in try/catch as the controller may not be available sometimes
+                     */
+                    if (CONSTANTS.isRunMode) {
+                        try {
+                            var filterController = $attrs.name + "Controller";
+                            $controller(filterController, {$scope: $scope});
+                        } catch (ignore) {
+                        }
+                    }
                     /* when the service call ended this function will be called */
                     var onResult = function (data, status) {
                         /* whether service call success or failure call this method*/
@@ -397,17 +408,6 @@ WM.module('wm.widgets.live')
                         post: function (scope, element, attrs) {
                             if (scope.expanded === undefined) {
                                 scope.expanded = true;
-                            }
-                            /*
-                             * Extend the properties from the form controller exposed to end user in page script
-                             * Kept in try/catch as the controller may not be available sometimes
-                             */
-                            if (CONSTANTS.isRunMode) {
-                                try {
-                                    var filterController = scope.name + "Controller";
-                                    $controller(filterController, {$scope: scope});
-                                } catch (ignore) {
-                                }
                             }
 
                             var variableRegex = /^bind:Variables\.(.*)\.dataSet$/,

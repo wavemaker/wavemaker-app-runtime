@@ -105,7 +105,19 @@ WM.module('wm.widgets.live')
                 }
                 return defaultTemplate;
             },
-            controller: function ($scope, DialogService) {
+            controller: function ($scope, $attrs, DialogService) {
+                var formController;
+                /*
+                 * Extend the properties from the form controller exposed to end user in page script
+                 * Kept in try/catch as the controller may not be available sometimes
+                 */
+                if (CONSTANTS.isRunMode) {
+                    try {
+                        formController = $attrs.name + "Controller";
+                        $controller(formController, {$scope: $scope});
+                    } catch (ignore) {
+                    }
+                }
                 $scope.__compileWithIScope = true;
                 /* when the service call ended this function will be called */
                 /* prevformFields is used for showing the previous data when cancel is clicked and also for update calls*/
@@ -703,23 +715,11 @@ WM.module('wm.widgets.live')
                             }
                         }
                         scope.element = element;
-                        var formController,
-                            handlers = [];
+                        var handlers = [];
 
                         scope.getActiveLayout = function () {
                             return LiveWidgetUtils.getColumnCountByLayoutType(scope.layout);
                         };
-                        /*
-                         * Extend the properties from the form controller exposed to end user in page script
-                         * Kept in try/catch as the controller may not be available sometimes
-                         */
-                        if (CONSTANTS.isRunMode) {
-                            try {
-                                formController = scope.name + "Controller";
-                                $controller(formController, {$scope: scope});
-                            } catch (ignore) {
-                            }
-                        }
 
                         // returns the grid object when dataset is empty
                         function getEmptyDataSetGridObj() {
