@@ -290,6 +290,82 @@ body {
 }
 
 /********************************************************************************
+********************************* Wizard styles *****************************
+********************************************************************************/
+.app-wizard {
+  position: relative;
+  min-height: 4em;
+  .app-wizard-steps {
+    position: relative;
+    border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+    .app-wizard-step {
+      position: relative;
+      a {
+        cursor: not-allowed;
+        padding: 0 20px;
+        line-height: 46px;
+      }
+      &.current {
+        pointer-events: none;
+        a {
+          cursor: default;
+        }
+      }
+      &.active {
+        pointer-events: all;
+        a {
+          cursor: pointer;
+        }
+      }
+      &.current {
+        a, a:hover, a:focus, a:active {
+          background-color: #fff;
+        }
+      }
+      &.disabled {
+        a, a:hover, a:focus, a:active {
+          background-color: #eee;
+        }
+      }
+      .step-title {
+        position: relative;
+      }
+      .arrow {
+        width: 28px;
+        height: 28px;
+        display: inline-block;
+        background-color: inherit;
+        right: -15px;
+        position: absolute;
+        top: 9px;
+        z-index: 1;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom-width: 0;
+        border-left-width: 0;
+        -webkit-transform: rotate(45deg) skew(11deg, 11deg);
+      }
+    }
+  }
+  .app-wizard-body {
+    position: relative;
+    .app-wizard-step-content {
+      position: relative;
+      display: none;
+      height: 100%;
+      min-height: 4em;
+      &.current {
+        display: block;
+      }
+    }
+  }
+  .app-wizard-actions {
+    .app-button {
+      margin-right: 8px;
+    }
+  }
+}
+
+/********************************************************************************
 ********************************* Application layout classes *****************************
 *********************************************************************************/
 

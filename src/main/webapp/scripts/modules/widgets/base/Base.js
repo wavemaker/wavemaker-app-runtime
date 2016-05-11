@@ -1451,6 +1451,20 @@ WM.module('wm.widgets.base', [])
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
+                    "wm.wizard": {
+                        "addchild": {"hidelabel": true, "options": [{"label": "Steps", "widgettype": "wm-wizardstep"}], "widget": "add-widget"},
+                        "nextbtnlabel": {"type": "string", "value": "Next Step", "bindable": "in-bound"},
+                        "cancelbtnlabel": {"type": "string", "value": "Cancel", "bindable": "in-bound"},
+                        "previousbtnlabel": {"type": "string", "value": "Previous Step", "bindable": "in-bound"},
+                        "donebtnlabel": {"type": "string", "value": "Done", "bindable": "in-bound"}
+                    },
+                    "wm.wizardstep": {
+                        "heading": {"type": "string", "value": "Step Title", "bindable": "in-bound"},
+                        "disablenext": {"type": "boolean", "value": false, "bindable": "in-bound"},
+                        "onNext": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onPrev": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                    },
                     "wm.carousel" : {
                         "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "show": false},
@@ -1750,7 +1764,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
                 {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
-                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings"], "parent": "properties"},
+                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
                 {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
@@ -1768,7 +1782,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "behavior", "properties": ["defaultview", "defaultmode", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "readonlygrid", "scrolldelay", "scrollamount", "direction",
                     "multiple", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
-                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
+                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                     "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "shortcutkey", "showcaptions", "multiselect", "radioselect", "enablesort", "gridfirstrowselect", "selectfirstitem", "enableemptyfilter", "displayformat", "updateon", "updatedelay"], "parent": "properties"},
@@ -1793,7 +1807,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onPaginationchange", "onActionsclick",
-                    "onBeforeSegmentChange", "onSegmentChange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen"], "parent": "events"},
+                    "onBeforeSegmentChange", "onSegmentChange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice"], "parent": "device"},
                 {"name": "imageproperties", "properties": ["imagetargetwidth", "imagetargetheight", "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
