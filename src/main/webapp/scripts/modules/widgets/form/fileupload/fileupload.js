@@ -217,7 +217,7 @@ WM.module('wm.widgets.form')
             /*fetching the variable object with service, operation*/
             variableObject = Variables.filterByVariableKeys(variableFilterData, true)[0];
             if (variableObject) {
-                uploadUrl = variableObject.wmServiceOperationInfo.relativePath;
+                uploadUrl = variableObject._wmServiceOperationInfo.relativePath;
             }
             return uploadUriPrefix + uploadUrl + destination;
         }

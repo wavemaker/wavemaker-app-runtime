@@ -111,6 +111,24 @@ wm.variables.services.VariableService = function (BaseService) {
                 action: params.pageName === 'App' ? 'deleteAppVariables' : 'deletePageVariables',
                 urlParams: params
             }, successCallback, failureCallback);
+        },
+        /**
+         * @ngdoc function
+         * @name wm.variables.$VariableService#getServiceOpInfo
+         * @methodOf wm.variables.$VariableService
+         * @function
+         *
+         * @description
+         * Get service operation info in run
+         *
+         * @param {function} successCallback to be called on success
+         * @param {function} failureCallback to be called on failure
+         */
+        getServiceOpInfo: function (successCallback, failureCallback) {
+            BaseService.send({
+                target: 'VariableService',
+                action: 'getServiceOpInfo'
+            }, successCallback, failureCallback);
         }
 
     };
