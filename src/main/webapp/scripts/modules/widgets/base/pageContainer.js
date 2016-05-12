@@ -73,6 +73,10 @@ WM.module('wm.widgets.base')
 
                 /*get the element scope*/
                 scope = element.scope();
+
+                if (!scope) {
+                    return;
+                }
                 scope = scope.$new();
                 // element might got removed by this time, check for scope
                 if (scope) {
