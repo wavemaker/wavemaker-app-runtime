@@ -578,8 +578,8 @@ WM.module('wm.widgets.base')
             wm.baseClasses.FieldDef.prototype = {
                 'setProperty' : function (field, newval) {
                     this.$is.setProperty.call(this, field, newval);
-                    if (this.$is.reRender) {
-                        this.$is.reRender();
+                    if (this.$is.redraw) {
+                        this.$is.redraw(true);
                     }
                 },
                 'getProperty' : function (field) {

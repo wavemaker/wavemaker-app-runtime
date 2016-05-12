@@ -231,7 +231,7 @@ $.widget('wm.datagrid', {
             cols += '/>';
             /* thead */
 
-            if (type === 'custom' && isDefined(value.class)) {
+            if (isDefined(value.class)) {
                 headerClasses +=  ' ' + value.class;
             }
             if (value.selected) {
@@ -695,7 +695,7 @@ $.widget('wm.datagrid', {
         this._prepareData();
         this._render();
         this.setColGroupWidths();
-        this.checkScrollBar();
+        this.addOrRemoveScroll();
     },
 
     refreshGrid: function () {
@@ -709,7 +709,7 @@ $.widget('wm.datagrid', {
         this.gridBody.remove();
         this._renderGrid();
         this._reselectColumns();
-        this.checkScrollBar();
+        this.addOrRemoveScroll();
     },
 
     /* Inserts a new blank row in the table. */
@@ -730,7 +730,7 @@ $.widget('wm.datagrid', {
             this.attachEventHandlers($row);
             $row.find('.edit-row-button').trigger('click', {operation: 'new'});
             this.updateSelectAllCheckboxState();
-            this.checkScrollBar();
+            this.addOrRemoveScroll();
         }
     },
 
@@ -777,7 +777,17 @@ $.widget('wm.datagrid', {
                     width = $header.width(),
                     id = $header.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id];
-                width = $header.hasClass('grid-col-small') ? 30 : (width > 50 ? width : (colDef.width || 50)); //Keep width as 30 for checkbox and radio; columnSanity check to prevent width being too small
+                if (!colDef.show) { //If show is false, set width to 0 to hide the column
+                    width = 0;
+                } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
+                    width = 30;
+                } else {
+                    if (_.isUndefined(colDef.width) || colDef.width === '') {
+                        width = width > 50 ? width : 50; //columnSanity check to prevent width being too small
+                    } else {
+                        width = colDef.width;
+                    }
+                }
                 $(headerCols[index]).css('width', width);
                 $(bodyCols[index]).css('width', width);
             });
@@ -1298,7 +1308,7 @@ $.widget('wm.datagrid', {
                     if (!this.preparedData.length) {
                         this.setStatus('nodata', this.dataStatus.nodata);
                     }
-                    this.checkScrollBar();
+                    this.addOrRemoveScroll();
                     return;
                 }
                 if ($.isFunction(this.options.setGridEditMode)) {
@@ -1311,7 +1321,7 @@ $.widget('wm.datagrid', {
                 $saveButton.addClass('hidden');
             }
         }
-        this.checkScrollBar();
+        this.addOrRemoveScroll();
     },
     cancelEdit: function ($editableElements) {
         var self = this;
@@ -1368,7 +1378,7 @@ $.widget('wm.datagrid', {
         $editButton.removeClass('hidden');
         $cancelButton.addClass('hidden');
         $saveButton.addClass('hidden');
-        this.checkScrollBar();
+        this.addOrRemoveScroll();
     },
     /* Deletes a row. */
     deleteRow: function (e) {
@@ -1382,7 +1392,7 @@ $.widget('wm.datagrid', {
             self = this;
         if (isNewRow) {
             $row.remove();
-            this.checkScrollBar();
+            this.addOrRemoveScroll();
             return;
         }
         if ($.isFunction(this.options.onRowDelete)) {
@@ -1397,7 +1407,7 @@ $.widget('wm.datagrid', {
                     $row.addClass('active');
                 }
                 $row.removeClass(className);
-                self.checkScrollBar();
+                self.addOrRemoveScroll();
             }, e);
         }
     },
@@ -1654,7 +1664,7 @@ $.widget('wm.datagrid', {
                         self.gridHeaderElement.width(newTableWidth);
                         self.gridElement.width(newTableWidth);
                     }
-                    self.checkScrollBar();
+                    self.addOrRemoveScroll();
                 }
             });
             /*On scroll of the content table, scroll the header*/
@@ -1663,14 +1673,14 @@ $.widget('wm.datagrid', {
             });
         }
     },
-    checkScrollBar: function () {
+    addOrRemoveScroll: function () {
         var gridContent = this.gridContainer.find('.app-grid-content').get(0),
             gridHeader = this.gridContainer.find('.app-grid-header');
         /*If scroll bar is present on the grid content, add padding to the header*/
         if ((gridContent.scrollHeight > gridContent.clientHeight) && !this.Utils.isMac()) {
-            gridHeader.addClass('sort-visible');
+            gridHeader.addClass('scroll-visible');
         } else {
-            gridHeader.removeClass('sort-visible');
+            gridHeader.removeClass('scroll-visible');
         }
     },
 
@@ -1761,7 +1771,7 @@ $.widget('wm.datagrid', {
         if (!this.tableId) {
             this.tableId = this.Utils.generateGuid();
         }
-        var sortVisible = this.Utils.isMac() ? '' : 'sort-visible',
+        var sortVisible = this.Utils.isMac() ? '' : 'scroll-visible',
             statusContainer =
                 '<div class="overlay" style="display: none;">' +
                     '<div class="status"><i class="fa fa-spinner fa-spin"></i><span class="message"></span></div>' +
@@ -1819,7 +1829,7 @@ $.widget('wm.datagrid', {
         if (key === 'height') {
             this.gridContainer.find('.app-grid-content').css(key, value);
         }
-        this.checkScrollBar();
+        this.addOrRemoveScroll();
     },
     /*Change the column header title. function will be called if display name changes in runmode*/
     setColumnProp: function (fieldName, property, val) {

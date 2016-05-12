@@ -634,15 +634,15 @@ WM.module('wm.widgets.grid')
                                 }));
                             }
                         }, 0, false);
-
                         //Will be called after setting grid column property.
-                        scope.reRender = function () {
-                            scope.datagridElement.datagrid(scope.gridOptions);
-                        };
-                        scope.redraw = function () {
-                            $timeout(function () {
-                                scope.datagridElement.datagrid('checkScrollBar');
-                            });
+                        scope.redraw = function (forceRender) {
+                            if (forceRender) {
+                                scope.datagridElement.datagrid(scope.gridOptions);
+                            } else {
+                                $timeout(function () {
+                                    scope.datagridElement.datagrid('addOrRemoveScroll');
+                                });
+                            }
                         };
                     }
                 };
@@ -1244,7 +1244,7 @@ WM.module('wm.widgets.grid')
             $scope.gridData = [];
             $scope.gridOptions = {
                 data: Utils.getClonedObject($scope.gridData),
-                colDefs: Utils.getClonedObject($scope.fieldDefs),
+                colDefs: $scope.fieldDefs,
                 startRowIndex: 1,
                 onRowSelect: function (rowData, e) {
                     $scope.selectedItems = $scope.datagridElement.datagrid('getSelectedRows');
@@ -2041,7 +2041,7 @@ WM.module('wm.widgets.grid')
                             if (property === 'displayName') {
                                 scope.datagridElement.datagrid('setColumnProp', this.field, property, newval);
                             } else {
-                                this.$is.reRender && this.$is.reRender();
+                                this.$is.redraw && this.$is.redraw(true);
                             }
                         };
 
@@ -2090,14 +2090,15 @@ WM.module('wm.widgets.grid')
                                 'displayfield': attrs.displayfield,
                                 'defaultvalue': attrs.defaultvalue,
                                 'sortable': attrs.sortable !== 'false',
-                                'searchable': attrs.searchable !== 'false'
+                                'searchable': attrs.searchable !== 'false',
+                                'show': attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show)
                             },
                             updateCustomExpression = function (column) {
                                 LiveWidgetUtils.setColumnConfig(column);
                             };
                         function watchProperty(property, expression) {
                             exprWatchHandlers[property] = BindingManager.register(scope.$parent, expression, function (newVal) {
-                                if (newVal) {
+                                if (WM.isDefined(newVal)) {
                                     scope.$parent.fieldDefs[index].setProperty(property, newVal);
                                 }
                             }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
