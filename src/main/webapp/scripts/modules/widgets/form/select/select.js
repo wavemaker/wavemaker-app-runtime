@@ -449,3 +449,110 @@ WM.module('wm.widgets.form')
  *   </example>
  */
 
+/**
+ * @ngdoc directive
+ * @name wm.widgets.form.directive:wmSelectLocale
+ * @restrict E
+ *
+ * @description
+ * The `wmSelectLocale` directive defines the select locale widget.
+ *
+ * @scope
+ *
+ * @requires PropertiesFactory
+ * @requires $rootScope
+ * @requires $templateCache
+ * @requires WidgetUtilService
+ * @requires $timeout
+ *
+ * @param {string=} name
+ *                  Name of the select locale widget.
+ * @param {string=} hint
+ *                  Title/hint for the select locale. <br>
+ *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of select locale widget. <br>
+ *                  Default value : 0
+ * @param {string=} width
+ *                  Width of the select locale.
+ * @param {string=} height
+ *                  Height of the select locale.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the initial value for the select locale widget from a variable defined in the script workspace. <br>
+ * @param {string=} datavalue
+ *                  This property defines the initial selected value of the select locale widget.
+ * @param {array||string=} scopedataset
+ *                  This property accepts the options to create the select locale widget from a variable defined in the script workspace.<br>
+ *                  Defined variable can be a comma separated string or an array.
+ * @param {string=} dataset
+ *                  This property accepts the options to create the select locale widget from a wavemaker studio variable which is of datatype entry.
+ * @param {string=} datafield
+ *                  This property sets the dataValue to be returned by the select locale widget when the list is populated using the dataSet property.
+ * @param {string=} displayfield
+ *                  This property sets the displayValue to show in the select locale widget when the list is populated using the dataSet property.
+ * @param {expression=} displayexpression
+ *                      This is an advanced property that gives more control over what is displayed in the  select locale widget drop-down list. <br>
+ *                      A Display Expression uses a Javascript expression to format exactly what is shown. <br>
+ *                      This property is bindable.
+ * @param {boolean=} required
+ *                  This property will be used to validate the state of the select locale widget when used inside a form widget.
+ * @param {boolean=} autofocus
+ *                   This property makes the widget get focused automatically when the page loads.
+ * @param {boolean=} readonly
+ *                  Readonly is a bindable property. <br>
+ *                  This property will be used to make the select locale widget non-editable on the web page. <br>
+ *                  Default value: `false`. <br>
+ * @param {boolean=} multiple
+ *                  When this value is set to true multiple options can be selected from select locale widget.
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the select locale widget on the web page. <br>
+ *                  Default value: `true`. <br>
+ * @param {boolean=} disabled
+ *                  Disabled is a bindable property. <br>
+ *                  This property will be used to disable/enable the select locale widget on the web page. <br>
+ *                  Default value: `false`. <br>
+ * @param {string=} on-change
+ *                  Callback function which will be triggered when the widget value is changed.
+ * @param {string=} on-focus
+ *                  Callback function which will be triggered when the widget gets focused.
+ * @param {string=} on-blur
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
+ * @param {string=} placeholder
+ *                  Placeholder for the selectbox.
+ * @example
+ *   <example module="wmCore">
+ *       <file name="index.html">
+ *           <div data-ng-controller="Ctrl" class="wm-app">
+ *
+ *               <wm-composite>
+ *                   <wm-label caption="Languages: "></wm-label>
+ *                   <wm-select scopedatavalue="language" scopedataset=languages><wm-select>
+ *               </wm-composite><br>
+ *
+ *               <wm-composite>
+ *                      <wm-label caption="language:"></wm-label>
+ *                      <wm-text scopedatavalue="language"></wm-text>
+ *                  </wm-composite>
+ *               <wm-composite>
+ *           </div>
+ *       </file>
+ *       <file name="script.js">
+ *          function Ctrl($scope) {
+ *
+ *              $scope.width = "100px";
+ *              $scope.height= "30px";
+ *
+ *              $scope.languages = ["en", "de"];
+ *
+ *           }
+ *       </file>
+ *   </example>
+ */
+

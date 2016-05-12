@@ -278,3 +278,113 @@ WM.module('wm.widgets.form')
  *       </file>
  *   </example>
  */
+
+
+/**
+ * @ngdoc directive
+ * @name wm.widgets.form.directive:wmToggle
+ * @restrict E
+ *
+ * @description
+ * The `wmToggle` directive defines the toggle widget.
+ *
+ * @scope
+ *
+ * @requires PropertiesFactory
+ * @requires WidgetUtilService
+ * @requires CONSTANTS
+ *
+ * @param {string=} caption
+ *                  Caption / Label for the Toggle widget. <br>
+ *                  This property is bindable
+ * @param {string=} name
+ *                  Name of the toggle widget.
+ * @param {string=} hint
+ *                  Title/hint for the toggle. <br>
+ *                  This property is bindable.
+ * @param {number=} tabindex
+ *                  This property specifies the tab order of Toggle widget. <br>
+ *                  Default value : 0
+ * @param {string=} width
+ *                  Width of the toggle.
+ * @param {string=} height
+ *                  Height of the toggle.
+ * @param {string=} scopedatavalue
+ *                  This property accepts the initial value for the toggle widget from a variable defined in the script workspace. <br>
+ * $param {string=} datavalue
+ *                  The value of the Toggle widget <br>
+ *                  This property is bindable.
+ *                  Default value : 'false'
+ * @param {string=} checkedvalue
+ *                  This property defines the value of the toggle widget when the widget is in the checked state.<br>
+ *                  Default value: `false`. <br>
+ * @param {string=} uncheckedvalue
+ *                  This property defines the value of the toggle widget when the widget is in the unchecked state.<br>
+ * @param {boolean=} required
+ *                   This property will be used to validate the state of the toggle widget when used inside a form widget. <br>
+ *                   Default value: `false`. <br>
+ * @param {boolean=} show
+ *                  Show is a bindable property. <br>
+ *                  This property will be used to show/hide the toggle widget on the web page. <br>
+ *                  Default value: `true`. <br>
+ * @param {boolean=} disabled
+ *                   Disabled is a bindable property. <br>
+ *                   This property will be used to disable/enable the toggle widget on the web page. <br>
+ *                   Default value: `false`. <br>
+ * @param {string=} on-change
+ *                  Callback function which will be triggered when the widget value is changed.
+ * @param {string=} on-focus
+ *                  Callback function which will be triggered when the widget gets focused.
+ * @param {string=} on-blur
+ *                  Callback function which will be triggered when the widget loses focus.
+ * @param {string=} on-click
+ *                  Callback function which will be triggered when the widget is clicked.
+ * @param {string=} on-mouseenter
+ *                  Callback function which will be triggered when the mouse enters the widget.
+ * @param {string=} on-mouseleave
+ *                  Callback function which will be triggered when the mouse leaves the widget.
+ * @example
+ *   <example module="wmCore">
+ *       <file name="index.html">
+ *           <div data-ng-controller="Ctrl" class="wm-app">
+ *               <wm-composite>
+ *                   <wm-label caption="{{check3caption}}"></wm-label>
+ *                   <wm-checkbox type="toggle"
+ *                       hint="hint/title for checkbox"
+ *                       checkedvalue="BLUE"
+ *                       scopedatavalue="favitem3"
+ *                       on-click="f('click');"
+ *                       on-change="f('change');"
+ *                       on-focus="f('focus');"
+ *                       on-blur="f('blur');"
+ *                       on-mouseenter="f('mouseenter');"
+ *                       on-mouseleave="f('mouseleave')"
+ *                       width="{{width}}"
+ *                       height="{{height}}">
+ *               </wm-composite>
+ *
+ *               <div>{{favitem3}}</div>
+ *           </div>
+ *       </file>
+ *       <file name="script.js">
+ *          function Ctrl($scope) {
+ *              $scope.clickCount =
+ *              $scope.changeCount =
+ *              $scope.mouseenterCount =
+ *              $scope.mouseleaveCount =
+ *              $scope.focusCount =
+ *              $scope.blurCount = 0;
+ *              $scope.favcolors = [];
+ *
+ *              $scope.width = "50px";
+ *              $scope.height= "20px";
+ *
+ *              $scope.isChecked = "true";
+ *
+ *              $scope.f = function (eventtype) {
+ *                  $scope[eventtype + 'Count']++;
+ *              }
+ *           }
+ *       </file>
+ *   </example>
+ */
