@@ -27,15 +27,13 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                     viewName,
                     operation,
                     sourceScope,
-                    isDataQueryParam,
                     urlParams;
 
                 operation           = variable.operation;
                 sourceScope         = options.scope || $rootScope;
                 pageName            = (variable.dataBinding && variable.dataBinding.pageName) || variable.pageName;
-                isDataQueryParam      = WM.isDefined(options.isDataQueryParam) ? options.isDataQueryParam : variable.isDataQueryParam;
                 variable.dataSet    = options.data || variable.dataSet;
-                urlParams           = isDataQueryParam ? variable.dataSet : urlParams;
+                urlParams           = variable.dataSet;
 
                 /* if operation is goToPage, navigate to the pageName */
                 switch (operation) {
@@ -72,7 +70,7 @@ wm.variables.services.NavigationVariableService = function ($rootScope, BaseVari
                         pageName    : pageName,
                         transition  : variable.pageTransitions,
                         $event      : options.$event,
-                        urlParams   : options.urlParams
+                        urlParams   : urlParams
                     });
                 }
             },

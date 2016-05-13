@@ -121,7 +121,8 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "owner": {"type": "list", "options": {"Page": "LABEL_PAGE", "App": "LABEL_APPLICATION"}, "value": "Page"},
                     "operation": {"type": "list", "options": {"goToPreviousPage": "goToPreviousPage", "gotoPage": "gotoPage", "gotoView": "gotoView", "gotoTab": "gotoTab", "gotoAccordion": "gotoAccordion"}, "value": "gotoPage"},
                     "dataBinding": {"type": "string", "value": [], "hide": true},
-                    "pageTransitions": {"type": "list", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": true}
+                    "pageTransitions": {"type": "list", "options": {"none": "none", "slide": "slide", "pop": "pop", "fade": "fade", "flip": "flip"}, "value": "none", "hide": true},
+                    "dataSet": {"hide": true, "value": []}
                 },
                 "wm.NotificationVariable": {
                     "name": {"type": "string", "required": true, "pattern": variableRegex},
@@ -171,14 +172,14 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                 {"name": "behavior", "properties": ["useDefaultSuccessHandler", "clearDataOnLogout", "autoUpdate", "startUpdate", "inFlightBehavior", "loadingDialog", "saveInCookie", "refireOnDbChange", "redirectTo", "autoStart", "delay", "repeating", "pageTransitions"], "parent": "properties"},
                 {"name": "mobile", "properties": ["saveInPhonegap"], "parent": "properties"},
                 {"name": "json", "properties": ["editJson"], "parent": "properties"},
-                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties", "bindable": true},
+                {"name": "Inputs", "properties": ["pageName", "viewName", "tabName", "accordionName", "segmentName", "dataBinding"], "parent": "properties", "propertyTarget": 'dataBinding'},
                 {"name": "spinner", "properties": ["spinnerContext", "spinnerMessage"], "parent": "properties"},
 
                 /* properties under data tab */
-                {"name": "Inputs", "properties": [], "parent": "data", "bindable": true},
-                {"name": "inputfields", "properties": [], "parent": "data", "bindable": true},
-                {"name": "filterfields", "properties": [], "parent": "data", "bindable": true},
-                {"name": "bindings", "properties": [], "parent": "data", "bindable": true},
+                {"name": "Inputs", "properties": [], "parent": "data", "propertyTarget": 'dataBinding, dataSet'},
+                {"name": "inputfields", "properties": [], "parent": "data", "propertyTarget": 'dataBinding'},
+                {"name": "filterfields", "properties": [], "parent": "data", "propertyTarget": 'dataBinding'},
+                {"name": "bindings", "properties": [], "parent": "data", "propertyTarget": 'dataBinding'},
                 {"name": "dataTransformation", "properties": ["transformationRequired", "columnField", "dataField"], "parent": "data"},
 
                 /* properties under events tab */
