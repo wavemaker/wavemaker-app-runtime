@@ -253,11 +253,9 @@ module.exports = function (grunt) {
                         '<%= config.scripts %>/wmbootstrap.js'
                     ],
                     '<%= config.tmp %>/scripts/component-libs/chart.min.js': [
-                        '<%= config.components %>/d3/d3.min.js',
                         '<%= config.components %>/nvd3/nv.d3.min.js'
                     ],
                     '<%= config.tmp %>/scripts/component-libs/richTextEditor.min.js': [
-                        '<%= config.components %>/textAngular/js/textAngular-sanitize.min.js',
                         '<%= config.components %>/textAngular/js/textAngularSetup.js',
                         '<%= config.components %>/textAngular/js/textAngular-rangy.min.js',
                         '<%= config.components %>/textAngular/js/textAngular.js'
@@ -268,6 +266,7 @@ module.exports = function (grunt) {
                     '<%= config.tmp %>/scripts/wm-application-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
+                        '<%= config.components %>/d3/d3.min.js',
                         //jQuery-ui -- start
                         '<%= config.components %>/jquery-ui/js/core.js',
                         '<%= config.components %>/jquery-ui/js/widget.js',
@@ -282,6 +281,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/angular-animate/angular-animate.js',
                         '<%= config.components %>/angular-toaster/toaster.js',
                         '<%= config.components %>/angular-ui-bootstrap/ui-bootstrap-tpls.js',
+                        '<%= config.components %>/textAngular/js/textAngular-sanitize.min.js',
                         '<%= config.components %>/moment/moment.js',
                         '<%= config.components %>/angular-ui-mask/js/mask.min.js',
                         '<%= config.components %>/angular-ui-calendar/calendar.js',
@@ -300,6 +300,7 @@ module.exports = function (grunt) {
                     '<%= config.tmp %>/scripts/wm-mobile-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
+                        '<%= config.components %>/d3/d3.min.js',
                         //jQuery-ui -- start
                         '<%= config.components %>/jquery-ui/js/core.js',
                         '<%= config.components %>/jquery-ui/js/widget.js',
@@ -314,6 +315,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/angular-animate/angular-animate.js',
                         '<%= config.components %>/angular-toaster/toaster.js',
                         '<%= config.components %>/angular-ui-bootstrap/ui-bootstrap-tpls.js',
+                        '<%= config.components %>/textAngular/js/textAngular-sanitize.min.js',
                         '<%= config.components %>/moment/moment.js',
                         '<%= config.components %>/angular-ui-mask/js/mask.min.js',
                         '<%= config.components %>/angular-ui-calendar/calendar.js',
