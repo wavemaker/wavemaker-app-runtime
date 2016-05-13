@@ -87,40 +87,43 @@ $.widget('wm.datagrid', {
     },
     customColumnDefs: {
         'checkbox': {
-            'field': 'checkbox',
-            'type': 'custom',
-            'displayName': '',
-            'sortable': false,
-            'searchable': false,
-            'resizable': false,
-            'selectable': false,
-            'readonly': true,
-            'style': 'width: 30px; text-align: center;',
-            'textAlignment': 'center',
-            'isMultiSelectCol': true
+            'field'            : 'checkbox',
+            'type'             : 'custom',
+            'displayName'      : '',
+            'sortable'         : false,
+            'searchable'       : false,
+            'resizable'        : false,
+            'selectable'       : false,
+            'readonly'         : true,
+            'style'            : 'width: 30px; text-align: center;',
+            'textAlignment'    : 'center',
+            'isMultiSelectCol' : true,
+            'show'             : true
         },
         'radio': {
-            'field': 'radio',
-            'type': 'custom',
-            'displayName': '',
-            'sortable': false,
-            'searchable': false,
-            'resizable': false,
-            'selectable': false,
-            'readonly': true,
-            'style': 'width: 30px; text-align: center;',
-            'textAlignment': 'center'
+            'field'         : 'radio',
+            'type'          : 'custom',
+            'displayName'   : '',
+            'sortable'      : false,
+            'searchable'    : false,
+            'resizable'     : false,
+            'selectable'    : false,
+            'readonly'      : true,
+            'style'         : 'width: 30px; text-align: center;',
+            'textAlignment' : 'center',
+            'show'          : true
         },
         'rowIndex': {
-            'field': 'rowIndex',
-            'type': 'custom',
-            'displayName': 'S. No.',
-            'sortable': false,
-            'searchable': false,
-            'selectable': false,
-            'readonly': true,
-            'style': 'text-align: left;',
-            'textAlignment': 'left'
+            'field'         : 'rowIndex',
+            'type'          : 'custom',
+            'displayName'   : 'S. No.',
+            'sortable'      : false,
+            'searchable'    : false,
+            'selectable'    : false,
+            'readonly'      : true,
+            'style'         : 'text-align: left;',
+            'textAlignment' : 'left',
+            'show'          : true
         }
     },
     Utils: {
@@ -1343,6 +1346,9 @@ $.widget('wm.datagrid', {
                 }
             }
         });
+        if ($.isFunction(this.options.setGridEditMode)) {
+            this.options.setGridEditMode(false);
+        }
     },
     hideRowEditMode: function ($row) {
         var $editableElements = $row.find('td.cell-editing'),
