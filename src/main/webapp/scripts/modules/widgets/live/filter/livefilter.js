@@ -691,8 +691,10 @@ WM.module('wm.widgets.live')
                             });
 
                             //Will be called after setting filter property.
-                            scope.reRender = function () {
-                                scope.filter(scope.result.options);
+                            scope.redraw = function (forceRender) {
+                                if (forceRender) {
+                                    scope.filter(scope.result.options);
+                                }
                             };
 
                             WidgetUtilService.postWidgetCreate(scope, element, attrs);
