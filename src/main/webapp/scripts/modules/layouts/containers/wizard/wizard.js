@@ -17,19 +17,22 @@ WM.module('wm.layouts.containers')
                         '<div wmtransclude></div>' +
                     '</div>' +
                     '<div class="app-wizard-actions panel-footer">' +
-                        '<button name="cancelBtn_{{name}}" class="btn app-button btn-secondary" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
-                        '<button name="previousBtn_{{name}}" class="btn app-button btn-secondary" ng-if="steps.indexOf(currentStep) > 0" ng-click="prev()">' +
-                            '<i class="app-icon wi wi-chevron-left"></i>' +
-                            '<span class="btn-caption">{{previousbtnlabel}}</span>' +
-                        '</button>' +
-                        '<button name="nextBtn_{{name}}" class="btn app-button btn-primary" ng-if="steps.indexOf(currentStep) !== steps.length - 1" ng-click="next()" ng-disabled="currentStep.disablenext || currentStep.isFormInvalid">' +
-                            '<span class="btn-caption">{{nextbtnlabel}}</span>' +
-                            '<i class="app-icon wi wi-chevron-right"></i>' +
-                        '</button>' +
-                        '<button name="doneBtn_{{name}}" class="btn app-button btn-success" ng-if="steps.indexOf(currentStep) === steps.length - 1">' +
-                            '<i class="app-icon wi wi-done"></i>' +
-                            '<span class="btn-caption">{{donebtnlabel}}</span>' +
-                        '</button>' +
+                        '<a class="app-wizard-skip" name="skipStep_{{name}}" ng-show="currentStep.enableskip" title="Skip step" ng-click="skip()">Skip &raquo;</a>' +
+                        '<div class="app-wizard-actions-right">' +
+                            '<button name="cancelBtn_{{name}}" class="btn app-button btn-secondary" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
+                            '<button name="previousBtn_{{name}}" class="btn app-button btn-secondary" ng-if="steps.indexOf(currentStep) > 0" ng-click="prev()">' +
+                                '<i class="app-icon wi wi-chevron-left"></i>' +
+                                '<span class="btn-caption">{{previousbtnlabel}}</span>' +
+                            '</button>' +
+                            '<button name="nextBtn_{{name}}" class="btn app-button btn-primary" ng-if="steps.indexOf(currentStep) !== steps.length - 1" ng-click="next()" ng-disabled="currentStep.disablenext || currentStep.isFormInvalid">' +
+                                '<span class="btn-caption">{{nextbtnlabel}}</span>' +
+                                '<i class="app-icon wi wi-chevron-right"></i>' +
+                            '</button>' +
+                            '<button name="doneBtn_{{name}}" class="btn app-button btn-success" ng-if="(steps.indexOf(currentStep) === steps.length - 1) || currentStep.enabledone" ng-click="done()" ng-disabled="currentStep.isFormInvalid">' +
+                                '<i class="app-icon wi wi-done"></i>' +
+                                '<span class="btn-caption">{{donebtnlabel}}</span>' +
+                            '</button>' +
+                        '</div>' +
                     '</div>' +
                 '</div>'
             );
@@ -59,7 +62,9 @@ WM.module('wm.layouts.containers')
 
             return {
                 'restrict'  : 'E',
-                'scope'     : {},
+                'scope'     : {
+                    'onDone': '&'
+                },
                 'replace'   : true,
                 'transclude': true,
                 'template'  : $templateCache.get('template/layout/container/wizard.html'),
@@ -92,7 +97,7 @@ WM.module('wm.layouts.containers')
                     if (CONSTANTS.isRunMode) {
                         //Function to navigate to next step
                         $is.next = function () {
-                            var params = {$isolateScope: $is, currentStep: $is.currentStep};
+                            var params = {$isolateScope: $is, currentStep: $is.currentStep, stepIndex: $is.currentStep.stepIndex};
                             if ($is.currentStep.onNext) {
                                 if ($is.currentStep.onNext(params) === false) {
                                     return;
@@ -105,13 +110,37 @@ WM.module('wm.layouts.containers')
                         $is.prev = function () {
                             var params;
                             if ($is.currentStep.onPrev) {
-                                params = {$isolateScope: $is, currentStep: $is.currentStep};
+                                params = {$isolateScope: $is, currentStep: $is.currentStep, stepIndex: $is.currentStep.stepIndex};
                                 if ($is.currentStep.onPrev(params) === false) {
                                     return;
                                 }
                             }
                             $is.currentStep.status = STEP_STATUS.DISABLED;
                             navigateToStep($is, $is.currentStep.stepIndex - 1);
+                        };
+                        //Function to skip current step
+                        $is.skip = function () {
+                            var params;
+                            if ($is.currentStep.onSkip) {
+                                params = {$isolateScope: $is, currentStep: $is.currentStep, stepIndex: $is.currentStep.stepIndex};
+                                if ($is.currentStep.onSkip(params) === false) {
+                                    return;
+                                }
+                            }
+                            if ($is.currentStep.stepIndex + 1 < $is.steps.length) {
+                                $is.currentStep.status = STEP_STATUS.COMPLETED;
+                                navigateToStep($is, $is.currentStep.stepIndex + 1);
+                            }
+                        };
+                        //Function to invoke on-Done event on wizard
+                        $is.done = function () {
+                            var params;
+                            if ($is.onDone) {
+                                params = {$isolateScope: $is, steps: $is.steps};
+                                if ($is.onDone(params) === false) {
+                                    return;
+                                }
+                            }
                         };
                     }
                 }],
@@ -147,6 +176,7 @@ WM.module('wm.layouts.containers')
                 $headerElement = '<li class="app-wizard-step" ng-class="{active: status === \'COMPLETED\', current: status === \'CURRENT\', disabled: status === \'DISABLED\'}">' +
                                     '<a href="javascript:void(0)">' +
                                         '<span class="arrow"></span>' +
+                                        '<i class="app-icon {{iconclass}}" ng-if="iconclass"></i> ' +
                                         '<span class="step-title" ng-bind="heading"></span>' +
                                     '</a>' +
                                 '</li>';
@@ -155,7 +185,8 @@ WM.module('wm.layouts.containers')
                 'scope'     : {
                     'onNext'    : '&',
                     'onPrev'    : '&',
-                    'onLoad'    : '&'
+                    'onLoad'    : '&',
+                    'onSkip'    : '&'
                 },
                 'transclude': true,
                 'template'  : $templateCache.get('template/layout/container/wizard-step.html'),

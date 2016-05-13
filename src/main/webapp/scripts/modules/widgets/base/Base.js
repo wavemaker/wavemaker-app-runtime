@@ -1457,14 +1457,19 @@ WM.module('wm.widgets.base', [])
                         "nextbtnlabel": {"type": "string", "value": "Next Step", "bindable": "in-bound"},
                         "cancelbtnlabel": {"type": "string", "value": "Cancel", "bindable": "in-bound"},
                         "previousbtnlabel": {"type": "string", "value": "Previous Step", "bindable": "in-bound"},
-                        "donebtnlabel": {"type": "string", "value": "Done", "bindable": "in-bound"}
+                        "donebtnlabel": {"type": "string", "value": "Done", "bindable": "in-bound"},
+                        "onDone": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.wizardstep": {
                         "heading": {"type": "string", "value": "Step Title", "bindable": "in-bound"},
-                        "disablenext": {"type": "boolean", "value": false, "bindable": "in-bound"},
+                        "disablenext": {"type": "boolean", "value": false, "show": false},
+                        "enabledone": {"type": "boolean", "value": false, "show": false},
+                        "enableskip": {"type": "boolean", "value": false, "bindable": "in-bound"},
+                        "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "onNext": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onPrev": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onSkip": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.carousel" : {
                         "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
@@ -1783,7 +1788,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "behavior", "properties": ["defaultview", "defaultmode", "pollinterval", "radiogroup", "viewgroup", "showweeks", "showbuttonbar", "autofocus", "readonly", "ignoreparentreadonly", "readonlygrid", "scrolldelay", "scrollamount", "direction",
                     "multiple", "enablereorder", "fileuploadmessage", "mode", "show", "hideclose", "calendartype", "controls", "view", "disabled", "pagesize", "dynamicslider", "selectionclick", "closeothers", "collapsible", "enablefullscreen",
                     "lock", "freeze", "autoscroll", "closable", "showactions", "expanded",  "destroyable", "showDirtyFlag", "link", "linktarget",
-                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
+                    "uploadpath", "contenttype", "origin", "destination", "maxfilesize", "isdefaulttab", "disablenext", "enabledone", "enableskip", "isdefaultpane", "autocomplete", "showpreview", "tooltips", "showlegend", "legendposition", "legendtype", "captions", "showxaxis", "showyaxis", "xdomain", "ydomain", "showvalues",
                     "showlabels", "showcontrols", "useinteractiveguideline", "staggerlabels", "highlightpoints", "linethickness", "reducexticks", "barspacing", "labeltype", "autoplay", "loop", "muted", "donutratio", "showlabelsoutside",
                     "showxdistance", "showydistance", "xpadding", "ypadding", "popoverplacement", "popoverarrow", "popoverautoclose", "transition", "animation", "animateitems", "animationinterval", "leftnavpaneliconclass", "backbutton", "backbuttoniconclass", "backbuttonlabel", "searchbutton",
                     "morebuttoniconclass", "menuiconclass", "morebuttonlabel", "capturetype", "loadmode", "loaddelay", "selectionlimit", "shortcutkey", "showcaptions", "multiselect", "radioselect", "enablesort", "gridfirstrowselect", "rowactionsposition", "selectfirstitem", "enableemptyfilter", "displayformat", "updateon", "updatedelay"], "parent": "properties"},
@@ -1808,7 +1813,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "keyboardevents", "properties": ["onKeydown", "onKeypress", "onKeyup", "onEnterkeypress"], "parent": "events"},
                 {"name": "callbackevents", "properties": ["onReady", "onStart", "onComplete", "onBeforeupdate", "onShow", "onHide", "onSuccess", "onError", "onOk", "onSubmit", "onCancel", "onClose", "onOpened", "onExpand", "onCollapse", "onSelect", "onDeselect", "onViewrender",
                     "onProgress", "onTransform", "onAbort", "onSort", "onGridbuttonclick", "onHeaderclick", "onRowclick", "onRowdblclick", "onColumnselect", "onColumndeselect", "onRowdeleted", "onBeforerowinsert", "onRowinsert", "onResult", "onBeforeservicecall", "onSetrecord", "onPaginationchange", "onActionsclick",
-                    "onBeforeSegmentChange", "onSegmentChange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev"], "parent": "events"},
+                    "onBeforeSegmentChange", "onSegmentChange", "onSearch", "onBackbtnclick", "onEventdrop", "onEventresize", "onEventclick", "onEventrender", "onReorder", "onSelectionlimitexceed", "onFullscreen", "onExitfullscreen", "onNext", "onPrev", "onSkip", "onDone"], "parent": "events"},
                 {"name": "security", "properties": ["accessroles"], "parent": "security"},
                 {"name": "devicesize", "properties": ["showindevice"], "parent": "device"},
                 {"name": "imageproperties", "properties": ["imagetargetwidth", "imagetargetheight", "imagequality", "imageencodingtype", "correctorientation", "sourcetype", "savetogallery", "allowedit"], "parent": "properties"}
