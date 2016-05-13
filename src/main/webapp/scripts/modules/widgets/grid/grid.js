@@ -665,17 +665,18 @@ WM.module('wm.widgets.grid')
             'use strict';
             var columnObj = {
                     rowOperationsColumn: {
-                        'field': 'rowOperations',
-                        'type': 'custom',
-                        'displayName': 'Actions',
-                        'width': '80px',
-                        'readonly': true,
-                        'sortable': false,
-                        'searchable': false,
-                        'resizable': false,
-                        'selectable': false,
-                        'operations': [],
-                        'opConfig': {}
+                        'field'       : 'rowOperations',
+                        'type'        : 'custom',
+                        'displayName' : 'Actions',
+                        'width'       : '80px',
+                        'readonly'    : true,
+                        'sortable'    : false,
+                        'searchable'  : false,
+                        'resizable'   : false,
+                        'selectable'  : false,
+                        'show'        : true,
+                        'operations'  : [],
+                        'opConfig'    : {}
                     }
                 },
                 rowOperations = {
