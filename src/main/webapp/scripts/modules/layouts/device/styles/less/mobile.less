@@ -121,11 +121,14 @@
         right: 0;
         background-color: @app-search-container-bg-color;
         padding: @app-standard-padding;
-        border-bottom: 1px @app-standard-border-color solid;
+        border-bottom: 1px rgba(0,0,0,0.1) solid;
         width: 100% !important;
         .dropdown-menu {
           width: 95%;
         }
+      }
+      .app-navbar {
+        padding: 0;
       }
     }
     /***setting back the behavior of bootstrap for mobile****/
@@ -218,6 +221,9 @@
     }
     .app-top-nav {
       color: #999;
+      .app-navbar {
+        padding: 0;
+      }
       .navbar-toggle {
        border: none;
         &:hover, &:active {
@@ -240,7 +246,7 @@
         .caret {
           position: absolute;
           right: 0.5em;
-          top: 1em;
+          top: 50%;
         }
         &.open {
           &.horizontal {
