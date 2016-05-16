@@ -1775,6 +1775,7 @@ WM.module('wm.widgets.base', [])
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
+                {"name": "partialparams", "properties": [], "parent": "properties"},
                 {"name": "display", "properties": ["picturesource", "modal", "vertical", "avatar"], "parent": "properties"},
                 {"name": "values", "properties": [ "scopedatavalue", "datavalue", "defaultvalue", "minvalue", "maxvalue", "formdata", "selectedvalue", "selectedvalues", "discretevalues", "integervalues", "minimum", "maximum", "step", "defaultcolor", "checkedvalue", "uncheckedvalue"], "parent": "properties"},
                 {"name": "valuedisplay", "properties": ["datepattern", "timepattern", "hourstep", "minutestep", "limit"], "parent": "properties"},

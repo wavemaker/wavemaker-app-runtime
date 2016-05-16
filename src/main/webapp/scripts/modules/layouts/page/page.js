@@ -193,7 +193,6 @@ WM.module('wm.layouts.page')
                         if (CONSTANTS.isRunMode) {
                             $s.Widgets   = {};
                             $s.Variables = {};
-                            $s.pageParams = {};
 
                             // get partial container's scope
                             containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
