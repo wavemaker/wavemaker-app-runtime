@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/tile/tile.html',
-            '<div init-widget class="app-tile panel" data-ng-show="show" apply-styles="scrollable-container" data-ng-style="{width:width}" wm-navigable-element="true">' +
+            '<div init-widget class="app-tile panel" apply-styles="scrollable-container" ng-style="{width:width}" wm-navigable-element="true">' +
                 '<div class="app-tile-body panel-body" wmtransclude ></div>' +
             '</div>');
     }])
@@ -14,43 +14,41 @@ WM.module('wm.layouts.containers')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.tile', ['wm.layouts', 'wm.containers', 'wm.base.events.touch']);
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {},
             'transclude': true,
-            'template': function (tElement, tAttrs) {
+            'template'  : function (tElement, tAttrs) {
                 var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
                     $template = WM.element(WidgetUtilService.getPreparedTemplate('template/layout/tile/tile.html', tElement, tAttrs));
 
                 if (!isWidgetInsideCanvas) {
                     if (tAttrs.hasOwnProperty('onEnterkeypress')) {
-                        $template.attr('data-ng-keypress', 'onKeypress({$event: $event, $scope: this})');
+                        $template.attr('ng-keypress', 'onKeypress({$event: $event, $scope: this})');
                     }
                 }
                 return $template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-                    },
-                    'post': function (scope, element, attrs) {
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-                        if (!scope.widgetid) {
-                            scope.onKeypress = function (args) {
-                                var action = Utils.getActionFromKey(args.$event);
-                                if (action === 'ENTER') {
-                                    scope.onEnterkeypress(args);
-                                }
-                            };
-                        }
+            'link': {
+                'pre': function (iScope) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
                     }
-                };
+                },
+                'post': function (scope, element, attrs) {
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    if (!scope.widgetid) {
+                        scope.onKeypress = function (args) {
+                            var action = Utils.getActionFromKey(args.$event);
+                            if (action === 'ENTER') {
+                                scope.onEnterkeypress(args);
+                            }
+                        };
+                    }
+                }
             }
         };
     }]);
@@ -114,7 +112,7 @@ WM.module('wm.layouts.containers')
  * @example
  * <example module="wmCore">
  * <file name="index.html">
- *  <div data-ng-controller="Ctrl" class="wm-app">
+ *  <div ng-controller="Ctrl" class="wm-app">
  *      <br>
  *      <wm-tile width="400" margintop="10" marginright="10" marginleft="10" marginbottom="10" backgroundcolor="#2F80E7" color="#fff"  paddingtop="10" paddingleft="10" paddingbottom="10" paddingright="10">
  *           <wm-icon iconsize="2em" iconclass="wi wi-user"></wm-icon>

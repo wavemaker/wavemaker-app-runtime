@@ -9,8 +9,8 @@ WM.module('wm.widgets.advanced')
             'use strict';
 
             $tc.put('template/widget/advanced/camera.html',
-                    '<button type="button" class="btn app-camera" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openCamera()" >' +
-                        '<i class="{{iconclass}}" data-ng-style="{\'font-size\':iconsize}"></i> ' +
+                    '<button type="button" class="btn app-camera" ng-model="_model_" init-widget has-model apply-styles title="{{hint}}" ng-click="openCamera()" >' +
+                        '<i class="{{iconclass}}" ng-style="{\'font-size\':iconsize}"></i> ' +
                         '<span class="btn-caption">{{caption}}</span>' +
                     '</button>'
                 );
@@ -99,22 +99,18 @@ WM.module('wm.widgets.advanced')
 
             return {
                 'restrict': 'E',
-                'replace': true,
-                'scope': {
-                    'onSuccess' : '&'
-                },
+                'replace' : true,
+                'scope'   : {'onSuccess' : '&'},
                 'template': $tc.get('template/widget/advanced/camera.html'),
-                'compile': function () {
-                    return {
-                        'pre': function ($is) {
-                            $is.widgetProps = widgetProps;
-                        },
-                        'post': function ($is, $el, attrs) {
-                            $is.openCamera = openCamera.bind(undefined, $is);
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
-                            WidgetUtilService.postWidgetCreate($is, $el, attrs);
-                        }
-                    };
+                'link'    : {
+                    'pre': function ($is) {
+                        $is.widgetProps = widgetProps;
+                    },
+                    'post': function ($is, $el, attrs) {
+                        $is.openCamera = openCamera.bind(undefined, $is);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is), $is, notifyFor);
+                        WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                    }
                 }
             };
         }

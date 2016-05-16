@@ -1,24 +1,21 @@
 /*global WM, wmCoreModule, document, window*/
 
 WM.module('wm.widgets.dialog')
-    /* Defining constants for wmDialog widget */
-    .constant('LOCAL_CONSTANTS', {
-        DEFAULT_DIALOG_HEADER_ICON_SIZE: "21px"
-    }).run(["$templateCache", function ($templateCache) {
+    .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/dialog-template.html",
             '<div tabindex="-1" role="dialog" class="modal default" ng-style="{\'z-index\': 1050 + index*10, display: \'block\'}" ng-click="close($event)" uib-modal-transclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog.html",
-            '<div class="modal-dialog app-dialog" init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}" ><div class="modal-content" wmtransclude></div></div>'
+            '<div class="modal-dialog app-dialog" init-widget ng-style="{width: dialogWidth}" ><div class="modal-content" wmtransclude></div></div>'
             );
         $templateCache.put("template/widget/dialog/dialog-header.html",
-            '<div data-ng-show="show" data-identifier="dialog-header" class="app-dialog-header modal-header" init-widget title="{{hint}}">' +
-                '<button data-ng-if="closable" aria-label="Close" class="app-dialog-close close" data-ng-click="hideDialog()" title="Close">' +
+            '<div data-identifier="dialog-header" class="app-dialog-header modal-header" init-widget title="{{hint}}">' +
+                '<button ng-if="closable" aria-label="Close" class="app-dialog-close close" ng-click="hideDialog()" title="Close">' +
                     '<span aria-hidden="true">&times;</span>' +
                 '</button>' +
                 '<h4 class="app-dialog-title modal-title">' +
-                    '<i class="{{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
+                    '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
                     '<span>{{caption}}</span>' +
                 '</h4>' +
                 '<div class="dialog-header-action" wmtransclude></div>' +
@@ -28,10 +25,10 @@ WM.module('wm.widgets.dialog')
             '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" data-identifier="dialog-content" init-widget wmtransclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog-footer.html",
-            '<div data-ng-show="show" class="app-dialog-footer modal-footer" data-identifier="actions" init-widget wmtransclude></div>'
+            '<div class="app-dialog-footer modal-footer" data-identifier="actions" init-widget wmtransclude></div>'
             );
 
-    }]).directive('wmDialog', ['PropertiesFactory', 'WidgetUtilService', 'DialogService', "$templateCache", '$compile', 'CONSTANTS', '$window', function (PropertiesFactory, WidgetUtilService, DialogService, $templateCache, $compile, CONSTANTS, $window) {
+    }]).directive('wmDialog', ['PropertiesFactory', 'WidgetUtilService', "$templateCache", '$compile', 'CONSTANTS', '$window', function (PropertiesFactory, WidgetUtilService, $templateCache, $compile, CONSTANTS, $window) {
         'use strict';
         var transcludedContent = "",
             id,
@@ -221,7 +218,7 @@ WM.module('wm.widgets.dialog')
                 };
             }
         };
-    }]).directive('wmDialogheader', ["PropertiesFactory", "DialogService", "WidgetUtilService", "LOCAL_CONSTANTS", "$templateCache", "CONSTANTS", function (PropertiesFactory, DialogService, WidgetUtilService, LOCAL_CONSTANTS, $templateCache, CONSTANTS) {
+    }]).directive('wmDialogheader', ["PropertiesFactory", "WidgetUtilService", "$templateCache", "CONSTANTS", function (PropertiesFactory, WidgetUtilService, $templateCache, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.dialog.dialogheader", ["wm.base"]),
             notifyFor = {
@@ -231,13 +228,14 @@ WM.module('wm.widgets.dialog')
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(scope, key, newVal) {
+            var defaultHeight = "21px";
             switch (key) {
             case "iconclass":
                 if (scope.iconurl && newVal !== '' && newVal !== '_none_') {
                     scope.iconurl = '';
-                    scope.iconwidth = scope.iconheight = LOCAL_CONSTANTS.DEFAULT_DIALOG_HEADER_ICON_SIZE;
+                    scope.iconwidth = scope.iconheight = defaultHeight;
                 } else if (!scope.iconurl && newVal !== '' && newVal !== '_none_') {
-                    scope.iconwidth = scope.iconheight = LOCAL_CONSTANTS.DEFAULT_DIALOG_HEADER_ICON_SIZE;
+                    scope.iconwidth = scope.iconheight = defaultHeight;
                 } else {
                     scope.iconwidth = scope.iconheight = '';
                 }
@@ -392,7 +390,7 @@ WM.module('wm.widgets.dialog')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl">
+            <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
                         <wm-dialogheader></wm-dialogheader>
@@ -470,7 +468,7 @@ WM.module('wm.widgets.dialog')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl">
+            <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
                         <wm-dialogheader></wm-dialogheader>
@@ -531,7 +529,7 @@ WM.module('wm.widgets.dialog')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl">
+            <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
                         <wm-dialogheader></wm-dialogheader>
@@ -591,7 +589,7 @@ WM.module('wm.widgets.dialog')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl">
+            <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-dialog name="sampleDialog" show="true" title="demo-dialog" on-close="onCloseCallBack()" controller="Ctrl">
                         <wm-dialogheader></wm-dialogheader>

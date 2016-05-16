@@ -6,9 +6,8 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/radioset.html',
             '<ul class="app-radioset list-group {{layout}}" init-widget has-model apply-styles role="input" listen-property="dataset"' +
-                ' title="{{hint}}" data-ng-model="_model_" data-ng-show="show"' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
-                '</ul>'
+                ' title="{{hint}}" ng-model="_model_" ng-change="_onChange({$event: $event, $scope: this})">' +
+            '</ul>'
             );
     }])
     .directive('wmRadioset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache) {
@@ -127,54 +126,54 @@ WM.module('wm.widgets.form')
                 }
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
+            'link': {
+                'pre': function (iScope) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
+                    }
+                },
+                'post': function (scope, element, attrs) {
+                    scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+
+                    /* checks if the given value object is in the given model array of objects */
+                    scope.valueInModel = function (model, value, dataObject) {
+                        if (!WM.isDefined(model)) {
+                            return false;
                         }
-                    },
-                    'post': function (scope, element, attrs) {
-                        scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-                        
-                        /* checks if the given value object is in the given model array of objects */
-                        scope.valueInModel = function (model, value, dataObject) {
-                            if (!WM.isDefined(model)) {
-                                return false;
-                            }
-                            /*If model is equal to value, return true*/
-                            if (model === value) {
-                                return true;
-                            }
-                            /*If the dataobject is equal in model, return true*/
-                            return (WM.equals(model, dataObject));
-                        };
-                        /*Watch on the model, to check or uncheck the values of checkboxset*/
+                        /*If model is equal to value, return true*/
+                        if (model === value) {
+                            return true;
+                        }
+                        /*If the dataobject is equal in model, return true*/
+                        return (WM.equals(model, dataObject));
+                    };
+                    /*Watch on the model, to check or uncheck the values of checkboxset*/
+                    if (!scope.widgetid) {
                         scope.$watch('_model_', function () {
                             FormWidgetUtils.updatedCheckedValues(scope);
-                        }, false);
-
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            scope._model_ = [];
-                        };
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching scopedataset attribute to create options for the checkboxset element.*/
-                        if (!attrs.widgetid && attrs.scopedataset) {
-                            scope.$watch('scopedataset', function () {
-                                /*generating the radioset based on the values provided*/
-                                constructRadioSet(scope, element, scope.scopedataset);
-                            });
-                        }
+                        });
                     }
-                };
+
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        scope._model_ = [];
+                    };
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    /* fields defined in scope: {} MUST be watched explicitly */
+                    /*watching scopedataset attribute to create options for the checkboxset element.*/
+                    if (!attrs.widgetid && attrs.scopedataset) {
+                        scope.$watch('scopedataset', function () {
+                            /*generating the radioset based on the values provided*/
+                            constructRadioSet(scope, element, scope.scopedataset);
+                        });
+                    }
+                }
             }
         };
     }]);
@@ -256,7 +255,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>single click count: {{clickCount}}</div>
  *               <div>change count: {{changeCount}}</div>
  *               <div>mouse enter count: {{mouseenterCount}}</div>

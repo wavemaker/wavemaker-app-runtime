@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/container.html',
-            '<div page-container init-widget class="app-container" data-ng-show="show" apply-styles="container" wmtransclude page-container-target></div>'
+            '<div page-container init-widget class="app-container" apply-styles="container" wmtransclude page-container-target></div>'
             );
     }])
     .directive('wmContainer', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
@@ -23,33 +23,31 @@ WM.module('wm.layouts.containers')
 
                 if (!isWidgetInsideCanvas) {
                     if (tAttrs.hasOwnProperty('onEnterkeypress')) {
-                        $template.attr('data-ng-keypress', 'onKeypress({$event: $event, $scope: this})');
+                        $template.attr('ng-keypress', 'onKeypress({$event: $event, $scope: this})');
                     }
                 }
                 return $template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-                    },
-                    'post': function (scope, element, attrs) {
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-                        if (!scope.widgetid) {
-                            scope.onKeypress = function (args) {
-                                var action = Utils.getActionFromKey(args.$event);
-                                if (action === 'ENTER') {
-                                    scope.onEnterkeypress(args);
-                                }
-                            };
-                        }
+            'link': {
+                'pre': function (iScope) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
                     }
-                };
+                },
+                'post': function (scope, element, attrs) {
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    if (!scope.widgetid) {
+                        scope.onKeypress = function (args) {
+                            var action = Utils.getActionFromKey(args.$event);
+                            if (action === 'ENTER') {
+                                scope.onEnterkeypress(args);
+                            }
+                        };
+                    }
+                }
             }
         };
     }]);
@@ -118,7 +116,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-container width="400" height="400" backgroundcolor="#979797" paddingtop="50">
                     <wm-composite>
                         <wm-label class="col-md-3" caption="First Name"></wm-label>

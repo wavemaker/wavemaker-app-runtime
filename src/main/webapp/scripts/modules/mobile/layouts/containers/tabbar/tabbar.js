@@ -1,4 +1,4 @@
-/*global WM, */
+/*global WM,_ */
 /*jslint todo: true */
 /*Directive for tabbar*/
 WM.module('wm.layouts.containers')
@@ -8,19 +8,19 @@ WM.module('wm.layouts.containers')
             '<div data-role="mobile-tabbar" class="app-tabbar app-top-nav {{class}} {{position}}" init-widget listen-property="dataset">' +
                 '<nav class="navbar navbar-default">' +
                     '<ul class="tab-items nav navbar-nav">' +
-                        '<li class="tab-item" data-ng-repeat="item in tabItems" data-ng-show="(tabItems.length == layout.max) || $index+1 < layout.max" >' +
-                            '<a data-ng-href="{{item.link}}" data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label })">' +
-                                '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +
+                        '<li class="tab-item" ng-repeat="item in tabItems" ng-show="(tabItems.length == layout.max) || $index+1 < layout.max" >' +
+                            '<a ng-href="{{item.link}}" ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label })">' +
+                                '<i class="app-icon" ng-class="item.icon"></i><label>{{item.label}}</label>' +
                             '</a>' +
                         '</li>' +
-                        '<li class="menu-items dropdown" data-ng-show="tabItems.length > layout.max" data-ng-class="{\'dropup\' : position == \'bottom\'}" uib-dropdown>' +
+                        '<li class="menu-items dropdown" ng-show="tabItems.length > layout.max" ng-class="{\'dropup\' : position == \'bottom\'}" uib-dropdown>' +
                             '<a uib-dropdown-toggle>' +
                                 '<i class="app-icon {{morebuttoniconclass}}"></i><label>{{morebuttonlabel}}</label>' +
                             '</a>' +
-                            '<ul class="dropdown-menu-right" uib-dropdown-menu data-ng-class="{\'nav navbar-nav\' : menutype == \'thumbnail\'}">' +
-                                '<li class="menu-item" data-ng-repeat="item in tabItems" data-ng-show="$index+1 >= layout.max">' +
-                                    '<a data-ng-href="{{item.link}}" data-ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label });">' +
-                                        '<i class="app-icon" data-ng-class="item.icon"></i><label>{{item.label}}</label>' +
+                            '<ul class="dropdown-menu-right" uib-dropdown-menu ng-class="{\'nav navbar-nav\' : menutype == \'thumbnail\'}">' +
+                                '<li class="menu-item" ng-repeat="item in tabItems" ng-show="$index+1 >= layout.max">' +
+                                    '<a ng-href="{{item.link}}" ng-click="onSelect({$event: $event, $scope: this, $item: item.value || item.label });">' +
+                                        '<i class="app-icon" ng-class="item.icon"></i><label>{{item.label}}</label>' +
                                     '</a>' +
                                 '</li>' +
                             '</ul>' +
@@ -28,20 +28,25 @@ WM.module('wm.layouts.containers')
                     '</ul>' +
                 '</nav>' +
             '</div>');
-    }]).directive('wmMobileTabbar', ['$window', '$templateCache', 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', function ($window, $templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS) {
+    }])
+    .directive('wmMobileTabbar', ['$window', '$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($window, $templateCache, PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabbar', ['wm.base', 'wm.tabbar.dataProps']),
-            notifyFor = { 'dataset': true},
-            layouts = [{'minwidth' : 2048, 'max': 12},
-                       {'minwidth' : 1024, 'max': 10},
-                       {'minwidth' : 768, 'max': 7},
-                       {'minwidth' : 480, 'max': 5},
-                       {'minwidth' : 0, 'max': 4}],
-            getSuitableLayout = function (avaiableWidth) {
-                return _.find(layouts, function (l) {
-                    return avaiableWidth >= l.minwidth;
-                });
-            };
+            notifyFor   = { 'dataset': true},
+            layouts     = [
+                {'minwidth' : 2048, 'max': 12},
+                {'minwidth' : 1024, 'max': 10},
+                {'minwidth' : 768,  'max': 7},
+                {'minwidth' : 480,  'max': 5},
+                {'minwidth' : 0,    'max': 4}
+            ];
+
+        function getSuitableLayout(avaiableWidth) {
+            return _.find(layouts, function (l) {
+                return avaiableWidth >= l.minwidth;
+            });
+        }
+
         function getItems(newVal) {
             return newVal.map(function (item) {
                 return {
@@ -69,7 +74,8 @@ WM.module('wm.layouts.containers')
                 scope.tabItems = getItems(newVal.split(","));
             }
         }
-        function propertyChangeHandler(scope, element, key, newVal) {
+
+        function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
             case 'dataset':
                 if (newVal) {
@@ -78,6 +84,13 @@ WM.module('wm.layouts.containers')
                 break;
             }
         }
+
+        function onResize(scope, element) {
+            scope.$root.$evalAsync(function () {
+                scope.layout = getSuitableLayout(element.parent().width());
+            });
+        }
+
         return {
             'scope' : {
                 'onSelect': '&',
@@ -85,27 +98,22 @@ WM.module('wm.layouts.containers')
                 'position': '&'
             },
             'restrict' : 'E',
-            'replace' : true,
+            'replace'  : true,
             'template' : $templateCache.get('template/layouts/containers/mobile/tabbar/tabbar.html'),
-            'compile' : function () {
-                return {
-                    'pre' : function (scope) {
-                        scope.widgetProps = widgetProps;
-                        scope.position = "bottom"; /**top | bottom**/
-                        scope.menutype = "thumbnail"; /**thumbnail | list**/
-                    },
-                    'post' : function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
-                        WM.element($window).resize(function () {
-                            scope.layout = getSuitableLayout(element.parent().width());
-                            scope.$apply();
-                        });
-                        scope.layout = getSuitableLayout(element.parent().width());
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+            'link'     : {
+                'pre' : function (scope) {
+                    scope.widgetProps = widgetProps;
+                    scope.position = 'bottom'; /**top | bottom**/
+                    scope.menutype = 'thumbnail'; /**thumbnail | list**/
+                },
+                'post' : function (scope, element, attrs) {
+                    var onPropertyChange = propertyChangeHandler.bind(undefined, scope);
+                    WM.element($window).resize(_.debounce(onResize.bind(undefined, scope, element), 20));
+                    scope.layout = getSuitableLayout(element.parent().width());
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -132,7 +140,7 @@ WM.module('wm.layouts.containers')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *              <wm-mobile-tabbar dataset="home,star,music,edit"></wm-mobile-tabbar>
  *           </div>
  *       </file>

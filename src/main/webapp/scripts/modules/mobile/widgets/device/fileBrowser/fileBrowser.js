@@ -6,43 +6,44 @@ WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/advanced/mobileFileBrowser.html',
-                '<div class="app-file-browser" data-ng-show="show">' +
-                    '<div class="modal-backdrop fade" data-ng-class="{in : show}"></div>' +
-                    '<div class="modal fade" style="display: block;" data-ng-class="{in : show}" >' +
+                '<div class="app-file-browser" ng-show="show">' +
+                    '<div class="modal-backdrop fade" ng-class="{in : show}"></div>' +
+                    '<div class="modal fade" style="display: block;" ng-class="{in : show}" >' +
                         '<div class="modal-dialog">' +
                             '<div class="modal-content">' +
                                 '<div class="modal-header clearfix">' +
                                     '<h4 class="modal-title pull-left">' +
-                                        '<span data-ng-click="onFileClick(directory.parent)" data-ng-show="directory.parent">' +
+                                        '<span ng-click="onFileClick(directory.parent)" ng-show="directory.parent">' +
                                             '<i class="wi wi-back"></i>' +
                                         '</span>' +
                                         ' {{directory.name}}' +
                                     '</h4>' +
-                                    '<div data-ng-show="selectedFiles.length > 0" class="selected-file-button pull-right">' +
-                                        '<i class="wi wi-file" data-ng-show="selectedFiles.length == 1"></i>' +
-                                        '<i class="fa fa-files-o" data-ng-show="selectedFiles.length > 1"></i>' +
+                                    '<div ng-show="selectedFiles.length > 0" class="selected-file-button pull-right">' +
+                                        '<i class="wi wi-file" ng-show="selectedFiles.length == 1"></i>' +
+                                        '<i class="fa fa-files-o" ng-show="selectedFiles.length > 1"></i>' +
                                         ' {{selectedFiles.length}}' +
                                     '</div>' +
                                 '</div>' +
                                 '<div class="modal-body">' +
-                                    '<div class="file-info-box" data-ng-repeat="file in directory.files">' +
-                                        '<div class="file-info"  data-ng-class="{\'bg-primary\': file.isSelected}" data-ng-click="onFileClick(file)">' +
-                                            '<i class="file-icon wi wi-folder" data-ng-if="!file.isFile"/>' +
-                                            '<i class="file-icon wi wi-file {{getFileExtension(file.name)}}" data-ng-if="file.isFile"/>' +
+                                    '<div class="file-info-box" ng-repeat="file in directory.files">' +
+                                        '<div class="file-info"  ng-class="{\'bg-primary\': file.isSelected}" ng-click="onFileClick(file)">' +
+                                            '<i class="file-icon wi wi-folder" ng-if="!file.isFile"/>' +
+                                            '<i class="file-icon wi wi-file {{getFileExtension(file.name)}}" ng-if="file.isFile"/>' +
                                             '<span class="file-name">{{file.name}}</span>' +
                                         '</div>' +
                                     '</div>' +
                                 '</div>' +
                                 '<div class="modal-footer">' +
-                                    '<button type="button" class="btn btn-primary" data-ng-show="selectedFiles && selectedFiles.length > 0" data-ng-click="submit()">Done</button>' +
-                                    '<button type="button" class="btn btn-default" data-ng-click="show = false;">Close</button>' +
+                                    '<button type="button" class="btn btn-primary" ng-show="selectedFiles && selectedFiles.length > 0" ng-click="submit()">Done</button>' +
+                                    '<button type="button" class="btn btn-default" ng-click="show = false;">Close</button>' +
                                 '</div>' +
                             '</div>' +
                         '</div>' +
                     '</div>' +
                 '</div>'
             );
-    }]).directive('wmMobileFileBrowser', [ '$templateCache', function ($templateCache) {
+    }])
+    .directive('wmMobileFileBrowser', [ '$templateCache', 'CONSTANTS', function ($templateCache, CONSTANTS) {
         'use strict';
         function loadFileSize(files, onComplete, index) {
             index = index || 0;
@@ -56,13 +57,16 @@ WM.module('wm.widgets.advanced')
             }
         }
         return {
-            restrict: 'E',
-            replace: true,
-            template : $templateCache.get('template/widget/advanced/mobileFileBrowser.html'),
-            scope: {
-                onSelect : '&'
-            },
-            link : function (scope) {
+            'restrict' : 'E',
+            'replace'  : true,
+            'template' : $templateCache.get('template/widget/advanced/mobileFileBrowser.html'),
+            'scope'    : {'onSelect' : '&'},
+            'link'     : function (scope) {
+
+                if (CONSTANTS.isStudioMode) {
+                    return;
+                }
+
                 scope.selectedFiles = [];
                 scope.directory = undefined;
                 scope.getFileExtension = function (fileName) {

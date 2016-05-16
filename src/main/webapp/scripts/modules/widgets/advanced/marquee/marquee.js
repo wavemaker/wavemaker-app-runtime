@@ -6,9 +6,9 @@ WM.module('wm.widgets.advanced')
         'use strict';
         var template;
         if (CONSTANTS.isStudioMode) {
-            template = '<div class="app-marquee app-container" ng-show="show" title="{{hint}}" init-widget apply-styles wmtransclude></div>';
+            template = '<div class="app-marquee app-container" title="{{hint}}" init-widget apply-styles wmtransclude></div>';
         } else {
-            template = '<marquee class="app-marquee app-container" ng-show="show" title="{{hint}}" init-widget apply-styles wmtransclude onmouseover="this.stop();" onmouseout="this.start();"></marquee>';
+            template = '<marquee class="app-marquee app-container" title="{{hint}}" init-widget apply-styles wmtransclude onmouseover="this.stop();" onmouseout="this.start();"></marquee>';
         }
         $tc.put('template/widget/advanced/marquee/marquee.html', template);
     }])
@@ -27,7 +27,7 @@ WM.module('wm.widgets.advanced')
                 'transclude': true,
                 'replace'   : true,
                 'template'  : $tc.get('template/widget/advanced/marquee/marquee.html'),
-                'link': {
+                'link'      : {
                     'pre': function ($is) {
                         $is.widgetProps = widgetProps;
                     },

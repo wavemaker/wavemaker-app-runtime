@@ -5,7 +5,7 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
-                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline align-{{captionalign}} position-{{captionposition}}" init-widget title="{{hint}}" data-ng-show="show" apply-styles>' +
+                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline align-{{captionalign}} position-{{captionposition}}" init-widget title="{{hint}}" apply-styles>' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +

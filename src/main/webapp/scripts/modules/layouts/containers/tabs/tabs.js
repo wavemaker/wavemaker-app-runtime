@@ -8,19 +8,19 @@ WM.module('wm.layouts.containers')
 
         /* define the template for the tabs directive */
         $templateCache.put('template/layout/container/tabs.html',
-                '<div class="app-tabs clearfix" init-widget data-ng-show="show" apply-styles="container" tabindex="-1">' +
-                    '<ul class="nav nav-tabs" data-ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
-                    '<div class="tab-content" data-ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
+                '<div class="app-tabs clearfix" init-widget apply-styles="container" tabindex="-1">' +
+                    '<ul class="nav nav-tabs" ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
+                    '<div class="tab-content" ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
                 '</div>'
             );
 
         /* define the template for the tabpane directive */
         $templateCache.put('template/layout/container/tab-pane.html',
-            '<div class="tab-pane" wmtransclude init-widget data-ng-show="show" data-ng-class="{disabled:disabled}" wm-navigable-element="true"></div>');
+            '<div class="tab-pane" wmtransclude init-widget ng-class="{disabled:disabled}" wm-navigable-element="true"></div>');
 
         /* define the template for the tabheader directive */
         $templateCache.put('template/layout/container/tab-header.html',
-            '<li class="tab-header" data-ng-class="{active: tab.isActive, disabled: tab.disabled}" data-ng-show="tab.show" data-tab-id="{{tab.widgetid}}" data-ng-click="tab.select()"  hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);" init-widget role="tab" tabindex="-1">' +
+            '<li class="tab-header" ng-class="{active: tab.isActive, disabled: tab.disabled}" ng-show="tab.show" data-tab-id="{{tab.widgetid}}" ng-click="tab.select()"  hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);" init-widget role="tab" tabindex="-1">' +
                 '<a href="javascript:void(0);" wmtransclude apply-styles="container" role="button" tabindex="0"></a>' +
             '</li>');
 
@@ -446,9 +446,9 @@ WM.module('wm.layouts.containers')
                             /* default template for the tabheader */
                             template =
                                     '<div class="tab-heading">' +
-                                    '<i class="app-icon {{paneicon}}" data-ng-if="paneicon"></i> ' +
-                                        '<span data-ng-bind-html="heading"></span>' +
-                                        '<i data-ng-click="tab.onClose();" data-ng-if="tab.closable">&nbsp;</i>' +
+                                    '<i class="app-icon {{paneicon}}" ng-if="paneicon"></i> ' +
+                                        '<span ng-bind-html="heading"></span>' +
+                                        '<i ng-click="tab.onClose();" ng-if="tab.closable">&nbsp;</i>' +
                                     '</div>';
 
                             /* compile the default tempalte and append it to the target */
@@ -609,7 +609,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <div>
                     <wm-composite>
                         <wm-label caption="width:"></wm-label>
@@ -707,7 +707,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <div>
                     tab1 selected {{tab1count}} times.
                 </div>
@@ -763,8 +763,8 @@ WM.module('wm.layouts.containers')
  *
  * Default template:<br>
  * &lt;div class='tab-heading'&gt; <br>
- * &lt;i class='app-icon' data-ng-show='iconsource' data-ng-style ='{backgroundImage:iconsource}'&gt;&nbsp;&lt;/i&gt; <br> { {heading} } <br>
- * &lt;i data-ng-click='tab.onClose();' data-ng-if='tab.closable'&gt;&nbsp;&lt;/i&gt; <br>
+ * &lt;i class='app-icon' ng-show='iconsource' ng-style ='{backgroundImage:iconsource}'&gt;&nbsp;&lt;/i&gt; <br> { {heading} } <br>
+ * &lt;i ng-click='tab.onClose();' ng-if='tab.closable'&gt;&nbsp;&lt;/i&gt; <br>
  * &lt;/div&gt;
  *
  * @scope
@@ -800,7 +800,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <br>
                 <wm-tabs>
                     <wm-tabpane>
@@ -859,7 +859,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <br>
                 <wm-tabs>
                     <wm-tabpane>

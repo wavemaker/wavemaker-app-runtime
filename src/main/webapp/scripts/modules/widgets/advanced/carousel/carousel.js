@@ -5,30 +5,30 @@ WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($tc) {
         'use strict';
         $tc.put('template/widget/advanced/carousel/static/carousel.html',
-                '<div init-widget class="app-carousel carousel slide" data-ng-show="show" apply-styles>' +
+                '<div init-widget class="app-carousel carousel slide" apply-styles>' +
                     '<ol class="carousel-indicators">' +
-                        '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': activeIndex === $index}" data-ng-click="goTo($index)"></li>' +
+                        '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}" ng-click="goTo($index)"></li>' +
                     '</ol>' +
                     '<div class="carousel-inner" wmtransclude></div>' +
-                    '<a class="left carousel-control" data-ng-click="previous()">' +
+                    '<a class="left carousel-control" ng-click="previous()">' +
                         '<i class="wi wi-chevron-left"></i>' +
                     '</a>' +
-                    '<a class="right carousel-control" data-ng-click="next()">' +
+                    '<a class="right carousel-control" ng-click="next()">' +
                         '<i class="wi wi-chevron-right"></i>' +
                     '</a>' +
                 '</div>'
             );
         $tc.put('template/widget/advanced/carousel/design/dynamic/carousel.html',
-            '<div apply-styles init-widget class="app-carousel carousel slide" data-ng-show="show" wmtransclude></div>'
+            '<div apply-styles init-widget class="app-carousel carousel slide" wmtransclude></div>'
             );
 
         $tc.put('template/widget/advanced/carousel/design/static/carousel.html',
-                 '<div init-widget class="app-carousel carousel slide" data-ng-show="show" apply-styles>' +
+                 '<div init-widget class="app-carousel carousel slide" apply-styles>' +
                      '<div class="carousel-inner" wmtransclude></div>' +
                      '<div class="carousel-actions">' +
                         '<ul class="pagination" >' +
-                            '<li data-ng-repeat="content in contents" data-ng-class="{\'active\': activeIndex === $index}"">' +
-                                '<a href="javascript:void(0);" data-ng-click="goTo($index)">{{$index + 1}}</a>' +
+                            '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}"">' +
+                                '<a href="javascript:void(0);" ng-click="goTo($index)">{{$index + 1}}</a>' +
                             '</li>' +
                         '</ul>' +
                      '</div>' +
@@ -36,11 +36,11 @@ WM.module('wm.widgets.advanced')
             );
 
         $tc.put('template/widget/advanced/carousel/dynamic/carousel.html',
-            '<div class="app-carousel" init-widget wmtransclude apply-styles data-identifier="carousel" data-ng-show="show"></div>'
+            '<div class="app-carousel" init-widget wmtransclude apply-styles data-identifier="carousel"></div>'
             );
 
         $tc.put('template/widget/advanced/carousel/carousel-content.html',
-            '<div class="app-carousel-item item" apply-styles init-widget wmtransclude data-ng-show="show"></div>'
+            '<div class="app-carousel-item item" apply-styles init-widget wmtransclude></div>'
             );
 
     }])
@@ -357,22 +357,20 @@ WM.module('wm.widgets.advanced')
                 'template'  : $templateCache.get('template/widget/advanced/carousel/carousel-content.html'),
                 'replace'   : true,
                 'require'   : '^wmCarousel',
-                'compile'   : function () {
-                    return {
-                        'pre': function ($is) {
-                            $is.widgetProps = widgetProps;
-                        },
-                        'post': function ($is, $el, attrs, controller) {
-                            $is.getElement = function () {
-                                return $el;
-                            };
-                            $is.$on('$destroy', function () {
-                                controller.unregister($is);
-                            });
-                            controller.register($is);
-                            WidgetUtilService.postWidgetCreate($is, $el, attrs);
-                        }
-                    };
+                'link'      : {
+                    'pre': function ($is) {
+                        $is.widgetProps = widgetProps;
+                    },
+                    'post': function ($is, $el, attrs, controller) {
+                        $is.getElement = function () {
+                            return $el;
+                        };
+                        $is.$on('$destroy', function () {
+                            controller.unregister($is);
+                        });
+                        controller.register($is);
+                        WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                    }
                 }
             };
         }
@@ -472,7 +470,7 @@ WM.module('wm.widgets.advanced')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-carousel animationinterval="5" height="100%">
                     <wm-carousel-content>
                         <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
@@ -518,7 +516,7 @@ WM.module('wm.widgets.advanced')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-carousel animationinterval="5" height="100%">
                     <wm-carousel-content>
                         <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>
@@ -565,7 +563,7 @@ WM.module('wm.widgets.advanced')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-carousel animationinterval="5" height="100%">
                     <wm-carousel-content-template type='dynamic'>
                          <wm-picture width="100%" name="picture3" picturesource="https://farm8.staticflickr.com/7555/16037316110_f0bef69033_z.jpg"></wm-picture>

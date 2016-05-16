@@ -1,8 +1,8 @@
-/*global WM*/
+/*global WM, _*/
 /*Directive for Navbar*/
 
 WM.module('wm.layouts.containers')
-    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$timeout', function (PropertiesFactory, WidgetUtilService, CONSTANTS, $timeout) {
+    .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.layouts', 'wm.tabbar.dataProps']),
             notifyFor = {
@@ -25,7 +25,7 @@ WM.module('wm.layouts.containers')
                     });
                 }
             } else if (WM.isArray(newVal)) {
-                WM.forEach(newVal, function (item) {
+                _.forEach(newVal, function (item) {
                     nodes.push({
                         'label' : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemlabel'}) || item.label,
                         'icon'  : WidgetUtilService.getEvaluatedData(scope, item, {expressionName: 'itemicon'}) || item.icon,
@@ -65,31 +65,28 @@ WM.module('wm.layouts.containers')
             },
             'transclude': true,
             'template':
-                '<ol class="breadcrumb app-breadcrumb" data-ng-show="show" apply-styles data-element-type="wmBreadCrumb"  init-widget has-model listen-property="dataset">' +
-                    '<li data-ng-repeat="item in nodes" data-ng-class="{\'active\':$last}">' +
+                '<ol class="breadcrumb app-breadcrumb" apply-styles data-element-type="wmBreadCrumb"  init-widget has-model listen-property="dataset">' +
+                    '<li ng-repeat="item in nodes" ng-class="{\'active\':$last}">' +
                         '<i class="{{item.icon}}"></i> ' +
-                        '<a title="{{item.label}}" href="{{item.link}}" data-ng-if="!$last">{{item.label}}</a>' +
-                        '<label data-ng-if="$last">{{item.label}}</label>' +
+                        '<a title="{{item.label}}" href="{{item.link}}" ng-if="!$last">{{item.label}}</a>' +
+                        '<label ng-if="$last">{{item.label}}</label>' +
                     '</li>' +
                 '</ol> ',
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        var onPropertyChange = propertyChangeHandler.bind(undefined, scope);
-                        /* Register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            'link': {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    var onPropertyChange = propertyChangeHandler.bind(undefined, scope);
+                    WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
-                        if (!attrs.widgetid && attrs.scopedataset) {
-                            scope.$watch('scopedataset', function (newVal) {
-                                onPropertyChange('scopedataset', newVal);
-                            }, true);
-                        }
+                    if (!attrs.widgetid && attrs.scopedataset) {
+                        scope.$watch('scopedataset', function (newVal) {
+                            onPropertyChange('scopedataset', newVal);
+                        }, true);
                     }
-                };
+                }
             }
         };
     }]);
@@ -126,7 +123,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <br>
                 <wm-breadcrumb dataset="Users, Alan, Profile, PersonalInfo, Address" name="breadcrumb1"></wm-breadcrumb>
             </div>

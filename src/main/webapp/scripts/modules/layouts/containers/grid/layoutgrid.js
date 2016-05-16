@@ -72,14 +72,13 @@ WM.module('wm.layouts.containers')
             }
 
             return {
-                'restrict': 'E',
-                'replace': true,
-                'scope': {},
+                'restrict'  : 'E',
+                'replace'   : true,
+                'scope'     : {},
                 'transclude': true,
-                'template': '<div init-widget class="app-grid-layout clearfix" data-ng-show="show" apply-styles="container" wmtransclude></div>',
-                'link': {
+                'template'  : '<div init-widget class="app-grid-layout clearfix" apply-styles="container" wmtransclude></div>',
+                'link'      : {
                     'pre': function ($is) {
-                        /*Applying widget properties to directive scope*/
                         $is.widgetProps = widgetProps;
                     },
 
@@ -112,23 +111,20 @@ WM.module('wm.layouts.containers')
             }
         }
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {},
             'transclude': true,
-            'template': '<div init-widget data-ng-class="show" class="app-grid-row clearfix" apply-styles="container" wmtransclude></div>',
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+            'template'  : '<div init-widget ng-class="show" class="app-grid-row clearfix" apply-styles="container" wmtransclude></div>',
+            'link'      : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }])
@@ -155,28 +151,26 @@ WM.module('wm.layouts.containers')
         }
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
-            'transclude': true,
-            'template': '<div init-widget data-ng-class="show" class="app-grid-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>',
-            'compile': function () {
-                return {
-                    'pre': function (scope, element, attrs) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
-                        /* If column width is specified, apply it, else layout grid will apply default width. */
-                        if (attrs.columnwidth) {
-                            setColumnWidth(element, attrs.columnwidth);
-                        }
-                    },
-                    'post': function (scope, element, attrs) {
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            'restrict'   : 'E',
+            'replace'    : true,
+            'scope'      : {},
+            'transclude' : true,
+            'template'   : '<div init-widget class="app-grid-column" apply-styles="container"><div class="app-ng-transclude" wmtransclude></div></div>',
+            'link'       : {
+                'pre': function (scope, element, attrs) {
+                    /*Applying widget properties to directive scope*/
+                    scope.widgetProps = widgetProps;
+                    /* If column width is specified, apply it, else layout grid will apply default width. */
+                    if (attrs.columnwidth) {
+                        setColumnWidth(element, attrs.columnwidth);
                     }
-                };
+                },
+                'post': function (scope, element, attrs) {
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -215,7 +209,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-layoutgrid>
                     <wm-gridrow>
                         <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#008B8B"></wm-gridcolumn>
@@ -258,7 +252,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-layoutgrid>
                     <wm-gridrow>
                         <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#008B8B"></wm-gridcolumn>
@@ -301,7 +295,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-layoutgrid>
                     <wm-gridrow>
                         <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#008B8B"></wm-gridcolumn>

@@ -4,7 +4,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/form.html',
-                '<form role="form" data-ng-show="show" init-widget class="panel app-panel app-form" ng-class="[captionAlignClass, captionPositionClass, formClassName]"' +
+                '<form role="form" init-widget class="panel app-panel app-form" ng-class="[captionAlignClass, captionPositionClass, formClassName]"' +
                     ' autocomplete="autocomplete" apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
@@ -197,24 +197,21 @@ WM.module('wm.layouts.containers')
             'scope': {},
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/container/form.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        scope.statusMessage = undefined;
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
+            'link': {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    scope.statusMessage = undefined;
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
 
-                        if (!scope.widgetid) {
-                            bindEvents(scope, element);
-                            scope.resetForm = resetForm.bind(undefined, scope, element);
-                        }
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                    if (!scope.widgetid) {
+                        bindEvents(scope, element);
+                        scope.resetForm = resetForm.bind(undefined, scope, element);
                     }
-                };
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -285,7 +282,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-form title="Form" class="panel-default" height="300">
                     <wm-layoutgrid>
                         <wm-gridrow>

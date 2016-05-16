@@ -5,30 +5,28 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/icon.html',
-            '<i init-widget class="app-icon"  data-ng-class="iconclass" data-ng-show="show"  data-ng-style="{\'font-size\' : iconsize, \'color\' : color, \'opacity\' : opacity}"></i>'
+            '<i init-widget class="app-icon"  ng-class="iconclass" ng-style="{\'font-size\' : iconsize, \'color\' : color, \'opacity\' : opacity}"></i>'
             );
     }])
-        .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
+    .directive('wmIcon', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.icon', ['wm.base']);
         return {
             'restrict': 'E',
-            'scope': {},
-            'replace': true,
+            'scope'   : {},
+            'replace' : true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/icon.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        /* register the property change handler */
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+            'link'    : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    /* register the property change handler */
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
-}]);
+    }]);
 
 
 /**
@@ -64,7 +62,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <br>
                 <wm-icon iconclass="wi wi-search" iconsize="3em"></wm-icon>
             </div>

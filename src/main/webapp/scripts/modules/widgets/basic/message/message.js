@@ -5,8 +5,8 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/message.html',
-            '<p class="alert app-message" data-ng-show="show" init-widget apply-styles ' +
-                'data-ng-class=\'{' +
+            '<p class="alert app-message" init-widget apply-styles ' +
+                'ng-class=\'{' +
                 '"alert-success":messageType.isSuccess, ' +
                 '"alert-danger":messageType.isError, ' +
                 '"alert-warning":messageType.isWarning, ' +
@@ -14,7 +14,7 @@ WM.module('wm.widgets.basic')
                 '"alert-info alert-loading":messageType.isLoading}\' ' +
                 '><i title="{{type}} Alert" class="{{type}} icon {{messageIcon}}"></i>' +
                 '<span ng-bind-html="messageContent"></span>' +
-                '<button title="Close" type="button" class="btn-transparent close" data-ng-hide="hideclose">&times;</button>' +
+                '<button title="Close" type="button" class="btn-transparent close" ng-hide="hideclose">&times;</button>' +
             '</p>'
             );
     }])
@@ -22,7 +22,7 @@ WM.module('wm.widgets.basic')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.message', ['wm.base']),
             notifyFor = {
-                'type': true,
+                'type'   : true,
                 'dataset': true,
                 'caption': true
             };
@@ -84,69 +84,64 @@ WM.module('wm.widgets.basic')
 
         return {
             'restrict': 'E',
-            'replace': true,
-            'scope': {
-                'scopedataset': '=?',
-                'onClose': '&'
-            },
+            'replace' : true,
+            'scope'   : {'scopedataset': '=?', 'onClose': '&'},
             'template': function (tElement, tAttrs) {
                 var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
                     template = WM.element($templateCache.get('template/widget/message.html'));
 
                 if (!isWidgetInsideCanvas) {
-                    template.children().last().attr('data-ng-click', 'dismiss({$event: $event, $scope: this})');
+                    template.children().last().attr('ng-click', 'dismiss({$event: $event, $scope: this})');
                 }
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        scope.hideclose = attrs.hideclose || attrs.hideClose || false;
+            'link': {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    scope.hideclose = attrs.hideclose || attrs.hideClose || false;
 
-                        /*on-click of close icon*/
-                        scope.dismiss = function (eventObject) {
-                            /* trigger the onClose function before closing */
-                            /*If a javascript function is given call the function directly else trigger the custom 'close' event*/
-                            scope.onClose({$event: eventObject.$event, $scope: eventObject.$scope});
-                            if (scope.dataset) {
-                                scope.dataset.show = false;
-                                setDataSet(null, scope);
-                            } else if (scope.scopedataset) {
-                                scope.scopedataset.show = false;
-                                setDataSet(null, scope);
-                            } else {
-                                scope.show = false;
-                            }
-                        };
-
-                        /*function to be called explicitly, to manage show/hide properties*/
-                        scope.toggle = function (showHide, caption, type) {
-                            if (WM.isUndefined(showHide)) {
-                                scope.show = !scope.show;
-                            } else {
-                                scope.show = showHide === 'show' ? true : (showHide === 'hide' ? false : showHide);
-                                scope.messageContent = caption || scope.messageContent;
-                                scope.type = type || scope.type;
-                            }
-                        };
-
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, attrs), scope, notifyFor);
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-                        // fields defined in scope: {} MUST be watched explicitly
-                        // watching model attribute to the data for the message element.
-                        if (!attrs.widgetid && attrs.scopedataset) {
-                            scope.$watch('scopedataset', function (newVal) {
-                                setDataSet(newVal, scope);
-                            });
+                    /*on-click of close icon*/
+                    scope.dismiss = function (eventObject) {
+                        /* trigger the onClose function before closing */
+                        /*If a javascript function is given call the function directly else trigger the custom 'close' event*/
+                        scope.onClose({$event: eventObject.$event, $scope: eventObject.$scope});
+                        if (scope.dataset) {
+                            scope.dataset.show = false;
+                            setDataSet(null, scope);
+                        } else if (scope.scopedataset) {
+                            scope.scopedataset.show = false;
+                            setDataSet(null, scope);
+                        } else {
+                            scope.show = false;
                         }
+                    };
+
+                    /*function to be called explicitly, to manage show/hide properties*/
+                    scope.toggle = function (showHide, caption, type) {
+                        if (WM.isUndefined(showHide)) {
+                            scope.show = !scope.show;
+                        } else {
+                            scope.show = showHide === 'show' ? true : (showHide === 'hide' ? false : showHide);
+                            scope.messageContent = caption || scope.messageContent;
+                            scope.type = type || scope.type;
+                        }
+                    };
+
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, attrs), scope, notifyFor);
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    // fields defined in scope: {} MUST be watched explicitly
+                    // watching model attribute to the data for the message element.
+                    if (!attrs.widgetid && attrs.scopedataset) {
+                        scope.$watch('scopedataset', function (newVal) {
+                            setDataSet(newVal, scope);
+                        });
                     }
-                };
+                }
             }
         };
     }]);
@@ -190,7 +185,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-message name="demoMessage" scopedataset="messageDataSet">
                 </wm-message>
                 <wm-composite>

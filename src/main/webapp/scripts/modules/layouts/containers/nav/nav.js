@@ -186,7 +186,7 @@ WM.module('wm.layouts.containers')
                         }
                         cls +=  '"';
                     } else {
-                        cls = 'class="nav app-nav" data-ng-class="{\'nav-pills\': type === \'pills\',' +
+                        cls = 'class="nav app-nav" ng-class="{\'nav-pills\': type === \'pills\',' +
                                     '\'nav-tabs\': type === \'tabs\',' +
                                     '\'navbar-nav\': type === \'navbar\',' +
                                     '\'nav-stacked\': layout === \'stacked\',' +
@@ -194,7 +194,7 @@ WM.module('wm.layouts.containers')
                                 '}"';
                     }
 
-                    return '<ul data-ng-show="show" apply-styles="container" data-element-type="wmNav" wmtransclude init-widget ' + cls + '></ul>';
+                    return '<ul apply-styles="container" data-element-type="wmNav" wmtransclude init-widget ' + cls + '></ul>';
                 },
                 'link'      : {
                     'pre': function ($is) {
@@ -294,7 +294,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div class="wm-app" data-ng-controller="Ctrl">
+            <div class="wm-app" ng-controller="Ctrl">
                 <wm-nav scopedataset="items"></wm-nav>
             </div>
         </file>
@@ -344,7 +344,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div class="wm-app" data-ng-controller="Ctrl">
+            <div class="wm-app" ng-controller="Ctrl">
                 <wm-nav>
                     <wm-nav-item>
                         <wm-anchor caption="Dashboard" iconclass="wi wi-dashboard" class="active"></wm-anchor>

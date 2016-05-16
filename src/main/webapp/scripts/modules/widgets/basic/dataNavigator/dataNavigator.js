@@ -5,23 +5,23 @@ WM.module("wm.widgets.basic")
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/datanavigator.html",
-            '<nav data-identifier="datanavigator" class="app-datanavigator clearfix text-{{navigationalign}}" data-ng-show="show" init-widget apply-styles>' +
-                '<ul class="pagination advanced {{class}}" data-ng-if="navcontrols === \'Classic\'">' +
-                    '<li data-ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" data-ng-click="navigatePage(\'first\', $event)"><i class="wi wi-first-page"></i></a></li>' +
-                    '<li data-ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" data-ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li>' +
-                    '<li class="pagecount disabled"><a><input title="Current Page" type="number" data-ng-disabled="isDisableCurrent" data-ng-model="dn.currentPage" ng-model-options="{updateOn: \'change blur\'}" data-ng-change="onModelChange($event)" class="form-control" /></a></li>' +
-                    '<li class="disabled"><a data-ng-hide="isDisableCount"> of {{pageCount}}</a></li>' +
-                    '<li data-ng-class="{\'disabled\':isDisableNext}"><a title="Go Next" name="next" href="javascript:void(0);" aria-label="Next" data-ng-click="navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li>' +
-                    '<li data-ng-class="{\'disabled\':isDisableLast}"><a title="Go to End" name="last" href="javascript:void(0);" aria-label="Last" data-ng-click="navigatePage(\'last\', $event)"><i class="wi wi-last-page"></i></a></li>' +
-                    '<li data-ng-if="showrecordcount" class="totalcount disabled"><a>Total Records: {{dataSize}}</a></li>' +
+            '<nav data-identifier="datanavigator" class="app-datanavigator clearfix text-{{navigationalign}}" init-widget apply-styles>' +
+                '<ul class="pagination advanced {{class}}" ng-if="navcontrols === \'Classic\'">' +
+                    '<li ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" ng-click="navigatePage(\'first\', $event)"><i class="wi wi-first-page"></i></a></li>' +
+                    '<li ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li>' +
+                    '<li class="pagecount disabled"><a><input title="Current Page" type="number" ng-disabled="isDisableCurrent" ng-model="dn.currentPage" ng-model-options="{updateOn: \'change blur\'}" ng-change="onModelChange($event)" class="form-control" /></a></li>' +
+                    '<li class="disabled"><a ng-hide="isDisableCount"> of {{pageCount}}</a></li>' +
+                    '<li ng-class="{\'disabled\':isDisableNext}"><a title="Go Next" name="next" href="javascript:void(0);" aria-label="Next" ng-click="navigatePage(\'next\', $event)"><i class="wi wi-chevron-right"></i></a></li>' +
+                    '<li ng-class="{\'disabled\':isDisableLast}"><a title="Go to End" name="last" href="javascript:void(0);" aria-label="Last" ng-click="navigatePage(\'last\', $event)"><i class="wi wi-last-page"></i></a></li>' +
+                    '<li ng-if="showrecordcount" class="totalcount disabled"><a>Total Records: {{dataSize}}</a></li>' +
                 '</ul>' +
-                '<ul class="pager" data-ng-if="navcontrols === \'Pager\'">' +
-                    '<li class="previous" data-ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true"><i class="wi wi-chevron-left"></i></span> Previous</a></li>' +
-                    '<li class="next" data-ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" data-ng-click="navigatePage(\'next\', $event)">Next <span aria-hidden="true"><i class="wi wi-chevron-right"></i></span></a></li>' +
+                '<ul class="pager" ng-if="navcontrols === \'Pager\'">' +
+                    '<li class="previous" ng-class="{\'disabled\':isDisablePrevious}"><a href="javascript:void(0);" ng-click="navigatePage(\'prev\', $event)"><span aria-hidden="true"><i class="wi wi-chevron-left"></i></span> Previous</a></li>' +
+                    '<li class="next" ng-class="{\'disabled\':isDisableNext}"><a href="javascript:void(0);" ng-click="navigatePage(\'next\', $event)">Next <span aria-hidden="true"><i class="wi wi-chevron-right"></i></span></a></li>' +
                 '</ul>' +
-                '<uib-pagination class="basic" data-ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ' +
+                '<uib-pagination class="basic" ng-if="navcontrols === \'Basic\'" items-per-page="maxResults" total-items="dataSize" ng-model="dn.currentPage" ng-change="pageChanged()" max-size="maxsize" ' +
                         ' boundary-links="boundarylinks" force-ellipses="forceellipses" direction-links="directionlinks" previous-text="." next-text="." first-text="." last-text="."></uib-pagination>' +
-                '<ul data-ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>Total Records: {{dataSize}}</a></li></ul>' +
+                '<ul ng-if="navcontrols === \'Basic\' && showrecordcount" class="pagination"><li class="totalcount disabled basiccount"><a>Total Records: {{dataSize}}</a></li></ul>' +
             '</nav>'
             );
     }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'Variables', '$rootScope', 'wmToaster', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, Variables, $rootScope, wmToaster, CONSTANTS) {

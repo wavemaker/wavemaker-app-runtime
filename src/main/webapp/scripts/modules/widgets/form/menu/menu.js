@@ -5,8 +5,8 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
-                '<div class="dropdown app-menu" init-widget data-ng-show="show" uib-dropdown role="input" listen-property="dataset" tabindex="-1">' +
-                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles tabindex="{{tabindex}}" accesskey="{{shortcutkey}}">' +
+                '<div class="dropdown app-menu" init-widget uib-dropdown role="input" listen-property="dataset" tabindex="-1">' +
+                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles tabindex="{{tabindex}}" accesskey="{{::shortcutkey}}">' +
                     '<i class="app-icon {{iconclass}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
@@ -16,8 +16,8 @@ WM.module('wm.widgets.form')
                 '</div>'
             );
         $templateCache.put('template/widget/form/anchormenu.html',
-                '<div class="dropdown app-menu" init-widget data-ng-show="show" uib-dropdown role="input" tabindex="-1">' +
-                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{shortcutkey}}"><i class="app-icon {{iconclass}}" tabindex="{{tabindex}}"></i>' +
+                '<div class="dropdown app-menu" init-widget uib-dropdown role="input" tabindex="-1">' +
+                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}" tabindex="{{tabindex}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +
@@ -27,13 +27,13 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/menu/dropdown.html',
                 '<ul class="dropdown-menu {{menulayout}} {{menualign}} {{animateClass}}" uib-dropdown-menu>' +
-                    '<wm-menu-dropdown-item data-ng-repeat="item in items" linktarget="linktarget" item="item" menualign="menualign"/>' +
+                    '<wm-menu-dropdown-item ng-repeat="item in items" linktarget="linktarget" item="item" menualign="menualign"/>' +
                 '</ul>'
             );
         $templateCache.put('template/widget/form/menu/dropdownItem.html',
-                '<li data-ng-class="{\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}">' +
+                '<li ng-class="{\'disabled\': item.disabled, \'dropdown-submenu\' : item.children.length > 0}">' +
                     '<a tabindex="0" href="javascript:void(0);" title="{{item.label}}" ng-href="{{item.link}}" target="{{linktarget}}">' +
-                    '<span data-ng-if="item.children.length" class="pull-right fa" data-ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
+                    '<span ng-if="item.children.length" class="pull-right fa" ng-class="{ \'fa-caret-left\': {{menualign === \'pull-right\'}}, \'fa-caret-right\': {{menualign === \'pull-left\' || menualign === undefined}}, \'fa-caret-down\': {{menualign === \'dropinline-menu\'}} }"></span>' +
                         '<i class="app-icon {{item.icon}}"></i>' +
                         '{{item.label}}' +
                     '</a>' +
@@ -243,26 +243,22 @@ WM.module('wm.widgets.form')
                 'linktarget': '='
             },
             'template': $templateCache.get('template/widget/form/menu/dropdown.html'),
-            'compile': function () {
-                return {
-                    'post': function (scope, element) {
-                        scope.onSelect = function (args) {
-                            if (!args.$scope.item.link) {
-                                scope.$parent.onSelect(args);
-                            }
-                        };
-                        if (CONSTANTS.isRunMode) {
-                            animation    = element.parent().isolateScope().animateitems;
-                            menuPosition = scope.$parent.menuposition;
-                            if (animation) { //If animation is set then add animation class based on menu position, if not set it to default
-                                scope.animateClass = animated + (animationClasses[animation][menuPosition] || animationClasses[animation].name);
-                            } else if (scope.items && element.parent().scope().animateClass) {
-                                //Set same animation to sub menu items of that of the parent.
-                                scope.animateClass = element.parent().scope().animateClass;
-                            }
-                        }
+            'link': function (scope, element) {
+                scope.onSelect = function (args) {
+                    if (!args.$scope.item.link) {
+                        scope.$parent.onSelect(args);
                     }
                 };
+                if (CONSTANTS.isRunMode) {
+                    animation    = element.parent().isolateScope().animateitems;
+                    menuPosition = scope.$parent.menuposition;
+                    if (animation) { //If animation is set then add animation class based on menu position, if not set it to default
+                        scope.animateClass = animated + (animationClasses[animation][menuPosition] || animationClasses[animation].name);
+                    } else if (scope.items && element.parent().scope().animateClass) {
+                        //Set same animation to sub menu items of that of the parent.
+                        scope.animateClass = element.parent().scope().animateClass;
+                    }
+                }
             }
         };
     }])
@@ -279,7 +275,7 @@ WM.module('wm.widgets.form')
             'template': function () {
                 var template = WM.element($templateCache.get('template/widget/form/menu/dropdownItem.html'));
                 if (!CONSTANTS.isStudioMode) {
-                    template.attr('data-ng-click', 'onSelect({$event: $event, $scope: this, $item: item.value || item.label })');
+                    template.attr('ng-click', 'onSelect({$event: $event, $scope: this, $item: item.value || item.label })');
                 }
                 return template[0].outerHTML;
             },
@@ -349,7 +345,7 @@ WM.module('wm.widgets.form')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                <wm-menu scopedataset="nodes" menuposition="down,right" caption="Menu" iconclass="wi wi-align-justify"></wm-menu>
             </div>
         </file>

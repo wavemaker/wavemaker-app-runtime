@@ -5,10 +5,10 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/spinner.html',
-            '<div ng-class="[\'app-spinner\', size, spinnerclass]" ng-show="show" init-widget title="{{hint}}" apply-styles no-animate>' +
+            '<div ng-class="[\'app-spinner\', size, spinnerclass]" init-widget title="{{hint}}" apply-styles no-animate>' +
                 '<div class="spinner-message">' +
                     '<span class="spinner-image animated infinite {{animation}}" ng-class="{\'fa-spin\' : animation === \'spin\'}" ng-style="{backgroundImage:picture, width: imagewidth, height: imageheight}" ng-if="type === \'image\'"></span>' +
-                    '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-show="show" ng-style="{\'font-size\' : iconsize}" ng-if="type === \'icon\'"></i>' +
+                    '<i class="spinner-image animated infinite {{animation}}" ng-class="iconclass" ng-style="{\'font-size\' : iconsize}" ng-if="type === \'icon\'"></i>' +
                     '<span class="spinner-text" ng-bind-html="messageContent" ng-if="messageContent"></span>' +
                 '</div>' +
             '</div>'
@@ -62,32 +62,30 @@ WM.module('wm.widgets.basic')
         }
 
         return {
-            'restrict': 'E',
-            'scope': {},
-            'replace': true,
-            'template': $templateCache.get('template/widget/spinner.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            'restrict' : 'E',
+            'scope'    : {},
+            'replace'  : true,
+            'template' : $templateCache.get('template/widget/spinner.html'),
+            'link'     : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
 
-                        scope.iconclass = scope.iconclass || 'fa fa-spinner';
-                        element.removeClass('animated ' + scope.animation);
+                    scope.iconclass = scope.iconclass || 'fa fa-spinner';
+                    element.removeClass('animated ' + scope.animation);
 
-                        if (!scope.widgetid) {
-                            scope.$on('$destroy', $rootScope.$on('toggle-variable-state', function (event, variableName, show) {
-                                if (variableName === scope.servicevariabletotrack) {
-                                    scope.show = show;
-                                }
-                            }));
-                        }
+                    if (!scope.widgetid) {
+                        scope.$on('$destroy', $rootScope.$on('toggle-variable-state', function (event, variableName, show) {
+                            if (variableName === scope.servicevariabletotrack) {
+                                scope.show = show;
+                            }
+                        }));
                     }
-                };
+                }
             }
         };
     }]);

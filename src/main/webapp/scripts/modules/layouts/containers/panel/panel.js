@@ -5,33 +5,33 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/panel.html',
-                '<div page-container init-widget listen-property="actions" class="app-panel panel" data-ng-class="[helpClass, {\'fullscreen\':fullscreen}]" data-ng-show="show" apply-styles="shell" wm-navigable-element="true">' +
-                    '<div class="panel-heading" data-ng-class="helpClass">' +
-                        '<h3 class="panel-title">' +
-                            '<a href="javascript:void(0)" class="panel-toggle" data-ng-click="expandCollapsePanel()">' +
-                                '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
-                                '<div class="pull-left">' +
-                                    '<div class="heading">{{title}}</div>' +
-                                    '<div class="description">{{subheading}}</div>' +
-                                 '</div>' +
-                            '</a>' +
-                            '<div class="panel-actions">' +
-                                '<span data-ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
-                                '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" data-ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel || displayfield}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
-                                '<button type="button" class="app-icon panel-action wi wi-question" title="{{::$root.appLocale.LABEL_HELP}}" data-ng-if="helptext" data-ng-click="toggleHelp()"></button>' +
-                                '<button type="button" class="app-icon wi panel-action" data-ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" data-ng-class="expanded ? \'wi-minus\': \'wi-plus\'" data-ng-click="expandCollapsePanel($event);"></button>' +
-                                '<button type="button" class="app-icon wi panel-action" data-ng-if="enablefullscreen" title="{{::$root.appLocale.LABEL_FULLSCREEN}}/{{::$root.appLocale.LABEL_EXITFULLSCREEN}}" data-ng-class="fullscreen ? \'wi-fullscreen-exit\': \'wi-fullscreen\'" data-ng-click="toggleFullScreen($event);"></button>' +
-                                '<button type="button" class="app-icon wi panel-action wi-close" title="{{::$root.appLocale.LABEL_CLOSE}}" data-ng-if="closable" data-ng-click="closePanel();onClose({$event: $event, $scope: this})"></button>' +
-                            '</div>' +
-                        '</h3>' +
-                    '</div>' +
-                    '<div class="panel-content" data-ng-show="expanded">' +
-                        '<div class="panel-body" data-ng-class="helpClass" wmtransclude page-container-target  apply-styles="inner-shell" ></div>' +
-                        '<aside class="panel-help-message" data-ng-class="helpClass"><h5 class="panel-help-header">{{::$root.appLocale.LABEL_HELP}}</h5><div class="panel-help-content" data-ng-bind-html="helptext"></div></aside>' +
-                    '</div>' +
-                '</div>'
+            '<div page-container init-widget listen-property="actions" class="app-panel panel" ng-class="[helpClass, {\'fullscreen\':fullscreen}]" apply-styles="shell" wm-navigable-element="true">' +
+                '<div class="panel-heading" ng-class="helpClass">' +
+                    '<h3 class="panel-title">' +
+                        '<a href="javascript:void(0)" class="panel-toggle" ng-click="expandCollapsePanel()">' +
+                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                            '<div class="pull-left">' +
+                                '<div class="heading">{{title}}</div>' +
+                                '<div class="description">{{subheading}}</div>' +
+                             '</div>' +
+                        '</a>' +
+                        '<div class="panel-actions">' +
+                            '<span ng-if="badgevalue" class="label label-{{badgetype}}">{{badgevalue}}</span>' +
+                            '<wm-menu type="anchor" class="panel-action" scopedataset="actions" iconclass="wi wi-more-vert" ng-if="actions" title="{{::$root.appLocale.LABEL_ACTIONS}}" on-select="onActionsclick({$item:$item})" datafield="{{datafield}}" itemlabel="{{binditemlabel || itemlabel || displayfield}}" menuposition="down,left" itemicon="{{binditemicon || itemicon}}" itemlink="{{binditemlink || itemlink}}" itemchildren="{{binditemchildren || itemchildren}}"></wm-menu>' +
+                            '<button type="button" class="app-icon panel-action wi wi-question" title="{{::$root.appLocale.LABEL_HELP}}" ng-if="helptext" ng-click="toggleHelp()"></button>' +
+                            '<button type="button" class="app-icon wi panel-action" ng-if="collapsible" title="{{::$root.appLocale.LABEL_COLLAPSE}}/{{::$root.appLocale.LABEL_EXPAND}}" ng-class="expanded ? \'wi-minus\': \'wi-plus\'" ng-click="expandCollapsePanel($event);"></button>' +
+                            '<button type="button" class="app-icon wi panel-action" ng-if="enablefullscreen" title="{{::$root.appLocale.LABEL_FULLSCREEN}}/{{::$root.appLocale.LABEL_EXITFULLSCREEN}}" ng-class="fullscreen ? \'wi-fullscreen-exit\': \'wi-fullscreen\'" ng-click="toggleFullScreen($event);"></button>' +
+                            '<button type="button" class="app-icon wi panel-action wi-close" title="{{::$root.appLocale.LABEL_CLOSE}}" ng-if="closable" ng-click="closePanel();onClose({$event: $event, $scope: this})"></button>' +
+                        '</div>' +
+                    '</h3>' +
+                '</div>' +
+                '<div class="panel-content" ng-show="expanded">' +
+                    '<div class="panel-body" ng-class="helpClass" wmtransclude page-container-target  apply-styles="inner-shell" ></div>' +
+                    '<aside class="panel-help-message" ng-class="helpClass"><h5 class="panel-help-header">{{::$root.appLocale.LABEL_HELP}}</h5><div class="panel-help-content" ng-bind-html="helptext"></div></aside>' +
+                '</div>' +
+            '</div>'
             );
-        $templateCache.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" data-ng-show="expanded" wmtransclude></div>');
+        $templateCache.put('template/layout/container/panel-footer.html', '<div class="app-panel-footer panel-footer" ng-show="expanded" wmtransclude></div>');
     }])
     .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
@@ -47,8 +47,8 @@ WM.module('wm.layouts.containers')
                 if (newVal && CONSTANTS.isStudioMode) {
                     scope.minheight = 0;
                 }
-                if(newVal){
-                  scope.overflow = "auto";
+                if (newVal) {
+                    scope.overflow = 'auto';
                 }
                 break;
             case 'actions':
@@ -59,17 +59,17 @@ WM.module('wm.layouts.containers')
             }
         }
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {},
             'transclude': true,
-            'template': function (tElement, tAttrs) {
+            'template'  : function (tElement, tAttrs) {
                 var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
                     template = WM.element(WidgetUtilService.getPreparedTemplate('template/layout/container/panel.html', tElement, tAttrs));
 
                 if (!isWidgetInsideCanvas) {
                     if (tAttrs.hasOwnProperty('onEnterkeypress')) {
-                        template.attr('data-ng-keypress', 'onKeypress({$event: $event, $scope: this})');
+                        template.attr('ng-keypress', 'onKeypress({$event: $event, $scope: this})');
                     }
                 }
                 return template[0].outerHTML;
@@ -167,15 +167,15 @@ WM.module('wm.layouts.containers')
         };
     }])
     .directive('wmPanelFooter', ['$templateCache', function ($templateCache) {
-        "use strict";
+        'use strict';
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {},
             'transclude': true,
-            'require': '^wmPanel',
-            'template': $templateCache.get('template/layout/container/panel-footer.html'),
-            'link': function (scope, element, attrs, panelCtrl) {
+            'require'   : '^wmPanel',
+            'template'  : $templateCache.get('template/layout/container/panel-footer.html'),
+            'link'      : function (scope, element, attrs, panelCtrl) {
                 scope.expanded = true;
                 panelCtrl.registerFooter(element);
             }
@@ -269,7 +269,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-panel class="panel-default" collapsible="true"  enablefullscreen="true" showheader="true" width="400" height="200" backgroundcolor="#dad8d9" title="Personal Info">
                     <wm-panel-footer>
                         <wm-container horizontalalign="right">

@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/htmlTemplate.html',
-            '<div class="app-html-container" init-widget title="{{hint}}" data-ng-show="show" apply-styles>' +
+            '<div class="app-html-container" init-widget title="{{hint}}" apply-styles>' +
                 '<div class="html-content"></div>' +
             ' </div>'
             );

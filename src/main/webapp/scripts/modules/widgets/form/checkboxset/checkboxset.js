@@ -7,9 +7,8 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/checkboxset.html',
             '<ul class="app-checkboxset list-group {{layout}}" init-widget has-model apply-styles role="input" listen-property="dataset"' +
                 ' title="{{hint}}" ' +
-                ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
-                ' data-ng-show="show" ' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
+                ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
+                ' ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</ul>'
             );
     }])
@@ -141,10 +140,8 @@ WM.module('wm.widgets.form')
         }
         return {
             'restrict': 'E',
-            'scope': {
-                'scopedataset': '=?'
-            },
-            'replace': true,
+            'scope'   : {'scopedataset': '=?'},
+            'replace' : true,
             'template': function (tElement, tAttrs) {
                 var template = WM.element($templateCache.get('template/widget/form/checkboxset.html')),
                     isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid');
@@ -153,59 +150,57 @@ WM.module('wm.widgets.form')
                 }
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-                    },
-                    'post': function (scope, element, attrs) {
-                        scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-
-                        /* checks if the given value object is in the given model array of objects */
-                        scope.valueInModel = function (model, value, dataObject) {
-                            /*If the value is in model, return true*/
-                            if (_.includes(model, value)) {
-                                return true;
-                            }
-                            /*If model is equal to value, return true*/
-                            if (model === value) {
-                                return true;
-                            }
-                            /*If the dataobject is present in model, return true*/
-                            return (dataObject && WM.isArray(model) && model.some(function (el) {
-                                return WM.equals(dataObject, el);
-                            }));
-                        };
-
-                        /*Watch on the model, to check or uncheck the values of checkboxset*/
-                        scope.$watch('_model_', function () {
-                            FormWidgetUtils.updatedCheckedValues(scope);
-                        }, false);
-
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            scope._model_ = [];
-                        };
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching scopedataset attribute to create options for the checkboxset element.*/
-                        if (!attrs.widgetid && attrs.scopedataset) {
-                            scope.$watch('scopedataset', function () {
-                                if (scope.scopedataset) {
-                                    scope.dataset = scope.scopedataset;
-                                }
-                            }, true);
-                        }
+            'link': {
+                'pre': function (iScope) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
                     }
-                };
+                },
+                'post': function (scope, element, attrs) {
+                    scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+
+                    /* checks if the given value object is in the given model array of objects */
+                    scope.valueInModel = function (model, value, dataObject) {
+                        /*If the value is in model, return true*/
+                        if (_.includes(model, value)) {
+                            return true;
+                        }
+                        /*If model is equal to value, return true*/
+                        if (model === value) {
+                            return true;
+                        }
+                        /*If the dataobject is present in model, return true*/
+                        return (dataObject && WM.isArray(model) && model.some(function (el) {
+                            return WM.equals(dataObject, el);
+                        }));
+                    };
+
+                    /*Watch on the model, to check or uncheck the values of checkboxset*/
+                    scope.$watch('_model_', function () {
+                        FormWidgetUtils.updatedCheckedValues(scope);
+                    }, false);
+
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        scope._model_ = [];
+                    };
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    /* fields defined in scope: {} MUST be watched explicitly */
+                    /*watching scopedataset attribute to create options for the checkboxset element.*/
+                    if (!attrs.widgetid && attrs.scopedataset) {
+                        scope.$watch('scopedataset', function () {
+                            if (scope.scopedataset) {
+                                scope.dataset = scope.scopedataset;
+                            }
+                        }, true);
+                    }
+                }
             }
         };
     }]);
@@ -288,7 +283,7 @@ WM.module('wm.widgets.form')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <div>single click count: {{clickCount}}</div>
                 <div>change count: {{changeCount}}</div>
                 <div>mouse enter count: {{mouseenterCount}}</div>

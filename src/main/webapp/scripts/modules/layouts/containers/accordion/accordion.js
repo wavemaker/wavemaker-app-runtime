@@ -5,22 +5,22 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
 
-        $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget data-ng-show="show" apply-styles="scrollable-container" data-ng-style="{width:width}"></div>');
+        $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget apply-styles="scrollable-container" ng-style="{width:width}"></div>');
 
         $templateCache.put('template/layout/container/accordion-pane.html',
-            '<div class="app-accordion-panel panel" init-widget wmtransclude data-ng-show="show" wm-navigable-element="true"></div>'
+            '<div class="app-accordion-panel panel" init-widget wmtransclude wm-navigable-element="true"></div>'
             );
 
         $templateCache.put('template/layout/container/accordion-header.html',
-                '<div class="panel-heading clearfix" data-ng-click="pane.togglePane()" init-widget apply-styles="container">' +
+                '<div class="panel-heading clearfix" ng-click="pane.togglePane()" init-widget apply-styles="container">' +
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0);" class="accordion-toggle" wmtransclude></a>' +
                     '</h3>' +
-                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" data-ng-class="pane.active ? \'wi-minus\': \'wi-plus\'"></button></div>' +
+                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" ng-class="pane.active ? \'wi-minus\': \'wi-plus\'"></button></div>' +
                 '</div>'
             );
         $templateCache.put('template/layout/container/accordion-content.html',
-                '<div class="panel-collapse collapse"  data-ng-class="pane.active ? \'collapse in\' : \'collapse\'" init-widget page-container apply-styles="scrollable-container">' +
+                '<div class="panel-collapse collapse"  ng-class="pane.active ? \'collapse in\' : \'collapse\'" init-widget page-container apply-styles="scrollable-container">' +
                     '<div class="panel-body" wmtransclude page-container-target></div>' +
                 '</div>'
             );
@@ -193,9 +193,9 @@ WM.module('wm.layouts.containers')
 
                         if (transcludeTarget.children().length === 0) { /* if there is no transcluded content, use the default template for the header */
                             template =
-                                '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
-                                '<div class="pull-left"><div class="heading" data-ng-bind-html="heading"></div>' +
-                                '<div class="description" data-ng-bind-html="subheading"></div></div>';
+                                '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                                '<div class="pull-left"><div class="heading" ng-bind-html="heading"></div>' +
+                                '<div class="description" ng-bind-html="subheading"></div></div>';
                             transcludeTarget.append($compile(template)(scope));
                         }
                         scope.pane = paneCtrl.getPaneScope();
@@ -302,7 +302,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-accordion width="400px" height="400px" closeothers="false" horizontalalign='right'>
                     <wm-accordionpane>
                         <wm-accordionheader heading="pane1"></wm-accordionheader>
@@ -353,7 +353,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-accordion>
                     <wm-accordionpane on-expand="expandCallback()" on-collapse="collapseCallback()">
                         <wm-accordionheader heading="pane1"></wm-accordionheader>
@@ -391,9 +391,9 @@ WM.module('wm.layouts.containers')
  * If there is no transcluded content, default template will be used. <br>
  *
  * Default template:<br>
- * &lt;i class="app-icon" data-ng-show = "iconsource"  data-ng-style ="{backgroundImage:iconsource}"&gt;&nbsp;&lt;/i&gt;
- *  {{heading}} <span class="description" data-ng-if="description"&gt; - { {description} }&lt;/span&gt;
- * &lt; class="app-icon" data-ng-class="pane.active ? panel-open-false: panel-open-true"&gt;&nbsp;&lt;/i&gt;
+ * &lt;i class="app-icon" ng-show = "iconsource"  ng-style ="{backgroundImage:iconsource}"&gt;&nbsp;&lt;/i&gt;
+ *  {{heading}} <span class="description" ng-if="description"&gt; - { {description} }&lt;/span&gt;
+ * &lt; class="app-icon" ng-class="pane.active ? panel-open-false: panel-open-true"&gt;&nbsp;&lt;/i&gt;
  *
  * @scope
  *
@@ -431,7 +431,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-accordion>
                     <wm-accordionpane>
                         <wm-accordionheader heading="{{heading1}}" description="{{description1}}"></wm-accordionheader>
@@ -483,7 +483,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-accordion>
                     <wm-accordionpane>
                         <wm-accordionheader heading="{{heading1}}" description="{{description1}}"></wm-accordionheader>

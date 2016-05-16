@@ -4,28 +4,21 @@
 WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
-        /*
-        * TODO: ng-required is removed as the current angular version(v1.2.13) is having issues
-        * with updating checkbox checked state based on initial dataValue if ng-checked-value is set
-        * on updating angular version, ng-required attribute can be kept in the template
-        * note: attribute 'ng-checked' removed as it is conflicting with the new property 'datavalue'
-        */
         $templateCache.put('template/widget/form/checkbox.html',
-            '<div class="app-checkbox checkbox" data-ng-class="{\'app-toggle\' : (type === \'toggle\')}" init-widget has-model data-ng-show="show" title="{{hint}}" role="input">' +
-                '<label data-ng-class="{\'disabled\':disabled,\'unchecked\': (_model_=== uncheckedvalue || _model_ === false || _model_ === null)}" apply-styles role="button">' +
+            '<div class="app-checkbox checkbox" ng-class="{\'app-toggle\' : (type === \'toggle\')}" init-widget has-model title="{{hint}}" role="input">' +
+                '<label ng-class="{\'disabled\':disabled,\'unchecked\': (_model_=== uncheckedvalue || _model_ === false || _model_ === null)}" apply-styles role="button">' +
                     '<input type="checkbox" ' +
-                        ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
-                        ' data-ng-readonly="readonly" ' +
-                        ' data-ng-required="required"' +
-                        ' data-ng-disabled="disabled" ' +
-                        ' accesskey="{{shortcutkey}}"' +
-                        ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
-                    '</input>' +
+                        ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
+                        ' ng-readonly="readonly" ' +
+                        ' ng-required="required"' +
+                        ' ng-disabled="disabled" ' +
+                        ' accesskey="{{::shortcutkey}}"' +
+                        ' ng-change="_onChange({$event: $event, $scope: this})">' +
                 '<span class="caption">{{caption || "&nbsp;"}}</span>' +
                 '<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" class="switch"/>' +
                 '</label>' +
                 /*Holder for the model for submitting values in a form*/
-                '<input type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
+                '<input type="hidden" class="ng-hide model-holder" ng-disabled="disabled" value="{{_model_}}">' +
             '</div>'
             );
     }])
@@ -47,13 +40,13 @@ WM.module('wm.widgets.form')
 
         return {
             'restrict': 'E',
-            'scope': {},
-            'replace': true,
+            'scope'   : {},
+            'replace' : true,
             'template': function (tElement, tAttrs) {
                 var template = WM.element($templateCache.get('template/widget/form/checkbox.html')),
                     checkbox,
                     isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
-                    setTrueFalseValues = function(attr, property) {
+                    setTrueFalseValues = function (attr, property) {
                         var value = tAttrs[attr];
                         if (value) {
                             //If boolean type value or value contains quotes, do not add the quotes
@@ -65,8 +58,8 @@ WM.module('wm.widgets.form')
                         }
                     };
                 checkbox = template.find('input[type=checkbox]');
-                setTrueFalseValues('checkedvalue', 'data-ng-true-value');
-                setTrueFalseValues('uncheckedvalue', 'data-ng-false-value');
+                setTrueFalseValues('checkedvalue', 'ng-true-value');
+                setTrueFalseValues('uncheckedvalue', 'ng-false-value');
                 if (!isWidgetInsideCanvas) {
                     WidgetUtilService.addEventAttributes(template, tAttrs, FormWidgetUtils.getProxyEventsMap());
                     WidgetUtilService.addEventAttributes(checkbox, tAttrs, FormWidgetUtils.getFocusBlurEvents());
@@ -76,28 +69,26 @@ WM.module('wm.widgets.form')
 
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope, element, attrs) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
-                        if (!attrs.datavalue && !attrs.scopedatavalue) {
-                            scope._model_ = attrs.uncheckedvalue || false;
-                        }
-
-                    },
-                    'post': function (scope, element, attrs) {
-                        scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            scope._model_ = false;
-                        };
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            'link': {
+                'pre': function (scope, element, attrs) {
+                    /*Applying widget properties to directive scope*/
+                    scope.widgetProps = widgetProps;
+                    if (!attrs.datavalue && !attrs.scopedatavalue) {
+                        scope._model_ = attrs.uncheckedvalue || false;
                     }
-                };
+
+                },
+                'post': function (scope, element, attrs) {
+                    scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        scope._model_ = false;
+                    };
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -168,7 +159,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>single click count: {{clickCount}}</div>
  *               <div>change count: {{changeCount}}</div>
  *               <div>mouse enter count: {{mouseenterCount}}</div>
@@ -346,7 +337,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <wm-composite>
  *                   <wm-label caption="{{check3caption}}"></wm-label>
  *                   <wm-checkbox type="toggle"

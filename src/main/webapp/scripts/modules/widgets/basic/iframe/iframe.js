@@ -6,11 +6,11 @@ WM.module('wm.widgets.basic')
         'use strict';
 
         $templateCache.put('template/widget/iframe.html',
-                '<div class="embed-responsive app-iframe" init-widget data-ng-show="show" data-ng-style="{width: width,height: height}">' +
+                '<div class="embed-responsive app-iframe" init-widget ng-style="{width: width,height: height}">' +
                     '<iframe class="embed-responsive-item iframe-content" scrolling="auto" marginheight="0" marginwidth="0" frameborder="0" ' +
                         'title="{{hint}}" seamless="seamless">' +
                     '</iframe>' +
-                    '<div class="wm-content-info {{class}} readonly-wrapper" data-ng-show="showContentLoadError"><p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p></div>' +
+                    '<div class="wm-content-info {{class}} readonly-wrapper" ng-if="showContentLoadError"><p class="wm-message" title="{{hintMsg}}">{{errMsg}}</p></div>' +
                 '</div>'
             );
     }])
@@ -49,27 +49,25 @@ WM.module('wm.widgets.basic')
 
         return {
             'restrict': 'E',
-            'scope': {},
-            'replace': true,
-            template: function (tElement, tAttrs) {
+            'scope'   : {},
+            'replace' : true,
+            'template': function (tElement, tAttrs) {
                 var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/iframe.html', tElement, tAttrs));
                 /*Set name for the model-holder, to ease submitting a form*/
                 template.find('.iframe-content').attr('name', tAttrs.name);
 
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+            'link': {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -112,7 +110,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 Width: <wm-text scopedatavalue="width"></wm-text> <br><br>
                 height: <wm-text scopedatavalue="height"></wm-text> <br><br>
                 <div>

@@ -7,27 +7,27 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/fileupload.html',
-                '<div data-ng-show="show" class="app-fileupload" init-widget role="input">' +
+                '<div class="app-fileupload" init-widget role="input">' +
                     /* drag and drop files UI in web */
-                    '<div data-ng-show="multiple" class="app-multi-file-upload" data-ng-if="!_isMobileType">' +
+                    '<div ng-show="multiple" class="app-multi-file-upload" ng-if="!_isMobileType">' +
                         '<div class="drop-box" drag-files="onFileSelect($event,$files)" apply-styles>' +
                             '<i class="{{iconclass}}"/>' +
                             '<div class="message">' +
-                                '<label data-ng-bind="caption"></label>' +
+                                '<label ng-bind="caption"></label>' +
                                     '<form class="form-horizontal" name="{{scope.formName}}">' +
-                                        '<input class="file-input" type="file" name="files" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" multiple data-ng-disabled="disabled">' +
-                                        '<a href="javascript:void(0);" class="app-anchor" data-ng-bind="fileuploadmessage"></a>' +
+                                        '<input class="file-input" type="file" name="files" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" multiple ng-disabled="disabled">' +
+                                        '<a href="javascript:void(0);" class="app-anchor" ng-bind="fileuploadmessage"></a>' +
                                     '</form>' +
                             '</div>' +
                         '</div>' +
                     '</div>' +
                     /* single file upload in web and single , multiple file upload UI in mobile runmode*/
-                    '<div class="app-single-file-upload" data-ng-show="!multiple || _isMobileType" data-ng-if="!_isCordova">' +
+                    '<div class="app-single-file-upload" ng-show="!multiple || _isMobileType" ng-if="!_isCordova">' +
                         '<div class="app-button-wrapper">' +
                             '<form class="form-horizontal" name="{{scope.formName}}">' +
                             /* support for file upload in Mobileapp in its runmode (Web) */
-                                '<input class="file-input" type="file" name="files" data-ng-if="multiple" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" data-ng-disabled="disabled" multiple>' +
-                                '<input class="file-input" type="file" name="files" data-ng-if="!multiple" on-file-select="onFileSelect($event, $files)" data-ng-attr-accept="{{chooseFilter}}" data-ng-disabled="disabled">' +
+                                '<input class="file-input" type="file" name="files" ng-if="multiple" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" ng-disabled="disabled" multiple>' +
+                                '<input class="file-input" type="file" name="files" ng-if="!multiple" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" ng-disabled="disabled">' +
                                 '<button class="app-button btn btn-default" apply-styles>' +
                                     '<i class="{{iconclass}}"></i> ' +
                                     '<span>{{caption}}</span>' +
@@ -37,25 +37,25 @@ WM.module('wm.widgets.form')
                         '<div class="app-files-upload-status single"></div>' +
                     '</div>' +
                     /* support for file upload in Mobile Application (device) */
-                    '<button data-ng-if="_isCordova" class="app-button btn btn-default" data-ng-click="openFileSelector()" data-ng-disabled="disabled" apply-styles>' +
+                    '<button ng-if="_isCordova" class="app-button btn btn-default" ng-click="openFileSelector()" ng-disabled="disabled" apply-styles>' +
                         '<i class="{{iconclass}}"></i> ' +
                         '<span>{{caption}}</span>' +
                     '</button>' +
                     /* list of selectedfiles UI */
-                    '<ul class="list-group file-upload" data-ng-style="{height: filelistheight, overflow: overflow}" data-ng-if="selectedFiles.length > 0 && mode === \'Select\'" >' +
-                        '<li class="list-group-item file-upload-status container" data-ng-repeat="ft in selectedFiles" >' +
+                    '<ul class="list-group file-upload" ng-style="{height: filelistheight, overflow: overflow}" ng-if="selectedFiles.length > 0 && mode === \'Select\'" >' +
+                        '<li class="list-group-item file-upload-status container" ng-repeat="ft in selectedFiles" >' +
                             '<div class="media upload-file-list">' +
                                 '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}"></div>' +
                                 '<div class="media-body media-middle file-details">' +
                                     '<label class="upload-title">{{ft.name}}</label><br/>' +
-                                    '<span class="filesize" data-ng-if="ft.fileLength  !== 0">{{ft.size | filesize:0}}</span>' +
+                                    '<span class="filesize" ng-if="ft.fileLength  !== 0">{{ft.size | filesize:0}}</span>' +
                                 '</div>' +
                             '</div>' +
                         '</li>' +
                     '</ul>' +
                     /* list of uploadedfiles UI */
-                    '<ul class="list-group file-upload"  data-ng-style="{height: filelistheight, overflow: overflow}" data-ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
-                        '<li class="list-group-item file-upload-status container {{ft.status}}" data-ng-hide="ft.status === \'abort\'" data-ng-repeat="ft in fileTransfers | filter : {status : \'!abort\'}" >' +
+                    '<ul class="list-group file-upload"  ng-style="{height: filelistheight, overflow: overflow}" ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
+                        '<li class="list-group-item file-upload-status container {{ft.status}}" ng-hide="ft.status === \'abort\'" ng-repeat="ft in fileTransfers | filter : {status : \'!abort\'}" >' +
                             '<div class="media upload-file-list">' +
                                 '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}">' +
                                 '</div>' +
@@ -63,19 +63,19 @@ WM.module('wm.widgets.form')
                                     '<div class="file-detail">' +
                                         '<p class="uploaddetails">' +
                                             '<label class="upload-title col-xs-8">{{ft.name}}</label>' +
-                                            '<span class="text-muted filesize" data-ng-if="ft.fileLength  !== 0">{{ft.size | filesize:0}}</span>' +
+                                            '<span class="text-muted filesize" ng-if="ft.fileLength  !== 0">{{ft.size | filesize:0}}</span>' +
                                         '</p>' +
-                                        '<div class="progress" data-ng-show="ft.status === \'inprogress\'">' +
-                                            '<div class="progress-bar progress-bar-striped progress-bar-info" data-ng-style="{width: (ft.progress +\'%\')}"></div>' +
+                                        '<div class="progress" ng-show="ft.status === \'inprogress\'">' +
+                                            '<div class="progress-bar progress-bar-striped progress-bar-info" ng-style="{width: (ft.progress +\'%\')}"></div>' +
                                         '</div>' +
                                     '</div>' +
                                 '</div>' +
-                                '<div class="media-right media-middle" data-ng-if="ft.status === \'inprogress\' || ft.status === \'queued\'">' +
+                                '<div class="media-right media-middle" ng-if="ft.status === \'inprogress\' || ft.status === \'queued\'">' +
                                     '<a class="btn btn-transparent" type="button" ng-click="abortUpload($event, ft)">' +
                                         '<i class="wi wi-stop"></i>' +
                                     '</a>' +
                                 '</div>' +
-                                '<div class="media-right media-middle status" data-ng-if="mode === \'Upload\'" data-ng-hide="ft.status === \'abort\' || ft.status === \'inprogress\'">' +
+                                '<div class="media-right media-middle status" ng-if="mode === \'Upload\'" ng-hide="ft.status === \'abort\' || ft.status === \'inprogress\'">' +
                                     '<span class="status-icon {{ft.status | stateClass }}"></span>' +
                                 '</div>' +
                             '</div>' +
@@ -742,7 +742,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <wm-fileupload on-success="success($event)" on-fail="fail($event)"></wm-fileupload>
  *               <toaster-container toaster-options="{'limit': 1,'time-out': 2000, 'position-class': 'toast-bottom-right'}"></toaster-container>
  *           </div>

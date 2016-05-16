@@ -5,17 +5,19 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/alertdialog.html",
-            '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
-                '<wm-dialogheader iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
-                '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
-                    '<p class="app-dialog-message text-{{alerttype}}"> {{message}}</p>' +
+            '<div class="app-dialog modal-dialog app-alert-dialog" ng-class="{type:type}" dialogclass init-widget ng-style="{width: dialogWidth}">' +
+                '<div class="modal-content">' +
+                    '<wm-dialogheader iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
+                    '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
+                        '<p class="app-dialog-message text-{{alerttype}}"> {{message}}</p>' +
+                    '</div>' +
+                    '<div class="app-dialog-footer modal-footer">' +
+                        '<wm-button  class="btn-primary"  caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                    '</div>' +
                 '</div>' +
-                '<div class="app-dialog-footer modal-footer">' +
-                    '<wm-button  class="btn-primary"  caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
-                '</div>' +
-            '</div></div>'
+            '</div>'
             );
-    }]).directive('wmAlertdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS",'Utils', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window) {
+    }]).directive('wmAlertdialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.alertdialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
             notifyFor = {
@@ -87,41 +89,39 @@ WM.module('wm.widgets.dialog')
                 }
                 return $templateCache.get("template/widget/dialog/alertdialog.html");
             },
-            "compile": function () {
-                return {
-                    "pre": function (iScope, element, attrs) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-
-                        /* for the notification-alert dialogs do not allow the user to edit the properties other than class */
-                        if (attrs.widgetid && attrs.notificationdialog) { //widget is in canvas
-                            var wp = iScope.widgetProps;
-                            _.keys(wp).forEach(function (propName) {
-                                if (propName !== 'class') {
-                                    wp[propName].disabled = true;
-                                }
-                            });
-                        }
-                    },
-                    "post": function (scope, element, attrs, dialogCtrl) {
-                        /* handles ok button click*/
-                        if (!scope.okButtonHandler) {
-                            scope.okButtonHandler = function () {
-                                dialogCtrl._OkButtonHandler(attrs.onOk);
-                            };
-                        }
-
-                        /* register the property change handler */
-                        if (scope.propertyManager) {
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
-                        }
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            "link": {
+                "pre": function (iScope, element, attrs) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
                     }
-                };
+
+                    /* for the notification-alert dialogs do not allow the user to edit the properties other than class */
+                    if (attrs.widgetid && attrs.notificationdialog) { //widget is in canvas
+                        var wp = iScope.widgetProps;
+                        _.keys(wp).forEach(function (propName) {
+                            if (propName !== 'class') {
+                                wp[propName].disabled = true;
+                            }
+                        });
+                    }
+                },
+                "post": function (scope, element, attrs, dialogCtrl) {
+                    /* handles ok button click*/
+                    if (!scope.okButtonHandler) {
+                        scope.okButtonHandler = function () {
+                            dialogCtrl._OkButtonHandler(attrs.onOk);
+                        };
+                    }
+
+                    /* register the property change handler */
+                    if (scope.propertyManager) {
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
+                    }
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -185,7 +185,7 @@ WM.module('wm.widgets.dialog')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-view class="dialog-view">
                     <wm-alertdialog name="alertDialog"></wm-alertdialog>
                 </wm-view>

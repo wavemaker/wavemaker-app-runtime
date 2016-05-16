@@ -2,35 +2,33 @@
 /*jslint sub: true*/
 /*Directive for login-from */
 
-WM.module("wm.widgets.advanced")
+WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($templateCache) {
-        "use strict";
-        $templateCache.put("template/widget/advanced/login.html",
-            '<div init-widget class="app-login" data-ng-show="show" apply-styles="container">' +
+        'use strict';
+        $templateCache.put('template/widget/advanced/login.html',
+            '<div init-widget class="app-login" apply-styles="container">' +
                 '<wm-message scopedataset="loginMessage" class="app-login-message"></wm-message>' +
                 '<form autocomplete="off" class="app-form app-login-form" method="post" wmtransclude></form>' +
             '</div>');
 
-    }]).directive('wmLogin', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'CONSTANTS', '$controller', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, CONSTANTS, $controller) {
-        "use strict";
-        var widgetProps = PropertiesFactory.getPropertiesOf("wm.login", ["wm.base", "wm.base.editors", "wm.base.events.successerror"]);
+    }])
+    .directive('wmLogin', ['PropertiesFactory', '$rootScope', '$templateCache', 'WidgetUtilService', 'CONSTANTS', '$controller', function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, CONSTANTS, $controller) {
+        'use strict';
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.login', ['wm.base', 'wm.base.editors', 'wm.base.events.successerror']);
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {
-                'onSuccess': '&',
-                'onError': '&'
-            },
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {'onSuccess': '&', 'onError': '&'},
             'transclude': true,
-            'template': $templateCache.get("template/widget/advanced/login.html"),
-            'compile': function (tElement, tAttr) {
+            'template'  : $templateCache.get('template/widget/advanced/login.html'),
+            'compile'   : function (tElement, tAttr) {
 
                 /* in run mode there is separate controller for login widget but not in studio mode,
                  * to prevent errors in studio mode create and empty function
                  * with particular controller name */
                 if (CONSTANTS.isStudioMode) {
-                    window[tAttr.name + "Controller"] = WM.noop;
+                    window[tAttr.name + 'Controller'] = WM.noop;
                 }
 
                 return {
@@ -45,7 +43,7 @@ WM.module("wm.widgets.advanced")
                              * Kept in try/catch as the controller may not be available sometimes
                              */
                             try {
-                                loginController = scope.name + "Controller";
+                                loginController = scope.name + 'Controller';
                                 $controller(loginController, {$scope: element.scope()});
                             } catch (ignore) {
                             }
@@ -64,7 +62,7 @@ WM.module("wm.widgets.advanced")
                                     rememberMeElement,
                                     $rememberMe,
                                     onSuccess = function () {
-                                        element.trigger("success");
+                                        element.trigger('success');
                                         if (successFn.indexOf('(') !== -1) {
                                             scope.onSuccess({$event: event, $scope: scope});
                                         } else {
@@ -74,9 +72,9 @@ WM.module("wm.widgets.advanced")
                                     onError = function (error) {
                                         scope.loginMessage = {
                                             type: 'error',
-                                            caption: scope.errormessage || error || $rootScope.appLocale['LABEL_INVALID_USERNAME_OR_PASSWORD']
+                                            caption: scope.errormessage || error || $rootScope.appLocale.LABEL_INVALID_USERNAME_OR_PASSWORD
                                         };
-                                        element.trigger("error");
+                                        element.trigger('error');
                                         if (errorFn.indexOf('(') !== -1) {
                                             scope.onError({$event: event, $scope: scope});
                                         } else {
@@ -168,7 +166,7 @@ WM.module("wm.widgets.advanced")
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div class="wm-app" data-ng-controller="Ctrl">
+            <div class="wm-app" ng-controller="Ctrl">
                 <wm-panel>
                     <wm-login>
                         <wm-composite>

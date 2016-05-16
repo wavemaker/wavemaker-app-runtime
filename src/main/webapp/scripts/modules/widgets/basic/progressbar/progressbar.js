@@ -5,8 +5,8 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/progress.html',
-                '<div class="progress app-progress" data-ng-show="show" title="{{hint}}" init-widget apply-styles>' +
-                    '<div class="progress-bar" role="progressbar" aria-valuenow={{datavalue}} aria-valuemin={{minvalue}} aria-valuemax={{maxvalue}} data-ng-hide="isMultipleBar"></div>' +
+                '<div class="progress app-progress" title="{{hint}}" init-widget apply-styles>' +
+                    '<div class="progress-bar" role="progressbar" aria-valuenow={{datavalue}} aria-valuemin={{minvalue}} aria-valuemax={{maxvalue}} ng-hide="isMultipleBar"></div>' +
                 '</div>'
             );
     }])
@@ -213,31 +213,29 @@ WM.module('wm.widgets.basic')
 
         return {
             'restrict': 'E',
-            'scope': {},
-            'replace': true,
+            'scope'   : {},
+            'replace' : true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/progress.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                        Object.defineProperty(scope, 'binddataset', {
-                            'configurable': true
-                        });
-                    },
-                    'post': function (scope, element, attrs) {
-                        var progressBarEl = element.children().first();
+            'link'    : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                    Object.defineProperty(scope, 'binddataset', {
+                        'configurable': true
+                    });
+                },
+                'post': function (scope, element, attrs) {
+                    var progressBarEl = element.children().first();
 
-                        defineProperties(scope);
-                        if (attrs.dataset) {
-                            if (Utils.stringStartsWith(attrs.dataset, 'bind:')) {
-                                scope.binddataset = attrs.dataset;
-                            }
+                    defineProperties(scope);
+                    if (attrs.dataset) {
+                        if (Utils.stringStartsWith(attrs.dataset, 'bind:')) {
+                            scope.binddataset = attrs.dataset;
                         }
-
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, progressBarEl), scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
-                };
+
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, progressBarEl), scope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -309,7 +307,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-composite>
                     <wm-label caption="type:"></wm-label>
                     <wm-select scopedatavalue="type" scopedataset="types"></wm-select>

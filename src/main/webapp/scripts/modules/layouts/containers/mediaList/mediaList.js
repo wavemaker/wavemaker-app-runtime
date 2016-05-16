@@ -5,37 +5,34 @@
 WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($tc) {
         'use strict';
-        $tc.put('template/widget/medialist-design.html',
-            '<div class="app-medialist" init-widget apply-styles="shell">' +
-            '<div wmtransclude></div>' +
-            '</div>'
-        );
+        $tc.put('template/widget/medialist-design.html', '<div class="app-medialist" init-widget apply-styles="shell"><div wmtransclude></div></div>');
+
         $tc.put('template/widget/medialist.html',
-            '<div class="app-medialist" data-ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget listen-property="dataset">' +
+            '<div class="app-medialist" ng-class="{\'singlerow\' : layout == \'Single-row\'}" init-widget listen-property="dataset">' +
                 '<ul class="list-unstyled list-inline app-media-thumbnail" wmtransclude></ul>' +
-                    '<div class="app-media-fullscreen" data-ng-show="selectedMediaIndex >= 0" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
-                        '<wm-mobile-navbar on-backbtnclick="exitFullScreen();" show-leftnav="false" backbuttoniconclass="wi wi-chevron-left" title= "{{selectedMediaIndex+1}}/{{fieldDefs.length}}"></wm-mobile-navbar>' +
-                        '<wm-content>' +
-                             '<wm-page-content>' +
-                                '<div class="app-content-column">' +
-                                        '<div class="image-container">' +
-                                            '<img class="center-block" data-ng-src="{{fieldDefs[selectedMediaIndex][mediaurl]}}">' +
-                                                '<a class="app-media-fullscreen-nav-control left" data-ng-show="selectedMediaIndex > 0" data-ng-click="showNext()">' +
-                                                    '<i class="wi wi-chevron-left"></i>' +
-                                                '</a>' +
-                                                '<a class="app-media-fullscreen-nav-control right" data-ng-show="selectedMediaIndex < fieldDefs.length-1" data-ng-click="showPrev()">' +
-                                                    '<i class="wi wi-chevron-right"></i>' +
-                                                '</a>' +
-                                         '</div>' +
-                                 '</div>' +
-                                '</wm-page-content>' +
-                            '</wm-content>' +
-                    '</div>' +
+                '<div class="app-media-fullscreen" ng-show="selectedMediaIndex >= 0" hm-swipe-left="showNext()" hm-swipe-right="showPrev()">' +
+                    '<wm-mobile-navbar on-backbtnclick="exitFullScreen();" show-leftnav="false" backbuttoniconclass="wi wi-chevron-left" title= "{{selectedMediaIndex+1}}/{{fieldDefs.length}}"></wm-mobile-navbar>' +
+                    '<wm-content>' +
+                        '<wm-page-content>' +
+                            '<div class="app-content-column">' +
+                                '<div class="image-container">' +
+                                    '<img class="center-block" ng-src="{{fieldDefs[selectedMediaIndex][mediaurl]}}">' +
+                                    '<a class="app-media-fullscreen-nav-control left" ng-show="selectedMediaIndex > 0" ng-click="showNext()">' +
+                                        '<i class="wi wi-chevron-left"></i>' +
+                                    '</a>' +
+                                    '<a class="app-media-fullscreen-nav-control right" ng-show="selectedMediaIndex < fieldDefs.length-1" ng-click="showPrev()">' +
+                                        '<i class="wi wi-chevron-right"></i>' +
+                                    '</a>' +
+                                '</div>' +
+                            '</div>' +
+                        '</wm-page-content>' +
+                    '</wm-content>' +
+                '</div>' +
             '</div>'
             );
         $tc.put('template/widget/medialist-template.html',
-            '<div init-widget data-ng-style="{\'width\': width, \'height\': height}" class="app-medialist-template thumbnail">' +
-                '<img class="thumbnail-image-template" data-ng-src="{{imagesource}}">' +
+            '<div init-widget ng-style="{\'width\': width, \'height\': height}" class="app-medialist-template thumbnail">' +
+                '<img class="thumbnail-image-template" ng-src="{{imagesource}}">' +
                 '<div class="thumbnail-details" wmtransclude></div>' +
             '</div>'
             );
@@ -56,9 +53,9 @@ WM.module('wm.layouts.containers')
                 },
                 directiveDefn,
                 elementsMarkup =
-                    '<li data-ng-repeat="item in fieldDefs" class="app-media-item" data-ng-click="showFullScreen($index)">' +
-                        '<div data-ng-style="{\'width\': thumbnailWidth, \'height\': thumbnailHeight}" class="thumbnail">' +
-                            '<img class="thumbnail-image" data-ng-src="{{item[thumbnailURL]}}">' +
+                    '<li ng-repeat="item in fieldDefs" class="app-media-item" ng-click="showFullScreen($index)">' +
+                        '<div ng-style="{\'width\': thumbnailWidth, \'height\': thumbnailHeight}" class="thumbnail">' +
+                            '<img class="thumbnail-image" ng-src="{{item[thumbnailURL]}}">' +
                             '<div class="thumbnail-details"></div>' +
                         '</div>' +
                     '</li>';
@@ -141,7 +138,7 @@ WM.module('wm.layouts.containers')
 
             /** In case of run mode, the field-definitions will be generated from the markup*/
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler($is, $el, attrs, key, nv, ov) {
+            function propertyChangeHandler($is, $el, attrs, key, nv) {
                 if (key === 'dataset') {
                     onDataChange($is, $el, nv);
                 }

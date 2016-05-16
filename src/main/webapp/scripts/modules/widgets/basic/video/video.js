@@ -5,22 +5,23 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/video.html',
-            '<video init-widget alt="{{hint}}" title="{{hint}}" class="app-video" preload="{{videopreload}}" data-ng-attr-poster="{{postersource}}" data-ng-src="{{mp4videoUrl}}" apply-styles data-ng-show="show" >' +
-                '<source type="video/mp4" data-ng-src="{{mp4videoUrl}}" data-ng-if="mp4videoUrl">' +
-                '<source type="video/webm" data-ng-src="{{webmvideoUrl}}" data-ng-if="webmvideoUrl">' +
-                '<source type="video/ogg" data-ng-src="{{oggvideoUrl}}" data-ng-if="oggvideoUrl">' +
-                '<track kind="subtitles" label="{{subtitlelang}}" data-ng-if="tracksource" data-ng-src="{{tracksource}}" srclang="{{subtitlelang}}" default>' +
+            '<video init-widget alt="{{hint}}" title="{{hint}}" class="app-video" preload="{{videopreload}}" ng-attr-poster="{{postersource}}" ng-src="{{mp4videoUrl}}" apply-styles>' +
+                '<source type="video/mp4" ng-src="{{mp4videoUrl}}" ng-if="mp4videoUrl">' +
+                '<source type="video/webm" ng-src="{{webmvideoUrl}}" ng-if="webmvideoUrl">' +
+                '<source type="video/ogg" ng-src="{{oggvideoUrl}}" ng-if="oggvideoUrl">' +
+                '<track kind="subtitles" label="{{subtitlelang}}" ng-if="tracksource" ng-src="{{tracksource}}" srclang="{{subtitlelang}}" default>' +
                 '{{videosupportmessage}}' +
             '</video>'
             );
-    }]).directive('wmVideo', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $sce, CONSTANTS) {
+    }])
+    .directive('wmVideo', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $sce, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.video', ['wm.base', 'wm.containers']),
             notifyFor = {
-                'videoposter': true,
-                'mp4format': true,
-                'oggformat': true,
-                'webmformat': true,
+                'videoposter'   : true,
+                'mp4format'     : true,
+                'oggformat'     : true,
+                'webmformat'    : true,
                 'subtitlesource': true
             };
 
@@ -54,11 +55,11 @@ WM.module('wm.widgets.basic')
         }
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
-            'template': $templateCache.get('template/widget/video.html'),
-            'compile': function (tElement) {
+            'restrict' : 'E',
+            'replace'  : true,
+            'scope'    : {},
+            'template' : $templateCache.get('template/widget/video.html'),
+            'compile'  : function (tElement) {
 
                 // donot play the media in studio mode
                 if (CONSTANTS.isStudioMode) {
@@ -158,7 +159,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-video videopreload="none" muted="true"
                    videoposter="{{video.poster}}"
                    mp4format="{{video.source.mp4}}"

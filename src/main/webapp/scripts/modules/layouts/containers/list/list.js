@@ -9,24 +9,22 @@ WM.module('wm.layouts.containers')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.list', ['wm.layouts']);
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {},
             'transclude': true,
-            'template': '<ul class="app-list" ng-class="[layout]" data-ng-show="show" apply-styles="container" data-element-type="wmList" wmtransclude init-widget has-model ></ul>',
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
-                    },
+            'template'  : '<ul class="app-list" ng-class="[layout]" apply-styles="container" data-element-type="wmList" wmtransclude init-widget></ul>',
+            'link'   : {
+                'pre': function (scope) {
+                    /*Applying widget properties to directive scope*/
+                    scope.widgetProps = widgetProps;
+                },
 
-                    'post': function (scope, element, attrs) {
-                        /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
-                         * style declarations.*/
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                'post': function (scope, element, attrs) {
+                    /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
+                     * style declarations.*/
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }])
@@ -35,23 +33,21 @@ WM.module('wm.layouts.containers')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.listitem', ['wm.layouts']);
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {},
             'transclude': true,
-            'template': '<li init-widget class="app-list-item" apply-styles="container" wmtransclude></li>',
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
+            'template'  : '<li init-widget class="app-list-item" apply-styles="container" wmtransclude></li>',
+            'link'      : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
 
-                    'post': function (scope, element, attrs) {
-                        /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
-                         * style declarations.*/
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                'post': function (scope, element, attrs) {
+                    /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
+                     * style declarations.*/
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -82,7 +78,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-list>
                     <wm-list-item>
                         <wm-button class="btn-default" caption="Users" type="button"></wm-button>
@@ -113,7 +109,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-list>
                     <wm-list-item>
                         <wm-button class="btn-default" caption="Users" type="button"></wm-button>

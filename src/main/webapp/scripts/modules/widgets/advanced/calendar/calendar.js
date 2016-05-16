@@ -5,9 +5,8 @@ WM.module('wm.widgets.advanced')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/calendar.html',
-                '<div class="app-calendar" init-widget has-model ' +
-                    ' data-ng-model ="_model_" data-ng-show = "show"' +
-                    ' data-ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
+                '<div class="app-calendar" init-widget has-model ng-model ="_model_"' +
+                    ' ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
                     '<div ui-calendar="calendarOptions.calendar" calendar="{{name}}" ng-model="eventSources"></div>' +
                 '</div>');
     }])
@@ -171,150 +170,148 @@ WM.module('wm.widgets.advanced')
 
                     return template[0].outerHTML;
                 },
-                'compile': function () {
-                    return {
-                        'pre': function (scope) {
-                            scope.widgetProps   = widgetProps;
-                            scope.events        = [];
-                            scope.eventSources  = [scope.events];
-                        },
-                        'post': function (scope, element, attrs) {
-                            var handlers        = [],
-                                headerOptions   = Utils.getClonedObject(defaultHeaderOptions),
-                                oldData;
+                'link': {
+                    'pre': function (scope) {
+                        scope.widgetProps   = widgetProps;
+                        scope.events        = [];
+                        scope.eventSources  = [scope.events];
+                    },
+                    'post': function (scope, element, attrs) {
+                        var handlers        = [],
+                            headerOptions   = Utils.getClonedObject(defaultHeaderOptions),
+                            oldData;
 
-                            function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
-                                var fn = scope[method] || WM.noop;
-                                fn({$event: jsEvent, $data: event, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                        function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
+                            var fn = scope[method] || WM.noop;
+                            fn({$event: jsEvent, $data: event, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                        }
+                        function eventClickProxy(event, jsEvent, view) {
+                            scope.onEventclick({$event: jsEvent, $data: event, $view: view});
+                        }
+                        function viewRenderProxy(view) {
+                            scope.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
+                            scope.onViewrender({$view: view});
+                        }
+                        function eventRenderProxy(event, jsEvent, view) {
+                            /*unable to pass jsEvent in angular expression, hence ignoring*/
+                            scope.onEventrender({$event: {}, $data: event, $view: view});
+                        }
+                        function setSelectedData(start, end) {
+                            var filteredDates   = [],
+                                dataset         = scope.dataset;
+                            if (!dataset) {
+                                return;
                             }
-                            function eventClickProxy(event, jsEvent, view) {
-                                scope.onEventclick({$event: jsEvent, $data: event, $view: view});
-                            }
-                            function viewRenderProxy(view) {
-                                scope.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
-                                scope.onViewrender({$view: view});
-                            }
-                            function eventRenderProxy(event, jsEvent, view) {
-                                /*unable to pass jsEvent in angular expression, hence ignoring*/
-                                scope.onEventrender({$event: {}, $data: event, $view: view});
-                            }
-                            function setSelectedData(start, end) {
-                                var filteredDates   = [],
-                                    dataset         = scope.dataset;
-                                if (!dataset) {
+                            dataset = dataset.data || dataset;
+                            _.forEach(dataset, function (value) {
+                                if (!value.start) {
                                     return;
                                 }
-                                dataset = dataset.data || dataset;
-                                _.forEach(dataset, function (value) {
-                                    if (!value.start) {
-                                        return;
-                                    }
-                                    var eventDate   = moment(new Date(value.start)).format('MM/DD/YYYY'),
-                                        startDate   = moment(new Date(start)).format('MM/DD/YYYY'),
-                                        endDate     = moment(new Date(end)).format('MM/DD/YYYY'),
-                                        eventExists = moment(eventDate).isSameOrAfter(startDate) && moment(eventDate).isBefore(endDate);
-                                    if (eventExists) {
-                                        filteredDates.push(value);
-                                    }
-                                });
-                                return filteredDates;
-                            }
-                            function onSelectProxy(start, end, jsEvent, view) {
-                                scope.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
-                                scope.selecteddata  = setSelectedData(start, end);
-                                scope.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view, $data: scope.selecteddata});
-                            }
-                            function onEventdropProxy(event, delta, revertFunc, jsEvent, ui, view) {
-                                scope.onEventdrop({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
-                            }
-                            function onEventresizeProxy(event, delta, revertFunc, jsEvent, ui, view) {
-                                scope.onEventresize({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
-                            }
-                            function onEventChangeStart(event, jsEvent, ui, view) {
-                                oldData = Utils.getClonedObject(event);
-                            }
-                            scope.calendarOptions = {
-                                calendar: {
-                                    'height'          : parseInt(scope.height, 10),
-                                    'editable'        : true,
-                                    'selectable'      : false,
-                                    'header'          : headerOptions,
-                                    'eventDrop'       : onEventdropProxy,
-                                    'eventResizeStart': onEventChangeStart,
-                                    'eventDragStart'  : onEventChangeStart,
-                                    'eventResize'     : onEventresizeProxy,
-                                    'eventClick'      : eventClickProxy,
-                                    'select'          : onSelectProxy,
-                                    'eventRender'     : eventRenderProxy,
-                                    'viewRender'      : viewRenderProxy,
-                                    'dayNames'        : $locale.DATETIME_FORMATS.DAY,
-                                    'dayNamesShort'   : $locale.DATETIME_FORMATS.SHORTDAY,
-                                    'views'           : {
-                                        'month': {
-                                            'eventLimit': 0
-                                        }
-                                    }
+                                var eventDate   = moment(new Date(value.start)).format('MM/DD/YYYY'),
+                                    startDate   = moment(new Date(start)).format('MM/DD/YYYY'),
+                                    endDate     = moment(new Date(end)).format('MM/DD/YYYY'),
+                                    eventExists = moment(eventDate).isSameOrAfter(startDate) && moment(eventDate).isBefore(endDate);
+                                if (eventExists) {
+                                    filteredDates.push(value);
                                 }
-                            };
-                            scope.$root.$on('locale-change', function () {
-                                scope.calendarOptions.calendar.dayNames      = $locale.DATETIME_FORMATS.DAY;
-                                scope.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
                             });
-
-                            /* add and removes an event source of choice */
-                            scope.addRemoveEventSource = function (sources, source) {
-                                var canAdd = 0;
-                                WM.forEach(sources, function (value, key) {
-                                    if (sources[key] === source) {
-                                        sources.splice(key, 1);
-                                        canAdd = 1;
-                                    }
-                                });
-                                if (canAdd === 0) {
-                                    sources.push(source);
-                                }
-                            };
-                            /* add custom event*/
-                            scope.addEvent = function (eventObject) {
-                                scope.events.push(eventObject);
-                            };
-                            /* remove event */
-                            scope.remove = function (index) {
-                                scope.events.splice(index, 1);
-                            };
-                            /* Change View */
-                            /*scope.changeView = function (view, calendar) {
-                            };*/
-                            /* Render Tooltip */
-                            scope.eventRender = function (event, element) {
-                                element.attr({'tooltip': event.title, 'tooltip-append-to-body': true});
-                                $compile(element)(scope);
-                            };
-
-                            scope.$on('$destroy', function () {
-                                handlers.forEach(Utils.triggerFn);
-                            });
-
-                            scope.redraw = function () {
-                                $timeout(function () {
-                                    element.children().first().fullCalendar('render');
-                                });
-                            };
-
-                            // To be used by binding dialog to construct tree against exposed properties for the widget
-                            scope.getPropertyType = getPropertyType.bind(undefined, scope);
-                            /* register the property change handler */
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-
-                            WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-                            if (!attrs.widgetid && attrs.scopedataset) {
-                                handlers.push(scope.$watch('scopedataset', function (newVal) {
-                                    scope.eventSources.push(newVal);
-                                }, true));
-                            }
+                            return filteredDates;
                         }
-                    };
+                        function onSelectProxy(start, end, jsEvent, view) {
+                            scope.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
+                            scope.selecteddata  = setSelectedData(start, end);
+                            scope.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view, $data: scope.selecteddata});
+                        }
+                        function onEventdropProxy(event, delta, revertFunc, jsEvent, ui, view) {
+                            scope.onEventdrop({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                        }
+                        function onEventresizeProxy(event, delta, revertFunc, jsEvent, ui, view) {
+                            scope.onEventresize({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                        }
+                        function onEventChangeStart(event, jsEvent, ui, view) {
+                            oldData = Utils.getClonedObject(event);
+                        }
+                        scope.calendarOptions = {
+                            calendar: {
+                                'height'          : parseInt(scope.height, 10),
+                                'editable'        : true,
+                                'selectable'      : false,
+                                'header'          : headerOptions,
+                                'eventDrop'       : onEventdropProxy,
+                                'eventResizeStart': onEventChangeStart,
+                                'eventDragStart'  : onEventChangeStart,
+                                'eventResize'     : onEventresizeProxy,
+                                'eventClick'      : eventClickProxy,
+                                'select'          : onSelectProxy,
+                                'eventRender'     : eventRenderProxy,
+                                'viewRender'      : viewRenderProxy,
+                                'dayNames'        : $locale.DATETIME_FORMATS.DAY,
+                                'dayNamesShort'   : $locale.DATETIME_FORMATS.SHORTDAY,
+                                'views'           : {
+                                    'month': {
+                                        'eventLimit': 0
+                                    }
+                                }
+                            }
+                        };
+                        scope.$root.$on('locale-change', function () {
+                            scope.calendarOptions.calendar.dayNames      = $locale.DATETIME_FORMATS.DAY;
+                            scope.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
+                        });
+
+                        /* add and removes an event source of choice */
+                        scope.addRemoveEventSource = function (sources, source) {
+                            var canAdd = 0;
+                            WM.forEach(sources, function (value, key) {
+                                if (sources[key] === source) {
+                                    sources.splice(key, 1);
+                                    canAdd = 1;
+                                }
+                            });
+                            if (canAdd === 0) {
+                                sources.push(source);
+                            }
+                        };
+                        /* add custom event*/
+                        scope.addEvent = function (eventObject) {
+                            scope.events.push(eventObject);
+                        };
+                        /* remove event */
+                        scope.remove = function (index) {
+                            scope.events.splice(index, 1);
+                        };
+                        /* Change View */
+                        /*scope.changeView = function (view, calendar) {
+                        };*/
+                        /* Render Tooltip */
+                        scope.eventRender = function (event, element) {
+                            element.attr({'tooltip': event.title, 'tooltip-append-to-body': true});
+                            $compile(element)(scope);
+                        };
+
+                        scope.$on('$destroy', function () {
+                            handlers.forEach(Utils.triggerFn);
+                        });
+
+                        scope.redraw = function () {
+                            $timeout(function () {
+                                element.children().first().fullCalendar('render');
+                            });
+                        };
+
+                        // To be used by binding dialog to construct tree against exposed properties for the widget
+                        scope.getPropertyType = getPropertyType.bind(undefined, scope);
+                        /* register the property change handler */
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            handlers.push(scope.$watch('scopedataset', function (newVal) {
+                                scope.eventSources.push(newVal);
+                            }, true));
+                        }
+                    }
                 }
             };
         }
@@ -386,7 +383,7 @@ WM.module('wm.widgets.advanced')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <div>Selected Date: {{currentDate | date:'medium'}}</div><br>
                     <wm-calendar name="calendar1"
                         on-change="f($event, $scope)"

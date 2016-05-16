@@ -6,12 +6,11 @@ WM.module('wm.widgets.basic')
         'PropertiesFactory',
         '$rootScope',
         'WidgetUtilService',
-        '$timeout',
         'Utils',
         'CONSTANTS',
         'FormWidgetUtils',
 
-        function (PropertiesFactory, $rs, WidgetUtilService, $timeout, Utils, CONSTANTS, FormWidgetUtils) {
+        function (PropertiesFactory, $rs, WidgetUtilService, Utils, CONSTANTS, FormWidgetUtils) {
             'use strict';
 
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.tree', ['wm.base', 'wm.base.editors']),
@@ -280,47 +279,42 @@ WM.module('wm.widgets.basic')
 
             return {
                 'restrict': 'E',
-                'scope': {
-                    'scopedataset': '=?',
-                    'onSelect': '&'
-                },
-                'template': '<div class="app-tree" init-widget apply-styles="container" listen-property="dataset" data-ng-show="show"></div>',
-                'replace': true,
-                'compile': function () {
-                    return {
-                        'pre': function ($is) {
-                            if (CONSTANTS.isStudioMode) {
-                                $is.widgetProps = Utils.getClonedObject(widgetProps);
-                            } else {
-                                $is.widgetProps = widgetProps;
-                            }
-                            defineDatavalueGetterSetter($is);
-                        },
-                        'post': function ($is, $el, attrs) {
-
-                            if (!$is.widgetid) {
-                                bindEvents($is, $el);
-                            }
-
-                            // wait till all the properties are set in the scope.
-                            $is.renderTree = _.debounce(renderTree, 20);
-
-                            var onPropertyChange = propertyChangeHandler.bind(undefined, $is, $el, attrs);
-                            WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
-
-                            if (attrs.datavalue && CONSTANTS.isRunMode) {
-                                $is.datavalue = attrs.datavalue.replace('bind:', '');
-                            }
-
-                            WidgetUtilService.postWidgetCreate($is, $el, attrs);
-
-                            if (!attrs.widgetid && attrs.scopedataset) {
-                                $is.$watch('scopedataset', function (newVal) {
-                                    onPropertyChange('scopedataset', newVal);
-                                }, true);
-                            }
+                'scope'   : {'scopedataset': '=?', 'onSelect': '&'},
+                'template': '<div class="app-tree" init-widget apply-styles="container" listen-property="dataset"></div>',
+                'replace' : true,
+                'link'    : {
+                    'pre': function ($is) {
+                        if (CONSTANTS.isStudioMode) {
+                            $is.widgetProps = Utils.getClonedObject(widgetProps);
+                        } else {
+                            $is.widgetProps = widgetProps;
                         }
-                    };
+                        defineDatavalueGetterSetter($is);
+                    },
+                    'post': function ($is, $el, attrs) {
+
+                        if (!$is.widgetid) {
+                            bindEvents($is, $el);
+                        }
+
+                        // wait till all the properties are set in the scope.
+                        $is.renderTree = _.debounce(renderTree, 20);
+
+                        var onPropertyChange = propertyChangeHandler.bind(undefined, $is, $el, attrs);
+                        WidgetUtilService.registerPropertyChangeListener(onPropertyChange, $is, notifyFor);
+
+                        if (attrs.datavalue && CONSTANTS.isRunMode) {
+                            $is.datavalue = attrs.datavalue.replace('bind:', '');
+                        }
+
+                        WidgetUtilService.postWidgetCreate($is, $el, attrs);
+
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            $is.$watch('scopedataset', function (newVal) {
+                                onPropertyChange('scopedataset', newVal);
+                            }, true);
+                        }
+                    }
                 }
             };
 
@@ -380,7 +374,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                <wm-tree scopedataset="nodes" levels="2" datavalue="label==='item2.1'"></wm-tree>
             </div>
         </file>

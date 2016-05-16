@@ -9,11 +9,11 @@ WM.module('wm.widgets.advanced')
             'use strict';
 
             $tc.put('template/widget/advanced/barcodeScanner.html',
-                '<button type="button" class="btn app-barcode" data-ng-model="_model_" data-ng-show="show" init-widget has-model apply-styles title="{{hint}}" data-ng-click="openBarcodeScanner()" >' +
-                '<i class="{{iconclass}}" data-ng-style="{\'font-size\':iconsize}"></i> ' +
-                '<span class="btn-caption">{{caption}}</span> '+
+                '<button type="button" class="btn app-barcode" ng-model="_model_" init-widget has-model apply-styles title="{{hint}}" ng-click="openBarcodeScanner()" >' +
+                    '<i class="{{iconclass}}" ng-style="{\'font-size\':iconsize}"></i> ' +
+                    '<span class="btn-caption">{{caption}}</span>' +
                 '</button>'
-            );
+                );
         }
     ])
     .directive('wmBarcodescanner', [
@@ -46,12 +46,10 @@ WM.module('wm.widgets.advanced')
             }
             return {
                 'restrict': 'E',
-                'replace': true,
-                'scope': {
-                    onSuccess: '&'
-                },
+                'replace' : true,
+                'scope'   : {onSuccess: '&'},
                 'template': $tc.get('template/widget/advanced/barcodeScanner.html'),
-                'link': {
+                'link'    : {
                     'pre': function ($is) {
                         $is.widgetProps = widgetProps;
                     },

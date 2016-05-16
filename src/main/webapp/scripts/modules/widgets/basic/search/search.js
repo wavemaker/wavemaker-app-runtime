@@ -13,7 +13,6 @@ WM.module('wm.widgets.basic')
             );
         $templateCache.put('template/widget/form/search.html',
             '<div class="app-search input-group" init-widget has-model listen-property="dataset"' +
-                ' ng-show="show"' +
                 ' ng-style="{' +
                 ' color: color, ' +
                 ' height: height, ' +
@@ -32,7 +31,7 @@ WM.module('wm.widgets.basic')
                 '<input title="{{hint}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
-                    ' accesskey="{{shortcutkey}}"' +
+                    ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
@@ -52,7 +51,7 @@ WM.module('wm.widgets.basic')
             '<div class="app-mobile-search" init-widget has-model>' +
                 '<input title="{{hint}}" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
-                    ' accesskey="{{shortcutkey}}"' +
+                    ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
@@ -456,7 +455,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-label caption='Search widget with an array of country list:' width='300px' color='#919191'></wm-label>
                 <wm-search name='search-countries' scopedataset='countries'></wm-search>
                 <br><br>

@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/picture.html',
-                '<img init-widget alt="{{hint}}" title="{{hint}}" ng-class="[imgClass]" class="app-picture" data-ng-src="{{imagesource}}" apply-styles data-ng-show="show">'
+                '<img init-widget alt="{{hint}}" title="{{hint}}" ng-class="[imgClass]" class="app-picture" ng-src="{{imagesource}}" apply-styles>'
             );
     }])
     .directive('wmPicture', ['PropertiesFactory', 'WidgetUtilService', 'Utils', function (PropertiesFactory, WidgetUtilService, Utils) {
@@ -48,21 +48,19 @@ WM.module('wm.widgets.basic')
 
         return {
             'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'replace' : true,
+            'scope'   : {},
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/picture.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
+            'link'    : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
 
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -134,7 +132,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-composite>
                     <wm-label caption="Select an image:"></wm-label>
                     <wm-select scopedatavalue="image" scopedataset="images"></wm-select>

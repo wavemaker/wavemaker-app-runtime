@@ -275,7 +275,7 @@ WM.module('wm.prefabs')
                             'marginLeft: marginleft + marginunit, ' +
                             'marginRight: marginright + marginunit, ' +
                             'marginTop: margintop + marginunit ' +
-                        '}" ng-show="show">' +
+                        '}">' +
                     '</section>',
                 'link': {
                     'pre': function ($is, $el, attrs) {

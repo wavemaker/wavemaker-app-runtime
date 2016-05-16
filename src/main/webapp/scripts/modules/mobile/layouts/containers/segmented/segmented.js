@@ -5,13 +5,13 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentedcontrol.html',
-            '<div class="app-segmented-control {{class}}" hm-swipe-left="goToNext()" hm-swipe-right="goToPrev();" init-widget data-ng-show="show" apply-styles="container">' +
+            '<div class="app-segmented-control {{class}}" hm-swipe-left="goToNext()" hm-swipe-right="goToPrev();" init-widget apply-styles="container">' +
                 '<div class="app-segments-container">' +
                     '<ul class="list-inline" wmtransclude></ul>' +
                 '</div>' +
                 '<div class="btn-group btn-group-justified">' +
-                    '<a class="btn btn-default" data-ng-repeat="content in contents" data-ng-class="{\'active btn-primary\' : $index == currentSelectedIndex}" data-ng-click="$event.stopPropagation(); showContent($index);">' +
-                        '<i class="app-icon" data-ng-class="content.iconclass"></i> {{content.caption}}' +
+                    '<a class="btn btn-default" ng-repeat="content in contents" ng-class="{\'active btn-primary\' : $index == currentSelectedIndex}" ng-click="$event.stopPropagation(); showContent($index);">' +
+                        '<i class="app-icon" ng-class="content.iconclass"></i> {{content.caption}}' +
                     '</a>' +
                 '</div>' +
             '</div>');
@@ -72,61 +72,59 @@ WM.module('wm.layouts.containers')
                     }
                 };
             },
-            'compile' : function () {
-                return {
-                    'pre' : function ($scope) {
-                        $scope.widgetProps = widgetProps;
-                        $scope.contents = [];
-                        $scope.animate = true;
-                        $scope.currentSelectedIndex = 0;
-                    },
-                    'post' : function ($scope, $element, attrs) {
-                        /**
-                         * Displays content at the given index.
-                         */
-                        $scope.showContent = function (index) {
-                            if (index < 0 || index >= $scope.contents.length) {
-                                return;
-                            }
-
-                            var contents = $scope.contents,
-                                currentContent = contents[index],
-                                eventData = {
-                                    $scope: this,
-                                    $old  : $scope.currentSelectedIndex,
-                                    $new  : index
-                                },
-                                $segmentsCtr = $element.find(".app-segments-container"),
-                                $segment = $element.find(".app-segments-container > ul > li:nth-child(" + (index + 1) + ")"),
-                                scrollPos = 0,
-                                left = $segment.position().left;
-                            $scope.currentSelectedIndex = index;
-                            $scope.onBeforesegmentchange(eventData);
-                            currentContent.onShow();
-                            if (currentContent && currentContent.widgetid && CONSTANTS.isStudioMode && $scope.$root) {
-                                $scope.$root.$emit('set-active-widget', currentContent.widgetid);
-                            }
-
-                            $segmentsCtr.animate(
-                                { scrollLeft: (scrollPos + left)},
-                                { duration: "fast" }
-                            );
-                            $scope.onSegmentchange(eventData);
-                        };
-                        $scope.showContent(0);
-                        /**add studio mode changes**/
-                        if (CONSTANTS.isStudioMode) {
-                            $scope.add = function () {
-                                $scope.$root.$emit('canvas-add-widget', {
-                                    'parentId': $scope.widgetid,
-                                    'widgetType': 'wm-segment-content'
-                                });
-                                $scope.currentSelectedIndex =  ($scope.contents.length - 1);
-                            };
+            'link' : {
+                'pre' : function ($scope) {
+                    $scope.widgetProps = widgetProps;
+                    $scope.contents = [];
+                    $scope.animate = true;
+                    $scope.currentSelectedIndex = 0;
+                },
+                'post' : function ($scope, $element, attrs) {
+                    /**
+                     * Displays content at the given index.
+                     */
+                    $scope.showContent = function (index) {
+                        if (index < 0 || index >= $scope.contents.length) {
+                            return;
                         }
-                        WidgetUtilService.postWidgetCreate($scope, $element, attrs);
+
+                        var contents = $scope.contents,
+                            currentContent = contents[index],
+                            eventData = {
+                                $scope: this,
+                                $old  : $scope.currentSelectedIndex,
+                                $new  : index
+                            },
+                            $segmentsCtr = $element.find(".app-segments-container"),
+                            $segment = $element.find(".app-segments-container > ul > li:nth-child(" + (index + 1) + ")"),
+                            scrollPos = 0,
+                            left = $segment.position().left;
+                        $scope.currentSelectedIndex = index;
+                        $scope.onBeforesegmentchange(eventData);
+                        currentContent.onShow();
+                        if (currentContent && currentContent.widgetid && CONSTANTS.isStudioMode && $scope.$root) {
+                            $scope.$root.$emit('set-active-widget', currentContent.widgetid);
+                        }
+
+                        $segmentsCtr.animate(
+                            { scrollLeft: (scrollPos + left)},
+                            { duration: "fast" }
+                        );
+                        $scope.onSegmentchange(eventData);
+                    };
+                    $scope.showContent(0);
+                    /**add studio mode changes**/
+                    if (CONSTANTS.isStudioMode) {
+                        $scope.add = function () {
+                            $scope.$root.$emit('canvas-add-widget', {
+                                'parentId': $scope.widgetid,
+                                'widgetType': 'wm-segment-content'
+                            });
+                            $scope.currentSelectedIndex =  ($scope.contents.length - 1);
+                        };
                     }
-                };
+                    WidgetUtilService.postWidgetCreate($scope, $element, attrs);
+                }
             }
         };
     }])
@@ -134,37 +132,35 @@ WM.module('wm.layouts.containers')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base', 'wm.layouts', 'wm.containers', 'wm.containers.lazy']);
         return {
-            'restrict' : 'E',
-            'replace' : 'true',
-            'scope' : {},
+            'restrict'  : 'E',
+            'replace'   : 'true',
+            'scope'     : {},
             'transclude': true,
-            'template' : $templateCache.get('template/widget/mobile/segmentedcontrol/segmentcontent.html'),
-            'require': '^wmSegmentedControl',
-            'compile' : function () {
-                return {
-                    'pre' : function ($scope) {
-                        $scope.widgetProps = widgetProps;
-                        $scope.onShow = function () {
-                            $scope.__load();
-                        };
-                        $scope.__onTransclude = function () {
-                            Utils.triggerFn($scope.onReady);
-                        };
-                    },
-                    'post' : function ($scope, element, attrs, controller) {
-                        controller.addContent($scope);
-                        $scope.navigate = function () {
-                            controller.showContent($scope);
-                        };
-                        //remove the segment links
-                        if (CONSTANTS.isStudioMode) {
-                            $scope.$on('$destroy', function () {
-                                controller.removeContent($scope);
-                            });
-                        }
-                        WidgetUtilService.postWidgetCreate($scope, element, attrs);
+            'template'  : $templateCache.get('template/widget/mobile/segmentedcontrol/segmentcontent.html'),
+            'require'   : '^wmSegmentedControl',
+            'link'      : {
+                'pre' : function ($scope) {
+                    $scope.widgetProps = widgetProps;
+                    $scope.onShow = function () {
+                        $scope.__load();
+                    };
+                    $scope.__onTransclude = function () {
+                        Utils.triggerFn($scope.onReady);
+                    };
+                },
+                'post' : function ($scope, element, attrs, controller) {
+                    controller.addContent($scope);
+                    $scope.navigate = function () {
+                        controller.showContent($scope);
+                    };
+                    //remove the segment links
+                    if (CONSTANTS.isStudioMode) {
+                        $scope.$on('$destroy', function () {
+                            controller.removeContent($scope);
+                        });
                     }
-                };
+                    WidgetUtilService.postWidgetCreate($scope, element, attrs);
+                }
             }
         };
     }]);
@@ -192,7 +188,7 @@ WM.module('wm.layouts.containers')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *                 <wm-segmented-control height="400" name="segmentedcontrol3">
  *                      <wm-segment-content caption="" name="segmentedcontrolcontent7" iconclass="wi wi-link">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#db6a2c"></wm-tile>
@@ -236,7 +232,7 @@ WM.module('wm.layouts.containers')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *                 <wm-segmented-control height="400" name="segmentedcontrol3">
  *                      <wm-segment-content caption="" name="segmentedcontrolcontent7" iconclass="glyphicon glyphicon-link">
  *                          <wm-tile name="tile1" width="100%" height="100%" backgroundcolor="#db6a2c"></wm-tile>

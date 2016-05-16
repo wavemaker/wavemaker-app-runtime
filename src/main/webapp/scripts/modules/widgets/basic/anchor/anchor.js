@@ -5,11 +5,11 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/anchor.html',
-                '<a data-identifier="anchor" class="app-anchor" init-widget data-ng-show="show" title="{{hint}}" apply-styles role="button" accesskey="{{shortcutkey}}">' +
-                    '<img data-identifier="img" class="anchor-image-icon" data-ng-src="{{iconsrc}}" data-ng-if="showimage" data-ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
-                    '<i class="app-icon {{iconclass}}" data-ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" data-ng-if="showicon"></i> ' +
+                '<a data-identifier="anchor" class="app-anchor" init-widget title="{{hint}}" apply-styles role="button" accesskey="{{::shortcutkey}}">' +
+                    '<img data-identifier="img" class="anchor-image-icon" ng-src="{{iconsrc}}" ng-if="showimage" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
+                    '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" ng-if="showicon"></i> ' +
                     '<span class="anchor-caption"></span>' +
-                    '<span data-ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
+                    '<span ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
                 '</a>'
             );
 
@@ -17,11 +17,11 @@ WM.module('wm.widgets.basic')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.anchor', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.events.focus']),
             notifyFor = {
-                'iconname': true,
-                'iconurl': true,
-                'target': true,
-                'hyperlink': true,
-                'caption': true,
+                'iconname'    : true,
+                'iconurl'     : true,
+                'target'      : true,
+                'hyperlink'   : true,
+                'caption'     : true,
                 'iconposition': true
             };
 
@@ -65,11 +65,11 @@ WM.module('wm.widgets.basic')
         }
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
-            'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/anchor.html'),
-            'compile': function (tElement) {
+            'restrict' : 'E',
+            'replace'  : true,
+            'scope'    : {},
+            'template' : WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/anchor.html'),
+            'compile'  : function (tElement) {
                 return {
                     'pre': function (scope, element, attrs) {
                         //@Deprecated iconname; use iconclass instead
@@ -174,7 +174,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-anchor
                     caption="google"
                     target="{{target}}"

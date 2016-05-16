@@ -6,17 +6,17 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/datetime.html',
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
-            ' title="{{hint}}" data-ng-show="show" data-ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
-                '<input class="form-control app-textbox display-input" data-ng-model="_displayModel" accesskey="{{shortcutkey}}" ng-change="updateDateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
-                '<input class="form-control app-textbox app-dateinput ng-hide" data-ng-change="selectDate($event)" date-disabled="excludeDays(date) || excludeDates(date)" data-ng-model="_dateModel" ' +
+            ' title="{{hint}}" ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
+                '<input class="form-control app-textbox display-input" ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
+                '<input class="form-control app-textbox app-dateinput ng-hide" ng-change="selectDate($event)" date-disabled="excludeDays(date) || excludeDates(date)" ng-model="_dateModel" ' +
                     ' uib-datepicker-popup show-button-bar={{showbuttonbar}} min-date=mindate max-date=maxdate is-open="isDateOpen" show-weeks="{{showweeks}}">' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
-                        '<uib-timepicker data-ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" data-ng-change="selectTime($event)"></uib-timepicker>' +
+                        '<uib-timepicker ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></uib-timepicker>' +
                     '</div>' +
                 '</div>' +
                 /*Holder for the model for submitting values in a form*/
-                '<input class="model-holder ng-hide" data-ng-disabled="disabled" data-ng-model="_model_">' +
+                '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
                 '<span class="input-group-btn">' +
                     '<button type="button" class="btn btn-default btn-date"><i class="app-icon wi wi-calendar"></i></button>' +
                     '<button type="button" class="btn btn-default btn-time uib-dropdown-toggle"><i class="app-icon wi wi-access-time "></i></button>' +
@@ -26,12 +26,11 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/device/widget/form/datetime.html',
             '<input type="datetime-local" class="form-control app-textbox app-dateinput" init-widget has-model role="input"' +
             ' step="any" ' +
-            ' data-ng-model="_proxyModel" ' +
-            ' data-ng-show="show" ' +
-            ' data-ng-readonly="readonly" ' +
-            ' data-ng-required="required" ' +
-            ' data-ng-disabled="disabled" ' +
-            ' data-ng-change="updateModel();_onChange({$event: $event, $scope: this});"> '
+            ' ng-model="_proxyModel" ' +
+            ' ng-readonly="readonly" ' +
+            ' ng-required="required" ' +
+            ' ng-disabled="disabled" ' +
+            ' ng-change="updateModel();_onChange({$event: $event, $scope: this});"> '
             );
     }]).directive('wmDatetime', ['$rootScope', 'PropertiesFactory', 'WidgetUtilService', '$timeout', '$templateCache', '$filter', 'FormWidgetUtils', '$interval', 'CONSTANTS', function ($rs, PropertiesFactory, WidgetUtilService, $timeout, $templateCache, $filter, FormWidgetUtils, $interval, CONSTANTS) {
         'use strict';
@@ -156,10 +155,10 @@ WM.module('wm.widgets.form')
         }
 
         return {
-            restrict: 'E',
-            replace: true,
-            scope: {},
-            template: function (tElement, tAttrs) {
+            'restrict' : 'E',
+            'replace'  : true,
+            'scope'    : {},
+            'template' : function (tElement, tAttrs) {
                 var template = '',
                     isWidgetInsideCanvas,
                     target;
@@ -176,204 +175,202 @@ WM.module('wm.widgets.form')
                 /*Set name for the model-holder, to ease submitting a form*/
                 template.find('.model-holder').attr('name', tAttrs.name);
                 if (!isWidgetInsideCanvas) {
-                    template.attr('data-ng-click', '_onClick($event)');
-                    template.find('.btn-date').attr('data-ng-click', '_onDateClick($event)');
-                    template.find('.display-input').attr('data-ng-click', '_onDateClick($event)');
-                    template.find('.btn-time').attr('data-ng-click', '_onTimeClick($event)');
+                    template.attr('ng-click', '_onClick($event)');
+                    template.find('.btn-date').attr('ng-click', '_onDateClick($event)');
+                    template.find('.display-input').attr('ng-click', '_onDateClick($event)');
+                    template.find('.btn-time').attr('ng-click', '_onTimeClick($event)');
 
                     if (tAttrs.hasOwnProperty('onMouseenter')) {
-                        template.attr('data-ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
+                        template.attr('ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onMouseleave')) {
-                        template.attr('data-ng-mouseleave', 'onMouseleave({$event: $event, $scope: this})');
+                        template.attr('ng-mouseleave', 'onMouseleave({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onFocus')) {
-                        target.attr('data-ng-focus', 'onFocus({$event: $event, $scope: this})');
+                        target.attr('ng-focus', 'onFocus({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onBlur')) {
-                        target.attr('data-ng-blur', 'onBlur({$event: $event, $scope: this})');
+                        target.attr('ng-blur', 'onBlur({$event: $event, $scope: this})');
                     }
                 }
 
                 return template[0].outerHTML;
             },
-            compile: function () {
-                return {
-                    pre: function (scope) {
-                        scope.widgetProps = widgetProps;
-                        if ($rs.isMobileApplicationType) {
-                            scope._nativeMode = true;
+            'link': {
+                pre: function (scope) {
+                    scope.widgetProps = widgetProps;
+                    if ($rs.isMobileApplicationType) {
+                        scope._nativeMode = true;
+                    }
+                },
+                post: function (scope, element, attrs) {
+                    var onPropertyChange  = propertyChangeHandler.bind(undefined, scope, element),
+                        CURRENT_DATETIME  = 'CURRENT_DATE',
+                        isCurrentDateTime = false,
+                        timeInterval,
+                        //Function to set/ cancel the timer based on the model passed
+                        setTimeInterval = function (cancel) {
+                            if (cancel) {
+                                $interval.cancel(timeInterval); //Cancel the existing timer
+                                return;
+                            }
+                            //Check if timer already exists. If time interval doesn't exist or state is canceled, create new timer
+                            if (!timeInterval || timeInterval.$$state.value === 'canceled') {
+                                timeInterval = $interval(function () {
+                                    scope._model_ = CURRENT_DATETIME; //Update the model every 1 sec
+                                }, 1000);
+                            }
+                        },
+                        setModels = function (val) {
+                            var dateTime;
+                            if (val) {
+                                if (isCurrentDateTime) {
+                                    dateTime = new Date();
+                                    scope._proxyModel = scope._timeModel = dateTime.getTime();
+                                    scope._dateModel = new Date(scope._proxyModel);
+                                    if (scope.widgetid) {
+                                        scope._displayModel = $filter('date')(scope._proxyModel, scope.datepattern);
+                                        return;
+                                    }
+                                    setTimeInterval();
+                                } else {
+                                    dateTime = parseDateTime(val);
+                                    if (dateTime.getTime()) {
+                                        scope._proxyModel = scope._timeModel = dateTime.getTime();
+                                        scope._dateModel = new Date(scope._proxyModel);
+                                    } else {
+                                        scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
+                                    }
+                                    setTimeInterval(true);
+                                }
+                            } else {
+                                scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
+                            }
+                            scope.formatDateTime();
+                        };
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    scope.formatDateTime = _formatDateTime.bind(undefined, scope);
+                    scope._onClick = _onClick.bind(undefined, scope);
+                    scope._onDateClick = _onDateClick.bind(undefined, scope);
+                    scope._onTimeClick = _onTimeClick.bind(undefined, scope);
+
+                    /*
+                     * Backward compatibility for ismeridian property which is deprecated.
+                     * if ismeridian is false then time is set as 24hr clock format.
+                     */
+                    if (attrs.ismeridian === 'false' && !attrs.datepattern) {
+                        scope.datepattern = scope.datepattern.replace('hh', 'HH').replace(' a', '');
+                    }
+
+                    /*On selection of a date, open the time picker popup*/
+                    scope.selectDate = function (event) {
+                        if (scope.isDateOpen) {
+                            scope.isTimeOpen = true;
                         }
-                    },
-                    post: function (scope, element, attrs) {
-                        var onPropertyChange  = propertyChangeHandler.bind(undefined, scope, element),
-                            CURRENT_DATETIME  = 'CURRENT_DATE',
-                            isCurrentDateTime = false,
-                            timeInterval,
-                            //Function to set/ cancel the timer based on the model passed
-                            setTimeInterval = function (cancel) {
-                                if (cancel) {
-                                    $interval.cancel(timeInterval); //Cancel the existing timer
-                                    return;
-                                }
-                                //Check if timer already exists. If time interval doesn't exist or state is canceled, create new timer
-                                if (!timeInterval || timeInterval.$$state.value === 'canceled') {
-                                    timeInterval = $interval(function () {
-                                        scope._model_ = CURRENT_DATETIME; //Update the model every 1 sec
-                                    }, 1000);
-                                }
-                            },
-                            setModels = function (val) {
-                                var dateTime;
+                        scope.formatDateTime();
+                        scope._onChange({$event: event, $scope: scope});
+                    };
+                    scope.selectTime = function (event) {
+                        scope.formatDateTime();
+                        scope._onChange({$event: event, $scope: scope});
+                    };
+                    /* handle initial readonly/disabled values */
+                    $timeout(function () {
+                        onPropertyChange('disabled', scope.disabled);
+                        onPropertyChange('readonly', scope.readonly);
+                    });
+
+                    /*update the model with device datetime value*/
+                    scope.updateModel = function () {
+                        scope._model_ = FormWidgetUtils.getUpdatedModel(scope.mindate, scope.maxdate, scope._model_, scope._proxyModel, scope._prevDateTime);
+                        scope._prevDateTime = scope._model_;
+                    };
+
+                    /*update the model when changed manually*/
+                    scope.updateDateTimeModel = function () {
+                        if (!isNaN(Date.parse(scope._displayModel))) {
+                            setModels(scope._displayModel);
+                        } else {
+                            this._proxyModel = undefined;
+                        }
+                    };
+
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                        scope._model_ = '';
+                    };
+
+                    /* _model_ acts as a converter for _proxyModel
+                     * read operation of _model_/datavalue will return epoch format of the date
+                     * write operation of _model_ will update _proxyModel with Date object.
+                     *  */
+                    Object.defineProperty(scope, '_model_', {
+                        get: function () {
+                            if (scope.widgetid && isCurrentDateTime) {
+                                return CURRENT_DATETIME;
+                            }
+                            if (!scope._nativeMode) {
+                                return this._proxyModel;
+                            }
+                            var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
+                            this.timestamp = timestamp;
+                            if (this.outputformat === "timestamp") {
+                                return timestamp;
+                            }
+                            if (!this.outputformat) {
+                                this.outputformat = 'yyyy-MM-dd';
+                            }
+                            return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : '';
+                        },
+                        set: function (val) {
+                            var dateTime;
+                            isCurrentDateTime = val === CURRENT_DATETIME;
+                            if (scope._nativeMode) {
                                 if (val) {
                                     if (isCurrentDateTime) {
                                         dateTime = new Date();
-                                        scope._proxyModel = scope._timeModel = dateTime.getTime();
-                                        scope._dateModel = new Date(scope._proxyModel);
-                                        if (scope.widgetid) {
-                                            scope._displayModel = $filter('date')(scope._proxyModel, scope.datepattern);
-                                            return;
-                                        }
                                         setTimeInterval();
                                     } else {
                                         dateTime = parseDateTime(val);
-                                        if (dateTime.getTime()) {
-                                            scope._proxyModel = scope._timeModel = dateTime.getTime();
-                                            scope._dateModel = new Date(scope._proxyModel);
-                                        } else {
-                                            scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
-                                        }
                                         setTimeInterval(true);
                                     }
+                                    this._proxyModel = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
                                 } else {
-                                    scope._proxyModel = scope._dateModel = scope._timeModel = undefined;
+                                    this._proxyModel = undefined;
                                 }
-                                scope.formatDateTime();
-                            };
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-                        scope.formatDateTime = _formatDateTime.bind(undefined, scope);
-                        scope._onClick = _onClick.bind(undefined, scope);
-                        scope._onDateClick = _onDateClick.bind(undefined, scope);
-                        scope._onTimeClick = _onTimeClick.bind(undefined, scope);
-
-                        /*
-                         * Backward compatibility for ismeridian property which is deprecated.
-                         * if ismeridian is false then time is set as 24hr clock format.
-                         */
-                        if (attrs.ismeridian === 'false' && !attrs.datepattern) {
-                            scope.datepattern = scope.datepattern.replace('hh', 'HH').replace(' a', '');
-                        }
-
-                        /*On selection of a date, open the time picker popup*/
-                        scope.selectDate = function (event) {
-                            if (scope.isDateOpen) {
-                                scope.isTimeOpen = true;
-                            }
-                            scope.formatDateTime();
-                            scope._onChange({$event: event, $scope: scope});
-                        };
-                        scope.selectTime = function (event) {
-                            scope.formatDateTime();
-                            scope._onChange({$event: event, $scope: scope});
-                        };
-                        /* handle initial readonly/disabled values */
-                        $timeout(function () {
-                            onPropertyChange('disabled', scope.disabled);
-                            onPropertyChange('readonly', scope.readonly);
-                        });
-
-                        /*update the model with device datetime value*/
-                        scope.updateModel = function () {
-                            scope._model_ = FormWidgetUtils.getUpdatedModel(scope.mindate, scope.maxdate, scope._model_, scope._proxyModel, scope._prevDateTime);
-                            scope._prevDateTime = scope._model_;
-                        };
-
-                        /*update the model when changed manually*/
-                        scope.updateDateTimeModel = function () {
-                            if (!isNaN(Date.parse(scope._displayModel))) {
-                                setModels(scope._displayModel);
                             } else {
-                                this._proxyModel = undefined;
-                            }
-                        };
-
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                            scope._model_ = '';
-                        };
-
-                        /* _model_ acts as a converter for _proxyModel
-                         * read operation of _model_/datavalue will return epoch format of the date
-                         * write operation of _model_ will update _proxyModel with Date object.
-                         *  */
-                        Object.defineProperty(scope, '_model_', {
-                            get: function () {
-                                if (scope.widgetid && isCurrentDateTime) {
-                                    return CURRENT_DATETIME;
-                                }
-                                if (!scope._nativeMode) {
-                                    return this._proxyModel;
-                                }
-                                var timestamp = this._proxyModel ?  this._proxyModel.valueOf() : undefined;
-                                this.timestamp = timestamp;
-                                if (this.outputformat === "timestamp") {
-                                    return timestamp;
-                                }
-                                if (!this.outputformat) {
-                                    this.outputformat = 'yyyy-MM-dd';
-                                }
-                                return this._proxyModel ? $filter('date')(this._proxyModel, this.outputformat) : '';
-                            },
-                            set: function (val) {
-                                var dateTime;
-                                isCurrentDateTime = val === CURRENT_DATETIME;
-                                if (scope._nativeMode) {
-                                    if (val) {
-                                        if (isCurrentDateTime) {
-                                            dateTime = new Date();
-                                            setTimeInterval();
-                                        } else {
-                                            dateTime = parseDateTime(val);
-                                            setTimeInterval(true);
-                                        }
-                                        this._proxyModel = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
-                                    } else {
-                                        this._proxyModel = undefined;
-                                    }
-                                } else {
-                                    setModels(val);
-                                }
-                            }
-                        });
-
-
-                        scope.excludeDays = function (date) {
-                            return _.includes(attrs.excludedays, date.getDay());
-                        };
-
-                        scope.excludeDates = function (date) {
-                            return _.includes(scope.proxyExcludeDates, FormWidgetUtils.getTimestampFromDate(date));
-                        };
-                        /*Set the model if datavalue exists*/
-                        if (attrs.datavalue  && !_.startsWith(attrs.datavalue, 'bind:')) {
-                            scope._model_ = attrs.datavalue;
-                            if (attrs.datavalue === CURRENT_DATETIME && CONSTANTS.isRunMode) {
-                                scope.disabled = true;
-                                setTimeInterval();
+                                setModels(val);
                             }
                         }
-                        scope.$on('$destroy', function () {
-                            setTimeInterval(true);
-                        });
+                    });
+
+
+                    scope.excludeDays = function (date) {
+                        return _.includes(attrs.excludedays, date.getDay());
+                    };
+
+                    scope.excludeDates = function (date) {
+                        return _.includes(scope.proxyExcludeDates, FormWidgetUtils.getTimestampFromDate(date));
+                    };
+                    /*Set the model if datavalue exists*/
+                    if (attrs.datavalue  && !_.startsWith(attrs.datavalue, 'bind:')) {
+                        scope._model_ = attrs.datavalue;
+                        if (attrs.datavalue === CURRENT_DATETIME && CONSTANTS.isRunMode) {
+                            scope.disabled = true;
+                            setTimeInterval();
+                        }
                     }
-                };
+                    scope.$on('$destroy', function () {
+                        setTimeInterval(true);
+                    });
+                }
             }
         };
 
@@ -473,7 +470,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <wm-datetime
  *                  on-change="f($event, $scope)"
  *                  name="time1"

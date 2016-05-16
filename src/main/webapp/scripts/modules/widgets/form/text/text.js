@@ -7,15 +7,13 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/text.html',
             '<input class="form-control app-textbox" init-widget has-model apply-styles role="input"' +
                 ' title="{{hint}}" ' +
-                ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
-                ' data-ng-readonly="readonly" ' +
-                ' data-ng-required="required" ' +
-                ' data-ng-disabled="disabled" ' +
-                ' data-ng-show="show" ' +
+                ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
+                ' ng-readonly="readonly" ' +
+                ' ng-required="required" ' +
+                ' ng-disabled="disabled" ' +
                 ' pattern="{{regexp}}"' +
-                ' accesskey="{{shortcutkey}}"' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
-                '</input>'
+                ' accesskey="{{::shortcutkey}}"' +
+                ' ng-change="_onChange({$event: $event, $scope: this})">'
             );
     }])
     .directive('wmText', ['PropertiesFactory', 'WidgetUtilService', 'FormWidgetUtils', 'CONSTANTS', 'Utils', function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, CONSTANTS, Utils) {
@@ -28,7 +26,7 @@ WM.module('wm.widgets.form')
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, element, attrs, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal) {
             var wdgtProperties = scope.widgetProps;
             switch (key) {
             case 'type':
@@ -80,29 +78,27 @@ WM.module('wm.widgets.form')
                 }
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-                    },
-                    'post': function (scope, element, attrs) {
-
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
-
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                            scope._model_ = '';
-                        };
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            'link': {
+                'pre': function (iScope) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
                     }
-                };
+                },
+                'post': function (scope, element, attrs) {
+
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                        scope._model_ = '';
+                    };
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -196,7 +192,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div style="display:inline-block;margin-right:200px">
  *                  <div style="font-weight:bold">Example 1:</div><br>
  *                  <div>single click count: {{clickCount}}</div>

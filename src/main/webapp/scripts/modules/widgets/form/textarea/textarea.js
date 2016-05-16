@@ -6,13 +6,12 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/textarea.html',
                 '<textarea init-widget has-model class="form-control app-textarea" apply-styles role="input"' +
-                    ' data-ng-model="_model_" title="{{hint}}"' +
-                    ' data-ng-show = "show" ' +
-                    ' data-ng-disabled="disabled" ' +
-                    ' data-ng-readonly="readonly"' +
-                    ' data-ng-required="required" ' +
-                    ' accesskey="{{shortcutkey}}"' +
-                    ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
+                    ' ng-model="_model_" title="{{hint}}"' +
+                    ' ng-disabled="disabled" ' +
+                    ' ng-readonly="readonly"' +
+                    ' ng-required="required" ' +
+                    ' accesskey="{{::shortcutkey}}"' +
+                    ' ng-change="_onChange({$event: $event, $scope: this})">' +
                 '</textarea>'
             );
     }])
@@ -23,8 +22,8 @@ WM.module('wm.widgets.form')
 
         return {
             'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'replace' : true,
+            'scope'   : {},
             'template': function (tElement, tAttrs) {
                 var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
                     template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/form/textarea.html', tElement, tAttrs)),
@@ -44,22 +43,20 @@ WM.module('wm.widgets.form')
                 }
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
+            'link': {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
 
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                            scope._model_ = '';
-                        };
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                        scope._model_ = '';
+                    };
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -138,7 +135,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>single click count: {{clickCount}}</div>
  *               <div>change count: {{changeCount}}</div>
  *               <div>mouse enter count: {{mouseenterCount}}</div>

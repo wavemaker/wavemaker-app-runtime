@@ -5,16 +5,17 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chart.html',
-            '<div init-widget class="app-chart" title="{{hint}}" data-ng-show="show" apply-styles>' +
+            '<div init-widget class="app-chart" title="{{hint}}" apply-styles>' +
                 '<div class="app-chart-inner">' +
                     '<svg></svg>' +
-                    '<div class="wm-content-info readonly-wrapper {{class}}" data-ng-show="showContentLoadError && showNoDataMsg">' +
+                    '<div class="wm-content-info readonly-wrapper {{class}}" ng-if="showContentLoadError && showNoDataMsg">' +
                         '<p class="wm-message" title="{{hintMsg}}" ng-class="{\'error\': invalidConfig}">{{errMsg}}</p>' +
                     '</div>' +
                 '</div>' +
             '</div>'
             );
-    }]).directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, $timeout) {
+    }])
+    .directive('wmChart', function (PropertiesFactory, $templateCache, $rootScope, WidgetUtilService, CONSTANTS, QueryBuilder, Utils, $timeout) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.chart', ['wm.base']),
             themes = {
@@ -2208,7 +2209,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module='wmCore'>
         <file name='index.html'>
-            <div data-ng-controller='Ctrl' class='wm-app'>
+            <div ng-controller='Ctrl' class='wm-app'>
                 <wm-layoutgrid>
                     <wm-gridrow>
                         <wm-gridcolumn columnwidth='6'>

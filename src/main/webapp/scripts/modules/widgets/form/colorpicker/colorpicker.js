@@ -9,14 +9,14 @@ WM.module('wm.widgets.form')
         'use strict';
         /*Assigning the template to an identifier.*/
         $templateCache.put('template/widget/form/colorpicker.html',
-            '<div title="{{hint}}" class="input-group app-colorpicker" data-ng-show="show" init-widget has-model role="input">' +
+            '<div title="{{hint}}" class="input-group app-colorpicker" init-widget has-model role="input">' +
                 '<input colorpicker colorpicker-parent="true" class="form-control app-textbox" ' +
-                ' data-ng-disabled="readonly || disabled"' +
-                ' data-ng-required="required"' +
-                ' data-ng-model="_model_"' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})"' +
-                ' accesskey="{{shortcutkey}}"' +
-                '><span class="input-group-addon" data-ng-style="{backgroundColor:_model_}">&nbsp;</span></div>');
+                ' ng-disabled="readonly || disabled"' +
+                ' ng-required="required"' +
+                ' ng-model="_model_"' +
+                ' ng-change="_onChange({$event: $event, $scope: this})"' +
+                ' accesskey="{{::shortcutkey}}"' +
+                '><span class="input-group-addon" ng-style="{backgroundColor:_model_}">&nbsp;</span></div>');
     }])
     /*Colorpicker widget directive definition*/
     .directive('wmColorpicker', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
@@ -26,8 +26,8 @@ WM.module('wm.widgets.form')
 
         return {
             'restrict': 'E',
-            'scope': {},
-            'replace': true,
+            'scope'   : {},
+            'replace' : true,
             'template': function (tElement, tAttrs) {
                 var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
                     template = WM.element($templateCache.get('template/widget/form/colorpicker.html')),
@@ -38,46 +38,43 @@ WM.module('wm.widgets.form')
 
                 if (!isWidgetInsideCanvas) {
                     if (tAttrs.hasOwnProperty('onClick')) {
-                        target.attr('data-ng-click', 'onClick({$event: $event, $scope: this})');
+                        target.attr('ng-click', 'onClick({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onMouseenter')) {
-                        target.attr('data-ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
+                        target.attr('ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onMouseleave')) {
-                        target.attr('data-ng-mouseleave', 'onMouseleave({$event: $event, $scope: this})');
+                        target.attr('ng-mouseleave', 'onMouseleave({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onFocus')) {
-                        target.attr('data-ng-focus', 'onFocus({$event: $event, $scope: this})');
+                        target.attr('ng-focus', 'onFocus({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onBlur')) {
-                        target.attr('data-ng-blur', 'onBlur({$event: $event, $scope: this})');
+                        target.attr('ng-blur', 'onBlur({$event: $event, $scope: this})');
                     }
                 }
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /*Assigning the obtained widgetProps to the widget scope.*/
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                            scope._model_ = '';
-                        };
-                        /*Executing WidgetUtilService method to initialize the widget with the essential configurations needed.*/
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+            'link': {
+                'pre': function (scope) {
+                    /*Assigning the obtained widgetProps to the widget scope.*/
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                        scope._model_ = '';
+                    };
+                    /*Executing WidgetUtilService method to initialize the widget with the essential configurations needed.*/
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
-
     }]);
 
 /**
@@ -136,7 +133,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>single click count: {{clickCount}}</div>
  *               <div>change count: {{changeCount}}</div>
  *               <div>mouse enter count: {{mouseenterCount}}</div>

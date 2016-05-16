@@ -6,20 +6,20 @@ WM.module('wm.widgets.advanced')
         'use strict';
 
         $templateCache.put('template/widget/advanced/rating.html',
-            '<div data-ng-model="_model_" data-ng-show="show" class="app-ratings" init-widget has-model apply-styles role="input" listen-property="dataset" data-ng-focus="onFocus($event)">' +
-                '<div data-ng-if="!readonly" class="rating-style">' +
-                    '<label data-ng-class="{active : rate.value <= datavalue}" for="{{$id}}+{{rate.value}}" data-ng-mouseleave="onMouseleave($event, rate)" data-ng-mouseover="onMouseover($event, rate)" data-ng-style="{\'font-size\':iconsize, \'color\': rate.value <= datavalue && iconcolor}" data-ng-repeat="rate in range track by $index" title="{{rate.label || rate.value}}">' +
-                        '<input type="radio" id="{{$id}}+{{rate.value}}" data-ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
+            '<div ng-model="_model_" class="app-ratings" init-widget has-model apply-styles role="input" listen-property="dataset" ng-focus="onFocus($event)">' +
+                '<div ng-if="!readonly" class="rating-style">' +
+                    '<label ng-class="{active : rate.value <= datavalue}" for="{{$id}}+{{rate.value}}" ng-mouseleave="onMouseleave($event, rate)" ng-mouseover="onMouseover($event, rate)" ng-style="{\'font-size\':iconsize, \'color\': rate.value <= datavalue && iconcolor}" ng-repeat="rate in range track by $index" title="{{rate.label || rate.value}}">' +
+                        '<input type="radio" id="{{$id}}+{{rate.value}}" ng-click="getActiveElements($event)" name="{{ratingname}}" value="{{rate.value}}"/>' +
                     '</label>' +
                 '</div>' +
-                '<div data-ng-if="readonly" data-ng-style="{\'font-size\':iconsize}" class="ratings-container disabled" >' +
-                    '<div class="ratings active" data-ng-style="{width: ratingsWidth(), color: iconcolor}"></div>' +
+                '<div ng-if="readonly" ng-style="{\'font-size\':iconsize}" class="ratings-container disabled" >' +
+                    '<div class="ratings active" ng-style="{width: ratingsWidth(), color: iconcolor}"></div>' +
                 '</div>' +
-            '<label data-ng-show="showcaptions" class="caption" data-ng-bind="caption"></label>' +
+            '<label ng-show="showcaptions" class="caption" ng-bind="caption"></label>' +
             '</div>'
             );
     }])
-    .directive('wmRating', ['PropertiesFactory', 'WidgetUtilService', 'FormWidgetUtils', 'CONSTANTS', 'Utils', '$rootScope', function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, CONSTANTS, Utils, $rs) {
+    .directive('wmRating', ['PropertiesFactory', 'WidgetUtilService', 'FormWidgetUtils', 'Utils', '$rootScope', function (PropertiesFactory, WidgetUtilService, FormWidgetUtils, Utils, $rs) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.rating', ['wm.base', 'wm.base.editors']),
@@ -275,84 +275,82 @@ WM.module('wm.widgets.advanced')
                 'scopedataset': '=?'
             },
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/advanced/rating.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
+            'link': {
+                'pre': function (scope) {
+                    /*Applying widget properties to directive scope*/
+                    scope.widgetProps = widgetProps;
 
-                        /*  flag to set if the rating widget is focused or not */
-                        scope.isFocused = false;
+                    /*  flag to set if the rating widget is focused or not */
+                    scope.isFocused = false;
 
-                    },
-                    'post': function (iScope, $el, attrs) {
-                        if (WM.isString(iScope.datavalue)) {
-                            iScope.datavalue = parseInt(iScope.datavalue, 10);
-                        }
+                },
+                'post': function (iScope, $el, attrs) {
+                    if (WM.isString(iScope.datavalue)) {
+                        iScope.datavalue = parseInt(iScope.datavalue, 10);
+                    }
 
-                        /* this function sets the caption */
+                    /* this function sets the caption */
+                    /* support if the caption is binded in the old projects for backward compatibility*/
+                    if (!attrs.caption) {
+                        iScope.caption = getCaption(iScope);
+                    }
+
+                    /*  onMouseover of the rating widget apply the iconcolor  */
+                    iScope.onMouseover = onMouseover.bind(undefined, iScope, attrs);
+
+                    /* This function is called onMouseleave of the rating widget */
+                    iScope.onMouseleave = onMouseout.bind(undefined, iScope, attrs, $el);
+
+                    /*  This function is called when the rating widget is focused  */
+                    iScope.onFocus = function () {
+                        iScope.isFocused = true;
+                    };
+
+                    /* keydown events for accessibility  */
+                    $el.bind('keydown', onKeyDown.bind(undefined, iScope, attrs));
+
+                    iScope.getActiveElements = function ($event) {
+                        iScope._model_ = $el.find(':checked').val();
                         /* support if the caption is binded in the old projects for backward compatibility*/
                         if (!attrs.caption) {
                             iScope.caption = getCaption(iScope);
                         }
+                        iScope._onChange($event);
+                    };
 
-                        /*  onMouseover of the rating widget apply the iconcolor  */
-                        iScope.onMouseover = onMouseover.bind(undefined, iScope, attrs);
-
-                        /* This function is called onMouseleave of the rating widget */
-                        iScope.onMouseleave = onMouseout.bind(undefined, iScope, attrs, $el);
-
-                        /*  This function is called when the rating widget is focused  */
-                        iScope.onFocus = function () {
-                            iScope.isFocused = true;
-                        };
-
-                        /* keydown events for accessibility  */
-                        $el.bind('keydown', onKeyDown.bind(undefined, iScope, attrs));
-
-                        iScope.getActiveElements = function ($event) {
-                            iScope._model_ = $el.find(':checked').val();
-                            /* support if the caption is binded in the old projects for backward compatibility*/
-                            if (!attrs.caption) {
-                                iScope.caption = getCaption(iScope);
-                            }
-                            iScope._onChange($event);
-                        };
-
-                        /* get the ratingsWidth for readonly mode */
-                        iScope.ratingsWidth = function () {
-                            var dataValue = parseFloat(iScope.datavalue),
-                                starWidth = 0.925,
-                                maxValue = parseInt(iScope.maxvalue, 10) || DEFAULT_RATING;
-                            $el.find('.ratings-container').css("width", (starWidth * maxValue) + 'em');
-                            if (iScope.datavalue === undefined || iScope.datavalue === '' || iScope.datavalue === null) {
-                                return 0;
-                            }
-                            if (dataValue <= maxValue && dataValue >= 0) {
-                                return dataValue * starWidth + 'em';
-                            }
-                            if (dataValue > maxValue) {
-                                return maxValue * starWidth + 'em';
-                            }
-                        };
-
-                        /*Called from form reset when users clicks on form reset*/
-                        iScope.reset = function () {
-                            iScope.datavalue = '';
-                        };
-
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, attrs), iScope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(iScope, $el, attrs);
-
-
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching scopedataset attribute to create options for the select element.*/
-                        if (!attrs.widgetid && attrs.scopedataset) {
-                            iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, $el));
+                    /* get the ratingsWidth for readonly mode */
+                    iScope.ratingsWidth = function () {
+                        var dataValue = parseFloat(iScope.datavalue),
+                            starWidth = 0.925,
+                            maxValue = parseInt(iScope.maxvalue, 10) || DEFAULT_RATING;
+                        $el.find('.ratings-container').css("width", (starWidth * maxValue) + 'em');
+                        if (iScope.datavalue === undefined || iScope.datavalue === '' || iScope.datavalue === null) {
+                            return 0;
                         }
+                        if (dataValue <= maxValue && dataValue >= 0) {
+                            return dataValue * starWidth + 'em';
+                        }
+                        if (dataValue > maxValue) {
+                            return maxValue * starWidth + 'em';
+                        }
+                    };
 
+                    /*Called from form reset when users clicks on form reset*/
+                    iScope.reset = function () {
+                        iScope.datavalue = '';
+                    };
+
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, attrs), iScope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(iScope, $el, attrs);
+
+
+                    /* fields defined in scope: {} MUST be watched explicitly */
+                    /*watching scopedataset attribute to create options for the select element.*/
+                    if (!attrs.widgetid && attrs.scopedataset) {
+                        iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, $el));
                     }
-                };
+
+                }
             }
         };
     }]);
@@ -405,7 +403,7 @@ WM.module('wm.widgets.advanced')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <wm-rating
  *                   caption="{{caption}}"
  *                   on-click="f('click');"

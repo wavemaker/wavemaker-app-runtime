@@ -8,38 +8,38 @@ WM.module('wm.layouts.containers')
 
         //Define the template for the wizard directive
         $templateCache.put('template/layout/container/wizard.html',
-                '<div class="app-wizard panel clearfix" init-widget ng-show="show" apply-styles="container">' +
-                    '<div class="app-wizard-heading">' +
-                        '<ul class="app-wizard-steps nav nav-pills"></ul>' +
+            '<div class="app-wizard panel clearfix" init-widget apply-styles="container">' +
+                '<div class="app-wizard-heading">' +
+                    '<ul class="app-wizard-steps nav nav-pills"></ul>' +
+                '</div>' +
+                '<div class="app-wizard-body panel-body">' +
+                    '<wm-message scopedataset="message"></wm-message>' +
+                    '<div wmtransclude></div>' +
+                '</div>' +
+                '<div class="app-wizard-actions panel-footer">' +
+                    '<a class="app-wizard-skip" name="skipStep_{{name}}" ng-show="currentStep.enableskip" title="Skip step" ng-click="skip()">Skip &raquo;</a>' +
+                    '<div class="app-wizard-actions-right">' +
+                        '<button name="cancelBtn_{{name}}" class="btn app-button btn-secondary" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
+                        '<button name="previousBtn_{{name}}" class="btn app-button btn-secondary" ng-if="steps.indexOf(currentStep) > 0" ng-click="prev()">' +
+                            '<i class="app-icon wi wi-chevron-left"></i>' +
+                            '<span class="btn-caption">{{previousbtnlabel}}</span>' +
+                        '</button>' +
+                        '<button name="nextBtn_{{name}}" class="btn app-button btn-primary" ng-if="steps.indexOf(currentStep) !== steps.length - 1" ng-click="next()" ng-disabled="currentStep.disablenext || currentStep.isFormInvalid">' +
+                            '<span class="btn-caption">{{nextbtnlabel}}</span>' +
+                            '<i class="app-icon wi wi-chevron-right"></i>' +
+                        '</button>' +
+                        '<button name="doneBtn_{{name}}" class="btn app-button btn-success" ng-if="(steps.indexOf(currentStep) === steps.length - 1) || currentStep.enabledone" ng-click="done()" ng-disabled="currentStep.isFormInvalid">' +
+                            '<i class="app-icon wi wi-done"></i>' +
+                            '<span class="btn-caption">{{donebtnlabel}}</span>' +
+                        '</button>' +
                     '</div>' +
-                    '<div class="app-wizard-body panel-body">' +
-                        '<wm-message scopedataset="message"></wm-message>' +
-                        '<div wmtransclude></div>' +
-                    '</div>' +
-                    '<div class="app-wizard-actions panel-footer">' +
-                        '<a class="app-wizard-skip" name="skipStep_{{name}}" ng-show="currentStep.enableskip" title="Skip step" ng-click="skip()">Skip &raquo;</a>' +
-                        '<div class="app-wizard-actions-right">' +
-                            '<button name="cancelBtn_{{name}}" class="btn app-button btn-secondary" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
-                            '<button name="previousBtn_{{name}}" class="btn app-button btn-secondary" ng-if="steps.indexOf(currentStep) > 0" ng-click="prev()">' +
-                                '<i class="app-icon wi wi-chevron-left"></i>' +
-                                '<span class="btn-caption">{{previousbtnlabel}}</span>' +
-                            '</button>' +
-                            '<button name="nextBtn_{{name}}" class="btn app-button btn-primary" ng-if="steps.indexOf(currentStep) !== steps.length - 1" ng-click="next()" ng-disabled="currentStep.disablenext || currentStep.isFormInvalid">' +
-                                '<span class="btn-caption">{{nextbtnlabel}}</span>' +
-                                '<i class="app-icon wi wi-chevron-right"></i>' +
-                            '</button>' +
-                            '<button name="doneBtn_{{name}}" class="btn app-button btn-success" ng-if="(steps.indexOf(currentStep) === steps.length - 1) || currentStep.enabledone" ng-click="done()" ng-disabled="currentStep.isFormInvalid">' +
-                                '<i class="app-icon wi wi-done"></i>' +
-                                '<span class="btn-caption">{{donebtnlabel}}</span>' +
-                            '</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>'
+                '</div>' +
+            '</div>'
             );
 
         //Define the template for the wizard step directive
         $templateCache.put('template/layout/container/wizard-step.html',
-            '<form apply-styles="container" init-widget page-container class="app-wizard-step-content" ng-class="{\'current\': status === \'CURRENT\'}" ng-show="show"><div page-container-target wmtransclude></div></form>');
+            '<form apply-styles="container" init-widget page-container class="app-wizard-step-content" ng-class="{\'current\': status === \'CURRENT\'}"><div page-container-target wmtransclude></div></form>');
     }])
     .directive('wmWizard', [
         'PropertiesFactory',
@@ -52,7 +52,7 @@ WM.module('wm.layouts.containers')
             'use strict';
 
             //Get the properties related to the wizard
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.wizard', ['wm.base', 'wm.layouts', 'wm.containers']),
+            var widgetProps  = PropertiesFactory.getPropertiesOf('wm.wizard', ['wm.base', 'wm.layouts', 'wm.containers']),
                 STEP_STATUS  = {'COMPLETED': 'COMPLETED', 'CURRENT': 'CURRENT', 'DISABLED': 'DISABLED'};
 
             function navigateToStep($is, stepIndex) {
@@ -62,9 +62,7 @@ WM.module('wm.layouts.containers')
 
             return {
                 'restrict'  : 'E',
-                'scope'     : {
-                    'onDone': '&'
-                },
+                'scope'     : {'onDone': '&'},
                 'replace'   : true,
                 'transclude': true,
                 'template'  : $templateCache.get('template/layout/container/wizard.html'),

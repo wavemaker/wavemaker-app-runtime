@@ -5,17 +5,20 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/iframedialog.html",
-            '<div class="app-dialog modal-dialog app-iframe-dialog" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
-                '<wm-dialogheader iconclass="{{iconclass}}" closable="{{closable}}"  iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
-                '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
-                    '<wm-iframe iframesrc="{{iframeurl}}" wm-widget-overlay height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
+            '<div class="app-dialog modal-dialog app-iframe-dialog" dialogclass init-widget ng-style="{width: dialogWidth}">' +
+                '<div class="modal-content">' +
+                    '<wm-dialogheader iconclass="{{iconclass}}" closable="{{closable}}"  iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}" caption="{{title}}"></wm-dialogheader>' +
+                    '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
+                        '<wm-iframe iframesrc="{{iframeurl}}" wm-widget-overlay height="100%" width="100%" hint="{{hint}}"></wm-iframe>' +
+                    '</div>' +
+                    '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
+                        '<wm-button class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                    '</div>' +
                 '</div>' +
-                '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
-                    '<wm-button class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
-                '</div>' +
-            '</div></div>'
+            '</div>'
             );
-    }]).directive('wmIframedialog', ["$templateCache", 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$sce', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $sce, $window) {
+    }])
+    .directive('wmIframedialog', ["$templateCache", 'PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$sce', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, $sce, $window) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.iframedialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
             notifyFor = {
@@ -55,9 +58,9 @@ WM.module('wm.widgets.dialog')
             "restrict": "E",
             "controller": "DialogController",
             "scope": {
-                dialogid: '@',
-                onOk: '&',
-                onClose: '&'
+                "dialogid": '@',
+                "onOk": '&',
+                "onClose": '&'
             },
             "replace": true,
             "template": function (template, attrs) {
@@ -76,27 +79,25 @@ WM.module('wm.widgets.dialog')
                 }
                 return $templateCache.get("template/widget/dialog/iframedialog.html");
             },
-            "compile": function () {
-                return {
-                    "pre": function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    "post": function (scope, element, attrs, dialogCtrl) {
-                        /* handles ok button click*/
-                        if (!scope.okButtonHandler) {
-                            scope.okButtonHandler = function () {
-                                dialogCtrl._OkButtonHandler(attrs.onOk);
-                            };
-                        }
-
-                        /* register the property change handler */
-                        if (scope.propertyManager) {
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-                        }
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            "link": {
+                "pre": function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                "post": function (scope, element, attrs, dialogCtrl) {
+                    /* handles ok button click*/
+                    if (!scope.okButtonHandler) {
+                        scope.okButtonHandler = function () {
+                            dialogCtrl._OkButtonHandler(attrs.onOk);
+                        };
                     }
-                };
+
+                    /* register the property change handler */
+                    if (scope.propertyManager) {
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                    }
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -157,7 +158,7 @@ WM.module('wm.widgets.dialog')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl">
+            <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-iframedialog name="iframeDialog" url="//www.wavemaker.com"
                         controller="Ctrl" iconclass="globe" oktext="Close"

@@ -5,15 +5,18 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/pagedialog.html",
-            '<div class="app-dialog modal-dialog app-page-dialog" dialogclass init-widget data-ng-show="show" page-container  data-ng-style="{width: dialogWidth}"><div class="modal-content">' +
-                '<wm-dialogheader iconclass={{iconclass}}  closable="{{closable}}" caption={{title}}  iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
-                '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target></div>' +
-                '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
-                    '<wm-button  class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+            '<div class="app-dialog modal-dialog app-page-dialog" dialogclass init-widget page-container ng-style="{width: dialogWidth}">' +
+                '<div class="modal-content">' +
+                    '<wm-dialogheader iconclass={{iconclass}} closable="{{closable}}" caption={{title}} iconwidth={{iconwidth}} iconheight={{iconheight}} iconmargin={{iconmargin}}></wm-dialogheader>' +
+                    '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" page-container-target></div>' +
+                    '<div class="app-dialog-footer modal-footer" ng-if="showactions">' +
+                        '<wm-button  class="btn-primary" caption={{oktext}} on-click="okButtonHandler()"></wm-button>' +
+                    '</div>' +
                 '</div>' +
-            '</div></div>'
+            '</div>'
             );
-    }]).directive('wmPagedialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window) {
+    }])
+    .directive('wmPagedialog', ["$templateCache", "PropertiesFactory", "WidgetUtilService", "CONSTANTS", 'Utils', '$window', function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, $window) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf("wm.pagedialog", ["wm.basicdialog", "wm.base", "wm.dialog.onOk"]),
             notifyFor = {
@@ -68,29 +71,27 @@ WM.module('wm.widgets.dialog')
                 }
                 return $templateCache.get("template/widget/dialog/pagedialog.html");
             },
-            "compile": function () {
-                return {
-                    "pre": function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-                    },
-                    "post": function (scope, element, attrs, dialogCtrl) {
-                        /* handles ok button click*/
-                        if (!scope.okButtonHandler) {
-                            scope.okButtonHandler = function () {
-                                dialogCtrl._OkButtonHandler(attrs.onOk);
-                            };
-                        }
-                        /* register the property change handler */
-                        if (scope.propertyManager) {
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-                        }
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            "link": {
+                "pre": function (iScope) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
                     }
-                };
+                },
+                "post": function (scope, element, attrs, dialogCtrl) {
+                    /* handles ok button click*/
+                    if (!scope.okButtonHandler) {
+                        scope.okButtonHandler = function () {
+                            dialogCtrl._OkButtonHandler(attrs.onOk);
+                        };
+                    }
+                    /* register the property change handler */
+                    if (scope.propertyManager) {
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                    }
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -154,7 +155,7 @@ WM.module('wm.widgets.dialog')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl">
+            <div ng-controller="Ctrl">
                 <wm-view class="dialog-view">
                     <wm-pagedialog name="pageDialog" controller="Ctrl" iconclass="wi wi-globe"
                         content="dropdownMenu"

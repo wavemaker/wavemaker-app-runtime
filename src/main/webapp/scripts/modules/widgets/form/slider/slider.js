@@ -5,15 +5,15 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/slider.html',
-                '<div class="app-slider slider" init-widget has-model data-ng-show="show" title="{{hint}}" apply-styles role="input">' +
+                '<div class="app-slider slider" init-widget has-model title="{{hint}}" apply-styles role="input">' +
                     '<span class="app-slider-value">{{minvalue}}</span>' +
                     '<span class="app-slider-value pull-right">{{maxvalue}}</span>' +
                     '<input class="range-input" type="range" title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
-                       ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
-                       ' data-ng-disabled="disabled"' +
-                       ' accesskey="{{shortcutkey}}"' +
-                       ' data-ng-change="_onChange({$event: $event, $scope: this})" />' + /* private method defined in this scope */
-                    '<div data-ng-show="readonly || disabled" class="readonly-wrapper"></div>' +
+                       ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
+                       ' ng-disabled="disabled"' +
+                       ' accesskey="{{::shortcutkey}}"' +
+                       ' ng-change="_onChange({$event: $event, $scope: this})" />' + /* private method defined in this scope */
+                    '<div ng-show="readonly || disabled" class="readonly-wrapper"></div>' +
                 '</div>'
             );
     }])
@@ -22,32 +22,28 @@ WM.module('wm.widgets.form')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.slider', ['wm.base', 'wm.base.editors', 'wm.base.events.change']);
         return {
             'restrict': 'E',
-            'replace': true,
-            'scope': {
-                'onChange': '&'
-            },
+            'replace' : true,
+            'scope'   : {'onChange': '&'},
             'template': function (tElement, tAttrs) {
                 var template = WM.element($templateCache.get('template/widget/form/slider.html'));
                 template.find('input').attr('name', tAttrs.name);
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
+            'link': {
+                'pre': function (scope) {
+                    /*Applying widget properties to directive scope*/
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
 
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                            scope._model_ = '';
-                        };
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                        scope._model_ = '';
+                    };
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -107,7 +103,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>focus count: {{focusCount}}</div>
  *               <div>blur count: {{blurCount}}</div>
  *               <wm-slider

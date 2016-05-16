@@ -6,7 +6,7 @@ WM.module('wm.layouts.containers')
         'use strict';
 
         $tc.put('template/layouts/containers/mobile/navbar.html',
-            '<header data-role="mobile-navbar" init-widget listen-property="dataset" class="app-header app-mobile-navbar {{class}}" ng-show="show" apply-styles>' +
+            '<header data-role="mobile-navbar" init-widget listen-property="dataset" class="app-header app-mobile-navbar {{class}}" apply-styles>' +
                 '<nav class="navbar" ng-show="!showSearchbar">' +
                     '<div class="mobile-navbar-left">' +
                         '<ul class="nav navbar-nav navbar-left">' +
@@ -21,19 +21,19 @@ WM.module('wm.layouts.containers')
                                 '</a>' +
                             '</li>' +
                         '</ul>' +
-                        '</div>' +
-                        '<div class="mobile-navbar-center">' +
-                            '<div class="navbar-header"><h1 class="navbar-brand"><img data-identifier="img" class="brand-image" alt="{{title}}" width="32" height="32" ng-if="imgsrc" ng-src="{{imagesrc}}"/><span>{{title}}</span></h1></div>' +
-                        '</div>' +
-                        '<div class="mobile-navbar-right">' +
-                            '<ul class="nav navbar-nav navbar-right">' +
-                                '<li wmtransclude></li>' +
-                                '<li ng-if="searchbutton">' +
-                                    '<a class="btn-search btn-transparent" type="button" ng-click="showSearchBar();">' +
-                                        '<i ng-class="searchbuttoniconclass"></i><span>{{searchbuttonlabel}}</span>' +
-                                    '</a>' +
-                                '</li>' +
-                            '</ul>' +
+                    '</div>' +
+                    '<div class="mobile-navbar-center">' +
+                        '<div class="navbar-header"><h1 class="navbar-brand"><img data-identifier="img" class="brand-image" alt="{{title}}" width="32" height="32" ng-if="imgsrc" ng-src="{{imagesrc}}"/><span>{{title}}</span></h1></div>' +
+                    '</div>' +
+                    '<div class="mobile-navbar-right">' +
+                        '<ul class="nav navbar-nav navbar-right">' +
+                            '<li wmtransclude></li>' +
+                            '<li ng-if="searchbutton">' +
+                                '<a class="btn-search btn-transparent" type="button" ng-click="showSearchBar();">' +
+                                    '<i ng-class="searchbuttoniconclass"></i><span>{{searchbuttonlabel}}</span>' +
+                                '</a>' +
+                            '</li>' +
+                        '</ul>' +
                     '</div>' +
                 '</nav>' +
                 '<nav class="navbar searchbar" ng-if="showSearchbar">' +
@@ -51,9 +51,9 @@ WM.module('wm.layouts.containers')
                     '</div>' +
                     '<div class="mobile-navbar-right">' +
                         '<ul class="nav navbar-nav navbar-right">' +
-                        '<li>' +
-                        '<a class="btn-cancel btn-transparent" type="button" ng-click="goBacktoPreviousView($event);"> Cancel </a>' +
-                        '</li>' +
+                            '<li>' +
+                                '<a class="btn-cancel btn-transparent" type="button" ng-click="goBacktoPreviousView($event);"> Cancel </a>' +
+                            '</li>' +
                         '</ul>' +
                     '</div>' +
                 '</nav>' +

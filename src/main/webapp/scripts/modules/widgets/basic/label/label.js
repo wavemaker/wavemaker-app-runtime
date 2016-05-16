@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/label.html',
-            '<label class="app-label" data-ng-show="show" title="{{hint}}" init-widget apply-styles data-ng-class="{required:required}"></label>'
+            '<label class="app-label" title="{{hint}}" init-widget apply-styles ng-class="{required:required}"></label>'
             );
     }])
     .directive('wmLabel', ['PropertiesFactory', 'WidgetUtilService', '$sce', function (PropertiesFactory, WidgetUtilService, $sce) {
@@ -30,21 +30,19 @@ WM.module('wm.widgets.basic')
 
         return {
             'restrict': 'E',
-            'scope': {},
-            'replace': true,
+            'scope'   : {},
+            'replace' : true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/label.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
+            'link'    : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
 
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -98,7 +96,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <div>single click count: {{clickCount}}</div>
                 <div>dbl click count: {{dblclickCount}}</div>
                 <div>mouse enter count: {{mouseenterCount}}</div>

@@ -5,11 +5,12 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/audio.html',
-            '<audio init-widget alt="{{hint}}" title="{{hint}}" class="app-audio" preload="{{audiopreload}}" data-ng-src="{{mp3audioUrl}}" apply-styles data-ng-show="show" >' +
+            '<audio init-widget alt="{{hint}}" title="{{hint}}" class="app-audio" preload="{{audiopreload}}" ng-src="{{mp3audioUrl}}" apply-styles>' +
                 '<source type="audio/mp3" ng-src="{{mp3audioUrl}}">' +
                 '{{audiosupportmessage}}' +
-                '</audio>');
-    }]).directive('wmAudio', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, CONSTANTS) {
+            '</audio>');
+    }])
+    .directive('wmAudio', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.audio', ['wm.base', 'wm.containers']),
             notifyFor = {
@@ -116,7 +117,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-audio audiopreload="none" muted="true"
                    mp3format="{{audio.source.mp3}}"
                    controls="controls">

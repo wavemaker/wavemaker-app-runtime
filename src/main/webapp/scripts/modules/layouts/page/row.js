@@ -4,7 +4,7 @@ WM.module('wm.layouts.page')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/page/row.html',
-                '<div init-widget class="row app-row clearfix" data-ng-show="show" apply-styles wmtransclude></div>'
+                '<div init-widget class="row app-row clearfix" apply-styles wmtransclude></div>'
             );
     }])
     .directive('wmRow', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
@@ -17,16 +17,13 @@ WM.module('wm.layouts.page')
             'scope': {},
             'transclude': true,
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/layout/page/row.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+            'link': {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);

@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/button-group.html',
-                '<div class="btn-group app-button-group" wmtransclude init-widget data-ng-class=\'{"btn-group-vertical": vertical}\' apply-styles="container" title="{{hint}}" data-ng-show="show" role="input"></div>'
+                '<div class="btn-group app-button-group" wmtransclude init-widget ng-class=\'{"btn-group-vertical": vertical}\' apply-styles="container" title="{{hint}}" role="input"></div>'
             );
     }])
     .directive('wmButtongroup', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($templateCache, PropertiesFactory, WidgetUtilService) {
@@ -14,26 +14,24 @@ WM.module('wm.widgets.form')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.buttongroup', ['wm.base', 'wm.base.editors']);
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
-            'template': $templateCache.get('template/widget/form/button-group.html'),
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {},
+            'template'  : $templateCache.get('template/widget/form/button-group.html'),
             'transclude': true,
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
+            'link'      : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
 
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                        };
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                    };
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -72,7 +70,7 @@ WM.module('wm.widgets.form')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 Will you try this widget?? <br>
                 <wm-buttongroup>
                     <wm-button backgroundcolor="teal" caption="Yes"></wm-button>

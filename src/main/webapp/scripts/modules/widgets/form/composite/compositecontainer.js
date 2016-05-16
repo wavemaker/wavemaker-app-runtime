@@ -7,10 +7,8 @@ WM.module('wm.widgets.form')
 
         $templateCache.put('template/widget/form/composite.html',
                 '<div class="form-group app-composite-widget clearfix" init-widget apply-styles="container" role="input"' +
-                ' data-ng-class="{\'caption-left\': captionposition == \'left\',\'caption-right\': captionposition == \'right\',\'caption-top\': captionposition == \'top\'}"' +
+                ' ng-class="{\'caption-left\': captionposition == \'left\',\'caption-right\': captionposition == \'right\',\'caption-top\': captionposition == \'top\'}"' +
                 ' title="{{hint}}"' +
-                ' data-ng-disabled="disabled"' +
-                ' data-ng-show="show"' +
                 ' wmtransclude></div>'
             );
     }])
@@ -44,43 +42,41 @@ WM.module('wm.widgets.form')
         }
 
         return {
-            'restrict': 'E',
-            'replace': true,
+            'restrict'  : 'E',
+            'replace'   : true,
             'transclude': true,
-            'scope': {},
-            'template': $templateCache.get('template/widget/form/composite.html'),
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
+            'scope'     : {},
+            'template'  : $templateCache.get('template/widget/form/composite.html'),
+            'link'      : {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
 
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
 
-                        //if the widget is not inside canvas.
-                        if (!scope.widgetid) {
-                            /* add for attribute for label and id attribute for the input elements */
-                            var labelEl = element.find('label'),
-                                inputEl = element.find('input, select, textarea'),
-                                inputName;
+                    //if the widget is not inside canvas.
+                    if (!scope.widgetid) {
+                        /* add for attribute for label and id attribute for the input elements */
+                        var labelEl = element.find('label'),
+                            inputEl = element.find('input, select, textarea'),
+                            inputName;
 
-                            if (labelEl.length === 1 && inputEl.length === 1) {
-                                inputName = inputEl.attr('name');
-                                inputEl.attr('id', inputName);
-                                labelEl.attr('for', inputName);
-                            }
+                        if (labelEl.length === 1 && inputEl.length === 1) {
+                            inputName = inputEl.attr('name');
+                            inputEl.attr('id', inputName);
+                            labelEl.attr('for', inputName);
                         }
-
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                        };
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
-                };
+
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                    };
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -120,7 +116,7 @@ WM.module('wm.widgets.form')
  *  @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>hint: {{hint}}</div>
  *               <wm-composite widget="text" name="Composite" hint="{{hint}}" horizontalalign="{{horizontalalign}}" bordercolor="#912121" borderstyle="solid" borderleft="1" bordertop="1" borderright="1" borderbottom="1" borderunit="px">
  *                  <wm-label name="label"></wm-label>

@@ -2218,12 +2218,12 @@ WM.module('wm.widgets.base', [])
                     if (CONSTANTS.isRunMode) {
                         var newValues = newVal ? newVal.split(',') : newVal;
                         if (WM.element.inArray('all', newValues) === 0) {
-                            WM.forEach(deviceSizeArray.all.classToRemove, function (device) {
+                            _.forEach(deviceSizeArray.all.classToRemove, function (device) {
                                 element.removeClass(device + scope.widgetProps.showindevice.displaytype || 'block');
                             });
                         } else {
                             /*If others are selected, add classes accordingly */
-                            WM.forEach(newValues, function (value) {
+                            _.forEach(newValues, function (value) {
                                 element.addClass(deviceSizeArray[value].class + (scope.widgetProps.showindevice.displaytype || 'block'));
                             });
                         }
@@ -2232,6 +2232,12 @@ WM.module('wm.widgets.base', [])
                     /*add the animated class only in the run mode since it will break the ui in design mode*/
                     if (CONSTANTS.isRunMode) {
                         element.addClass('animated ' + newVal);
+                    }
+                } else if (key === 'show') {
+                    if (newVal) {
+                        element.removeClass('ng-hide');
+                    } else {
+                        element.addClass('ng-hide');
                     }
                 }
 

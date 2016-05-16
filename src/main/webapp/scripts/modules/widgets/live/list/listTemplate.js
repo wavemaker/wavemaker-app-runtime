@@ -54,7 +54,7 @@ WM.module('wm.layouts.containers')
 
             // template function of studio directive
             function templateFn() {
-                return '<li init-widget class="app-listtemplate list-group-item app-list-item" data-ng-show="show" apply-styles="container" wmtransclude></li>';
+                return '<li init-widget class="app-listtemplate list-group-item app-list-item" apply-styles="container" wmtransclude></li>';
             }
 
             // pre link function of studio directive

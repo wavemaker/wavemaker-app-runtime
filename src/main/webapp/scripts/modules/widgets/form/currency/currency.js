@@ -5,15 +5,15 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/currency.html',
-            '<div init-widget has-model class="input-group app-currency" data-ng-show="show" role="input"><span class="input-group-addon">{{currencysymbol}}</span>' +
+            '<div init-widget has-model class="input-group app-currency" role="input"><span class="input-group-addon">{{currencysymbol}}</span>' +
                 '<input type="number" class="form-control app-textbox app-currency-input" title="{{hint}}" apply-styles' +
-                ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
-                ' data-ng-readonly="readonly" ' +
-                ' data-ng-required="required" ' +
-                ' data-ng-disabled="disabled" ' +
-                ' accesskey="{{shortcutkey}}"' +
-                ' data-ng-change="_onChange({$event: $event, $scope: this})">' +
-                '</div>'
+                ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
+                ' ng-readonly="readonly" ' +
+                ' ng-required="required" ' +
+                ' ng-disabled="disabled" ' +
+                ' accesskey="{{::shortcutkey}}"' +
+                ' ng-change="_onChange({$event: $event, $scope: this})">' +
+            '</div>'
             );
     }])
     .directive('wmCurrency', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$locale', 'CURRENCYCONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $locale, CURRENCYCONSTANTS) {
@@ -36,8 +36,8 @@ WM.module('wm.widgets.form')
 
         return {
             'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'replace' : true,
+            'scope'   : {},
             'template': function (tElement, tAttrs) {
 
                 var isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid'),
@@ -62,49 +62,47 @@ WM.module('wm.widgets.form')
                     }
 
                     if (tAttrs.hasOwnProperty('onClick')) {
-                        target.attr('data-ng-click', 'onClick({$event: $event, $scope: this})');
+                        target.attr('ng-click', 'onClick({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onMouseenter')) {
-                        target.attr('data-ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
+                        target.attr('ng-mouseenter', 'onMouseenter({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onMouseleave')) {
-                        target.attr('data-ng-mouseleave', 'onMouseleave({$event: $event, $scope: this})');
+                        target.attr('ng-mouseleave', 'onMouseleave({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onFocus')) {
-                        target.attr('data-ng-focus', 'onFocus({$event: $event, $scope: this})');
+                        target.attr('ng-focus', 'onFocus({$event: $event, $scope: this})');
                     }
 
                     if (tAttrs.hasOwnProperty('onBlur')) {
-                        target.attr('data-ng-blur', 'onBlur({$event: $event, $scope: this})');
+                        target.attr('ng-blur', 'onBlur({$event: $event, $scope: this})');
                     }
                 }
 
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        /* to get the currency symbol from current locale*/
-                        scope.$locale = $locale;
+            'link': {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    /* to get the currency symbol from current locale*/
+                    scope.$locale = $locale;
 
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
 
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                            scope._model_ = '';
-                        };
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                        scope._model_ = '';
+                    };
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -180,7 +178,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>single click count: {{clickCount}}</div>
  *               <div>change count: {{changeCount}}</div>
  *               <div>mouse enter count: {{mouseenterCount}}</div>

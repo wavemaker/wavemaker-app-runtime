@@ -5,7 +5,7 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livegrid/livegrid.html",
-                '<div class="app-livegrid" init-widget title="{{hint}}" apply-styles="container" data-ng-show="show">' +
+                '<div class="app-livegrid" init-widget title="{{hint}}" apply-styles="container">' +
                     '<div wmtransclude></div>' +
                 '</div>'
             );

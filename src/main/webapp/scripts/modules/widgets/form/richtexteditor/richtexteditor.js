@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($tc) {
         'use strict';
         $tc.put('template/widget/richtexteditor.html',
-            '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles ng-show="show" role="input">' +
+            '<div class="app-richtexteditor clearfix" init-widget has-model apply-styles role="input">' +
                 '<div text-angular ng-model="_model_"></div>' +
                 '<div ng-bind-html="_model_" class="ta-preview" ng-if="showpreview"></div>' +
                 '<input class="model-holder ng-hide" ng-disabled="disabled">' +
@@ -181,7 +181,7 @@ WM.module('wm.widgets.form')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-composite>
                     <wm-label caption="Placeholder:"></wm-label>
                     <wm-text scopedatavalue="placeholder"></wm-text>

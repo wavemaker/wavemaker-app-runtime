@@ -7,9 +7,9 @@ WM.module('wm.widgets.basic')
         'use strict';
 
         $templateCache.put('template/widget/basic/popover.html',
-                '<div class="app-popover popover invisible {{class}} {{popoverplacement}}" data-ng-style="{width : popoverwidth, height : popoverheight}">' +
-                    '<div class="arrow" ng-class="{\'arrow-color\': title}" data-ng-show="popoverarrow"></div>' +
-                    '<h3 class="popover-title" data-ng-if="title">{{title}}</h3>' +
+                '<div class="app-popover popover invisible {{class}} {{popoverplacement}}" ng-style="{width : popoverwidth, height : popoverheight}">' +
+                    '<div class="arrow" ng-class="{\'arrow-color\': title}" ng-show="popoverarrow"></div>' +
+                    '<h3 class="popover-title" ng-if="title">{{title}}</h3>' +
                     '<wm-container class="popover-content" content="{{content}}"></wm-container>' +
                 '</div>');
     }])
@@ -275,8 +275,8 @@ WM.module('wm.widgets.basic')
             'template': function () {
                 var template = WM.element($templateCache.get('template/widget/anchor.html'));
                 if (CONSTANTS.isRunMode) {
-                    template.attr('data-ng-click', 'togglePopover($event)');
-                    template.attr('data-ng-keydown', 'togglePopover($event)');
+                    template.attr('ng-click', 'togglePopover($event)');
+                    template.attr('ng-keydown', 'togglePopover($event)');
                 }
                 template.addClass('app-popover-anchor');
                 return template[0].outerHTML;
@@ -402,7 +402,7 @@ WM.module('wm.widgets.basic')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <br>
                 <wm-page ng-controller="WM.noop">
                     <wm-popover caption="Click here to see the popover including the content from a partial"

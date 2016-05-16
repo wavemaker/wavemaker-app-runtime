@@ -8,14 +8,14 @@ WM.module('wm.widgets.form')
         function ($templateCache) {
             'use strict';
             $templateCache.put('template/widget/form/switch.html',
-                '<div data-ng-show="show" class="app-switch" init-widget has-model apply-styles role="input" listen-property="dataset">' +
+                '<div class="app-switch" init-widget has-model apply-styles role="input" listen-property="dataset">' +
                     '<div class="btn-group btn-group-justified">' +
-                        '<a title="{{opt[displayfield || \'label\']}}" href="javascript:void(0);" role="button" class="btn btn-default" data-ng-disabled="disabled" ' +
-                            ' data-ng-repeat="opt in options track by $index" data-ng-class="{\'selected\': selected.index === $index}"' +
-                            ' data-ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</a>' +
+                        '<a title="{{opt[displayfield || \'label\']}}" href="javascript:void(0);" role="button" class="btn btn-default" ng-disabled="disabled" ' +
+                            ' ng-repeat="opt in options track by $index" ng-class="{\'selected\': selected.index === $index}"' +
+                            ' ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</a>' +
                     '</div>' +
-                    '<span title="{{_model_}}" class="btn btn-primary app-switch-overlay switch-handle" data-ng-style="{\'width\': btnwidth + \'%\'}">{{options[selected.index][displayfield || "label"] || _model_}}</span>' +
-                    '<input name={{name}} type="hidden" class="ng-hide model-holder" data-ng-disabled="disabled" value="{{_model_}}">' +
+                    '<span title="{{_model_}}" class="btn btn-primary app-switch-overlay switch-handle" ng-style="{\'width\': btnwidth + \'%\'}">{{options[selected.index][displayfield || "label"] || _model_}}</span>' +
+                    '<input name={{name}} type="hidden" class="ng-hide model-holder" ng-disabled="disabled" value="{{_model_}}">' +
                 '</div>'
                 );
         }
@@ -129,89 +129,85 @@ WM.module('wm.widgets.form')
 
             return {
                 'restrict': 'E',
-                'replace': true,
-                'scope': {
-                    'scopedataset': '=?'
-                },
+                'replace' : true,
+                'scope'   : {'scopedataset': '=?'},
                 'template': function (tElement, tAttrs) {
                     var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/form/switch.html', tElement, tAttrs));
                     return template[0].outerHTML;
                 },
-                'compile': function () {
-                    return {
-                        'pre': function (scope) {
-                            scope.widgetProps = widgetProps;
-                        },
-                        'post': function (scope, element, attrs) {
+                'link': {
+                    'pre': function (scope) {
+                        scope.widgetProps = widgetProps;
+                    },
+                    'post': function (scope, element, attrs) {
 
-                            scope.options = [];
+                        scope.options = [];
 
-                            scope.selectOptAtIndex = function ($index) {
-                                var opt = scope.options[$index];
-                                if (scope.datasetType === ARRAY_OBJECTS) {
-                                    if (scope.datafield) {
-                                        if (scope.datafield === 'All Fields') {
-                                            scope._model_ = opt;
-                                        } else {
-                                            scope._model_ = opt[scope.datafield];
-                                        }
+                        scope.selectOptAtIndex = function ($index) {
+                            var opt = scope.options[$index];
+                            if (scope.datasetType === ARRAY_OBJECTS) {
+                                if (scope.datafield) {
+                                    if (scope.datafield === 'All Fields') {
+                                        scope._model_ = opt;
+                                    } else {
+                                        scope._model_ = opt[scope.datafield];
                                     }
-                                } else {
-                                    scope._model_ = opt.value;
                                 }
-                            };
+                            } else {
+                                scope._model_ = opt.value;
+                            }
+                        };
 
-                            scope.selectOpt = function ($event, $index) {
+                        scope.selectOpt = function ($event, $index) {
 
-                                $event.preventDefault();
+                            $event.preventDefault();
 
-                                if (scope.disabled) {
+                            if (scope.disabled) {
+                                return;
+                            }
+
+                            if (scope.selected.index === $index) {
+                                if (scope.options.length === 2) {
+                                    $index = $index === 1 ? 0 : 1;
+                                } else {
                                     return;
                                 }
-
-                                if (scope.selected.index === $index) {
-                                    if (scope.options.length === 2) {
-                                        $index = $index === 1 ? 0 : 1;
-                                    } else {
-                                        return;
-                                    }
-                                }
-                                scope.selected.index = $index;
-
-                                scope.selectOptAtIndex($index);
-                                updateHighlighter(scope, element);
-
-                                scope._onChange($event);
-                            };
-
-                            scope.$watch('_model_', function () {
-                                setSelectedValue(scope);
-                                updateHighlighter(scope, element, true);
-                            });
-
-                            scope.selected = {};
-
-                            /*Called from form reset when users clicks on form reset*/
-                            scope.reset = function () {
-                                if (scope.options.length > 0) {
-                                    scope.datavalue = scope.options[0].value;
-                                    scope.selected.index = 0;
-                                }
-                            };
-
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
-                            WidgetUtilService.postWidgetCreate(scope, element, attrs);
-
-
-                            /* fields defined in scope: {} MUST be watched explicitly */
-                            if (!attrs.widgetid && attrs.scopedataset) {
-                                scope.$watch('scopedataset', function (newVal) {
-                                    /*generating the radioset based on the values provided*/
-                                    updateSwitchOptions(scope, element, newVal);
-                                });
                             }
+                            scope.selected.index = $index;
+
+                            scope.selectOptAtIndex($index);
+                            updateHighlighter(scope, element);
+
+                            scope._onChange($event);
+                        };
+
+                        scope.$watch('_model_', function () {
+                            setSelectedValue(scope);
+                            updateHighlighter(scope, element, true);
+                        });
+
+                        scope.selected = {};
+
+                        /*Called from form reset when users clicks on form reset*/
+                        scope.reset = function () {
+                            if (scope.options.length > 0) {
+                                scope.datavalue = scope.options[0].value;
+                                scope.selected.index = 0;
+                            }
+                        };
+
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+
+                        /* fields defined in scope: {} MUST be watched explicitly */
+                        if (!attrs.widgetid && attrs.scopedataset) {
+                            scope.$watch('scopedataset', function (newVal) {
+                                /*generating the radioset based on the values provided*/
+                                updateSwitchOptions(scope, element, newVal);
+                            });
                         }
-                    };
+                    }
                 }
             };
         }]);
@@ -281,7 +277,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>single click count: {{clickCount}}</div>
  *               <div>change count: {{changeCount}}</div>
  *               <div>mouse enter count: {{mouseenterCount}}</div>

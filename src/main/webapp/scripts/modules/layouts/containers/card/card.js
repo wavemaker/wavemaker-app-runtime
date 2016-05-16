@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layout/container/card.html',
-            '<div init-widget class="app-card card" ng-show="show" apply-styles="shell" wm-navigatable-element="true" ng-style="{height:height}">' +
+            '<div init-widget class="app-card card" apply-styles="shell" wm-navigatable-element="true" ng-style="{height:height}">' +
                 '<div class="app-card-header" ng-show="heading || subheading || iconclass || iconurl">' +
                     '<div class="app-card-avatar" ng-show="iconclass || iconurl">' +
                         '<i class="app-icon {{iconclass}}" ng-if="showIcon"></i>' +
@@ -108,7 +108,6 @@ WM.module('wm.layouts.containers')
                     }
                 },
                 'post': function (scope, element, attrs) {
-                    // register the property change handler
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
@@ -251,7 +250,7 @@ WM.module('wm.layouts.containers')
  * @example
  <example module="wmCore">
      <file name="index.html">
-         <div data-ng-controller="Ctrl" class="wm-app">
+         <div ng-controller="Ctrl" class="wm-app">
              <wm-card width="400" height="500" heading="Daily Sync Up" subheading="Event">
                  <wm-card-content>
                      <wm-layoutgrid>

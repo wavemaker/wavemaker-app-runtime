@@ -5,16 +5,16 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/radio.html',
-            '<div class="radio app-radio" init-widget has-model data-ng-show="show" title="{{hint}}" role="input">' +
+            '<div class="radio app-radio" init-widget has-model title="{{hint}}" role="input">' +
                 '<label apply-styles>' +
                     '<input type="radio" class="app-radiobutton"' +
                         ' value="{{checkedvalue}}"' +
-                        ' data-ng-model="_model_"' + /* _model_ is a private variable inside this scope */
-                        ' data-ng-readonly="readonly" ' +
-                        ' data-ng-required="required" ' +
-                        ' data-ng-disabled="disabled" ' +
-                        ' accesskey="{{shortcutkey}}"' +
-                        ' data-ng-change="_onChange({$event: $event, $scope: this})" ' + /* private method defined in this scope */
+                        ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
+                        ' ng-readonly="readonly" ' +
+                        ' ng-required="required" ' +
+                        ' ng-disabled="disabled" ' +
+                        ' accesskey="{{::shortcutkey}}"' +
+                        ' ng-change="_onChange({$event: $event, $scope: this})" ' + /* private method defined in this scope */
                     '/>' +
                     '<span class="caption">{{caption || "&nbsp;"}}</span>' +
                 '</label>' +
@@ -44,8 +44,8 @@ WM.module('wm.widgets.form')
 
         return {
             'restrict': 'E',
-            'scope': {},
-            'replace': true,
+            'scope'   : {},
+            'replace' : true,
             'template': function (tElement, tAttrs) {
                 var template = WM.element($templateCache.get('template/widget/form/radio.html')),
                     radioBtn,
@@ -61,26 +61,24 @@ WM.module('wm.widgets.form')
 
                 return template[0].outerHTML;
             },
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        scope.widgetProps = widgetProps;
-                    },
-                    'post': function (scope, element, attrs) {
-                        scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
-                        /* register the property change handler */
-                        var radtioBtn = element.find('input[type=radio]');
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, radtioBtn), scope, notifyFor);
+            'link': {
+                'pre': function (scope) {
+                    scope.widgetProps = widgetProps;
+                },
+                'post': function (scope, element, attrs) {
+                    scope.eventProxy = FormWidgetUtils.eventProxy.bind(undefined, scope);
+                    /* register the property change handler */
+                    var radtioBtn = element.find('input[type=radio]');
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, radtioBtn), scope, notifyFor);
 
-                        /*Called from form reset when users clicks on form reset*/
-                        scope.reset = function () {
-                            //TODO implement custom reset logic here
-                            scope._model_ = undefined;
-                        };
+                    /*Called from form reset when users clicks on form reset*/
+                    scope.reset = function () {
+                        //TODO implement custom reset logic here
+                        scope._model_ = undefined;
+                    };
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -152,7 +150,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>single click count: {{clickCount}}</div>
  *               <div>change count: {{changeCount}}</div>
  *               <div>mouse enter count: {{mouseenterCount}}</div>

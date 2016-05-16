@@ -5,7 +5,7 @@ WM.module('wm.widgets.dialog')
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/dialog/confirmdialog.html",
-                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget data-ng-show="show" data-ng-style="{width: dialogWidth}">' +
+                '<div class="app-dialog modal-dialog app-confirm-dialog" dialogclass init-widget ng-style="{width: dialogWidth}">' +
                     '<div class="modal-content">' +
                         '<wm-dialogheader caption="{{title}}" iconclass="{{iconclass}}" iconwidth="{{iconwidth}}" iconheight="{{iconheight}}" iconmargin="{{iconmargin}}"></wm-dialogheader>' +
                         '<div class="app-dialog-body modal-body" apply-styles="scrollable-container">' +
@@ -99,54 +99,52 @@ WM.module('wm.widgets.dialog')
                 }
                 return $templateCache.get("template/widget/dialog/confirmdialog.html");
             },
-            "compile": function () {
-                return {
-                    "pre": function (iScope, element, attrs) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-
-                        /* for the notification-alert dialogs do not allow the user to edit the properties other than class */
-                        if (attrs.widgetid && attrs.notificationdialog) { //widget is in canvas
-                            var wp = iScope.widgetProps;
-                            _.keys(wp).forEach(function (propName) {
-                                if (propName !== 'class') {
-                                    wp[propName].disabled = true;
-                                }
-                            });
-                        }
-                    },
-                    "post": function (scope, element, attrs, dialogCtrl) {
-                        /* handles cancel button click*/
-                        if (!scope.cancelButtonHandler) {
-                            scope.cancelButtonHandler = function () {
-                                dialogCtrl._CancelButtonHandler(attrs.onCancel);
-                            };
-                        }
-                        /* handles ok button click*/
-                        if (!scope.okButtonHandler) {
-                            scope.okButtonHandler = function () {
-                                dialogCtrl._OkButtonHandler(attrs.onOk);
-                            };
-                        }
-                        /*adding classes for ok and cancel button for studio*/
-                        if (scope.okbuttonclass) {
-                            WM.element(element.find('button')[1]).addClass(scope.okbuttonclass);
-                        }
-                        if (scope.cancelbuttonclass) {
-                            WM.element(element.find('button')[0]).addClass(scope.cancelbuttonclass);
-                        }
-
-                        /* register the property change handler */
-                        if (scope.propertyManager) {
-                            WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
-                        }
-
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+            "link": {
+                "pre": function (iScope, element, attrs) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
                     }
-                };
+
+                    /* for the notification-alert dialogs do not allow the user to edit the properties other than class */
+                    if (attrs.widgetid && attrs.notificationdialog) { //widget is in canvas
+                        var wp = iScope.widgetProps;
+                        _.keys(wp).forEach(function (propName) {
+                            if (propName !== 'class') {
+                                wp[propName].disabled = true;
+                            }
+                        });
+                    }
+                },
+                "post": function (scope, element, attrs, dialogCtrl) {
+                    /* handles cancel button click*/
+                    if (!scope.cancelButtonHandler) {
+                        scope.cancelButtonHandler = function () {
+                            dialogCtrl._CancelButtonHandler(attrs.onCancel);
+                        };
+                    }
+                    /* handles ok button click*/
+                    if (!scope.okButtonHandler) {
+                        scope.okButtonHandler = function () {
+                            dialogCtrl._OkButtonHandler(attrs.onOk);
+                        };
+                    }
+                    /*adding classes for ok and cancel button for studio*/
+                    if (scope.okbuttonclass) {
+                        WM.element(element.find('button')[1]).addClass(scope.okbuttonclass);
+                    }
+                    if (scope.cancelbuttonclass) {
+                        WM.element(element.find('button')[0]).addClass(scope.cancelbuttonclass);
+                    }
+
+                    /* register the property change handler */
+                    if (scope.propertyManager) {
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element, attrs), scope, notifyFor);
+                    }
+
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -212,7 +210,7 @@ WM.module('wm.widgets.dialog')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl">
+            <div ng-controller="Ctrl">
                 <wm-button on-click="confirmDialog.show" caption="Show Dialog" class="btn-primary"></wm-button>
                 <wm-view class="dialog-view">
                     <wm-confirmdialog name="confirmDialog" controller="Ctrl"

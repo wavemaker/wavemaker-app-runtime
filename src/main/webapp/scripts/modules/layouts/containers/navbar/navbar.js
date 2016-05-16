@@ -37,12 +37,12 @@ WM.module('wm.layouts.containers')
         }
 
         return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
+            'restrict'  : 'E',
+            'replace'   : true,
+            'scope'     : {},
             'transclude': true,
-            'template':
-                '<nav class="navbar navbar-default app-navbar" data-ng-show="show" apply-styles="container" data-element-type="wmNavbar"  init-widget has-model >' +
+            'template'  :
+                '<nav class="navbar navbar-default app-navbar" apply-styles="container" data-element-type="wmNavbar" init-widget>' +
                     '<div class="container-fluid">' +
                     /* Brand and toggle get grouped for better mobile display */
                         '<div class="navbar-header"> ' +
@@ -50,32 +50,29 @@ WM.module('wm.layouts.containers')
                                 '<span class="sr-only">Toggle navigation</span>' +
                                 '<i class="{{menuiconclass}}"></i>' +
                             '</button>' +
-                            '<a class="navbar-brand" href="#/" data-ng-if="title || imagesrc">' +
-                                '<img data-identifier="img" class="brand-image" alt="{{title}}" width="20" height="20" data-ng-if="imgsrc" data-ng-src="{{imagesrc}}"/>' +
-                                    '{{title}}' +
+                            '<a class="navbar-brand" href="#/" ng-if="title || imagesrc">' +
+                                '<img data-identifier="img" class="brand-image" alt="{{title}}" width="20" height="20" ng-if="imgsrc" ng-src="{{imagesrc}}"/>' +
+                                '{{title}}' +
                             '</a>' +
                         '</div>' +
                         /* Collect the nav links, forms, and other content for toggling */
                         '<div class="collapse navbar-collapse" id="collapse-content" wmtransclude></div>' +
                     '</div>' +
                 '</nav> ',
-            'compile': function () {
-                return {
-                    'pre': function (scope) {
-                        /*Applying widget properties to directive scope*/
-                        scope.widgetProps = widgetProps;
-                    },
+            'link': {
+                'pre': function (scope) {
+                    /*Applying widget properties to directive scope*/
+                    scope.widgetProps = widgetProps;
+                },
 
-                    'post': function (scope, element, attrs) {
-                        var collapseContent = element.children().find('> #collapse-content');
-                        /* Register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
-                        scope.toggleCollapse = toggleCollapse.bind(undefined, collapseContent);
-                        /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or
-                         * style declarations.*/
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
+                'post': function (scope, element, attrs) {
+                    var collapseContent = element.children().find('> #collapse-content');
+                    /* Register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                    scope.toggleCollapse = toggleCollapse.bind(undefined, collapseContent);
+                    /*Cleaning the widget markup such that the widget wrapper is not cluttered with unnecessary property or style declarations.*/
+                    WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                }
             }
         };
     }]);
@@ -106,7 +103,7 @@ WM.module('wm.layouts.containers')
  * @example
     <example module="wmCore">
         <file name="index.html">
-            <div data-ng-controller="Ctrl" class="wm-app">
+            <div ng-controller="Ctrl" class="wm-app">
                 <wm-top-nav>
                     <wm-navbar title="Brand">
                         <wm-nav type="navbar" class="navbar-left"></wm-nav>
@@ -120,8 +117,3 @@ WM.module('wm.layouts.containers')
         </file>
     </example>
  */
-
-
-
-
-

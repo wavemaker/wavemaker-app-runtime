@@ -7,15 +7,14 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/select.html',
             '<select init-widget has-model listen-property="dataset" class="form-control app-select" apply-styles role="input"' +
-                ' data-ng-model="modelProxy"' + /* proxy-object is updated in the onChangeProxy function*/
+                ' ng-model="modelProxy"' + /* proxy-object is updated in the onChangeProxy function*/
                 ' title="{{hint}}"' +
-                ' data-ng-show="show"' +
-                ' data-ng-readonly="readonly" ' +
-                ' data-ng-disabled="disabled"' +
-                ' data-ng-required="required"' +
-                ' accesskey="{{shortcutkey}}"' +
-                ' data-ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
-                ' data-ng-options="option.key as $root.locale[option.value] || option.value for option in selectOptions">' +
+                ' ng-readonly="readonly" ' +
+                ' ng-disabled="disabled"' +
+                ' ng-required="required"' +
+                ' accesskey="{{::shortcutkey}}"' +
+                ' ng-change="onChangeProxy({$event: $event, $scope: this})"' + /* wrapper to _onChange function to update the model-proxy*/
+                ' ng-options="option.key as $root.locale[option.value] || option.value for option in selectOptions">' +
                 '<option selected value="" ng-if="placeholder">{{placeholder}}</option>' +
             '</select>'
                 );
@@ -96,7 +95,7 @@ WM.module('wm.widgets.form')
 
             } else {
                 data = {};
-                if (!WM.isArray(dataSet) && scope.binddataset && scope.binddataset.indexOf('selecteditem') > -1 ) {
+                if (!WM.isArray(dataSet) && scope.binddataset && scope.binddataset.indexOf('selecteditem') > -1) {
                     data[0] = WidgetUtilService.getEvaluatedData(scope, dataSet, {fieldName: 'displayfield', expressionName: 'displayexpression'}, displayField);
                     /*store parsed dataSet in scope*/
                     _dataSetModelProxyMap[scope.$id][0] = dataSet;
@@ -131,7 +130,7 @@ WM.module('wm.widgets.form')
          * 1. comma separated string, which is captured in the options property of the scope
          * 2. application scope variable which is assigned to the dataSet attribute of the select widget from the studio.
          * 3. a wm-studio-variable which is bound to the widget's dataSet property.*/
-        function createSelectOptions(dataset, scope, element) {
+        function createSelectOptions(dataset, scope) {
             /* check for dataSet*/
             if (!dataset) {
                 return;
@@ -265,46 +264,44 @@ WM.module('wm.widgets.form')
                 'scopedataset': '=?'
             },
             'template': WidgetUtilService.getPreparedTemplate.bind(undefined, 'template/widget/form/select.html'),
-            'compile': function () {
-                return {
-                    'pre': function (iScope) {
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-                    },
-                    'post': function (iScope, element, attrs) {
-
-                        // expose the `changeLocale` method defined on $rootScope as `changeAppLocale` on widget scope.
-                        var scope = element.scope();
-                        scope.changeAppLocale = scope.$root.changeLocale;
-
-                        /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, element, attrs), iScope, notifyFor);
-
-                        /*decorate onChange function*/
-                        iScope.onChangeProxy = onChangeProxy.bind(undefined, iScope);
-
-                        /*Called from form reset when users clicks on form reset*/
-                        iScope.reset = function () {
-                            //TODO implement custom reset logic here
-                            iScope._model_ = '';
-                        };
-
-                        /*Executing WidgetUtilService method to initialize the widget with the essential configurations.*/
-                        WidgetUtilService.postWidgetCreate(iScope, element, attrs);
-
-                        /* fields defined in scope: {} MUST be watched explicitly */
-                        /*watching scopedataset attribute to create options for the select element.*/
-                        if (!attrs.widgetid) {
-                            if (attrs.scopedataset) {
-                                iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
-                            }
-                            iScope.$watch('_model_', updateModelProxy.bind(undefined, iScope));
-                        }
+            'link': {
+                'pre': function (iScope) {
+                    if (CONSTANTS.isStudioMode) {
+                        iScope.widgetProps = Utils.getClonedObject(widgetProps);
+                    } else {
+                        iScope.widgetProps = widgetProps;
                     }
-                };
+                },
+                'post': function (iScope, element, attrs) {
+
+                    // expose the `changeLocale` method defined on $rootScope as `changeAppLocale` on widget scope.
+                    var scope = element.scope();
+                    scope.changeAppLocale = scope.$root.changeLocale;
+
+                    /* register the property change handler */
+                    WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, iScope, element, attrs), iScope, notifyFor);
+
+                    /*decorate onChange function*/
+                    iScope.onChangeProxy = onChangeProxy.bind(undefined, iScope);
+
+                    /*Called from form reset when users clicks on form reset*/
+                    iScope.reset = function () {
+                        //TODO implement custom reset logic here
+                        iScope._model_ = '';
+                    };
+
+                    /*Executing WidgetUtilService method to initialize the widget with the essential configurations.*/
+                    WidgetUtilService.postWidgetCreate(iScope, element, attrs);
+
+                    /* fields defined in scope: {} MUST be watched explicitly */
+                    /*watching scopedataset attribute to create options for the select element.*/
+                    if (!attrs.widgetid) {
+                        if (attrs.scopedataset) {
+                            iScope.$watch('scopedataset', scopeDatasetWatcher.bind(undefined, iScope, element));
+                        }
+                        iScope.$watch('_model_', updateModelProxy.bind(undefined, iScope));
+                    }
+                }
             }
         };
     }]);
@@ -389,7 +386,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>single click count: {{clickCount}}</div>
  *               <div>change count: {{changeCount}}</div>
  *               <div>mouse enter count: {{mouseenterCount}}</div>
@@ -529,7 +526,7 @@ WM.module('wm.widgets.form')
  * @example
  *   <example module="wmCore">
  *       <file name="index.html">
- *           <div data-ng-controller="Ctrl" class="wm-app">
+ *           <div ng-controller="Ctrl" class="wm-app">
  *
  *               <wm-composite>
  *                   <wm-label caption="Languages: "></wm-label>

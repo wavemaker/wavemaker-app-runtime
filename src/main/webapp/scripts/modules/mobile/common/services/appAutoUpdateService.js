@@ -5,22 +5,18 @@ WM.module('wm.widgets.advanced')
         'use strict';
 
         $templateCache.put('template/widget/advanced/appUpdate.html',
-            '<div class="modal fade in" data-ng-style="{display : show ? \'block\' : \'none\'}">' +
+            '<div class="modal fade in" ng-style="{display : show ? \'block\' : \'none\'}">' +
                 '<div class="modal-dialog">' +
                     '<div class="modal-content">' +
                         '<div class="modal-body">' +
                             '<span>{{message}}</span>' +
-                            '<div class="progress" data-ng-show="downloading">' +
-                                '<div class="progress-bar" data-ng-style="{ \'width\' : downloadProgress + \'%\'}"></div>' +
+                            '<div class="progress" ng-show="downloading">' +
+                                '<div class="progress-bar" ng-style="{ \'width\' : downloadProgress + \'%\'}"></div>' +
                             '</div>' +
                         '</div>' +
                         '<div class="modal-footer">' +
-                            '<button type="button" class="btn btn-default" data-dismiss="modal" data-ng-click="cancel()">' +
-                                'Skip update' +
-                            '</button>' +
-                            '<button type="button" class="btn btn-primary" data-ng-hide="downloading" data-ng-click="updateApp()">' +
-                                'Update' +
-                            '</button>' +
+                            '<button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Skip update</button>' +
+                            '<button type="button" class="btn btn-primary" ng-hide="downloading" ng-click="updateApp()">Update</button>' +
                         '</div>' +
                     '</div>' +
                 '</div>' +
