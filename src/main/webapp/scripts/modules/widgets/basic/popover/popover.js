@@ -205,7 +205,7 @@ WM.module('wm.widgets.basic')
          * @param onClose callback to invoke when popover closes automatically.
          * @constructor
          */
-        function Popover(element, transcludeFn, isInlineContent, onOpen, onClose) {
+        function Popover(element, transcludeFn, isInlineContent, onOpen, onClose, onLoad) {
             var scope = element.isolateScope(),
                 popoverScope = createPopoverScope(element),
                 page = $rootScope.$activePageEl,
@@ -237,6 +237,7 @@ WM.module('wm.widgets.basic')
                     var includedPageScope = popoverEle.find('[data-ng-controller]:first').scope();
                     scope.Widgets = includedPageScope.Widgets;
                     scope.Variables = includedPageScope.Variables;
+                    Utils.triggerFn(onLoad);
                     Utils.triggerFn(onOpen);
                 });
             }
@@ -295,6 +296,9 @@ WM.module('wm.widgets.basic')
                             },
                             onClose = function (event) {
                                 scope.togglePopover(event);
+                            },
+                            onLoad = function () {
+                                Utils.triggerFn(scope.onLoad, {'$isolateScope' : scope});
                             };
                         if (CONSTANTS.isRunMode) {
                             scope.togglePopover = function (event) {
@@ -311,7 +315,7 @@ WM.module('wm.widgets.basic')
                                     element.focus();
                                     Utils.triggerFn(scope.onHide, {'$event': event, '$scope': scope});
                                 } else {
-                                    popover = new Popover(element, transcludeFn, isInlineContent, onOpen.bind(undefined, event), onClose);
+                                    popover = new Popover(element, transcludeFn, isInlineContent, onOpen.bind(undefined, event), onClose, onLoad);
                                     element.addClass('app-popover-open');
                                 }
                                 return false;

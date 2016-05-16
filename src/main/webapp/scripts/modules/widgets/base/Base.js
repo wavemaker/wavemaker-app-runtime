@@ -1378,7 +1378,8 @@ WM.module('wm.widgets.base', [])
                         "popoverplacement": {"type": "list", "options": ["bottom", "left", "right", "top"], "value": "bottom"},
                         "title": {"type": "string", "bindable": "in-bound"},
                         "onShow": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "onHide": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
+                        "onHide": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.prefabs": {
                         "margin": {"type": "string", "widget": "box"},
@@ -1689,7 +1690,8 @@ WM.module('wm.widgets.base', [])
                         "onSubmit": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.pagecontainer": {
-                        "content": {"type": "list", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"}
+                        "content": {"type": "list", "options": [], "widget": "pages-list", value: "", "bindable": "in-bound"},
+                        "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.video": {
                         "mp4format": {"type": "string", "value": "", "bindable": "in-out-bound"},

@@ -1,4 +1,4 @@
-/*global WM */
+/*global WM, _ */
 
 WM.module('wm.widgets.base')
     .directive('pageContainer', [
@@ -12,8 +12,9 @@ WM.module('wm.widgets.base')
         'Utils',
         'WidgetUtilService',
         'ProjectService',
+        '$timeout',
 
-        function ($compile, $rootScope, $routeParams, PropertiesFactory, Variables, FileService, CONSTANTS, Utils, WidgetUtilService, ProjectService) {
+        function ($compile, $rootScope, $routeParams, PropertiesFactory, Variables, FileService, CONSTANTS, Utils, WidgetUtilService, ProjectService, $timeout) {
             'use strict';
 
             var props = PropertiesFactory.getPropertiesOf('wm.pagecontainer'),
@@ -89,6 +90,9 @@ WM.module('wm.widgets.base')
                     scope.pageParams = iScope.pageParams;
                     /* compile */
                     target.html($compile(partialMarkup)(scope));
+                    $timeout(function () {
+                        Utils.triggerFn(iScope.onLoad, {$isolateScope: iScope});
+                    }, undefined, false);
                 } else {
                     return;
                 }
