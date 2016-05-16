@@ -369,13 +369,16 @@ WM.module('wm.widgets.grid')
                         /* event emitted whenever grid actions are modified */
                         handlers.push($rootScope.$on('wms:compile-grid-row-actions', function (event, scopeId, markup, fromDesigner) {
                             /* as multiple grid directives will be listening to the event, apply fieldDefs only for current grid */
+                            var prevLength, forceSet;
                             if (scope.$id === scopeId) {
                                 scope.rowActions = [];
                                 $compile(markup)(scope);
                             }
+                            prevLength = scope.fieldDefs.length;
                             /*Invoke the function to render the operation columns.*/
                             scope.renderOperationColumns(fromDesigner);
-                            scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs));
+                            forceSet = prevLength !== scope.fieldDefs.length;//since `fieldDefs` has reference to `colDefs` forcibly setting grid option
+                            scope.setDataGridOption('colDefs', Utils.getClonedObject(scope.fieldDefs), forceSet);
                             scope.setDataGridOption('rowActions', Utils.getClonedObject(scope.rowActions));
                         }));
 
@@ -1824,9 +1827,9 @@ WM.module('wm.widgets.grid')
                 $scope.setDataGridOption('colDefs', Utils.getClonedObject($scope.fieldDefs));
             };
 
-            $scope.setDataGridOption = function (optionName, newVal) {
+            $scope.setDataGridOption = function (optionName, newVal, forceSet) {
                 var option = {};
-                if (WM.isDefined(newVal) && !WM.equals(newVal, $scope.gridOptions[optionName])) {
+                if (WM.isDefined(newVal) && (!WM.equals(newVal, $scope.gridOptions[optionName]) || forceSet)) {
                     option[optionName] = newVal;
                     $scope.datagridElement.datagrid('option', option);
                     $scope.gridOptions[optionName] = newVal;
