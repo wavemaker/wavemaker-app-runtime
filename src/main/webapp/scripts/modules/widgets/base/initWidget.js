@@ -716,7 +716,12 @@ WM.module('wm.widgets.base')
                     while (watchers.length) {
                         watcher = watchers.shift();
                         if (watcher.$s && !watcher.$s.$$destroyed) {
-                            watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
+                            // when bound to FileUpload widget, use $watchCollection instead of $watch
+                            if (_.includes(watcher.expr, 'Widgets.') && _.endsWith(watcher.expr, 'selectedFiles')) {
+                                watcher.deRegister.destroy = watcher.$s.$watchCollection(watcher.expr, watcher.listener, watcher.deepWatch);
+                            } else {
+                                watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
+                            }
                         }
                     }
                 });
