@@ -1993,18 +1993,18 @@ WM.module('wm.widgets.base', [])
      * When this attribute directive is applied on an element, the elements transcluded content is processed and appended to the element.
      */
     .directive('wmtransclude', ['CONSTANTS', '$timeout', function (CONSTANTS, $timeout) {
-        "use strict";
+        'use strict';
 
         return {
-            "restrict": "A",
-            "link": function (scope, element, attrs, nullCtrl, transcludeFn) {
+            'restrict': 'A',
+            'link'    : function (scope, element, attrs, nullCtrl, transcludeFn) {
 
                 /*
                  * add data-droptarget-for attribute on the element.
                  * this attribute is useful in studio. it is used to find out the droptarget on an element.
                  */
                 if (scope.widgetid) {
-                    element.attr("data-droptarget-for", scope.widgettype);
+                    element.attr('data-droptarget-for', scope.widgettype);
                 }
 
                 var eleScope = element.scope(),
@@ -2133,7 +2133,7 @@ WM.module('wm.widgets.base', [])
      */
     .service('WidgetUtilService', ['$parse', '$rootScope', 'CONSTANTS', 'Utils', '$templateCache',
         function ($parse, $rootScope, CONSTANTS, Utils, $templateCache) {
-            "use strict";
+            'use strict';
 
             var deviceSizeArray = {
                 "all": {
@@ -2154,36 +2154,38 @@ WM.module('wm.widgets.base', [])
                 }
             },
                 EventsMap = {
-                    'onClick':          {'name': 'data-ng-click',       'value': 'onClick({$event: $event, $scope: this})'},
-                    'onDblclick':       {'name': 'data-ng-dblclick',    'value': 'onDblclick({$event: $event, $scope: this})'},
-                    'onMouseenter':     {'name': 'data-ng-mouseenter',  'value': 'onMouseenter({$event: $event, $scope: this})'},
-                    'onMouseleave':     {'name': 'data-ng-mouseleave',  'value': 'onMouseleave({$event: $event, $scope: this})'},
-                    'onMouseover':      {'name': 'data-ng-mouseover',   'value': 'onMouseover({$event: $event, $scope: this})'},
-                    'onMouseout':       {'name': 'data-ng-mouseout',    'value': 'onMouseout({$event: $event, $scope: this})'},
+                    'onClick':          {'name': 'ng-click',       'value': 'onClick({$event: $event, $scope: this})'},
+                    'onDblclick':       {'name': 'ng-dblclick',    'value': 'onDblclick({$event: $event, $scope: this})'},
+                    'onMouseenter':     {'name': 'ng-mouseenter',  'value': 'onMouseenter({$event: $event, $scope: this})'},
+                    'onMouseleave':     {'name': 'ng-mouseleave',  'value': 'onMouseleave({$event: $event, $scope: this})'},
+                    'onMouseover':      {'name': 'ng-mouseover',   'value': 'onMouseover({$event: $event, $scope: this})'},
+                    'onMouseout':       {'name': 'ng-mouseout',    'value': 'onMouseout({$event: $event, $scope: this})'},
 
-                    'onFocus':          {'name': 'data-ng-focus',       'value': 'onFocus({$event: $event, $scope: this})'},
-                    'onBlur':           {'name': 'data-ng-blur',        'value': 'onBlur({$event: $event, $scope: this})'},
+                    'onFocus':          {'name': 'ng-focus',       'value': 'onFocus({$event: $event, $scope: this})'},
+                    'onBlur':           {'name': 'ng-blur',        'value': 'onBlur({$event: $event, $scope: this})'},
 
-                    'onKeypress':       {'name': 'data-ng-keypress',    'value': 'onKeypress({$event: $event, $scope: this})'},
-                    'onKeydown':        {'name': 'data-ng-keydown',     'value': 'onKeydown({$event: $event, $scope: this})'},
-                    'onKeyup':          {'name': 'data-ng-keyup',       'value': 'onKeyup({$event: $event, $scope: this})'},
+                    'onKeypress':       {'name': 'ng-keypress',    'value': 'onKeypress({$event: $event, $scope: this})'},
+                    'onKeydown':        {'name': 'ng-keydown',     'value': 'onKeydown({$event: $event, $scope: this})'},
+                    'onKeyup':          {'name': 'ng-keyup',       'value': 'onKeyup({$event: $event, $scope: this})'},
 
-                    'onSwipeup':        {'name': 'hm-swipe-up',         'value': 'onSwipeup({$event: $event, $scope: this})'},
-                    'onSwipedown':      {'name': 'hm-swipe-down',       'value': 'onSwipedown({$event: $event, $scope: this})'},
-                    'onSwipeleft':      {'name': 'hm-swipe-left',       'value': 'onSwipeleft({$event: $event, $scope: this})'},
-                    'onSwiperight':     {'name': 'hm-swipe-right',      'value': 'onSwiperight({$event: $event, $scope: this})'},
-                    'onPinchin':        {'name': 'hm-pinch-in',         'value': 'onPinchin({$event: $event, $scope: this})'},
-                    'onPinchout':       {'name': 'hm-pinch-out',        'value': 'onPinchout({$event: $event, $scope: this})'},
-                    'onTap':            {'name': 'data-ng-click',       'value': 'onTap({$event: $event, $scope: this})'},
-                    'onDoubletap':      {'name': 'data-ng-dblclick',    'value': 'onDoubletap({$event: $event, $scope: this})'}
+                    'onSwipeup':        {'name': 'hm-swipe-up',    'value': 'onSwipeup({$event: $event, $scope: this})'},
+                    'onSwipedown':      {'name': 'hm-swipe-down',  'value': 'onSwipedown({$event: $event, $scope: this})'},
+                    'onSwipeleft':      {'name': 'hm-swipe-left',  'value': 'onSwipeleft({$event: $event, $scope: this})'},
+                    'onSwiperight':     {'name': 'hm-swipe-right', 'value': 'onSwiperight({$event: $event, $scope: this})'},
+                    'onPinchin':        {'name': 'hm-pinch-in',    'value': 'onPinchin({$event: $event, $scope: this})'},
+                    'onPinchout':       {'name': 'hm-pinch-out',   'value': 'onPinchout({$event: $event, $scope: this})'},
+                    'onTap':            {'name': 'ng-click',       'value': 'onTap({$event: $event, $scope: this})'},
+                    'onDoubletap':      {'name': 'ng-dblclick',    'value': 'onDoubletap({$event: $event, $scope: this})'}
 
                 },
                 triggerFn,
+                $rIC, //requestIdleCallback
+                $rICQueue,
                 attrsToBeRemoved;
 
             attrsToBeRemoved =
-                ' data-ng-style data-ng-change data-ng-click data-ng-dblclick data-ng-mouseout data-ng-mouseover data-ng-blur data-ng-focus' +
-                ' data-ng-show data-ng-hide data-ng-readonly data-ng-disabled data-ng-required data-ng-attr-placeholder ng-attr-name' +
+                ' ng-style ng-change ng-click ng-dblclick ng-mouseout ng-mouseover ng-blur ng-focus' +
+                ' ng-show ng-hide ng-readonly ng-disabled ng-required ng-attr-placeholder ng-attr-name' +
                 ' on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect ' +
                 ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius ' +
                 ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight ' +
@@ -2191,8 +2193,23 @@ WM.module('wm.widgets.base', [])
                 ' whitespace wordbreak zindex bordertop borderright borderbottom borderleft borderunit paddingtop paddingright paddingbottom paddingleft' +
                 ' paddingunit margintop marginright marginbottom marginleft marginunit fontsize fontunit show hint caption animation backgroundimage iconposition iconclass';
 
+
+            //use requestIdleCallback when available otherwise use setTimeout
+            $rIC = window.requestIdelCallback || window.setTimeout;
+
+            $rICQueue = [];
+
             function cleanupMarkup(element) {
-                element.removeAttr(attrsToBeRemoved);
+                if (!$rICQueue.length) {
+                    $rIC(function () {
+                        while ($rICQueue.length) {
+                            $rICQueue.shift().removeAttr(attrsToBeRemoved);
+                        }
+                        element.removeAttr(attrsToBeRemoved);
+                    });
+                }
+
+                $rICQueue.push(element);
             }
 
             function onScopeValueChangeProxy(scope, element, attrs, key, newVal, oldVal) {
@@ -2263,6 +2280,7 @@ WM.module('wm.widgets.base', [])
                             onScopeValueChangeProxy($is, $el, attrs, key, value);
                         }
                     });
+                Utils.triggerFn($is.__applyCSS);
                 $is._isInitialized = true;
                 if (!$is.__onTransclude) {
                     Utils.triggerFn($is.onReady, $is, $el, attrs);
@@ -2276,7 +2294,7 @@ WM.module('wm.widgets.base', [])
              3. triggers onScopeValueChange function for the initial state of the widget(default values and attributes specified on the element).
              */
             function postWidgetCreate($is, $el, attrs) {
-                _.defer(cleanupMarkup, $el);
+                cleanupMarkup($el);
 
                 if (!$is || !$is._initState) {
                     return;
@@ -2333,8 +2351,8 @@ WM.module('wm.widgets.base', [])
                 }
 
                 if (model) {
-                    dotIdx = model.indexOf(".");
-                    braceIdx = model.indexOf("[");
+                    dotIdx = model.indexOf('.');
+                    braceIdx = model.indexOf('[');
                     if (dotIdx === -1 && braceIdx === -1) {
                         /* model is provided with a variable name eg. model = x, we need to update in the controller directly */
                         ctrlScope = ctrlScope.ctrlScope;
@@ -2755,7 +2773,12 @@ WM.module('wm.widgets.base', [])
                 propNameCSSKeyMap,
                 SHELL_TYPE_IGNORE_LIST,
                 CONTAINER_TYPE_IGNORE_LIST,
-                SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST;
+                SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST,
+                MAP_SHELL_TYPE_IGNORE_LIST,
+                MAP_CONTAINER_TYPE_IGNORE_LIST,
+                MAP_SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST,
+                MAP_DIMENSION_PROPS,
+                temp;
 
 
             propNameCSSKeyMap = {
@@ -2794,9 +2817,35 @@ WM.module('wm.widgets.base', [])
             CONTAINER_TYPE_IGNORE_LIST = 'textalign';
             SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST = 'textalign width';
 
+            MAP_SHELL_TYPE_IGNORE_LIST = {};
+            MAP_CONTAINER_TYPE_IGNORE_LIST = {};
+            MAP_SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST = {};
+            MAP_DIMENSION_PROPS = {};
+
+            temp = _.split(SHELL_TYPE_IGNORE_LIST, ' ');
+
+            _.forEach(temp, function (k) {
+                MAP_SHELL_TYPE_IGNORE_LIST[k] = true;
+                notifyFor[k] = true;
+            });
+
+
+            temp = _.split(CONTAINER_TYPE_IGNORE_LIST, ' ');
+
+            _.forEach(temp, function (k) {
+                MAP_CONTAINER_TYPE_IGNORE_LIST[k] = true;
+                notifyFor[k] = true;
+            });
+
+
+            temp = _.split(SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST, ' ');
+
+            _.forEach(temp, function (k) {
+                MAP_SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST[k] = true;
+            });
+
+
             _.keys(propNameCSSKeyMap)
-                .concat(SHELL_TYPE_IGNORE_LIST.split(' '))
-                .concat(CONTAINER_TYPE_IGNORE_LIST.split(' '))
                 .forEach(function (propName) {
                     notifyFor[propName] = true;
                 });
@@ -2806,18 +2855,15 @@ WM.module('wm.widgets.base', [])
             }));
 
             // add dimension related properties to notifyFor
-            _.forEach(DIMENSION_PROPS, function (prop) {
-                notifyFor[prop] = true;
+            _.forEach(DIMENSION_PROPS, function (k) {
+                MAP_DIMENSION_PROPS[k] = true;
+                notifyFor[k] = true;
             });
 
             // few extra properties which need some calculation/manipulations before applying as CSS.
             notifyFor.fontsize        = true;
             notifyFor.fontunit        = true;
             notifyFor.backgroundimage = true;
-
-            function isDimensionProp(key) {
-                return _.includes(DIMENSION_PROPS, key);
-            }
 
             function setDimensionProp($is, cssObj, key) {
                 var prefix,
@@ -2841,21 +2887,19 @@ WM.module('wm.widgets.base', [])
                 cssObj[prefix + 'Left' + suffix]   = $is[prefix + 'left']   + unit;
             }
 
-            function applyCSS($is, $el, applyType, key, nv) {
+            function applyCSS($is, applyType, targetObj, key, nv) {
 
-                var obj = {},
-                    cssName = propNameCSSKeyMap[key],
-                    keys,
-                    resetObj;
+                var obj = targetObj,
+                    cssName = propNameCSSKeyMap[key];
 
                 // if the type is `shell` and the key is in the SHELL_TYPE_IGNORE_LIST, return
-                if (applyType === 'shell' && _.includes(SHELL_TYPE_IGNORE_LIST, key)) {
+                if (applyType === 'shell' && MAP_SHELL_TYPE_IGNORE_LIST[key]) {
                     return;
                 }
 
                 // if the type is `inner-shell` and the key is NOT in the SHELL_TYPE_IGNORE_LIST, return
                 if (applyType === 'inner-shell') {
-                    if (!_.includes(SHELL_TYPE_IGNORE_LIST, key)) {
+                    if (!MAP_SHELL_TYPE_IGNORE_LIST[key]) {
                         return;
                     }
                     if (key === 'height') {
@@ -2864,11 +2908,12 @@ WM.module('wm.widgets.base', [])
                 }
 
                 // if the type is `container` and the key is in the CONTAINER_TYPE_IGNORE_LIST, return
-                if (applyType === 'container' && _.includes(CONTAINER_TYPE_IGNORE_LIST, key)) {
+                if (applyType === 'container' && MAP_CONTAINER_TYPE_IGNORE_LIST[key]) {
                     return;
                 }
+
                 if (applyType === 'scrollable-container') {
-                    if (_.includes(SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST, key)) {
+                    if (MAP_SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST[key]) {
                         return;
                     }
 
@@ -2877,7 +2922,7 @@ WM.module('wm.widgets.base', [])
                     }
                 }
 
-                if (isDimensionProp(key)) {
+                if (MAP_DIMENSION_PROPS[key]) {
                     setDimensionProp($is, obj, key);
                 } else {
                     if (cssName) {
@@ -2889,22 +2934,48 @@ WM.module('wm.widgets.base', [])
                     }
                 }
 
-                keys = _.keys(obj);
+                return obj;
+            }
+
+            function flushCSS(css, $el) {
+                var keys = Object.keys(css), resetObj = {};
 
                 if (keys.length) {
                     //reset obj;
-                    resetObj = _.zipObject(keys, _.range(keys.length).map(function () { return ''; }));
+                    keys.forEach(function (k) {
+                        resetObj[k] = '';
+                    });
                     $el.css(resetObj);
-                    $el.css(obj);
+                    $el.css(css);
                 }
             }
 
             function onCSSPropertyChange($is, $el, attrs, key, nv) {
-                applyCSS($is, $el, attrs.applyStyles, key, nv);
+                var toBeAppliedCSS = {};
+                if ($is._isInitialized) {
+                    applyCSS($is, attrs.applyStyles, toBeAppliedCSS, key, nv);
+                    flushCSS(toBeAppliedCSS, $el);
+                } else {
+                    $is._cssObj[key] = nv;
+                }
+            }
+
+            function __applyCSS($is, $el, attrs) {
+                var toBeAppliedCSS = {}, cssObj = $is._cssObj;
+                _.keys(cssObj).forEach(function (key) {
+                    applyCSS($is, attrs.applyStyles, toBeAppliedCSS, key, cssObj[key]);
+                });
+
+                flushCSS(toBeAppliedCSS, $el);
+                $is._cssObj = undefined;
             }
 
             return {
                 'link': function ($is, $el, attrs) {
+                    $is._cssObj = {};
+
+                    $is.__applyCSS = __applyCSS.bind(undefined, $is, $el, attrs);
+
                     WidgetUtilService.registerPropertyChangeListener(onCSSPropertyChange.bind(undefined, $is, $el, attrs), $is, notifyFor);
                 }
             };
