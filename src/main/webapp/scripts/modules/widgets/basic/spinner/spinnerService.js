@@ -7,7 +7,7 @@
  */
 
 WM.module('wm.widgets.basic').
-    factory('wmSpinner', function ($animate) {
+    factory('wmSpinner', function () {
         "use strict";
         var spinnerMap = {},
             spinnerId = 0,

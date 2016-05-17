@@ -29,7 +29,6 @@ var Application =
             'wm.prefabs',
             'i18n',
             'angular-gestures',
-            'ngAnimate',
             'ngSanitize'
         ]);
 
