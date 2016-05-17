@@ -29,7 +29,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 //callback function to execute on click of the custom notification element
                 function customNotificationOnClick() {
                     if (variable.onClick) {
-                        initiateCallback('onClick', variable, scope);
+                        initiateCallback('onClick', variable, scope, options.data);
                     } else {
                         wmToaster.hide();
                     }
@@ -37,7 +37,7 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                 //callback function to execute on hide of the custom notification element
                 function customNotificationOnHide() {
                     if (variable.onHide) {
-                        initiateCallback('onHide', variable, scope);
+                        initiateCallback('onHide', variable, scope, options.data);
                     }
                 }
                 if (operation === 'toast') {
@@ -83,15 +83,15 @@ wm.variables.services.NotificationVariableService = function (BaseVariableProper
                                         'onClose': variableName + "onClose"
                                     },
                                     onOk: function () {
-                                        initiateCallback('onOk', variable, scope);
+                                        initiateCallback('onOk', variable, scope, options.data);
                                         DialogService.hideDialog(dialogId);
                                     },
                                     onCancel: function () {
-                                        initiateCallback('onCancel', variable, scope);
+                                        initiateCallback('onCancel', variable, scope, options.data);
                                         DialogService.hideDialog(dialogId);
                                     },
                                     onClose: function () {
-                                        initiateCallback('onClose', variable, scope);
+                                        initiateCallback('onClose', variable, scope, options.data);
                                         DialogService.hideDialog(dialogId);
                                     }
                                 };
