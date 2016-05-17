@@ -63,8 +63,9 @@ WM.module('wm.widgets.live')
         'DeviceVariableService',
         'LiveWidgetUtils',
         'FormWidgetUtils',
+        '$filter',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.navigation']),
@@ -75,7 +76,8 @@ WM.module('wm.widgets.live')
                     'height'      : true,
                     'groupby'     : true,
                     'navigation'  : CONSTANTS.isStudioMode,
-                    'itemsperrow' : CONSTANTS.isStudioMode
+                    'itemsperrow' : CONSTANTS.isStudioMode,
+                    'match'       : CONSTANTS.isStudioMode
                 },
                 directiveDefn,
                 NAVIGATION = {
@@ -288,20 +290,85 @@ WM.module('wm.widgets.live')
                 var $liTemplate,
                     groupedLiData,
                     groupDataByUserDefinedFn,
-                    regex    = /[^\w]/g,
-                    ALPHABET = 'alphabet',
-                    OTHERS   = 'Others';
+                    regex                    = /[^\w]/g,
+                    momentLocale             = moment.localeData(),
+                    momentCalendarOptions    = momentLocale._calendar,
+                    momentCalendarDayOptions = momentLocale._calendarDay || {
+                            'lastDay'  : '[Yesterday]',
+                            'lastWeek' : '[Last] dddd',
+                            'nextDay'  : '[Tomorrow]',
+                            'nextWeek' : 'dddd',
+                            'sameDay'  : '[Today]',
+                            'sameElse' : 'L'
+                        },
+                    groupByOptions = {
+                        'ALPHABET' : 'alphabet',
+                        'WORD'     : 'word',
+                        'OTHERS'   : 'Others'
+                    },
+                    timeRollupOptions = {
+                        'HOUR'  : 'hour',
+                        'DAY'   : 'day',
+                        'WEEK'  : 'week',
+                        'MONTH' : 'month',
+                        'YEAR'  : 'year'
+                    },
+                    rollupPatterns = {
+                        'DAY'   : 'yyyy-MM-dd',
+                        'WEEK'  : 'w \'Week\',  yyyy',
+                        'MONTH' : 'MMM, yyyy',
+                        'YEAR'  : 'YYYY'
+                    };
+
+                //Get the group by roll up string for time based group by options
+                function getTimeRolledUpString(str, rollUp) {
+                    var groupByKey,
+                        currMoment = moment(),
+                        strMoment  = moment(str),
+                        getSameElseFormat = function () { //Set the sameElse option of moment calendar to user defined pattern
+                            return  '[' + $filter('date')(this.valueOf(), $is.dateformat || rollupPatterns.DAY) + ']';
+                        };
+                    switch (rollUp) {
+                    case timeRollupOptions.HOUR:
+                        strMoment = strMoment.startOf('hour'); //round off to nearest last hour
+                        momentLocale._calendar.sameElse = getSameElseFormat;
+                        groupByKey = strMoment.calendar(currMoment);
+                        break;
+                    case timeRollupOptions.WEEK:
+                        groupByKey = $filter('date')(strMoment.valueOf(), $is.dateformat || rollupPatterns.WEEK);
+                        break;
+                    case timeRollupOptions.MONTH:
+                        groupByKey = $filter('date')(strMoment.valueOf(), $is.dateformat || rollupPatterns.MONTH);
+                        break;
+                    case timeRollupOptions.YEAR:
+                        groupByKey = strMoment.format(rollupPatterns.YEAR);
+                        break;
+                    case timeRollupOptions.DAY:
+                    default:
+                        strMoment = strMoment.startOf('day'); //round off to current day
+                        momentLocale._calendar.sameElse = getSameElseFormat;
+                        groupByKey = strMoment.calendar(currMoment);
+                        break;
+
+                    }
+                    return groupByKey;
+                }
 
                 function groupDataByField(liData) {
-                    var concatStr = Utils.findValueOf(liData, $is.groupby);
+                    var concatStr = _.get(liData, $is.groupby);
 
                     if (WM.isUndefined(concatStr)) {
-                        concatStr = OTHERS; // by default set the undefined groupKey as 'others'
+                        concatStr = groupByOptions.OTHERS; // by default set the undefined groupKey as 'others'
+                        return concatStr;
                     }
 
                     // if match prop is alphabetic ,get the starting alphabet of the word as key.
-                    if ($is.match === ALPHABET) {
+                    if ($is.match === groupByOptions.ALPHABET) {
                         return concatStr.substr(0, 1);
+                    }
+
+                    if (_.includes(_.values(timeRollupOptions), $is.match)) {
+                        return getTimeRolledUpString(concatStr, $is.match);
                     }
 
                     return concatStr;
@@ -314,7 +381,14 @@ WM.module('wm.widgets.live')
                     groupDataByUserDefinedFn = _s[$is.groupby.split('(')[0]];
                     groupedLiData = _.groupBy(_s.fieldDefs, groupDataByUserDefinedFn);
                 } else {
+                    if (!$is.orderby) { //Apply implicit orderby on group by clause, if order by not specified
+                        _s.fieldDefs = FormWidgetUtils.getOrderedDataSet(_s.fieldDefs, $is.groupby);
+                    }
+                    if ($is.match === timeRollupOptions.DAY) {
+                        momentLocale._calendar = momentCalendarDayOptions; //For day, set the relevant moment calendar options
+                    }
                     groupedLiData = _.groupBy(_s.fieldDefs, groupDataByField);
+                    momentLocale._calendar = momentCalendarOptions; //Reset to default moment calendar options
                 }
 
                 // append data to li based on the grouped data.
@@ -374,11 +448,11 @@ WM.module('wm.widgets.live')
                     _s.fieldDefs = data;
                 }
 
-                if ($is.orderby && $is.orderby !== '') {
+                if ($is.orderby) {
                     _s.fieldDefs = FormWidgetUtils.getOrderedDataSet(_s.fieldDefs, $is.orderby);
                 }
 
-                if ($is.groupby && $is.groupby !== '') {
+                if ($is.groupby) {
                     addListElements(_s, $el, $is, attrs, listCtrl);
                 }
 
@@ -578,11 +652,6 @@ WM.module('wm.widgets.live')
                     break;
                 }
             }
-
-            function isFieldTypeString(variable, fieldName) {
-                return (DeviceVariableService.getFieldType(variable, fieldName) === 'string');
-            }
-
             /* In case of run mode, the field-definitions will be generated from the markup
              * Define the property change handler. This function will be triggered when there is a change in the widget property
              */
@@ -597,7 +666,28 @@ WM.module('wm.widgets.live')
                     eleScope    = $el.scope(),
                     variable    = Utils.getVariableName($is, eleScope),
                     wp          = $is.widgetProps,
-                    stringType  = 'java.lang.String';
+                    matchDataTypes  = ['string', 'date', 'time', 'datetime', 'timestamp'],
+                    matchServiceDataTypes  = ['java.lang.String', 'java.sql.Date', 'java.sql.Time', 'java.sql.Datetime', 'java.sql.Timestamp'],
+                    showOrHideMatchProperty = function () {
+                        if (!$is.dataset || $is.groupby === 'Javascript') {
+                            return;
+                        }
+                        if (!$is.groupby || _.includes($is.groupby, '(')) {
+                            wp.match.show = false;
+                        } else if (selectedVariable) {
+                            if (selectedVariable.category === 'wm.LiveVariable') {
+                                wp.match.show = _.includes(matchDataTypes, getFieldType($is.dataset.propertiesMap, $is.groupby));
+                            } else if (selectedVariable.category === 'wm.DeviceVariable') {
+                                wp.match.show = _.includes(matchDataTypes, DeviceVariableService.getFieldType(variable, $is.groupby));
+                            } else if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
+                                wp.match.show = _.includes(matchServiceDataTypes, _.get($rs, ['dataTypes', selectedVariable.type, 'fields', $is.groupby, 'type']));
+                            }
+                        }
+                        if (!wp.match.show) {
+                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
+                            $is.match = '';
+                        }
+                    };
 
                 //checking if the height is set on the element then we will enable the overflow
                 switch (key) {
@@ -616,10 +706,7 @@ WM.module('wm.widgets.live')
                         // set the groupby options
                         wp.groupby.options = wp.orderby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
 
-                        // show the match property
-                        if ($is.groupby && $is.groupby !== '' && nv.propertiesMap && !(_.includes($is.groupby, '('))) {
-                            wp.match.show = (getFieldType(nv.propertiesMap, $is.groupby) === 'string');
-                        }
+                        showOrHideMatchProperty();
 
                         //if studio-mode, then update the displayField & dataField in property panel
                         if (!nv.length) {
@@ -639,18 +726,6 @@ WM.module('wm.widgets.live')
                                 }
                                 wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, {'sort' : false});
                             }
-                        }
-                        // show match property for device variables
-                        if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable' && $is.groupby && $is.groupby !== '') {
-                            wp.match.show = isFieldTypeString(selectedVariable, $is.groupby);
-                        }
-
-                        if ($is.groupby !== '') {
-                            wp.match.show = false;
-                        }
-
-                        if (!wp.match.show) {
-                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
                         }
 
                         // empty option selection is included in groupby options.
@@ -695,17 +770,7 @@ WM.module('wm.widgets.live')
                 case 'groupby':
                     selectedVariable = eleScope.Variables[variable];
                     if ($is.widgetid) {
-                        if (nv === '') {
-                            wp.match.show = false;
-                        } else if ($is.dataset && $is.groupby !== 'Javascript' && !_.includes($is.groupby, '(')) {
-                            if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {
-                                wp.match.show = _.get($rs, ['dataTypes', selectedVariable.type, 'fields', $is.groupby, 'type'], stringType) === stringType;
-                            } else if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
-                                wp.match.show = isFieldTypeString(selectedVariable, $is.groupby);
-                            } else {
-                                wp.match.show = (getFieldType($is.dataset.propertiesMap, $is.groupby) === 'string');
-                            }
-                        }
+                        showOrHideMatchProperty();
                         // enablereorder is not shown with groupby
                         if (nv && nv !== '') {
                             markup   = Utils.getService('MarkupManagerService').getMarkup();
@@ -721,9 +786,11 @@ WM.module('wm.widgets.live')
                         } else {
                             wp.enablereorder.show = true;
                         }
-                        if (!wp.match.show) {
-                            $is.$root.$emit('set-markup-attr', $is.widgetid, {'match': ''});
-                        }
+                    }
+                    break;
+                case 'match':
+                    if ($is.widgetid) {
+                        wp.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], $is.match);
                     }
                     break;
                 }
