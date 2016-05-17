@@ -1767,7 +1767,7 @@ WM.module('wm.widgets.basic')
                     columns.push('none');
                 }
                 scope.widgetProps.groupby.options = columns;
-                if (scope.widgetid) {
+                if (scope.widgetid && scope.active) {
                     $rootScope.$emit('update-widget-property', 'groupby', choosenColumn);
                 }
             } else {
