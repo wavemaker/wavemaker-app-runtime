@@ -593,17 +593,20 @@ Application
 
                 // load prefab configurations
                 if ($rs.isPrefabType) {
-                    Utils.fetchContent(
-                        'json',
-                        Utils.preventCachingOf('./config.json'),
-                        function (response) {
-                            if (!response.error) {
-                                $rs.prefabConfig = response;
-                            }
-                        },
-                        WM.noop,
-                        true
-                    );
+                    MetaDataFactory.load()
+                        .then(function () {
+                            Utils.fetchContent(
+                                'json',
+                                Utils.preventCachingOf('./config.json'),
+                                function (response) {
+                                    if (!response.error) {
+                                        $rs.prefabConfig = response;
+                                    }
+                                },
+                                WM.noop,
+                                true
+                            );
+                        });
                 }
 
                 if (CONSTANTS.hasCordova) {
