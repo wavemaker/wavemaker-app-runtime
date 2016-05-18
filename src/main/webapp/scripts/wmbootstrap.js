@@ -62,6 +62,7 @@ Application
             'Utils',
             'BaseService',
             '$location',
+            '$window',
             '$rootScope',
             'wmToaster',
             'SecurityService',
@@ -75,7 +76,7 @@ Application
             '$timeout',
             '$route',
 
-            function ($q, Utils, BaseService, $location, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route) {
+            function ($q, Utils, BaseService, $location, $window, $rs, wmToaster, SecurityService, i18nService, $compile, Variables, $cacheFactory, $document, CONSTANTS, wmSpinner, $timeout, $route) {
                 'use strict';
 
                 var prevRoute,
@@ -108,8 +109,10 @@ Application
                         loginMethod,
                         LOGIN_METHOD = {
                             'DIALOG' : 'DIALOG',
-                            'PAGE'   : 'PAGE'
-                        };
+                            'PAGE'   : 'PAGE',
+                            'SSO'    : 'SSO'
+                        },
+                        ssoUrl;
                     SecurityService.getConfig(function (config) {
                         // if no user found, 401 was thrown for first time login
                         if (config.userInfo && config.userInfo.userName) {
@@ -132,11 +135,21 @@ Application
                         } else {
                             loginConfig = config.login;
                             loginMethod = loginConfig.type.toUpperCase();
-                            if (loginMethod === LOGIN_METHOD.DIALOG) {
+                            switch (loginMethod) {
+                            case LOGIN_METHOD.DIALOG:
                                 BaseService.handleSessionTimeOut();
-                                // Through loginDialog, user will be redirected to respective landing page as it is a first time login
-                            } else if (loginMethod === LOGIN_METHOD.PAGE) {
+                            // Through loginDialog, user will be redirected to respective landing page as it is a first time login
+                                break;
+                            case LOGIN_METHOD.PAGE:
                                 $location.path(loginConfig.pageName);
+                                break;
+                            case LOGIN_METHOD.SSO:
+                                //showing a redirecting message
+                                document.write('Redirecting to sso login...');
+                                ssoUrl = $rs.project.deployedUrl + '/services/security/ssologin';
+                                //In case of CAS redirecting to the sso login page
+                                $window.location.href = ssoUrl;
+                                break;
                             }
                         }
                     });
