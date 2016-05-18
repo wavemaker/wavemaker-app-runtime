@@ -210,7 +210,7 @@ WM.module('wm.widgets.base')
                 _.forEach(partiaParams, function (param) {
                     paramName = param.name;
                     if (!_.find(iScope.partialParams, {name: paramName})) {
-                        iScope.partialParams.push({'name': param.name, 'value': ''});
+                        iScope.partialParams.push({'name': param.name, 'value': '', 'type': param.type});
                     }
                 });
             }
@@ -297,7 +297,8 @@ WM.module('wm.widgets.base')
                 var containerScope = element.closest('[page-container]').isolateScope();
                 containerScope.partialParams.push({
                     name: attrs.name,
-                    value: attrs.value
+                    value: attrs.value,
+                    type: attrs.type
                 });
             }
         };
