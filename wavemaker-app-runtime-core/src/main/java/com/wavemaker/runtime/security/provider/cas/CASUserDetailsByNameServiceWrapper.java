@@ -1,12 +1,10 @@
 package com.wavemaker.runtime.security.provider.cas;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
-import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,38 +28,28 @@ public class CASUserDetailsByNameServiceWrapper extends UserDetailsByNameService
 
     @Override
     public UserDetails loadUserDetails(Authentication authentication) throws UsernameNotFoundException {
-        CasAssertionAuthenticationToken casAssertionAuthenticationToken = null;
-        if (authentication instanceof CasAssertionAuthenticationToken) {
-            casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) authentication;
-        }
+        if (StringUtils.isNotBlank(roleAttributeName)) {
+            CasAssertionAuthenticationToken casAssertionAuthenticationToken = null;
+            if (authentication instanceof CasAssertionAuthenticationToken) {
+                casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) authentication;
+            }
 
-        CasAuthenticationToken casAuthenticationToken = null;
-        if (authentication instanceof CasAuthenticationToken) {
-            casAuthenticationToken = (CasAuthenticationToken) authentication;
-        }
+            String roles = null;
+            if (casAssertionAuthenticationToken != null) {
+                Map attributes = casAssertionAuthenticationToken.getAssertion().getPrincipal().getAttributes();
+                roles = (String) attributes.get(getRoleAttributeName());
+            }
 
-        String roles = null;
-        if (casAssertionAuthenticationToken != null) {
-            Map attributes = casAssertionAuthenticationToken.getAssertion().getPrincipal().getAttributes();
-            roles = (String) attributes.get(getRoleAttributeName());
-        }
+            StringTokenizer roleTokenizer = new StringTokenizer(roles, ",");
 
-        if (casAuthenticationToken != null) {
-            Map attributes = casAuthenticationToken.getAssertion().getPrincipal().getAttributes();
-            roles = (String) attributes.get(getRoleAttributeName());
-        }
-
-
-        StringTokenizer roleTokenizer = new StringTokenizer(roles, ",");
-
-        WMUser userDetails = (WMUser) super.loadUserDetails(authentication);
-        while (roleTokenizer.hasMoreTokens()) {
-            String role = roleTokenizer.nextToken();
-            GrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role);
-            userDetails.getAuthorities().add(simpleGrantedAuthority);
-        }
-
-        return userDetails;
+            WMUser userDetails = (WMUser) super.loadUserDetails(authentication);
+            while (roleTokenizer.hasMoreTokens()) {
+                String role = roleTokenizer.nextToken();
+                GrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role);
+                userDetails.getAuthorities().add(simpleGrantedAuthority);
+            }
+            return userDetails;
+        } else return super.loadUserDetails(authentication);
     }
 
     public String getRoleAttributeName() {
