@@ -1511,7 +1511,9 @@ WM.module('wm.widgets.base', [])
                         "groupby": {"type": "list", "show": true, "widget": "list-typeahead"},
                         "match": {"type": "listGroup", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour":"hour","day":"day","week":"week", "month":"month", "year": "year"}}], "show": false, "value": "word"},
                         "dateformat": {"type": "list", "options": [], "widget": "datetimepatterns", "show": false},
-                        "orderby": {"type": "list", "widget": "order-by"}
+                        "orderby": {"type": "list", "widget": "order-by"},
+                        "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-out-bound"},
+                        "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-out-bound"}
                     },
                     "wm.medialist": {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
