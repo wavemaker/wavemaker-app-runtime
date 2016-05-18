@@ -131,16 +131,15 @@ WM.module('wm.widgets.base')
                     target.find('.app-included-page, .app-included-page + .content-overlay, .wm-included-page-heading').remove();
                 } else {
                     iScope.pageParams = {};
-                    _.forEach(attrs, function (paramVal, paramName) {
-                        if (Utils.stringStartsWith(paramName, PARTIAL_PARAM_SUBSCRIPT)) {
-                            paramName = paramName.replace(PARTIAL_PARAM_SUBSCRIPT, '');
-                            if (Utils.stringStartsWith(paramVal, 'bind:')) {
-                                $s.$watch(paramVal.replace('bind:', ''), function (nv) {
-                                    iScope.pageParams[paramName] = nv;
-                                });
-                            } else {
-                                iScope.pageParams[paramName] = paramVal;
-                            }
+                    _.forEach(iScope.partialParams, function (param) {
+                        var paramName = param.name,
+                            paramVal = param.value;
+                        if (Utils.stringStartsWith(paramVal, 'bind:')) {
+                            $s.$watch(paramVal.replace('bind:', ''), function (nv) {
+                                iScope.pageParams[paramName] = nv;
+                            });
+                        } else {
+                            iScope.pageParams[paramName] = paramVal;
                         }
                     });
                 }
@@ -199,21 +198,19 @@ WM.module('wm.widgets.base')
                     propertyGroups  = element.scope().propertyGroups,
                     propertiesGroup = _.find(propertyGroups, {name: 'properties'}),
                     paramsSubGroup  = _.find(propertiesGroup.subGroups, {name: 'partialparams'}),
-                    paramName,
-                    paramCloakedName;
+                    paramName;
                 paramsSubGroup.properties = [];
+                if (iScope.newcolumns) {
+                    iScope.newcolumns = false;
+                    iScope.partialParams = [];
+                    $rootScope.$emit('wms:partial-container-params-modified', {params: iScope.partialParams, widgetName: iScope.name});
+                }
 
                 // loop over each partial param, and append a property object against the widget scope
                 _.forEach(partiaParams, function (param) {
                     paramName = param.name;
-                    paramCloakedName = PARTIAL_PARAM_SUBSCRIPT + paramName; // using this name to avoid conflicts with other properties
-                    iScope.widgetProps[paramCloakedName] = {"type": 'string', value: '', "bindable": 'in-bound', "label": paramName, "show": true};
-                    paramsSubGroup.show = true;
-                    paramsSubGroup.properties.push(paramCloakedName);
-                    iScope[paramCloakedName] = attrs[paramCloakedName];
-                    // If value bound, adding (bind+property) to iScope, as it won't be computed through bindManager, this is required to show disabled text against the param
-                    if (Utils.stringStartsWith(attrs[paramCloakedName], 'bind:')) {
-                        iScope['bind' + paramCloakedName] = attrs[paramCloakedName];
+                    if (!_.find(iScope.partialParams, {name: paramName})) {
+                        iScope.partialParams.push({'name': param.name, 'value': ''});
                     }
                 });
             }
@@ -248,7 +245,6 @@ WM.module('wm.widgets.base')
                     if (newVal) {
                         iScope.toolbar.addClass('active');
                         iScope.overlay.addClass('active');
-                        loadPartialParamProperties(iScope, element, attrs, iScope.content);
                     } else {
                         iScope.toolbar.removeClass('active');
                         iScope.overlay.removeClass('active');
@@ -265,6 +261,7 @@ WM.module('wm.widgets.base')
                             var partialName = attrs.page || attrs.content;
                             WM.extend(iScope.widgetProps || {}, Utils.getClonedObject(props));
                             iScope['page-container'] = true;
+                            iScope.partialParams = [];
                             //Trigger registerPageContainer method of page widget when the content of this widget is loaded from other page.
                             // if the $lazyLoad method is defined on the iScope, do not register the pagePart.
                             if (CONSTANTS.isRunMode && partialName && !loadedPartials[partialName] && !iScope.$lazyLoad) {
@@ -289,4 +286,19 @@ WM.module('wm.widgets.base')
                 }
             };
         }
-    ]);
+    ])
+    .directive('wmParam', [function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            replace: true,
+            link: function (iScope, element, attrs) {
+                var containerScope = element.closest('[page-container]').isolateScope();
+                containerScope.partialParams.push({
+                    name: attrs.name,
+                    value: attrs.value
+                });
+            }
+        };
+    }]);
