@@ -1,4 +1,4 @@
-/*global WM, window, _, document, Hammer*/
+/*global WM, window, _, document, Hammer, moment*/
 /*jslint todo: true */
 /*Directive for liveList */
 
@@ -296,13 +296,13 @@ WM.module('wm.widgets.live')
                     momentLocale             = moment.localeData(),
                     momentCalendarOptions    = Utils.getClonedObject(momentLocale._calendar),
                     momentCalendarDayOptions = momentLocale._calendarDay || {
-                            'lastDay'  : '[Yesterday]',
-                            'lastWeek' : '[Last] dddd',
-                            'nextDay'  : '[Tomorrow]',
-                            'nextWeek' : 'dddd',
-                            'sameDay'  : '[Today]',
-                            'sameElse' : 'L'
-                        },
+                        'lastDay'  : '[Yesterday]',
+                        'lastWeek' : '[Last] dddd',
+                        'nextDay'  : '[Tomorrow]',
+                        'nextWeek' : 'dddd',
+                        'sameDay'  : '[Today]',
+                        'sameElse' : 'L'
+                    },
                     groupByOptions = {
                         'ALPHABET' : 'alphabet',
                         'WORD'     : 'word',
@@ -329,7 +329,7 @@ WM.module('wm.widgets.live')
                         currMoment = moment(),
                         strMoment  = moment(str),
                         getSameElseFormat = function () { //Set the sameElse option of moment calendar to user defined pattern
-                            return  '[' + $filter('date')(this.valueOf(), $is.dateformat || rollupPatterns.DAY) + ']';
+                            return '[' + $filter('date')(this.valueOf(), $is.dateformat || rollupPatterns.DAY) + ']';
                         };
                     switch (rollUp) {
                     case timeRollupOptions.HOUR:
@@ -337,7 +337,7 @@ WM.module('wm.widgets.live')
                             strMoment = moment(new Date().toDateString() + ' ' + str);
                             if (strMoment.isValid()) {
                                 momentLocale._calendar.sameDay = function () { //As only time is present, roll up at the hour level with given time format
-                                    return  '[' + $filter('date')(this.valueOf(), $is.dateformat || rollupPatterns.HOUR) + ']';
+                                    return '[' + $filter('date')(this.valueOf(), $is.dateformat || rollupPatterns.HOUR) + ']';
                                 };
                             }
                         }
@@ -355,7 +355,6 @@ WM.module('wm.widgets.live')
                         groupByKey = strMoment.format(rollupPatterns.YEAR);
                         break;
                     case timeRollupOptions.DAY:
-                    default:
                         strMoment = strMoment.startOf('day'); //round off to current day
                         momentLocale._calendar.sameElse = getSameElseFormat;
                         groupByKey = strMoment.calendar(currMoment);
@@ -834,20 +833,20 @@ WM.module('wm.widgets.live')
 
                 // evt handlers will be created by isolateScope. redefine them on $liScope.
                 WM.extend($liScope, {
-                    'onClick'               : $is.onClick,
-                    'onDblclick'            : $is.onDblclick,
-                    'onTap'                 : $is.onTap,
-                    'onDoubletap'           : $is.onDoubletap,
-                    'onMouseenter'          : $is.onMouseenter,
-                    'onMouseleave'          : $is.onMouseleave,
-                    'onEnterkeypress'       : $is.onEnterkeypress,
-                    'onSetrecord'           : $is.onSetrecord,
-                    'onPaginationchange'    : $is.onPaginationchange,
-                    'itemclass'             : $is.itemclass,
-                    'itemsPerRowClass'      : getRowClass(attrs.itemsperrow),
-                    'addRow'                : $is.addRow,
-                    'updateRow'             : $is.updateRow,
-                    'deleteRow'             : $is.deleteRow
+                    'onClick'            : $is.onClick,
+                    'onDblclick'         : $is.onDblclick,
+                    'onTap'              : $is.onTap,
+                    'onDoubletap'        : $is.onDoubletap,
+                    'onMouseenter'       : $is.onMouseenter,
+                    'onMouseleave'       : $is.onMouseleave,
+                    'onEnterkeypress'    : $is.onEnterkeypress,
+                    'onSetrecord'        : $is.onSetrecord,
+                    'onPaginationchange' : $is.onPaginationchange,
+                    'itemclass'          : $is.itemclass,
+                    'itemsPerRowClass'   : getRowClass(attrs.itemsperrow),
+                    'addRow'             : $is.addRow,
+                    'updateRow'          : $is.updateRow,
+                    'deleteRow'          : $is.deleteRow
                 });
 
                 return $liScope;
