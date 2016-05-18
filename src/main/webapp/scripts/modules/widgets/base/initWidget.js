@@ -558,7 +558,7 @@ WM.module('wm.widgets.base')
                 var wp       = $is.widgetProps,
                     hasModel = attrs.hasOwnProperty('hasModel');
 
-                _.keys(wp).forEach(function (propName) {
+                Object.keys(wp).forEach(function (propName) {
                     var propDetails = wp[propName];
 
                     if ($is.$$isolateBindings[propName] || propDetails.type === EVENT) {
@@ -658,7 +658,7 @@ WM.module('wm.widgets.base')
                             }
 
                             // delay the setting of binded properties in isolateScope
-                            _.keys($is._initState).forEach(function (propName) {
+                            Object.keys($is._initState).forEach(function (propName) {
                                 var propVal = $is._initState[propName];
 
                                 if (_.startsWith(propVal, 'bind:')) {
@@ -670,7 +670,7 @@ WM.module('wm.widgets.base')
                             });
 
                             // update the binded properties in isolateScope
-                            _.forEach(delayed, function (prop) {
+                            delayed.forEach(function (prop) {
                                 $is[prop.name] = prop.value;
                             });
 
@@ -862,7 +862,7 @@ WM.module('wm.widgets.base')
             directiveFn;
 
         // get the _cdnUrl_ from the loaded script
-        baseUri = WM.element('head > script[src$="wm-loader.min.js"]').attr('src');
+        baseUri = WM.element('script[src$="wm-loader.min.js"]').attr('src');
 
         if (!baseUri) {
             return;
