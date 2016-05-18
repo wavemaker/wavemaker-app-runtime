@@ -847,7 +847,32 @@ html, body {
     }
   }
 }
-
+.app-datetime, .app-date {
+  .app-calendar-event {
+    .btn:after {
+      font-family: "FontAwesome";
+      font-size: 6px;
+      content: "\f111\00a0\f111\00a0\f111";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      color: rgba(0,0,0,0.2);
+      text-align: center;
+      line-height: 2px;
+    }
+    &.one {
+      .btn:after {
+        content: "\f111";
+      }
+    }
+    &.two {
+      .btn:after {
+        content: "\f111\00a0\f111";
+      }
+    }
+  }
+}
 /**input required**/
 .app-required-input {
   color: @red;
