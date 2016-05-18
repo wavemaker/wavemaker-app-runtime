@@ -147,9 +147,6 @@ $.widget('wm.datagrid', {
         isDefined: function (value) {
             return value !== undefined;
         },
-        isUndefined: function (value) {
-            return value === undefined;
-        },
         isObject: function (value) {
             return value !== null && typeof value === 'object';
         },
@@ -211,9 +208,7 @@ $.widget('wm.datagrid', {
 
         var cols = '<colgroup>',
             htm = '<thead><tr>',
-            isDefined = this.Utils.isDefined,
-            isUndefined = this.Utils.isUndefined;
-
+            isDefined = this.Utils.isDefined;
         this.preparedHeaderData.forEach(function (value, index) {
 
             var id = index,
@@ -245,10 +240,10 @@ $.widget('wm.datagrid', {
             }
             htm += '<th data-col-id="' + id + '" data-col-field="' + field + '" class="' + headerClasses + '" title="' + headerLabel + '" style="text-align: ' +
                 value.textAlignment + ';"';
-            if (isUndefined(value.resizable) || value.resizable) {
+            if ((_.isUndefined(value.resizable) || value.resizable) && (_.isUndefined(value.show) || value.show)) { //If show is false, do not add the resize option
                 htm += ' data-col-resizable';
             }
-            if (isUndefined(value.selectable) || value.selectable) {
+            if (_.isUndefined(value.selectable) || value.selectable) {
                 htm += ' data-col-selectable';
             }
             htm += '>';
@@ -260,7 +255,7 @@ $.widget('wm.datagrid', {
                 htm += '';
             }
             htm += '<div class="header-data">' + headerLabel + '</div>';
-            if (this.options.enableSort && (isUndefined(value.sortable) || value.sortable) && !value.widgetType) {
+            if (this.options.enableSort && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType) {
                 htm += '<span class="sort-buttons-container">';
                 sortInfo = this.options.sortInfo;
                 sortField = sortInfo.field;
@@ -446,7 +441,7 @@ $.widget('wm.datagrid', {
                 /* 1. Show "null" values as null if filterNullRecords is true, else show empty string.
                 * 2. Show "undefined" values as empty string. */
                 if ((this.options.filterNullRecords && columnValue === null) ||
-                        this.Utils.isUndefined(columnValue)) {
+                        _.isUndefined(columnValue)) {
                     columnValue = '';
                 }
                 htm += 'title="' + columnValue + '">';
@@ -470,7 +465,7 @@ $.widget('wm.datagrid', {
                     htm += '';
                     break;
                 default:
-                    htm += ((this.Utils.isUndefined(columnValue) || columnValue === null)) ? '' : columnValue;
+                    htm += ((_.isUndefined(columnValue) || columnValue === null)) ? '' : columnValue;
                     break;
                 }
             }
@@ -780,7 +775,7 @@ $.widget('wm.datagrid', {
                     width = $header.width(),
                     id = $header.attr('data-col-id'),
                     colDef = self.preparedHeaderData[id];
-                if (!colDef.show) { //If show is false, set width to 0 to hide the column
+                if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
                     width = 0;
                 } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
                     width = 30;
