@@ -339,8 +339,11 @@ WM.module('wm.layouts.containers')
 
                         /* using this method we will be able to select a tab[i.e, make it active] programatically */
                         scope.select = function ($event) {
-                            $event.stopPropagation();
-                            $event.preventDefault();
+                            // When called programatically $event won't be available
+                            if ($event) {
+                                $event.stopPropagation();
+                                $event.preventDefault();
+                            }
                             if (scope.isActive || scope.disabled) {
                                 if (scope.isActive) {
                                     $rs.$emit('set-active-widget', scope.widgetid);
