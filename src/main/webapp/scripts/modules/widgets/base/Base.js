@@ -1855,14 +1855,14 @@ WM.module('wm.widgets.base', [])
                     if (!WM.isObject(properties[parent])) {
                         return;
                     }
-                    _.keys(properties[parent])
+                    Object.keys(properties[parent])
                         .forEach(function (propName) {
                             var propObj = properties[parent][propName];
                             if (!widgetProps[propName]) {
                                 widgetProps[propName] = {};
                             }
-                            _.forEach(propObj, function (val, key) {
-                                widgetProps[propName][key] = val;
+                            Object.keys(propObj).forEach(function (key) {
+                                widgetProps[propName][key] = propObj[key];
                             });
                         });
                 });
@@ -1879,7 +1879,7 @@ WM.module('wm.widgets.base', [])
                         property.disabled = property.disabled || false;
                     });
             } else {
-                _.keys(widgetProps).forEach(function (propName) {
+                Object.keys(widgetProps).forEach(function (propName) {
                     var propDetails = widgetProps[propName];
                     widgetProps[propName] = _.pick(propDetails, ['type', 'value', 'bindable', 'displaytype']);
                 });
@@ -2207,72 +2207,73 @@ WM.module('wm.widgets.base', [])
                 $rICQueue.push(element);
             }
 
-            function onScopeValueChangeProxy(scope, element, attrs, key, newVal, oldVal) {
+            function onScopeValueChangeProxy($is, $el, attrs, key, nv, ov, listeners) {
 
                 if (key === 'placeholder' || key === 'type') {
-                    if (element.is('input') || element.is('textarea')) {
-                        attrs.$set(key, newVal);
+                    if ($el.is('input') || $el.is('textarea')) {
+                        attrs.$set(key, nv);
                     } else {
-                        element.find('input').attr(key, newVal);
+                        $el.find('input').attr(key, nv);
                     }
                 } else if (key === 'backgroundimage') {
-                    scope.picturesource = Utils.getBackGroundImageUrl(newVal);
+                    $is.picturesource = Utils.getBackGroundImageUrl(nv);
                 } else if (key === 'backgroundcolor') {
                     /* setting background image as none when background color is set. This is done because background
                     gradients are set as background image and have precedence over background color.*/
                     if (!attrs.picturesource) {
-                        scope.picturesource = undefined;
+                        $is.picturesource = undefined;
                     }
                 } else if (key === 'class') {
-                    element.removeClass(oldVal).addClass(newVal);
+                    $el.removeClass(ov).addClass(nv);
                 } else if (key === 'name') {
-                    attrs.$set('name', newVal);
+                    attrs.$set('name', nv);
                 } else if (key === 'showindevice') {
                     /*Apply the corresponding classes only in runMode*/
                     if (CONSTANTS.isRunMode) {
-                        var newValues = newVal ? newVal.split(',') : newVal;
+                        var newValues = nv ? nv.split(',') : nv;
                         if (WM.element.inArray('all', newValues) === 0) {
                             _.forEach(deviceSizeArray.all.classToRemove, function (device) {
-                                element.removeClass(device + scope.widgetProps.showindevice.displaytype || 'block');
+                                $el.removeClass(device + $is.widgetProps.showindevice.displaytype || 'block');
                             });
                         } else {
                             /*If others are selected, add classes accordingly */
                             _.forEach(newValues, function (value) {
-                                element.addClass(deviceSizeArray[value].class + (scope.widgetProps.showindevice.displaytype || 'block'));
+                                $el.addClass(deviceSizeArray[value].class + ($is.widgetProps.showindevice.displaytype || 'block'));
                             });
                         }
                     }
                 } else if (key === 'animation') {
                     /*add the animated class only in the run mode since it will break the ui in design mode*/
                     if (CONSTANTS.isRunMode) {
-                        element.addClass('animated ' + newVal);
+                        $el.addClass('animated ' + nv);
                     }
                 } else if (key === 'show') {
-                    if (newVal) {
-                        element.removeClass('ng-hide');
+                    if (nv) {
+                        $el.removeClass('ng-hide');
                     } else {
-                        element.addClass('ng-hide');
+                        $el.addClass('ng-hide');
                     }
                 }
 
-                triggerFn = Utils.triggerFn;
+                if (!listeners) {
+                    listeners = $is.propertyManager.get($is.propertyManager.ACTIONS.CHANGE);
+                }
 
-                scope.propertyManager
-                    .get(scope.propertyManager.ACTIONS.CHANGE)
-                    .forEach(function (handler) {
-                        var notifyFor = handler.notifyFor;
-                        if ((notifyFor && notifyFor[key]) || !notifyFor) {
-                            triggerFn(handler, key, newVal, oldVal);
-                        }
-                    });
+                listeners.forEach(function (handler) {
+                    var notifyFor = handler.notifyFor;
+                    if ((notifyFor && notifyFor[key]) || !notifyFor) {
+                        handler(key, nv, ov);
+                    }
+                });
             }
 
             function triggerInitValueChange($is, $el, attrs) {
-                _.keys($is._initState)
+                var listeners = $is.propertyManager.get($is.propertyManager.ACTIONS.CHANGE);
+                Object.keys($is._initState)
                     .forEach(function (key) {
                         var value = $is[key];
                         if (WM.isDefined(value)) {
-                            onScopeValueChangeProxy($is, $el, attrs, key, value);
+                            onScopeValueChangeProxy($is, $el, attrs, key, value, listeners);
                         }
                     });
                 Utils.triggerFn($is.__applyCSS);
@@ -2933,15 +2934,31 @@ WM.module('wm.widgets.base', [])
             }
 
             function flushCSS(css, $el) {
-                var keys = Object.keys(css), resetObj = {};
+                var keys = Object.keys(css), style = $el[0].style;
 
                 if (keys.length) {
                     //reset obj;
+
+                    if (WM.isDefined(css.width)) {
+                        // case conversion is not required here.
+                        // if the dimensions are not provided for width, use `px`
+                        if (css.width == +css.width) {
+                            css.width += 'px';
+                        }
+                    }
+
+                    if (WM.isDefined(css.height)) {
+                        // case conversion is not required here.
+                        // if the dimensions are not provided for height, use `px`
+                        if (css.height == +css.height) {
+                            css.height += 'px';
+                        }
+                    }
+
                     keys.forEach(function (k) {
-                        resetObj[k] = '';
+                        style[k] = '';
+                        style[k] = css[k];
                     });
-                    $el.css(resetObj);
-                    $el.css(css);
                 }
             }
 
@@ -2957,7 +2974,7 @@ WM.module('wm.widgets.base', [])
 
             function __applyCSS($is, $el, attrs) {
                 var toBeAppliedCSS = {}, cssObj = $is._cssObj;
-                _.keys(cssObj).forEach(function (key) {
+                Object.keys(cssObj).forEach(function (key) {
                     applyCSS($is, attrs.applyStyles, toBeAppliedCSS, key, cssObj[key]);
                 });
 
