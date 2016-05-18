@@ -862,7 +862,7 @@ WM.module('wm.widgets.base')
             directiveFn;
 
         // get the _cdnUrl_ from the loaded script
-        baseUri = WM.element('script[src$="wm-loader.min.js"]').attr('src');
+        baseUri = WM.element('script[src$="wm-libs.min.js"]').attr('src');
 
         if (!baseUri) {
             return;
