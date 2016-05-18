@@ -194,12 +194,9 @@ WM.module('wm.widgets.base')
             }
 
             function loadPartialParamProperties(iScope, element, attrs, partialName) {
-                var partiaParams    = _.get(ProjectService.getPageInfo(partialName), 'params'),
-                    propertyGroups  = element.scope().propertyGroups,
-                    propertiesGroup = _.find(propertyGroups, {name: 'properties'}),
-                    paramsSubGroup  = _.find(propertiesGroup.subGroups, {name: 'partialparams'}),
+                var partiaParams = _.get(ProjectService.getPageInfo(partialName), 'params'),
                     paramName;
-                paramsSubGroup.properties = [];
+
                 if (iScope.newcolumns) {
                     iScope.newcolumns = false;
                     iScope.partialParams = [];
