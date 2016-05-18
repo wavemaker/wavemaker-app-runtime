@@ -294,7 +294,7 @@ WM.module('wm.widgets.live')
                     groupDataByUserDefinedFn,
                     regex                    = /[^\w]/g,
                     momentLocale             = moment.localeData(),
-                    momentCalendarOptions    = momentLocale._calendar,
+                    momentCalendarOptions    = Utils.getClonedObject(momentLocale._calendar),
                     momentCalendarDayOptions = momentLocale._calendarDay || {
                             'lastDay'  : '[Yesterday]',
                             'lastWeek' : '[Last] dddd',
@@ -319,7 +319,8 @@ WM.module('wm.widgets.live')
                         'DAY'   : 'yyyy-MM-dd',
                         'WEEK'  : 'w \'Week\',  yyyy',
                         'MONTH' : 'MMM, yyyy',
-                        'YEAR'  : 'YYYY'
+                        'YEAR'  : 'YYYY',
+                        'HOUR'  : 'hh:mm a'
                     };
 
                 //Get the group by roll up string for time based group by options
@@ -332,6 +333,14 @@ WM.module('wm.widgets.live')
                         };
                     switch (rollUp) {
                     case timeRollupOptions.HOUR:
+                        if (!strMoment.isValid()) { //If date is invalid, check if data is in forom of hh:mm a
+                            strMoment = moment(new Date().toDateString() + ' ' + str);
+                            if (strMoment.isValid()) {
+                                momentLocale._calendar.sameDay = function () { //As only time is present, roll up at the hour level with given time format
+                                    return  '[' + $filter('date')(this.valueOf(), $is.dateformat || rollupPatterns.HOUR) + ']';
+                                };
+                            }
+                        }
                         strMoment = strMoment.startOf('hour'); //round off to nearest last hour
                         momentLocale._calendar.sameElse = getSameElseFormat;
                         groupByKey = strMoment.calendar(currMoment);
