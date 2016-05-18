@@ -8,21 +8,21 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layout/container/accordion.html', '<div class="app-accordion panel-group" wmtransclude init-widget apply-styles="scrollable-container" ng-style="{width:width}"></div>');
 
         $templateCache.put('template/layout/container/accordion-pane.html',
-            '<div class="app-accordion-panel panel" init-widget wmtransclude wm-navigable-element="true"></div>'
-            );
-
-        $templateCache.put('template/layout/container/accordion-header.html',
-                '<div class="panel-heading clearfix" ng-click="pane.togglePane()" init-widget apply-styles="container">' +
+            '<div class="app-accordion-panel panel" page-container init-widget wm-navigable-element="true">' +
+                '<div class="panel-heading clearfix" ng-click="togglePane()" apply-styles="container" ng-class="{active: isActive}">' +
                     '<h3 class="panel-title">' +
-                        '<a href="javascript:void(0);" class="accordion-toggle" wmtransclude></a>' +
+                        '<a href="javascript:void(0);" class="accordion-toggle">' +
+                            '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
+                            '<div class="pull-left"><div class="heading" ng-bind-html="heading"></div>' +
+                            '<div class="description" ng-bind-html="subheading"></div></div>' +
+                        '</a>' +
                     '</h3>' +
-                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" ng-class="pane.active ? \'wi-minus\': \'wi-plus\'"></button></div>' +
-                '</div>'
-            );
-        $templateCache.put('template/layout/container/accordion-content.html',
-                '<div class="panel-collapse collapse"  ng-class="pane.active ? \'collapse in\' : \'collapse\'" init-widget page-container apply-styles="scrollable-container">' +
+                    '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" ng-class="isActive ? \'wi-minus\': \'wi-plus\'"></button></div>' +
+                '</div>' +
+                '<div class="panel-collapse collapse"  ng-class="isActive ? \'collapse in\' : \'collapse\'" apply-styles="scrollable-container">' +
                     '<div class="panel-body" wmtransclude page-container-target></div>' +
-                '</div>'
+                '</div>' +
+            '</div>'
             );
     }])
     .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils) {
@@ -50,12 +50,12 @@ WM.module('wm.layouts.containers')
                     /* process the request only when closeothers attribute is present on accordion */
                     if ($scope.closeothers) {
                         WM.forEach(this.panes, function (pane) {
-                            if (pane.active) {
+                            if (pane.isActive) {
                                 /* trigger the onCollapse method on the pane which is about to be collapsed */
                                 Utils.triggerFn(pane.onCollapse);
                             }
                             /* update the `active` flag of the pane */
-                            pane.active = false;
+                            pane.isActive = false;
                         });
                     }
                 };
@@ -76,7 +76,7 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', '$parse', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, $parse) {
+    .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', '$parse', '$sce', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, $parse, $sce) {
         'use strict';
 
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base']);
@@ -88,29 +88,11 @@ WM.module('wm.layouts.containers')
             'transclude': true,
             'template': $templateCache.get('template/layout/container/accordion-pane.html'),
             'require': '^wmAccordion',
-            'controller': function ($scope, $element) {
-                /* returns the scope of the accordion pane. accordion-header and accordion-content uses this */
-                this.getPaneScope = function () {
-                    return $scope;
-                };
-
-                this.registerCallback = function (name, value) {
-                    if (!name || !value) {
-                        return;
-                    }
-
-                    var fn = $parse(value);
-                    $scope[name] = function (locals) {
-                        locals = locals || {};
-                        locals.$scope = $scope;
-                        return fn($element.scope(), locals);
-                    };
-                };
-            },
             'compile': function () {
                 return {
                     'pre': function (scope) {
                         scope.widgetProps = widgetProps;
+                        scope.$lazyLoad   = WM.noop;
                     },
                     'post': function (scope, element, attrs, panesCtrl) {
 
@@ -120,15 +102,15 @@ WM.module('wm.layouts.containers')
                         /* toggle the state of the pane */
                         scope.togglePane = function () {
                             /* flip the active flag */
-                            var flag = !scope.active;
+                            var flag = !scope.isActive;
                             if (flag) {
                                 /* some widgets like charts needs to be redrawn when a accordion pane becomes active for the first time */
                                 element.find('.ng-isolate-scope')
                                     .each(function () {
                                         Utils.triggerFn(WM.element(this).isolateScope().redraw);
                                     });
-                                // when accordionContent is set to display external page, triggering $lazyLoad on expand of the accordion pane will render the content.
-                                Utils.triggerFn(scope.accordionContent.$lazyLoad);
+                                // when pane content is set to display external page, triggering $lazyLoad on expand of the accordion pane will render the content.
+                                Utils.triggerFn(scope.$lazyLoad);
                                 /* trigger the onExpand call back */
                                 Utils.triggerFn(scope.onExpand);
                                 panesCtrl.closeOthers(scope);
@@ -137,129 +119,23 @@ WM.module('wm.layouts.containers')
                                 Utils.triggerFn(scope.onCollapse);
                             }
 
-                            scope.active = flag;
+                            scope.isActive = flag;
                         };
 
                         /* Expose the method `expand` on pane. Triggering this method will expand the pane. */
                         scope.expand = function () {
-                            if (!scope.active) {
+                            if (!scope.isActive) {
                                 scope.togglePane();
                             }
                         };
 
                         /* Expose the method `collapse` on pane. Triggering this method will collapse the pane. */
                         scope.collapse = function () {
-                            if (scope.active) {
+                            if (scope.isActive) {
                                 scope.togglePane();
                             }
                         };
-
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
-            }
-        };
-    }])
-    .directive('wmAccordionheader', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', '$compile', 'CONSTANTS', function ($templateCache, WidgetUtilService, PropertiesFactory, $compile, CONSTANTS) {
-        'use strict';
-
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionheader', ['wm.base', 'wm.layouts']);
-
-        return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
-            'transclude': true,
-            'template': $templateCache.get('template/layout/container/accordion-header.html'),
-            'require': '^wmAccordionpane',
-            'compile': function (tElement) {
-                return {
-                    'pre': function (scope, element, attrs) {
-                        scope.widgetProps = widgetProps;
-                        if (scope.widgetProps.show) {
-                            delete scope.widgetProps.show;// show property should be handled from pane.
-                        }
-                        delete scope.widgetProps.accessroles; // accessroles property should be handled from pane
-                        //handle the backward compatibility for description attributes
-                        if (attrs.description && !attrs.subheading) {
-                            scope.subheading = attrs.subheading = attrs.description;
-                            WM.element(tElement.context).attr('subheading', scope.subheading);
-                            delete attrs.description;
-                        }
-                    },
-                    'post': function (scope, element, attrs, paneCtrl) {
-                        var transcludeTarget = element.find('[wmtransclude]'),
-                            template;
-
-                        if (transcludeTarget.children().length === 0) { /* if there is no transcluded content, use the default template for the header */
-                            template =
-                                '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
-                                '<div class="pull-left"><div class="heading" ng-bind-html="heading"></div>' +
-                                '<div class="description" ng-bind-html="subheading"></div></div>';
-                            transcludeTarget.append($compile(template)(scope));
-                        }
-                        scope.pane = paneCtrl.getPaneScope();
-                        scope.pane.isdefaultpane = scope.isdefaultpane;
-
-                        if (CONSTANTS.isRunMode) {
-                            if (attrs.onExpand) {
-                                paneCtrl.registerCallback('onExpand', attrs._onExpand || attrs.onExpand);
-                            }
-
-                            if (attrs.onCollapse) {
-                                paneCtrl.registerCallback('onCollapse', attrs._onCollapse || attrs.onCollapse);
-                            }
-                        }
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
-                    }
-                };
-            }
-        };
-    }]).directive('wmAccordioncontent', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'CONSTANTS', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, CONSTANTS, Utils) {
-        'use strict';
-
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordioncontent', ['wm.base', 'wm.layouts',  'wm.containers']);
-
-        return {
-            'restrict': 'E',
-            'replace': true,
-            'scope': {},
-            'transclude': true,
-            'template': $templateCache.get('template/layout/container/accordion-content.html'),
-            'require': '^wmAccordionpane',
-            'compile': function () {
-                return {
-                    'pre': function (iScope) {
-
-                        if (CONSTANTS.isStudioMode) {
-                            iScope.widgetProps = Utils.getClonedObject(widgetProps);
-                            delete iScope.widgetProps.show;
-                            delete iScope.widgetProps.accessroles; // accessroles property should be handled from pane
-                        } else {
-                            iScope.widgetProps = widgetProps;
-                        }
-
-                        // define $lazyLoad method on iScope.
-                        // pageContainer widget will override this.
-                        iScope.$lazyLoad = WM.noop;
-                    },
-                    'post': function (iScope, element, attrs, paneCtrl) {
-                        iScope.pane = paneCtrl.getPaneScope();
-
-                        // save a reference of accordionContent in accordionPane
-                        // accordionPane will use this reference to trigger $lazyLoad method.
-                        iScope.pane.accordionContent = iScope;
-
-                        // define isActive property on the iScope of accordion content.
-                        // this property will be used by page-container directive.
-                        // when content property is set, the page corresponding to the value of content will be loaded on demand.
-                        // if the pane is active (i.e, expanded) page will be loaded immediately.
-                        Object.defineProperty(iScope, 'isActive', {
-                            get: function () {
-                                return this.pane.active;
-                            }
-                        });
-                        WidgetUtilService.postWidgetCreate(iScope, element, attrs);
                     }
                 };
             }
@@ -304,13 +180,11 @@ WM.module('wm.layouts.containers')
         <file name="index.html">
             <div ng-controller="Ctrl" class="wm-app">
                 <wm-accordion width="400px" height="400px" closeothers="false" horizontalalign='right'>
-                    <wm-accordionpane>
-                        <wm-accordionheader heading="pane1"></wm-accordionheader>
-                        <wm-accordioncontent>content of the pane1</wm-accordioncontent>
+                    <wm-accordionpane heading="pane1">
+                        Content for pane1
                     </wm-accordionpane>
-                    <wm-accordionpane>
-                        <wm-accordionheader heading="pane2"></wm-accordionheader>
-                        <wm-accordioncontent>content of pane 2</wm-accordioncontent>
+                    <wm-accordionpane heading="pane2">
+                        Content for pane2
                     </wm-accordionpane>
                 </wm-accordion>
             </div>
@@ -345,73 +219,13 @@ WM.module('wm.layouts.containers')
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the accordion on the web page. <br>
  *                  Default value: `true`.
- * @param {string=} on-expand
- *                  Callback function which will be triggered when the pane is expanded.
- * @param {string=} on-collapse
- *                  Callback function which will be triggered when the pane is collapsed.
- *
- * @example
-    <example module="wmCore">
-        <file name="index.html">
-            <div ng-controller="Ctrl" class="wm-app">
-                <wm-accordion>
-                    <wm-accordionpane on-expand="expandCallback()" on-collapse="collapseCallback()">
-                        <wm-accordionheader heading="pane1"></wm-accordionheader>
-                        <wm-accordioncontent>content of the pane1</wm-accordioncontent>
-                    </wm-accordionpane>
-                    <wm-accordionpane>
-                        <wm-accordionheader heading="pane2"></wm-accordionheader>
-                        <wm-accordioncontent>content of pane 2</wm-accordioncontent>
-                    </wm-accordionpane>
-                </wm-accordion>
-            </div>
-        </file>
-        <file name="script.js">
-            function Ctrl($scope) {
-                $scope.expandCallback = function () {
-                    console.log("inside expand callback");
-                }
-                $scope.collapseCallback = function () {
-                    console.log("inside collapse callback");
-                }
-            }
-        </file>
-    </example>
- */
-
-
-/**
- * @ngdoc directive
- * @name wm.layouts.containers.directive:wmAccordionheader
- * @restrict E
- *
- * @description
- * The `wmAccordionheader` directive defines accordion-header widget. <br>
- * wmAccordionheader can be used only inside wmAccordionpane. <br>
- * If there is no transcluded content, default template will be used. <br>
- *
- * Default template:<br>
- * &lt;i class="app-icon" ng-show = "iconsource"  ng-style ="{backgroundImage:iconsource}"&gt;&nbsp;&lt;/i&gt;
- *  {{heading}} <span class="description" ng-if="description"&gt; - { {description} }&lt;/span&gt;
- * &lt; class="app-icon" ng-class="pane.active ? panel-open-false: panel-open-true"&gt;&nbsp;&lt;/i&gt;
- *
- * @scope
- *
- * @requires PropertiesFactory
- * @requires $templateCache
- * @requires WidgetUtilService
- * @requires $compile
- * @requires Utils
- *
- * @param {string=} name
- *                  Name of the accordionheader.
  * @param {string=} heading
  *                  Title of the header. <br>
  *                  This property is bindable. <br>
  *                  Default value: `Heading`. <br>
  *                  This is will be used only when the default template is used.
- * @param {string=} description
- *                  description of the accordion header. <br>
+ * @param {string=} subheading
+ *                  subheading of the accordion header. <br>
  *                  This is will be used only when the default template is used.
  * @param {string=} iconclass
  *                  Icon which we displayed on the header. <br>
@@ -428,108 +242,33 @@ WM.module('wm.layouts.containers')
  *                  This is a bindable property. <br>
  *                  It will be used to make one accordion pane open by default. <br>
  *                  Default value: `false`.
+ * @param {string=} on-expand
+ *                  Callback function which will be triggered when the pane is expanded.
+ * @param {string=} on-collapse
+ *                  Callback function which will be triggered when the pane is collapsed.
+ *
  * @example
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl" class="wm-app">
                 <wm-accordion>
-                    <wm-accordionpane>
-                        <wm-accordionheader heading="{{heading1}}" description="{{description1}}"></wm-accordionheader>
-                        <wm-accordioncontent>content of the pane1</wm-accordioncontent>
+                    <wm-accordionpane on-expand="expandCallback()" on-collapse="collapseCallback()" heading="pane1">
+                        Content for pane1
                     </wm-accordionpane>
-                    <wm-accordionpane>
-                    <wm-accordionheader><a><i class="default-pane-icon"></i><span>Pane2</span></a></wm-accordionheader>
-                        <wm-accordioncontent>content of pane 2</wm-accordioncontent>
+                    <wm-accordionpane heading="pane2">
+                        Content for pane2
                     </wm-accordionpane>
                 </wm-accordion>
             </div>
         </file>
         <file name="script.js">
             function Ctrl($scope) {
-                $scope.heading1 = "Pane1";
-                $scope.description1 = "this is pane1";
-            }
-        </file>
-    </example>
- */
-
-
-/**
- * @ngdoc directive
- * @name wm.layouts.containers.directive:wmAccordioncontent
- * @restrict E
- *
- * @description
- * The `wmAccordioncontent` directive defines accordion-content widget. <br>
- * wmAccordioncontent can be used only inside wmAccordionpane.
- *
- *
- * @scope
- *
- * @requires PropertiesFactory
- * @requires $templateCache
- * @requires WidgetUtilService
- * @requires Utils
- *
- * @param {string=} name
- *                  Name of the accordioncontent.
- * @param {boolean=} show
- *                  Show is a bindable property. <br>
- *                  This property will be used to show/hide the accordion on the web page. <br>
- *                  Default value: `true`.
- * @param {string=} horizontalalign
- *                  Align the content of the accordion-content to left/right/center.
- *                  Default value: `left`.
- * @example
-    <example module="wmCore">
-        <file name="index.html">
-            <div ng-controller="Ctrl" class="wm-app">
-                <wm-accordion>
-                    <wm-accordionpane>
-                        <wm-accordionheader heading="{{heading1}}" description="{{description1}}"></wm-accordionheader>
-                        <wm-accordioncontent>
-                            This is the content of Pane1
-                            <wm-button caption="inside pane1" on-click="f()"></wm-button>
-                        </wm-accordioncontent>
-                    </wm-accordionpane>
-                    <wm-accordionpane>
-                        <wm-accordionheader><a><i class="default-pane-icon"></i><span>Pane2</span></a></wm-accordionheader>
-                        <wm-accordioncontent>
-                            {{pane2content}}
-                        </wm-accordioncontent>
-                    </wm-accordionpane>
-                    <wm-accordionpane show="{{showPane3}}">
-                        <wm-accordionheader heading="pane3"></wm-accordionheader>
-                        <wm-accordioncontent>
-                            this is pane 3
-                        </wm-accordioncontent>
-                    </wm-accordionpane>
-                </wm-accordion>
-
-                <wm-button on-click="toggle()" caption="{{showHidePane}}"></wm-button>
-            </div>
-        </file>
-        <file name="script.js">
-            function Ctrl($scope) {
-                $scope.heading1 = "Pane1";
-                $scope.description1 = "this is pane1";
-                $scope.showPane3 = false;
-                $scope.showHidePane = "Show Pane 3";
-
-                $scope.f = function () {
-                    console.log(" inside function f");
+                $scope.expandCallback = function () {
+                    console.log("inside expand callback");
                 }
-
-                $scope.toggle = function () {
-                    $scope.showPane3 = !$scope.showPane3;
-                    if($scope.showPane3) {
-                        $scope.showHidePane = "Hide Pane 3";
-                    } else {
-                        $scope.showHidePane = "Show Pane 3";
-                    }
+                $scope.collapseCallback = function () {
+                    console.log("inside collapse callback");
                 }
-
-                $scope.pane2content = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
             }
         </file>
     </example>
