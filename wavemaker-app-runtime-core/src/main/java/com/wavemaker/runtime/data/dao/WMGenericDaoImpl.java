@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2016 WaveMaker, Inc.
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,10 @@
  */
 package com.wavemaker.runtime.data.dao;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -40,11 +44,17 @@ import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.runtime.export.DataExporter;
+import com.wavemaker.runtime.export.ExportOptions;
+import com.wavemaker.runtime.export.ExportType;
+import com.wavemaker.runtime.file.model.DownloadResponse;
+import com.wavemaker.runtime.file.model.Downloadable;
 
 public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier extends Serializable> implements WMGenericDao<Entity, Identifier> {
 
     public static final String SEARCH_PROPERTY_DILIMITTER = ".";
     private Class<Entity> entityClass;
+
 
     public abstract HibernateTemplate getTemplate();
 
@@ -112,6 +122,35 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 return executeAndGetPageableData(criteria, pageable);
             }
         });
+    }
+
+    @Override
+    public Page<Entity> findAll(String query, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
+        File file = getTemplate().execute(new HibernateCallback<File>() {
+            @Override
+            public File doInHibernate(Session session) throws HibernateException {
+                ExportOptions exportOptions = new ExportOptions();
+                exportOptions.setPageable(pageable);
+                exportOptions.setQuery(query);
+                return export(session, exportType, exportOptions);
+            }
+        });
+        try {
+            InputStream is = new FileInputStream(file);
+            return new DownloadResponse(is, null, file.getName());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("exported file cannot be opened", e);
+        }
+    }
+
+    private File export(Session session, ExportType exportType, ExportOptions exportOptions) {
+        DataExporter<Entity> exporter = new DataExporter<>(session, entityClass, exportType, exportOptions);
+        return exporter.build();
     }
 
     protected Criterion createCriterion(QueryFilter queryFilter) {
