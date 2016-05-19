@@ -109,16 +109,37 @@ wm.modules.wmCommon.services.NavigationService = [
             return dialogId;
         }
 
+        /* If page name is equal to active pageName, this function returns the element in the page.
+        The element in the partial page is not selected.*/
+        function getViewElementInActivePage($el) {
+            var selector;
+            if ($el.length > 1) {
+                selector = _.filter($el, function (childSelector) {
+                    if (_.isEmpty(WM.element(childSelector).closest('[data-role = "partial"]'))) {
+                        return childSelector;
+                    }
+                });
+                if (selector) {
+                    $el = WM.element(selector);
+                }
+            }
+            return $el;
+        }
 
         /*
          * navigates the user to a view element with given name
          * if the element not found in the compiled markup, the same is searched in the available dialogs in the page
          */
-        function goToView(viewElement, viewName) {
-            var $is = viewElement.isolateScope(),
-                parentDialog;
+        function goToView(viewElement, viewName, pageName) {
+
+            var $is, parentDialog;
 
             if (viewElement.length) {
+                if (pageName === $rs.activePageName) {
+                    viewElement = getViewElementInActivePage(viewElement);
+                }
+
+                $is = viewElement.isolateScope();
                 switch ($is._widgettype) {
                 case 'wm-view':
                     showAncestors(viewElement);
@@ -145,18 +166,10 @@ wm.modules.wmCommon.services.NavigationService = [
                 parentDialog = showAncestorDialog(viewName);
                 $timeout(function () {
                     if (parentDialog) {
-                        goToView(WM.element('[name="' + viewName + '"]'), viewName, false);
+                        goToView(WM.element('[name="' + viewName + '"]'), viewName, pageName);
                     }
                 });
             }
-        }
-
-        //listens for the event only once and destroys the listener.
-        function listenOnce(eventName, callBack) {
-            var removeListener = $rs.$on(eventName, function () {
-                removeListener();
-                callBack.call(undefined, arguments);
-            });
         }
 
         $rs.$on('$routeChangeStart', function (evt, $next) {
@@ -239,16 +252,13 @@ wm.modules.wmCommon.services.NavigationService = [
                 $event = options.$event;
 
             if (!pageName || pageName === $rs.activePageName || isPartialWithNameExists(pageName)) {
-                goToView(WM.element(parentSelector).find('[name="' + viewName + '"]'), viewName);
+                goToView(WM.element(parentSelector).find('[name="' + viewName + '"]'), viewName, pageName);
             } else {
                 this.goToPage(pageName, {
                     viewName    : viewName,
                     $event      : $event,
                     transition  : transition,
                     urlParams   : options.urlParams
-                });
-                listenOnce('page-ready', function () {
-                    goToView(WM.element(parentSelector).find('[name="' + viewName + '"]'), viewName);
                 });
             }
         };

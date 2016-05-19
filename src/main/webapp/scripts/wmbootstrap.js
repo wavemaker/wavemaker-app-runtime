@@ -86,7 +86,9 @@ Application
 
                 function defaultPageLoadSuccessHandler(pageName, response) {
                     cache.put(pageName, Utils.parseCombinedPageContent(response.data, pageName));
-                    $rs.activePageName = pageName; // setting active page name in rootScope, required by the Variables service
+                    if (pageName !== 'Common') {
+                        $rs.activePageName = pageName; // setting active page name in rootScope, required by the Variables service
+                    }
                     prevRoute = $location.path();
                 }
 
@@ -188,7 +190,9 @@ Application
                     if (!content) {
                         _load(pageName, deferred.resolve, deferred.reject);
                     } else {
-                        $rs.activePageName = pageName;
+                        if (pageName !== 'Common') {
+                            $rs.activePageName = pageName;
+                        }
                         deferred.resolve(content);
                     }
 
