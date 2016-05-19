@@ -91,6 +91,14 @@ WM.module('wm.layouts.containers')
             });
         }
 
+        function onDestroy() {
+            WM.element($window).off('.tabbar');
+        }
+
+        function registerResizeHandler(scope, element) {
+            WM.element($window).on('resize.tabbar', _.debounce(onResize.bind(undefined, scope, element), 20));
+        }
+
         return {
             'scope' : {
                 'onSelect': '&',
@@ -108,11 +116,16 @@ WM.module('wm.layouts.containers')
                 },
                 'post' : function (scope, element, attrs) {
                     var onPropertyChange = propertyChangeHandler.bind(undefined, scope);
-                    WM.element($window).resize(_.debounce(onResize.bind(undefined, scope, element), 20));
+
+                    registerResizeHandler(scope, element);
+
                     scope.layout = getSuitableLayout(element.parent().width());
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(onPropertyChange, scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
+
+                    scope.$on('$destroy', onDestroy);
+                    element.on('$destroy', onDestroy);
                 }
             }
         };
