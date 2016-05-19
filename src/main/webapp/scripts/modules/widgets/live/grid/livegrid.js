@@ -17,12 +17,17 @@ WM.module('wm.widgets.live')
         '$timeout',
         'Utils',
         'CONSTANTS',
-        function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils, CONSTANTS) {
+        'wmToaster',
+        '$rootScope',
+        function (PropertiesFactory, $templateCache, WidgetUtilService, DialogService, $compile, $timeout, Utils, CONSTANTS, wmToaster, $rs) {
             "use strict";
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.livegrid', ['wm.base']),
                 gridMarkup = '',
                 notifyFor = {
                     'formlayout': true
+                },
+                showErrorMessage = function () {
+                    wmToaster.show('error', 'ERROR', $rs.appLocale.LABEL_ACCESS_DENIED);
                 };
 
             return {
@@ -208,6 +213,22 @@ WM.module('wm.widgets.live')
                                         }
                                     }
                                 }));
+                            } else if (scope.grid) {
+                                //If form is not present along with the grid, disable the actions on grid
+                                scope.grid.datagridElement.datagrid('option', {
+                                    'allowInlineEditing' : false,
+                                    'disableDelete'      : true,
+                                    'allowAddNewRow'     : false,
+                                    'beforeRowUpdate'    : function () {
+                                        showErrorMessage();
+                                    },
+                                    'beforeRowDelete'     : function () {
+                                        showErrorMessage();
+                                    },
+                                    'beforeRowInsert'     : function () {
+                                        showErrorMessage();
+                                    }
+                                });
                             }
                             $compile(attrs.gridColumnMarkup)(scope);
                             function propertyChangeHandler(key, newVal) {
