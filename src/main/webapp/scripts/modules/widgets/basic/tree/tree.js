@@ -13,7 +13,7 @@ WM.module('wm.widgets.basic')
         function (PropertiesFactory, $rs, WidgetUtilService, Utils, CONSTANTS, FormWidgetUtils) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.tree', ['wm.base', 'wm.base.editors']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.tree', ['wm.base', 'wm.containers','wm.containers.borderstyle']),
                 notifyFor = {
                     'scopedataset' : true,
                     'dataset'      : true,

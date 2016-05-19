@@ -14,7 +14,7 @@ WM.module('wm.widgets.form')
     }])
     .directive('wmCheckboxset', ['PropertiesFactory', 'WidgetUtilService', '$compile', 'CONSTANTS', 'Utils', 'FormWidgetUtils', '$templateCache', function (PropertiesFactory, WidgetUtilService, $compile, CONSTANTS, Utils, FormWidgetUtils, $templateCache) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkboxset', ['wm.base', 'wm.booleaneditors', 'wm.base.editors.dataseteditors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkboxset', ['wm.base', 'wm.base.editors.dataseteditors']),
             notifyFor = {
                 'dataset'       : true,
                 'displayfield'  : true,

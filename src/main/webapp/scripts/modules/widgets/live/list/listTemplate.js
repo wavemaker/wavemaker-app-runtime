@@ -19,7 +19,7 @@ WM.module('wm.layouts.containers')
                 };
 
             if (CONSTANTS.isStudioMode) {
-                widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.listtemplate', ['wm.containers']);
+                widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.listtemplate');
                 notifyFor = {
                     'layout': true
                 };

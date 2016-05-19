@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
     .directive('wmComposite', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
         'use strict';
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.composite', ['wm.base', 'wm.layouts']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.composite', ['wm.base', 'wm.containers']),
             notifyFor = {
                 'required': true
             };

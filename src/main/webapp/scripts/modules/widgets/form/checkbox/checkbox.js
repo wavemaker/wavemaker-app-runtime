@@ -24,7 +24,7 @@ WM.module('wm.widgets.form')
     }])
     .directive('wmCheckbox', ['PropertiesFactory', 'WidgetUtilService', 'CONSTANTS', '$templateCache', 'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, CONSTANTS, $templateCache, FormWidgetUtils) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkbox', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.checkbox', ['wm.base', 'wm.base.editors.abstracteditors']),
             notifyFor = {
                 'readonly': true
             };

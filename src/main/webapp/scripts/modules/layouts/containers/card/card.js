@@ -26,12 +26,12 @@ WM.module('wm.layouts.containers')
             '</div>'
             );
         $templateCache.put('template/layout/container/card-content.html', '<div apply-styles="container" init-widget page-container class="app-card-content card-body card-block"><div page-container-target wmtransclude></div></div>');
-        $templateCache.put('template/layout/container/card-footer.html', '<div apply-styles="container" init-widget wmtransclude page-container-target class="app-card-footer text-muted card-footer"></div>');
-        $templateCache.put('template/layout/container/card-actions.html', '<div apply-styles="container" class="app-card-actions" init-widget wmtransclude page-container></div>');
+        $templateCache.put('template/layout/container/card-footer.html', '<div apply-styles="container" init-widget wmtransclude  class="app-card-footer text-muted card-footer"></div>');
+        $templateCache.put('template/layout/container/card-actions.html', '<div apply-styles="container" class="app-card-actions" init-widget wmtransclude ></div>');
     }])
     .directive('wmCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.layouts', 'wm.containers', 'wm.base.events.touch']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events.touch']),
             notifyFor = {
                 'heading'   : true,
                 'subheading': true,
@@ -122,7 +122,7 @@ WM.module('wm.layouts.containers')
         function (PropertiesFactory, $templateCache, WidgetUtilService) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.cardcontent', ['wm.base', 'wm.layouts',  'wm.containers']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardcontent', ['wm.base','wm.containers']);
             return {
                 'restrict'  : 'E',
                 'scope'     : {},
@@ -150,7 +150,7 @@ WM.module('wm.layouts.containers')
         function (PropertiesFactory, $templateCache, WidgetUtilService) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.cardactions', ['wm.base', 'wm.layouts',  'wm.containers']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardactions', ['wm.base']);
             return {
                 'restrict'  : 'E',
                 'scope'     : {},
@@ -178,7 +178,7 @@ WM.module('wm.layouts.containers')
         function (PropertiesFactory, $templateCache, WidgetUtilService) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.cardfooter', ['wm.base', 'wm.layouts',  'wm.containers']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardfooter', ['wm.base']);
             return {
                 'restrict'  : 'E',
                 'scope'     : {},

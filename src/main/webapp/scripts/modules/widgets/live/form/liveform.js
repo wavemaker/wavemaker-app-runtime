@@ -6,7 +6,7 @@ WM.module('wm.widgets.live')
     .controller('liveFormDialogController', WM.noop)
     .directive('wmLiveform', ['PropertiesFactory', 'WidgetUtilService', '$compile', '$rootScope', 'CONSTANTS', '$controller', 'Utils', 'wmToaster', '$filter', 'LiveWidgetUtils', 'DialogService', function (PropertiesFactory, WidgetUtilService, $compile, $rootScope, CONSTANTS, $controller, Utils, wmToaster, $filter, LiveWidgetUtils, DialogService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.liveform', ['wm.layouts', 'wm.base.events.successerror']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.liveform', ['wm.base', 'wm.base.events.successerror']),
             notifyFor = {
                 'dataset': true,
                 'captionsize': true,

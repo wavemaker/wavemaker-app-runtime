@@ -27,7 +27,7 @@ WM.module('wm.widgets.advanced')
         function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaCamera, $cordovaCapture) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.camera', ['wm.base', 'wm.base.editors']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.camera', ['wm.base','wm.base.advancedformwidgets']),
                 cameraOptions,
                 notifyFor = {
                     'capturetype': true

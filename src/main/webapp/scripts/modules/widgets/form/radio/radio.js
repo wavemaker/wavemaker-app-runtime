@@ -24,7 +24,7 @@ WM.module('wm.widgets.form')
     .directive('wmRadio', ['PropertiesFactory', 'WidgetUtilService', '$templateCache',  'FormWidgetUtils', function (PropertiesFactory, WidgetUtilService, $templateCache,  FormWidgetUtils) {
         'use strict';
         /*Obtaining properties specific to radio widget by extending from all editor related widget properties*/
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.radio', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.radio', ['wm.base', 'wm.base.editors.abstracteditors']),
             notifyFor = {
                 'height': true,
                 'radiogroup': true

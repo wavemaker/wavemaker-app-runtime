@@ -15,7 +15,7 @@ WM.module('wm.widgets.basic')
 
     }]).directive('wmAnchor', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, $sce, Utils, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.anchor', ['wm.base', 'wm.base.editors', 'wm.base.events', 'wm.base.events.focus']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.anchor', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events', 'wm.base.events.focus']),
             notifyFor = {
                 'iconname'    : true,
                 'iconurl'     : true,

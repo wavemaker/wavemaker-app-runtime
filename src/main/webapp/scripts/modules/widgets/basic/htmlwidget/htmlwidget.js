@@ -12,7 +12,7 @@ WM.module('wm.widgets.basic')
     }])
     .directive('wmHtml', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.html', ['wm.base', 'wm.base.editors', 'wm.base.events']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.html', ['wm.base', 'wm.base.editors', 'wm.containers', 'wm.containers.borderstyle', 'wm.base.events']),
             notifyFor = {
                 'content': true,
                 'autoscroll': true

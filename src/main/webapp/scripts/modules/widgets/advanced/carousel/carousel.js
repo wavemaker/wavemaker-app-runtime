@@ -63,7 +63,7 @@ WM.module('wm.widgets.advanced')
                 slideTemplateWrapper,
                 CAROUSEL_TYPE = {'STATIC': 'static', 'DYNAMIC': 'dynamic'};
 
-            widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base', 'wm.containers']);
+            widgetProps = PropertiesFactory.getPropertiesOf('wm.carousel', ['wm.base']);
             notifyFor   = {
                 'dataset' : true,
                 'type'    : true
@@ -349,7 +349,7 @@ WM.module('wm.widgets.advanced')
         function (PropertiesFactory, $templateCache, WidgetUtilService) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.containers']);
             return {
                 'restrict'  : 'E',
                 'scope'     : {},
@@ -383,7 +383,7 @@ WM.module('wm.widgets.advanced')
 
         function (PropertiesFactory, $templateCache, WidgetUtilService, CONSTANTS) {
             'use strict';
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.layouts']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.carouselcontent', ['wm.base', 'wm.containers']),
                 directiveDefn;
 
             function preLinkFn($is) {

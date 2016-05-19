@@ -16,7 +16,7 @@ WM.module('wm.widgets.basic')
     .directive('wmPopover', ['PropertiesFactory', 'WidgetUtilService', '$sce', 'Utils', 'CONSTANTS', '$rootScope', '$compile', '$templateCache', '$timeout', function (PropertiesFactory, WidgetUtilService, $sce, Utils, CONSTANTS, $rootScope, $compile, $templateCache, $timeout) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.popover', ['wm.base', 'wm.base.editors', 'wm.anchor']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.popover', ['wm.base', 'wm.base.advancedformwidgets', 'wm.anchor']),
             notifyFor = {
                 'iconclass'     : true,
                 'iconurl'       : true,

@@ -13,7 +13,7 @@ WM.module('wm.layouts.containers')
         function (PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $compile) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.layoutgrid', ['wm.layouts']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.layoutgrid'),
                 notifyFor = CONSTANTS.isStudioMode ? {'columns': true} : undefined;
 
             /* Applies default width to columns which don't already have their width set. */
@@ -98,7 +98,7 @@ WM.module('wm.layouts.containers')
     .directive('wmGridrow', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.gridrow', ['wm.layouts']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.gridrow'),
             notifyFor = {
                 'height': true
             };
@@ -131,7 +131,7 @@ WM.module('wm.layouts.containers')
     .directive('wmGridcolumn', ['PropertiesFactory', 'WidgetUtilService', '$rootScope', function (PropertiesFactory, WidgetUtilService, $rootScope) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.gridcolumn', ['wm.layouts']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.gridcolumn'),
             notifyFor = {
                 'columnwidth': true
             },

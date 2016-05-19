@@ -28,7 +28,7 @@ WM.module('wm.layouts.containers')
     .directive('wmAccordion', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordion', ['wm.base',  'wm.containers']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordion', ['wm.base']);
 
         return {
             'restrict': 'E',

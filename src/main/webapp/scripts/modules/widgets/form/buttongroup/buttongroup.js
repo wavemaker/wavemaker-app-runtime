@@ -11,7 +11,7 @@ WM.module('wm.widgets.form')
     .directive('wmButtongroup', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($templateCache, PropertiesFactory, WidgetUtilService) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.buttongroup', ['wm.base', 'wm.base.editors']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.buttongroup', ['wm.base']);
 
         return {
             'restrict'  : 'E',

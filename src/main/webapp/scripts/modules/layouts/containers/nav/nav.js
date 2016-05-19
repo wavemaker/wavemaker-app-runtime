@@ -16,7 +16,7 @@ WM.module('wm.layouts.containers')
 
         function (Utils, PropertiesFactory, WidgetUtilService, $rs, $compile, $routeParams, CONSTANTS, FormWidgetUtils) {
             'use strict';
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.layouts']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.nav', ['wm.containers']),
                 notifyFor = {
                     'dataset'      : true,
                     'scopedataset' : true,
@@ -227,7 +227,7 @@ WM.module('wm.layouts.containers')
 
         function (PropertiesFactory, WidgetUtilService) {
             'use strict';
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navitem', ['wm.layouts']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navitem',['wm.base']);
 
             return {
                 'restrict'  : 'E',

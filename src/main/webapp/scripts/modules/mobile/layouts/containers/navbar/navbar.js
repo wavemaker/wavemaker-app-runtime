@@ -72,7 +72,7 @@ WM.module('wm.layouts.containers')
         function ($templateCache, PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, NavigationService, $window) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mobile.navbar', ['wm.layouts']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.mobile.navbar', ['wm.base']),
                 notifyFor = {
                     'imgsrc'         : true,
                     'dataset'        : true,

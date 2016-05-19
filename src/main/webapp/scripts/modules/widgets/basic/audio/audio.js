@@ -12,7 +12,7 @@ WM.module('wm.widgets.basic')
     }])
     .directive('wmAudio', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $sce, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.audio', ['wm.base', 'wm.containers']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.audio', ['wm.base']),
             notifyFor = {
                 'mp3format': true
             };

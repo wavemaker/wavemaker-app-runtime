@@ -6,7 +6,7 @@
 WM.module('wm.layouts.containers')
     .directive('wmList', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.list', ['wm.layouts']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.list');
 
         return {
             'restrict'  : 'E',
@@ -30,7 +30,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmListItem', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.listitem', ['wm.layouts']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.listitem');
 
         return {
             'restrict'  : 'E',
