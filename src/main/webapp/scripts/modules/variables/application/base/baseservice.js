@@ -1037,7 +1037,7 @@ wm.variables.services.Variables = [
            /* function to create default non-conflicting name for a variable */
             generateUniqueName = function (category, name, overWrite) {
                 var defaultName,
-                    nameIteratorKey = 'category';
+                    nameIteratorKey = category;
 
                 if (name) {
                     nameIteratorKey = name;
