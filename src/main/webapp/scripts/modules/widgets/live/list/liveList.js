@@ -287,6 +287,13 @@ WM.module('wm.widgets.live')
                 return obj.type;
             }
 
+            //Format the date with given date format
+            function filterDate(value, format, defaultFormat) {
+                if (format === 'timestamp') { //For timestamp format, return the epoch value
+                    return value;
+                }
+                return $filter('date')(value, format || defaultFormat);
+            }
             // This function adds the li elements if groupby is set.
             function addListElements(_s, $el, $is, attrs, listCtrl) {
                 var $liTemplate,
@@ -303,19 +310,19 @@ WM.module('wm.widgets.live')
                         'sameDay'  : '[Today]',
                         'sameElse' : 'L'
                     },
-                    groupByOptions = {
+                    GROUP_BY_OPTIONS    = {
                         'ALPHABET' : 'alphabet',
                         'WORD'     : 'word',
                         'OTHERS'   : 'Others'
                     },
-                    timeRollupOptions = {
+                    TIME_ROLLUP_OPTIONS = {
                         'HOUR'  : 'hour',
                         'DAY'   : 'day',
                         'WEEK'  : 'week',
                         'MONTH' : 'month',
                         'YEAR'  : 'year'
                     },
-                    rollupPatterns = {
+                    ROLLUP_PATTERNS    = {
                         'DAY'   : 'yyyy-MM-dd',
                         'WEEK'  : 'w \'Week\',  yyyy',
                         'MONTH' : 'MMM, yyyy',
@@ -329,15 +336,15 @@ WM.module('wm.widgets.live')
                         currMoment = moment(),
                         strMoment  = moment(str),
                         getSameElseFormat = function () { //Set the sameElse option of moment calendar to user defined pattern
-                            return '[' + $filter('date')(this.valueOf(), $is.dateformat || rollupPatterns.DAY) + ']';
+                            return '[' + filterDate(this.valueOf(), $is.dateformat, ROLLUP_PATTERNS.DAY) + ']';
                         };
                     switch (rollUp) {
-                    case timeRollupOptions.HOUR:
+                    case TIME_ROLLUP_OPTIONS.HOUR:
                         if (!strMoment.isValid()) { //If date is invalid, check if data is in forom of hh:mm a
                             strMoment = moment(new Date().toDateString() + ' ' + str);
                             if (strMoment.isValid()) {
                                 momentLocale._calendar.sameDay = function () { //As only time is present, roll up at the hour level with given time format
-                                    return '[' + $filter('date')(this.valueOf(), $is.dateformat || rollupPatterns.HOUR) + ']';
+                                    return '[' + filterDate(this.valueOf(), $is.dateformat, ROLLUP_PATTERNS.HOUR) + ']';
                                 };
                             }
                         }
@@ -345,21 +352,24 @@ WM.module('wm.widgets.live')
                         momentLocale._calendar.sameElse = getSameElseFormat;
                         groupByKey = strMoment.calendar(currMoment);
                         break;
-                    case timeRollupOptions.WEEK:
-                        groupByKey = $filter('date')(strMoment.valueOf(), $is.dateformat || rollupPatterns.WEEK);
+                    case TIME_ROLLUP_OPTIONS.WEEK:
+                        groupByKey = filterDate(strMoment.valueOf(), $is.dateformat, ROLLUP_PATTERNS.WEEK);
                         break;
-                    case timeRollupOptions.MONTH:
-                        groupByKey = $filter('date')(strMoment.valueOf(), $is.dateformat || rollupPatterns.MONTH);
+                    case TIME_ROLLUP_OPTIONS.MONTH:
+                        groupByKey = filterDate(strMoment.valueOf(), $is.dateformat, ROLLUP_PATTERNS.MONTH);
                         break;
-                    case timeRollupOptions.YEAR:
-                        groupByKey = strMoment.format(rollupPatterns.YEAR);
+                    case TIME_ROLLUP_OPTIONS.YEAR:
+                        groupByKey = strMoment.format(ROLLUP_PATTERNS.YEAR);
                         break;
-                    case timeRollupOptions.DAY:
+                    case TIME_ROLLUP_OPTIONS.DAY:
                         strMoment = strMoment.startOf('day'); //round off to current day
                         momentLocale._calendar.sameElse = getSameElseFormat;
                         groupByKey = strMoment.calendar(currMoment);
                         break;
 
+                    }
+                    if (groupByKey === 'Invalid date') { //If invalid date is returned, Categorize it as Others.
+                        return GROUP_BY_OPTIONS.OTHERS;
                     }
                     return groupByKey;
                 }
@@ -368,16 +378,16 @@ WM.module('wm.widgets.live')
                     var concatStr = _.get(liData, $is.groupby);
 
                     if (WM.isUndefined(concatStr)) {
-                        concatStr = groupByOptions.OTHERS; // by default set the undefined groupKey as 'others'
+                        concatStr = GROUP_BY_OPTIONS.OTHERS; // by default set the undefined groupKey as 'others'
                         return concatStr;
                     }
 
                     // if match prop is alphabetic ,get the starting alphabet of the word as key.
-                    if ($is.match === groupByOptions.ALPHABET) {
+                    if ($is.match === GROUP_BY_OPTIONS.ALPHABET) {
                         return concatStr.substr(0, 1);
                     }
 
-                    if (_.includes(_.values(timeRollupOptions), $is.match)) {
+                    if (_.includes(_.values(TIME_ROLLUP_OPTIONS), $is.match)) {
                         return getTimeRolledUpString(concatStr, $is.match);
                     }
 
@@ -394,7 +404,7 @@ WM.module('wm.widgets.live')
                     if (!$is.orderby) { //Apply implicit orderby on group by clause, if order by not specified
                         _s.fieldDefs = FormWidgetUtils.getOrderedDataSet(_s.fieldDefs, $is.groupby);
                     }
-                    if ($is.match === timeRollupOptions.DAY) {
+                    if ($is.match === TIME_ROLLUP_OPTIONS.DAY) {
                         momentLocale._calendar = momentCalendarDayOptions; //For day, set the relevant moment calendar options
                     }
                     groupedLiData = _.groupBy(_s.fieldDefs, groupDataByField);
