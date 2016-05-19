@@ -716,6 +716,9 @@ $.widget('wm.datagrid', {
             rowData = {},
             $row;
 
+        if ($.isFunction(this.options.beforeRowInsert)) {
+            this.options.beforeRowInsert();
+        }
         rowData.index = this.options.startRowIndex + rowId;
         rowData.pk = rowId;
         if (this.options.allowAddNewRow) {
@@ -1175,12 +1178,12 @@ $.widget('wm.datagrid', {
                 this.options.beforeRowUpdate(rowData, e);
             }
 
-            if ($.isFunction(this.options.setGridEditMode)) {
-                this.options.setGridEditMode(true);
-            }
-
             if (!this.options.allowInlineEditing) {
                 return;
+            }
+
+            if ($.isFunction(this.options.setGridEditMode)) {
+                this.options.setGridEditMode(true);
             }
 
             $originalElements.each(function () {
@@ -1391,6 +1394,12 @@ $.widget('wm.datagrid', {
             className,
             isActiveRow,
             self = this;
+        if ($.isFunction(this.options.beforeRowDelete)) {
+            this.options.beforeRowDelete(rowData, e);
+        }
+        if (this.options.disableDelete) {
+            return;
+        }
         if (isNewRow) {
             $row.remove();
             this.addOrRemoveScroll();
