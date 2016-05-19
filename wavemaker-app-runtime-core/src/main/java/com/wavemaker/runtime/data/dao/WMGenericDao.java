@@ -28,8 +28,6 @@ public interface WMGenericDao<Entity, Identifier> {
 
     void update(Entity entity);
 
-    Downloadable export(ExportType exportType, String query, Pageable pageable);
-
     void delete(Entity entity);
 
     Entity findById(Identifier entityId);
@@ -40,7 +38,9 @@ public interface WMGenericDao<Entity, Identifier> {
 
     Page<Entity> search(QueryFilter queryFilters[], Pageable pageable);
 
-    Page<Entity> findAll(String query, Pageable pageable);
+    Page<Entity> search(String query, Pageable pageable);
 
-    public long count();
+    long count();
+
+    Downloadable export(ExportType exportType, String query, Pageable pageable);
 }
