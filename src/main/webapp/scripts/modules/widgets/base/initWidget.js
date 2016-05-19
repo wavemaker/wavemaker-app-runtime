@@ -868,18 +868,18 @@ WM.module('wm.widgets.base')
             return;
         }
 
-        baseUri = baseUri.substring(0, baseUri.indexOf('/wmapp'));
+        baseUri = baseUri.substring(0, baseUri.indexOf('/scripts/'));
 
         // typeConfigMap defines the widgetType and dependency map
         typeConfigMap = {
             'wm-chart': {
-                'files': [baseUri + '/wmapp/scripts/component-libs/chart.min.js']
+                'files': [baseUri + '/scripts/component-libs/chart.min.js']
             },
             'wm-calendar': {
-                'files': [baseUri + '/wmapp/scripts/component-libs/calendar.min.js']
+                'files': [baseUri + '/scripts/component-libs/calendar.min.js']
             },
             'wm-richtexteditor': {
-                'files': [baseUri + '/wmapp/scripts/component-libs/richTextEditor.min.js'],
+                'files': [baseUri + '/scripts/component-libs/richTextEditor.min.js'],
                 'name': 'textAngular'
             }
         };

@@ -153,6 +153,18 @@ module.exports = function (grunt) {
                         dest : '<%= config.application %>/scripts/component-libs/calendar.min.js'
                     },
                     {
+                        src : '<%= config.tmp %>/scripts/component-libs/chart.min.js',
+                        dest : '<%= config.mobile %>/scripts/component-libs/chart.min.js'
+                    },
+                    {
+                        src : '<%= config.tmp %>/scripts/component-libs/richTextEditor.min.js',
+                        dest : '<%= config.mobile %>/scripts/component-libs/richTextEditor.min.js'
+                    },
+                    {
+                        src : '<%= config.tmp %>/scripts/component-libs/calendar.min.js',
+                        dest : '<%= config.mobile %>/scripts/component-libs/calendar.min.js'
+                    },
+                    {
                         src : '<%= config.tmp %>/scripts/wm-mobile-libs.min.js',
                         dest : '<%= config.mobile %>/scripts/wm-libs.min.js'
                     },
@@ -274,6 +286,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/jquery-ui/js/draggable.js',
                         '<%= config.components %>/jquery-ui/js/droppable.js',
                         '<%= config.components %>/jquery-ui/js/position.js',
+                        '<%= config.components %>/jquery-ui/js/sortable.js',
                         '<%= config.components %>/jquery-ui/js/resizable.js',
                         //jQuery-ui -- end
                         '<%= config.components %>/angular/angular.js',
@@ -307,6 +320,7 @@ module.exports = function (grunt) {
                         '<%= config.components %>/jquery-ui/js/draggable.js',
                         '<%= config.components %>/jquery-ui/js/droppable.js',
                         '<%= config.components %>/jquery-ui/js/position.js',
+                        '<%= config.components %>/jquery-ui/js/sortable.js',
                         '<%= config.components %>/jquery-ui/js/resizable.js',
                         //jQuery-ui -- end
                         '<%= config.components %>/angular/angular.js',
