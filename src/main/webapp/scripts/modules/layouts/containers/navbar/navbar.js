@@ -4,7 +4,7 @@
 WM.module('wm.layouts.containers')
     .directive('wmNavbar', ['PropertiesFactory', 'WidgetUtilService', 'Utils', '$timeout', function (PropertiesFactory, WidgetUtilService, Utils, $timeout) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navbar', ['wm.layouts']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navbar', ['wm.base']),
             notifyFor = {
                 'imgsrc': true
             };

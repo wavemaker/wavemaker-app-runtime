@@ -175,7 +175,7 @@ WM.module('wm.widgets.form')
     }])
     .directive('wmFileupload', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'wmToaster', 'Utils', 'Variables', 'ServiceFactory', '$rootScope', 'CONSTANTS', 'FileUploadService', 'FileSelectorService', 'DeviceMediaService', '$timeout', function (PropertiesFactory, $templateCache, WidgetUtilService, wmToaster, Utils, Variables, ServiceFactory, $rootScope, CONSTANTS, FileUploadService, FileSelectorService, DeviceMediaService, $timeout) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.fileupload', ['wm.base', 'wm.base.editors', 'wm.base.events.successerror']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.fileupload', ['wm.base', 'wm.base.advancedformwidgets', 'wm.base.events.successerror']),
             selectedUploadTypePath,
             notifyFor = {
                 'uploadpath': true,

@@ -38,7 +38,7 @@ WM.module('wm.widgets.live')
         'LiveWidgetUtils',
         function (PropertiesFactory, $rootScope, $templateCache, WidgetUtilService, $compile, CONSTANTS, QueryBuilder, Utils, wmToaster, $controller, LiveWidgetUtils) {
             "use strict";
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.layouts', 'wm.containers']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.livefilter', ['wm.base']),
                 filterMarkup = '',
                 notifyFor,
                 FILTER_CONSTANTS = {

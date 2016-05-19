@@ -21,7 +21,7 @@ WM.module('wm.widgets.form')
         function (PropertiesFactory, $tc, WidgetUtilService, $injector) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.richtexteditor', ['wm.base', 'wm.base.editors']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.richtexteditor', ['wm.base']),
                 notifyFor = {
                     'placeholder': true,
                     'showpreview': true,

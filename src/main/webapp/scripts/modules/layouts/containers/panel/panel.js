@@ -35,7 +35,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmPanel', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.layouts', 'wm.containers', 'wm.base.events.touch', 'wm.menu.dataProps']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.panel', ['wm.base', 'wm.base.events.touch', 'wm.menu.dataProps']),
             notifyFor = {
                 'height': true,
                 'actions': true

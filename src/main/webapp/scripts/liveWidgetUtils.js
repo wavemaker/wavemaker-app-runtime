@@ -937,15 +937,15 @@ WM.module('wm.widgets.live')
                 case 'toggle':
                 case 'checkbox':
                     baseProperties      = 'wm.checkbox';
-                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors'];
                     break;
                 case 'slider':
                     baseProperties      = 'wm.slider';
-                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.events.change'];
+                    extendedProperties  = ['wm.base', 'wm.base.events.change'];
                     break;
                 case 'richtext':
                     baseProperties      = 'wm.richtexteditor';
-                    extendedProperties  = ['wm.base', 'wm.base.editors'];
+                    extendedProperties  = ['wm.base'];
                     break;
                 case 'select':
                     baseProperties      = 'wm.select';
@@ -953,11 +953,11 @@ WM.module('wm.widgets.live')
                     break;
                 case 'checkboxset':
                     baseProperties      = 'wm.checkboxset';
-                    extendedProperties  = ['wm.base', 'wm.booleaneditors', 'wm.base.editors.dataseteditors'];
+                    extendedProperties  = ['wm.base', 'wm.base.editors.dataseteditors'];
                     break;
                 case 'radioset':
                     baseProperties      = 'wm.radioset';
-                    extendedProperties  = ['wm.base', 'wm.booleaneditors', 'wm.base.editors.dataseteditors'];
+                    extendedProperties  = ['wm.base', 'wm.base.editors.dataseteditors'];
                     break;
                 case 'date':
                     baseProperties      = 'wm.date';
@@ -982,11 +982,11 @@ WM.module('wm.widgets.live')
                     break;
                 case 'switch':
                     baseProperties      = 'wm.switch';
-                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
+                    extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors'];
                     break;
                 case 'currency':
                     baseProperties      = 'wm.currency';
-                    extendedProperties  = ['wm.base', 'wm.base.editors.abstracteditors'];
+                    extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
                     break;
                 case 'typeahead':
                     baseProperties      = 'wm.search';

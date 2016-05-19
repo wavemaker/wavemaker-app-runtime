@@ -10,7 +10,7 @@ WM.module('wm.widgets.basic')
     }])
     .directive('wmLabel', ['PropertiesFactory', 'WidgetUtilService', '$sce', function (PropertiesFactory, WidgetUtilService, $sce) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.label', ['wm.base', 'wm.base.editors', 'wm.base.events']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.label', ['wm.base','wm.base.advancedformwidgets', 'wm.base.events']),
             notifyFor = {
                 'caption': true
             };

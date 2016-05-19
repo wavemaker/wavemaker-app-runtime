@@ -26,7 +26,7 @@ WM.module("wm.widgets.basic")
             );
     }]).directive('wmDatanavigator', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'Variables', '$rootScope', 'wmToaster', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, Variables, $rootScope, wmToaster, CONSTANTS) {
         "use strict";
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.datanavigator', ['wm.base', 'wm.base.editors', 'wm.base.navigation']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.datanavigator', ['wm.base', 'wm.base.navigation']),
             notifyFor = {
                 'dataset'    : true,
                 'navigation' : true

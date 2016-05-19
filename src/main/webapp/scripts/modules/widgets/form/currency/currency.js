@@ -18,7 +18,7 @@ WM.module('wm.widgets.form')
     }])
     .directive('wmCurrency', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', '$locale', 'CURRENCYCONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, $locale, CURRENCYCONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.currency', ['wm.base', 'wm.base.editors.abstracteditors']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.currency', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
             notifyFor = {
                 'currency': true
             };

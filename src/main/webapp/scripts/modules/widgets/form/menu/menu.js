@@ -43,7 +43,7 @@ WM.module('wm.widgets.form')
     .directive('wmMenu', ['$templateCache', 'PropertiesFactory', 'WidgetUtilService', '$timeout', 'Utils', 'CONSTANTS', 'FormWidgetUtils', function ($templateCache, PropertiesFactory, WidgetUtilService, $timeout, Utils, CONSTANTS, FormWidgetUtils) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base.editors', 'wm.menu.dataProps']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.menu', ['wm.base','wm.base.advancedformwidgets', 'wm.menu.dataProps']),
             notifyFor = {
                 'iconname'      : true,
                 'scopedataset'  : true,

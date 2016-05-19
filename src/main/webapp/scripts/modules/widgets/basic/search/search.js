@@ -106,7 +106,7 @@ WM.module('wm.widgets.basic')
 
         function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $servicevariable, VARIABLE_CONSTANTS) {
             'use strict';
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors.abstracteditors']),
                 notifyFor = {
                     'searchkey'      : true,
                     'displaylabel'   : true,

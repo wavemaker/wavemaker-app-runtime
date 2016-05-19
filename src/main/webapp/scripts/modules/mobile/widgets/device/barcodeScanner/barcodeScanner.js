@@ -27,7 +27,7 @@ WM.module('wm.widgets.advanced')
         function ($tc, PropertiesFactory, WidgetUtilService, CONSTANTS, $rs, $cordovaBarcodeScanner) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.barcodescanner', ['wm.base', 'wm.base.editors']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.barcodescanner', ['wm.base', 'wm.base.advancedformwidgets']);
 
             function openBarcodeScanner($is) {
                 if (CONSTANTS.isStudioMode) {

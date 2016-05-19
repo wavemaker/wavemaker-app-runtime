@@ -28,7 +28,7 @@ WM.module('wm.widgets.form')
         function (PropertiesFactory, WidgetUtilService, FormWidgetUtils) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.switch', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors']),
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.switch', ['wm.base', 'wm.base.editors.abstracteditors']),
                 notifyFor = {
                     'dataset': true
                 },

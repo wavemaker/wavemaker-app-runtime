@@ -20,7 +20,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmSegmentedControl', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', 'WidgetUtilService', function ($templateCache, PropertiesFactory, CONSTANTS, WidgetUtilService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrol', ['wm.base', 'wm.layouts', 'wm.containers']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentedcontrol', ['wm.base']);
         return {
             'restrict' : 'E',
             'scope'    : {
@@ -130,7 +130,7 @@ WM.module('wm.layouts.containers')
     }])
     .directive('wmSegmentContent', ['$templateCache', 'PropertiesFactory', 'CONSTANTS', 'Utils', 'WidgetUtilService', function ($templateCache, PropertiesFactory, CONSTANTS, Utils, WidgetUtilService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base', 'wm.layouts', 'wm.containers', 'wm.containers.lazy']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.segmentcontent', ['wm.base', 'wm.containers', 'wm.containers.lazy']);
         return {
             'restrict'  : 'E',
             'replace'   : 'true',

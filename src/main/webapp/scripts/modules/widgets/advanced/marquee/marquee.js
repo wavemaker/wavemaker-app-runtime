@@ -19,7 +19,7 @@ WM.module('wm.widgets.advanced')
 
         function (PropertiesFactory, $tc, WidgetUtilService) {
             'use strict';
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.marquee', ['wm.base', 'wm.base.editors', 'wm.containers']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.marquee', ['wm.base']);
 
             return {
                 'restrict'  : 'E',

@@ -23,7 +23,7 @@ WM.module('wm.layouts.containers')
         'use strict';
 
         /* get the properties related to the tabs */
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabs', ['wm.base', 'wm.layouts', 'wm.containers']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabs', ['wm.base']),
             notifyFor = {
                 'tabsposition': true
             };

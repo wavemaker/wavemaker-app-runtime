@@ -19,7 +19,7 @@ WM.module('wm.widgets.form')
     }])
     .directive('wmSlider', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', function (PropertiesFactory, $templateCache, WidgetUtilService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.slider', ['wm.base', 'wm.base.editors', 'wm.base.events.change']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.slider', ['wm.base', 'wm.base.events.change']);
         return {
             'restrict': 'E',
             'replace' : true,

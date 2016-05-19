@@ -4,7 +4,7 @@
 WM.module('wm.layouts.containers')
     .directive('wmBreadcrumb', ['PropertiesFactory', 'WidgetUtilService', function (PropertiesFactory, WidgetUtilService) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.layouts', 'wm.tabbar.dataProps']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.breadcrumb', ['wm.containers', 'wm.tabbar.dataProps']),
             notifyFor = {
                 'dataset': true,
                 'scopedataset': true,

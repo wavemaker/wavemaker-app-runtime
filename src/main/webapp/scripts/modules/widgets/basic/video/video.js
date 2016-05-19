@@ -16,7 +16,7 @@ WM.module('wm.widgets.basic')
     }])
     .directive('wmVideo', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$sce', 'CONSTANTS', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $sce, CONSTANTS) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.video', ['wm.base', 'wm.containers']),
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.video', ['wm.base']),
             notifyFor = {
                 'videoposter'   : true,
                 'mp4format'     : true,
