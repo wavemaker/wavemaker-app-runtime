@@ -432,6 +432,11 @@
                 <artifactId>jmimemagic</artifactId>
                 <version>${mimemagic.version}</version>
             </dependency>
+            <dependency>
+                <groupId>net.sourceforge.dynamicreports</groupId>
+                <artifactId>dynamicreports-core</artifactId>
+                <version>${dynamicReports.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>

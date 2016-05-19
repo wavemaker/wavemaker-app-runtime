@@ -240,7 +240,6 @@
         <dependency>
             <groupId>net.sourceforge.dynamicreports</groupId>
             <artifactId>dynamicreports-core</artifactId>
-            <version>${dynamicReports.version}</version>
         </dependency>
 
 
