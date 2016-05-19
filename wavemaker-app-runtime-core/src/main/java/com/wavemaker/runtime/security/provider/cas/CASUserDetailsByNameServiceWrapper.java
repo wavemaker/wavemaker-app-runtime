@@ -1,15 +1,16 @@
 package com.wavemaker.runtime.security.provider.cas;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -18,10 +19,12 @@ import com.wavemaker.runtime.security.WMUser;
 /**
  * Created by ArjunSahasranam on 5/16/16.
  */
-public class CASUserDetailsByNameServiceWrapper extends UserDetailsByNameServiceWrapper {
+public class CASUserDetailsByNameServiceWrapper implements AuthenticationUserDetailsService<Authentication> {
+
+    private UserDetailsService userDetailsService;
 
     public CASUserDetailsByNameServiceWrapper(UserDetailsService userDetailsService) {
-        super(userDetailsService);
+        this.userDetailsService = userDetailsService;
     }
 
     private String roleAttributeName;
@@ -41,15 +44,23 @@ public class CASUserDetailsByNameServiceWrapper extends UserDetailsByNameService
             }
 
             StringTokenizer roleTokenizer = new StringTokenizer(roles, ",");
-
-            WMUser userDetails = (WMUser) super.loadUserDetails(authentication);
+            List<String> rolesList = new ArrayList<>();
             while (roleTokenizer.hasMoreTokens()) {
                 String role = roleTokenizer.nextToken();
-                GrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(role);
-                userDetails.getAuthorities().add(simpleGrantedAuthority);
+                rolesList.add(role);
             }
-            return userDetails;
-        } else return super.loadUserDetails(authentication);
+
+            String[] rolesArray = new String[rolesList.size()];
+
+            WMUser userDetails = (WMUser) userDetailsService.loadUserByUsername(authentication.getName());
+
+            String username = userDetails.getUsername();
+            String userId = userDetails.getUserId();
+            String password = userDetails.getPassword();
+            long loginTime = System.currentTimeMillis();
+            return new WMUser(userId, username, password, username, 0, true, true, true, true, AuthorityUtils.createAuthorityList(rolesList.toArray(rolesArray)),
+                    loginTime);
+        } else return userDetailsService.loadUserByUsername(authentication.getName());
     }
 
     public String getRoleAttributeName() {
@@ -59,4 +70,6 @@ public class CASUserDetailsByNameServiceWrapper extends UserDetailsByNameService
     public void setRoleAttributeName(final String roleAttributeName) {
         this.roleAttributeName = roleAttributeName;
     }
+
+
 }

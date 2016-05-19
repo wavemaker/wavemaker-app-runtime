@@ -15,8 +15,11 @@
  */
 package com.wavemaker.runtime.security.controller;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -108,5 +111,11 @@ public class SecurityController {
     @ApiOperation(value = "Returns access token for current logged in user")
     public Token getAccessToken() {
         return securityService.generateUserAccessToken();
+    }
+
+    @RequestMapping(value = "/ssologin", method = RequestMethod.GET)
+    @ApiOperation(value = "redirects to sso login")
+    public void ssoLogin(HttpServletResponse httpServletResponse) throws IOException {
+        securityService.ssoLogin(httpServletResponse);
     }
 }

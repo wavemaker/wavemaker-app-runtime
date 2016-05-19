@@ -15,14 +15,24 @@
  */
 package com.wavemaker.runtime.security;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 
+import org.jasig.cas.client.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -51,6 +61,10 @@ public class SecurityService {
     private static final String ROLE_PREFIX = "ROLE_";
     private List<String> roles;
     private Boolean securityEnabled;
+
+    @Autowired
+    @Qualifier("casServiceProperties")
+    private ServiceProperties serviceProperties;
 
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
 
@@ -330,5 +344,12 @@ public class SecurityService {
             }
         }
         return wmTokenBasedAuthenticationService;
+    }
+
+    public void ssoLogin(final HttpServletResponse httpServletResponse) throws IOException {
+        String redirectUrl = CommonUtils.constructServiceUrl(null, httpServletResponse, this.serviceProperties
+                        .getService(), null, this.serviceProperties.getArtifactParameter(), true);
+        logger.info("redirect to: {}",redirectUrl);
+        httpServletResponse.sendRedirect(redirectUrl);
     }
 }
