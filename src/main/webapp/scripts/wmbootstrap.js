@@ -83,7 +83,8 @@ Application
                     cache           = $cacheFactory('APP_PAGES'),
                     NG_LOCALE_PATH  = 'resources/ngLocale/',
                     APP_LOCALE_PATH = 'resources/i18n/',
-                    appVariablesLoaded = false;
+                    appVariablesLoaded = false,
+                    SSO_URL = '/services/security/ssologin';
 
                 function defaultPageLoadSuccessHandler(pageName, response) {
                     cache.put(pageName, Utils.parseCombinedPageContent(response.data, pageName));
@@ -146,7 +147,7 @@ Application
                             case LOGIN_METHOD.SSO:
                                 //showing a redirecting message
                                 document.write('Redirecting to sso login...');
-                                ssoUrl = $rs.project.deployedUrl + '/services/security/ssologin';
+                                ssoUrl = $rs.project.deployedUrl + SSO_URL;
                                 //In case of CAS redirecting to the sso login page
                                 $window.location.href = ssoUrl;
                                 break;
