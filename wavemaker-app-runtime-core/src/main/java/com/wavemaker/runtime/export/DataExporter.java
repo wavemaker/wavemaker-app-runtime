@@ -1,8 +1,6 @@
 package com.wavemaker.runtime.export;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 
@@ -28,21 +26,16 @@ public class DataExporter<Entity extends Serializable> {
         this.exportType = exportType;
     }
 
-    public File build() {
+    public OutputStream build() {
         ReportBuilder reportBuilder = new ReportBuilder(session, entityClass, exportOptions);
         JasperReportBuilder jasperReportBuilder = reportBuilder.build();
 
-        try {
-            jasperReportBuilder
-                    .setTemplate(Templates.reportTemplate)
-                    .title(Templates.createTitleComponent(entityClass.getName()))
-                    .highlightDetailOddRows();
-            File reportFile = File.createTempFile("Report", exportType.getExtention());
-            OutputStream reportOutputStream = new FileOutputStream(reportFile);
-            exportType.formatReport(jasperReportBuilder, reportOutputStream);
-            return reportFile;
-        } catch (IOException e) {
-            throw new RuntimeException("Error while writing into file ", e);
-        }
+        jasperReportBuilder
+                .setTemplate(Templates.reportTemplate)
+                .title(Templates.createTitleComponent(entityClass.getName()))
+                .highlightDetailOddRows();
+        OutputStream reportOutputStream = new ByteArrayOutputStream();
+        exportType.formatReport(jasperReportBuilder, reportOutputStream);
+        return reportOutputStream;
     }
 }

@@ -55,6 +55,7 @@
 
         <c3po.version>0.9.5.1</c3po.version>
         <jsoup.version>1.8.3</jsoup.version>
+        <dynamicReports.version>3.1.3</dynamicReports.version>
 
     </properties>
 

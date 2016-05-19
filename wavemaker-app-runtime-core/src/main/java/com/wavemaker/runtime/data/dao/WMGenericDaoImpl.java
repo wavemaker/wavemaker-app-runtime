@@ -15,10 +15,10 @@
  */
 package com.wavemaker.runtime.data.dao;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -68,6 +68,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         this.entityClass = (Class<Entity>) genericSuperclass.getActualTypeArguments()[0];
     }
 
+    @SuppressWarnings("unchecked")
     public Entity create(Entity entity) {
         Identifier identifier = (Identifier) getTemplate().save(entity);
         return findById(identifier);
@@ -98,9 +99,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     public Page<Entity> list() {
-        return search(null, null);
+        return search((QueryFilter[]) null, null);
     }
 
+    @SuppressWarnings("unchecked")
     public Page<Entity> search(final QueryFilter queryFilters[], final Pageable pageable) {
         validateQueryFilters(queryFilters);
 
@@ -125,32 +127,24 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     @Override
-    public Page<Entity> findAll(String query, Pageable pageable) {
-        return null;
+    public Page<Entity> search(String query, Pageable pageable) {
+        return search((QueryFilter[]) null, null);
     }
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
-        File file = getTemplate().execute(new HibernateCallback<File>() {
+        ByteArrayOutputStream reportOutputStream = (ByteArrayOutputStream) getTemplate().execute(new HibernateCallback<OutputStream>() {
             @Override
-            public File doInHibernate(Session session) throws HibernateException {
+            public OutputStream doInHibernate(Session session) throws HibernateException {
                 ExportOptions exportOptions = new ExportOptions();
                 exportOptions.setPageable(pageable);
                 exportOptions.setQuery(query);
-                return export(session, exportType, exportOptions);
+                DataExporter<Entity> exporter = new DataExporter<>(session, entityClass, exportType, exportOptions);
+                return exporter.build();
             }
         });
-        try {
-            InputStream is = new FileInputStream(file);
-            return new DownloadResponse(is, null, file.getName());
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("exported file cannot be opened", e);
-        }
-    }
-
-    private File export(Session session, ExportType exportType, ExportOptions exportOptions) {
-        DataExporter<Entity> exporter = new DataExporter<>(session, entityClass, exportType, exportOptions);
-        return exporter.build();
+        InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
+        return new DownloadResponse(is, null, entityClass.getName());
     }
 
     protected Criterion createCriterion(QueryFilter queryFilter) {
@@ -251,7 +245,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Page<Entity> list(Pageable pageable) {
-        return search(null, pageable);
+        return search((QueryFilter[]) null, pageable);
     }
 
     @Override
