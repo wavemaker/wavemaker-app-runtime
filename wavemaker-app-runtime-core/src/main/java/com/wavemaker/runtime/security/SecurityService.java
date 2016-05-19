@@ -62,10 +62,6 @@ public class SecurityService {
     private List<String> roles;
     private Boolean securityEnabled;
 
-    @Autowired
-    @Qualifier("casServiceProperties")
-    private ServiceProperties serviceProperties;
-
     private WMTokenBasedAuthenticationService wmTokenBasedAuthenticationService;
 
     public SecurityService() {
@@ -347,8 +343,9 @@ public class SecurityService {
     }
 
     public void ssoLogin(final HttpServletResponse httpServletResponse) throws IOException {
-        String redirectUrl = CommonUtils.constructServiceUrl(null, httpServletResponse, this.serviceProperties
-                        .getService(), null, this.serviceProperties.getArtifactParameter(), true);
+        ServiceProperties casServiceProperties = (ServiceProperties) WMAppContext.getInstance().getSpringBean("casServiceProperties");
+        String redirectUrl = CommonUtils.constructServiceUrl(null, httpServletResponse, casServiceProperties
+                        .getService(), null, casServiceProperties.getArtifactParameter(), true);
         logger.info("redirect to: {}",redirectUrl);
         httpServletResponse.sendRedirect(redirectUrl);
     }
