@@ -1994,13 +1994,13 @@ wm.variables.services.Variables = [
                     createdVariable.service       = variableDetails.service;
                     createdVariable.operation     = variableDetails.operation;
                     createdVariable.operationType = variableDetails.operationType;
-                    createdVariable.serviceType = variableDetails.serviceType;
-                    createdVariable.category = variableCategory;
-                    createdVariable.isDefault = true;
-                    createdVariable.maxResults = variableDetails.maxResults;
-                    createdVariable.startUpdate = variableDetails.startUpdate;
-                    createdVariable.autoUpdate = variableDetails.autoUpdate;
-                    createdVariable.type = variableDetails.returnType;
+                    createdVariable.serviceType   = variableDetails.serviceType;
+                    createdVariable.category      = variableCategory;
+                    createdVariable.isDefault     = true;
+                    createdVariable.maxResults    = variableDetails.maxResults;
+                    createdVariable.startUpdate   = variableDetails.startUpdate;
+                    createdVariable.autoUpdate    = variableDetails.autoUpdate;
+                    createdVariable.type          = variableDetails.returnType;
 
                     /* insert sample param values if provided */
                     bindMapCollection = createdVariable.dataBinding;
@@ -2011,9 +2011,12 @@ wm.variables.services.Variables = [
                             "type": "java.lang.String"
                         });
                     });
-
-                    /* Store the variable in proper category */
-                    store(variableOwner, variableName, createdVariable, true);
+                    //appending operationId to variable being created
+                    Utils.getService('$servicevariable').getOperationId(createdVariable.operation, createdVariable.service, function (operationId) {
+                        createdVariable.operationId = operationId;
+                        /* Store the variable in proper category */
+                        store(variableOwner, variableName, createdVariable, true);
+                    });
 
                     /*Update the tree with the newly added variable under the appropriate category(i.e., basic/service/live variables)*/
                     $rootScope.$emit("update-variables-tree", createdVariable);
