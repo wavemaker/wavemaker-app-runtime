@@ -2919,8 +2919,13 @@ WM.module('wm.widgets.base', [])
                 MAP_CONTAINER_TYPE_IGNORE_LIST,
                 MAP_SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST,
                 MAP_DIMENSION_PROPS,
-                temp;
+                temp,
+                $rAF,
+                $rAFQueue;
 
+            $rAF = window.requestAnimationFrame || window.setTimeout;
+
+            $rAFQueue = [];
 
             propNameCSSKeyMap = {
                 'backgroundattachment'  : 'backgroundAttachment',
@@ -3123,7 +3128,16 @@ WM.module('wm.widgets.base', [])
                     applyCSS($is, attrs.applyStyles, toBeAppliedCSS, key, cssObj[key]);
                 });
 
-                flushCSS(toBeAppliedCSS, $el);
+                if (!$rAFQueue.length) {
+                    $rAF(function () {
+                        while ($rAFQueue.length) {
+                            $rAFQueue.shift()();
+                        }
+                    });
+                }
+
+                $rAFQueue.push(flushCSS.bind(undefined, toBeAppliedCSS, $el));
+
                 $is._cssObj = undefined;
             }
 

@@ -33,18 +33,20 @@ WM.module('wm.widgets.base')
         function ($rs, WidgetUtilService, DialogService, Utils, CONSTANTS, $parse, $timeout, $routeParams, BindingManager) {
             'use strict';
 
-            var booleanAttrs = [
-                    'readonly', 'autofocus', 'disabled', 'startchecked', 'multiple',
-                    'selected', 'required', 'controls', 'autoplay', 'loop', 'muted'
-                ],
-                DLG_ACTIONS = {
-                    'SHOW': 'show',
-                    'HIDE': 'hide'
-                },
-                EVENT = 'event';
+            var BOOLEAN_ATTRS = {},
+                DLG_ACTIONS   = {'SHOW': 'show', 'HIDE': 'hide'},
+                EVENT         = 'event';
+
+            // create a map of boolean attrs
+            [
+                'readonly', 'autofocus', 'disabled', 'startchecked', 'multiple',
+                'selected', 'required', 'controls', 'autoplay', 'loop', 'muted'
+            ].forEach(function (attr) {
+                BOOLEAN_ATTRS[attr] = true;
+            });
 
             function isBooleanAttr(key) {
-                _.includes(booleanAttrs, key);
+                return BOOLEAN_ATTRS[key];
             }
 
             function PropertyManager() {
@@ -434,6 +436,15 @@ WM.module('wm.widgets.base')
                 });
             }
 
+            function hasValueChanged(nv, ov, doEqualsCheck) {
+                // When both "oldVal" and "newVal" are objects/arrays, comparison is not done.
+                if (doEqualsCheck) {
+                    return !WM.equals(nv, ov);
+                }
+
+                return (nv !== ov || WM.isObject(nv) || WM.isObject(ov));
+            }
+
             function definePropertyGetterSetters($is, $s, $el, attrs, propDetails, isBindableProperty, key, value) {
                 var flg,
                     bindKey,
@@ -474,15 +485,6 @@ WM.module('wm.widgets.base')
                         }
                     }
                     return modifiedValue;
-                }
-
-                function hasValueChanged(nv, ov, doEqualsCheck) {
-                    // When both "oldVal" and "newVal" are objects/arrays, comparison is not done.
-                    if (doEqualsCheck) {
-                        return !WM.equals(nv, ov);
-                    }
-
-                    return (nv !== ov || WM.isObject(nv) || WM.isObject(ov));
                 }
 
                 Object.defineProperty($is, key, {
