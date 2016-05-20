@@ -28,7 +28,7 @@ WM.module('wm.widgets.basic')
                 ' wordBreak: wordbreak, ' +
                 ' zIndex: zindex' +
                 ' }">' +
-                '<input title="{{hint}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
+                '<input title="{{hint || query}}" type="text" class="app-textbox form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
                     ' tabindex="{{tabindex}}"' +
                     ' accesskey="{{::shortcutkey}}"' +
@@ -51,7 +51,7 @@ WM.module('wm.widgets.basic')
         // this template is specify to search widget in mobile-navbar
         $templateCache.put('template/widget/form/navsearch.html',
             '<div class="app-mobile-search" init-widget has-model>' +
-                '<input title="{{hint}}" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
+                '<input title="{{hint || query}}" type="text" class="form-control list-of-objs" placeholder="{{placeholder}}" ' +
                     ' ng-model="queryModel" ng-change="updateModel(true)" ng-model-options="{debounce: 100}"' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-readonly="readonly" ' +
