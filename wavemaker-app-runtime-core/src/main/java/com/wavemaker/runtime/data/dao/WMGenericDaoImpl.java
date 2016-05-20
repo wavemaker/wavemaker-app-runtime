@@ -23,8 +23,6 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-
 import javax.annotation.PostConstruct;
 
 import org.hibernate.Criteria;
@@ -127,8 +125,8 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     @Override
-    public Page<Entity> search(String query, Pageable pageable) {
-        return search((QueryFilter[]) null, null);
+    public Page<Entity> searchByQuery(String query, Pageable pageable) {
+        return search(null, null);
     }
 
     @Override
@@ -157,12 +155,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         criteria.setFirstResult(pageable.getOffset());
         criteria.setMaxResults(pageable.getPageSize());
         if (pageable.getSort() != null) {
-            Iterator<Sort.Order> iterator = pageable.getSort().iterator();
-            while (iterator.hasNext()) {
-                Sort.Order order = iterator.next();
+            for (final Sort.Order order : pageable.getSort()) {
                 final String property = order.getProperty();
                 criteriaForRelatedProperty(criteria, property);
-                if (order.getDirection().equals(Sort.Direction.DESC)) {
+                if (order.getDirection() == Sort.Direction.DESC) {
                     criteria.addOrder(Order.desc(property));
                 } else {
                     criteria.addOrder(Order.asc(property));
@@ -213,13 +209,14 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
         if (queryFilters != null && queryFilters.length > 0) {
             for (QueryFilter queryFilter : queryFilters) {
                 Object attributeValue = queryFilter.getAttributeValue();
-                if (attributeValue == null || queryFilter.getFilterCondition() == Type.NULL)
+                if (attributeValue == null || queryFilter.getFilterCondition() == Type.NULL) {
                     continue;
+                }
 
                 AttributeType attributeType = queryFilter.getAttributeType();
                 if (attributeValue instanceof Collection) {
                     Collection collection = (Collection) attributeValue;
-                    Object[] objects = collection.toArray(new Object[]{});
+                    Object[] objects = collection.toArray(new Object[collection.size()]);
                     queryFilter.setAttributeValue(Arrays.asList(updateObjectsArray(objects, attributeType)));
                 } else if (attributeValue.getClass().isArray()) {
                     Object[] objects = (Object[]) attributeValue;
@@ -245,7 +242,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Page<Entity> list(Pageable pageable) {
-        return search((QueryFilter[]) null, pageable);
+        return search(null, pageable);
     }
 
     @Override

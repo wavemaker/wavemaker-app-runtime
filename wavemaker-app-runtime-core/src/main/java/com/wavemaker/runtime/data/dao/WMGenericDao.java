@@ -38,7 +38,7 @@ public interface WMGenericDao<Entity, Identifier> {
 
     Page<Entity> search(QueryFilter queryFilters[], Pageable pageable);
 
-    Page<Entity> search(String query, Pageable pageable);
+    Page<Entity> searchByQuery(String query, Pageable pageable);
 
     long count();
 
