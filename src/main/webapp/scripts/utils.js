@@ -1452,7 +1452,10 @@ WM.module('wm.utils', [])
             var pageDom = WM.element('<div>' + pageContent + '</div>'),
                 htmlEle = pageDom.find('script[id="' + pageName + '.html' + '"]'),
                 variableContext = '_' + pageName + 'Page_Variables_';
+
+            htmlEle.remove();
             /* remove the previously loaded styles in studio-mode*/
+
             if (APPCONSTANTS.isStudioMode) {
                 WM.element('script[id="' + pageName + '.css' + '"]').remove();
             }

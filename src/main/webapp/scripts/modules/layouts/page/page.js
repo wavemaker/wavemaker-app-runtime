@@ -21,7 +21,7 @@ WM.module('wm.layouts.page')
                 'restrict'  : 'E',
                 'replace'   : true,
                 'transclude': true,
-                'template'  : '<div data-role="pageContainer" class="app-page container" ng-class="layoutClass" wmtransclude no-animate></div>',
+                'template'  : '<div data-role="pageContainer" class="app-page container" wmtransclude no-animate></div>',
                 'link'      :  {
                     'pre': function ($s, $el, attrs) {
                         var pageName,

@@ -115,7 +115,7 @@ WM.module('wm.layouts.containers')
             'replace'   : true,
             'scope'     : {},
             'transclude': true,
-            'template'  : '<div init-widget ng-class="show" class="app-grid-row clearfix" apply-styles="container" wmtransclude></div>',
+            'template'  : '<div init-widget class="app-grid-row clearfix" apply-styles="container" wmtransclude></div>',
             'link'      : {
                 'pre': function (scope) {
                     scope.widgetProps = widgetProps;
