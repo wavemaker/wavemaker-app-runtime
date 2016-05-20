@@ -411,10 +411,13 @@ WM.module('wm.widgets.basic')
                 var operationResult = variable.operation + 'Result', //when output is only string it is available as oprationNameResult
                     tempResponse    = data[operationResult],
                     tempObj         = {};
-
-                if (tempResponse) { // in case data received is an object with single value as string
+                // in case data received is value as string then add that string value to object and convert object into array
+                if (tempResponse) {
                     _.set(tempObj, operationResult, tempResponse);
                     data = [tempObj]; //convert data into an array having tempObj
+                } else {
+                    // in case data received is already an object then convert it into an array
+                    data = [data];
                 }
 
                 return data;
