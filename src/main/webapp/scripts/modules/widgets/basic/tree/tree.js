@@ -145,18 +145,18 @@ WM.module('wm.widgets.basic')
             function changeTreeIcons($el, nv, ov) {
                 nv = nv || defaultTreeIconClass;
                 ov = ov || defaultTreeIconClass;
-                $el.find('i.expanded').switchClass(ICON_CLASSES[ov].expanded, ICON_CLASSES[nv].expanded);
-                $el.find('i.collapsed').switchClass(ICON_CLASSES[ov].collapsed, ICON_CLASSES[nv].collapsed);
+                $el.find('i.expanded').removeClass(ICON_CLASSES[ov].expanded).addClass(ICON_CLASSES[nv].expanded);
+                $el.find('i.collapsed').removeClass(ICON_CLASSES[ov].collapsed).addClass(ICON_CLASSES[nv].collapsed);
             }
 
             function toggleExpandCollapseNode($is, $i, $li) {
                 var treeIcons = ICON_CLASSES[$is.treeicons || defaultTreeIconClass];
 
                 if ($i.hasClass('collapsed')) {
-                    $i.switchClass('collapsed ' + treeIcons.collapsed, 'expanded ' + treeIcons.expanded);
-                    $li.switchClass('collapsed').addClass('expanded');
+                    $i.removeClass('collapsed ' + treeIcons.collapsed).addClass('expanded ' + treeIcons.expanded);
+                    $li.removeClass('collapsed').addClass('expanded');
                 } else if ($i.hasClass('expanded')) {
-                    $i.switchClass('expanded ' + treeIcons.expanded, 'collapsed ' + treeIcons.collapsed);
+                    $i.removeClass('expanded ' + treeIcons.expanded).addClass('collapsed ' + treeIcons.collapsed);
                     $li.removeClass('expanded').addClass('collapsed');
                 }
             }
