@@ -759,6 +759,8 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.picture": {
+                        "height": {"type": "string", "pattern": dimensionRegex},
+                        "width": {"type": "string", "pattern": dimensionRegex},
                         "picturesource": {"type": "string", "value": "resources/images/imagelists/default-image.png", "bindable": "in-out-bound"},
                         "pictureaspect": {"type": "list", "options": ["Both", "H", "None", "V"], "value": "None"},
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
