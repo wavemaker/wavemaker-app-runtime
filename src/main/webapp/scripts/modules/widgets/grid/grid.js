@@ -668,18 +668,20 @@ WM.module('wm.widgets.grid')
             'use strict';
             var columnObj = {
                     rowOperationsColumn: {
-                        'field'       : 'rowOperations',
-                        'type'        : 'custom',
-                        'displayName' : 'Actions',
-                        'width'       : '80px',
-                        'readonly'    : true,
-                        'sortable'    : false,
-                        'searchable'  : false,
-                        'resizable'   : false,
-                        'selectable'  : false,
-                        'show'        : true,
-                        'operations'  : [],
-                        'opConfig'    : {}
+                        'field'         : 'rowOperations',
+                        'type'          : 'custom',
+                        'displayName'   : 'Actions',
+                        'width'         : '120px',
+                        'readonly'      : true,
+                        'sortable'      : false,
+                        'searchable'    : false,
+                        'resizable'     : false,
+                        'selectable'    : false,
+                        'show'          : true,
+                        'operations'    : [],
+                        'opConfig'      : {},
+                        'pcDisplay'     : true,
+                        'mobileDisplay' : true
                     }
                 },
                 rowOperations = {
@@ -1177,17 +1179,16 @@ WM.module('wm.widgets.grid')
 
             /*Function to render the column containing row operations.*/
             $scope.renderOperationColumns = function (fromDesigner) {
-
+                var rowActionCol,
+                    opConfig = {},
+                    operations = [],
+                    insertPosition;
                 /*Return if no fieldDefs are present.*/
                 if (!$scope.fieldDefs.length) {
                     return;
                 }
-
+                rowActionCol = _.find($scope.fullFieldDefs, {'field': 'rowOperations', type : 'custom'}); //Check if column is fetched from markup
                 _.remove($scope.fieldDefs, {type : 'custom', field : 'rowOperations'});//Removing operations column
-
-                var opConfig = {},
-                    operations = [],
-                    insertPosition;
                 /*Loop through the "rowOperations"*/
                 _.forEach(rowOperations, function (field, fieldName) {
                     /* Add it to operations only if the corresponding property is enabled.*/
@@ -1199,8 +1200,12 @@ WM.module('wm.widgets.grid')
 
                 /*Add the column for row operations only if at-least one operation has been enabled.*/
                 if ($scope.rowActions.length) {
-                    insertPosition = $scope.rowactionsposition ? _.toNumber($scope.rowactionsposition) : $scope.fieldDefs.length;
-                    $scope.fieldDefs.splice(insertPosition, 0, columnObj.rowOperationsColumn);
+                    if (rowActionCol) { //If column is present in markup, push the column or push the default column
+                        insertPosition = rowActionCol.rowactionsposition ? _.toNumber(rowActionCol.rowactionsposition) : $scope.fieldDefs.length;
+                        $scope.fieldDefs.splice(insertPosition, 0, rowActionCol);
+                    } else {
+                        $scope.fieldDefs.push(columnObj.rowOperationsColumn);
+                    }
                 } else if (!fromDesigner && operations.length) {
                     columnObj.rowOperationsColumn.operations = operations;
                     columnObj.rowOperationsColumn.opConfig = opConfig;
@@ -2095,7 +2100,8 @@ WM.module('wm.widgets.grid')
                                 'defaultvalue': attrs.defaultvalue,
                                 'sortable': attrs.sortable !== 'false',
                                 'searchable': attrs.searchable !== 'false',
-                                'show': attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show)
+                                'show': attrs.show === 'false' ? false : (attrs.show === 'true' || !attrs.show || attrs.show),
+                                'rowactionsposition': attrs.rowactionsposition
                             },
                             updateCustomExpression = function (column) {
                                 LiveWidgetUtils.setColumnConfig(column);
