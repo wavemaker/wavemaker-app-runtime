@@ -264,6 +264,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/:entityName/search?page=:page&size=:size&:sort",
             method: "POST"
         },
+        searchTableDataWithQuery: {
+            url: "/:service/:dataModelName/:entityName/?q=:query&page=:page&size=:size&:sort",
+            method: "GET"
+        },
         readTableRelatedData: {
             url: "/:service/:dataModelName/:entityName/:id/:relatedFieldName?page=:page&size=:size&:sort",
             method: "GET"
@@ -540,6 +544,10 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "null"             : "NULL",
         "empty"            : "EMPTY",
         "nullorempty"      : "NULL_OR_EMPTY"
+    },
+    "DATABASE_MATCH_MODES_WITH_QUERY": {
+        "EQUALS"            : "=",
+        "CONTAINING"        : "CONTAINING"
     },
     "DATABASE_EMPTY_MATCH_MODES": ["NULL", "EMPTY", "NULL_OR_EMPTY"],
     "DATABASE_RANGE_MATCH_MODES": ["BETWEEN", "LESS_THAN", "LESS_THAN_OR_EQUALS", "GREATER_THAN", "GREATER_THAN_OR_EQUALS"],

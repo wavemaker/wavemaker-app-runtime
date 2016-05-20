@@ -84,7 +84,8 @@ wm.plugins.database.services.DatabaseService = [
                 relatedFieldName: params.relatedFieldName,
                 page: params.page,
                 size: params.size,
-                sort: params.sort
+                sort: params.sort,
+                query: params.query
             };
             /*In the SAAS studio mode, if we directly try to access the runtime urls, it results in cross-domain request issues.,
              * Hence use the WebService's testRestService call to initiate the request.*/
@@ -1658,6 +1659,27 @@ wm.plugins.database.services.DatabaseService = [
 
             searchTableData: function (params, successCallback, failureCallback) {
                 return initiateAction("searchTableData", params, successCallback, failureCallback);
+            },
+
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#searchTableDataWithQuery
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to read the related data from the specified table using query parameter.
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the table.
+             * @param {function=} successCallback
+             *                    Callback function to be triggered on success.
+             * @param {function=} failureCallback
+             *                    Callback function to be triggered on failure.
+             */
+
+            searchTableDataWithQuery: function (params, successCallback, failureCallback) {
+                return initiateAction('searchTableDataWithQuery', params, successCallback, failureCallback);
             },
 
             /**

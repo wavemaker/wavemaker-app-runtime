@@ -427,6 +427,8 @@ wm.variables.services.$liveVariable = [
                     filterOptions = [],
                     orderByFields,
                     orderByOptions = '',
+                    query          = '',
+                    params         = [],
                     getFieldType = function (options) {
                         return options.type || getSqlType(variable, options.fieldName) || 'integer';
                     },
@@ -527,13 +529,22 @@ wm.variables.services.$liveVariable = [
                         }
                     });
                 }
-
+                /*if searchWithQuery is true, then convert the input params into query string. For example if firstName and lastName
+                 should be sent as params then query string will be q="firstName containing 'someValue' OR lastName containing 'someValue'"
+                 */
+                if (options.searchWithQuery) {
+                    _.forEach(filterOptions, function (fieldValue) {
+                        params.push(fieldValue.attributeName + ' ' + DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[fieldValue.filterCondition] + ' ' + '\'' + fieldValue.attributeValue + '\'');
+                    });
+                    query = _.join(params, ' OR '); //empty space added intentionally around OR
+                }
                 orderByFields = (!options.orderBy || WM.element.isEmptyObject(options.orderBy)) ? variable.orderBy : options.orderBy;
                 orderByOptions = orderByFields ? 'sort=' + orderByFields : '';
 
                 return {
                     'filter': filterOptions,
-                    'sort': orderByOptions
+                    'sort': orderByOptions,
+                    'query' : query
                 };
             },
         /*Function to initiate the callback and obtain the data for the callback variable.*/
@@ -590,8 +601,12 @@ wm.variables.services.$liveVariable = [
                 }
 
                 tableOptions = prepareTableOptions(variable, options);
-
-                dbOperation = (tableOptions.filter && tableOptions.filter.length) ? "searchTableData" : "readTableData";
+                // if tableOptions object has query then set the dbOperation to 'searchTableDataWithQuery'
+                if (tableOptions.query) {
+                    dbOperation = 'searchTableDataWithQuery';
+                } else {
+                    dbOperation = (tableOptions.filter && tableOptions.filter.length) ? "searchTableData" : "readTableData";
+                }
                 /* if it is a prefab variable (used in a normal project), modify the url */
                 /*Fetch the table data*/
                 promiseObj = DatabaseService[dbOperation]({
@@ -603,7 +618,8 @@ wm.variables.services.$liveVariable = [
                     "size": options.pagesize || (CONSTANTS.isRunMode ? (variable.maxResults || 20) : (variable.designMaxResults || 20)),
                     "sort": tableOptions.sort,
                     "data": tableOptions.filter,
-                    "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl
+                    "url": variable.prefabName ? ($rootScope.project.deployedUrl + "/prefabs/" + variable.prefabName) : $rootScope.project.deployedUrl,
+                    "query" : tableOptions.query
                 }, function (response) {
 
                     if ((response && response.error) || !response || !WM.isArray(response.content)) {
@@ -1309,7 +1325,6 @@ wm.variables.services.$liveVariable = [
                     if (CONSTANTS.isRunMode) {
                         $rootScope.$emit('toggle-variable-state', name, true);
                     }
-
                     methods.getData(this, options, function (data, propertiesMap, pageOptions) {
                         if (CONSTANTS.isRunMode) {
                             $rootScope.$emit('toggle-variable-state', name, false);
