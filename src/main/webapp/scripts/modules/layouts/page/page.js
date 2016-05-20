@@ -44,6 +44,7 @@ WM.module('wm.layouts.page')
                             $s.Variables = {};
                             $s.Widgets   = {};
                             $rs.pageParams = $s.pageParams = $location.search();
+                            $rs._pageReady = false;
                             // only expose the widgets of the active page to rootScope
                             if (!$s.$parent.partialname && !$s.prefabname) {
                                 $rs.Widgets       = $s.Widgets;
@@ -106,6 +107,7 @@ WM.module('wm.layouts.page')
                                         }
                                         DeviceViewService.update($el, $s.layout.leftSection, $s.layout.rightSection, $s.layout.search);
                                         $rs.$$postDigest(function () {
+                                            $rs._pageReady = true;
                                             /* triggering the event post digest, so that any expression watches are computed before the same*/
                                             $rs.$emit('page-ready');
                                         });

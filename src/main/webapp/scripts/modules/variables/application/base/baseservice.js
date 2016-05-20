@@ -511,6 +511,62 @@ wm.variables.services.Variables = [
                 }
             },
 
+            /**
+             * calls the default method on the variable to get data
+             * e.g.
+             * - 'update' method for Live/Service Variable
+             * - 'invoke' method for Device Variable
+             * @param variable
+             */
+            makeVariableCall = function (variable) {
+                var method;
+                switch (variable.category) {
+                case 'wm.ServiceVariable':
+                    method = 'update';
+                    break;
+                case 'wm.LiveVariable':
+                    /*
+                     * For variable with operation other than 'read', call respective method in RUN mode
+                     * In studio mode, DB and table related data is to be fetched and saved in the variable
+                     * So, getData is called in STUDIO mode for liva variables with all types of operations
+                     */
+                    if (variable.operation !== 'read') {
+                        method = variable.operation + 'Record';
+                    } else {
+                        method = 'update';
+                    }
+                    break;
+                case 'wm.LoginVariable':
+                    method = 'login';
+                    break;
+                case 'wm.TimerVariable':
+                    method = 'fire';
+                    break;
+                case 'wm.DeviceVariable':
+                    method = 'invoke';
+                    break;
+                }
+                if (WM.isFunction(variable[method])) {
+                    variable[method]();
+                }
+            },
+
+            /**
+             * If the parent page(main page being loaded) is not ready
+             * the variable is pushed in the startUpdateQueue, which is processed after the page is loaded
+             *
+             * If it is ready
+             * the method on variable is simply called
+             * @param variable
+             */
+            processVariableStartUpdate = function (variable) {
+                if ($rootScope._pageReady) {
+                    makeVariableCall(variable);
+                } else {
+                    startUpdateQueue.push(variable);
+                }
+            },
+
             /*
              * Updates the variables in a context with their latest values
              * context refers to the namespace for the variables collection, like 'app'/page/partial/prefab
@@ -576,7 +632,7 @@ wm.variables.services.Variables = [
                         if (runMode) {
                             variable.canUpdate = true;
                             if (variable.startUpdate) {
-                                startUpdateQueue.push(variable);
+                                processVariableStartUpdate(variable);
                             }
                         } else {
                             //fetching the meta data in design mode always
@@ -589,7 +645,7 @@ wm.variables.services.Variables = [
                         if (runMode) {
                             variable.canUpdate = true;
                             if (variable.startUpdate) {
-                                startUpdateQueue.push(variable);
+                                processVariableStartUpdate(variable);
                             }
                         } else {
                             if (variable.startUpdate && WM.isFunction(variable.update)) {
@@ -610,15 +666,15 @@ wm.variables.services.Variables = [
                         }
                     } else if (variable.category === "wm.LoginVariable") {
                         if (runMode && variable.startUpdate) {
-                            startUpdateQueue.push(variable);
+                            processVariableStartUpdate(variable);
                         }
                     } else if (variable.category === "wm.TimerVariable") {
                         if (runMode && variable.autoStart) {
-                            startUpdateQueue.push(variable);
+                            processVariableStartUpdate(variable);
                         }
                     } else if (variable.category === "wm.DeviceVariable") {
                         if (runMode && variable.startUpdate) {
-                            startUpdateQueue.push(variable);
+                            processVariableStartUpdate(variable);
                         }
                     }
                 });
@@ -1462,38 +1518,7 @@ wm.variables.services.Variables = [
          */
         if (CONSTANTS.isRunMode) {
             $rootScope.$on('page-ready', function () {
-                var method;
-                _.forEach(startUpdateQueue, function (variable) {
-                    switch (variable.category) {
-                    case 'wm.ServiceVariable':
-                        method = 'update';
-                        break;
-                    case 'wm.LiveVariable':
-                        /*
-                         * For variable with operation other than 'read', call respective method in RUN mode
-                         * In studio mode, DB and table related data is to be fetched and saved in the variable
-                         * So, getData is called in STUDIO mode for liva variables with all types of operations
-                         */
-                        if (variable.operation !== 'read') {
-                            method = variable.operation + 'Record';
-                        } else {
-                            method = 'update';
-                        }
-                        break;
-                    case 'wm.LoginVariable':
-                        method = 'login';
-                        break;
-                    case 'wm.TimerVariable':
-                        method = 'fire';
-                        break;
-                    case 'wm.DeviceVariable':
-                        method = 'invoke';
-                        break;
-                    }
-                    if (WM.isFunction(variable[method])) {
-                        variable[method]();
-                    }
-                });
+                _.forEach(startUpdateQueue, makeVariableCall);
                 startUpdateQueue = [];
             });
         }
