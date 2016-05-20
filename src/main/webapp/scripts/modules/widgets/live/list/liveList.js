@@ -89,7 +89,8 @@ WM.module('wm.widgets.live')
                     'SCROLL'   : 'Scroll',
                     'INLINE'   : 'Inline',
                     'PAGER'    : 'Pager'
-                };
+                },
+                handlers = [];
 
             // to return the bootstrap classes for the <li> w.r.t no. of items per row
             function getRowClass(itemsperrow) {
@@ -1205,11 +1206,16 @@ WM.module('wm.widgets.live')
                 }
             }
 
+            function onDestroy() {
+                handlers.forEach(Utils.triggerFn);
+            }
+
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate,
-                    variableName;
+                    variable;
 
+                variable = Utils.getVariableName($is);
                 $liScope = createChildScope($is, $el, attrs);
                 $is.$liScope = $liScope;
                 $is.variableInflight = false;
@@ -1241,22 +1247,16 @@ WM.module('wm.widgets.live')
 
                     $is.getWidgets = getWidgets.bind(undefined, $el);
 
-                    $is.noDataFound = $is.binddataset === undefined;
-                    if ($is.binddataset && _.includes($is.binddataset, 'bind:Variables')) {
-                        variableName = Utils.getVariableName($is);
-                        $is.variable = Variables.getVariableByName(variableName);
-
-                        if ($is.variable && _.includes(['wm.ServiceVariable', 'wm.LiveVariable'], $is.variable.category)) {
-                            $is.$watch('variable.canUpdate', function (nv) {
-                                if (nv) {
-                                    $is.variableInflight = false;
-                                } else if (nv === false) {
-                                    $is.noDataFound      = false;
-                                    $is.variableInflight = true;
-                                }
-                            });
+                    $is.noDataFound = undefined === ($is.binddataset || $is.scopedataset);
+                    handlers.push($rs.$on('toggle-variable-state', function (event, variableName, active) {
+                        if (variable === variableName) {
+                            $is.noDataFound      = !active;
+                            $is.variableInflight = active;
                         }
-                    }
+                    }));
+
+                    $is.$on('$destroy', onDestroy);
+                    $el.on('$destroy', onDestroy);
                 }
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
