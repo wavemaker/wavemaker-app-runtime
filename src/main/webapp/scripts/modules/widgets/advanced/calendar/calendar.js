@@ -2,23 +2,6 @@
 /*Directive for Calendar */
 
 WM.module('wm.widgets.advanced')
-    .run(['$templateCache', 'Utils', '$rootScope', function ($tc, Utils, $rs) {
-        'use strict';
-        var isMobile = Utils.isMobile() || $rs.isMobileApplicationType;
-        if (isMobile) {
-            $tc.put('template/widget/calendar.html',
-                '<div init-widget has-model apply-styles="shell" class="app-date">' +
-                    '<uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" ' +
-                    'datepicker-options="mobileCalendarOptions"></uib-datepicker>' +
-                '</div>');
-        } else {
-            $tc.put('template/widget/calendar.html',
-                '<div class="app-calendar" init-widget has-model ng-model ="_model_"' +
-                    ' ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
-                    '<div ui-calendar="calendarOptions.calendar" calendar="{{name}}" ng-model="eventSources"></div>' +
-                '</div>');
-        }
-    }])
     .directive('wmCalendar', [
         'PropertiesFactory',
         'WidgetUtilService',
@@ -28,7 +11,8 @@ WM.module('wm.widgets.advanced')
         'Utils',
         '$rootScope',
         '$timeout',
-        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils, $rs, $timeout) {
+        '$templateCache',
+        function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils, $rs, $timeout, $tc) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
                 isMobile = $rs.isMobileApplicationType || Utils.isMobile(),
@@ -193,6 +177,19 @@ WM.module('wm.widgets.advanced')
                     'onEventrender' : '&'
                 },
                 'template': function (tElement, tAttrs) {
+                    if (isMobile) {
+                        $tc.put('template/widget/calendar.html',
+                            '<div init-widget has-model apply-styles="shell" class="app-date">' +
+                            '<uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" ' +
+                            'datepicker-options="mobileCalendarOptions"></uib-datepicker>' +
+                            '</div>');
+                    } else {
+                        $tc.put('template/widget/calendar.html',
+                            '<div class="app-calendar" init-widget has-model ng-model ="_model_"' +
+                            ' ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
+                            '<div ui-calendar="calendarOptions.calendar" calendar="{{name}}" ng-model="eventSources"></div>' +
+                            '</div>');
+                    }
                     var template    = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/calendar.html', tElement, tAttrs));
                     /*Set name for the model-holder, to ease submitting a form*/
                     template.find('.model-holder').attr('name', tAttrs.name);
