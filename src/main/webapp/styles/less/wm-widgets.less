@@ -2069,7 +2069,9 @@ If the height and width are not specified the video takes the height of the post
 @app-tabs-bg-color: #FFFFFF;
 
 .app-tabs {
-
+  &:focus {
+    outline: none;
+  }
   &.has-transition {
     > .tab-content {
       overflow: hidden;

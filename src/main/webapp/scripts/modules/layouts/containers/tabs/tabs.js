@@ -10,13 +10,13 @@ WM.module('wm.layouts.containers')
         $templateCache.put('template/layout/container/tabs.html',
                 '<div class="app-tabs clearfix" init-widget apply-styles="container" tabindex="-1">' +
                     '<ul class="nav nav-tabs" ng-class="{\'nav-stacked\': vertical, \'nav-justified\': justified}"></ul>' +
-                    '<div class="tab-content" ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}"><div class="tab-body" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div></div>' +
+                    '<div class="tab-content" ng-class="{\'tab-stacked\': vertical, \'tab-justified\': justified}" wmtransclude hm-swipe-left="_onSwipeLeft();" hm-swipe-right="_onSwipeRight()"></div>' +
                 '</div>'
             );
 
         /* define the template for the tabpane directive */
         $templateCache.put('template/layout/container/tab-pane.html',
-            '<div class="tab-pane" page-container init-widget ng-class="{disabled:disabled, active: isActive}" wm-navigable-element="true"><div page-container-target apply-styles wmtransclude></div></div>');
+            '<div class="tab-pane" page-container init-widget ng-class="{disabled:disabled, active: isActive}" wm-navigable-element="true"><div class="tab-body" apply-styles="container" page-container-target wmtransclude></div></div>');
 
     }])
     .directive('wmTabs', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', 'CONSTANTS', '$rootScope', '$compile', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, CONSTANTS, $rootScope, $compile) {
@@ -139,7 +139,7 @@ WM.module('wm.layouts.containers')
                             if (el.selectedIndex) {
                                 $rootScope.$safeApply($rootScope, function () {
                                     //trigger the select method on selected tab.
-                                    WM.element(el).children().eq(el.selectedIndex).scope().tab._headerElement.click();
+                                    WM.element(el).children().eq(el.selectedIndex).scope().select();
                                 });
                             }
                         };
@@ -301,17 +301,18 @@ WM.module('wm.layouts.containers')
             }
         };
     }])
-    .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rs) {
+    .directive('wmTabpane', ['PropertiesFactory', '$templateCache', 'WidgetUtilService', 'Utils', '$rootScope', 'CONSTANTS', '$compile', function (PropertiesFactory, $templateCache, WidgetUtilService, Utils, $rs, CONSTANTS, $compile) {
         'use strict';
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base']),
-            $headerEle  = '<li class="tab-header" ng-class="{active: isActive, disabled: disabled}" ng-click="select($event)" role="tab" tabindex="-1">' +
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabpane', ['wm.base', 'wm.layouts']),
+            $headerEle  = '<li class="tab-header" ng-class="{active: isActive, disabled: disabled}" ng-click="select($event)" role="tab" tabindex="-1" hm-swipe-left="_onHeaderSwipeLeft($event);" hm-swipe-right="_onHeaderSwipeRight($event);">' +
                             '<a href="javascript:void(0);" role="button" tabindex="0">' +
                                 '<div class="tab-heading">' +
                                     '<i class="app-icon {{paneicon}}" ng-if="paneicon"></i> ' +
                                     '<span ng-bind="heading"></span>' +
                                 '</div>' +
                             '</a>' +
-                          '</li>';
+                          '</li>',
+            $opt;
         return {
             'restrict': 'E',
             'scope': {},
@@ -394,6 +395,35 @@ WM.module('wm.layouts.containers')
                                 ul.scrollLeft = 0;
                             }
                         };
+
+                        function _scrollHeader(delta) {
+                            var $ul = element.parent(),
+                                left = $ul[0].scrollLeft,
+                                _delta = -2 * delta;
+                            $ul.animate({scrollLeft: left + _delta}, {'duration': 10});
+                        }
+
+                        if (CONSTANTS.isRunMode) {
+                            // define the functions to scroll the header into the view port on swipe.
+                            scope._onHeaderSwipeLeft = function (e) {
+                                _scrollHeader(e.deltaX);
+                            };
+
+                            scope._onHeaderSwipeRight = function (e) {
+                                _scrollHeader(e.deltaX);
+                            };
+                        } else {
+                            // create an option element and add it to the tabs-list element.
+                            $opt = WM.element('<option ng-bind-html="heading"></option>');
+                            $opt = $compile($opt)(scope);
+                            element.closest('.app-tabs').children('select').append($opt);
+
+                            scope.$on('$destroy', function () {
+                                if ($opt) {
+                                    $opt.remove();
+                                }
+                            });
+                        }
 
                         /* initialize the widget */
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);

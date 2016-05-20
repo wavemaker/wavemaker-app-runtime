@@ -9,7 +9,7 @@ WM.module('wm.layouts.containers')
 
         $templateCache.put('template/layout/container/accordion-pane.html',
             '<div class="app-accordion-panel panel" page-container init-widget wm-navigable-element="true">' +
-                '<div class="panel-heading clearfix" ng-click="togglePane()" apply-styles="container" ng-class="{active: isActive}">' +
+                '<div class="panel-heading clearfix" ng-click="togglePane()" ng-class="{active: isActive}">' +
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0);" class="accordion-toggle">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -20,7 +20,7 @@ WM.module('wm.layouts.containers')
                     '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" ng-class="isActive ? \'wi-minus\': \'wi-plus\'"></button></div>' +
                 '</div>' +
                 '<div class="panel-collapse collapse"  ng-class="isActive ? \'collapse in\' : \'collapse\'" apply-styles="scrollable-container">' +
-                    '<div class="panel-body" wmtransclude page-container-target></div>' +
+                    '<div class="panel-body" wmtransclude page-container-target apply-styles="container"></div>' +
                 '</div>' +
             '</div>'
             );
@@ -79,7 +79,7 @@ WM.module('wm.layouts.containers')
     .directive('wmAccordionpane', ['$templateCache', 'WidgetUtilService', 'PropertiesFactory', 'Utils', '$parse', '$sce', function ($templateCache, WidgetUtilService, PropertiesFactory, Utils, $parse, $sce) {
         'use strict';
 
-        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base']);
+        var widgetProps = PropertiesFactory.getPropertiesOf('wm.accordionpane', ['wm.base', 'wm.layouts']);
 
         return {
             'restrict': 'E',
