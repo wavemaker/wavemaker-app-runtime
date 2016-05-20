@@ -16,6 +16,7 @@
 
     <properties>
         <main.basedir>${basedir}/..</main.basedir>
+        <jasperreports.version>6.2.2</jasperreports.version>
     </properties>
 
     <dependencies>
@@ -177,6 +178,25 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>${jasperreports.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <!-- Provided -->
         <dependency>
@@ -236,6 +256,16 @@
         <dependency>
             <groupId>net.sf.jmimemagic</groupId>
             <artifactId>jmimemagic</artifactId>
+            <exclusions>
+                <!-- jmimemagic has dependency on xerces version 2.4.0
+                     and jasperreports also has transitive dependency on xerces version 2.9.1
+                     so excluding from jmimemagic dependency list
+                -->
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.dynamicreports</groupId>
