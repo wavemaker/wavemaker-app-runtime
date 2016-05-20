@@ -289,8 +289,70 @@ WM.module('wm.widgets.base')
                 }
             }
 
+            function processBoxModelProperties(el, $attrs) {
+                var attrs       = el.attributes, // attributes from the dom node
+                    toBeUpdated = {},
+                    removeAttrs;
+
+                ['border', 'margin', 'padding'].forEach(function (key) {
+                    var value = '', top, right, bottom, left, unit, _unit, suffix = (key === 'border' ? 'width' : ''), hasDeprecatedAttr,
+                        topVal, rightVal, bottomVal, leftVal;
+
+                    top    = key + 'top';
+                    right  = key + 'right';
+                    bottom = key + 'bottom';
+                    left   = key + 'left';
+                    unit   = key + 'unit';
+
+                    if (attrs[top] || attrs[right] || attrs[bottom] || attrs[left]) {
+                        hasDeprecatedAttr = true;
+                        removeAttrs = true;
+                    }
+
+                    if (WM.isUndefined(attrs[key])) {
+
+                        if (hasDeprecatedAttr) {
+                            _unit = attrs[unit] ? attrs[unit].value : 'px';
+
+                            topVal    = (attrs[top]    ? attrs[top].value    : '0') + _unit;
+                            rightVal  = (attrs[right]  ? attrs[right].value  : '0') + _unit;
+                            bottomVal = (attrs[bottom] ? attrs[bottom].value : '0') + _unit;
+                            leftVal   = (attrs[left]   ? attrs[left].value   : '0') + _unit;
+
+                            if (topVal === bottomVal && leftVal === rightVal) {
+                                if (topVal === leftVal) {
+                                    value = topVal;
+                                } else {
+                                    value = topVal + ' ' + leftVal;
+                                }
+                            } else {
+                                value = topVal + ' ' + rightVal + ' ' + bottomVal + ' ' + leftVal;
+                            }
+
+                            el.setAttribute(key + suffix, value);
+                            $attrs[key + suffix] = value;
+
+                            toBeUpdated[key] = value;
+                        }
+                    }
+
+                    if (hasDeprecatedAttr) {
+                        el.removeAttribute(top);
+                        el.removeAttribute(right);
+                        el.removeAttribute(bottom);
+                        el.removeAttribute(left);
+                        el.removeAttribute(unit);
+                    }
+                });
+
+                if ($attrs.widgetid && removeAttrs) {
+                    $rs.$emit('wms:migrate-box-model-props', $attrs.widgetid, toBeUpdated);
+                }
+            }
+
             function processAttrs($is, $s, $tEl, attrs) {
                 var widgetProps = $is.widgetProps;
+
                 _.forEach($tEl.context.attributes, function (attr) {
                     var attrName = attr.name,
                         attrValue = attr.value.trim(),
@@ -591,7 +653,10 @@ WM.module('wm.widgets.base')
 
             return {
                 'restrict': 'A',
-                'compile': function ($tEl) {
+                'compile': function ($tEl, $tAttrs) {
+
+                    processBoxModelProperties($tEl.context, $tAttrs);
+
                     return {
                         pre: function ($is, $el, attrs) {
                             var hasDataValue,
@@ -699,10 +764,11 @@ WM.module('wm.widgets.base')
         function ($rs, Utils, CONSTANTS) {
             'use strict';
 
-            var regex    = /\[\$i\]/g,
-                $I       = '[$i]',
-                $0       = '[0]',
-                watchers = [],
+            var regex          = /\[\$i\]/g,
+                $I             = '[$i]',
+                $0             = '[0]',
+                watchers       = [],
+                VARIABLE_REGEX = new RegExp(/Variables\.(\w*)\.dataSet\[\$i\]/g), //Reg exp to match all Variables which has dataSet[$i];
                 _registerWatchers;
 
             function isArrayTypeExpr(expr) {
@@ -797,7 +863,6 @@ WM.module('wm.widgets.base')
                     deepWatch      = _config.deepWatch,
                     allowPageable  = _config.allowPageable,
                     acceptsArray   = _config.acceptsArray,
-                    regExp         = new RegExp(/Variables\.(\w*)\.dataSet\[\$i\]/g), //Reg exp to match all Variables which has dataSet[$i]
                     deRegister     = {},
                     variableObject;
 
@@ -812,7 +877,7 @@ WM.module('wm.widgets.base')
                         return;
                     }
                     //Check each match is pageable and replace dataSet[$i] with dataSet.content[$i]
-                    watchExpr = watchExpr.replace(regExp, function (match, key) {
+                    watchExpr = watchExpr.replace(VARIABLE_REGEX, function (match, key) {
                         variableObject = _.get($s.Variables, key);
                         // In case of queries(native sql,hql) the actual data is wrapped inside content but in case of procedure its not wrapped
                         // So for procedures the watch expression will not have content in it

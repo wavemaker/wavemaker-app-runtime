@@ -40,7 +40,6 @@ WM.module('wm.widgets.form')
                 'readonly': true,
                 'disabled': true,
                 'timestamp': true,
-                'autofocus': true,
                 'excludedates': true
             };
 

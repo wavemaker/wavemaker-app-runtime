@@ -126,12 +126,7 @@ WM.module('wm.widgets.base', [])
                     "wm.base.editors": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "fontweight": {"type": "string", "options": ["bold"], "hidelabel": true, "widget": "icons_checkbox"},
                         "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size", "pattern": numberRegex},
                         "fontunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "hidelabel": true, "widget": "icons_radio"},
@@ -140,17 +135,12 @@ WM.module('wm.widgets.base', [])
                         "fontstyle": {"type": "string", "options": ["italic"], "hidelabel": true, "widget": "icons_checkbox"},
                         "fontfamily": {"type": "string", "hidelabel": true, "hint": "Arial, Geneva"},
                         "color": {"type": "string", "hidelabel": true, "widget": "color"}
-                     },
+                    },
                     "wm.base.advancedformwidgets": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align"},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "fontweight": {"type": "string", "options": ["bold"], "hidelabel": true, "widget": "icons_checkbox"},
                         "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size", "pattern": numberRegex},
                         "fontunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "hidelabel": true, "widget": "icons_radio"},
@@ -159,21 +149,10 @@ WM.module('wm.widgets.base', [])
                         "fontstyle": {"type": "string", "options": ["italic"], "hidelabel": true, "widget": "icons_checkbox"},
                         "fontfamily": {"type": "string", "hidelabel": true, "hint": "Arial, Geneva"},
                         "color": {"type": "string", "hidelabel": true, "widget": "color"},
-                        "border": {"type": "string", "widget": "box"},
-                        "borderunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "bordertop": {"type": "string", "pattern": numberRegex},
-                        "borderright": {"type": "string", "pattern": numberRegex},
-                        "borderbottom": {"type": "string", "pattern": numberRegex},
-                        "borderleft": {"type": "string", "pattern": numberRegex},
-                        "borderwidth": {"type": "string"},
+                        "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"},
-                        "padding": {"type": "string", "widget": "box"},
-                        "paddingunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "paddingtop": {"type": "string", "pattern": numberRegex},
-                        "paddingright": {"type": "string", "pattern": numberRegex},
-                        "paddingbottom": {"type": "string", "pattern": numberRegex},
-                        "paddingleft": {"type": "string", "pattern": numberRegex},
+                        "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -181,7 +160,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]}
-                     },
+                    },
                     "wm.base.editors.abstracteditors": {
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
                         "required": {"type": "boolean", "bindable": "in-bound"},
@@ -197,14 +176,8 @@ WM.module('wm.widgets.base', [])
                     "wm.base.editors.captionproperties": {
                         "caption": {"type": "string", "value": "_unset_", "bindable": "in-bound", "maxlength": 256 },
                         "captionsize": {"type": "string"},
-                        "paddingtop": {"value": "0"},
-                        "paddingright": {"value": "0"},
-                        "paddingbottom": {"value": "0"},
-                        "paddingleft": {"value": "0"},
-                        "bordertop": {"value": "0"},
-                        "borderright": {"value": "0"},
-                        "borderbottom": {"value": "0"},
-                        "borderleft": {"value": "0"}
+                        "padding": {"value": "0"},
+                        "borderwidth": {"value": "0"}
                     },
 
                     "wm.base.editors.dataseteditors": {
@@ -299,12 +272,7 @@ WM.module('wm.widgets.base', [])
                         "animation": {"type": "list", "options": animationOptions},
                         "shortcutkey": {"type": "string"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "value": "btn-default", "options": ["btn-primary", "btn-info", "btn-warning", "btn-success", "btn-danger", "btn-lg", "btn-sm", "btn-xs", "btn-raised", "btn-fab", "btn-link", "btn-transparent", "jumbotron"]},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex}
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.rating": {
                         "maxvalue": {"type": "number", "value": 5, "pattern": maxRatingRegex, "bindable": "in-bound"},
@@ -369,12 +337,7 @@ WM.module('wm.widgets.base', [])
                         "displayfield": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
                         "tabindex": {"type": "string", "value": "0"},
                         "orderby": {"type": "list", "widget": "order-by"},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex}
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.menu": {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
@@ -473,12 +436,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string", "value": "0"},
                         /* ---- styles ----*/
 
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "color": {"type": "string", "hidelabel": true, "widget": "color"}
                     },
                     "wm.date": {
@@ -573,12 +531,7 @@ WM.module('wm.widgets.base', [])
                     "wm.composite": {
                         "captionposition": {"type": "list", "options": ["left", "right", "top"]},
                         "required": {"type": "boolean"},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex}
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
 
                     "wm.radio": {
@@ -593,22 +546,12 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex}
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.radioset": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "tabindex": {"type": "string", "value": "0"},
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
@@ -663,23 +606,13 @@ WM.module('wm.widgets.base', [])
                         "shortcutkey": {"type": "string"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex}
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
 
                     "wm.checkbox": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "datavalue": {"type": "boolean, string", "bindable": "in-out-bound", "widget": "string"},
                         "checkedvalue": {"type": "string"},
                         "uncheckedvalue": {"type": "string"},
@@ -690,12 +623,7 @@ WM.module('wm.widgets.base', [])
                     "wm.checkboxset": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "tabindex": {"type": "string", "value": "0"},
                         "disabled": {"type": "boolean", "value": false, "bindable": "in-bound"},
                         "readonly": {"type": "boolean", "value": false, "bindable": "in-bound"},
@@ -769,27 +697,11 @@ WM.module('wm.widgets.base', [])
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'inline-block'},
                         "animation": {"type": "list", "options": animationOptions},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["img-responsive"]},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
-                        "border": {"type": "string", "widget": "box"},
-                        "borderunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "bordertop": {"type": "string", "pattern": numberRegex},
-                        "borderright": {"type": "string", "pattern": numberRegex},
-                        "borderbottom": {"type": "string", "pattern": numberRegex},
-                        "borderleft": {"type": "string", "pattern": numberRegex},
-                        "borderwidth": {"type": "string"},
+                        "margin": {"type": "string", "widget": "box-model"},
+                        "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"},
-                        "padding": {"type": "string", "widget": "box"},
-                        "paddingunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "paddingtop": {"type": "string", "pattern": numberRegex},
-                        "paddingright": {"type": "string", "pattern": numberRegex},
-                        "paddingbottom": {"type": "string", "pattern": numberRegex},
-                        "paddingleft": {"type": "string", "pattern": numberRegex},
+                        "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -797,7 +709,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "cursor": {"type": "list", "options": ["default","pointer"]}
+                        "cursor": {"type": "list", "options": ["default", "pointer"]}
                     },
 
                     "wm.textarea": {
@@ -908,21 +820,10 @@ WM.module('wm.widgets.base', [])
                     'wm.layouts': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
                         "class": {"type": "string", "pattern": classRegex},
-                        "border": {"type": "string", "widget": "box"},
-                        "borderunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "bordertop": {"type": "string", "pattern": numberRegex},
-                        "borderright": {"type": "string", "pattern": numberRegex},
-                        "borderbottom": {"type": "string", "pattern": numberRegex},
-                        "borderleft": {"type": "string", "pattern": numberRegex},
-                        "borderwidth": {"type": "string"},
+                        "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"},
-                        "padding": {"type": "string", "widget": "box"},
-                        "paddingunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "paddingtop": {"type": "string", "pattern": numberRegex},
-                        "paddingright": {"type": "string", "pattern": numberRegex},
-                        "paddingbottom": {"type": "string", "pattern": numberRegex},
-                        "paddingleft": {"type": "string", "pattern": numberRegex},
+                        "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -942,12 +843,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "accessroles": {"type": "accessrolesselect", "options": roles, "value": EVERYONE},
                         "showindevice": {"type": "selectall", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'},
-                        "padding": {"type": "string", "widget": "box"},
-                        "paddingunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "paddingtop": {"type": "string", "pattern": numberRegex},
-                        "paddingright": {"type": "string", "pattern": numberRegex},
-                        "paddingbottom": {"type": "string", "pattern": numberRegex},
-                        "paddingleft": {"type": "string", "pattern": numberRegex},
+                        "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -966,14 +862,8 @@ WM.module('wm.widgets.base', [])
 
 
                     },
-                    'wm.containers.borderstyle':{
-                        "border": {"type": "string", "widget": "box"},
-                        "borderunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "bordertop": {"type": "string", "pattern": numberRegex},
-                        "borderright": {"type": "string", "pattern": numberRegex},
-                        "borderbottom": {"type": "string", "pattern": numberRegex},
-                        "borderleft": {"type": "string", "pattern": numberRegex},
-                        "borderwidth": {"type": "string"},
+                    'wm.containers.borderstyle': {
+                        "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"}
                     },
@@ -1020,12 +910,7 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]},
                         "orderby": {"type": "list", "widget": "order-by"},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex}
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
                     'wm.layouts.navbar': {
                         "height": {"type": "string", "pattern": dimensionRegex},
@@ -1093,7 +978,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "hint": {"type": "string", "bindable": "in-bound"},
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "list-group-item-success","list-group-item-info","list-group-item-warning","list-group-item-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["list-group-item", "list-group-item-success", "list-group-item-info", "list-group-item-warning", "list-group-item-danger"]}
                     },
                     'wm.layouts.topnav': {
                         "height": {"type": "string", "pattern": dimensionRegex}
@@ -1120,12 +1005,7 @@ WM.module('wm.widgets.base', [])
                         "actions": {"type": "array, object", "bindable": "in-bound", "widget": "string"},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
                         "badgetype": {"type": "list", "options": ["default", "primary", "success", "info", "warning", "danger"], "value": "default", "bindable": "in-out-bound"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margin": {"type": "string", "widget": "box"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseenter": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1146,12 +1026,7 @@ WM.module('wm.widgets.base', [])
                         "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconurl": {"type": "string", "bindable": "in-bound"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px"], "value": "px", "widget": "icons_radio"},
-                        "margin": {"type": "string", "widget": "box"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "picturesource": {"type": "string", "value": "", "bindable": "in-out-bound"},
                         "picturetitle": {"type": "string", "bindable": "in-bound"},
                         "imagewidth": {"type": "string", "value": "100%"},
@@ -1168,29 +1043,18 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex}
                     },
 
-                    'wm.layouts.cardcontent':{
+                    'wm.layouts.cardcontent': {
                         "width": {"type": "string", "pattern": dimensionRegex, 'show': false}
                     },
-                    'wm.layouts.cardactions':{
+                    'wm.layouts.cardactions': {
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align"}
                     },
-                    'wm.layouts.cardfooter':{
+                    'wm.layouts.cardfooter': {
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align"}
                     },
                     'wm.layouts.container': {
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margin": {"type": "string", "widget": "box"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
-                        "border": {"type": "string", "widget": "box"},
-                        "borderunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "bordertop": {"type": "string", "pattern": numberRegex},
-                        "borderright": {"type": "string", "pattern": numberRegex},
-                        "borderbottom": {"type": "string", "pattern": numberRegex},
-                        "borderleft": {"type": "string", "pattern": numberRegex},
-                        "borderwidth": {"type": "string"},
+                        "margin": {"type": "string", "widget": "box-model"},
+                        "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"},
                         "opacity": {"type": "string", "widget": "slider"},
@@ -1212,12 +1076,7 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
                     },
                     'wm.layouts.tile': {
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margin": {"type": "string", "widget": "box"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         /*Events*/
                         "onEnterkeypress": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onClick": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1247,21 +1106,10 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.gridcolumn': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
-                        "border": {"type": "string", "widget": "box"},
-                        "borderunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "bordertop": {"type": "string", "pattern": numberRegex},
-                        "borderright": {"type": "string", "pattern": numberRegex},
-                        "borderbottom": {"type": "string", "pattern": numberRegex},
-                        "borderleft": {"type": "string", "pattern": numberRegex},
-                        "borderwidth": {"type": "string"},
+                        "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"},
-                        "padding": {"type": "string", "widget": "box"},
-                        "paddingunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "paddingtop": {"type": "string", "pattern": numberRegex},
-                        "paddingright": {"type": "string", "pattern": numberRegex},
-                        "paddingbottom": {"type": "string", "pattern": numberRegex},
-                        "paddingleft": {"type": "string", "pattern": numberRegex},
+                        "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]},
@@ -1270,21 +1118,10 @@ WM.module('wm.widgets.base', [])
                     },
                     'wm.layouts.gridrow': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
-                        "border": {"type": "string", "widget": "box"},
-                        "borderunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "bordertop": {"type": "string", "pattern": numberRegex},
-                        "borderright": {"type": "string", "pattern": numberRegex},
-                        "borderbottom": {"type": "string", "pattern": numberRegex},
-                        "borderleft": {"type": "string", "pattern": numberRegex},
-                        "borderwidth": {"type": "string"},
+                        "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"},
-                        "padding": {"type": "string", "widget": "box"},
-                        "paddingunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "paddingtop": {"type": "string", "pattern": numberRegex},
-                        "paddingright": {"type": "string", "pattern": numberRegex},
-                        "paddingbottom": {"type": "string", "pattern": numberRegex},
-                        "paddingleft": {"type": "string", "pattern": numberRegex},
+                        "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "insert": {"type": "toolbar", "actions": [{'action': 'addrowbelow', 'label': 'LABEL_PROPERTY_ADDROWBELOW', 'icon': 'add-row-below'}, {'action': 'addrowabove', 'label': 'LABEL_PROPERTY_ADDROWABOVE', 'icon': 'add-row-above'}, {'action': 'addcolumn', 'label': 'LABEL_PROPERTY_ADDCOLUMN', 'icon': 'add-column'}]}
@@ -1330,12 +1167,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex}
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
                     'wm.layouts.liveform': {
                         "title": {"type": "string",  "bindable": "in-bound"},
@@ -1377,12 +1209,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex}
+                        "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.layouts.segmentedcontrol" : {
                         "onBeforeSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1450,12 +1277,7 @@ WM.module('wm.widgets.base', [])
                         "onSetrecord": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         /* Styles */
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "gridclass": {"type": "string", "value": "table-bordered table-striped table-hover", "pattern": classRegex, "widget": "list-picker", "options": ["table-hover", "table-bordered", "table-striped"]},
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
@@ -1527,9 +1349,8 @@ WM.module('wm.widgets.base', [])
                         "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.prefabs": {
-                        "margin": {"type": "string", "widget": "box"},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "debugurl": {"type": "string", "show": false},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "onLoad": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
@@ -1666,7 +1487,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "groupby": {"type": "list", "show": true, "widget": "list-typeahead"},
-                        "match": {"type": "listGroup", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour":"hour","day":"day","week":"week", "month":"month", "year": "year"}}], "show": false, "value": "word"},
+                        "match": {"type": "listGroup", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}], "show": false, "value": "word"},
                         "dateformat": {"type": "list", "options": [], "widget": "datetimepatterns", "show": false},
                         "orderby": {"type": "list", "widget": "order-by"},
                         "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-out-bound"},
@@ -1704,12 +1525,7 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color"}
                     },
                     "wm.search": {
@@ -1799,13 +1615,7 @@ WM.module('wm.widgets.base', [])
                         "xdomain" : {"type": "list", "options": ["Default", "Min"], "value": "Default"},
                         "ydomain" : {"type": "list", "options": ["Default", "Min"], "value": "Default"},
                         /**Style**/
-                        "border": {"type": "string", "widget": "box"},
-                        "borderunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "bordertop": {"type": "string", "pattern": numberRegex},
-                        "borderright": {"type": "string", "pattern": numberRegex},
-                        "borderbottom": {"type": "string", "pattern": numberRegex},
-                        "borderleft": {"type": "string", "pattern": numberRegex},
-                        "borderwidth": {"type": "string"},
+                        "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
@@ -1887,12 +1697,7 @@ WM.module('wm.widgets.base', [])
                         "onBeforeupdate": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
 
                         /* ---- styles ----*/
-                        "margin": {"type": "string", "widget": "box"},
-                        "marginunit": {"type": "string", "options": ["%", "em", "px", "pt"], "value": "px", "widget": "icons_radio"},
-                        "margintop": {"type": "string", "pattern": numberRegex},
-                        "marginbottom": {"type": "string", "pattern": numberRegex},
-                        "marginright": {"type": "string", "pattern": numberRegex},
-                        "marginleft": {"type": "string", "pattern": numberRegex},
+                        "margin": {"type": "string", "widget": "box-model"},
                         "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.template": {
@@ -1905,7 +1710,8 @@ WM.module('wm.widgets.base', [])
                 }
             },
             properties,
-            propertyGroups;
+            propertyGroups,
+            ignoreList;
 
         if (CONSTANTS.isStudioMode) {
             result.propertyGroups = [
@@ -1949,8 +1755,8 @@ WM.module('wm.widgets.base', [])
                 {"properties": [ "class", "menuclass", "listclass", "itemclass", "gridclass",  "theme", "customcolors"], "parent": "styles"},
                 {"name": "textstyle", "properties": [ "fontsize", "fontunit", "fontfamily", "color", "fontweight", "fontstyle", "textdecoration", "textalign", "whitespace"], "parent": "styles"},
                 {"name": "backgroundstyle", "properties": ["backgroundcolor", "backgroundimage", "backgroundrepeat", "backgroundposition", "backgroundsize", "backgroundattachment"], "parent": "styles"},
-                {"name": "border", "properties": ["bordercolor", "borderstyle", "border", "borderunit"], "parent": "styles"},
-                {"name": "displaystyle", "properties": ["iconcolor", "padding", "paddingunit", "margin", "marginunit", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},
+                {"name": "border", "properties": ["bordercolor", "borderstyle", "borderwidth"], "parent": "styles"},
+                {"name": "displaystyle", "properties": ["iconcolor", "padding", "margin", "opacity", "overflow", "cursor", "zindex", "visibility", "display"], "parent": "styles"},
                 {"name": "prefablifecycleevents", "properties": ["onLoad", "onDestroy"], "parent": "events"},
                 {"name": "event", "properties": ["onChange",  "onFocus", "onBlur"], "parent": "events"},
                 {"name": "mouseevents", "properties": ["onClick", "onDblclick", "onMousedown", "onMouseup", "onMouseover", "onMouseout", "onMousemove", "onMouseenter", "onMouseleave"], "parent": "events", "platforms": [PLATFORM_TYPE.WEB, PLATFORM_TYPE.DEFAULT]},
@@ -1966,6 +1772,8 @@ WM.module('wm.widgets.base', [])
         }
         properties = result.properties;
         propertyGroups = result.propertyGroups;
+
+        ignoreList = CONSTANTS.isRunMode ? {'accessroles': true, 'updateon': true, 'updatedelay': true} : {};
 
         /**
          * @ngdoc function
@@ -2009,7 +1817,9 @@ WM.module('wm.widgets.base', [])
                                 widgetProps[propName] = {};
                             }
                             Object.keys(propObj).forEach(function (key) {
-                                widgetProps[propName][key] = propObj[key];
+                                if (!ignoreList[key]) {
+                                    widgetProps[propName][key] = propObj[key];
+                                }
                             });
                         });
                 });
@@ -2320,7 +2130,6 @@ WM.module('wm.widgets.base', [])
                     'onDoubletap':      {'name': 'ng-dblclick',    'value': 'onDoubletap({$event: $event, $scope: this})'}
 
                 },
-                triggerFn,
                 $rIC, //requestIdleCallback
                 $rICQueue,
                 attrsToBeRemoved;
@@ -2961,7 +2770,7 @@ WM.module('wm.widgets.base', [])
                 'wordbreak'             : 'wordbreak',
                 'zindex'                : 'zIndex'
             };
-            SHELL_TYPE_IGNORE_LIST     = 'height overflow paddingunit paddingtop paddingright paddingbottom paddingleft';
+            SHELL_TYPE_IGNORE_LIST     = 'height overflow padding';
             CONTAINER_TYPE_IGNORE_LIST = 'textalign';
             SCROLLABLE_CONTAINER_TYPE_IGNORE_LIST = 'textalign width';
 
@@ -2998,9 +2807,7 @@ WM.module('wm.widgets.base', [])
                     notifyFor[propName] = true;
                 });
 
-            DIMENSION_PROPS = _.flatten(_.map(['padding', 'border', 'margin'], function (prop) {
-                return [prop + 'top', prop + 'right', prop + 'bottom', prop + 'left', prop + 'unit'];
-            }));
+            DIMENSION_PROPS = ['padding', 'borderwidth', 'margin'];
 
             // add dimension related properties to notifyFor
             _.forEach(DIMENSION_PROPS, function (k) {
@@ -3014,25 +2821,11 @@ WM.module('wm.widgets.base', [])
             notifyFor.backgroundimage = true;
 
             function setDimensionProp($is, cssObj, key) {
-                var prefix,
-                    suffix,
-                    unit;
-
-                prefix = prefix || (_.startsWith(key, 'border') && 'border');
-                suffix = prefix ? 'Width' : '';
-                prefix = prefix || (_.startsWith(key, 'margin') && 'margin');
-                prefix = prefix || (_.startsWith(key, 'padding') && 'padding');
-
-                if (!prefix) {
-                    return;
+                var cssKey = key;
+                if (key === 'borderwidth') {
+                    cssKey = 'borderWidth';
                 }
-
-                unit = $is[prefix + 'unit'];
-
-                cssObj[prefix + 'Top' + suffix]    = $is[prefix + 'top']    + unit;
-                cssObj[prefix + 'Right' + suffix]  = $is[prefix + 'right']  + unit;
-                cssObj[prefix + 'Bottom' + suffix] = $is[prefix + 'bottom'] + unit;
-                cssObj[prefix + 'Left' + suffix]   = $is[prefix + 'left']   + unit;
+                cssObj[cssKey] = $is[key];
             }
 
             function applyCSS($is, applyType, targetObj, key, nv) {
@@ -3093,7 +2886,7 @@ WM.module('wm.widgets.base', [])
 
                     if (WM.isDefined(css.width)) {
                         // case conversion is not required here.
-                        // if the dimensions are not provided for width, use `px`
+                        // if the units are not provided for width, use `px`
                         if (css.width == +css.width) {
                             css.width += 'px';
                         }
@@ -3101,7 +2894,7 @@ WM.module('wm.widgets.base', [])
 
                     if (WM.isDefined(css.height)) {
                         // case conversion is not required here.
-                        // if the dimensions are not provided for height, use `px`
+                        // if the units are not provided for height, use `px`
                         if (css.height == +css.height) {
                             css.height += 'px';
                         }
