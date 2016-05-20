@@ -15,8 +15,8 @@ WM.module('wm.widgets.advanced')
         function (PropertiesFactory, WidgetUtilService, $compile, $locale, CONSTANTS, Utils, $rs, $timeout, $tc) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.calendar', ['wm.base', 'wm.base.datetime']),
-                isMobile = $rs.isMobileApplicationType || Utils.isMobile(),
-                notifyFor = isMobile ? {
+                isMobile    = $rs.isMobileApplicationType || Utils.isMobile(),
+                notifyFor   = isMobile ? {
                     'dataset'     : true
                 } : {
                     'dataset'     : true,
@@ -40,8 +40,8 @@ WM.module('wm.widgets.advanced')
             if (!isMobile) {
                 delete widgetProps.datavalue;
             }
-            function updateCalendarOptions(scope) {
-                var ctrls = scope.controls, viewType = scope.calendartype, left = '', right = '',
+            function updateCalendarOptions($is) {
+                var ctrls = $is.controls, viewType = $is.calendartype, left = '', right = '',
                     regEx = new RegExp('\\bday\\b', 'g');
                 if (ctrls && viewType) {
                     if (_.includes(ctrls, 'navigation')) {
@@ -64,13 +64,13 @@ WM.module('wm.widgets.advanced')
                         right += viewType === VIEW_TYPES.BASIC ?  ' basicDay' : ' agendaDay';
                     }
 
-                    WM.extend(scope.calendarOptions.calendar.header, {'left': left, 'right': right});
+                    WM.extend($is.calendarOptions.calendar.header, {'left': left, 'right': right});
                 }
             }
             //to calculate the height for the event limit and parsing the value when it is percentage based.
-            function calculateHeight(calendar, element) {
-                var parentHeight      = element.parent().attr('height'),
-                    elHeight          = element.attr('height'),
+            function calculateHeight(calendar, $el) {
+                var parentHeight      = $el.parent().attr('height'),
+                    elHeight          = $el.attr('height'),
                     computedHeight;
                 if (_.includes(elHeight, '%')) {
                     computedHeight = (parentHeight * Number(elHeight.replace(/\%/g, ''))) / 100;
@@ -81,41 +81,41 @@ WM.module('wm.widgets.advanced')
                 return computedHeight;
             }
 
-            function triggerCalendarChange(scope) {
-                var modelVal = scope._model_;
-                scope.prepareCalendarEvents();
+            function triggerCalendarChange($is) {
+                var modelVal = $is._model_;
+                $is.prepareCalendarEvents();
                 //change the model so that the view is rendered again with the events , after the dataset is changed.
-                scope._model_ = modelVal ? new Date(modelVal) : new Date();
-                scope.onViewrender({$scope: scope});
-                scope.onEventrender({$scope: scope, $data: scope.eventData});
+                $is._model_ = modelVal ? new Date(modelVal) : new Date();
+                $is.onViewrender({$scope: $is});
+                $is.onEventrender({$scope: $is, $data: $is.eventData});
             }
 
             /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-            function propertyChangeHandler(scope, element, key, newVal) {
-                var calendar = scope.calendarOptions && scope.calendarOptions.calendar,
-                    eleScope = element.scope(),
-                    variable = Utils.getVariableName(scope, eleScope);
+            function propertyChangeHandler($is, $el, key, newVal) {
+                var calendar = $is.calendarOptions && $is.calendarOptions.calendar,
+                    eleScope = $el.scope(),
+                    variable = Utils.getVariableName($is, eleScope);
                 switch (key) {
                 case 'dataset':
                     if (isMobile) {
-                        triggerCalendarChange(scope);
+                        triggerCalendarChange($is);
                         return;
                     }
-                    scope.eventSources.length = 0;
+                    $is.eventSources.length = 0;
                     if (CONSTANTS.isRunMode || (variable && eleScope.Variables[variable].category !== 'wm.ServiceVariable')) {
                         newVal = WM.isArray(newVal) ? newVal : [];
                         if (_.intersection(_.keys(newVal[0]), ['allDay', 'start', 'end']).length === 3) {
-                            scope.eventSources.push(newVal);
+                            $is.eventSources.push(newVal);
                         }
                     }
                     break;
                 case 'height':
-                    calendar.height = calculateHeight(calendar, element);
+                    calendar.height = calculateHeight(calendar, $el);
                     break;
                 case 'controls':
                 case 'calendartype':
                     if (!isMobile) {
-                        updateCalendarOptions(scope);
+                        updateCalendarOptions($is);
                     }
                     break;
                 case 'view':
@@ -123,7 +123,7 @@ WM.module('wm.widgets.advanced')
                         return;
                     }
                     if (newVal !== 'month') {
-                        calendar.defaultView = scope.calendartype + _.capitalize(newVal);
+                        calendar.defaultView = $is.calendartype + _.capitalize(newVal);
                     } else {
                         calendar.defaultView = newVal;
                     }
@@ -180,17 +180,15 @@ WM.module('wm.widgets.advanced')
                     if (isMobile) {
                         $tc.put('template/widget/calendar.html',
                             '<div init-widget has-model apply-styles="shell" class="app-date">' +
-                            '<uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" ' +
-                            'datepicker-options="mobileCalendarOptions"></uib-datepicker>' +
+                                '<uib-datepicker ng-model="_model_" ng-change="onModelUpdate(this);" datepicker-options="mobileCalendarOptions"></uib-datepicker>' +
                             '</div>');
                     } else {
                         $tc.put('template/widget/calendar.html',
-                            '<div class="app-calendar" init-widget has-model ng-model ="_model_"' +
-                            ' ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
-                            '<div ui-calendar="calendarOptions.calendar" calendar="{{name}}" ng-model="eventSources"></div>' +
+                            '<div class="app-calendar" init-widget has-model ng-model ="_model_" ng-change="_onChange({$event: $event, $scope: this})" apply-styles="shell">' +
+                                '<div ui-calendar="calendarOptions.calendar" calendar="{{name}}" ng-model="eventSources"></div>' +
                             '</div>');
                     }
-                    var template    = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/calendar.html', tElement, tAttrs));
+                    var template = WM.element(WidgetUtilService.getPreparedTemplate('template/widget/calendar.html', tElement, tAttrs));
                     /*Set name for the model-holder, to ease submitting a form*/
                     template.find('.model-holder').attr('name', tAttrs.name);
                     if (tAttrs.hasOwnProperty('disabled')) {
@@ -200,12 +198,12 @@ WM.module('wm.widgets.advanced')
                     return template[0].outerHTML;
                 },
                 'link': {
-                    'pre': function (scope) {
-                        scope.widgetProps   = widgetProps;
-                        scope.events        = [];
-                        scope.eventSources  = [scope.events];
+                    'pre': function ($is) {
+                        $is.widgetProps   = widgetProps;
+                        $is.events        = [];
+                        $is.eventSources  = [$is.events];
                     },
-                    'post': function (scope, element, attrs) {
+                    'post': function ($is, $el, attrs) {
                         var handlers            = [],
                             headerOptions       = Utils.getClonedObject(defaultHeaderOptions),
                             oldData,
@@ -213,16 +211,18 @@ WM.module('wm.widgets.advanced')
                             doubleEventClass    = multipleEventClass + ' two',
                             singleEventClass    = multipleEventClass + ' one',
                             dateFormat          = 'YYYY/MM/DD',
-                            wp = scope.widgetProps;
+                            wp                  = $is.widgetProps;
+
                         //returns the custom class for the events depending on the length of the events for that day.
                         function getDayClass(data) {
                             var date = data.date,
-                                mode = data.mode;
+                                mode = data.mode,
+                                eventDay,
+                                eventsLength;
                             if (mode === 'day') {
-                                var eventDay = moment(date).startOf('day').format(dateFormat),
-                                    eventsLength;
-                                if (!_.isEmpty(scope.eventData) && scope.eventData[eventDay]) {
-                                    eventsLength = scope.eventData[eventDay].length;
+                                eventDay = moment(date).startOf('day').format(dateFormat);
+                                if (!_.isEmpty($is.eventData) && $is.eventData[eventDay]) {
+                                    eventsLength = $is.eventData[eventDay].length;
                                     if (eventsLength === 1) {
                                         return singleEventClass;
                                     }
@@ -235,23 +235,23 @@ WM.module('wm.widgets.advanced')
                             }
                         }
                         function eventProxy(method, event, delta, revertFunc, jsEvent, ui, view) {
-                            var fn = scope[method] || WM.noop;
+                            var fn = $is[method] || WM.noop;
                             fn({$event: jsEvent, $data: event, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
                         }
                         function eventClickProxy(event, jsEvent, view) {
-                            scope.onEventclick({$event: jsEvent, $data: event, $view: view});
+                            $is.onEventclick({$event: jsEvent, $data: event, $view: view});
                         }
                         function viewRenderProxy(view) {
-                            scope.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
-                            scope.onViewrender({$view: view});
+                            $is.currentview = {start: view.start._d.getTime(), end: view.end._d.getTime()};
+                            $is.onViewrender({$view: view});
                         }
                         function eventRenderProxy(event, jsEvent, view) {
                             /*unable to pass jsEvent in angular expression, hence ignoring*/
-                            scope.onEventrender({$event: {}, $data: event, $view: view});
+                            $is.onEventrender({$event: {}, $data: event, $view: view});
                         }
                         function setSelectedData(start, end) {
                             var filteredDates   = [],
-                                dataset         = scope.dataset;
+                                dataset         = $is.dataset;
                             if (!dataset) {
                                 return;
                             }
@@ -271,68 +271,68 @@ WM.module('wm.widgets.advanced')
                             return filteredDates;
                         }
                         function onSelectProxy(start, end, jsEvent, view) {
-                            scope.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
-                            scope.selecteddata  = setSelectedData(start, end);
-                            scope.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view, $data: scope.selecteddata});
+                            $is.selecteddates = {start: start._d.getTime(), end: end._d.getTime()};
+                            $is.selecteddata  = setSelectedData(start, end);
+                            $is.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: view, $data: $is.selecteddata});
                         }
                         function onEventdropProxy(event, delta, revertFunc, jsEvent, ui, view) {
-                            scope.onEventdrop({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                            $is.onEventdrop({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
                         }
                         function onEventresizeProxy(event, delta, revertFunc, jsEvent, ui, view) {
-                            scope.onEventresize({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
+                            $is.onEventresize({$event: jsEvent, $newData: event, $oldData: oldData, $delta: delta, $revertFunc: revertFunc, $ui: ui, $view: view});
                         }
                         function onEventChangeStart(event, jsEvent, ui, view) {
                             oldData = Utils.getClonedObject(event);
                         }
 
                         if (isMobile) {
-                            scope.eventData = {};
+                            $is.eventData = {};
                             wp.view.options = ['day', 'month', 'year'];
                             //prepare calendar Events
-                            scope.prepareCalendarEvents = function () {
+                            $is.prepareCalendarEvents = function () {
                                 var eventDay;
-                                scope.eventData = {};
-                                if (!scope.dataset) {
+                                $is.eventData = {};
+                                if (!$is.dataset) {
                                     return;
                                 }
-                                scope.events = WM.isArray(scope.dataset) ? scope.dataset : (WM.isObject(scope.dataset) ? [scope.dataset] : []);
-                                _.forEach(scope.events, function (event, index) {
+                                $is.events = WM.isArray($is.dataset) ? $is.dataset : (WM.isObject($is.dataset) ? [$is.dataset] : []);
+                                _.forEach($is.events, function (event) {
                                     if (event.start) {
                                         eventDay = moment(event.start).startOf('day').format(dateFormat);
-                                        if (scope.eventData[eventDay]) {
-                                            scope.eventData[eventDay].push(event);
+                                        if ($is.eventData[eventDay]) {
+                                            $is.eventData[eventDay].push(event);
                                         } else {
-                                            scope.eventData[eventDay] = [event];
+                                            $is.eventData[eventDay] = [event];
                                         }
                                     }
                                 });
                             };
                             //trigger on-select when the model is updated.
-                            scope.onModelUpdate = function (eleScope) {
-                                var selectedDate        = scope._model_ && moment(scope._model_).startOf('day').format(dateFormat),
-                                    selectedEventData   = scope.eventData[selectedDate],
-                                    start               = moment(scope._model_),
-                                    end                 = moment(scope._model_).endOf('day');
-                                scope.selecteddata = selectedEventData;
-                                scope.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: eleScope, $scope: eleScope, $data: selectedEventData});
-                                scope.onEventclick({$event: this, $data: selectedEventData, $view: eleScope});
+                            $is.onModelUpdate = function (eleScope) {
+                                var selectedDate        = $is._model_ && moment($is._model_).startOf('day').format(dateFormat),
+                                    selectedEventData   = $is.eventData[selectedDate],
+                                    start               = moment($is._model_),
+                                    end                 = moment($is._model_).endOf('day');
+                                $is.selecteddata = selectedEventData;
+                                $is.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: eleScope, $scope: eleScope, $data: selectedEventData});
+                                $is.onEventclick({$event: this, $data: selectedEventData, $view: eleScope});
                             };
 
-                            scope.openCalendar = function () {
-                                scope.isCalendarOpened = true;
+                            $is.openCalendar = function () {
+                                $is.isCalendarOpened = true;
                             };
 
-                            scope.isCalendarOpened = false;
+                            $is.isCalendarOpened = false;
 
-                            scope.mobileCalendarOptions = {
+                            $is.mobileCalendarOptions = {
                                 'showWeeks'     : false,
                                 'customClass'   : getDayClass,
-                                'datepickerMode': scope.view
+                                'datepickerMode': $is.view
                             };
                         } else {
-                            scope.calendarOptions = {
+                            $is.calendarOptions = {
                                 calendar: {
-                                    'height'          : parseInt(scope.height, 10),
+                                    'height'          : parseInt($is.height, 10),
                                     'editable'        : true,
                                     'selectable'      : false,
                                     'header'          : headerOptions,
@@ -353,15 +353,16 @@ WM.module('wm.widgets.advanced')
                                     }
                                 }
                             };
-                            scope.$root.$on('locale-change', function () {
-                                scope.calendarOptions.calendar.dayNames      = $locale.DATETIME_FORMATS.DAY;
-                                scope.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
-                            });
+
+                            handlers.push($rs.$on('locale-change', function () {
+                                $is.calendarOptions.calendar.dayNames      = $locale.DATETIME_FORMATS.DAY;
+                                $is.calendarOptions.calendar.dayNamesShort = $locale.DATETIME_FORMATS.SHORTDAY;
+                            }));
 
                             /* add and removes an event source of choice */
-                            scope.addRemoveEventSource = function (sources, source) {
+                            $is.addRemoveEventSource = function (sources, source) {
                                 var canAdd = 0;
-                                WM.forEach(sources, function (value, key) {
+                                _.forEach(sources, function (value, key) {
                                     if (sources[key] === source) {
                                         sources.splice(key, 1);
                                         canAdd = 1;
@@ -372,43 +373,45 @@ WM.module('wm.widgets.advanced')
                                 }
                             };
                             /* add custom event*/
-                            scope.addEvent = function (eventObject) {
-                                scope.events.push(eventObject);
+                            $is.addEvent = function (eventObject) {
+                                $is.events.push(eventObject);
                             };
                             /* remove event */
-                            scope.remove = function (index) {
-                                scope.events.splice(index, 1);
+                            $is.remove = function (index) {
+                                $is.events.splice(index, 1);
                             };
                             /* Change View */
                             /*scope.changeView = function (view, calendar) {
                              };*/
                             /* Render Tooltip */
-                            scope.eventRender = function (event, element) {
-                                element.attr({'tooltip': event.title, 'tooltip-append-to-body': true});
-                                $compile(element)(scope);
+                            $is.eventRender = function (event, el) {
+                                el.attr({'tooltip': event.title, 'tooltip-append-to-body': true});
+                                $compile(el)($is);
                             };
 
-                            scope.$on('$destroy', function () {
+                            $is.$on('$destroy', function () {
                                 handlers.forEach(Utils.triggerFn);
                             });
 
-                            scope.redraw = function () {
+                            $is.redraw = function () {
                                 $timeout(function () {
-                                    element.children().first().fullCalendar('render');
-                                });
+                                    $el.children().first().fullCalendar('render');
+                                }, undefined, false);
                             };
                         }
 
                         // To be used by binding dialog to construct tree against exposed properties for the widget
-                        scope.getPropertyType = getPropertyType.bind(undefined, scope);
+                        $is.getPropertyType = getPropertyType.bind(undefined, $is);
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el), $is, notifyFor);
 
-                        WidgetUtilService.postWidgetCreate(scope, element, attrs);
+                        WidgetUtilService.postWidgetCreate($is, $el, attrs);
+
+                        _.defer($is.redraw);
 
                         if (!attrs.widgetid && attrs.scopedataset) {
-                            handlers.push(scope.$watch('scopedataset', function (newVal) {
-                                scope.eventSources.push(newVal);
+                            handlers.push($is.$watch('scopedataset', function (newVal) {
+                                $is.eventSources.push(newVal);
                             }, true));
                         }
                     }
