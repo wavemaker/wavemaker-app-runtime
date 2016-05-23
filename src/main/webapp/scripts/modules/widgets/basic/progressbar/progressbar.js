@@ -1,4 +1,4 @@
-/*global WM */
+/*global WM, _ */
 /*Directive for Progressbar */
 
 WM.module('wm.widgets.basic')
@@ -14,11 +14,13 @@ WM.module('wm.widgets.basic')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.progress', ['wm.base', 'wm.base.events']),
             notifyFor = {
-                'datavalue': true,
-                'minvalue': true,
-                'maxvalue': true,
-                'type': true,
-                'pollinterval': true
+                'datavalue'       : true,
+                'minvalue'        : true,
+                'maxvalue'        : true,
+                'type'            : true,
+                'pollinterval'    : true,
+                'dataset'         : true,
+                'captionplacement': true
             },
             /* map of type and classes to be applied*/
             CLASSES = {
@@ -82,12 +84,24 @@ WM.module('wm.widgets.basic')
             }
         }
 
+        //Updates caption placement of each progress bar
+        function updateCaptionPlacement(element, isMultipleBar, captionPlacement) {
+            if (isMultipleBar) {
+                element.find('.multi-bar').each(function () {
+                    WM.element(this).find('.app-progress-label').attr('data-caption-placement', captionPlacement);
+                });
+            } else {
+                element.find('.app-progress-label').attr('data-caption-placement', captionPlacement);
+            }
+        }
+
         // if the progressbar is NOT multibar, update the bar when maxvalue, minvalue or datavalue are changed.
         function updateProgressBar(scope, progressBarEl, oldDatavalue, newDatavalue) {
 
             var isValueAPercentage,
                 progressBarWidth,
-                displayValue = 0;
+                displayValue = 0,
+                $label = progressBarEl.find('.app-progress-label');
 
             if (scope.isMultipleBar) {
                 return;
@@ -122,16 +136,26 @@ WM.module('wm.widgets.basic')
                 }
             }
 
-            progressBarEl.css('width', progressBarWidth).text(displayValue);
+            progressBarEl.css('width', progressBarWidth);
+            if (!$label.length || (newDatavalue !== oldDatavalue)) {
+                if ($label.length) {
+                    $label.text(newDatavalue).attr('data-caption-placement', scope.captionplacement);
+                } else {
+                    WM.element('<span class="app-progress-label"></span>').text(displayValue).attr('data-caption-placement', scope.captionplacement).appendTo(progressBarEl);
+                }
+            }
         }
 
         // if the progress bar is multibar, create the multi-bar related nodes.
-        function updateMultipleProgressBar(element, data) {
-            data.forEach(function (barInfo) {
-                var cls = CLASSES[barInfo.type],
-                    val = barInfo.value + '%';
-                WM.element('<div class="multi-bar progress-bar"></div>').appendTo(element).addClass(cls).css('width', val).text(val);
+        function updateMultipleProgressBar(element, data, captionPlacement) {
+            var typeField  = _.split(element.attr('type'), '.'),
+                valueField = _.split(element.attr('datavalue'), '.');
+            _.forEach(data, function (barInfo) {
+                var cls = CLASSES[barInfo[_.last(typeField)]] || CLASSES.default,
+                    val = barInfo[_.last(valueField)] + '%' || barInfo.value;
+                WM.element('<div class="multi-bar progress-bar"><span class="app-progress-label">' + val + '</span></div>').appendTo(element).addClass(cls).css('width', val);
             });
+            updateCaptionPlacement(element, true, captionPlacement);
         }
 
         function successHandler(scope, response) {
@@ -190,13 +214,12 @@ WM.module('wm.widgets.basic')
                 updateProgressBar(scope, progressBarEl);
                 break;
             case 'datavalue':
-                scope.isMultipleBar = false;
-                element.children('.multi-bar').remove();
-                if (WM.isNumber(newVal) || WM.isString(newVal)) {
-                    updateProgressBar(scope, progressBarEl, oldVal, newVal);
-                } else if (WM.isArray(newVal)) {
-                    scope.isMultipleBar = true;
-                    updateMultipleProgressBar(element, newVal);
+                if (!(WM.isArray(scope.dataset))) {
+                    scope.isMultipleBar = false;
+                    element.children('.multi-bar').remove();
+                    if (WM.isNumber(newVal) || WM.isString(newVal)) {
+                        updateProgressBar(scope, progressBarEl, oldVal, newVal);
+                    }
                 }
                 break;
             case 'type':
@@ -208,6 +231,15 @@ WM.module('wm.widgets.basic')
                     setupPolling(scope);
                 }
                 break;
+            case 'captionplacement':
+                updateCaptionPlacement(element, scope.isMultipleBar || false, newVal);
+                break;
+            }
+
+            if (WM.isArray(scope.dataset)) {
+                element.children('.multi-bar').remove();
+                scope.isMultipleBar = true;
+                updateMultipleProgressBar(element, scope.dataset, scope.captionplacement);
             }
         }
 
