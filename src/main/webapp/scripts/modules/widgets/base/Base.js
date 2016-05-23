@@ -857,7 +857,7 @@ WM.module('wm.widgets.base', [])
                         "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
                         "color": {"type": "string", "hidelabel": true, "widget": "color"},
                         "fontweight": {"type": "string", "options": ["bold"], "hidelabel": true, "widget": "icons_checkbox"},
-                        "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size", "value": 12, "pattern": numberRegex},
+                        "fontsize": {"type": "number", "hidelabel": true, "hint": "Font size", "pattern": numberRegex},
                         "fontunit": {"type": "string", "options": ["em", "px", "pt"], "value": "px", "hidelabel": true, "widget": "icons_radio"},
                         "textdecoration": {"type": "string", "options": ["underline"], "hidelabel": true, "widget": "icons_checkbox"},
                         "fontstyle": {"type": "string", "options": ["italic"], "hidelabel": true, "widget": "icons_checkbox"},
@@ -1103,11 +1103,19 @@ WM.module('wm.widgets.base', [])
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "show": {"type": "boolean", "value": true, "bindable": "in-bound"},
                         "insert": {"type": "toolbar", "actions": [{'action': 'addrow', 'label': 'LABEL_PROPERTY_ADDROW', 'icon': 'add-row'}]},
-                        "columns": {"type": "list", "options": ["1", "2", "3", "4", "6", "12"]}
+                        "columns": {"type": "list", "options": ["1", "2", "3", "4", "6", "12"]},
+                        "backgroundcolor": {"type": "string", "widget": "color"},
+                        "backgroundgradient": {"type": "string", "show": false},
+                        "backgroundimage": {"type": "string", "bindable": "in-bound", "show": false},
+                        "backgroundrepeat": {"type": "list", "options": ["no-repeat", "repeat", "repeat-x", "repeat-y"], "show": false},
+                        "backgroundsize": {"type": "string", "hint": "width, height", "show": false},
+                        "backgroundposition": {"type": "string", "hint": "top, left", "show": false},
+                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"], "show": false}
 
                     },
                     'wm.layouts.gridcolumn': {
                         "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
+                        "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align"},
                         "borderwidth": {"type": "string", "widget": "box-model"},
                         "borderstyle": {"type": "string", "options": ["dashed", "dotted", "none", "solid"], "widget": "borderstyle"},
                         "bordercolor": {"type": "string", "widget": "color"},
