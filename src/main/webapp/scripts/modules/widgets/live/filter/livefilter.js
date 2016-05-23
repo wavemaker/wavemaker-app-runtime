@@ -902,9 +902,9 @@ WM.module('wm.widgets.live')
                         index = scope.parentIsolateScope.buttonArray.push(buttonDef) - 1;
                         scope.parentIsolateScope.columnsDefCreated = true;
 
-                        buttonTemplate = '<wm-button caption="{{buttonArray[' + index + '].displayName}}" show="{{buttonArray[' + index + '].show}}" ' +
-                            'class="{{buttonArray[' + index + '].class}}" iconclass="{{buttonArray[' + index + '].iconclass}}"' +
-                            'on-click="' + buttonDef.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
+                        buttonTemplate = '<wm-button caption="' + buttonDef.displayName + '" show="{{buttonArray[' + index + '].show}}" hint="' + buttonDef.title + '"' +
+                            'class="' + buttonDef.class + '" iconclass="' + buttonDef.iconclass + '"' +
+                            'on-click="' + buttonDef.action + '" type="' + buttonDef.type + '"></wm-button>';
                         element.closest('[data-identifier="livefilter"]').find('.basic-btn-grp').append($compile(buttonTemplate)(scope.parentIsolateScope));
                         $compile(element.contents())(scope.parentIsolateScope);
                         //Removing the default template for the directive
