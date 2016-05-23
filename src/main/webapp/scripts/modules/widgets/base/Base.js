@@ -2234,7 +2234,7 @@ WM.module('wm.widgets.base', [])
                     .forEach(function (key) {
                         var value = $is[key];
                         if (WM.isDefined(value)) {
-                            onScopeValueChangeProxy($is, $el, attrs, key, value, listeners);
+                            onScopeValueChangeProxy($is, $el, attrs, key, value, undefined, listeners);
                         }
                     });
                 Utils.triggerFn($is.__applyCSS);
