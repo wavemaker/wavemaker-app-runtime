@@ -1760,15 +1760,15 @@ WM.module('wm.utils', [])
                     retVal = triggerFn(callBackScope[variable && variable.name + event], firstArg, data);
                 }
                 if (_.includes(eventValue, '.show')) {
-                    DialogService.showDialog(eventValue.slice(0, _.indexOf(eventValue, '.show')));
+                    DialogService.showDialog(eventValue.slice(0, eventValue.indexOf('.show')));
                     return;
                 }
                 if (_.includes(eventValue, '.hide')) {
-                    DialogService.hideDialog(eventValue.slice(0, _.indexOf(eventValue, '.hide')));
+                    DialogService.hideDialog(eventValue.slice(0, eventValue.indexOf('.hide')));
                     return;
                 }
                 if (_.includes(eventValue, '(')) {
-                    retVal = triggerFn(callBackScope[eventValue.substring(0, _.indexOf(eventValue, '('))], firstArg, data);
+                    retVal = triggerFn(callBackScope[eventValue.substring(0, eventValue.indexOf('('))], firstArg, data);
                 }
                 /* invoking the variable in a timeout, so that the current variable dataSet values are updated before invoking */
                 $rootScope.$evalAsync(function () {
