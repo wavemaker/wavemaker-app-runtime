@@ -3,6 +3,7 @@ package com.wavemaker.runtime.servicedef.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,11 @@ public class ServiceDefinitionController {
     @RequestMapping(value = "/servicedefs", method = RequestMethod.GET)
     public Map<String, ServiceDefinition> listServiceDefs() {
         return serviceDefinitionService.listServiceDefs();
+    }
+
+    @RequestMapping(value = "/prefabs/{prefabName}/servicedefs", method = RequestMethod.GET)
+    public Map<String, ServiceDefinition> listPrefabServiceDefs(@PathVariable("prefabName") String prefabName) {
+        return serviceDefinitionService.listPrefabServiceDefs(prefabName);
     }
 
 }

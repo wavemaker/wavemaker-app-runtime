@@ -15,15 +15,8 @@
  */
 package com.wavemaker.studio.prefab.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-
-import com.wavemaker.studio.prefab.util.PrefabConstants;
 
 /**
  * Required bean configurations for {@link com.wavemaker.studio.prefab.web.PrefabControllerServlet}. This can be possibly
@@ -33,15 +26,6 @@ import com.wavemaker.studio.prefab.util.PrefabConstants;
  */
 @Configuration
 @Import(PrefabsConfig.class)
-@ComponentScan(basePackages = {"com.wavemaker.studio.prefab"})
 public class PrefabServletConfig {
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new ClassPathResource[]
-                {new ClassPathResource(PrefabConstants.PREFABS_PROP_FILE)};
-        configurer.setLocations(resources);
-        configurer.setIgnoreUnresolvablePlaceholders(true);
-        return configurer;
-    }
+
 }
