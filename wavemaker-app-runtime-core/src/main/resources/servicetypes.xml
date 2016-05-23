@@ -36,4 +36,9 @@ once that's complete.
           class="com.wavemaker.runtime.report.ReportServiceType"
           scope="singleton" lazy-init="false"/>
 
+    <bean id="SchedulerServiceType"
+          class="com.wavemaker.runtime.scheduler.SchedulerServiceType"
+          scope="singleton" lazy-init="false">
+    </bean>
+
 </beans>
