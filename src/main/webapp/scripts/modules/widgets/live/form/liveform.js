@@ -1221,13 +1221,13 @@ WM.module('wm.widgets.live')
         'use strict';
 
         var getTemplate = function (btnField, index) {
-            var template = '';
+            var template = '<wm-button name="' + btnField.key + '" caption="' + btnField.displayName + '" class="' + btnField.class + '" iconclass="' + btnField.iconclass + '"" on-click="' + btnField.action + '" type="' + btnField.type + '" hint="' + btnField.title + '"';
             if (btnField.updateMode) {
-                template  = '<wm-button name="{{buttonArray[' + index + '].key}}" caption="{{buttonArray[' + index + '].displayName}}" show="{{isUpdateMode && buttonArray[' + index + '].show}}" class="{{buttonArray[' + index + '].class}}" iconclass="{{buttonArray[' + index + '].iconclass}}" on-click="' + btnField.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
+                template  = template + ' show="{{isUpdateMode && buttonArray[' + index + '].show}}"';
             } else {
-                template  = '<wm-button name="{{buttonArray[' + index + '].key}}" caption="{{buttonArray[' + index + '].displayName}}" show="{{!isUpdateMode && buttonArray[' + index + '].show}}" class="{{buttonArray[' + index + '].class}}" iconclass="{{buttonArray[' + index + '].iconclass}}" on-click="' + btnField.action + '" type="{{buttonArray[' + index + '].type}}" ></wm-button>';
+                template  = template + ' show="{{!isUpdateMode && buttonArray[' + index + '].show}}"';
             }
-
+            template = template + '></wm-button>';
             return template;
         };
 
