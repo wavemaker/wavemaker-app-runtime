@@ -1220,7 +1220,7 @@ wm.variables.services.Variables = [
                 return variableObj;
             },
         /*function to store a variable to the collection*/
-            store = function (owner, name, variableObj, isUpdate) {
+            store = function (owner, name, variableObj, isUpdate, fetchData) {
                 /* sanity checking */
                 if (!variableObj) {
                     return;
@@ -1259,7 +1259,7 @@ wm.variables.services.Variables = [
                     CRUDMAP.CREATE[owner].push(name);/*Storing created variable name in map*/
                 }
                 if (isUpdate) {
-                    call('getData', name, {scope: scope, skipFetchData: true});
+                    call('getData', name, {scope: scope, skipFetchData: !fetchData});
                 }
             },
             initiateCallback = function (event, variable, callBackScope, response) {
@@ -1948,7 +1948,7 @@ wm.variables.services.Variables = [
              * creates a live variable based on the specified details
              * @params {object} variable details
              */
-            createLiveVariable: function (variableDetails) {
+            createLiveVariable: function (variableDetails, fetchData) {
                 /* call base service function to create the variable */
                 var variableCategory = "wm.LiveVariable",
                     defaultName,
@@ -1979,7 +1979,7 @@ wm.variables.services.Variables = [
                     createdVariable.dbSystem = variableDetails.dbSystem;
 
                     /* Store the variable in proper category */
-                    store(variableOwner, variableName, createdVariable, true);
+                    store(variableOwner, variableName, createdVariable, true, fetchData);
 
                     /*Update the tree with the newly added variable under the appropriate category(i.e., basic/service/live variables)*/
                     $rootScope.$emit("update-variables-tree", createdVariable);
