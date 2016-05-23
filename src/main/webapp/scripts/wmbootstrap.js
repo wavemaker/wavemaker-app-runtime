@@ -572,9 +572,6 @@ Application
                     if (pageName) {
                         pageName = pageName.split('.').shift();
                         $cRoute.locals.$template = AppManager.getPreparedPageContent(pageName);
-                        // set the page-level variables, registration will occur in the page directive
-                        pageVars = AppManager.getPageContent(pageName, 'variables');
-                        Variables.setPageVariables(pageName, pageVars);
 
                         if ($rs.isPrefabType) {
                             supportedLocale = Utils.findValueOf(pageVars, 'supportedLocale.dataSet');

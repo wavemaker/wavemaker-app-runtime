@@ -28,7 +28,8 @@ WM.module('wm.layouts.page')
                             variableScope,
                             containerScope,
                             count,
-                            subView;
+                            subView,
+                            AppManager;
 
                         /* if the page belongs to a prefab use the name of the prefab
                          * else if the project is of prefab type use `Main`
@@ -132,6 +133,11 @@ WM.module('wm.layouts.page')
                             }
                         }
 
+                        // set the page-level variables in run mode, design mode process is different
+                        if (CONSTANTS.isRunMode) {
+                            AppManager = Utils.getService('AppManager');
+                            Variables.setPageVariables(pageName, AppManager.getPageContent(pageName, 'variables'));
+                        }
                         // register the page variables
                         Variables.getPageVariables(pageName, function (variables) {
                             Variables.register(pageName, variables, true, variableScope);
