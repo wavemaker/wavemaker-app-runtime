@@ -148,11 +148,7 @@ WM.module('wm.layouts.containers')
                     },
                     'post': function ($is, element, attrs) {
                         $is.currentStep = $is.steps[0];
-                        if (CONSTANTS.isRunMode) {
-                            $is.currentStep.status = STEP_STATUS.CURRENT;
-                        } else {
-                            WM.element($is.currentStep._headerElement).click();
-                        }
+                        $is.currentStep.status = STEP_STATUS.CURRENT;
                         //initialize the widget
                         WidgetUtilService.postWidgetCreate($is, element, attrs);
                     }
