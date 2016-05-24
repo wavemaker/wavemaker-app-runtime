@@ -489,37 +489,38 @@ $.widget('wm.datagrid', {
         if (colDef.editWidgetType) {
             var template,
                 formName,
+                placeholder = _.isUndefined(colDef.placeholder) ? '' : colDef.placeholder,
                 dataValue = cellText ? 'datavalue="' + cellText + '"' : '';
             switch (colDef.editWidgetType) {
             case 'select':
                 cellText = cellText || '';
-                template =  '<wm-select ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '"></wm-select>';
+                template =  '<wm-select ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
                 break;
             case 'typeahead':
                 $el.addClass('datetime-wrapper');
-                template =  '<wm-search ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="typeahead"></wm-select>';
+                template =  '<wm-search ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="typeahead" placeholder="' + placeholder + '"></wm-select>';
                 break;
             case 'date':
                 $el.addClass('datetime-wrapper');
-                template = '<wm-date ' + dataValue + '></wm-date>';
+                template = '<wm-date ' + dataValue + ' placeholder="' + placeholder + '"></wm-date>';
                 break;
             case 'time':
                 $el.addClass('datetime-wrapper');
-                template = '<wm-time ' + dataValue + '></wm-time>';
+                template = '<wm-time ' + dataValue + ' placeholder="' + placeholder + '"></wm-time>';
                 break;
             case 'datetime':
                 $el.addClass('datetime-wrapper');
-                template = '<wm-datetime ' + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss"></wm-datetime>';
+                template = '<wm-datetime ' + dataValue + ' outputformat="yyyy-MM-ddTHH:mm:ss" placeholder="' + placeholder + '"></wm-datetime>';
                 break;
             case 'checkbox':
-                template = '<wm-checkbox ' + dataValue + ' height="10px"></wm-checkbox>';
+                template = '<wm-checkbox ' + dataValue + '></wm-checkbox>';
                 break;
             case 'number':
-                template = '<wm-text type="number" ' + dataValue + '></wm-text>';
+                template = '<wm-text type="number" ' + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
                 break;
             case 'textarea':
                 cellText = cellText || '';
-                template = '<wm-textarea ' + dataValue + '></wm-textarea>';
+                template = '<wm-textarea ' + dataValue + ' placeholder="' + placeholder + '"></wm-textarea>';
                 break;
             case 'upload':
                 formName = colDef.field + '_' + rowId;
@@ -527,7 +528,7 @@ $.widget('wm.datagrid', {
                 template = '<form name="' + formName + '"><input class="file-upload" type="file" name="' + colDef.field + '"/></form>';
                 break;
             default:
-                template = '<wm-text ' + dataValue + '></wm-text>';
+                template = '<wm-text ' + dataValue + ' placeholder="' + placeholder + '"></wm-text>';
                 break;
             }
             return this.options.compileTemplateInGridScope(template);
@@ -1280,8 +1281,17 @@ $.widget('wm.datagrid', {
                                 _.set(rowData, colDef.field, _.get(rowData, colDef.field) === null ? null : '');
                             }
                         } else {
-                            if (WM.isDefined(text) && text !== null) {
-                                _.set(rowData, colDef.field, text);
+                            if (WM.isDefined(text)) {
+                                text = text === 'null' ? null : text; //For select, null is returned as string null. Set this back to ull
+                                if (text === null) {
+                                    if (fields.length > 1) {
+                                        _.set(rowData, fields[0], text); //For related fields, set the object to null
+                                    } else {
+                                        _.set(rowData, colDef.field, ''); //Set to empty for normal fields
+                                    }
+                                } else {
+                                    _.set(rowData, colDef.field, text);
+                                }
                             }
                         }
                     });
