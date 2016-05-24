@@ -121,13 +121,34 @@ wm.variables.services.VariableService = function (BaseService) {
          * @description
          * Get service operation info in run
          *
+         * @param {object} params object containing parameters for the request (else throws an error message)
          * @param {function} successCallback to be called on success
          * @param {function} failureCallback to be called on failure
          */
-        getServiceOpInfo: function (successCallback, failureCallback) {
+        getServiceOpInfo: function (params, successCallback, failureCallback) {
             BaseService.send({
                 target: 'VariableService',
-                action: 'getServiceOpInfo'
+                action: 'getServiceOpInfo',
+                urlParams: params
+            }, successCallback, failureCallback);
+        },
+        /**
+         * @ngdoc function
+         * @name wm.variables.$VariableService#getPrefabServiceOpInfo
+         * @methodOf wm.variables.$VariableService
+         * @function
+         *
+         * @description
+         * Get service operation info in run
+         * @param {object} params object containing parameters for the request (else throws an error message)
+         * @param {function} successCallback to be called on success
+         * @param {function} failureCallback to be called on failure
+         */
+        getPrefabServiceOpInfo: function (params, successCallback, failureCallback) {
+            BaseService.send({
+                target: 'VariableService',
+                action: 'getPrefabServiceOpInfo',
+                urlParams: params
             }, successCallback, failureCallback);
         }
 

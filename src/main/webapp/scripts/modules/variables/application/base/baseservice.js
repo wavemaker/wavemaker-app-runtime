@@ -809,7 +809,7 @@ wm.variables.services.Variables = [
                         variables[name].dataSet = [];
                     } else if (variable.category === "wm.ServiceVariable" && runMode) {
                         // Attaching service operation info to variables if in run mode
-                        variables[name]._wmServiceOperationInfo = MetaDataFactory.getByOperationId(variable.operationId);
+                        variables[name]._wmServiceOperationInfo = MetaDataFactory.getByOperationId(variable.operationId, variable.prefabName);
                     }
                 });
 

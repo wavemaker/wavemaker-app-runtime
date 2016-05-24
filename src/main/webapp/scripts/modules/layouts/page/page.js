@@ -134,7 +134,7 @@ WM.module('wm.layouts.page')
                         }
 
                         // set the page-level variables in run mode, design mode process is different
-                        if (CONSTANTS.isRunMode) {
+                        if (CONSTANTS.isRunMode && !$s.prefabname) {
                             AppManager = Utils.getService('AppManager');
                             Variables.setPageVariables(pageName, AppManager.getPageContent(pageName, 'variables'));
                         }

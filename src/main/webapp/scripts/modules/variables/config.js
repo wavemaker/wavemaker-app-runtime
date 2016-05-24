@@ -96,6 +96,10 @@ wm.variables.constant('VARIABLE_SERVICE_URLS', {
         getServiceOpInfo: {
             url: 'services/servicedefs',
             method: 'GET'
+        },
+        getPrefabServiceOpInfo: {
+            url: 'services/prefabs/:prefabName/servicedefs',
+            method: 'GET'
         }
     }
 });

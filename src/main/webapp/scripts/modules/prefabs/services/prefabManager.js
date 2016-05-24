@@ -366,7 +366,15 @@ WM.module('wm.prefabs')
                     });
                     /* set variables in prefab namespace, registration will occur in page directive */
                     Variables.setPageVariables(prefabName, window["_MainPage_Variables_"]);
-                    deferred.resolve(htmlMarkup);
+                    //In run-mode fetching metaData
+                    if (CONSTANTS.isRunMode) {
+                        Utils.getService('MetaDataFactory').load(prefabName)
+                            .then(function () {
+                                deferred.resolve(htmlMarkup);
+                            });
+                    } else {
+                        deferred.resolve(htmlMarkup);
+                    }
                 });
                 return deferred.promise;
             }
