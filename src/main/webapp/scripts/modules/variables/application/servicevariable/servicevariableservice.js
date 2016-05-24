@@ -408,6 +408,7 @@ wm.variables.services.$servicevariable = ['Variables',
                     if (preventCall === false) {
                         return;
                     }
+                    $rootScope.$emit('toggle-variable-state', variable.name, true);
                     variableActive[variable.activeScope.$id][variable.name] = true;
                     variable.canUpdate = false;
                 }
@@ -775,10 +776,6 @@ wm.variables.services.$servicevariable = ['Variables',
                     var name = this.name;
                     options = options || {};
                     options.scope = this.activeScope || options.scope;
-
-                    if (CONSTANTS.isRunMode) {
-                        $rootScope.$emit('toggle-variable-state', name, true);
-                    }
 
                     methods.getData(this, options, function (response) {
                         if (CONSTANTS.isRunMode) {
