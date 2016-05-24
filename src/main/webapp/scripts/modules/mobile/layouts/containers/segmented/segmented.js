@@ -95,19 +95,16 @@ WM.module('wm.layouts.containers')
                                 $old  : $scope.currentSelectedIndex,
                                 $new  : index
                             },
-                            $segmentsCtr = $element.find(".app-segments-container"),
-                            $segment = $element.find(".app-segments-container > ul > li:nth-child(" + (index + 1) + ")"),
-                            scrollPos = 0,
-                            left = $segment.position().left;
+                            $segmentsCtr = $element.find(".app-segments-container");
+
                         $scope.currentSelectedIndex = index;
                         $scope.onBeforesegmentchange(eventData);
                         currentContent.onShow();
                         if (currentContent && currentContent.widgetid && CONSTANTS.isStudioMode && $scope.$root) {
                             $scope.$root.$emit('set-active-widget', currentContent.widgetid);
                         }
-
                         $segmentsCtr.animate(
-                            { scrollLeft: (scrollPos + left)},
+                            { scrollLeft: index * $segmentsCtr.width()},
                             { duration: "fast" }
                         );
                         $scope.onSegmentchange(eventData);
