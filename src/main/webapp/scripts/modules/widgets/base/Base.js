@@ -325,8 +325,10 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex, "show": false}
                     },
                     "wm.buttongroup": {
+                        "width": {"type": "string", "pattern": dimensionRegex},
                         "vertical": {"type": "boolean"},
                         "horizontalalign": {"type": "string", "options": ["left", "center", "right"], "widget": "icons_align"},
+                        "padding": {"type": "string", "widget": "box-model"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["btn-group-lg", "btn-group-sm", "btn-group-xs", "btn-group-raised", "btn-toolbar", "btn-group-vertical"]}
                     },
                     "wm.switch": {
@@ -966,11 +968,7 @@ WM.module('wm.widgets.base', [])
 
                     },
                     'wm.layouts.listtemplate': {
-                        "height": {"type": "string", "pattern": dimensionRegex},
-                        "width": {"type": "string", "pattern": dimensionRegex},
-                        "class": {"type": "string", "show": false, "pattern": classRegex},
-                        "name": {"type": "string", "pattern": nameRegex, "maxlength": 32},
-                        "show": {"type": "boolean", "value": true, "bindable": "in-bound"}
+                        "name": {"type": "string", "pattern": nameRegex, "maxlength": 32}
                     },
                     'wm.layouts.mediatemplate': {
                         "width": {"type": "string", "pattern": dimensionRegex, "value": 100},
