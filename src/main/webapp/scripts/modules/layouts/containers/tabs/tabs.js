@@ -87,8 +87,10 @@ WM.module('wm.layouts.containers')
                  * this method will be triggered by a tab when it is selected using the user click option.
                  * if there is any activeTab, set the active flag on it to false and trigger onDeselect callback of it
                  * trigger the onSelect callback of the selected tab
+                 * skipActiveWidget to skip active widget selection for first time load, it should trigger
+                 * only on click on header
                  */
-                this.selectTab = function (tab, skipOnSelect) {
+                this.selectTab = function (tab, skipOnSelect, skipActiveWidget) {
                     var _tab = $scope.activeTab,
                         i,
                         tabs = $scope.tabs;
@@ -97,7 +99,7 @@ WM.module('wm.layouts.containers')
                         _tab.isActive = false;
                     }
                     $scope.activeTab = tab;
-
+                    tab.isActive = true;
                     for (i = 0; i < tabs.length; i++) {
                         if ($scope.activeTab.$id === tabs[i].$id) {
                             $scope.activeTabIndex = i;
@@ -113,7 +115,7 @@ WM.module('wm.layouts.containers')
                         tab._animateIn($element.hasClass('has-transition'));
                     }
                     // In studio mode on click on header set tab-pane as active widget
-                    if (CONSTANTS.isStudioMode) {
+                    if (CONSTANTS.isStudioMode && !skipActiveWidget) {
                         $rootScope.$emit('set-active-widget', tab.widgetid);
                     }
                     // when tabContent is set to display external page, triggering $lazyLoad on select of the tab will render the content.
@@ -183,7 +185,7 @@ WM.module('wm.layouts.containers')
                     scope.activeTab = activeTab = activeTab || tabs[0];
 
                     if (activeTab) {
-                        activeTab.isActive = true;
+                        scope.selectTab(activeTab, false, true);
                     }
                     /**
                      * @ngdoc function
