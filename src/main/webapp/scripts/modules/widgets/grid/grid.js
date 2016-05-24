@@ -2094,6 +2094,7 @@ WM.module('wm.widgets.grid')
                                 'editWidgetType': attrs.editWidgetType,
                                 'dataset': attrs.dataset,
                                 'datafield': attrs.datafield,
+                                'placeholder': attrs.placeholder,
                                 'displaylabel': attrs.displaylabel,
                                 'searchkey': attrs.searchkey,
                                 'displayfield': attrs.displayfield,
