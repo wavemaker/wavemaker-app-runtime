@@ -983,6 +983,12 @@ WM.module('wm.widgets.base')
                 _compileWidgets($s);
             }
 
+
+            // do not load the calendar related libs in mobile project/ web project in mobile view
+            if (directiveName === 'wmCalendar' && Utils.isMobile()) {
+                return {};
+            }
+
             return {
                 'restrict': 'E',
                 'terminal': true,
