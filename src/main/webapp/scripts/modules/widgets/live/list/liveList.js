@@ -516,7 +516,6 @@ WM.module('wm.widgets.live')
                                 variable = getVariable($is, boundVariableName);
                             // data from the live list must have .data filed
                             if (variable && variable.category === 'wm.LiveVariable') {
-                                $is.noDataFound = true;
                                 return;
                             }
                         }
