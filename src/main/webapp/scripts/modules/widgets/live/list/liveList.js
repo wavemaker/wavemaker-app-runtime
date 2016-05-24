@@ -1249,7 +1249,6 @@ WM.module('wm.widgets.live')
                     $is.noDataFound = undefined === ($is.binddataset || $is.scopedataset);
                     handlers.push($rs.$on('toggle-variable-state', function (event, variableName, active) {
                         if (variable === variableName) {
-                            $is.noDataFound      = !active;
                             $is.variableInflight = active;
                         }
                     }));
