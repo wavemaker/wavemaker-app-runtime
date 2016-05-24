@@ -86,7 +86,6 @@ WM.module('wm.widgets.advanced')
                 $is.prepareCalendarEvents();
                 //change the model so that the view is rendered again with the events , after the dataset is changed.
                 $is._model_ = modelVal ? new Date(modelVal) : new Date();
-                $is.onViewrender({$scope: $is});
                 $is.onEventrender({$scope: $is, $data: $is.eventData});
             }
 
@@ -288,6 +287,7 @@ WM.module('wm.widgets.advanced')
                         if (isMobile) {
                             $is.eventData = {};
                             wp.view.options = ['day', 'month', 'year'];
+                            wp.controls.show = wp.multiselect.show = wp.calendartype.show = wp.onEventdrop.show = wp.onEventresize.show = wp.onViewrender.show = false;
                             //prepare calendar Events
                             $is.prepareCalendarEvents = function () {
                                 var eventDay;
@@ -315,7 +315,9 @@ WM.module('wm.widgets.advanced')
                                     end                 = moment($is._model_).endOf('day');
                                 $is.selecteddata = selectedEventData;
                                 $is.onSelect({$start: start._d.getTime(), $end: end._d.getTime(), $view: eleScope, $scope: eleScope, $data: selectedEventData});
-                                $is.onEventclick({$event: this, $data: selectedEventData, $view: eleScope});
+                                if (selectedEventData) {
+                                    $is.onEventclick({$event: this, $data: selectedEventData, $view: eleScope});
+                                }
                             };
 
                             $is.openCalendar = function () {
@@ -407,7 +409,9 @@ WM.module('wm.widgets.advanced')
 
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
 
-                        _.defer($is.redraw);
+                        if (!isMobile) {
+                            _.defer($is.redraw);
+                        }
 
                         if (!attrs.widgetid && attrs.scopedataset) {
                             handlers.push($is.$watch('scopedataset', function (newVal) {
