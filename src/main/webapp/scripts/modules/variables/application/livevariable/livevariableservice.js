@@ -97,20 +97,22 @@ wm.variables.services.$liveVariable = [
                 href        = ((variable.prefabName !== '' && variable.prefabName !== undefined) ? 'prefabs/' + variable.prefabName : 'services') + '/' + variable.liveSource + '/' + variable.type + '/';
                 primaryKeys = variable.propertiesMap.primaryFields || variable.propertiesMap.primaryKeys;
                 _.forEach(responseData, function (data) {
-                    _.forEach(blobCols, function (col) {
-                        var compositeKeysData = {};
-                        if (data[col] === null) {
-                            return;
-                        }
-                        if (variable.isCompositeKey(primaryKeys)) {
-                            primaryKeys.forEach(function (key) {
-                                compositeKeysData[key] = data[key];
-                            });
-                            data[col] = href + 'composite-id/content/' + col + '?' + getCompositeIDURL(compositeKeysData);
-                        } else {
-                            data[col] = href + data[_.join(primaryKeys)] + '/content/' + col;
-                        }
-                    });
+                    if (data) {
+                        _.forEach(blobCols, function (col) {
+                            var compositeKeysData = {};
+                            if (data[col] === null) {
+                                return;
+                            }
+                            if (variable.isCompositeKey(primaryKeys)) {
+                                primaryKeys.forEach(function (key) {
+                                    compositeKeysData[key] = data[key];
+                                });
+                                data[col] = href + 'composite-id/content/' + col + '?' + getCompositeIDURL(compositeKeysData);
+                            } else {
+                                data[col] = href + data[_.join(primaryKeys)] + '/content/' + col;
+                            }
+                        });
+                    }
                 });
             },
             /*function to fetch the column list of a related field*/
