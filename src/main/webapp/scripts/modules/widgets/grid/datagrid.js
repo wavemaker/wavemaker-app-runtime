@@ -1810,7 +1810,8 @@ $.widget('wm.datagrid', {
     },
 
     setStatus: function (state, message) {
-        var loadingIndicator = this.dataStatusContainer.find('.fa');
+        var loadingIndicator = this.dataStatusContainer.find('.fa'),
+            headerHeight;
         this.dataStatus.state = state;
         this.dataStatus.message = message || this.options.dataStates[state];
         this.dataStatusContainer.find('.message').text(this.dataStatus.message);
@@ -1828,6 +1829,13 @@ $.widget('wm.datagrid', {
             this.dataStatusContainer.addClass('bg-none');
         } else {
             this.dataStatusContainer.removeClass('bg-none');
+        }
+        if (this.options.showHeader) {
+            //If header height is increased to 2 or 3 lines, No data found message overlaps with header
+            //To avoid this, set minimum height on grid content and add margin top to the status
+            headerHeight = this.gridHeaderElement.height();
+            this.gridContainer.find('.app-grid-content').css('min-height', headerHeight * 0.5);
+            this.dataStatusContainer.find('.status').css('margin-top', headerHeight * 0.35);
         }
     },
 
