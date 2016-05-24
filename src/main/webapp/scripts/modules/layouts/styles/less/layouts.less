@@ -66,14 +66,10 @@ body {
     overflow: inherit;
     .panel-icon {
       margin-right: 0.5em;
-      margin-top: 0.4em;
     }
     .panel-title{
       display: table;
       width: 100%;
-      .heading {
-        font-size: 1.2em;
-      }
       > a {
         text-decoration: none;
         display: table-cell;
@@ -1183,13 +1179,20 @@ body {
   /***override the chart tooltip style***/
   .app-page-content {
     padding: 1em;
+
+    .btn-group, .btn-group-vertical {
+      margin: 0;
+      .btn {
+        float: none;
+      }
+    }
   }
 
   /***setting the default size of waviocn****/
   .wi {
     font-family: "wavicon";
-    font-size: 1em;
-    vertical-align: initial;
+    width: auto;
+    height: auto;
   }
 
   .nvtooltip {
@@ -1238,11 +1241,13 @@ body {
       }
     }
   }
+
   /********button classes ***/
   .btn.btn-transparent {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    padding: 0;
     &:hover {
       color: initial;
     }
@@ -1261,8 +1266,9 @@ body {
     text-align: center;
     padding-left: 0;
     padding-right: 0;
-    > i {
+    > .app-icon {
       display: block;
+      width: 100% !important;
     }
     .badge {
       top: 2pt;

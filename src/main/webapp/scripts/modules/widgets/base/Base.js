@@ -2185,12 +2185,6 @@ WM.module('wm.widgets.base', [])
                     }
                 } else if (key === 'backgroundimage') {
                     $is.picturesource = Utils.getBackGroundImageUrl(nv);
-                } else if (key === 'backgroundcolor') {
-                    /* setting background image as none when background color is set. This is done because background
-                    gradients are set as background image and have precedence over background color.*/
-                    if (!attrs.picturesource) {
-                        $is.picturesource = undefined;
-                    }
                 } else if (key === 'class') {
                     $el.removeClass(ov).addClass(nv);
                 } else if (key === 'name') {
