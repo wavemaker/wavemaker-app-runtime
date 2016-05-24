@@ -29,8 +29,8 @@ public class DataExporter<Entity extends Serializable> {
     }
 
     public OutputStream build() {
-        ReportBuilder reportBuilder = new ReportBuilder(session, entityClass, exportOptions);
-        JasperReportBuilder jasperReportBuilder = reportBuilder.build();
+        ReportGenerator reportGenerator = new ReportGenerator(session, entityClass, exportOptions);
+        JasperReportBuilder jasperReportBuilder = reportGenerator.generateReport();
 
         jasperReportBuilder
                 .setTemplate(Templates.reportTemplate)

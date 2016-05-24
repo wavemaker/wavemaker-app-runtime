@@ -5,28 +5,16 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.engine.spi.LoadQueryInfluencers;
-import org.hibernate.engine.spi.SessionFactoryImplementor;
-import org.hibernate.internal.CriteriaImpl;
-import org.hibernate.internal.SessionImpl;
-import org.hibernate.jdbc.Work;
-import org.hibernate.loader.OuterJoinLoader;
-import org.hibernate.loader.criteria.CriteriaLoader;
-import org.hibernate.persister.entity.OuterJoinLoadable;
-import org.hibernate.transform.Transformers;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import com.wavemaker.runtime.data.util.QueryParser;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
 import net.sf.dynamicreports.report.builder.column.Columns;
@@ -40,7 +28,7 @@ import net.sf.dynamicreports.report.definition.ReportParameters;
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 9/5/16
  */
-public class ReportBuilder {
+public class ReportGenerator {
 
 
     private Class<?> entityClass;
@@ -48,28 +36,16 @@ public class ReportBuilder {
     private ExportOptions exportOptions;
 
 
-    public ReportBuilder(Session session, Class<?> entityClass, ExportOptions exportOptions) {
+    public ReportGenerator(Session session, Class<?> entityClass, ExportOptions exportOptions) {
         this.session = session;
         this.entityClass = entityClass;
         this.exportOptions = exportOptions;
     }
 
-    public JasperReportBuilder build() {
-        final JasperReportBuilder[] jasperReportBuilder = new JasperReportBuilder[]{null};
-        session.doWork(new Work() {
-            @Override
-            public void execute(Connection connection) throws SQLException {
-                jasperReportBuilder[0] = generateReport(connection);
-            }
-        });
-        return jasperReportBuilder[0];
-    }
-
-    private JasperReportBuilder generateReport(Connection connection) {
+    public JasperReportBuilder generateReport() {
         JasperReportBuilder reportBuilder = new JasperReportBuilder();
         HashMap<String, String> fieldNameVsTypeMap = getFieldNameVsTypeMap();
-
-        reportBuilder.setDataSource(constructSql(), connection);
+        reportBuilder.setDataSource(constructList());
         List<String> fieldNames = new ArrayList<>(fieldNameVsTypeMap.keySet());
 
         for (String fieldName : fieldNames) {
@@ -105,42 +81,14 @@ public class ReportBuilder {
         return reportBuilder;
     }
 
-    private String constructSql() {
+    private List constructList() {
         Criteria criteria = session.createCriteria(entityClass);
-        String sql = getGeneratedQueryString(criteria);
-        System.out.println(sql);
-        return sql;
-    }
-
-    //hack written to get native sql from criteria.
-    private String getGeneratedQueryString(Criteria criteria) {
-        try {
-            Field[] fields = entityClass.getDeclaredFields();
-            ProjectionList projectionList = Projections.projectionList();
-            for (int i = 0; i < fields.length; i++) {
-                projectionList.add(Projections.property(fields[i].getName()), fields[i].getName());
-            }
-            criteria.setProjection(projectionList).setResultTransformer(Transformers.aliasToBean(entityClass));
-            CriteriaImpl criteria1 = (CriteriaImpl) criteria;
-            SessionImpl session1 = (SessionImpl) criteria1.getSession();
-            SessionFactoryImplementor factory = session1.getSessionFactory();
-            String[] implementors = factory.getImplementors(criteria1.getEntityOrClassName());
-            LoadQueryInfluencers loadQueryInfluencers = new LoadQueryInfluencers(factory);
-            CriteriaLoader cl = new CriteriaLoader((OuterJoinLoadable) factory.getEntityPersister(implementors[0]),
-                    factory,
-                    criteria1,
-                    implementors[0],
-                    loadQueryInfluencers);
-            Field f = OuterJoinLoader.class.getDeclaredField("sql");
-            f.setAccessible(true);
-            String sql = (String) f.get(cl);
-            for (int i = 0; i < fields.length; i++) {
-                sql = sql.replaceAll("as y" + i + "_", "as " + fields[i].getName());
-            }
-            return sql;
-        } catch (Exception e) {
-            throw new WMRuntimeException("Failed to generate query string", e);
+        QueryParser queryParser = new QueryParser(entityClass);
+        String query = exportOptions.getQuery();
+        if (StringUtils.isNotBlank(query)) {
+            criteria.add(queryParser.parse(query));
         }
+        return criteria.list();
     }
 
     private HashMap<String, String> getFieldNameVsTypeMap() {

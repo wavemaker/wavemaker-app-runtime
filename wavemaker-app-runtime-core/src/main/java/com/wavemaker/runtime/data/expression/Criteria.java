@@ -15,12 +15,7 @@
  */
 package com.wavemaker.runtime.data.expression;
 
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
 
 /**
  * @author <a href="mailto:sunil.pulugula@wavemaker.com">Sunil Kumar</a>
@@ -28,6 +23,5 @@ import org.hibernate.criterion.Restrictions;
  */
 public interface Criteria {
 
-    public Criterion criterion(final String name, final Object value);
-
+    Criterion criterion(final String name, final Object value);
 }

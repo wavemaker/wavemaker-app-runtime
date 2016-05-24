@@ -1,12 +1,12 @@
 /**
  * Copyright © 2013 - 2016 WaveMaker, Inc.
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,9 @@
 package com.wavemaker.runtime.data.expression;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
@@ -28,22 +30,22 @@ import org.hibernate.criterion.Restrictions;
  */
 public enum Type implements Criteria {
 
-    STARTING_WITH {
+    STARTING_WITH("startswith") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.ilike(name, String.valueOf(value), MatchMode.START);
         }
-    }, ENDING_WITH {
+    }, ENDING_WITH("endswith") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.ilike(name, String.valueOf(value), MatchMode.END);
         }
-    }, CONTAINING {
+    }, CONTAINING("containing") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.ilike(name, String.valueOf(value), MatchMode.ANYWHERE);
         }
-    }, EQUALS {
+    }, EQUALS("=") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             Criterion criterion;
@@ -56,12 +58,12 @@ public enum Type implements Criteria {
             }
             return criterion;
         }
-    }, NOT_EQUALS {
+    }, NOT_EQUALS("!=") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.ne(name, value);
         }
-    }, BETWEEN {
+    }, BETWEEN("between") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             Criterion criterion;
@@ -83,43 +85,86 @@ public enum Type implements Criteria {
             }
             return criterion;
         }
-    }, LESS_THAN {
+    }, LESS_THAN("<") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.lt(name, value);
         }
-    }, LESS_THAN_OR_EQUALS {
+    }, LESS_THAN_OR_EQUALS("<=") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.le(name, value);
         }
-    }, GREATER_THAN {
+    }, GREATER_THAN(">") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.gt(name, value);
         }
-    }, GREATER_THAN_OR_EQUALS {
+    }, GREATER_THAN_OR_EQUALS(">=") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.ge(name, value);
         }
-    }, NULL {
+    }, NULL("null") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.isNull(name);
         }
-    }, EMPTY {
+    }, EMPTY("") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.eq(name, "");
         }
-    }, NULL_OR_EMPTY {
+    }, LIKE("like") {
+        @Override
+        public Criterion criterion(String name, Object value) {
+            return Restrictions.like(name, value);
+        }
+    }, IN("in") {
+        @Override
+        public Criterion criterion(String name, Object value) {
+            if (value instanceof Collection) {
+                return Restrictions.in(name, (Collection) value);
+            }
+            throw new RuntimeException("Expected Collection type but found value of type " + value.getClass());
+        }
+    }, NULL_OR_EMPTY ("nullorempty") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             Criterion emptyValueCriterion = Restrictions.eq(name, "");
             Criterion nullValueCriterion = Restrictions.isNull(name);
             return Restrictions.or(emptyValueCriterion, nullValueCriterion);
         }
+    };
+
+
+    static Map<String, Type> nameVsType = new HashMap<>();
+
+    static {
+        for (Type type : Type.values()) {
+            nameVsType.put(type.getName(), type);
+        }
     }
 
+
+    public static Type valueFor(String typeName) {
+        return nameVsType.get(typeName.toLowerCase());
+
+    }
+
+    private String name;
+
+    Type(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    //    TODO remove null for both methods
+    @Override
+    public Criterion criterion(String name, Object value) {
+        return null;
+    }
 }
