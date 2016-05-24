@@ -191,6 +191,7 @@ wm.modules.wmCommon.services.BaseService = [
                         /* In runtime, the variable error handler needs to be invoked to hide the spinner */
                         Utils.triggerFn(failureCallback);
                     } else {
+                        pushToErrorCallStack(config, successCallback, failureCallback);
                         handleSessionTimeOut();
                     }
                     return;
