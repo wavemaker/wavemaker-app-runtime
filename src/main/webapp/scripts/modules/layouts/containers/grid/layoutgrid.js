@@ -212,19 +212,19 @@ WM.module('wm.layouts.containers')
             <div ng-controller="Ctrl" class="wm-app">
                 <wm-layoutgrid>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#008B8B"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#FF1493"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#9932CC"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#8FBC8F"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#1E90FF"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#CD5C5C"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#ADD8E6"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#F08080"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#20B2AA"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                 </wm-layoutgrid>
             </div>
@@ -255,19 +255,19 @@ WM.module('wm.layouts.containers')
             <div ng-controller="Ctrl" class="wm-app">
                 <wm-layoutgrid>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#008B8B"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#FF1493"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#9932CC"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#8FBC8F"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#1E90FF"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#CD5C5C"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#ADD8E6"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#F08080"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#20B2AA"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                 </wm-layoutgrid>
             </div>
@@ -298,19 +298,19 @@ WM.module('wm.layouts.containers')
             <div ng-controller="Ctrl" class="wm-app">
                 <wm-layoutgrid>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#008B8B"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#FF1493"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#9932CC"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                     <wm-gridrow>
-                    <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#8FBC8F"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#1E90FF"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#CD5C5C"></wm-gridcolumn>
+                    <wm-gridcolumn columnwidth="4" ></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                     <wm-gridrow>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#ADD8E6"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#F08080"></wm-gridcolumn>
-                        <wm-gridcolumn columnwidth="4" height="100" backgroundcolor="#20B2AA"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="4"></wm-gridcolumn>
                     </wm-gridrow>
                 </wm-layoutgrid>
             </div>
