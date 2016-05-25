@@ -95,7 +95,7 @@ $.widget('wm.datagrid', {
             'resizable'        : false,
             'selectable'       : false,
             'readonly'         : true,
-            'style'            : 'width: 30px; text-align: center;',
+            'style'            : 'width: 50px; text-align: center;',
             'textAlignment'    : 'center',
             'isMultiSelectCol' : true,
             'show'             : true
@@ -109,7 +109,7 @@ $.widget('wm.datagrid', {
             'resizable'     : false,
             'selectable'    : false,
             'readonly'      : true,
-            'style'         : 'width: 30px; text-align: center;',
+            'style'         : 'width: 50px; text-align: center;',
             'textAlignment' : 'center',
             'show'          : true
         },
@@ -782,7 +782,7 @@ $.widget('wm.datagrid', {
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
                     width = 0;
                 } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
-                    width = 30;
+                    width = 50;
                 } else {
                     if (_.isUndefined(colDef.width) || colDef.width === '') {
                         width = width > 50 ? width : 50; //columnSanity check to prevent width being too small
@@ -1844,8 +1844,15 @@ $.widget('wm.datagrid', {
             //If header height is increased to 2 or 3 lines, No data found message overlaps with header
             //To avoid this, set minimum height on grid content and add margin top to the status
             headerHeight = this.gridHeaderElement.height();
-            this.gridContainer.find('.app-grid-content').css('min-height', headerHeight * 0.5);
-            this.dataStatusContainer.find('.status').css('margin-top', headerHeight * 0.35);
+            if (headerHeight < 70) {
+                this.gridContainer.find('.app-grid-content').css('min-height', 100 - headerHeight);
+                if (headerHeight > 50) {
+                    this.dataStatusContainer.find('.status').css('margin-top', 15);
+                }
+            } else {
+                this.gridContainer.find('.app-grid-content').css('min-height', headerHeight * 0.5);
+                this.dataStatusContainer.find('.status').css('margin-top', headerHeight * 0.35);
+            }
         }
     },
 
