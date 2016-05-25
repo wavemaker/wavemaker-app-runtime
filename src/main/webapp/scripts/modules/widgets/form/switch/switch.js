@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                             ' ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</a>' +
                     '</div>' +
                     '<span title="{{_model_}}" class="btn btn-primary app-switch-overlay switch-handle" ng-style="{\'width\': btnwidth + \'%\'}">{{options[selected.index][displayfield || "label"] || _model_}}</span>' +
-                    '<input name={{name}} type="hidden" class="ng-hide model-holder" ng-disabled="disabled" value="{{_model_}}">' +
+                    '<input name={{name}} class="model-holder" ng-disabled="disabled" value="{{_model_}}"  ng-required="required">' +
                 '</div>'
                 );
         }
@@ -65,6 +65,8 @@ WM.module('wm.widgets.form')
                             return true;
                         }
                     });
+                } else {
+                    scope.selected.index = -1;
                 }
             }
 
