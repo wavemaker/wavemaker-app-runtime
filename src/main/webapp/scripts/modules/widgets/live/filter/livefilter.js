@@ -105,6 +105,9 @@ WM.module('wm.widgets.live')
                         WM.forEach($scope.formFields, function (filterField) {
                             //Added check for range field
                             if (!filterField.readonly && filterField.show) {
+                                if (filterField.widget === 'typeahead' && !filterField.value) {
+                                    $scope.$element.find('div[name=' + filterField.name + '] input').val('');
+                                }
                                 if (filterField.isRange) {
                                     filterField.minValue = undefined;
                                     filterField.maxValue = undefined;
@@ -145,14 +148,15 @@ WM.module('wm.widgets.live')
                         $scope.orderBy = orderBy; //Store the order by in scope. This can be used to retain the sort after filtering
                         /* Copy the values to be sent to the user as '$data' before servicecall */
                         _.each($scope.formFields, function (field) {
+                            var fieldSelector = 'div[name=' + field.name + '] input';
                             if (!field.isRange) {
                                 dataModel[field.field] = {
-                                    'value': field.value
+                                    'value': field.value || (field.widget === 'typeahead' && $scope.$element ? $scope.$element.find(fieldSelector).val() : undefined)
                                 };
                             } else {
                                 dataModel[field.field] = {
-                                    'minValue': field.minValue,
-                                    'maxValue': field.maxValue
+                                    'minValue': field.minValue || (field.widget === 'typeahead' && $scope.$element ? $scope.$element.find(fieldSelector + ':first').val() : undefined),
+                                    'maxValue': field.maxValue || (field.widget === 'typeahead' && $scope.$element ? $scope.$element.find(fieldSelector + ':last').val() : undefined)
                                 };
                             }
                         });
