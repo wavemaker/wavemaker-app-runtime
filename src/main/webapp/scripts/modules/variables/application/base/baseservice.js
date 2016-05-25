@@ -1287,6 +1287,7 @@ wm.variables.services.Variables = [
                 if (!namespace) {
                     return;
                 }
+                var scopeId = scope.$id;
                 self.variableCollection = self.variableCollection || {};
 
                 /*
@@ -1294,15 +1295,15 @@ wm.variables.services.Variables = [
                  */
                 if (watchers[scope.$id]) {
                     WM.forEach(self.variableCollection[namespace], function (variable, name) {
-                        if (watchers[scope.$id][name]) {
-                            watchers[scope.$id][name].forEach(Utils.triggerFn);
+                        if (watchers[scopeId][name]) {
+                            watchers[scopeId][name].forEach(Utils.triggerFn);
                         }
                     });
                 }
 
                 /* remove the variables in namespace from the variable collection*/
                 delete self.variableCollection[namespace];
-                delete self.variableCollection[scope.$id];
+                delete self.variableCollection[scopeId];
             },
 
             /* process the requests in the queue for a variable based on the inFlightBehavior flag of the variable */

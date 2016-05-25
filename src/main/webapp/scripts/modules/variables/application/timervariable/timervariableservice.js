@@ -22,14 +22,14 @@ wm.variables.services.TimerVariableService = ['Variables',
     function (Variables, BaseVariablePropertyFactory, $rootScope, $interval, $timeout, CONSTANTS) {
         "use strict";
 
-        var methods, timerVariableObj, initiateCallback, timerMap = {}, DEFAULT_TIMER_DELAY = 500;
+        var methods, timerVariableObj, initiateCallback, DEFAULT_TIMER_DELAY = 500;
 
         /*function to initiate the callback and obtain the data for the callback variable.*/
         initiateCallback = Variables.initiateCallback;
 
         methods = {
             fire: function (variable, options, success, error) {
-                if (WM.isDefined(timerMap[variable.name]) || CONSTANTS.isStudioMode) {
+                if (WM.isDefined(variable._promise) || CONSTANTS.isStudioMode) {
                     return;
                 }
                 var repeatTimer = variable.repeating,
@@ -40,26 +40,35 @@ wm.variables.services.TimerVariableService = ['Variables',
                         initiateCallback(event, variable, callBackScope);
                     };
 
-                timerMap[variable.name] = repeatTimer ? $interval(exec, delay) : $timeout(function () {
+                variable._promise = repeatTimer ? $interval(exec, delay) : $timeout(function () {
                     exec();
-                    timerMap[variable.name] = undefined;
+                    variable._promise = undefined;
                 }, delay);
+
+                // destroy the timer on scope destruction
+                callBackScope.$on('$destroy', function () {
+                    variable.cancel(variable._promise);
+                });
+
+                return variable._promise;
             },
             cancel: function (variable, options) {
-                if (WM.isDefined(timerMap[variable.name])) {
+                var status;
+                if (WM.isDefined(variable._promise)) {
                     if (variable.repeating) {
-                        $interval.cancel(timerMap[variable.name]);
+                        status = $interval.cancel(variable._promise);
                     } else {
-                        $timeout.cancel(timerMap[variable.name]);
+                        status = $timeout.cancel(variable._promise);
                     }
-                    timerMap[variable.name] = undefined;
+                    variable._promise = undefined;
                 }
+                return status;
             }
         };
 
         timerVariableObj = {
             fire: function (success, error) {
-                methods.fire(this, {scope: this.activeScope}, success, error);
+                return methods.fire(this, {scope: this.activeScope}, success, error);
             },
             cancel: function () {
                 return methods.cancel(this);
