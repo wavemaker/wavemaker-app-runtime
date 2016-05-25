@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
+import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.QueryParser;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.base.expression.AbstractSimpleExpression;
@@ -88,6 +89,7 @@ public class ReportGenerator {
         if (StringUtils.isNotBlank(query)) {
             criteria.add(queryParser.parse(query));
         }
+        CriteriaUtils.updateCriteriaForPageable(criteria, exportOptions.getPageable());
         return criteria.list();
     }
 
