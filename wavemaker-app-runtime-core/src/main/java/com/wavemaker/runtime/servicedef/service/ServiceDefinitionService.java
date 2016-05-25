@@ -96,7 +96,7 @@ public class ServiceDefinitionService {
         if (resources != null) {
             for (Resource resource : resources) {
                 try {
-                    prefabServiceDefsCache.put(prefab.getName(), serviceDefinitionHelper.build(resource.getInputStream()));
+                    prefabServiceDefsCache.get(prefab.getName()).putAll(serviceDefinitionHelper.build(resource.getInputStream()));
                 } catch (IOException e) {
                     throw new WMRuntimeException("Failed to generate service definition for file " + resource.getFilename(), e);
                 }
