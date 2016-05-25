@@ -114,7 +114,7 @@ WM.module('wm.layouts.containers')
  * <file name="index.html">
  *  <div ng-controller="Ctrl" class="wm-app">
  *      <br>
- *      <wm-tile width="400" margintop="10" marginright="10" marginleft="10" marginbottom="10" backgroundcolor="#2F80E7" color="#fff"  paddingtop="10" paddingleft="10" paddingbottom="10" paddingright="10">
+ *      <wm-tile width="400" margin="10px" backgroundcolor="#2F80E7" color="#fff"  padding="10px">
  *           <wm-icon iconsize="2em" iconclass="wi wi-user"></wm-icon>
  *           <wm-label width="100%" textalign="center" fontsize="3" fontunit="em" fontweight="bold" caption="12680"></wm-label>
  *           <wm-label width="100%" caption="Signups" textalign="center" fontweight="bold"></wm-label>

@@ -117,7 +117,7 @@ WM.module('wm.layouts.containers')
     <example module="wmCore">
         <file name="index.html">
             <div ng-controller="Ctrl" class="wm-app">
-                <wm-container width="400" height="400" backgroundcolor="#979797" paddingtop="50">
+                <wm-container width="400" height="400" backgroundcolor="#979797" padding="50px 0 0 0">
                     <wm-composite>
                         <wm-label class="col-md-3" caption="First Name"></wm-label>
                         <wm-container class="col-md-9">

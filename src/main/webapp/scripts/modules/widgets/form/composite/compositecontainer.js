@@ -118,7 +118,7 @@ WM.module('wm.widgets.form')
  *       <file name="index.html">
  *           <div ng-controller="Ctrl" class="wm-app">
  *               <div>hint: {{hint}}</div>
- *               <wm-composite widget="text" name="Composite" hint="{{hint}}" horizontalalign="{{horizontalalign}}" bordercolor="#912121" borderstyle="solid" borderleft="1" bordertop="1" borderright="1" borderbottom="1" borderunit="px">
+ *               <wm-composite widget="text" name="Composite" hint="{{hint}}" horizontalalign="{{horizontalalign}}" bordercolor="#912121" borderstyle="solid" borderwidth="1px">
  *                  <wm-label name="label"></wm-label>
  *                  <wm-text name="text"></wm-text>
  *               </wm-composite><br>

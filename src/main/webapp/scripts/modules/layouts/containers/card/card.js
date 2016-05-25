@@ -26,13 +26,13 @@ WM.module('wm.layouts.containers')
             '</div>'
             );
         $templateCache.put('template/layout/container/card-content.html', '<div apply-styles="container" init-widget page-container class="app-card-content card-body card-block"><div page-container-target wmtransclude></div></div>');
-        $templateCache.put('template/layout/container/card-footer.html', '<div apply-styles="container" init-widget wmtransclude  class="app-card-footer text-muted card-footer"></div>');
+        $templateCache.put('template/layout/container/card-footer.html',  '<div apply-styles="container" init-widget wmtransclude  class="app-card-footer text-muted card-footer"></div>');
         $templateCache.put('template/layout/container/card-actions.html', '<div apply-styles="container" class="app-card-actions" init-widget wmtransclude ></div>');
     }])
     .directive('wmCard', ['PropertiesFactory', 'WidgetUtilService', 'Utils', 'CONSTANTS', function (PropertiesFactory, WidgetUtilService, Utils, CONSTANTS) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events.touch']),
-            notifyFor = {
+            notifyFor   = {
                 'heading'   : true,
                 'subheading': true,
                 'iconclass' : true,
@@ -41,22 +41,6 @@ WM.module('wm.layouts.containers')
                 'content'   : true,
                 'iconurl'   : true
             };
-
-        //Apply border classes on change of header, content, actions
-        function applyBorderClasses(scope) {
-            var borderTop = scope.heading || scope.subheading || scope.iconclass || scope.iconurl || scope.picturesource;
-            if (scope.content) {
-                scope.content.borderTop    = borderTop ? '' : 'border-radius-top';
-                scope.content.borderBottom = scope.footer || scope.action ? '' : 'border-radius-bottom';
-            }
-            if (scope.footer) {
-                scope.footer.borderTop     = borderTop || scope.content || scope.action ? '' : 'border-radius-top';
-            }
-            if (scope.action) {
-                scope.action.borderTop     = borderTop || scope.content ? '' : 'border-radius-top';
-                scope.action.borderBottom  = !scope.footer ? 'border-radius-bottom' : '';
-            }
-        }
 
         // Define the property change handler. This function will be triggered when there is a change in the widget property
         function propertyChangeHandler(scope, key, newVal) {
@@ -77,7 +61,6 @@ WM.module('wm.layouts.containers')
                     // showing icon when iconurl is not set
                     scope.showIcon = scope.iconclass !== '_none_' && newVal !== '' && !scope.iconurl;
                 }
-                applyBorderClasses(scope);
                 break;
             }
         }
@@ -122,7 +105,7 @@ WM.module('wm.layouts.containers')
         function (PropertiesFactory, $templateCache, WidgetUtilService) {
             'use strict';
 
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardcontent', ['wm.base','wm.containers']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.cardcontent', ['wm.base', 'wm.containers']);
             return {
                 'restrict'  : 'E',
                 'scope'     : {},

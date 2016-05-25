@@ -269,13 +269,7 @@ WM.module('wm.prefabs')
                 'replace' : true,
                 'template':
                     '<section data-role="prefab" init-widget class="app-prefab" ' +
-                        'ng-style="{' +
-                            'width:width, height:height,' +
-                            'marginBottom: marginbottom + marginunit, ' +
-                            'marginLeft: marginleft + marginunit, ' +
-                            'marginRight: marginright + marginunit, ' +
-                            'marginTop: margintop + marginunit ' +
-                        '}">' +
+                        'ng-style="{width:width, height:height, margin: margin}">' +
                     '</section>',
                 'link': {
                     'pre': function ($is, $el, attrs) {

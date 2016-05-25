@@ -25,17 +25,11 @@ WM.module('wm.widgets.form')
         'use strict';
         /*Obtaining properties specific to radio widget by extending from all editor related widget properties*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.radio', ['wm.base', 'wm.base.editors.abstracteditors']),
-            notifyFor = {
-                'height': true,
-                'radiogroup': true
-            };
+            notifyFor   = {'radiogroup': true};
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
         function propertyChangeHandler(radtioBtn, key, newVal) {
             switch (key) {
-            /*case 'height':
-                scope.lineheight = (scope.height === 'undefined' || scope.height === '') ? '24px' : (parseInt(scope.height, 10) - (parseInt(scope.bordertop, 10) + parseInt(scope.borderbottom, 10) + parseInt(scope.paddingtop, 10) + parseInt(scope.paddingbottom, 10))) + 'px';
-                break;*/
             case 'radiogroup':
                 radtioBtn.attr('name', newVal);
                 break;

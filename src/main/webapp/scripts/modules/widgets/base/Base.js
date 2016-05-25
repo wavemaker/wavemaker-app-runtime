@@ -2153,9 +2153,8 @@ WM.module('wm.widgets.base', [])
                 ' on-change on-focus on-blur on-click on-dblclick on-mouseover on-mouseout on-rowclick on-columnselect on-columndeselect ' +
                 ' backgroundattachment backgroundcolor backgroundgradient backgroundposition backgroundrepeat backgroundsize bordercolor borderradius ' +
                 ' borderstyle color cursor display fontfamily fontstyle fontvariant fontweight horizontalalign lineheight ' +
-                ' opacity overflow paddingbottom paddingleft paddingright paddingtop picturesource avatar textalign textdecoration verticalalign visibility ' +
-                ' whitespace wordbreak zindex bordertop borderright borderbottom borderleft borderunit paddingtop paddingright paddingbottom paddingleft' +
-                ' paddingunit margintop marginright marginbottom marginleft marginunit fontsize fontunit show hint caption animation backgroundimage iconposition iconclass';
+                ' opacity overflow padding picturesource avatar textalign textdecoration verticalalign visibility ' +
+                ' whitespace wordbreak zindex borderwidth margin fontsize fontunit show hint caption animation backgroundimage iconposition iconclass';
 
 
             //use requestIdleCallback when available otherwise use setTimeout
@@ -2892,7 +2891,7 @@ WM.module('wm.widgets.base', [])
                     //reset obj;
 
                     if (WM.isDefined(css.width)) {
-                        // case conversion is not required here.
+                        // type conversion is required here.
                         // if the units are not provided for width, use `px`
                         if (css.width == +css.width) {
                             css.width += 'px';
@@ -2900,7 +2899,7 @@ WM.module('wm.widgets.base', [])
                     }
 
                     if (WM.isDefined(css.height)) {
-                        // case conversion is not required here.
+                        // type conversion is required here.
                         // if the units are not provided for height, use `px`
                         if (css.height == +css.height) {
                             css.height += 'px';
@@ -2964,7 +2963,7 @@ WM.module('wm.widgets.base', [])
 
             return {
                 'link': function ($is, $el, attrs) {
-                    /* not required for run mode */
+                    // not required for run mode
                     if (CONSTANTS.isRunMode) {
                         return;
                     }

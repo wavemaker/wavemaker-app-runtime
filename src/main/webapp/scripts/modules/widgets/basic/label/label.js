@@ -101,7 +101,7 @@ WM.module('wm.widgets.basic')
                 <div>dbl click count: {{dblclickCount}}</div>
                 <div>mouse enter count: {{mouseenterCount}}</div>
                 <div>mouse leave count: {{mouseleaveCount}}</div>
-                <wm-label bordertop="1" borderleft="1" borderright="1" borderbottom="1" bordercolor="crimson" borderstyle="solid" paddingtop="4" paddingleft="4" paddingright="4" paddingbottom="4"
+                <wm-label borderwidth="2px" bordercolor="crimson" borderstyle="solid" padding="4px"
                     caption="{{caption}}"
                     hint="hint/title for label"
                     show="{{show}}"
