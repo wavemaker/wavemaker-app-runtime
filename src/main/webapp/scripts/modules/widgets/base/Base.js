@@ -160,7 +160,8 @@ WM.module('wm.widgets.base', [])
                         "backgroundrepeat": {"type": "list", "options": ["no-repeat", "repeat", "repeat-x", "repeat-y"]},
                         "backgroundsize": {"type": "string", "hint": "width, height"},
                         "backgroundposition": {"type": "string", "hint": "top, left"},
-                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]}
+                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"]},
+                        "display": {"type": "list", "options": displayOptions, "show": false}
                     },
                     "wm.base.editors.abstracteditors": {
                         "hint": {"type": "string", "bindable": "in-bound"},
