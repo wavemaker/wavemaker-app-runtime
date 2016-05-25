@@ -1224,7 +1224,7 @@ WM.module('wm.widgets.base', [])
                         "onBeforeSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onSegmentChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "width": {"show": false},
-                        "height": {"pattern": dimensionRegex},
+                        "height": {"type": "string", "pattern": dimensionRegex},
                         "tabindex": {"type": "string", "value": "0"},
                         "addchild": {"hidelabel": true, "options": [{"label": "Segmented Content", "widgettype": "wm-segment-content"}], "widget": "add-widget"}
                     },
