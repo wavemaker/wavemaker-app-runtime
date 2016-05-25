@@ -794,9 +794,6 @@ WM.module('wm.widgets.live')
                         showOrHideMatchProperty();
                         // enablereorder is not shown with groupby
                         if (nv && nv !== '') {
-                            markup   = Utils.getService('MarkupManagerService').getMarkup();
-                            $element = markup.find('[name=' + attrs.name + ']');
-                            $element.removeAttr('enablereorder');
                             $is.enablereorder     = false;
                             wp.enablereorder.show = false;
                             if (nv === 'Javascript') {
@@ -1230,7 +1227,7 @@ WM.module('wm.widgets.live')
                         $compile($liTemplate)($liScope);
                     }
 
-                    if ($is.enablereorder) {
+                    if (!$is.groupby && $is.enablereorder) {
                         configureDnD($el, $is);
                     }
 
