@@ -23,8 +23,10 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
+
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -42,6 +44,7 @@ import com.wavemaker.runtime.data.expression.AttributeType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
 import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.runtime.data.spring.WMPageImpl;
+import com.wavemaker.runtime.data.util.QueryParser;
 import com.wavemaker.runtime.export.DataExporter;
 import com.wavemaker.runtime.export.ExportOptions;
 import com.wavemaker.runtime.export.ExportType;
@@ -125,8 +128,18 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
     }
 
     @Override
-    public Page<Entity> searchByQuery(String query, Pageable pageable) {
-        return search(null, null);
+    public Page<Entity> searchByQuery(final String query, final Pageable pageable) {
+        return getTemplate().execute(new HibernateCallback<Page<Entity>>() {
+            @Override
+            public Page<Entity> doInHibernate(Session session) throws HibernateException {
+                Criteria criteria = session.createCriteria(entityClass);
+                if (StringUtils.isNotBlank(query)) {
+                    Criterion criterion = new QueryParser(entityClass).parse(query);
+                    criteria.add(criterion);
+                }
+                return executeAndGetPageableData(criteria, pageable);
+            }
+        });
     }
 
     @Override
@@ -142,7 +155,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             }
         });
         InputStream is = new ByteArrayInputStream(reportOutputStream.toByteArray());
-        return new DownloadResponse(is, null, entityClass.getName());
+        return new DownloadResponse(is, null, entityClass.getSimpleName());
     }
 
     protected Criterion createCriterion(QueryFilter queryFilter) {

@@ -161,10 +161,4 @@ public enum Type implements Criteria {
     public String getName() {
         return name;
     }
-
-    //    TODO remove null for both methods
-    @Override
-    public Criterion criterion(String name, Object value) {
-        return null;
-    }
 }
