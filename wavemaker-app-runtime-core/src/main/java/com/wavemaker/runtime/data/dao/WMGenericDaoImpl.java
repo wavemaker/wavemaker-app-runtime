@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 import java.util.Collection;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
@@ -204,5 +203,10 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                 return CriteriaUtils.getRowCount(criteria);
             }
         });
+    }
+
+    @Override
+    public long count(final String query) {
+        return count(); // TODO filter by query
     }
 }

@@ -42,5 +42,7 @@ public interface WMGenericDao<Entity, Identifier> {
 
     long count();
 
+    long count(String query);
+
     Downloadable export(ExportType exportType, String query, Pageable pageable);
 }
