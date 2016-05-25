@@ -994,6 +994,7 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },
                     'wm.layouts.panel': {
+                        "height": {"type": "string", "pattern": dimensionRegex},
                         "title": {"type": "string", "value": "Title", "bindable": "in-bound"},
                         "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},

@@ -22,7 +22,7 @@ WM.module('wm.widgets.live')
                             'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
                     '</nav>' +
                     '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" ng-show="!noDataFound" ng-class="listclass" wmtransclude ' +
-                             'ng-style="{height: height, overflow: overflow, paddingTop: paddingtop + paddingunit, paddingRight: paddingright + paddingunit, paddingLeft: paddingleft + paddingunit, paddingBottom: paddingbottom + paddingunit}">' +
+                             'ng-style="{padding: padding, height: height, overflow: overflow}">' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound">{{nodatamessage}}</div>' +
                     '<div class="loading-data-msg" ng-if="variableInflight">{{loadingdatamsg}}</div>' +
