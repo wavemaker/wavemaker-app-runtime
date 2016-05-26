@@ -1360,10 +1360,12 @@ WM.module('wm.utils', [])
                 cookies      = {};
 
             if (_.some(cookiesArray, function (cookie) {
-                    var cookieArray         = cookie.split('=');
-                    cookies[cookieArray[0]] = cookieArray[1];
+                    var index           = cookie.indexOf('='),
+                        cookieName      = cookie.substr(0, index),
+                        cookieValue     = cookie.substr(index + 1);
+                    cookies[cookieName] = cookieValue;
 
-                    if (cookieArray[0] === name) { // break the loop when the required cookie is found
+                    if (cookieName === name) { // break the loop when the required cookie is found
                         return true;
                     }
 
