@@ -39,7 +39,7 @@ WM.module('wm.layouts.containers')
 
         //Define the template for the wizard step directive
         $templateCache.put('template/layout/container/wizard-step.html',
-            '<form apply-styles="container" init-widget page-container class="app-wizard-step-content" ng-class="{\'current\': status === \'CURRENT\'}"><div page-container-target wmtransclude></div></form>');
+            '<form apply-styles="container" init-widget page-container class="app-wizard-step-content" ng-class="{\'current\': status === \'CURRENT\'}" data-step-id="{{stepIndex}}"><div page-container-target wmtransclude></div></form>');
     }])
     .directive('wmWizard', [
         'PropertiesFactory',
@@ -77,14 +77,14 @@ WM.module('wm.layouts.containers')
                     //Register step header to append to header list
                     this.registerStepHeader = function (stepScope) {
                         stepScope.stepIndex = this.dataStepId;
-                        stepScope._headerElement.attr('step-id', this.dataStepId);
+                        stepScope._headerElement.attr('data-step-id', this.dataStepId);
                         stepHeaderTarget.append(stepScope._headerElement);
                         $compile(stepScope._headerElement)(stepScope);
                         this.dataStepId++;
                     };
                     //Remove header element on removal of step
                     this.unRegisterHeaderElement = function (stepScope) {
-                        stepHeaderTarget.find('[step-id="' + stepScope.stepIndex + '"]').remove();
+                        stepHeaderTarget.find('[data-step-id="' + stepScope.stepIndex + '"]').remove();
                         $is.steps.splice(stepScope.stepIndex, 1);
                         //On removal of current step make first step as current step
                         if ($is.steps.length) {
@@ -220,9 +220,9 @@ WM.module('wm.layouts.containers')
                         $parentElement.on('click', '.app-wizard-step', function (event) {
                             event.stopPropagation();
                             var $headerEles     = $parentElement.find('.app-wizard-step'),
-                                currentStepId   = WM.element(event.currentTarget).attr('step-id'),
+                                currentStepId   = WM.element(event.currentTarget).attr('data-step-id'),
                                 $stepPanes      = $parentElement.find('.app-wizard-step-content'),
-                                $currentStepEle = WM.element($stepPanes[currentStepId]),
+                                $currentStepEle = $parentElement.find('.app-wizard-step-content[data-step-id=' + currentStepId + ']'),
                                 currentStep     = $currentStepEle.isolateScope(),
                                 widgetId        = $currentStepEle.attr('widgetid');
                             if (CONSTANTS.isStudioMode) {
