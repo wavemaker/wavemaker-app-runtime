@@ -63,8 +63,8 @@ public class QueryParser {
                     Type type = Type.valueFor(operator);
                     if (type != null) {
                         Class operandTypeClass = entityClass.getDeclaredField(token).getType();
-                        if (Type.IN == type) {
-                            Collection value = formatOperandForIn(stringTokenizer, operandTypeClass);
+                        if (Type.IN == type || Type.BETWEEN == type) {
+                            Collection value = formatOperandAsCollection(stringTokenizer, operandTypeClass);
                             criterionStack.push(type.criterion(token, value));
                         } else {
                             String value = stringTokenizer.nextToken();
@@ -106,7 +106,7 @@ public class QueryParser {
         return joinType.criterion(lhs, rhs);
     }
 
-    private Collection formatOperandForIn(RegExStringTokenizer stringTokenizer, Class<?> typeClass) {
+    private Collection formatOperandAsCollection(RegExStringTokenizer stringTokenizer, Class<?> typeClass) {
         List<Object> tokens = new LinkedList<>();
         String token;
 //        todo  skip expected token OPEN_PARENTHESIS properly

@@ -110,7 +110,7 @@ public enum Type implements Criteria {
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.isNull(name);
         }
-    }, EMPTY("") {
+    }, EMPTY("empty") {
         @Override
         public Criterion criterion(final String name, final Object value) {
             return Restrictions.eq(name, "");
