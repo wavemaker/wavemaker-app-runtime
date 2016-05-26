@@ -39,7 +39,7 @@ public class DataExporter<Entity extends Serializable> {
         try {
             switch (exportType) {
                 case EXCEL:
-                    jasperReportBuilder.toExcelApiXls(reportOutputStream);
+                    jasperReportBuilder.toXls(reportOutputStream);
                     break;
                 case CSV:
                     jasperReportBuilder.toCsv(reportOutputStream);
