@@ -392,6 +392,12 @@ WM.module('wm.widgets.live')
                             $scope.expanded = !$scope.expanded;
                         }
                     };
+                    $scope.onFocusField = function ($event) {
+                        WM.element($event.target).closest('.live-field').addClass('active');  //On focus of the field, add active class
+                    };
+                    $scope.onBlurField = function ($event) {
+                        WM.element($event.target).closest('.live-field').removeClass('active'); //On focus out of the field, remove active class
+                    };
                 },
                 template: function (element) {
                     filterMarkup = element.html();

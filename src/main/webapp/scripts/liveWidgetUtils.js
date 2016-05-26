@@ -21,7 +21,8 @@ WM.module('wm.widgets.live')
         function (Utils, $rs, FormWidgetUtils, PropertiesFactory, $compile, $liveVariable, CONSTANTS, WidgetUtilService, Variables) {
             'use strict';
             var keyEventsWidgets       = ['number', 'text', 'select', 'password', 'textarea'],
-                eventTypes             = ['onChange', 'onBlur', 'onFocus', 'onMouseleave', 'onMouseenter', 'onClick'],
+                focusEvents            = ['onBlur', 'onFocus'],
+                eventTypes             = focusEvents.concat(['onChange', 'onMouseleave', 'onMouseenter', 'onClick']),
                 allEventTypes          = eventTypes.concat('onKeypress', 'onKeydown', 'onKeyup'),
                 defaultNgClassesConfig = {'className': '', 'condition': ''},
                 isDataSetWidgets       = Utils.getDataSetWidgets();
@@ -351,11 +352,11 @@ WM.module('wm.widgets.live')
             }
 
             function getFormFields(fieldDef, index, type) {
-                var fields = '',
+                var fields    = '',
                     dateTypes = ['date', 'datetime'],
                     textTypes = ['text', 'password', 'textarea'],
-                    evtTypes = getEventTypes(),
-                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'name'];
+                    evtTypes  = _.pull(getEventTypes(), focusEvents),
+                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'name', 'onFocus', 'onBlur'];
                 Object.keys(fieldDef).forEach(function (field) {
                     if (_.includes(excludeProperties, field)) {
                         return;
@@ -388,6 +389,9 @@ WM.module('wm.widgets.live')
                             fields += ' ' + field + '="{{formFields[' + index + '].' + field + '}}"';
                         }
                     }
+                });
+                _.forEach(focusEvents, function (evt) {
+                    fields += ' ' + Utils.hyphenate(evt) + '="{{formFields[' + index + '].' + evt + '}};' + evt + 'Field($event)"';
                 });
                 return fields;
             }
