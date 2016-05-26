@@ -1041,6 +1041,13 @@ WM.module('wm.widgets.live')
                             dataSetWatchHandler,
                             variable,
                             isLayoutDialog;
+                        function setDefaultValue() {
+                            if (parentIsolateScope._widgettype === 'wm-liveform') {
+                                parentIsolateScope.setDefaultValueToValue(columnDef);
+                            } else {
+                                columnDef.value = columnDef.defaultvalue;
+                            }
+                        }
                         parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         isLayoutDialog = parentIsolateScope.isLayoutDialog;
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
@@ -1071,13 +1078,13 @@ WM.module('wm.widgets.live')
                                 exprWatchHandler = BindingManager.register(parentIsolateScope, expr, function (newVal) {
                                     parentIsolateScope.formFields[index].defaultvalue = newVal;
                                     if (parentIsolateScope.operationType !== 'update') {
-                                        parentIsolateScope.setDefaultValueToValue(columnDef);
+                                        setDefaultValue();
                                     }
                                 }, {"deepWatch": true, "allowPageable": true, "acceptsArray": false});
                             } else {
                                 columnDef.defaultvalue = attrs.defaultvalue;
                                 if (CONSTANTS.isRunMode) {
-                                    parentIsolateScope.setDefaultValueToValue(columnDef);
+                                    setDefaultValue();
                                 }
                             }
                         }
