@@ -87,7 +87,7 @@ WM.module('wm.widgets.base')
                 var parts;
 
                 // For anchor elements suppressing the default action to refresh the page
-                if (isAnchor) {
+                if (isAnchor && $evt) {
                     $evt.preventDefault();
                 }
 
