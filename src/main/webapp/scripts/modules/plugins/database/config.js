@@ -268,6 +268,10 @@ wm.plugins.database.constant('DB_SERVICE_URLS', {
             url: "/:service/:dataModelName/:entityName/?q=:query&page=:page&size=:size&:sort",
             method: "GET"
         },
+        exportTableData: {
+            url: "/:service/:dataModelName/:entityName/export/:exportFormat?q=:query&:sort",
+            method: "GET"
+        },
         readTableRelatedData: {
             url: "/:service/:dataModelName/:entityName/:id/:relatedFieldName?page=:page&size=:size&:sort",
             method: "GET"
@@ -546,8 +550,19 @@ wm.plugins.database.constant('DB_CONSTANTS', {
         "nullorempty"      : "NULL_OR_EMPTY"
     },
     "DATABASE_MATCH_MODES_WITH_QUERY": {
-        "EQUALS"            : "=",
-        "CONTAINING"        : "CONTAINING"
+        "STARTING_WITH"          : "startswith",
+        "ENDING_WITH"            : "endswith",
+        "CONTAINING"             : "containing",
+        "EQUALS"                 : "=",
+        "NOT_EQUALS"             : "!=",
+        "BETWEEN"                : "between",
+        "LESS_THAN"              : "<",
+        "LESS_THAN_OR_EQUALS"    : "<=",
+        "GREATER_THAN"           : ">",
+        "GREATER_THAN_OR_EQUALS" : ">=",
+        "NULL"                   : "= null",
+        "EMPTY"                  : "= empty",
+        "NULL_OR_EMPTY"          : "= nullorempty"
     },
     "DATABASE_EMPTY_MATCH_MODES": ["NULL", "EMPTY", "NULL_OR_EMPTY"],
     "DATABASE_RANGE_MATCH_MODES": ["BETWEEN", "LESS_THAN", "LESS_THAN_OR_EQUALS", "GREATER_THAN", "GREATER_THAN_OR_EQUALS"],

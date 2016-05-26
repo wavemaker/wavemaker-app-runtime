@@ -72,20 +72,21 @@ wm.plugins.database.services.DatabaseService = [
             requestData = params.data;
 
             urlParams = {
-                projectID: params.projectID,
-                service: WM.isDefined(params.service) ? params.service : "services",
-                dataModelName: params.dataModelName,
-                entityName: params.entityName,
-                queryName: params.queryName,
-                queryParams: params.queryParams,
-                procedureName: params.procedureName,
-                procedureParams: params.procedureParams,
-                id: params.id,
-                relatedFieldName: params.relatedFieldName,
-                page: params.page,
-                size: params.size,
-                sort: params.sort,
-                query: params.query
+                projectID        : params.projectID,
+                service          : WM.isDefined(params.service) ? params.service : "services",
+                dataModelName    : params.dataModelName,
+                entityName       : params.entityName,
+                queryName        : params.queryName,
+                queryParams      : params.queryParams,
+                procedureName    : params.procedureName,
+                procedureParams  : params.procedureParams,
+                id               : params.id,
+                relatedFieldName : params.relatedFieldName,
+                page             : params.page,
+                size             : params.size,
+                sort             : params.sort,
+                query            : params.query,
+                exportFormat     : params.exportFormat
             };
             /*In the SAAS studio mode, if we directly try to access the runtime urls, it results in cross-domain request issues.,
              * Hence use the WebService's testRestService call to initiate the request.*/
@@ -145,7 +146,11 @@ wm.plugins.database.services.DatabaseService = [
                     connectionParams.headers = {"skipSecurity": "true"};
                 }
 
-                return BaseService.execute(connectionParams, successCallback, failureCallback);
+                if (action === 'exportTableData') {
+                    Utils.simulateFileDownload(BaseService.parseReplace(connectionParams));
+                } else {
+                    return BaseService.execute(connectionParams, successCallback, failureCallback);
+                }
             }
         };
         /* APIs returned by the DatabaseService.*/
@@ -1415,7 +1420,7 @@ wm.plugins.database.services.DatabaseService = [
                         dataModelName: params.dataModelName,
                         procedureName: params.procedureName
                     },
-                    data              :params.data,
+                    data              : params.data,
                     returnTypeMetadata: params.returnTypeMetadata
                 }, successCallback, failureCallback);
             },
@@ -1680,6 +1685,22 @@ wm.plugins.database.services.DatabaseService = [
 
             searchTableDataWithQuery: function (params, successCallback, failureCallback) {
                 return initiateAction('searchTableDataWithQuery', params, successCallback, failureCallback);
+            },
+            /**
+             * @ngdoc function
+             * @name wm.database.$DatabaseService#exportTableData
+             * @methodOf wm.database.$DatabaseService
+             * @function
+             *
+             * @description
+             * Method to download the data in given format
+             *
+             * @param {object} params
+             *                 Object containing name of the project & details of the table.
+             */
+
+            exportTableData: function (params) {
+                return initiateAction('exportTableData', params);
             },
 
             /**

@@ -507,6 +507,21 @@ wm.modules.wmCommon.services.BaseService = [
              * @return {string} errorMsg error message
              */
 
-            parseError: parseError
+            parseError: parseError,
+
+            /**
+             * @ngdoc function
+             * @name wm.common.$BaseService#parseReplace
+             * @methodOf wm.common.$BaseService
+             * @function
+             *
+             * @description
+             * replace all the parameters from the config service
+             *
+             * @param {object} serviceParams service config params
+             *
+             * @return {object} config with replaced params
+             */
+            parseReplace: parseReplace
         };
     }];

@@ -536,7 +536,27 @@ wm.variables.services.$liveVariable = [
                  */
                 if (options.searchWithQuery) {
                     _.forEach(filterOptions, function (fieldValue) {
-                        params.push(fieldValue.attributeName + ' ' + DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[fieldValue.filterCondition] + ' ' + '\'' + fieldValue.attributeValue + '\'');
+                        var param           = fieldValue.attributeName + ' ',
+                            value           = fieldValue.attributeValue,
+                            filterCondition = fieldValue.filterCondition,
+                            matchMode       = DB_CONSTANTS.DATABASE_MATCH_MODES_WITH_QUERY[filterCondition];
+                        if (_.isArray(value)) {
+                            matchMode = matchMode === 'between' ? matchMode : 'in';
+                        }
+                        param = param + matchMode;
+                        if (!_.includes(DB_CONSTANTS.DATABASE_EMPTY_MATCH_MODES, filterCondition)) {
+                            if (_.isArray(value)) {
+                                param = param + ' (';
+                                _.forEach(value, function (val) {
+                                    param = param + ' ' + '\'' + val + '\'' + ' ,';
+                                });
+                                param = param.slice(0, -2);
+                                param = param + ' )';
+                            } else {
+                                param = param + ' ' + '\'' + value + '\'';
+                            }
+                        }
+                        params.push(param);
                     });
                     query = _.join(params, ' OR '); //empty space added intentionally around OR
                 }
@@ -1127,6 +1147,24 @@ wm.variables.services.$liveVariable = [
                         });
                     }
                 },
+                /*Function to download the data associated with the live variable*/
+                download: function (variable, options) {
+                    var tableOptions,
+                        dbOperation = 'exportTableData',
+                        projectID   = $rootScope.project.id || $rootScope.projectName;
+                    options.searchWithQuery = true; //For export, query api is used. So set this flag to true
+                    tableOptions = prepareTableOptions(variable, options);
+                    DatabaseService[dbOperation]({
+                        'projectID'     : projectID,
+                        'service'       : variable.prefabName ? '' : 'services',
+                        'dataModelName' : variable.liveSource,
+                        'entityName'    : variable.type,
+                        'sort'          : tableOptions.sort,
+                        'url'           : variable.prefabName ? ($rootScope.project.deployedUrl + '/prefabs/' + variable.prefabName) : $rootScope.project.deployedUrl,
+                        'query'         : tableOptions.query,
+                        'exportFormat'  : options.exportFormat
+                    });
+                },
             /*Function to update the data associated with the related tables of the live variable*/
                 updateRelatedData: function (variable, options, success, error) {
                     var projectID = $rootScope.project.id || $rootScope.projectName;
@@ -1338,6 +1376,10 @@ wm.variables.services.$liveVariable = [
                         }
                         Utils.triggerFn(error, errMsg);
                     });
+                },
+                download: function (options) {
+                    options = options || {};
+                    methods.download(this, options);
                 },
                 updateRecord: function (options, success, error) {
                     var name = this.name;

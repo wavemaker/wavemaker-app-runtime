@@ -121,55 +121,6 @@ wm.variables.services.$servicevariable = ['Variables',
                 return data;
             },
 
-            /**
-             * Simulates file download in an app through creating and submitting a hidden form in DOM.
-             * The action will be initiated through a Service Variable
-             * @param variable: the variable that is called from user action
-             * @param requestParams object consisting the info to construct the XHR request for the service
-             */
-            simulateFileDownload = function (requestParams) {
-                var iFrameElement,
-                    IFRAME_NAME = "fileDownloadIFrame",
-                    FORM_NAME = "fileDownloadForm",
-                    formEl,
-                    url = requestParams.url,
-                    paramElement,
-                    queryParams;
-
-                /* look for existing iframe. If exists, remove it first */
-                iFrameElement = $(IFRAME_NAME);
-                if (iFrameElement.length) {
-                    iFrameElement.first().remove();
-                }
-                iFrameElement = WM.element('<iframe id="' + IFRAME_NAME +'" name="'+ IFRAME_NAME +'" class="ng-hide"></iframe>');
-                formEl = WM.element('<form id="' + FORM_NAME + '" name="' + FORM_NAME + '"></form>'),
-                formEl.attr({
-                    'target': iFrameElement.attr("name"),
-                    'action': url,
-                    'method': requestParams.method,
-                    'enctype': requestParams.headers['Content-Type']
-                });
-
-                /* process query params, append a hidden input element in the form against each param */
-                queryParams = url.indexOf('?') !== -1 ? url.substring(url.indexOf('?') + 1) :
-                        requestParams.headers['Content-Type'] === WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED ? requestParams.dataParams : "",
-                queryParams = queryParams.split("&");
-                queryParams.forEach(function (param) {
-                    param = param.split("=");
-                    paramElement = WM.element("<input type='hidden'>");
-                    paramElement.attr({
-                        'name': param[0],
-                        'value': param[1]
-                    });
-                    formEl.append(paramElement);
-                });
-
-                /* append form to iFrame and iFrame to the document and submit the form */
-                WM.element('body').append(iFrameElement);
-                iFrameElement.contents().find('body').append(formEl);
-                formEl.submit();
-            },
-
             /* function to process error response from a service */
             processErrorResponse = function (errMsg, variable, callBackScope, error) {
                 // EVENT: ON_ERROR
@@ -480,7 +431,7 @@ wm.variables.services.$servicevariable = ['Variables',
 
                 /* if the service produces octet/stream, replicate file download through form submit */
                 if (WM.isArray(methodInfo.produces) && _.includes(methodInfo.produces, WS_CONSTANTS.CONTENT_TYPES.OCTET_STREAM)) {
-                    simulateFileDownload(params);
+                    Utils.simulateFileDownload(params);
                     variableActive[variable.activeScope.$id][variable.name] = false;
                     return;
                 }

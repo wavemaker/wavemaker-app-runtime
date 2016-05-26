@@ -108,29 +108,30 @@ WM.module('wm.widgets.grid')
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.grid', ['wm.base', 'wm.base.navigation']),
             gridColumnMarkup = '',
             notifyFor = {
-                'width': true,
-                'height': true,
-                'gridfirstrowselect': true,
-                'deleterow': true,
-                'updaterow': true,
-                'dataset': true,
-                'showheader': true,
-                'navigation': true,
-                'insertrow': true,
-                'show': true,
-                'gridsearch': true,
-                'searchlabel': true,
-                'multiselect': true,
-                'radioselect': true,
-                'showrowindex': true,
-                'enablesort': true,
-                'readonlygrid': true,
-                'gridcaption': true,
-                'gridclass': true,
-                'nodatamessage': true,
-                'loadingdatamsg': true,
-                'filternullrecords': true,
-                'spacing': true
+                'width'              : true,
+                'height'             : true,
+                'gridfirstrowselect' : true,
+                'deleterow'          : true,
+                'updaterow'          : true,
+                'dataset'            : true,
+                'showheader'         : true,
+                'navigation'         : true,
+                'insertrow'          : true,
+                'show'               : true,
+                'gridsearch'         : true,
+                'searchlabel'        : true,
+                'multiselect'        : true,
+                'radioselect'        : true,
+                'showrowindex'       : true,
+                'enablesort'         : true,
+                'readonlygrid'       : true,
+                'gridcaption'        : true,
+                'gridclass'          : true,
+                'nodatamessage'      : true,
+                'loadingdatamsg'     : true,
+                'filternullrecords'  : true,
+                'spacing'            : true,
+                'exportformat'       : true
             },
             getObjectIndexInArray = function (key, value, arr) {
                 var index = -1, i;
@@ -175,12 +176,15 @@ WM.module('wm.widgets.grid')
                 /*set the raw gridColumnMarkup to the local variable*/
                 gridColumnMarkup = element.html();
                 return '<div data-identifier="grid" init-widget title="{{hint}}" class="app-grid app-panel panel" apply-styles="shell">' +
-                    '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
+                    '<div class="panel-heading" ng-if="title || subheading || iconclass || exportOptions.length">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" data-ng-show="iconclass"></i></div>' +
                             '<div class="pull-left">' +
                                 '<div class="heading">{{title}}</div>' +
                                 '<div class="description">{{subheading}}</div>' +
+                            '</div>' +
+                            '<div class="panel-actions" ng-if="exportOptions.length">' +
+                                '<wm-menu caption="Export" name="{{::name}}-export" scopedataset="exportOptions" on-select="export($item)" menuposition="down,left"></wm-menu>' +
                             '</div>' +
                         '</h3>' +
                     '</div>' +
@@ -198,7 +202,11 @@ WM.module('wm.widgets.grid')
             'compile': function (tElement, tAttr) {
                 var contextEl = tElement.context,
                     showHeader,
-                    showNavigation;
+                    showNavigation,
+                    exportIconMapping = {
+                        'EXCEL' : 'fa fa-file-excel-o',
+                        'CSV'   : 'fa fa-file-text-o'
+                    };
 
                 /*Backward compatibility to support "gridnoheader".*/
                 if (tAttr.gridnoheader) {
@@ -585,6 +593,18 @@ WM.module('wm.widgets.grid')
                                     scope.navigationClass = '';
                                 }
                                 break;
+                            case 'exportformat':
+                                scope.exportOptions = [];
+                                if (newVal) {
+                                    //Populate options for export drop down menu
+                                    _.forEach(_.split(newVal, ','), function (type) {
+                                        scope.exportOptions.push({
+                                            'label'      : type,
+                                            'icon'       : exportIconMapping[type]
+                                        });
+                                    });
+                                }
+                                break;
                             }
                         }
 
@@ -884,7 +904,7 @@ WM.module('wm.widgets.grid')
                             'logicalOp' : 'AND'
                         };
                     }
-
+                    $scope.filterFields = filterFields;
                     variable.update({
                         'type'         : 'wm.LiveVariable',
                         'page'         : 1,
@@ -1465,7 +1485,8 @@ WM.module('wm.widgets.grid')
                     columns,
                     isPageable = false,
                     widgetBindingDetails,
-                    relatedTables;
+                    relatedTables,
+                    wp;
                 $scope.datagridElement.datagrid('setStatus', 'loading', $scope.loadingdatamsg);
                 //After the setting the watch on navigator, dataset is triggered with undefined. In this case, return here.
                 if ($scope.dataNavigatorWatched && _.isUndefined(newVal) && $scope.__fullData) {
@@ -1524,7 +1545,7 @@ WM.module('wm.widgets.grid')
                         variableName = variableName.substr(0, variableName.indexOf('.'));
                     } else if (isBoundToWidget) {
                         widgetName = $scope.binddataset.replace('bind:Widgets.', '').split(".")[0];
-                        isBoundToFilter = $scope.Widgets[widgetName]._widgettype === 'wm-livefilter';
+                        isBoundToFilter = $scope.Widgets[widgetName]._widgettype === 'wm-livefilter' || $scope.Widgets[widgetName].widgettype === 'wm-livefilter';
 
                         $scope.isBoundToFilter = isBoundToFilter;
                         $scope.widgetName = widgetName;
@@ -1622,13 +1643,14 @@ WM.module('wm.widgets.grid')
                 }
                 /* Disable/Update the properties in properties panel which are dependent on binddataset value. */
                 if (CONSTANTS.isStudioMode) {
+                    wp = $scope.widgetProps;
                     /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
-                    $scope.widgetProps.pagesize.show = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
-                    $scope.widgetProps.multiselect.show = $scope.isPartOfLiveGrid ? false : $scope.widgetProps.multiselect.show;
-                    $scope.widgetProps.multiselect.showindesigner = $scope.isPartOfLiveGrid ? false : $scope.widgetProps.multiselect.showindesigner;
+                    wp.pagesize.show    = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
+                    wp.exportformat.show  = wp.exportformat.showindesigner  = isBoundToLiveVariable || isBoundToFilter;
+                    wp.multiselect.show = wp.multiselect.showindesigner = ($scope.isPartOfLiveGrid ? false : wp.multiselect.show);
                     /* In Studio, disabling readonlygrid property if bound to a service variable or view */
                     if (!($scope.binddataset && (isBoundToServiceVariable || isBoundToStaticVariable || isBoundToServiceVariableSelectedItem)) && !isBoundToView()) {
-                        $scope.widgetProps.readonlygrid.disabled = false;
+                        wp.readonlygrid.disabled = false;
                     } else {
                         if ($scope.isPartOfLiveGrid) {
                             $scope.readonlygrid = true;
@@ -1647,16 +1669,16 @@ WM.module('wm.widgets.grid')
                                 $rootScope.$emit('update-widget-property', 'readonlygrid', true);
                             }
                         }
-                        $scope.widgetProps.readonlygrid.disabled = true;
+                        wp.readonlygrid.disabled = true;
                     }
                     /* If bound to live filter result, disable grid search. */
                     if (isBoundToWidget && $scope.widgetid && _.includes($scope.binddataset, 'livefilter')) {
                         if ($scope.gridsearch) {
                             $rootScope.$emit('update-widget-property', 'gridsearch', false);
                         }
-                        $scope.widgetProps.gridsearch.disabled = true;
+                        wp.gridsearch.disabled = true;
                     } else {
-                        $scope.widgetProps.gridsearch.disabled = false;
+                        wp.gridsearch.disabled = false;
                     }
                 }
                 if (!WM.isObject(newVal) || (newVal && newVal.dataValue === '')) {
@@ -1966,7 +1988,23 @@ WM.module('wm.widgets.grid')
                     break;
                 }
             };
-
+            //On click of item in export menu, download the file in respective format
+            $scope.export = function ($item) {
+                var filterFields,
+                    variable     = $scope.gridElement.scope().Variables[$scope.variableName],
+                    sortOptions  = $scope.sortInfo ? $scope.sortInfo.field + ' ' + $scope.sortInfo.direction : '';
+                if ($scope.isBoundToFilter) {
+                    $scope.Widgets[$scope.widgetName].applyFilter({'orderBy': sortOptions, 'exportFormat': $item.label});
+                } else {
+                    filterFields = $scope.filterFields || {};
+                    variable.download({
+                        'matchMode'    : 'anywhere',
+                        'filterFields' : filterFields,
+                        'orderBy'      : sortOptions,
+                        'exportFormat' : $item.label
+                    });
+                }
+            };
         }])
 
 /**

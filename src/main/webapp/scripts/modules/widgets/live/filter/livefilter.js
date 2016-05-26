@@ -262,6 +262,15 @@ WM.module('wm.widgets.live')
                             }
                         });
 
+                        if (options.exportFormat) {
+                            variable.download({
+                                'matchMode'    : 'anywhere',
+                                'filterFields' : formFields,
+                                'orderBy'      : orderBy,
+                                'exportFormat' : options.exportFormat
+                            });
+                            return;
+                        }
                         variable.update({
                             'filterFields'       : formFields,
                             'orderBy'            : orderBy,
