@@ -86,12 +86,11 @@ Application
                     appVariablesLoaded = false,
                     SSO_URL = '/services/security/ssologin';
 
-                function defaultPageLoadSuccessHandler(pageName, response) {
+                function defaultPageLoadSuccessHandler(pageName, response, isPartial) {
                     cache.put(pageName, Utils.parseCombinedPageContent(response.data, pageName));
-                    if (pageName !== 'Common') {
-                        $rs.activePageName = pageName; // setting active page name in rootScope, required by the Variables service
+                    if (!isPartial) {
+                        prevRoute = $location.path();
                     }
-                    prevRoute = $location.path();
                 }
 
                 /**
@@ -180,20 +179,20 @@ Application
                     }
                 }
 
-                function _load(pageName, onSuccess, onError) {
+                function _load(pageName, onSuccess, onError, isPartial) {
 
                     BaseService.getHttpPromise({
                         'method': 'GET',
                         'url'   : Utils.preventCachingOf('pages/' + pageName + '/' + 'page.min.html')
                     }).then(function (response) {
-                        defaultPageLoadSuccessHandler(pageName, response);
+                        defaultPageLoadSuccessHandler(pageName, response ,isPartial);
                         Utils.triggerFn(onSuccess, cache.get(pageName));
                     }, function (jqxhr) {
                         defaultPageLoadErrorHandler(pageName, onSuccess, onError, jqxhr);
                     });
                 }
 
-                function loadPage(pageName) {
+                function loadPage(pageName, isPartial) {
                     var deferred = $q.defer(),
                         content;
 
@@ -202,15 +201,16 @@ Application
                     content  = cache.get(pageName);
 
                     if (!content) {
-                        _load(pageName, deferred.resolve, deferred.reject);
+                        _load(pageName, deferred.resolve, deferred.reject, isPartial);
                     } else {
-                        if (pageName !== 'Common') {
-                            $rs.activePageName = pageName;
-                        }
                         deferred.resolve(content);
                     }
 
                     return deferred.promise;
+                }
+
+                function loadPartial(partialPageName) {
+                    return loadPage(partialPageName, true);
                 }
 
                 function getPageContent(pageName, type) {
@@ -419,6 +419,7 @@ Application
                 $rs.$on('app-logout-success', clearPagesCache);
 
                 this.loadPage                           = loadPage;
+                this.loadPartial                        = loadPartial;
                 this.getPageContent                     = getPageContent;
                 this.loadCommonPage                     = loadCommonPage;
                 this.initI18nService                    = initI18nService;
@@ -494,9 +495,12 @@ Application
                     .when('/:name', {
                         'template': initText,
                         'resolve' : WM.extend({
-                            'pageContent': function (AppManager, $route) {
+                            'pageContent': function (AppManager, $route, $rootScope) {
                                 var pageName = $route.current.params.name;
-                                return AppManager.loadPage(pageName);
+                                return AppManager.loadPage(pageName).
+                                    then(function () {
+                                        $rootScope.activePageName = pageName;
+                                    });
                             }
                         }, routeConfig.resolve)
                     });
