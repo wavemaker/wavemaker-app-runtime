@@ -14,7 +14,7 @@
  */
 
 WM.module('wm.utils', [])
-    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', 'WS_CONSTANTS', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService, WS_CONSTANTS) {
+    .service('Utils', ['$rootScope', '$location', '$window', 'CONSTANTS', '$sce', 'DialogService', function ($rootScope, $location, $window, APPCONSTANTS, $sce, DialogService) {
         'use strict';
 
         var userAgent = navigator.userAgent,
@@ -1810,7 +1810,7 @@ WM.module('wm.utils', [])
 
             /* process query params, append a hidden input element in the form against each param */
             queryParams = url.indexOf('?') !== -1 ? url.substring(url.indexOf('?') + 1) :
-                    requestParams.headers['Content-Type'] === WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED ? requestParams.dataParams : '';
+                    requestParams.headers['Content-Type'] === getService('WS_CONSTANTS').CONTENT_TYPES.FORM_URL_ENCODED ? requestParams.dataParams : '';
             queryParams = _.split(queryParams, '&');
             _.forEach(queryParams, function (param) {
                 param = _.split(param, '=');
