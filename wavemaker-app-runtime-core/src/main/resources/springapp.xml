@@ -112,6 +112,9 @@
 
     <bean class="com.wavemaker.runtime.file.manager.FileServiceManager" id="FileServiceManager"/>
 
+    <bean id="reportServiceManager" class="com.wavemaker.runtime.report.manager.ReportServiceManagerImpl"/>
+    <bean id="dbReport" name="dbReport" class="com.wavemaker.runtime.report.service.DBJasperReportGenerator"/>
+
     <bean id="restServiceSimpleUrlHandlerMapping" class="com.wavemaker.runtime.rest.handler.RestServiceSimpleUrlHandlerMapping"/>
     <bean id="restServiceBeanPostProcessor" class="com.wavemaker.runtime.rest.handler.RestServiceBeanPostProcessor"/>
 

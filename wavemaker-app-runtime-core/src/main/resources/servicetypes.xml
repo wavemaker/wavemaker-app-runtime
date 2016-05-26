@@ -32,4 +32,8 @@ once that's complete.
           scope="singleton" lazy-init="false">
     </bean>
 
+    <bean id="ReportServiceType"
+          class="com.wavemaker.runtime.report.ReportServiceType"
+          scope="singleton" lazy-init="false"/>
+
 </beans>
