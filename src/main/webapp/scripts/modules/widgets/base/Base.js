@@ -2830,37 +2830,36 @@ WM.module('wm.widgets.base', [])
             notifyFor.backgroundimage = true;
 
             function setDimensionProp($is, cssObj, key) {
-                var cssKey = key, val, top, right, bottom, left, UNSET = 'unset';
+                var cssKey = key,
+                    val, top, right, bottom, left,
+                    SEPARATOR = ' ', UNSET = 'unset',
+
+                    suffix = '',
+                    setVal = function(prop, value) {
+                        if(value !== UNSET) {
+                            cssObj[cssKey + prop + suffix] = value;
+                        }
+                    };
+
                 if (key === 'borderwidth') {
-                    cssKey = 'borderWidth';
+                    suffix =  'Width';
+                    cssKey = 'border';
                 }
 
                 val = $is[key];
 
                 if (val.indexOf('unset') !== -1) {
-                    val = val.split(' ');
+                    val = val.split(SEPARATOR);
 
                     top    = val[0];
                     right  = val[1] || val[0];
                     bottom = val[2] || val[0];
                     left   = val[3] || val[1] || val[0];
 
-                    if (top !== UNSET) {
-                        cssObj[cssKey + 'Top'] = top;
-                    }
-
-                    if (right !== UNSET) {
-                        cssObj[cssKey + 'Right'] = right;
-                    }
-
-                    if (bottom !== UNSET) {
-                        cssObj[cssKey + 'Bottom'] = bottom;
-                    }
-
-                    if (left !== UNSET) {
-                        cssObj[cssKey + 'Left'] = left;
-                    }
-
+                    setVal('Top', top);
+                    setVal('Right', right);
+                    setVal('Bottom', bottom);
+                    setVal('Left', left);
                 } else {
                     cssObj[cssKey] = $is[key];
                 }
