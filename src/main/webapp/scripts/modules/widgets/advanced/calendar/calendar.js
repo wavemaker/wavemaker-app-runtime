@@ -102,8 +102,8 @@ WM.module('wm.widgets.advanced')
                     }
                     $is.eventSources.length = 0;
                     if (CONSTANTS.isRunMode || (variable && eleScope.Variables[variable].category !== 'wm.ServiceVariable')) {
-                        newVal = WM.isArray(newVal) ? newVal : [];
-                        if (_.intersection(_.keys(newVal[0]), ['allDay', 'start', 'end']).length === 3) {
+                        newVal = WM.isArray(newVal) ? newVal : WM.isObject(newVal) ? [newVal] : [];
+                        if (_.includes(_.keys(newVal[0]), 'start')) {
                             $is.eventSources.push(newVal);
                         }
                     }
