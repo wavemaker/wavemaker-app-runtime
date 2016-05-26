@@ -292,6 +292,7 @@ WM.module('wm.widgets.base')
             function processBoxModelProperties(el, $attrs) {
                 var attrs       = el.attributes, // attributes from the dom node
                     toBeUpdated = {},
+                    UNSET       = 'unset',
                     removeAttrs;
 
                 ['border', 'margin', 'padding'].forEach(function (key) {
@@ -314,10 +315,10 @@ WM.module('wm.widgets.base')
                         if (hasDeprecatedAttr) {
                             _unit = attrs[unit] ? attrs[unit].value : 'px';
 
-                            topVal    = (attrs[top]    ? attrs[top].value    : '0') + _unit;
-                            rightVal  = (attrs[right]  ? attrs[right].value  : '0') + _unit;
-                            bottomVal = (attrs[bottom] ? attrs[bottom].value : '0') + _unit;
-                            leftVal   = (attrs[left]   ? attrs[left].value   : '0') + _unit;
+                            topVal    = (attrs[top]    ? attrs[top].value    + _unit : UNSET);
+                            rightVal  = (attrs[right]  ? attrs[right].value  + _unit : UNSET);
+                            bottomVal = (attrs[bottom] ? attrs[bottom].value + _unit : UNSET);
+                            leftVal   = (attrs[left]   ? attrs[left].value   + _unit : UNSET);
 
                             if (topVal === bottomVal && leftVal === rightVal) {
                                 if (topVal === leftVal) {
