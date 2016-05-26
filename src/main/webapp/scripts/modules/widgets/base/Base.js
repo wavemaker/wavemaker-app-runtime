@@ -2829,11 +2829,23 @@ WM.module('wm.widgets.base', [])
             notifyFor.backgroundimage = true;
 
             function setDimensionProp($is, cssObj, key) {
-                var cssKey = key;
+                var cssKey = key, val;
                 if (key === 'borderwidth') {
                     cssKey = 'borderWidth';
                 }
-                cssObj[cssKey] = $is[key];
+
+                val = $is[key];
+
+                if (val.indexOf('unset') !== -1) {
+                    val = val.split(' ');
+
+                    cssObj[cssKey + 'Top']    = val[0];
+                    cssObj[cssKey + 'Right']  = val[1] || val[0];
+                    cssObj[cssKey + 'Bottom'] = val[2] || val[0];
+                    cssObj[cssKey + 'Left']   = val[3] || val[1] || val[0];
+                } else {
+                    cssObj[cssKey] = $is[key];
+                }
             }
 
             function applyCSS($is, applyType, targetObj, key, nv) {
