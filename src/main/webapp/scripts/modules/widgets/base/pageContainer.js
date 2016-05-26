@@ -126,6 +126,21 @@ WM.module('wm.widgets.base')
                     iScope.target = target = WM.isDefined(attrs.pageContainerTarget) ? element : element.find('[page-container-target]').eq(0);
                 }
 
+                function onPageFetchSuccess(content) {
+                    /*get individual file contents like - html/js/css */
+                    loadedPartials[newVal] = content;
+                    /* to compile the partial page*/
+                    compilePartialAndUpdateVariables(iScope, element, newVal, el);
+                }
+                function onPageFetchError() {
+                    if (element[0].hasAttribute('page-container-target')) {
+                        target = element;
+                    } else {
+                        target = element.find('[page-container-target]').first();
+                    }
+                    target.html('<div class="app-partial-info"><div class="partial-message">Content for the container is unavailable.</div></div>');
+                }
+
                 element.attr('content', newVal);
                 if (CONSTANTS.isStudioMode) {
                     target.find('.app-included-page, .app-included-page + .content-overlay, .wm-included-page-heading').remove();
@@ -157,24 +172,18 @@ WM.module('wm.widgets.base')
                             if (addToolBar) {
                                 el = '<button class="wm-included-page-heading button-primary" data-ng-click=_openPageWS("' + newVal + '"); title="edit ' + newVal + '"><i class="wm-edit wi wi-pencil"></i></button>';
                             }
+                            /*read the file content*/
+                            FileService.read({
+                                path: CONSTANTS.isStudioMode ? "../../../" + page + 'page.min.html' : page + 'page.min.html',
+                                projectID : $rootScope.project.id
+                            }, function (pageContent) {
+                                onPageFetchSuccess(Utils.parseCombinedPageContent(pageContent, newVal));
+                            }, onPageFetchError);
+                        } else {
+                            var AppManager = Utils.getService('AppManager');
+                            AppManager.loadPartial(newVal).
+                                then(onPageFetchSuccess);
                         }
-                        /*read the file content*/
-                        FileService.read({
-                            path: CONSTANTS.isStudioMode ? "../../../" + page + 'page.min.html' : page + 'page.min.html',
-                            projectID : $rootScope.project.id
-                        }, function (pageContent) {
-                            /*get individual file contents like - html/js/css */
-                            loadedPartials[newVal] = Utils.parseCombinedPageContent(pageContent, newVal);
-                            /* to compile the partial page*/
-                            compilePartialAndUpdateVariables(iScope, element, newVal, el);
-                        }, function () {
-                            if (element[0].hasAttribute('page-container-target')) {
-                                target = element;
-                            } else {
-                                target = element.find('[page-container-target]').first();
-                            }
-                            target.html('<div class="app-partial-info"><div class="partial-message">Content for the container is unavailable.</div></div>');
-                        });
                     } else {
                         /* to compile the partial page*/
                         compilePartialAndUpdateVariables(iScope, element, newVal, el);
