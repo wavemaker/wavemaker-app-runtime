@@ -275,20 +275,28 @@ module.exports = function (grunt) {
                     '<%= config.tmp %>/scripts/component-libs/calendar.min.js': [
                         '<%= config.components %>/fullcalendar/fullcalendar.min.js'
                     ],
+                    '<%= config.tmp %>/scripts/jquery-ui.min.js': [
+                        "<%= config.components %>/jquery-ui/js/core.js",
+                        "<%= config.components %>/jquery-ui/js/widget.js",
+                        "<%= config.components %>/jquery-ui/js/mouse.js",
+                        "<%= config.components %>/jquery-ui/js/draggable.js",
+                        "<%= config.components %>/jquery-ui/js/droppable.js",
+                        "<%= config.components %>/jquery-ui/js/position.js",
+                        "<%= config.components %>/jquery-ui/js/sortable.js",
+                        "<%= config.components %>/jquery-ui/js/resizable.js",
+                        "<%= config.components %>/jquery-ui/js/selectable.js",
+                        "<%= config.components %>/jquery-ui/js/autocomplete.js",
+                        "<%= config.components %>/jquery-ui/js/button.js",
+                        "<%= config.components %>/jquery-ui/js/menu.js",
+                        "<%= config.components %>/jquery-ui/js/selectmenu.js",
+                        "<%= config.components %>/jquery-ui/js/slider.js",
+                        "<%= config.components %>/jquery-ui/js/tooltip.js"
+                    ],
                     '<%= config.tmp %>/scripts/wm-application-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
+                        '<%= config.tmp %>/scripts/jquery-ui.min.js',
                         '<%= config.components %>/d3/d3.min.js',
-                        //jQuery-ui -- start
-                        '<%= config.components %>/jquery-ui/js/core.js',
-                        '<%= config.components %>/jquery-ui/js/widget.js',
-                        '<%= config.components %>/jquery-ui/js/mouse.js',
-                        '<%= config.components %>/jquery-ui/js/draggable.js',
-                        '<%= config.components %>/jquery-ui/js/droppable.js',
-                        '<%= config.components %>/jquery-ui/js/position.js',
-                        '<%= config.components %>/jquery-ui/js/sortable.js',
-                        '<%= config.components %>/jquery-ui/js/resizable.js',
-                        //jQuery-ui -- end
                         '<%= config.components %>/angular/angular.js',
                         '<%= config.components %>/angular-route/angular-route.js',
                         '<%= config.components %>/angular-toaster/toaster.js',
@@ -312,17 +320,8 @@ module.exports = function (grunt) {
                     '<%= config.tmp %>/scripts/wm-mobile-libs.min.js': [
                         '<%= config.components %>/lodash/lodash.js',
                         '<%= config.components %>/jquery/jquery.js',
+                        '<%= config.tmp %>/scripts/jquery-ui.min.js',
                         '<%= config.components %>/d3/d3.min.js',
-                        //jQuery-ui -- start
-                        '<%= config.components %>/jquery-ui/js/core.js',
-                        '<%= config.components %>/jquery-ui/js/widget.js',
-                        '<%= config.components %>/jquery-ui/js/mouse.js',
-                        '<%= config.components %>/jquery-ui/js/draggable.js',
-                        '<%= config.components %>/jquery-ui/js/droppable.js',
-                        '<%= config.components %>/jquery-ui/js/position.js',
-                        '<%= config.components %>/jquery-ui/js/sortable.js',
-                        '<%= config.components %>/jquery-ui/js/resizable.js',
-                        //jQuery-ui -- end
                         '<%= config.components %>/angular/angular.js',
                         '<%= config.components %>/angular-route/angular-route.js',
                         '<%= config.components %>/angular-animate/angular-animate.js',
