@@ -2024,6 +2024,8 @@ wm.variables.services.Variables = [
                     createdVariable.category      = variableCategory;
                     createdVariable.isDefault     = true;
                     createdVariable.maxResults    = variableDetails.maxResults;
+                    createdVariable.controller    = variableDetails.controller;
+                    createdVariable.operationId   = variableDetails.operationId;
                     createdVariable.startUpdate   = variableDetails.startUpdate;
                     createdVariable.autoUpdate    = variableDetails.autoUpdate;
                     createdVariable.type          = variableDetails.returnType;
@@ -2033,16 +2035,12 @@ wm.variables.services.Variables = [
                     WM.forEach(variableDetails.sampleParamValues, function (val, key) {
                         bindMapCollection.push({
                             "target": key,
-                            "value": val,
-                            "type": "java.lang.String"
+                            "value" : val,
+                            "type"  : "java.lang.String"
                         });
                     });
-                    //appending operationId to variable being created
-                    Utils.getService('$servicevariable').getOperationId(createdVariable.operation, createdVariable.service, function (operationId) {
-                        createdVariable.operationId = operationId;
-                        /* Store the variable in proper category */
-                        store(variableOwner, variableName, createdVariable, true);
-                    });
+                    /* Store the variable in proper category */
+                    store(variableOwner, variableName, createdVariable, true);
 
                     /*Update the tree with the newly added variable under the appropriate category(i.e., basic/service/live variables)*/
                     $rootScope.$emit("update-variables-tree", createdVariable);
