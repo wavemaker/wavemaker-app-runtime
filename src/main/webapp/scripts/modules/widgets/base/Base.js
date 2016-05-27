@@ -1122,6 +1122,12 @@ WM.module('wm.widgets.base', [])
                         "bordercolor": {"type": "string", "widget": "color", "show": false},
                         "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color", "show": false},
+                        "backgroundgradient": {"type": "string", "show": false},
+                        "backgroundimage": {"type": "string", "bindable": "in-bound", "show": false},
+                        "backgroundrepeat": {"type": "list", "options": ["no-repeat", "repeat", "repeat-x", "repeat-y"], "show": false},
+                        "backgroundsize": {"type": "string", "hint": "width, height", "show": false},
+                        "backgroundposition": {"type": "string", "hint": "top, left", "show": false},
+                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"], "show": false},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]},
                         "insert": {"type": "toolbar", "actions": [{'action': 'addcolumnleft', 'label': 'LABEL_PROPERTY_ADDCOLUMNLEFT', 'icon': 'add-column-left'}, {'action': 'addcolumnright', 'label': 'LABEL_PROPERTY_ADDCOLUMNRIGHT', 'icon': 'add-column-right'}]},
@@ -2863,6 +2869,9 @@ WM.module('wm.widgets.base', [])
                     setVal('Bottom', bottom);
                     setVal('Left', left);
                 } else {
+                    if (key === 'borderwidth') {
+                        cssKey = 'borderWidth';
+                    }
                     cssObj[cssKey] = $is[key];
                 }
             }
