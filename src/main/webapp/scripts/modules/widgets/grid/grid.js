@@ -254,6 +254,9 @@ WM.module('wm.widgets.grid')
                         get: function () {
                             // update the items with out changing the reference.
                             items.length = 0;
+                            if (!scope.datagridElement.datagrid('instance')) {
+                                return;
+                            }
                             _.forEach(scope.datagridElement.datagrid('getSelectedRows'), function (item) {
                                 items.push(item);
                             });
