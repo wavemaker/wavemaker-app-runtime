@@ -1110,7 +1110,8 @@ WM.module('wm.widgets.base', [])
                         "backgroundrepeat": {"type": "list", "options": ["no-repeat", "repeat", "repeat-x", "repeat-y"], "show": false},
                         "backgroundsize": {"type": "string", "hint": "width, height", "show": false},
                         "backgroundposition": {"type": "string", "hint": "top, left", "show": false},
-                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"], "show": false}
+                        "backgroundattachment": {"type": "list", "options": ["fixed", "local", "scroll"], "show": false},
+                        "padding": {"type": "string", "widget": "box-model", "show": false}
 
                     },
                     'wm.layouts.gridcolumn': {
