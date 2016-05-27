@@ -34,6 +34,7 @@ public class DataExporter<Entity extends Serializable> {
 
         jasperReportBuilder
                 .setTemplate(Templates.reportTemplate)
+                .ignorePageWidth()
                 .highlightDetailOddRows();
         OutputStream reportOutputStream = new ByteArrayOutputStream();
         try {
