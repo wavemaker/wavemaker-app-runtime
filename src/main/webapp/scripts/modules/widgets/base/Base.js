@@ -1141,7 +1141,8 @@ WM.module('wm.widgets.base', [])
                         "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]}
                     },
                     'wm.layouts.pagecontent': {
-                        "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]}
+                        "columnwidth": {"type": "list", "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]},
+                        "padding": {"type": "string", "widget": "box-model"}
                     },
                     'wm.layouts.row': {
                         "show": {"type": "boolean", "value": true}
