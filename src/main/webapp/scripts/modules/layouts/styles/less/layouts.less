@@ -594,14 +594,34 @@ body {
       text-overflow: ellipsis;
       word-break: break-word;
     }
+    .help-block {
+      font-size: 0.8em;
+      padding: 0 1.25em;
+    }
     &.align-left .app-label {
       text-align: left;
     }
-    &.align-center .app-label {
-      text-align: center;
+    &.align-center {
+      .app-label {
+        text-align: center;
+      }
+      &.position-top {
+        text-align: center;
+        .form-control {
+          text-align: center;
+        }
+      }
+      .form-control-static + .form-control {
+        width: 100%;
+      }
     }
-    &.align-right .app-label {
-      text-align: right;
+    &.align-right {
+      .app-label {
+        text-align: right;
+      }
+      &.position-top {
+        direction: rtl;
+      }
     }
     &.position-left {
       direction: ltr;
@@ -613,10 +633,7 @@ body {
       }
     }
     input:focus.ng-invalid {
-      border: 1px solid crimson;
-    }
-    input:focus.ng-valid {
-      border: 1px solid rgb(40, 160, 122);
+      border-color: crimson;
     }
     .file-readonly {
       pointer-events: none;
@@ -643,7 +660,7 @@ body {
     }
     .form-control-static {
       font-weight: normal;
-      padding: 8px 12px 0 12px
+      padding: 8px 12px 0 12px;
     }
 
     .ng-hide-animate {
@@ -1388,8 +1405,8 @@ body {
       }
     }
   }
-  .h1,.h2,.h3,.h4,.h5,.h6,.p {
-    display: block;
+  .p {
+    width: 100%;
     color: inherit;
   }
   // (Reduce width by left and right margin) Fix for horizontal scroll in android devices
