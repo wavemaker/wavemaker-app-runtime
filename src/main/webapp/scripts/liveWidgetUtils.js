@@ -621,6 +621,7 @@ WM.module('wm.widgets.live')
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
                     break;
                 }
+                template = template + (fieldDef.hint ? '<p class="help-block">' + fieldDef.hint + '</p>' : '');
                 template = template + '</div></wm-composite>';
                 return template;
             }
