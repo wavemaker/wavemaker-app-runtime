@@ -1192,6 +1192,12 @@ WM.module('wm.widgets.live')
                             template = LiveWidgetUtils.getHiddenTemplate(columnDef, index);
                             element.closest('[data-identifier="liveform"]').find('> .hidden-form-elements').append($compile(template)(parentIsolateScope));
                         }
+                        parentIsolateScope.onFocusField = parentIsolateScope.onFocusField ||  function ($event) {
+                            WM.element($event.target).closest('.live-field').addClass('active'); //On focus of the field, add active class
+                        };
+                        parentIsolateScope.onBlurField = parentIsolateScope.onBlurField || function ($event) {
+                            WM.element($event.target).closest('.live-field').removeClass('active'); //On focus out of the field, remove active class
+                        };
                         parentIsolateScope.$on('$destroy', function () {
                             if (exprWatchHandler) {
                                 exprWatchHandler();
