@@ -85,7 +85,7 @@ WM.module('wm.layouts.page')
                                 'search'      : false
                             };
 
-                            $s.onPageLoad = function () {
+                            $s._onPageLoad = function () {
                                 // if the count is zero(means the page is ready), trigger update method of DeviceViewService
                                 if (!count) {
                                     /* if subview element names found (appended with page-name after a '.'), navigate to the view element */
@@ -123,7 +123,7 @@ WM.module('wm.layouts.page')
 
                             $s.onPagePartLoad = function () {
                                 --count; // decrement the counter when the a pageContainer is ready
-                                $s.onPageLoad();
+                                $s._onPageLoad();
                             };
 
                             // if specified, call handle route function in the page.js
@@ -163,7 +163,7 @@ WM.module('wm.layouts.page')
                             // register session timeout handler
                             handlers.push($rs.$on('on-sessionTimeout', $s.onSessionTimeout));
 
-                            Utils.triggerFn($s.onPageLoad);
+                            Utils.triggerFn($s._onPageLoad);
                             $el.on('$destroy', function () {
                                 // destroy variables
                                 Variables.unload(attrs.ngController.replace('PageController', ''), $s);
@@ -184,6 +184,15 @@ WM.module('wm.layouts.page')
         function (CONSTANTS, $rs, Utils, Variables) {
             'use strict';
 
+            function triggerOnReady($s) {
+                // trigger onPageReady method if it is defined in the controller of partial
+                if ($s.hasOwnProperty('onPageReady')) {
+                    Utils.triggerFn($s.onPageReady);
+                }
+                // trigger the onPagePartLoad of parent container
+                Utils.triggerFn($s.$parent.onPagePartLoad);
+            }
+
             return {
                 'restrict'   : 'E',
                 'replace'    : true,
@@ -193,7 +202,9 @@ WM.module('wm.layouts.page')
                     'pre': function ($s, $el, attrs) {
                         var pageName,
                             variableScope,
-                            containerScope;
+                            containerScope,
+                            count = 0,
+                            hasLazyWidgets;
 
                         pageName      = attrs.ngController.replace('PageController', '');
                         variableScope = CONSTANTS.isStudioMode && !$s.prefabname && !$s.$parent.partialname ? $rs.domScope : $s;
@@ -209,9 +220,40 @@ WM.module('wm.layouts.page')
                             if (containerScope) {
                                 containerScope.Widgets = $s.Widgets;
                             }
-                        }
 
-                        if (CONSTANTS.isStudioMode) {
+                            /**
+                             * Will be called when a lazy widget (eg, calendar) or any partial is found in the markup,
+                             * increment the counter to keep track of the number components to be loaded before triggering onPageReady
+                             */
+                            $s.registerPagePart = function () {
+                                count++;
+                                hasLazyWidgets = true;
+                            };
+
+                            /**
+                             * Will be called when a page part (lazy widget or partial) is loaded.
+                             * Decrement the counter, when all the page parts are loaded(ie, count become zero) trigger the onPageReady
+                             * and trigger the onPagePartLoad of parent container.
+                             */
+                            $s.onPagePartLoad = function () {
+                                --count; // decrement the counter when a pageContainer is ready
+                                if (!count) {
+                                    triggerOnReady($s);
+                                }
+                            };
+
+                            /**
+                             * This method will be called when a partial is loaded.
+                             * If the partial doesn't contain any lazy widgets or partials
+                             * invoke the onPageReady of the partial and invoke the onPagePartLoad of the parent container
+                             */
+                            $s._onPartialLoad = function () {
+                                if (!hasLazyWidgets || !count) {
+                                    triggerOnReady($s);
+                                }
+                            };
+
+                        } else {
                             containerScope = $s.$parent.Widgets && $s.$parent.Widgets[$s.$parent.partialcontainername];
                             if (containerScope && WM.isDefined(containerScope.Widgets)) {
                                 containerScope.Widgets = $s.Widgets = {};
@@ -236,10 +278,7 @@ WM.module('wm.layouts.page')
                             handlers.push($rs.$on('on-sessionTimeout', function () {
                                 Utils.triggerFn($s.onSessionTimeout);
                             }));
-                            // trigger onPageReady method if it is defined in the controller of partial
-                            if ($s.hasOwnProperty('onPageReady')) {
-                                Utils.triggerFn($s.onPageReady);
-                            }
+
                             // canvasTree will listen for this event and will hide itself upon occurrence of it
                             $el.on('$destroy', function () {
                                 // destroy loaded variables

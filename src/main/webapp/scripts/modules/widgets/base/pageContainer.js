@@ -108,7 +108,13 @@ WM.module('wm.widgets.base')
                      * else don't call as the page-part is not registered */
                     if (iScope.isPagePartRegistered) {
                         iScope.isPagePartRegistered = undefined;
-                        Utils.triggerFn(scope.onPagePartLoad);
+
+                        /**
+                         * Invoke the _onPartialLoad method defined on the scope of the partial.
+                         * _onPartialMethod will trigger the onPageReady of the Partial and onPagePartLoad
+                         * of the parent container once all the components(lazy widgets, partials) are loaded.
+                         */
+                        Utils.triggerFn(scope.$$childHead._onPartialLoad);
                     }
                 }
                 scope.$emit('on-pagecontainer-ready');
