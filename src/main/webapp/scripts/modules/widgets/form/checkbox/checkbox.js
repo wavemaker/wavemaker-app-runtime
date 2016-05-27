@@ -65,7 +65,7 @@ WM.module('wm.widgets.form')
                     WidgetUtilService.addEventAttributes(checkbox, tAttrs, FormWidgetUtils.getFocusBlurEvents());
                 }
                 /*Set name for the model-holder, to ease submitting a form*/
-                template.find('.model-holder').attr('name', tAttrs.name);
+                checkbox.attr('name', tAttrs.name);
 
                 return template[0].outerHTML;
             },

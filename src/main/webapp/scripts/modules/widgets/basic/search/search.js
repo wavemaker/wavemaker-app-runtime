@@ -38,6 +38,7 @@ WM.module('wm.widgets.basic')
                     ' typeahead-loading="_loadingItems" ' +
                     ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
+                    ' name={{name}}' +
                     ' typeahead-template-url="template/widget/form/searchlist.html">' +
                 '<i ng-show="_loadingItems" class="fa fa-refresh wm-search-widget-refresh"></i>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +

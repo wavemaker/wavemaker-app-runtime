@@ -173,7 +173,7 @@ WM.module('wm.widgets.form')
                 target = template.children('input.form-control');
 
                 /*Set name for the model-holder, to ease submitting a form*/
-                template.find('.model-holder').attr('name', tAttrs.name);
+                template.find('.display-input').attr('name', tAttrs.name);
                 if (!isWidgetInsideCanvas) {
                     template.attr('ng-click', '_onClick($event)');
                     template.find('.btn-date').attr('ng-click', '_onDateClick($event)');
