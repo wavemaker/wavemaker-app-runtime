@@ -551,6 +551,24 @@ WM.module('wm.widgets.form')
                 return proxyModelValue;
             }
 
+            /**
+             * @ngdoc function
+             * @name wm.widgets.form.FormWidgetUtils#disableDates
+             * @methodOf wm.widgets.form.FormWidgetUtils
+             * @function
+             *
+             * @description
+             * function to check if particular date has to be disabled.
+             *
+             * @param {string} scope widget's scope
+             * @param {string} date date object from widget
+             */
+            function disableDates(scope, date) {
+                if (date.mode === 'day') {
+                    return (_.includes(scope.excludedays, date.date.getDay()) || (scope.proxyExcludeDates && _.includes(scope.proxyExcludeDates, getTimestampFromDate(date.date))));
+                }
+            }
+
             this.getDisplayField                = getDisplayField;
             this.setPropertiesTextWidget        = setPropertiesTextWidget;
             this.createDataKeys                 = createDataKeys;
@@ -567,5 +585,6 @@ WM.module('wm.widgets.form')
             this.getUpdatedModel                = getUpdatedModel;
             this.updatedCheckedValues           = updatedCheckedValues;
             this.getOrderedDataSet              = getOrderedDataSet;
+            this.disableDates                   = disableDates;
         }
     ]);

@@ -6,14 +6,13 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/date.html',
             '<div class="app-date input-group" init-widget has-model role="input" apply-styles>' +
-                '<input class="form-control app-textbox app-dateinput" focus-target uib-datepicker-popup={{datepattern}} show-button-bar={{showbuttonbar}} date-disabled="excludeDays(date, mode) || excludeDates(date, mode)" ' +
+                '<input class="form-control app-textbox app-dateinput" focus-target uib-datepicker-popup={{datepattern}} show-button-bar={{showbuttonbar}} datepicker-options="_dateOptions" ' +
                     ' title="{{hint}}" ' +
-                    ' min-date=mindate max-date=maxdate is-open=isOpen' +
+                    ' is-open=isOpen' +
                     ' ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
-                    ' show-weeks={{showweeks}} ' +
                     ' accesskey="{{::shortcutkey}}"' +
                     ' ng-change="_onChange({$event: $event, $scope: this})">' +
                 /*Holder for the model for submitting values in a form*/
@@ -40,6 +39,9 @@ WM.module('wm.widgets.form')
                 'readonly': true,
                 'disabled': true,
                 'timestamp': true,
+                'showweeks': true,
+                'mindate': true,
+                'maxdate': true,
                 'excludedates': true
             };
 
@@ -65,6 +67,15 @@ WM.module('wm.widgets.form')
                 break;
             case 'excludedates':
                 scope.proxyExcludeDates = FormWidgetUtils.getProxyExcludeDates(newVal);
+                break;
+            case 'showweeks':
+                scope._dateOptions.showWeeks = scope.showweeks;
+                break;
+            case 'maxdate':
+                scope._dateOptions.maxDate = scope.maxdate;
+                break;
+            case 'mindate':
+                scope._dateOptions.minDate = scope.mindate;
                 break;
             }
         }
@@ -139,6 +150,7 @@ WM.module('wm.widgets.form')
             'link': {
                 'pre': function (scope) {
                     scope.widgetProps = widgetProps;
+                    scope._dateOptions = {};
                     if ($rs.isMobileApplicationType) {
                         scope._nativeMode = true;
                     }
@@ -199,13 +211,7 @@ WM.module('wm.widgets.form')
                         //TODO implement custom reset logic here
                         scope._model_ = '';
                     };
-
-                    scope.excludeDays = function (date, mode) {
-                        return mode === 'day' && _.includes(attrs.excludedays, date.getDay());
-                    };
-                    scope.excludeDates = function (date, mode) {
-                        return mode === 'day' && _.includes(scope.proxyExcludeDates, FormWidgetUtils.getTimestampFromDate(date));
-                    };
+                    scope._dateOptions.dateDisabled = FormWidgetUtils.disableDates.bind(undefined, scope);
                     /*if datavalue exists set the model*/
                     if (attrs.datavalue && !_.startsWith(attrs.datavalue, 'bind:')) {
                         scope._model_ = attrs.datavalue;
@@ -310,9 +316,9 @@ WM.module('wm.widgets.form')
  *                   datepattern="{{datepattern}}"
  *                   outputformat="{{outputformat}}"
  *                   mindate="{{mindate}}"
- *                  maxdate="{{maxdate}}"
- *                  excludedays="{{excludedays}}"
- *                  excludedates="{{excludedates}}">
+ *                   maxdate="{{maxdate}}"
+ *                   excludedays="{{excludedays}}"
+ *                   excludedates="{{excludedates}}">
  *               </wm-date><br>
  *               <div>Selected Date: {{currentDate}}</div><br>
  *               <div>timestamp: {{currentTimestamp}}</div><br>

@@ -8,8 +8,8 @@ WM.module('wm.widgets.form')
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             ' title="{{hint}}" ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
                 '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
-                '<input class="form-control app-textbox app-dateinput ng-hide" ng-change="selectDate($event)" date-disabled="excludeDays(date) || excludeDates(date)" ng-model="_dateModel" ' +
-                    ' uib-datepicker-popup show-button-bar={{showbuttonbar}} min-date=mindate max-date=maxdate is-open="isDateOpen" show-weeks="{{showweeks}}">' +
+                '<input class="form-control app-textbox app-dateinput ng-hide" ng-change="selectDate($event)" ng-model="_dateModel" ' +
+                    ' uib-datepicker-popup datepicker-options="_dateOptions" show-button-bar={{showbuttonbar}} is-open="isDateOpen">' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
                     '<div uib-dropdown-menu>' +
                         '<uib-timepicker ng-model="_timeModel" hour-step="hourstep" minute-step="minutestep" show-meridian="ismeridian" show-seconds="showseconds" ng-change="selectTime($event)"></uib-timepicker>' +
@@ -40,6 +40,9 @@ WM.module('wm.widgets.form')
                 'disabled'     : true,
                 'autofocus'    : true,
                 'excludedates' : true,
+                'showweeks'    : true,
+                'mindate'      : true,
+                'maxdate'      : true,
                 'datepattern'  : true
             };
 
@@ -108,6 +111,15 @@ WM.module('wm.widgets.form')
                 scope.showseconds = _.includes(newVal, 'ss');
                 scope.ismeridian  = _.includes(newVal, 'hh');
                 _formatDateTime(scope);
+                break;
+            case 'showweeks':
+                scope._dateOptions.showWeeks = scope.showweeks;
+                break;
+            case 'maxdate':
+                scope._dateOptions.maxDate = scope.maxdate;
+                break;
+            case 'mindate':
+                scope._dateOptions.minDate = scope.mindate;
                 break;
             }
         }
@@ -202,6 +214,7 @@ WM.module('wm.widgets.form')
             'link': {
                 pre: function (scope) {
                     scope.widgetProps = widgetProps;
+                    scope._dateOptions = {};
                     if ($rs.isMobileApplicationType) {
                         scope._nativeMode = true;
                     }
@@ -350,15 +363,7 @@ WM.module('wm.widgets.form')
                             }
                         }
                     });
-
-
-                    scope.excludeDays = function (date) {
-                        return _.includes(attrs.excludedays, date.getDay());
-                    };
-
-                    scope.excludeDates = function (date) {
-                        return _.includes(scope.proxyExcludeDates, FormWidgetUtils.getTimestampFromDate(date));
-                    };
+                    scope._dateOptions.dateDisabled = FormWidgetUtils.disableDates.bind(undefined, scope);
                     /*Set the model if datavalue exists*/
                     if (attrs.datavalue  && !_.startsWith(attrs.datavalue, 'bind:')) {
                         scope._model_ = attrs.datavalue;
