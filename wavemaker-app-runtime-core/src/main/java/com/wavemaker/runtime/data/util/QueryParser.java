@@ -1,7 +1,9 @@
 package com.wavemaker.runtime.data.util;
 
 import java.lang.reflect.Constructor;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -9,6 +11,7 @@ import java.util.Stack;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.LogicalExpression;
 
+import com.wavemaker.runtime.data.JasperType;
 import com.wavemaker.runtime.data.expression.JoinType;
 import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.studio.common.WMRuntimeException;
@@ -62,15 +65,21 @@ public class QueryParser {
                     String operator = stringTokenizer.nextToken();
                     Type type = Type.valueFor(operator);
                     if (type != null) {
-                        Class operandTypeClass = entityClass.getDeclaredField(token).getType();
+                        String[] classNameFieldName = token.split("\\.");
+                        Class operandTypeClass;
+                        if (classNameFieldName.length > 1) {
+                            ReportContext reportContext = new ReportContext();
+                            JasperType jasperType = reportContext.buildFieldNameVsTypeMap(classNameFieldName[0]).get(classNameFieldName[2]);
+                            operandTypeClass = jasperType.getJavaClass();
+
+                        } else {
+                            operandTypeClass = entityClass.getDeclaredField(token).getType();
+                        }
                         if (Type.IN == type || Type.BETWEEN == type) {
                             Collection value = formatOperandAsCollection(stringTokenizer, operandTypeClass);
                             criterionStack.push(type.criterion(token, value));
                         } else {
                             String value = stringTokenizer.nextToken();
-                            if (value.startsWith(SINGLE_QUOTE) && value.endsWith(SINGLE_QUOTE)) {
-                                value = value.substring(1, value.length() - 1);
-                            }
                             criterionStack.push(type.criterion(token, castOperand(value, operandTypeClass)));
                         }
                     } else {
@@ -82,16 +91,30 @@ public class QueryParser {
                 JoinType joinType = JoinType.valueFor(joinOperatorStack.pop());
                 criterionStack.push(applyOp(criterionStack.pop(), criterionStack.pop(), joinType));
             }
-        } catch (NoSuchFieldException e) {
-            throw new WMRuntimeException("no such field found ", e);
+        } catch (Exception e) {
+            throw new WMRuntimeException("error while parsing the condition query", e);
         }
         return criterionStack.pop();
     }
 
     private Object castOperand(String value, Class<?> typeClass) {
         try {
-            Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
-            return cons.newInstance(value);
+            if (value.startsWith(SINGLE_QUOTE) && value.endsWith(SINGLE_QUOTE)) {
+                value = value.substring(1, value.length() - 1);
+            }
+            Object castedValue;
+            if (typeClass == Date.class) {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                castedValue = formatter.parse(value);
+            } else {
+                Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
+                castedValue = cons.newInstance(value);
+            }
+//            if (typeClass == LocalDateTime.class) {
+//                LocalDateTime localDateTime = (LocalDateTime) castedValue;
+//                castedValue = localDateTime.toDate();
+//            } todo
+            return castedValue;
         } catch (Exception e) {
             throw new WMRuntimeException("Exception while casting the operand", e);
         }
