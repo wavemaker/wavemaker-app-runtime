@@ -770,22 +770,25 @@ $.widget('wm.datagrid', {
     /*Set the default widths for the colgroup*/
     setColGroupWidths : function () {
         if (this.options.showHeader) {
-            var self = this,
+            var self       = this,
                 headerCols = this.gridHeaderElement.find('col'),
-                bodyCols = this.gridElement.find('col');
+                bodyCols   = this.gridElement.find('col');
             this.gridHeaderElement.find('th').each(function (index) {
                 /***setting the header col width based on the content width***/
                 var $header = $(this),
-                    width = $header.width(),
-                    id = $header.attr('data-col-id'),
-                    colDef = self.preparedHeaderData[id];
+                    width   = $header.width(),
+                    id      = $header.attr('data-col-id'),
+                    colDef  = self.preparedHeaderData[id];
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
                     width = 0;
                 } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
                     width = 50;
                 } else {
                     if (_.isUndefined(colDef.width) || colDef.width === '') {
-                        width = width > 50 ? width : 50; //columnSanity check to prevent width being too small
+                        if (colDef.displayName && colDef.displayName.length) {
+                            width = (colDef.displayName.length * 10) + 20;
+                        }
+                        width = width > 100 ? width : 100; //columnSanity check to prevent width being too small
                     } else {
                         width = colDef.width;
                     }
