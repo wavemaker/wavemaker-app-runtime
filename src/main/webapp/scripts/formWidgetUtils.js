@@ -373,7 +373,7 @@ WM.module('wm.widgets.form')
                     template = template +
                         '<li class="' + liClass + ' {{itemclass}}" data-ng-class="{\'active\':checkedValues[' + "'" + dataKey + "'" + ']}">' +
                             '<label class="' + labelClass + '" data-ng-class="{\'disabled\':disabled}" title="' + dataKey + '">' +
-                                 '<input ' + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + index + ' value="' + dataKey + '" data-ng-checked="checkedValues[' + "'" + dataKey + "'" + ']"/>' +
+                                 '<input ' + required + ' type="' + type + '" ' + (scope.disabled ? ' disabled="disabled" ' : '') + 'data-attr-index=' + index + ' value="' + dataKey + '" tabindex="' + scope.tabindex + '" data-ng-checked="checkedValues[' + "'" + dataKey + "'" + ']"/>' +
                                  '<span class="caption">' + dataKey + '</span>' +
                             '</label>' +
                         '</li>';

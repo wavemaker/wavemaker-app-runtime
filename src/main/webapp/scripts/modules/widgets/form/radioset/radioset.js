@@ -173,6 +173,7 @@ WM.module('wm.widgets.form')
                             constructRadioSet(scope, element, scope.scopedataset);
                         });
                     }
+                    element.removeAttr('tabindex');
                 }
             }
         };

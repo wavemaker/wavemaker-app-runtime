@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/currency.html',
             '<div init-widget has-model class="input-group app-currency" role="input"><span class="input-group-addon">{{currencysymbol}}</span>' +
-                '<input type="number" class="form-control app-textbox app-currency-input" title="{{hint}}" apply-styles' +
+                '<input type="number" focus-target class="form-control app-textbox app-currency-input" title="{{hint}}" apply-styles' +
                 ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                 ' ng-readonly="readonly" ' +
                 ' ng-required="required" ' +

@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
         /*Assigning the template to an identifier.*/
         $templateCache.put('template/widget/form/colorpicker.html',
             '<div title="{{hint}}" class="input-group app-colorpicker" init-widget has-model role="input">' +
-                '<input colorpicker colorpicker-parent="true" class="form-control app-textbox" ' +
+                '<input colorpicker colorpicker-parent="true" focus-target class="form-control app-textbox" ' +
                 ' ng-disabled="readonly || disabled"' +
                 ' ng-required="required"' +
                 ' ng-model="_model_"' +

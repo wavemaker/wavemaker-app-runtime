@@ -196,6 +196,12 @@ WM.module('wm.widgets.advanced')
 
         /* accessibility purpose - on focus of the widget, the up-arrow and down-arrow key press should change the datavalue */
         function onKeyDown(iScope, attrs, event) {
+            //prevents the page from scrolling when up and down arrows are used
+            if ((event.which === 38) || (event.which === 40)) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
             var action = Utils.getActionFromKey(event);
             /*  if widget is focused and keydown is detected */
             if (iScope.isFocused) {

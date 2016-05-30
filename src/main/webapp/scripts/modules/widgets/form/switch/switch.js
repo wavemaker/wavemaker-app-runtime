@@ -10,7 +10,7 @@ WM.module('wm.widgets.form')
             $templateCache.put('template/widget/form/switch.html',
                 '<div class="app-switch" init-widget has-model apply-styles role="input" listen-property="dataset">' +
                     '<div class="btn-group btn-group-justified">' +
-                        '<a title="{{opt[displayfield || \'label\']}}" href="javascript:void(0);" role="button" class="btn btn-default" ng-disabled="disabled" ' +
+                        '<a title="{{opt[displayfield || \'label\']}}" focus-target href="javascript:void(0);" role="button" class="btn btn-default" ng-disabled="disabled" ' +
                             ' ng-repeat="opt in options track by $index" ng-class="{\'selected\': selected.index === $index}"' +
                             ' ng-click="selectOpt($event, $index)">{{opt[displayfield || "label"]}}</a>' +
                     '</div>' +

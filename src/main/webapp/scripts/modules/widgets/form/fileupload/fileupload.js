@@ -15,7 +15,7 @@ WM.module('wm.widgets.form')
                             '<div class="message">' +
                                 '<label ng-bind="caption"></label>' +
                                     '<form class="form-horizontal" name="{{scope.formName}}">' +
-                                        '<input class="file-input" type="file" name="files" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" multiple ng-disabled="disabled">' +
+                                        '<input class="file-input" focus-target type="file" name="files" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" multiple ng-disabled="disabled">' +
                                         '<a href="javascript:void(0);" class="app-anchor" ng-bind="fileuploadmessage"></a>' +
                                     '</form>' +
                             '</div>' +
@@ -28,7 +28,7 @@ WM.module('wm.widgets.form')
                             /* support for file upload in Mobileapp in its runmode (Web) */
                                 '<input class="file-input" type="file" name="files" ng-if="multiple" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" ng-disabled="disabled" multiple>' +
                                 '<input class="file-input" type="file" name="files" ng-if="!multiple" on-file-select="onFileSelect($event, $files)" ng-attr-accept="{{chooseFilter}}" ng-disabled="disabled">' +
-                                '<button class="app-button btn btn-default" apply-styles>' +
+                                '<button focus-target class="app-button btn btn-default" apply-styles>' +
                                     '<i class="{{iconclass}}"></i> ' +
                                     '<span>{{caption}}</span>' +
                                 '</button>' +
@@ -37,7 +37,7 @@ WM.module('wm.widgets.form')
                         '<div class="app-files-upload-status single"></div>' +
                     '</div>' +
                     /* support for file upload in Mobile Application (device) */
-                    '<button ng-if="_isCordova" class="app-button btn btn-default" ng-click="openFileSelector()" ng-disabled="disabled" apply-styles>' +
+                    '<button ng-if="_isCordova" focus-target class="app-button btn btn-default" ng-click="openFileSelector()" ng-disabled="disabled" apply-styles>' +
                         '<i class="{{iconclass}}"></i> ' +
                         '<span>{{caption}}</span>' +
                     '</button>' +

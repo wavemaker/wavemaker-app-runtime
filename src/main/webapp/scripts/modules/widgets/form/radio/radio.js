@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/radio.html',
             '<div class="radio app-radio" init-widget has-model title="{{hint}}" role="input">' +
                 '<label apply-styles>' +
-                    '<input type="radio" class="app-radiobutton"' +
+                    '<input type="radio" class="app-radiobutton" focus-target' +
                         ' value="{{checkedvalue}}"' +
                         ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                         ' ng-readonly="readonly" ' +

@@ -2838,16 +2838,13 @@ WM.module('wm.widgets.base', [])
             notifyFor.backgroundimage = true;
 
             function setDimensionProp($is, cssObj, key) {
-                var cssKey = key,
-                    val, top, right, bottom, left,
-                    SEPARATOR = ' ', UNSET = 'unset',
+                var cssKey = key, val, top, right, bottom, left, SEPARATOR = ' ', UNSET = 'unset', suffix = '';
 
-                    suffix = '',
-                    setVal = function(prop, value) {
-                        if(value !== UNSET) {
-                            cssObj[cssKey + prop + suffix] = value;
-                        }
-                    };
+                function setVal(prop, value) {
+                    if (value !== UNSET) {
+                        cssObj[cssKey + prop + suffix] = value;
+                    }
+                }
 
                 if (key === 'borderwidth') {
                     suffix =  'Width';
@@ -2856,7 +2853,7 @@ WM.module('wm.widgets.base', [])
 
                 val = $is[key];
 
-                if (val.indexOf('unset') !== -1) {
+                if (val.indexOf(UNSET) !== -1) {
                     val = val.split(SEPARATOR);
 
                     top    = val[0];
@@ -2864,10 +2861,10 @@ WM.module('wm.widgets.base', [])
                     bottom = val[2] || val[0];
                     left   = val[3] || val[1] || val[0];
 
-                    setVal('Top', top);
-                    setVal('Right', right);
+                    setVal('Top',    top);
+                    setVal('Right',  right);
                     setVal('Bottom', bottom);
-                    setVal('Left', left);
+                    setVal('Left',   left);
                 } else {
                     if (key === 'borderwidth') {
                         cssKey = 'borderWidth';
@@ -3018,6 +3015,44 @@ WM.module('wm.widgets.base', [])
             };
         }
     ])
+
+    /**
+     * @ngdoc directive
+     * @name wmCore.$focusTarget
+     * @description
+     * Applies focus on the form control elements and removes tabindex attribute from the container element
+     */
+
+    .directive('focusTarget', ['CONSTANTS', function (CONSTANTS) {
+        'use strict';
+
+        if (CONSTANTS.isStudioMode) {
+            return {};
+        }
+
+        return {
+            'restrict': 'A',
+            'link'    : function ($s, $el) {
+                var $is, $root;
+
+                $root = $el.closest('[init-widget]');
+                $is   = $root.isolateScope();
+
+                if ($is.widgetProps.tabindex) {
+                    $el.attr('tabindex', $is.tabindex);
+                    $root.removeAttr('tabindex');
+                }
+
+                $is.focus = function () {
+                    var target = $el.find('[focus-target]');
+                    if (!target.length) {
+                        target = $el;
+                    }
+                    target.first().focus();
+                };
+            }
+        };
+    }])
 
     /**
      * @ngdoc service

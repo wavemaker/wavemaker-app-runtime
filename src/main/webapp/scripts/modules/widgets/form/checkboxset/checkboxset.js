@@ -200,6 +200,7 @@ WM.module('wm.widgets.form')
                             }
                         }, true);
                     }
+                    element.removeAttr('tabindex');
                 }
             }
         };

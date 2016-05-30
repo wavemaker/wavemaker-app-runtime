@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/date.html',
             '<div class="app-date input-group" init-widget has-model role="input" apply-styles>' +
-                '<input class="form-control app-textbox app-dateinput" uib-datepicker-popup={{datepattern}} show-button-bar={{showbuttonbar}} date-disabled="excludeDays(date, mode) || excludeDates(date, mode)" ' +
+                '<input class="form-control app-textbox app-dateinput" focus-target uib-datepicker-popup={{datepattern}} show-button-bar={{showbuttonbar}} date-disabled="excludeDays(date, mode) || excludeDates(date, mode)" ' +
                     ' title="{{hint}}" ' +
                     ' min-date=mindate max-date=maxdate is-open=isOpen' +
                     ' ng-model="_proxyModel" ' + /* _proxyModel is a private variable inside this scope */
@@ -19,7 +19,7 @@ WM.module('wm.widgets.form')
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
                 '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default btn-date"><i class="app-icon wi wi-calendar"></i></button>' +
+                    '<button type="button" class="btn btn-default btn-date" focus-target><i class="app-icon wi wi-calendar"></i></button>' +
                 '</span>' +
             '</div>'
             );

@@ -7,7 +7,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/datetime.html',
             '<div class="app-datetime input-group" init-widget has-model apply-styles role="input"' +
             ' title="{{hint}}" ng-model="_proxyModel">' + /* _proxyModel is a private variable inside this scope */
-                '<input class="form-control app-textbox display-input" ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
+                '<input class="form-control app-textbox display-input" focus-target ng-model="_displayModel" accesskey="{{::shortcutkey}}" ng-change="updateDateTimeModel()" ng-model-options="{updateOn: \'blur\'}" ng-required="required">' +
                 '<input class="form-control app-textbox app-dateinput ng-hide" ng-change="selectDate($event)" date-disabled="excludeDays(date) || excludeDates(date)" ng-model="_dateModel" ' +
                     ' uib-datepicker-popup show-button-bar={{showbuttonbar}} min-date=mindate max-date=maxdate is-open="isDateOpen" show-weeks="{{showweeks}}">' +
                 '<div uib-dropdown is-open="isTimeOpen" class="dropdown">' +
@@ -18,8 +18,8 @@ WM.module('wm.widgets.form')
                 /*Holder for the model for submitting values in a form*/
                 '<input class="model-holder ng-hide" ng-disabled="disabled" ng-model="_model_">' +
                 '<span class="input-group-btn">' +
-                    '<button type="button" class="btn btn-default btn-date"><i class="app-icon wi wi-calendar"></i></button>' +
-                    '<button type="button" class="btn btn-default btn-time uib-dropdown-toggle"><i class="app-icon wi wi-access-time "></i></button>' +
+                    '<button type="button" class="btn btn-default btn-date" focus-target><i class="app-icon wi wi-calendar"></i></button>' +
+                    '<button type="button" class="btn btn-default btn-time uib-dropdown-toggle" focus-target><i class="app-icon wi wi-access-time "></i></button>' +
                 '</span>' +
             '</div>'
             );

@@ -6,7 +6,7 @@ WM.module('wm.widgets.form')
         'use strict';
         $templateCache.put('template/widget/form/menu.html',
                 '<div class="dropdown app-menu" init-widget uib-dropdown role="input" listen-property="dataset" tabindex="-1">' +
-                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles tabindex="{{tabindex}}" accesskey="{{::shortcutkey}}">' +
+                    '<button title="{{hint}}" class="btn app-button dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles focus-target accesskey="{{::shortcutkey}}">' +
                     '<i class="app-icon {{iconclass}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
@@ -17,7 +17,7 @@ WM.module('wm.widgets.form')
             );
         $templateCache.put('template/widget/form/anchormenu.html',
                 '<div class="dropdown app-menu" init-widget uib-dropdown role="input" tabindex="-1">' +
-                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}" tabindex="{{tabindex}}"></i>' +
+                    '<a title="{{hint}}" href="javascript:void(0);" class="app-anchor dropdown-toggle {{menuclass}}" uib-dropdown-toggle apply-styles accesskey="{{::shortcutkey}}"><i class="app-icon {{iconclass}}"></i>' +
                         ' {{caption}} ' +
                         '<span wmtransclude></span>' +
                         '<span class="caret"></span>' +

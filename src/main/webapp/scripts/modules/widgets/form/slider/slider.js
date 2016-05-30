@@ -8,7 +8,7 @@ WM.module('wm.widgets.form')
                 '<div class="app-slider slider" init-widget has-model title="{{hint}}" apply-styles role="input">' +
                     '<span class="app-slider-value">{{minvalue}}</span>' +
                     '<span class="app-slider-value pull-right">{{maxvalue}}</span>' +
-                    '<input class="range-input" type="range" title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
+                    '<input class="range-input" type="range" focus-target title="{{_model_}}" min="{{minvalue}}" max="{{maxvalue}}" step="{{step}}"' +
                        ' ng-model="_model_"' + /* _model_ is a private variable inside this scope */
                        ' ng-disabled="disabled"' +
                        ' accesskey="{{::shortcutkey}}"' +
