@@ -33,7 +33,6 @@ public class ReportContext {
                     JasperType jasperType = JasperType.valueFor(typeClassName);
                     if (jasperType != null) {
                         if (StringUtils.isNotBlank(fieldPrefix)) {
-//                            entity.getSimpleName().toLowerCase() + "." +
                             fieldName = fieldPrefix + "." + fieldName;
                         }
                         fieldNameVsTypeMap.put(fieldName, jasperType);

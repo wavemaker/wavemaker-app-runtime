@@ -10,6 +10,7 @@ import java.util.Stack;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.LogicalExpression;
+import org.joda.time.LocalDateTime;
 
 import com.wavemaker.runtime.data.JasperType;
 import com.wavemaker.runtime.data.expression.JoinType;
@@ -67,7 +68,7 @@ public class QueryParser {
                     if (type != null) {
                         String[] classNameFieldName = token.split("\\.");
                         Class operandTypeClass;
-                        if (classNameFieldName.length > 1) {
+                        if (classNameFieldName.length > 2) {
                             ReportContext reportContext = new ReportContext();
                             JasperType jasperType = reportContext.buildFieldNameVsTypeMap(classNameFieldName[0]).get(classNameFieldName[2]);
                             operandTypeClass = jasperType.getJavaClass();
@@ -106,14 +107,12 @@ public class QueryParser {
             if (typeClass == Date.class) {
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                 castedValue = formatter.parse(value);
+            } else if (typeClass == LocalDateTime.class) {
+                castedValue = LocalDateTime.parse(value);
             } else {
                 Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
                 castedValue = cons.newInstance(value);
             }
-//            if (typeClass == LocalDateTime.class) {
-//                LocalDateTime localDateTime = (LocalDateTime) castedValue;
-//                castedValue = localDateTime.toDate();
-//            } todo
             return castedValue;
         } catch (Exception e) {
             throw new WMRuntimeException("Exception while casting the operand", e);

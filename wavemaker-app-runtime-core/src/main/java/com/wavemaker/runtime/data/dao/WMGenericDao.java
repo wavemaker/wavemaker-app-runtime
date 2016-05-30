@@ -18,8 +18,8 @@ package com.wavemaker.runtime.data.dao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.wavemaker.runtime.data.export.ExportType;
 import com.wavemaker.runtime.data.expression.QueryFilter;
-import com.wavemaker.runtime.export.ExportType;
 import com.wavemaker.runtime.file.model.Downloadable;
 
 public interface WMGenericDao<Entity, Identifier> {
