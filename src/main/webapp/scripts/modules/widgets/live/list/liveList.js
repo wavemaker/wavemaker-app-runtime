@@ -89,8 +89,7 @@ WM.module('wm.widgets.live')
                     'SCROLL'   : 'Scroll',
                     'INLINE'   : 'Inline',
                     'PAGER'    : 'Pager'
-                },
-                handlers = [];
+                };
 
             // to return the bootstrap classes for the <li> w.r.t no. of items per row
             function getRowClass(itemsperrow) {
@@ -1200,14 +1199,16 @@ WM.module('wm.widgets.live')
                 }
             }
 
-            function onDestroy() {
+            function onDestroy(handlers) {
                 handlers.forEach(Utils.triggerFn);
             }
 
             function postLinkFn($is, $el, attrs, listCtrl) {
                 var $liScope,
                     $liTemplate,
-                    variable;
+                    variable,
+                    _onDestroy,
+                    handlers = [];
 
                 variable = Utils.getVariableName($is);
                 $liScope = createChildScope($is, $el, attrs);
@@ -1247,9 +1248,9 @@ WM.module('wm.widgets.live')
                             $is.variableInflight = active;
                         }
                     }));
-
-                    $is.$on('$destroy', onDestroy);
-                    $el.on('$destroy', onDestroy);
+                    _onDestroy = onDestroy.bind(undefined, handlers);
+                    $is.$on('$destroy', _onDestroy);
+                    $el.on('$destroy', _onDestroy);
                 }
 
                 WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, $el, attrs, listCtrl), $is, notifyFor);
