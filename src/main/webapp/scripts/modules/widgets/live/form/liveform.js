@@ -107,7 +107,10 @@ WM.module('wm.widgets.live')
             },
             controller: function ($scope, $attrs, DialogService) {
                 var formController;
-                function resetValidationMessages() {
+                function resetFormState() {
+                    if (!$scope.ngform || !$scope.ngform[$scope.name]) {
+                        return;
+                    }
                     //Reset the form to original state on cancel/ save
                     $scope.ngform[$scope.name].$setUntouched();
                     $scope.ngform[$scope.name].$setPristine();
@@ -222,7 +225,7 @@ WM.module('wm.widgets.live')
                         wmToaster.show('info', 'Not Editable', 'Table of type view, not editable');
                         return;
                     }
-                    resetValidationMessages();
+                    resetFormState();
                     /*If live-form is in a dialog, then always fetch the formElement by name
                     because the earlier reference "$scope.formElement" would be destroyed on close of the dialog.*/
                     $scope.formElement = $scope.isLayoutDialog ? (document.forms[$scope.name]) : ($scope.formElement || document.forms[$scope.name]);
@@ -376,7 +379,7 @@ WM.module('wm.widgets.live')
                 };
                 /*Method to clear the fields and set the form to readonly*/
                 $scope.formCancel = function () {
-                    resetValidationMessages();
+                    resetFormState();
                     $scope.clearData();
                     $scope.toggleMessage(false);
                     /*Show the previous selected data*/
@@ -406,7 +409,7 @@ WM.module('wm.widgets.live')
                 }
                 /*Method to reset the form to original state*/
                 $scope.reset = function () {
-                    resetValidationMessages();
+                    resetFormState();
                     $scope.toggleMessage(false);
                     if (WM.isArray($scope.formFields)) {
                         $scope.formFields.forEach(function (dataValue) {
@@ -433,7 +436,7 @@ WM.module('wm.widgets.live')
                 }
                 /*Method to update, sets the operationType to "update" disables the readonly*/
                 $scope.edit = function () {
-                    resetValidationMessages();
+                    resetFormState();
                     $scope.toggleMessage(false);
                     /*set the formFields into the prevformFields only in case of inline form
                     * in case of dialog layout the set prevformFields is called before manually clearing off the formFields*/
@@ -453,7 +456,7 @@ WM.module('wm.widgets.live')
                 /*Method clears the fields, sets any defaults if available,
                  disables the readonly, and sets the operationType to "insert"*/
                 $scope.new = function () {
-                    resetValidationMessages();
+                    resetFormState();
                     $scope.toggleMessage(false);
                     if ($scope.isSelected && !$scope.isLayoutDialog) {
                         prevformFields = Utils.getClonedObject($scope.formFields);
@@ -507,7 +510,7 @@ WM.module('wm.widgets.live')
                 };
                 /*Sets the operationType to "delete" and calls the formSave function to handle the action*/
                 $scope.delete = function (callBackFn) {
-                    resetValidationMessages();
+                    resetFormState();
                     $scope.operationType = "delete";
                     prevDataObject = Utils.getClonedObject($scope.rowdata);
                     $scope.formSave();
@@ -1169,6 +1172,7 @@ WM.module('wm.widgets.live')
                         }
 
                         if (isLayoutDialog) {
+                            parentIsolateScope.ngform[parentIsolateScope.name] = parentIsolateScope[parentIsolateScope.name];
                             defaultObj = _.find(parentIsolateScope.translatedObj, function (obj) {
                                 return obj.key === columnDef.key;
                             });
