@@ -1972,9 +1972,11 @@ wm.variables.services.Variables = [
                     createdVariable.type = variableDetails.table;
                     createdVariable.category = variableCategory;
                     createdVariable.isDefault = true;
-                    createdVariable.maxResults = variableDetails.maxResults;
-                    createdVariable.startUpdate = variableDetails.startUpdate;
-                    createdVariable.autoUpdate = variableDetails.autoUpdate;
+                    _.forEach(['maxResults', 'startUpdate', 'autoUpdate'], function (property) {
+                        if (WM.isDefined(variableDetails[property])) {
+                            createdVariable[property] = variableDetails[property];
+                        }
+                    });
 
                     /*adding a property to identify the database-type for the created live-variable*/
                     createdVariable.dbSystem = variableDetails.dbSystem;
@@ -2023,12 +2025,15 @@ wm.variables.services.Variables = [
                     createdVariable.serviceType   = variableDetails.serviceType;
                     createdVariable.category      = variableCategory;
                     createdVariable.isDefault     = true;
-                    createdVariable.maxResults    = variableDetails.maxResults;
                     createdVariable.controller    = variableDetails.controller;
                     createdVariable.operationId   = variableDetails.operationId;
-                    createdVariable.startUpdate   = variableDetails.startUpdate;
-                    createdVariable.autoUpdate    = variableDetails.autoUpdate;
                     createdVariable.type          = variableDetails.returnType;
+
+                    _.forEach(['maxResults', 'startUpdate', 'autoUpdate'], function (property) {
+                        if (WM.isDefined(variableDetails[property])) {
+                            createdVariable[property] = variableDetails[property];
+                        }
+                    });
 
                     /* insert sample param values if provided */
                     bindMapCollection = createdVariable.dataBinding;
