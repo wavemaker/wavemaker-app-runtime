@@ -105,7 +105,7 @@ WM.module('wm.widgets.live')
                         WM.forEach($scope.formFields, function (filterField) {
                             //Added check for range field
                             if (!filterField.readonly && filterField.show) {
-                                if (filterField.widget === 'typeahead' && !filterField.value) {
+                                if (filterField.widget === 'typeahead') {
                                     $scope.$element.find('div[name=' + filterField.name + '] input').val('');
                                 }
                                 if (filterField.isRange) {
@@ -147,16 +147,31 @@ WM.module('wm.widgets.live')
                         orderBy = options.orderBy || $scope.orderBy || '';
                         $scope.orderBy = orderBy; //Store the order by in scope. This can be used to retain the sort after filtering
                         /* Copy the values to be sent to the user as '$data' before servicecall */
-                        _.each($scope.formFields, function (field) {
-                            var fieldSelector = 'div[name=' + field.name + '] input';
+                        _.forEach($scope.formFields, function (field) {
+                            var fieldSelector = 'div[name=' + field.name + '] input',
+                                $el     = $scope.$element;
+                            if (field.widget === 'typeahead' && $el) {
+                                var fieldEle = $el.find(fieldSelector);
+                                if (!field.isRange) {
+                                    dataModel[field.field] = {
+                                        'value': fieldEle.val()
+                                    };
+                                } else {
+                                    dataModel[field.field] = {
+                                        'minValue': fieldEle.first().val(),
+                                        'maxValue': fieldEle.last().val()
+                                    };
+                                }
+                                return;
+                            }
                             if (!field.isRange) {
                                 dataModel[field.field] = {
-                                    'value': field.value || (field.widget === 'typeahead' && $scope.$element ? $scope.$element.find(fieldSelector).val() : undefined)
+                                    'value': field.value
                                 };
                             } else {
                                 dataModel[field.field] = {
-                                    'minValue': field.minValue || (field.widget === 'typeahead' && $scope.$element ? $scope.$element.find(fieldSelector + ':first').val() : undefined),
-                                    'maxValue': field.maxValue || (field.widget === 'typeahead' && $scope.$element ? $scope.$element.find(fieldSelector + ':last').val() : undefined)
+                                    'minValue': field.minValue,
+                                    'maxValue': field.maxValue
                                 };
                             }
                         });
