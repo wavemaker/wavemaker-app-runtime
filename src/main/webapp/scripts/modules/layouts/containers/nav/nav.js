@@ -73,16 +73,20 @@ WM.module('wm.layouts.containers')
                     var iconField     = $is.itemicon     || 'icon',
                         labelField    = $is.itemlabel    || 'label',
                         itemField     = $is.itemlink     || 'link',
+                        badgeField    = $is.itembadge    || 'badge',
                         childrenField = $is.itemchildren || 'children';
 
                     $is.nodes.forEach(function (node) {
                         var $a           = WM.element('<a class="app-anchor"></a>'),
+                            $a_caption   = WM.element('<span class="anchor-caption"></span>'),
                             $li          = WM.element('<li class="app-nav-item"></li>').data('node-data', node),
                             $i           = WM.element('<i class="app-nav-icon"></i>'),
                             $caret       = WM.element('<span class="caret"></span>'),
+                            $badge       = WM.element('<span class="badge"></span>'),
                             itemLabel    = node[labelField],
                             itemClass    = node[iconField],
                             itemLink     = node[itemField],
+                            itemBadge    = node[badgeField],
                             itemChildren = node[childrenField],
                             $ul;
 
@@ -92,20 +96,30 @@ WM.module('wm.layouts.containers')
 
                         if (itemChildren && WM.isArray(itemChildren)) {
                             $i.addClass(itemClass);
-                            $a.html(itemLabel).attr('uib-dropdown-toggle', '').addClass('app-anchor dropdown-toggle').prepend($i).append($caret);
+                            $a.append($a_caption.html(itemLabel)).attr('uib-dropdown-toggle', '').addClass('app-anchor dropdown-toggle').prepend($i);
+                            if (itemBadge) {
+                                $a.append($badge.html(itemBadge));
+                            }
+                            $a.append($caret);
                             $li.append($a).attr('uib-dropdown', '').addClass('dropdown');
                             $ul = WM.element('<ul uib-dropdown-menu></ul>');
                             itemChildren.forEach(function (child) {
-                                var $a_inner  = WM.element('<a class="app-anchor"></a>'),
-                                    $li_inner = WM.element('<li class="app-nav-item"></li>').data('node-data', child),
-                                    $i_inner  = WM.element('<i class="app-nav-icon"></i>');
+                                var $a_inner         = WM.element('<a class="app-anchor"></a>'),
+                                    $a_caption_inner = WM.element('<span class="anchor-caption"></span>'),
+                                    $li_inner        = WM.element('<li class="app-nav-item"></li>').data('node-data', child),
+                                    $i_inner         = WM.element('<i class="app-nav-icon"></i>'),
+                                    $badge_inner     = WM.element('<span class="badge"></span>');
 
                                 itemLabel = child[labelField];
                                 itemClass = child[iconField];
                                 itemLink  = child[itemField];
+                                itemBadge = child[badgeField];
 
                                 $i_inner.addClass(itemClass);
-                                $a_inner.html(itemLabel).attr('href', itemLink).prepend($i_inner);
+                                $a_inner.append($a_caption_inner.html(itemLabel)).attr('href', itemLink).prepend($i_inner);
+                                if (itemBadge) {
+                                    $a_inner.append($badge_inner.html(itemBadge));
+                                }
                                 $li_inner.append($a_inner);
                                 $ul.append($li_inner);
                             });
@@ -113,7 +127,10 @@ WM.module('wm.layouts.containers')
                             $el.append($li);
                         } else {
                             $i.addClass(itemClass);
-                            $a.html(itemLabel).attr('href', itemLink).prepend($i);
+                            $a.append($a_caption.html(itemLabel)).attr('href', itemLink).prepend($i);
+                            if (itemBadge) {
+                                $a.append($badge.html(itemBadge));
+                            }
                             $li.append($a);
                             $el.append($li);
                         }
@@ -123,7 +140,8 @@ WM.module('wm.layouts.containers')
                     $el.on('click.on-select', '.app-anchor', function (e) {
                         var $target = WM.element(this),
                             $li     = $target.closest('.app-nav-item');
-
+                        $li.closest('ul.app-nav').children('li.app-nav-item').removeClass('active');
+                        $li.addClass('active');
                         $rs.$safeApply($is, function () {
                             $is.selecteditem = $li.data('node-data');
                             Utils.triggerFn($is.onSelect, {'$event': e, $scope: $is, '$item': $is.selecteditem});
@@ -227,7 +245,7 @@ WM.module('wm.layouts.containers')
 
         function (PropertiesFactory, WidgetUtilService) {
             'use strict';
-            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navitem',['wm.base']);
+            var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.navitem', ['wm.base']);
 
             return {
                 'restrict'  : 'E',
