@@ -560,7 +560,7 @@ WM.module('wm.widgets.live')
                 widgetType = widgetType.toLowerCase();
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
-                    '<wm-label class="control-label ' + labelLayout + '" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
+                    '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
 
@@ -621,7 +621,8 @@ WM.module('wm.widgets.live')
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
                     break;
                 }
-                template = template + (fieldDef.hint ? '<p class="help-block" ng-if="isUpdateMode">' + fieldDef.hint + '</p>' : '');
+                template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched) && isUpdateMode">' + fieldDef.hint + '</p>' : '');
+                template = template + (fieldDef.validationmessage ? '<p ng-if="ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">' + fieldDef.validationmessage + '</p>' : '');
                 template = template + '</div></wm-composite>';
                 return template;
             }
@@ -911,7 +912,7 @@ WM.module('wm.widgets.live')
              *
              * @param {string} widgetType type of the widget
              */
-            function getWidgetProps(widgetType) {
+            function getWidgetProps(widgetType, fieldType) {
                 var widgetProps,
                     baseProperties,
                     extendedProperties,
@@ -1002,9 +1003,13 @@ WM.module('wm.widgets.live')
                     extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
                     break;
                 }
-                widgetProps             = PropertiesFactory.getPropertiesOf(baseProperties, extendedProperties);
-                widgetProps.displayname =  {'type': "string", 'show': true, 'bindable': "in-bound"};
-                widgetProps.widget      = {'type': 'label', 'show': true};
+                widgetProps                   = PropertiesFactory.getPropertiesOf(baseProperties, extendedProperties);
+                widgetProps.displayname       =  {'type': "string", 'show': true, 'bindable': "in-bound"};
+                widgetProps.widget            = {'type': 'label', 'show': true};
+                if (fieldType === 'wm-form-field') {
+                    widgetProps.validationmessage      =  {'type': "string", 'bindable': "in-bound"};
+                    widgetProps.validationmessage.show = widgetProps.required && widgetProps.required.show;
+                }
                 if (_.includes(textWidgets, widgetType)) {
                     /*In form and filter, type conflicts with data type. Change the type to input type.*/
                     widgetProps.inputtype = WM.copy(widgetProps.type);
@@ -1111,7 +1116,7 @@ WM.module('wm.widgets.live')
                 WM.element(tElement.context).attr('inputtype', inputtype);
                 handleBackwardCompatibility(fieldType, scope, attrs, tElement);
                /*Get the respective widget properties*/
-                scope.widgetProps = getWidgetProps(attrs.widget);
+                scope.widgetProps = getWidgetProps(attrs.widget, fieldType);
             }
 
             function parseNgClasses(classExpression) {
