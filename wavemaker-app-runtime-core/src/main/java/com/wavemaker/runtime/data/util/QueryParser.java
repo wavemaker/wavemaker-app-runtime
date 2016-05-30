@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -41,7 +42,8 @@ public class QueryParser {
         Stack<Criterion> criterionStack = new Stack<>();
         Stack<String> joinOperatorStack = new Stack<>();
         RegExStringTokenizer stringTokenizer = new RegExStringTokenizer(query, QUERY_DELIMITER);
-
+        ReportContext reportContext = new ReportContext();
+        HashMap<String, JasperType> fieldNameVsJasperTypeMap = reportContext.buildFieldNameVsTypeMap(entityClass.getName());
 
         try {
             while (stringTokenizer.hasNext()) {
@@ -66,16 +68,9 @@ public class QueryParser {
                     String operator = stringTokenizer.nextToken();
                     Type type = Type.valueFor(operator);
                     if (type != null) {
-                        String[] classNameFieldName = token.split("\\.");
                         Class operandTypeClass;
-                        if (classNameFieldName.length > 2) {
-                            ReportContext reportContext = new ReportContext();
-                            JasperType jasperType = reportContext.buildFieldNameVsTypeMap(classNameFieldName[0]).get(classNameFieldName[2]);
-                            operandTypeClass = jasperType.getJavaClass();
-
-                        } else {
-                            operandTypeClass = entityClass.getDeclaredField(token).getType();
-                        }
+                        JasperType jasperType = fieldNameVsJasperTypeMap.get(token);
+                        operandTypeClass = jasperType.getJavaClass();
                         if (Type.IN == type || Type.BETWEEN == type) {
                             Collection value = formatOperandAsCollection(stringTokenizer, operandTypeClass);
                             criterionStack.push(type.criterion(token, value));
@@ -113,6 +108,7 @@ public class QueryParser {
                 Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
                 castedValue = cons.newInstance(value);
             }
+//            TODO boolean and time types support
             return castedValue;
         } catch (Exception e) {
             throw new WMRuntimeException("Exception while casting the operand", e);

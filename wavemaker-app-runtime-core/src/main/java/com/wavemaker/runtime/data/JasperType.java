@@ -35,7 +35,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return byte.class;
+            return Byte.class;
         }
     },
     SHORT(Arrays.asList(Short.class.getName(), short.class.getName())) {
@@ -46,7 +46,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return short.class;
+            return Short.class;
         }
     },
     INTEGER(Arrays.asList(Integer.class.getName(), int.class.getName())) {
@@ -57,7 +57,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return int.class;
+            return Integer.class;
         }
     },
     LONG(Arrays.asList(Long.class.getName(), long.class.getName())) {
@@ -68,7 +68,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return long.class;
+            return Long.class;
         }
     },
     BIG_INTEGER(Collections.singletonList(BigInteger.class.getName())) {
@@ -90,7 +90,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return float.class;
+            return Float.class;
         }
     },
     DOUBLE(Arrays.asList(Double.class.getName(), double.class.getName())) {
@@ -101,7 +101,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return null;
+            return Double.class;
         }
     },
     BIG_DECIMAL(Collections.singletonList(BigDecimal.class.getName())) {
@@ -123,7 +123,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return boolean.class;
+            return Boolean.class;
         }
     },
     CHARACTER(Arrays.asList(Character.class.getName(), char.class.getName())) {
@@ -134,7 +134,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return char.class;
+            return Character.class;
         }
     },
     STRING(Collections.singletonList(String.class.getName())) {
@@ -156,7 +156,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return byte[].class;
+            return Byte.class;
         }
     },
     DATE(Collections.singletonList(Date.class.getName())) {
