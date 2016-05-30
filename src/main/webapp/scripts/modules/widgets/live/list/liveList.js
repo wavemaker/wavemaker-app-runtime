@@ -726,7 +726,6 @@ WM.module('wm.widgets.live')
                     if ($is.widgetid && WM.isDefined(nv) && nv !== null) {
                         // set the groupby options
                         wp.groupby.options = wp.orderby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
-
                         showOrHideMatchProperty();
 
                         //if studio-mode, then update the displayField & dataField in property panel
@@ -739,14 +738,13 @@ WM.module('wm.widgets.live')
                                     }
                                 }
                             }
-                            if ($is.groupby) {
-                                // set the groupby options
-                                if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
-                                    wp.groupby.options = _.keys(DeviceVariableService.getOperation(selectedVariable.service, selectedVariable.operation).getMeta());
-                                    return;
-                                }
-                                wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, {'sort' : false});
+
+                            // set the groupby options
+                            if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
+                                wp.groupby.options = _.keys(DeviceVariableService.getOperation(selectedVariable.service, selectedVariable.operation).getMeta());
+                                return;
                             }
+                            wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, {'sort' : true});
                         }
 
                         // empty option selection is included in groupby options.
