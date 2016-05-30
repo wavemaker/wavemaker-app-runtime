@@ -3133,7 +3133,9 @@ WM.module('wm.widgets.base', [])
                             'wm-left-panel',
                             'wm-right-panel',
                             'wm-top-nav',
-                            'wm-card'
+                            'wm-cardcontent',
+                            'wm-wizardstep',
+                            'wm-tabpane'
                         ];
                     } else {
                         types = types.split(",");
