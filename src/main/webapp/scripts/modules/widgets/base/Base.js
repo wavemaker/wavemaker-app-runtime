@@ -618,6 +618,7 @@ WM.module('wm.widgets.base', [])
                     "wm.checkbox": {
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "height": {"type": "string", "pattern": dimensionRegex},
+                        "backgroundcolor": {"type": "string", "widget": "color"},
                         "margin": {"type": "string", "widget": "box-model"},
                         "datavalue": {"type": "boolean, string", "bindable": "in-out-bound", "widget": "string"},
                         "checkedvalue": {"type": "string"},
