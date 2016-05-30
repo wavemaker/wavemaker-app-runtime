@@ -1261,32 +1261,32 @@ WM.module('wm.widgets.live')
                     };
                     break;
                 case 'button':
-                    widgetIcon = el.attr('iconname');
-                    widgetTitle = el.attr('caption');
+                    widgetIcon   = el.attr('iconclass') || el.attr('iconname');
+                    widgetTitle  = el.attr('caption');
                     widgetAction = el.attr('on-click');
                     column.widgetConfig = {
-                        'icon': widgetIcon,
-                        'action': widgetAction,
-                        'title': widgetTitle,
-                        'class': widgetClass,
-                        'ngClasses': widgetNgClasses
+                        'icon'      : widgetIcon,
+                        'action'    : widgetAction,
+                        'title'     : widgetTitle,
+                        'class'     : widgetClass,
+                        'ngClasses' : widgetNgClasses
                     };
                     break;
                 case 'checkbox':
-                    widgetModel = el.attr('ng-model');
+                    widgetModel    = el.attr('ng-model');
                     widgetDisabled = el.attr('ng-disabled');
                     column.widgetConfig = {
-                        'model': widgetModel,
-                        'disabled': widgetDisabled,
-                        'class': widgetClass,
-                        'ngClasses': widgetNgClasses
+                        'model'     : widgetModel,
+                        'disabled'  : widgetDisabled,
+                        'class'     : widgetClass,
+                        'ngClasses' : widgetNgClasses
                     };
                     break;
                 default:
                     column.widgetConfig = {
-                        'src': '',
-                        'class': widgetClass,
-                        'ngClasses': widgetNgClasses
+                        'src'       : '',
+                        'class'     : widgetClass,
+                        'ngClasses' : widgetNgClasses
                     };
                     break;
                 }
