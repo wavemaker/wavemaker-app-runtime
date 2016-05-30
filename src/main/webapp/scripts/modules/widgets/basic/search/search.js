@@ -35,6 +35,7 @@ WM.module('wm.widgets.basic')
                     ' ng-readonly="readonly" ' +
                     ' ng-required="required" ' +
                     ' ng-disabled="disabled" ' +
+                    ' autocomplete="off"' +
                     ' typeahead-loading="_loadingItems" ' +
                     ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
