@@ -44,7 +44,7 @@ public class ReportGenerator {
             JasperType jasperType = fieldNameVsTypeMap.get(fieldName);
             ColumnBuilder columnBuilder = jasperType.getColumnBuilder(fieldName, fieldName);
             reportBuilder.addColumn(columnBuilder);
-            if (jasperType == JasperType.BLOB || jasperType == JasperType.DATETIME) {
+            if (jasperType == JasperType.BLOB || jasperType == JasperType.DATETIME || jasperType == JasperType.DATE) {
                 reportBuilder.addField(fieldName, Object.class);
             }
         }
