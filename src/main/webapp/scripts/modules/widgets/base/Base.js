@@ -3042,14 +3042,6 @@ WM.module('wm.widgets.base', [])
                     $el.attr('tabindex', $is.tabindex);
                     $root.removeAttr('tabindex');
                 }
-
-                $is.focus = function () {
-                    var target = $el.find('[focus-target]');
-                    if (!target.length) {
-                        target = $el;
-                    }
-                    target.first().focus();
-                };
             }
         };
     }])

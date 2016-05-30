@@ -699,18 +699,33 @@ WM.module('wm.widgets.base')
                                 }
                             }
 
-                            // Setter for widget properties
-                            $is.setProperty = function (option, value) {
-                                this[option] = value;
-                            };
-
-                            // Getter for widget properties
-                            $is.getProperty = function (option) {
-                                return this[option];
-                            };
-
                             if (CONSTANTS.isStudioMode) {
                                 WM.extend($is.widgetProps, {'active': {}});
+                            } else {
+
+                                // Setter for widget properties
+                                $is.setProperty = function (option, value) {
+                                    this[option] = value;
+                                };
+
+                                // Getter for widget properties
+                                $is.getProperty = function (option) {
+                                    return this[option];
+                                };
+
+                                // define focus method
+                                $is.focus = function () {
+                                    /**
+                                     * Check for the nodes having focus-target attribute inside the element
+                                     * If found, focus the first node (eg, date widget)
+                                     * else, focus the element (eg, text widget)
+                                     */
+                                    var $target = $el.find('[focus-target]');
+                                    if (!$target.length) {
+                                        $target = $el;
+                                    }
+                                    $target.first().focus();
+                                };
                             }
 
                             // initialize setters and getters
