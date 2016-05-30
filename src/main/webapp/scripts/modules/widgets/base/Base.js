@@ -1389,8 +1389,8 @@ WM.module('wm.widgets.base', [])
                     "wm.accordionpane": {
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
-                        "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
-                        "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
                         "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
@@ -1429,8 +1429,8 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.tabpane": {
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
-                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
-                        "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist", "show": false},
+                        "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
+                        "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "heading": {"type": "string", "value": "Tab Title", "bindable": "in-bound"},
                         "paneicon": {"type": "string", "widget": "selecticon", "bindable": "in-bound", "pattern": classRegex},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
