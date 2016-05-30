@@ -9,7 +9,7 @@ WM.module('wm.widgets.form')
         $templateCache.put('template/widget/form/fileupload.html',
                 '<div class="app-fileupload" init-widget role="input">' +
                     /* drag and drop files UI in web */
-                    '<div ng-show="multiple" class="app-multi-file-upload" ng-if="!_isMobileType">' +
+                    '<div class="app-multi-file-upload" ng-if="!_isMobileType && multiple">' +
                         '<div class="drop-box" drag-files="onFileSelect($event,$files)" apply-styles>' +
                             '<i class="{{iconclass}}"/>' +
                             '<div class="message">' +
@@ -22,7 +22,7 @@ WM.module('wm.widgets.form')
                         '</div>' +
                     '</div>' +
                     /* single file upload in web and single , multiple file upload UI in mobile runmode*/
-                    '<div class="app-single-file-upload" ng-show="!multiple || _isMobileType" ng-if="!_isCordova">' +
+                    '<div class="app-single-file-upload" ng-if="!_isCordova && (!multiple || _isMobileType)">' +
                         '<div class="app-button-wrapper">' +
                             '<form class="form-horizontal" name="{{scope.formName}}">' +
                             /* support for file upload in Mobileapp in its runmode (Web) */
@@ -54,7 +54,7 @@ WM.module('wm.widgets.form')
                         '</li>' +
                     '</ul>' +
                     /* list of uploadedfiles UI */
-                    '<ul class="list-group file-upload"  ng-style="{height: filelistheight, overflow: overflow}" ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
+                    '<ul class="list-group file-upload" ng-style="{height: filelistheight, overflow: overflow}" ng-if="fileTransfers.length > 0 && mode === \'Upload\'" >' +
                         '<li class="list-group-item file-upload-status container {{ft.status}}" ng-hide="ft.status === \'abort\'" ng-repeat="ft in fileTransfers | filter : {status : \'!abort\'}" >' +
                             '<div class="media upload-file-list">' +
                                 '<div class="media-left media-middle file-icon {{getFileExtension(ft.name) | fileIconClass}}" title="{{getFileExtension(ft.name)}}">' +

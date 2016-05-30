@@ -2982,12 +2982,20 @@ WM.module('wm.widgets.base', [])
             }
 
             return {
-                'link': function ($is, $el, attrs) {
+                'link': function ($s, $el, attrs) {
+                    var $is = $el.closest('[init-widget]').isolateScope();
+
                     $is._cssObj = {};
 
                     $is.__applyCSS = __applyCSS.bind(undefined, $is, $el, attrs);
 
                     WidgetUtilService.registerPropertyChangeListener(onCSSPropertyChange.bind(undefined, $is, $el, attrs), $is, notifyFor);
+
+                    // trigger the __applyCSS method if the widget is initialized by this time
+                    if ($is._isInitialized) {
+                        _.assign($is._cssObj, $is._initState);
+                        $is.__applyCSS();
+                    }
                 }
             };
         }
