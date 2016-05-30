@@ -163,7 +163,7 @@ WM.module('wm.layouts.containers')
                     tabs.forEach(function (tab) {
                         if (!activeTab) {
                             if (tab.isdefaulttab) {
-                                scope.activeTab = activeTab = tab;
+                                activeTab = tab;
                                 activeTab.isActive = true;
                             }
                         } else {
@@ -182,7 +182,7 @@ WM.module('wm.layouts.containers')
                     }
 
                     /* if isdefaulttab is not set on any of the tabs, then set the first tab as active */
-                    scope.activeTab = activeTab = activeTab || tabs[0];
+                    activeTab = activeTab || tabs[0];
 
                     if (activeTab) {
                         scope.selectTab(activeTab, false, true);
