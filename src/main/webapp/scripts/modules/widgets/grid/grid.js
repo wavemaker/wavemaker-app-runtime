@@ -1648,7 +1648,7 @@ WM.module('wm.widgets.grid')
                 if (CONSTANTS.isStudioMode) {
                     wp = $scope.widgetProps;
                     /*Make the "pageSize" property hidden so that no editing is possible for live and query service variables*/
-                    wp.pagesize.show    = !(isBoundToLiveVariable || isBoundToQueryServiceVariable);
+                    wp.pagesize.show    = !(isBoundToLiveVariable || isBoundToQueryServiceVariable || isBoundToFilter);
                     wp.exportformat.show  = wp.exportformat.showindesigner  = isBoundToLiveVariable || isBoundToFilter;
                     wp.multiselect.show = wp.multiselect.showindesigner = ($scope.isPartOfLiveGrid ? false : wp.multiselect.show);
                     /* In Studio, disabling readonlygrid property if bound to a service variable or view */

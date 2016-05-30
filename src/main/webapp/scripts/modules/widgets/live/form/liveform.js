@@ -1172,6 +1172,7 @@ WM.module('wm.widgets.live')
                         }
 
                         if (isLayoutDialog) {
+                            parentIsolateScope.ngform                          = parentIsolateScope.ngform || {};
                             parentIsolateScope.ngform[parentIsolateScope.name] = parentIsolateScope[parentIsolateScope.name];
                             defaultObj = _.find(parentIsolateScope.translatedObj, function (obj) {
                                 return obj.key === columnDef.key;
