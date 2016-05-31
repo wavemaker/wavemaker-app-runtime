@@ -2,12 +2,16 @@ package com.wavemaker.runtime.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -133,6 +137,11 @@ public enum JasperType {
         }
 
         @Override
+        public Object toJavaType(String value) {
+            return value.charAt(0);
+        }
+
+        @Override
         public Class getJavaClass() {
             return Character.class;
         }
@@ -166,6 +175,26 @@ public enum JasperType {
         }
 
         @Override
+        public Object toJavaType(String value) {
+            Object castedValue = null;
+            List<SimpleDateFormat> formats = new LinkedList<>();
+//        TODO add other formats
+            formats.add(new SimpleDateFormat("yyyy-MM-dd"));
+            formats.add(new SimpleDateFormat("HH:mm:ss"));
+            for (SimpleDateFormat format : formats) {
+                try {
+                    castedValue = format.parse(value);
+                } catch (ParseException ex) {
+//                do nothing
+                }
+            }
+            if (castedValue == null) {
+                castedValue = new Date(Long.parseLong(value));
+            }
+            return castedValue;
+        }
+
+        @Override
         public Class getJavaClass() {
             return Date.class;
         }
@@ -175,6 +204,11 @@ public enum JasperType {
         public ColumnBuilder getColumnBuilder(String fieldName, String aliasName) {
 
             return Columns.column(fieldName, new SimpleExpression_datetime(fieldName));
+        }
+
+        @Override
+        public Object toJavaType(String value) {
+            return LocalDateTime.parse(value);
         }
 
         @Override
@@ -223,6 +257,19 @@ public enum JasperType {
     public abstract ColumnBuilder getColumnBuilder(String fieldName, String aliasName);
 
     public abstract Class getJavaClass();
+
+
+    public Object toJavaType(String value) {
+        Object castedValue;
+        try {
+            Class<?> typeClass = getJavaClass();
+            Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
+            castedValue = cons.newInstance(value);
+            return castedValue;
+        } catch (Exception e) {
+            throw new WMRuntimeException("Exception while casting the operand", e);
+        }
+    }
 
     class ImageExpression extends AbstractSimpleExpression<InputStream> {
         private static final long serialVersionUID = 1L;
