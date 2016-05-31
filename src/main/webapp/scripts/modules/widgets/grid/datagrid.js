@@ -1848,9 +1848,7 @@ $.widget('wm.datagrid', {
             headerHeight = this.gridHeaderElement.height();
             if (headerHeight < 70) {
                 this.gridContainer.find('.app-grid-content').css('min-height', 100 - headerHeight);
-                if (headerHeight > 50) {
-                    this.dataStatusContainer.find('.status').css('margin-top', 15);
-                }
+                this.dataStatusContainer.find('.status').css('margin-top', headerHeight > 50 ? 15 : 0);
             } else {
                 this.gridContainer.find('.app-grid-content').css('min-height', headerHeight * 0.5);
                 this.dataStatusContainer.find('.status').css('margin-top', headerHeight * 0.35);

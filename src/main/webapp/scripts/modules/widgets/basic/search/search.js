@@ -39,7 +39,6 @@ WM.module('wm.widgets.basic')
                     ' typeahead-loading="_loadingItems" ' +
                     ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
-                    ' name={{name}}' +
                     ' typeahead-template-url="template/widget/form/searchlist.html">' +
                 '<i ng-show="_loadingItems" class="fa fa-refresh wm-search-widget-refresh"></i>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
@@ -105,8 +104,9 @@ WM.module('wm.widgets.basic')
         '$q',
         '$servicevariable',
         'VARIABLE_CONSTANTS',
+        '$templateCache',
 
-        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $servicevariable, VARIABLE_CONSTANTS) {
+        function (PropertiesFactory, WidgetUtilService, CONSTANTS, Utils, FormWidgetUtils, $rs, $timeout, Variables, $filter, $q, $servicevariable, VARIABLE_CONSTANTS, $templateCache) {
             'use strict';
             var widgetProps = PropertiesFactory.getPropertiesOf('wm.search', ['wm.base', 'wm.base.editors.abstracteditors']),
                 notifyFor = {
@@ -500,14 +500,29 @@ WM.module('wm.widgets.basic')
                     'onSubmit': '&'
                 },
                 'template': function (tElement, tAttrs) {
-                    var template, url = '';
+                    var template, url = '', target, isWidgetInsideCanvas;
                     if (tAttrs.navsearchbar) {
                         url = 'template/widget/form/navsearch.html';
                     } else {
                         url = 'template/widget/form/search.html';
                     }
-                    template = WM.element(WidgetUtilService.getPreparedTemplate(url, tElement, tAttrs));
+                    template = WM.element($templateCache.get(url));
+                    isWidgetInsideCanvas = tAttrs.hasOwnProperty('widgetid');
                     setQuerySearchAttributes(template, tAttrs);
+                    target = template.find('input.form-control');
+
+                    /*Set name for the model-holder, to ease submitting a form*/
+                    target.attr('name', tAttrs.name);
+                    if (!isWidgetInsideCanvas) {
+                        if (tAttrs.hasOwnProperty('onFocus')) {
+                            target.attr('ng-focus', 'onFocus({$event: $event, $scope: this})');
+                        }
+
+                        if (tAttrs.hasOwnProperty('onBlur')) {
+                            target.attr('ng-blur', 'onBlur({$event: $event, $scope: this})');
+                        }
+                    }
+
                     return template[0].outerHTML;
                 },
                 'link': {
@@ -556,8 +571,6 @@ WM.module('wm.widgets.basic')
                                 wp.onTap.show        = false;
                                 wp.onMouseenter.show = false;
                                 wp.onMouseleave.show = false;
-                                wp.onFocus.show      = false;
-                                wp.onBlur.show       = false;
                                 wp.onChange.show     = false;
                             }
                         }
