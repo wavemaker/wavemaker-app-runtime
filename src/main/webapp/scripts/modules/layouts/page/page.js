@@ -279,6 +279,12 @@ WM.module('wm.layouts.page')
                                 Utils.triggerFn($s.onSessionTimeout);
                             }));
 
+                            /**
+                             * _onPartialMethod will trigger the onPageReady of the Partial and onPagePartLoad
+                             * of the parent container once all the components(lazy widgets, partials) are loaded.
+                             */
+                            $s._onPartialLoad();
+
                             // canvasTree will listen for this event and will hide itself upon occurrence of it
                             $el.on('$destroy', function () {
                                 // destroy loaded variables
