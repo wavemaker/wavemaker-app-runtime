@@ -9,7 +9,7 @@ import java.util.Stack;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.LogicalExpression;
 
-import com.wavemaker.runtime.data.JasperType;
+import com.wavemaker.runtime.data.Types;
 import com.wavemaker.runtime.data.expression.JoinType;
 import com.wavemaker.runtime.data.expression.Type;
 import com.wavemaker.studio.common.WMRuntimeException;
@@ -39,7 +39,7 @@ public class QueryParser {
         Stack<String> joinOperatorStack = new Stack<>();
         RegExStringTokenizer stringTokenizer = new RegExStringTokenizer(query, QUERY_DELIMITER);
         ReportContext reportContext = new ReportContext();
-        HashMap<String, JasperType> fieldNameVsJasperTypeMap = reportContext.buildFieldNameVsTypeMap(entityClass.getName());
+        HashMap<String, Types> fieldNameVsTypeMap = reportContext.buildFieldNameVsTypeMap(entityClass.getName());
 
         try {
             while (stringTokenizer.hasNext()) {
@@ -64,13 +64,13 @@ public class QueryParser {
                     String operator = stringTokenizer.nextToken();
                     Type type = Type.valueFor(operator);
                     if (type != null) {
-                        JasperType jasperType = fieldNameVsJasperTypeMap.get(token);
+                        Types types = fieldNameVsTypeMap.get(token);
                         if (Type.IN == type || Type.BETWEEN == type) {
-                            Collection value = formatOperandAsCollection(stringTokenizer, jasperType);
+                            Collection value = formatOperandAsCollection(stringTokenizer, types);
                             criterionStack.push(type.criterion(token, value));
                         } else {
                             String value = stringTokenizer.nextToken();
-                            Object castedValue = jasperType.toJavaType(removeQuotes(value));
+                            Object castedValue = types.toJavaType(removeQuotes(value));
                             criterionStack.push(type.criterion(token, castedValue));
                         }
                     } else {
@@ -88,7 +88,7 @@ public class QueryParser {
         return criterionStack.pop();
     }
 
-    private Collection formatOperandAsCollection(RegExStringTokenizer stringTokenizer, JasperType jasperType) {
+    private Collection formatOperandAsCollection(RegExStringTokenizer stringTokenizer, Types types) {
         List<Object> tokens = new LinkedList<>();
         String token;
 //        todo  skip expected token OPEN_PARENTHESIS properly
@@ -96,7 +96,7 @@ public class QueryParser {
         do {
             token = stringTokenizer.nextToken();
             if (!token.equals(CLOSE_PARENTHESIS) && !token.isEmpty() && !token.equals(COMMA)) {
-                tokens.add(jasperType.toJavaType(removeQuotes(token.replace(COMMA, ""))));
+                tokens.add(types.toJavaType(removeQuotes(token.replace(COMMA, ""))));
             }
         } while (!CLOSE_PARENTHESIS.equals(token));
         return tokens;
