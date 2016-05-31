@@ -1,10 +1,6 @@
 package com.wavemaker.runtime.data.util;
 
-import java.lang.reflect.Constructor;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +8,6 @@ import java.util.Stack;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.LogicalExpression;
-import org.joda.time.LocalDateTime;
 
 import com.wavemaker.runtime.data.JasperType;
 import com.wavemaker.runtime.data.expression.JoinType;
@@ -69,15 +64,14 @@ public class QueryParser {
                     String operator = stringTokenizer.nextToken();
                     Type type = Type.valueFor(operator);
                     if (type != null) {
-                        Class operandTypeClass;
                         JasperType jasperType = fieldNameVsJasperTypeMap.get(token);
-                        operandTypeClass = jasperType.getJavaClass();
                         if (Type.IN == type || Type.BETWEEN == type) {
-                            Collection value = formatOperandAsCollection(stringTokenizer, operandTypeClass);
+                            Collection value = formatOperandAsCollection(stringTokenizer, jasperType);
                             criterionStack.push(type.criterion(token, value));
                         } else {
                             String value = stringTokenizer.nextToken();
-                            criterionStack.push(type.criterion(token, castOperand(value, operandTypeClass)));
+                            Object castedValue = jasperType.toJavaType(removeQuotes(value));
+                            criterionStack.push(type.criterion(token, castedValue));
                         }
                     } else {
                         throw new WMRuntimeException("Invalid operator in the query");
@@ -94,7 +88,7 @@ public class QueryParser {
         return criterionStack.pop();
     }
 
-    private Collection formatOperandAsCollection(RegExStringTokenizer stringTokenizer, Class<?> typeClass) {
+    private Collection formatOperandAsCollection(RegExStringTokenizer stringTokenizer, JasperType jasperType) {
         List<Object> tokens = new LinkedList<>();
         String token;
 //        todo  skip expected token OPEN_PARENTHESIS properly
@@ -102,50 +96,17 @@ public class QueryParser {
         do {
             token = stringTokenizer.nextToken();
             if (!token.equals(CLOSE_PARENTHESIS) && !token.isEmpty() && !token.equals(COMMA)) {
-                tokens.add(castOperand(token.replace(COMMA, ""), typeClass));
+                tokens.add(jasperType.toJavaType(removeQuotes(token.replace(COMMA, ""))));
             }
         } while (!CLOSE_PARENTHESIS.equals(token));
         return tokens;
     }
 
-    private Object castOperand(String value, Class<?> typeClass) {
-        try {
-            if (value.startsWith(SINGLE_QUOTE) && value.endsWith(SINGLE_QUOTE)) {
-                value = value.substring(1, value.length() - 1);
-            }
-            Object castedValue;
-            if (typeClass == Date.class) {
-                castedValue = castDateOperand(value);
-            } else if (typeClass == LocalDateTime.class) {
-                castedValue = LocalDateTime.parse(value);
-            } else {
-                Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
-                castedValue = cons.newInstance(value);
-            }
-//            TODO boolean and time types support
-            return castedValue;
-        } catch (Exception e) {
-            throw new WMRuntimeException("Exception while casting the operand", e);
+    private String removeQuotes(String value) {
+        if (value.startsWith(SINGLE_QUOTE) && value.endsWith(SINGLE_QUOTE)) {
+            value = value.substring(1, value.length() - 1);
         }
-    }
-
-    private Object castDateOperand(String value) {
-        Object castedValue = null;
-        List<SimpleDateFormat> formats = new LinkedList<>();
-//        TODO add other formats
-        formats.add(new SimpleDateFormat("yyyy-MM-dd"));
-        formats.add(new SimpleDateFormat("HH:mm:ss"));
-        for (SimpleDateFormat format : formats) {
-            try {
-                castedValue = format.parse(value);
-            } catch (ParseException ex) {
-//                do nothing
-            }
-        }
-        if (castedValue == null) {
-            castedValue = new Date(Long.parseLong(value));
-        }
-        return castedValue;
+        return value;
     }
 
     private boolean hasPrecedence(String op2) {
