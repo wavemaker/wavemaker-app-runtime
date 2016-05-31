@@ -258,6 +258,9 @@ WM.module('wm.widgets.live')
                 };
                 return fieldTypeWidgetTypeMap;
             }
+            function toBoolean(val, identity) {
+                return val === 'false' ? false : (val === 'true' || val === '' || val === identity || val);
+            }
             /**
              * @ngdoc function
              * @name wm.widgets.live.LiveWidgetUtils#getColumnDef
@@ -268,29 +271,30 @@ WM.module('wm.widgets.live')
              * return the common properties to liveFilter and liveForm .
              */
             function getColumnDef(attrs) {
-                var columnDef = {},
-                    widgetType = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0],
-                    excludeKeys = ['$attr', '$$element', 'initWidget', 'role', 'wmResizable', 'wmWidgetDrag', 'value', 'dataset', 'extensions', 'filetype'];
+                var columnDef    = {},
+                    widgetType   = attrs.widget || (attrs.widgetType && attrs.widgetType.toLowerCase()) || getFieldTypeWidgetTypesMap()[attrs.type || 'text'][0],
+                    excludeKeys  = ['$attr', '$$element', 'initWidget', 'role', 'wmResizable', 'wmWidgetDrag', 'value', 'dataset', 'extensions', 'filetype'],
+                    booleanAttrs = ['readonly', 'multiple', 'required', 'disabled'];
                 /*Loop through the attrs keys and set it to columndef*/
                 _.each(attrs, function (value, key) {
+                    if (_.includes(booleanAttrs, key)) {
+                        columnDef[key] = toBoolean(value, key);
+                        return;
+                    }
                     /*Exclude special type of keys*/
                     if (!_.includes(excludeKeys, key)) {
                         columnDef[key] = value;
                     }
                 });
                 /*Handle special cases properties*/
-                columnDef.displayname = attrs.displayname || attrs.caption;
-                columnDef.pcDisplay = WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === "1" || attrs.pcDisplay === "true") : true;
-                columnDef.mobileDisplay = WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === "1" || attrs.mobileDisplay === "true") : true;
-                columnDef.type = attrs.type || 'text';
-                columnDef.widget = widgetType; /*Widget type support for older projects*/
-                columnDef.primaryKey = attrs.primaryKey === 'true' || attrs.primaryKey === true;
-                columnDef.readonly = attrs.readonly === 'false' ? false : (attrs.readonly === 'readonly' || attrs.readonly === 'true' || attrs.readonly);
-                columnDef.multiple = attrs.multiple === 'false' ? false :  (attrs.multiple === 'multiple' || attrs.multiple === 'true' || attrs.multiple);
-                columnDef.class = attrs.class || '';
-                columnDef.required = attrs.required === 'false' ? false : (attrs.required === 'required' || attrs.required === 'true' || attrs.required);
-                columnDef.show = attrs.show === 'false' ? false : (attrs.show === '1' || attrs.show === 'true' || attrs.show);
-                columnDef.disabled = attrs.disabled === 'false' ? false : (attrs.disabled === 'disabled' || attrs.disabled === 'true' || attrs.disabled);
+                columnDef.displayname   = attrs.displayname || attrs.caption;
+                columnDef.pcDisplay     = WM.isDefined(attrs.pcDisplay) ? (attrs.pcDisplay === 'true') : true;
+                columnDef.mobileDisplay = WM.isDefined(attrs.mobileDisplay) ? (attrs.mobileDisplay === 'true') : true;
+                columnDef.type          = attrs.type || 'text';
+                columnDef.class         = attrs.class || '';
+                columnDef.widget        = widgetType; /*Widget type support for older projects*/
+                columnDef.primaryKey    = attrs.primaryKey === 'true' || attrs.primaryKey === true;
+                columnDef.show          = attrs.show === 'false' ? false : (attrs.show === 'true' || attrs.show);
                 return columnDef;
             }
             /**
