@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.wavemaker.runtime.data.JasperType;
+import com.wavemaker.runtime.data.Types;
 
 /**
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
@@ -16,26 +16,26 @@ import com.wavemaker.runtime.data.JasperType;
 public class ReportContext {
 
 
-    public HashMap<String, JasperType> buildFieldNameVsTypeMap(String className) {
+    public HashMap<String, Types> buildFieldNameVsTypeMap(String className) {
         return _buildFieldNameVsTypeMap(className, "", true);
     }
 
 
-    private HashMap<String, JasperType> _buildFieldNameVsTypeMap(String entityName, String fieldPrefix, boolean loopOnce) {
+    private HashMap<String, Types> _buildFieldNameVsTypeMap(String entityName, String fieldPrefix, boolean loopOnce) {
         try {
             Class entity = Class.forName(entityName);
-            HashMap<String, JasperType> fieldNameVsTypeMap = new LinkedHashMap<>();
+            HashMap<String, Types> fieldNameVsTypeMap = new LinkedHashMap<>();
             for (Field field : entity.getDeclaredFields()) {
                 Class fieldType = field.getType();
                 String fieldName = field.getName();
                 if (Collection.class != fieldType) {
                     String typeClassName = fieldType.getName();
-                    JasperType jasperType = JasperType.valueFor(typeClassName);
-                    if (jasperType != null) {
+                    Types types = Types.valueFor(typeClassName);
+                    if (types != null) {
                         if (StringUtils.isNotBlank(fieldPrefix)) {
                             fieldName = fieldPrefix + "." + fieldName;
                         }
-                        fieldNameVsTypeMap.put(fieldName, jasperType);
+                        fieldNameVsTypeMap.put(fieldName, types);
                     } else if (loopOnce) {
                         fieldNameVsTypeMap.putAll(_buildFieldNameVsTypeMap(typeClassName, fieldName, false));
                     }

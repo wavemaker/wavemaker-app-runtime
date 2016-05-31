@@ -29,7 +29,7 @@ import net.sf.dynamicreports.report.definition.ReportParameters;
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 26/5/16
  */
-public enum JasperType {
+public enum Types {
 
     BYTE(Arrays.asList(Byte.class.getName(), byte.class.getName())) {
         @Override
@@ -228,25 +228,25 @@ public enum JasperType {
         }
     };
 
-    private static Map<String, JasperType> classNameVsJasperTypesMap = new HashMap<>();
+    private static Map<String, Types> classNameVsTypesMap = new HashMap<>();
 
 
-    public static JasperType valueFor(String value) {
-        return classNameVsJasperTypesMap.get(value);
+    public static Types valueFor(String value) {
+        return classNameVsTypesMap.get(value);
     }
 
 
     static {
-        for (final JasperType jasperType : JasperType.values()) {
-            for (String className : jasperType.getClassNames()) {
-                classNameVsJasperTypesMap.put(className, jasperType);
+        for (final Types types : Types.values()) {
+            for (String className : types.getClassNames()) {
+                classNameVsTypesMap.put(className, types);
             }
         }
     }
 
     private final List<String> classNames;
 
-    JasperType(final List<String> classNames) {
+    Types(final List<String> classNames) {
         this.classNames = classNames;
     }
 

@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 
-import com.wavemaker.runtime.data.JasperType;
+import com.wavemaker.runtime.data.Types;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.QueryParser;
 import com.wavemaker.runtime.data.util.ReportContext;
@@ -36,15 +36,15 @@ public class ReportGenerator {
     public JasperReportBuilder generateReport() {
         JasperReportBuilder reportBuilder = new JasperReportBuilder();
         ReportContext reportContext = new ReportContext();
-        HashMap<String, JasperType> fieldNameVsTypeMap = reportContext.buildFieldNameVsTypeMap(entityClass.getName());
+        HashMap<String, Types> fieldNameVsTypeMap = reportContext.buildFieldNameVsTypeMap(entityClass.getName());
         reportBuilder.setDataSource(constructDataSource());
         List<String> fieldNames = new ArrayList<>(fieldNameVsTypeMap.keySet());
 
         for (String fieldName : fieldNames) {
-            JasperType jasperType = fieldNameVsTypeMap.get(fieldName);
-            ColumnBuilder columnBuilder = jasperType.getColumnBuilder(fieldName, fieldName);
+            Types types = fieldNameVsTypeMap.get(fieldName);
+            ColumnBuilder columnBuilder = types.getColumnBuilder(fieldName, fieldName);
             reportBuilder.addColumn(columnBuilder);
-            if (jasperType == JasperType.BLOB || jasperType == JasperType.DATETIME || jasperType == JasperType.DATE) {
+            if (types == Types.BLOB || types == Types.DATETIME || types == Types.DATE) {
                 reportBuilder.addField(fieldName, Object.class);
             }
         }
