@@ -39,7 +39,7 @@ WM.module('wm.layouts.containers')
 
         //Define the template for the wizard step directive
         $templateCache.put('template/layout/container/wizard-step.html',
-            '<form apply-styles="container" init-widget page-container class="app-wizard-step-content" ng-class="{\'current\': status === \'CURRENT\'}" data-step-id="{{stepIndex}}"><div page-container-target wmtransclude></div></form>');
+            '<form apply-styles="container" init-widget wmtransclude class="app-wizard-step-content" ng-class="{\'current\': status === \'CURRENT\'}" data-step-id="{{stepIndex}}"></form>');
     }])
     .directive('wmWizard', [
         'PropertiesFactory',
