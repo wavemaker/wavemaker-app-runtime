@@ -148,7 +148,7 @@ public enum JasperType {
             return String.class;
         }
     },
-    BLOB(Arrays.asList(Byte.class.getName(), byte[].class.getName())) {
+    BLOB(Arrays.asList(Byte[].class.getName(), byte[].class.getName())) {
         @Override
         public ColumnBuilder getColumnBuilder(String fieldName, String aliasName) {
             return Columns.componentColumn(fieldName, Components.image(new ImageExpression(fieldName)));
@@ -156,7 +156,7 @@ public enum JasperType {
 
         @Override
         public Class getJavaClass() {
-            return Byte.class;
+            return Byte[].class;
         }
     },
     DATE(Collections.singletonList(Date.class.getName())) {
