@@ -2041,7 +2041,7 @@ WM.module('wm.widgets.base', [])
      * If match is satisfied, the widget is properly compiled and displayed in the UI
      * Else the element is cleared from the DOM
      */
-    .directive('accessroles', function (CONSTANTS, $rootScope, $compile) {
+    .directive('accessroles', function (CONSTANTS, $rootScope, $compile, Utils) {
         "use strict";
         var directive = {};
 
@@ -2082,7 +2082,7 @@ WM.module('wm.widgets.base', [])
                 "link": {
                     "pre": function (scope, element, attrs) {
                         var userRoles   = $rootScope.userRoles || [],
-                            widgetRoles = attrs.accessroles ? attrs.accessroles.split(",") : [],
+                            widgetRoles = Utils.getWidgetRolesArrayFromStr(attrs.accessroles),
                             clonedElement;
 
                         if (hasAccessToWidget(widgetRoles, userRoles)) {
