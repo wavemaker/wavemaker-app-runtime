@@ -64,10 +64,9 @@ WM.module('wm.widgets.live')
         'DeviceVariableService',
         'LiveWidgetUtils',
         'FormWidgetUtils',
-        'Variables',
         '$filter',
 
-        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, Variables, $filter) {
+        function (WidgetUtilService, PropertiesFactory, $tc, CONSTANTS, $compile, Utils, $rs, $servicevariable, $timeout, DeviceVariableService, LiveWidgetUtils, FormWidgetUtils, $filter) {
             'use strict';
 
             var widgetProps             = PropertiesFactory.getPropertiesOf('wm.livelist', ['wm.base', 'wm.containers', 'wm.base.events', 'wm.base.navigation']),
@@ -285,6 +284,41 @@ WM.module('wm.widgets.live')
                     }
                 });
                 return obj.type;
+            }
+
+            function applyWrapper($tmplContent, attrs, flag) {
+                var tmpl = liTemplateWrapper_start;
+
+                if (attrs.hasOwnProperty('onMouseenter')) {
+                    tmpl += ' ng-mouseenter="onMouseenter({$event: $event, $scope: this})" ';
+                }
+
+                if (attrs.hasOwnProperty('onMouseleave')) {
+                    tmpl += ' ng-mouseleave="onMouseleave({$event: $event, $scope: this})" ';
+                }
+
+                tmpl += liTemplateWrapper_end;
+                tmpl = WM.element(tmpl);
+
+                if (flag) {
+                    tmpl.find('.app-list-item').append($tmplContent);
+                } else {
+                    tmpl.first().append($tmplContent);
+                }
+                return tmpl;
+            }
+
+            function prepareLITemplate(tmpl, attrs, flag) {
+                var $tmpl = WM.element(tmpl),
+                    $div  = WM.element('<div></div>').append($tmpl),
+                    parentDataSet = attrs.dataset || attrs.scopedataset;
+
+                if (parentDataSet) {
+                    Utils.updateTmplAttrs($div, parentDataSet);
+                }
+                $tmpl = applyWrapper($tmpl, attrs, flag);
+
+                return $tmpl;
             }
 
             //Format the date with given date format
@@ -680,9 +714,8 @@ WM.module('wm.widgets.live')
                     selectedVariable,
                     oldClass,
                     newClass,
-                    markup,
-                    $element,
                     groupbyOptions,
+                    operation,
                     eleScope    = $el.scope(),
                     variable    = Utils.getVariableName($is, eleScope),
                     wp          = $is.widgetProps,
@@ -740,8 +773,11 @@ WM.module('wm.widgets.live')
 
                             // set the groupby options
                             if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
-                                wp.groupby.options = _.keys(DeviceVariableService.getOperation(selectedVariable.service, selectedVariable.operation).getMeta());
-                                return;
+                                operation = DeviceVariableService.getOperation(selectedVariable.service, selectedVariable.operation);
+                                if (operation.hasOwnProperty('getMeta')) {
+                                    wp.groupby.options = _.keys(operation.getMeta());
+                                    return;
+                                }
                             }
                             wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, {'sort' : true});
                         }
@@ -856,40 +892,6 @@ WM.module('wm.widgets.live')
                 return $liScope;
             }
 
-            function applyWrapper($tmplContent, attrs, flag) {
-                var tmpl = liTemplateWrapper_start;
-
-                if (attrs.hasOwnProperty('onMouseenter')) {
-                    tmpl += ' ng-mouseenter="onMouseenter({$event: $event, $scope: this})" ';
-                }
-
-                if (attrs.hasOwnProperty('onMouseleave')) {
-                    tmpl += ' ng-mouseleave="onMouseleave({$event: $event, $scope: this})" ';
-                }
-
-                tmpl += liTemplateWrapper_end;
-                tmpl = WM.element(tmpl);
-
-                if (flag) {
-                    tmpl.find('.app-list-item').append($tmplContent);
-                } else {
-                    tmpl.first().append($tmplContent);
-                }
-                return tmpl;
-            }
-
-            function prepareLITemplate(tmpl, attrs, flag) {
-                var $tmpl = WM.element(tmpl),
-                    $div  = WM.element('<div></div>').append($tmpl),
-                    parentDataSet = attrs.dataset || attrs.scopedataset;
-
-                if (parentDataSet) {
-                    Utils.updateTmplAttrs($div, parentDataSet);
-                }
-                $tmpl = applyWrapper($tmpl, attrs, flag);
-
-                return $tmpl;
-            }
             /*Function to get data of all active elements*/
             function getSelectedItems($el, items) {
                 items.length = 0;
