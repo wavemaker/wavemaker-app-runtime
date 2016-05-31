@@ -162,7 +162,7 @@ public enum JasperType {
     DATE(Collections.singletonList(Date.class.getName())) {
         @Override
         public ColumnBuilder getColumnBuilder(String fieldName, String aliasName) {
-            return Columns.column(fieldName, fieldName, DataTypes.dateType());
+            return Columns.column(fieldName, new SimpleExpression_date(fieldName));
         }
 
         @Override
@@ -251,6 +251,22 @@ public enum JasperType {
         public String evaluate(ReportParameters reportParameters) {
             LocalDateTime localDateTime = reportParameters.getValue(fieldName);
             return localDateTime.toString();
+        }
+    }
+
+    private class SimpleExpression_date extends AbstractSimpleExpression<String> {
+        private static final long serialVersionUID = 1L;
+
+        private String fieldName;
+
+        public SimpleExpression_date(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        @Override
+        public String evaluate(ReportParameters reportParameters) {
+            Date date = reportParameters.getValue(fieldName);
+            return date.toString();
         }
     }
 }

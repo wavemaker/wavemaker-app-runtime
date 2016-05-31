@@ -1,6 +1,7 @@
 package com.wavemaker.runtime.data.util;
 
 import java.lang.reflect.Constructor;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -93,37 +94,6 @@ public class QueryParser {
         return criterionStack.pop();
     }
 
-    private Object castOperand(String value, Class<?> typeClass) {
-        try {
-            if (value.startsWith(SINGLE_QUOTE) && value.endsWith(SINGLE_QUOTE)) {
-                value = value.substring(1, value.length() - 1);
-            }
-            Object castedValue;
-            if (typeClass == Date.class) {
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                castedValue = formatter.parse(value);
-            } else if (typeClass == LocalDateTime.class) {
-                castedValue = LocalDateTime.parse(value);
-            } else {
-                Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
-                castedValue = cons.newInstance(value);
-            }
-//            TODO boolean and time types support
-            return castedValue;
-        } catch (Exception e) {
-            throw new WMRuntimeException("Exception while casting the operand", e);
-        }
-
-    }
-
-    private boolean hasPrecedence(String op2) {
-        return (!(op2.equals(OPEN_PARENTHESIS) || op2.equals(CLOSE_PARENTHESIS)));
-    }
-
-    private LogicalExpression applyOp(Criterion lhs, Criterion rhs, JoinType joinType) {
-        return joinType.criterion(lhs, rhs);
-    }
-
     private Collection formatOperandAsCollection(RegExStringTokenizer stringTokenizer, Class<?> typeClass) {
         List<Object> tokens = new LinkedList<>();
         String token;
@@ -136,6 +106,54 @@ public class QueryParser {
             }
         } while (!CLOSE_PARENTHESIS.equals(token));
         return tokens;
+    }
+
+    private Object castOperand(String value, Class<?> typeClass) {
+        try {
+            if (value.startsWith(SINGLE_QUOTE) && value.endsWith(SINGLE_QUOTE)) {
+                value = value.substring(1, value.length() - 1);
+            }
+            Object castedValue;
+            if (typeClass == Date.class) {
+                castedValue = castDateOperand(value);
+            } else if (typeClass == LocalDateTime.class) {
+                castedValue = LocalDateTime.parse(value);
+            } else {
+                Constructor<?> cons = typeClass.getConstructor(new Class<?>[]{String.class});
+                castedValue = cons.newInstance(value);
+            }
+//            TODO boolean and time types support
+            return castedValue;
+        } catch (Exception e) {
+            throw new WMRuntimeException("Exception while casting the operand", e);
+        }
+    }
+
+    private Object castDateOperand(String value) {
+        Object castedValue = null;
+        List<SimpleDateFormat> formats = new LinkedList<>();
+//        TODO add other formats
+        formats.add(new SimpleDateFormat("yyyy-MM-dd"));
+        formats.add(new SimpleDateFormat("HH:mm:ss"));
+        for (SimpleDateFormat format : formats) {
+            try {
+                castedValue = format.parse(value);
+            } catch (ParseException ex) {
+//                do nothing
+            }
+        }
+        if (castedValue == null) {
+            castedValue = new Date(Long.parseLong(value));
+        }
+        return castedValue;
+    }
+
+    private boolean hasPrecedence(String op2) {
+        return (!(op2.equals(OPEN_PARENTHESIS) || op2.equals(CLOSE_PARENTHESIS)));
+    }
+
+    private LogicalExpression applyOp(Criterion lhs, Criterion rhs, JoinType joinType) {
+        return joinType.criterion(lhs, rhs);
     }
 
     private boolean isJoinOperator(String operator) {
