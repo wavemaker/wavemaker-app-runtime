@@ -1830,6 +1830,18 @@ WM.module('wm.utils', [])
             formEl.submit();
         }
 
+
+        //converts the csv representation of roles to array
+        function getWidgetRolesArrayFromStr(val) {
+            var UNICODE_COMMA_REGEX = /&#44;/g;
+
+            val = val || '';
+            // replace the unicode equivalent of comma with comma
+            return val.split(',').map(function (v) {
+                return _.trim(v).replace(UNICODE_COMMA_REGEX, ',');
+            });
+        }
+
         this.camelCase                  = WM.element.camelCase;
         this.initCaps                   = initCaps;
         this.firstCaps                  = firstCaps;
@@ -1897,7 +1909,7 @@ WM.module('wm.utils', [])
         this.getNodeFromJson            = getNodeFromJson;
         this.removeJsonNodeChildren     = removeJsonNodeChildren;
         this.isIE                       = isIE;
-        this.isIE9                       = isIE9;
+        this.isIE9                      = isIE9;
         this.isIE11                     = isIE11;
         this.getValidJSON               = getValidJSON;
         this.getActionFromKey           = getActionFromKey;
@@ -1936,4 +1948,5 @@ WM.module('wm.utils', [])
         this.sort                       = sort;
         this.triggerCustomEvents        = triggerCustomEvents;
         this.simulateFileDownload       = simulateFileDownload;
+        this.getWidgetRolesArrayFromStr = getWidgetRolesArrayFromStr;
     }]);
