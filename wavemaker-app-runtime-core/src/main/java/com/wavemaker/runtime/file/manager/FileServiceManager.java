@@ -153,16 +153,14 @@ public class FileServiceManager {
      * **************************************************************************
      */
     public boolean deleteFile(String file, File uploadDirectory) throws IOException {
-        File dir = uploadDirectory;
-        File f = (file.startsWith("/")) ? new File(file) : new File(dir, file);
-        boolean deleteFileResponse = false;
+        File f = (file.startsWith("/")) ? new File(file) : new File(uploadDirectory, file);
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your operating system, or your .password file.
-        if (f.getAbsolutePath().indexOf(dir.getAbsolutePath()) == 0) {
-            deleteFileResponse = f.delete();
+        if (f.getAbsolutePath().indexOf(uploadDirectory.getAbsolutePath()) != 0) {
+            throw new RuntimeException("Deletion of file at " + f.getAbsolutePath() + " is not allowed. ");
         }
-        return deleteFileResponse;
+        return f.delete();
     }
 
     /**
@@ -180,13 +178,15 @@ public class FileServiceManager {
      * **************************************************************************
      */
     public File downloadFile(String file, File uploadDirectory) throws Exception {
-        File dir = uploadDirectory;
-        File f = (file.startsWith("/")) ? new File(file) : new File(dir, file);
+        File f = (file.startsWith("/")) ? new File(file) : new File(uploadDirectory, file);
 
         // verify that the path specified by the server is a valid path, and not, say,
         // your .password file.
-        if (f.getAbsolutePath().indexOf(dir.getAbsolutePath()) != 0)
+        if (f.getAbsolutePath().indexOf(uploadDirectory.getAbsolutePath()) != 0)
             throw new Exception("File not in uploadDir");
+
+        if(!f.exists())
+            throw new Exception("File with name " + file + "  not found");
 
         return f;
     }
