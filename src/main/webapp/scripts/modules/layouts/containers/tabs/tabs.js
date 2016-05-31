@@ -177,7 +177,7 @@ WM.module('wm.layouts.containers')
                         Utils.triggerFn(onBeforeSwitchTab);
 
                         if (tab) {
-                            tab._headerElement.click();
+                            tab.select();
                         }
                     }
 
