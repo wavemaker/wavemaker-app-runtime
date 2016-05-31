@@ -282,7 +282,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         isList       : isList,
                         return       : returnObj,
                         returnFormat : returnFormat,
-                        controller   : operation.tags && operation.tags[0],
+                        controller   : operation.tags && operation.tags[0].replace(/Controller$/, ''),
                         operationId  : operation.operationId
                     };
                     serviceObj.operations.push(operationObject);
