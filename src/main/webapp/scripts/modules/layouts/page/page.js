@@ -111,6 +111,7 @@ WM.module('wm.layouts.page')
                                             //trigger the onPageReady method
                                             if ($s.hasOwnProperty('onPageReady')) {
                                                 Utils.triggerFn($s.onPageReady);
+                                                $s.registerPagePart = $s.onPagePartLoad = _.noop;
                                             }
                                         });
                                     });
@@ -195,6 +196,7 @@ WM.module('wm.layouts.page')
                         // trigger onPageReady method if it is defined in the controller of partial
                         if ($s.hasOwnProperty('onPageReady')) {
                             Utils.triggerFn($s.onPageReady);
+                            $s.registerPagePart = $s.onPagePartLoad = _.noop;
                         }
                         // trigger the onPagePartLoad of parent container
                         Utils.triggerFn($s.$parent.onPagePartLoad);

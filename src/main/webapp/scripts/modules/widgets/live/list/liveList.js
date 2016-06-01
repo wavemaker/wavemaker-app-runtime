@@ -1105,7 +1105,8 @@ WM.module('wm.widgets.live')
 
             function defineSelectedItemProp($is, $el, items) {
                 Object.defineProperty($is, 'selecteditem', {
-                    get: function () {
+                    'configurable': true,
+                    'get': function () {
                         //update the items with out changing the reference.
                         items = getSelectedItems($el, items);
                         if (items && items.length === 1) {
@@ -1113,7 +1114,7 @@ WM.module('wm.widgets.live')
                         }
                         return items;
                     },
-                    set: function (items) {
+                    'set': function (items) {
                         $el.find('li.app-list-item.active').removeClass('active'); // removing active class from previous selectedItem
                         if (_.isArray(items)) {
                             _.forEach(items, function (item) {
@@ -1150,7 +1151,8 @@ WM.module('wm.widgets.live')
                 }
             }
 
-            function onDestroy(handlers) {
+            function onDestroy($is, handlers) {
+                Object.defineProperty($is, 'selecteditem', {'get': _.noop, 'set': _.noop});
                 handlers.forEach(Utils.triggerFn);
             }
 
@@ -1199,7 +1201,7 @@ WM.module('wm.widgets.live')
                             $is.variableInflight = active;
                         }
                     }));
-                    _onDestroy = onDestroy.bind(undefined, handlers);
+                    _onDestroy = onDestroy.bind(undefined, $is, handlers);
                     $is.$on('$destroy', _onDestroy);
                     $el.on('$destroy', _onDestroy);
                 }
