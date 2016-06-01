@@ -651,7 +651,9 @@ wm.variables.services.Variables = [
                             }
                         } else {
                             if (variable.startUpdate && WM.isFunction(variable.update)) {
-                                variable.update();
+                                $timeout(function () {
+                                    variable.update();
+                                }, null, false);
                             } else {
                                 /*
                                  * In studio mode, DB and table related data is to be fetched and saved in the variable
