@@ -189,6 +189,9 @@ WM.module('wm.layouts.page')
             function triggerOnReady($s) {
                 $timeout(function () {
                     $rs.$$postDigest(function () {
+                        /* triggering the event post digest, so that any expression watches are computed before the same*/
+                        $rs.$emit('partial-ready', $s);
+
                         // trigger onPageReady method if it is defined in the controller of partial
                         if ($s.hasOwnProperty('onPageReady')) {
                             Utils.triggerFn($s.onPageReady);

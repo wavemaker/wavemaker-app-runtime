@@ -49,6 +49,7 @@ wm.variables.services.Variables = [
         var runMode = CONSTANTS.isRunMode,
             MAIN_PAGE = 'Main',
             startUpdateQueue = [],
+            lazySartUpdateQueue = {},
             variableConfig = [
                 {
                     "collectionType": "call",
@@ -559,9 +560,10 @@ wm.variables.services.Variables = [
              * the method on variable is simply called
              * @param variable
              */
-            processVariableStartUpdate = function (variable) {
+            processVariableStartUpdate = function (variable, scope) {
                 if ($rootScope._pageReady) {
-                    makeVariableCall(variable);
+                    lazySartUpdateQueue[scope.$id] = lazySartUpdateQueue[scope.$id] || [];
+                    lazySartUpdateQueue[scope.$id].push(variable);
                 } else {
                     startUpdateQueue.push(variable);
                 }
@@ -632,7 +634,7 @@ wm.variables.services.Variables = [
                         if (runMode) {
                             variable.canUpdate = true;
                             if (variable.startUpdate) {
-                                processVariableStartUpdate(variable);
+                                processVariableStartUpdate(variable, scope);
                             }
                         } else {
                             //fetching the meta data in design mode always
@@ -645,7 +647,7 @@ wm.variables.services.Variables = [
                         if (runMode) {
                             variable.canUpdate = true;
                             if (variable.startUpdate) {
-                                processVariableStartUpdate(variable);
+                                processVariableStartUpdate(variable, scope);
                             }
                         } else {
                             if (variable.startUpdate && WM.isFunction(variable.update)) {
@@ -666,15 +668,15 @@ wm.variables.services.Variables = [
                         }
                     } else if (variable.category === "wm.LoginVariable") {
                         if (runMode && variable.startUpdate) {
-                            processVariableStartUpdate(variable);
+                            processVariableStartUpdate(variable, scope);
                         }
                     } else if (variable.category === "wm.TimerVariable") {
                         if (runMode && variable.autoStart) {
-                            processVariableStartUpdate(variable);
+                            processVariableStartUpdate(variable, scope);
                         }
                     } else if (variable.category === "wm.DeviceVariable") {
                         if (runMode && variable.startUpdate) {
-                            processVariableStartUpdate(variable);
+                            processVariableStartUpdate(variable, scope);
                         }
                     }
                 });
@@ -1521,6 +1523,12 @@ wm.variables.services.Variables = [
             $rootScope.$on('page-ready', function () {
                 _.forEach(startUpdateQueue, makeVariableCall);
                 startUpdateQueue = [];
+            });
+            $rootScope.$on('partial-ready', function (event, scope) {
+                if (lazySartUpdateQueue[scope.$id]) {
+                    _.forEach(lazySartUpdateQueue[scope.$id], makeVariableCall);
+                    lazySartUpdateQueue[scope.$id] = undefined;
+                }
             });
         }
 
