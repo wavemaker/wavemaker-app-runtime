@@ -395,7 +395,7 @@ WM.module('wm.widgets.live')
                     }
                 });
                 _.forEach(focusEvents, function (evt) {
-                    fields += ' ' + Utils.hyphenate(evt) + '="{{formFields[' + index + '].' + evt + '}};' + evt + 'Field($event)"';
+                    fields += ' ' + Utils.hyphenate(evt) + '="' + evt + 'Field($event, $scope);{{formFields[' + index + '].' + evt + '}}"';
                 });
                 return fields;
             }
@@ -626,7 +626,7 @@ WM.module('wm.widgets.live')
                     break;
                 }
                 template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched) && isUpdateMode">' + fieldDef.hint + '</p>' : '');
-                template = template + (fieldDef.validationmessage ? '<p ng-if="ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">' + fieldDef.validationmessage + '</p>' : '');
+                template = template + '<p ng-if="ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
                 template = template + '</div></wm-composite>';
                 return template;
             }
@@ -892,6 +892,7 @@ WM.module('wm.widgets.live')
                 case 'disabled':
                 case 'readonly':
                 case 'required':
+                case 'validationmessage':
                     parentScope.formFields[index][key] = newVal;
                     compileField();
                     break;

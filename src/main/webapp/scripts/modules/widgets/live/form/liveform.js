@@ -1065,6 +1065,9 @@ WM.module('wm.widgets.live')
                                 columnDef.value = columnDef.defaultvalue;
                             }
                         }
+                        function setValidity(name, val) {
+                            parentIsolateScope.ngform[columnDef.parentForm][name + '_formWidget'].$setValidity('custom', val);
+                        }
                         parentIsolateScope = scope.parentIsolateScope = (element.parent() && element.parent().length > 0) ? element.parent().closest('[data-identifier="liveform"]').isolateScope() || scope.$parent : scope.$parent;
                         isLayoutDialog = parentIsolateScope.isLayoutDialog;
                         columnDef = WM.extend(LiveWidgetUtils.getColumnDef(attrs), {
@@ -1083,6 +1086,7 @@ WM.module('wm.widgets.live')
                         scope.readonly = columnDef.readonly;
                         scope.disabled = columnDef.disabled;
                         scope.multiple = columnDef.multiple;
+                        scope._validationmessage = columnDef.validationmessage;
                         //For normal form is update mode won't be set on parent scope, set it explicitly based on isupdatemode attribute
                         if (scope.isupdatemode === 'true') {
                             parentIsolateScope.isUpdateMode = true;
@@ -1224,7 +1228,11 @@ WM.module('wm.widgets.live')
                             WM.element($event.target).closest('.live-field').addClass('active'); //On focus of the field, add active class
                         };
                         parentIsolateScope.onBlurField = parentIsolateScope.onBlurField || function ($event) {
-                            WM.element($event.target).closest('.live-field').removeClass('active'); //On focus out of the field, remove active class
+                            var $field     = WM.element($event.target).closest('.live-field'),
+                                fieldScope = $field.parent('[data-role="form-field"]').isolateScope();
+                            $field.removeClass('active');
+                            fieldScope.validationmessage = fieldScope._validationmessage;
+                            setValidity(fieldScope.name, true);
                         };
                         parentIsolateScope.$on('$destroy', function () {
                             if (exprWatchHandler) {
@@ -1253,6 +1261,10 @@ WM.module('wm.widgets.live')
                                 }
                             });
                         }
+                        scope.setValidationMessage = function (val) {
+                            scope.validationmessage = val;
+                            setValidity(scope.name, false);
+                        };
                     }
                 };
             }
