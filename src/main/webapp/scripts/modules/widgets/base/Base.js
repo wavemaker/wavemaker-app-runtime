@@ -1144,6 +1144,7 @@ WM.module('wm.widgets.base', [])
                         "padding": {"type": "string", "widget": "box-model"},
                         "backgroundcolor": {"type": "string", "widget": "color", "show": false},
                         "height": {"type": "string", "pattern": dimensionRegex},
+                        "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "insert": {"type": "toolbar", "actions": [{'action': 'addrowbelow', 'label': 'LABEL_PROPERTY_ADDROWBELOW', 'icon': 'add-row-below'}, {'action': 'addrowabove', 'label': 'LABEL_PROPERTY_ADDROWABOVE', 'icon': 'add-row-above'}, {'action': 'addcolumn', 'label': 'LABEL_PROPERTY_ADDCOLUMN', 'icon': 'add-column'}]}
                     },
                     'wm.layouts.column': {
