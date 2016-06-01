@@ -776,7 +776,7 @@ $.widget('wm.datagrid', {
             this.gridHeaderElement.find('th').each(function (index) {
                 /***setting the header col width based on the content width***/
                 var $header = $(this),
-                    width   = $header.width(),
+                    width   = $header.outerWidth(),
                     id      = $header.attr('data-col-id'),
                     colDef  = self.preparedHeaderData[id];
                 if (!_.isUndefined(colDef.show) && !colDef.show) { //If show is false, set width to 0 to hide the column
@@ -784,12 +784,7 @@ $.widget('wm.datagrid', {
                 } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
                     width = 50;
                 } else {
-                    if (_.isUndefined(colDef.width) || colDef.width === '') {
-                        if (colDef.displayName && colDef.displayName.length) {
-                            width = (colDef.displayName.length * 10) + 20;
-                        }
-                        width = width > 100 ? width : 100; //columnSanity check to prevent width being too small
-                    } else {
+                    if (colDef.width) {
                         width = colDef.width;
                     }
                 }
@@ -1822,10 +1817,7 @@ $.widget('wm.datagrid', {
     },
 
     setStatus: function (state, message) {
-        var loadingIndicator = this.dataStatusContainer.find('.fa'),
-            headerHeight,
-            $gridContent,
-            $status;
+        var loadingIndicator = this.dataStatusContainer.find('.fa');
         this.dataStatus.state = state;
         this.dataStatus.message = message || this.options.dataStates[state];
         this.dataStatusContainer.find('.message').text(this.dataStatus.message);
@@ -1839,29 +1831,10 @@ $.widget('wm.datagrid', {
         } else {
             this.dataStatusContainer.show();
         }
-        if (state === 'nodata') {
-            this.dataStatusContainer.addClass('bg-none');
+        if (state === 'nodata' || state === 'loading') {
+            this.gridContainer.addClass('show-msg');
         } else {
-            this.dataStatusContainer.removeClass('bg-none');
-        }
-        if (this.options.showHeader) {
-            $gridContent = this.gridContainer.find('.app-grid-content');
-            $status      = this.dataStatusContainer.find('.status');
-            if (state === 'nodata' || state === 'loading') {
-                //If header height is increased to 2 or 3 lines, No data found message overlaps with header
-                //To avoid this, set minimum height on grid content and add margin top to the status
-                headerHeight = this.gridHeaderElement.height();
-                if (headerHeight < 70) {
-                    $gridContent.css('min-height', 100 - headerHeight);
-                    $status.css('margin-top', headerHeight > 50 ? 15 : 0);
-                } else {
-                    $gridContent.css('min-height', headerHeight * 0.5);
-                    $status.css('margin-top', headerHeight * 0.35);
-                }
-            } else {
-                $gridContent.css('min-height', '');
-                $status.css('margin-top', '');
-            }
+            this.gridContainer.removeClass('show-msg');
         }
     },
 
@@ -1872,6 +1845,7 @@ $.widget('wm.datagrid', {
         this.options[key] = value;
         if (key === 'height') {
             this.gridContainer.find('.app-grid-content').css(key, value);
+            this.dataStatusContainer.css(key, value);
         }
         this.addOrRemoveScroll();
     },

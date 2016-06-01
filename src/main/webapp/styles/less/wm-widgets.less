@@ -1534,6 +1534,15 @@ If the height and width are not specified the video takes the height of the post
       overflow: hidden;
       overflow-x: hidden;
       width: 100%;
+      &.show-msg {
+        pointer-events: none;
+        .overlay {
+          position: relative;
+        }
+        .app-grid-content {
+          display: none;
+        }
+      }
     }
     .app-datagrid-cell {
       img {
@@ -1569,6 +1578,9 @@ If the height and width are not specified the video takes the height of the post
         overflow: hidden;
         width: 100%;
         height: 100%;
+        colgroup col {
+          width: 10em;
+        }
       }
       &.scroll-visible {
         padding-right: 17px;
@@ -1712,7 +1724,7 @@ If the height and width are not specified the video takes the height of the post
     z-index: 999;
     background: rgba(255, 255, 255, 0.5);
     text-align: center;
-    padding: 3em;
+    padding: 1em;
     .loading {
       display: inline-block;
       .width-height(16px, 16px);
@@ -1725,9 +1737,6 @@ If the height and width are not specified the video takes the height of the post
       display: inline-block;
       position: relative;
       top: 50%;
-    }
-    &.bg-none {
-      background: none;
     }
   }
 }
