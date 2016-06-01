@@ -102,15 +102,16 @@ WM.module('wm.layouts.page')
 
                                     // update the device after some delay
                                     $timeout(function () {
-                                        //trigger the onPageReady method
-                                        if ($s.hasOwnProperty('onPageReady')) {
-                                            Utils.triggerFn($s.onPageReady);
-                                        }
                                         DeviceViewService.update($el, $s.layout.leftSection, $s.layout.rightSection, $s.layout.search);
                                         $rs.$$postDigest(function () {
-                                            $rs._pageReady = true;
                                             /* triggering the event post digest, so that any expression watches are computed before the same*/
-                                            $rs.$emit('page-ready');
+                                            $rs._pageReady = true;
+                                            $rs.$emit('page-ready', pageName);
+
+                                            //trigger the onPageReady method
+                                            if ($s.hasOwnProperty('onPageReady')) {
+                                                Utils.triggerFn($s.onPageReady);
+                                            }
                                         });
                                     });
                                 }
@@ -180,17 +181,22 @@ WM.module('wm.layouts.page')
         '$rootScope',
         'Utils',
         'Variables',
+        '$timeout',
 
-        function (CONSTANTS, $rs, Utils, Variables) {
+        function (CONSTANTS, $rs, Utils, Variables, $timeout) {
             'use strict';
 
             function triggerOnReady($s) {
-                // trigger onPageReady method if it is defined in the controller of partial
-                if ($s.hasOwnProperty('onPageReady')) {
-                    Utils.triggerFn($s.onPageReady);
-                }
-                // trigger the onPagePartLoad of parent container
-                Utils.triggerFn($s.$parent.onPagePartLoad);
+                $timeout(function () {
+                    $rs.$$postDigest(function () {
+                        // trigger onPageReady method if it is defined in the controller of partial
+                        if ($s.hasOwnProperty('onPageReady')) {
+                            Utils.triggerFn($s.onPageReady);
+                        }
+                        // trigger the onPagePartLoad of parent container
+                        Utils.triggerFn($s.$parent.onPagePartLoad);
+                    });
+                });
             }
 
             return {
