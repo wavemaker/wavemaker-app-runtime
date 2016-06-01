@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.hibernate.criterion.Criterion;
@@ -27,19 +28,18 @@ public class QueryParser {
     private static String SINGLE_QUOTE = "'";
     private static String COMMA = ",";
 
-    private Class entityClass;
+    public QueryParser() {}
 
-    public QueryParser(Class entityClass) {
-        this.entityClass = entityClass;
+    public Criterion parse(String query, Class<?> entityClass) {
+        HashMap<String, Types> fieldNameVsTypeMap = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass.getName());
+        return parse(query,fieldNameVsTypeMap);
     }
 
-    public Criterion parse(String query) {
+    public Criterion parse(String query, Map<String, Types> fieldNameVsTypeMap) {
 
         Stack<Criterion> criterionStack = new Stack<>();
         Stack<String> joinOperatorStack = new Stack<>();
         RegExStringTokenizer stringTokenizer = new RegExStringTokenizer(query, QUERY_DELIMITER);
-        ReportContext reportContext = new ReportContext();
-        HashMap<String, Types> fieldNameVsTypeMap = reportContext.buildFieldNameVsTypeMap(entityClass.getName());
 
         try {
             while (stringTokenizer.hasNext()) {
