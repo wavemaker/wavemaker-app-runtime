@@ -2199,22 +2199,31 @@ WM.module('wm.widgets.base', [])
                 } else if (key === 'backgroundimage') {
                     $is.picturesource = Utils.getBackGroundImageUrl(nv);
                 } else if (key === 'class') {
-                    $el.removeClass(ov).addClass(nv);
+                    if (ov) {
+                        $el.removeClass(ov).addClass(nv);
+                    } else {
+                        $el.addClass(nv);
+                    }
                 } else if (key === 'name') {
                     attrs.$set('name', nv);
                 } else if (key === 'showindevice') {
                     /*Apply the corresponding classes only in runMode*/
                     if (CONSTANTS.isRunMode) {
-                        var newValues = nv ? nv.split(',') : nv;
+                        var newValues = nv ? nv.split(',') : nv,
+                            classesToRemove = '',
+                            classesToAdd = '';
+
                         if (WM.element.inArray('all', newValues) === 0) {
                             _.forEach(deviceSizeArray.all.classToRemove, function (device) {
-                                $el.removeClass(device + $is.widgetProps.showindevice.displaytype || 'block');
+                                classesToRemove += ' ' + (device + $is.widgetProps.showindevice.displaytype || 'block');
                             });
+                            $el.removeClass(classesToRemove)
                         } else {
                             /*If others are selected, add classes accordingly */
                             _.forEach(newValues, function (value) {
-                                $el.addClass(deviceSizeArray[value].class + ($is.widgetProps.showindevice.displaytype || 'block'));
+                                classesToAdd += ' ' + (deviceSizeArray[value].class + ($is.widgetProps.showindevice.displaytype || 'block'));
                             });
+                            $el.addClass(classesToAdd);
                         }
                     }
                 } else if (key === 'animation') {
