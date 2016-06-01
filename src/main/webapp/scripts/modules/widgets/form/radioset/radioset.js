@@ -5,7 +5,7 @@ WM.module('wm.widgets.form')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/radioset.html',
-            '<ul class="app-radioset list-group {{layout}}" init-widget has-model apply-styles role="input" listen-property="dataset"' +
+            '<ul class="app-radioset list-group" init-widget has-model apply-styles role="input" listen-property="dataset"' +
                 ' title="{{hint}}" ng-model="_model_" ng-change="_onChange({$event: $event, $scope: this})">' +
             '</ul>'
             );
@@ -21,7 +21,8 @@ WM.module('wm.widgets.form')
                 'usekeys'       : true,
                 'selectedvalue' : true,
                 'disabled'      : true,
-                'orderby'       : true
+                'orderby'       : true,
+                'layout'        : true
             };
 
         /*function to assign the values to the model variable based on the selectedvalue as provided.*/
@@ -73,7 +74,7 @@ WM.module('wm.widgets.form')
         }
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, element, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             var dataSet = scope.dataset || scope.scopedataset,
                 isBoundToServiceVariable;
             /*Checking if widget is bound to service variable*/
@@ -108,7 +109,9 @@ WM.module('wm.widgets.form')
             case 'disabled':
                 element.find('input[type="radio"]').attr('disabled', newVal);
                 break;
-
+            case 'layout':
+                element.removeClass(oldVal).addClass(newVal);
+                break;
             }
         }
 

@@ -5,7 +5,7 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
-                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline align-{{captionalign}} position-{{captionposition}}" init-widget title="{{hint}}" apply-styles>' +
+                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline" init-widget title="{{hint}}" apply-styles>' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -55,12 +55,16 @@ WM.module('wm.widgets.live')
                 };
             if (CONSTANTS.isStudioMode) {
                 notifyFor = {
-                    'dataset': true,
-                    'pagesize': true
+                    'dataset'        : true,
+                    'pagesize'       : true,
+                    'captionalign'   : true,
+                    'captionposition': true
                 };
             } else {
                 notifyFor = {
-                    'dataset': true
+                    'dataset'        : true,
+                    'captionalign'   : true,
+                    'captionposition': true
                 };
             }
 
@@ -674,6 +678,12 @@ WM.module('wm.widgets.live')
                                     if (WM.isDefined(scope.variableName) && WM.isDefined(newVal) && !WM.equals(newVal, oldVal)) {
                                         scope.filter();
                                     }
+                                    break;
+                                case 'captionalign':
+                                    element.removeClass('align-' + oldVal).addClass('align-' + newVal);
+                                    break;
+                                case 'captionposition':
+                                    element.removeClass('position-' + oldVal).addClass('position-' + newVal);
                                     break;
                                 }
                             }

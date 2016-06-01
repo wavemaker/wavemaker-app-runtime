@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/layouts/containers/mobile/tabbar/tabbar.html',
-            '<div data-role="mobile-tabbar" class="app-tabbar app-top-nav {{class}} {{position}}" init-widget listen-property="dataset">' +
+            '<div data-role="mobile-tabbar" class="app-tabbar app-top-nav" init-widget listen-property="dataset">' +
                 '<nav class="navbar navbar-default">' +
                     '<ul class="tab-items nav navbar-nav">' +
                         '<li class="tab-item" ng-repeat="item in tabItems" ng-show="(tabItems.length == layout.max) || $index+1 < layout.max" >' +
@@ -32,7 +32,7 @@ WM.module('wm.layouts.containers')
     .directive('wmMobileTabbar', ['$window', '$templateCache', 'PropertiesFactory', 'WidgetUtilService', function ($window, $templateCache, PropertiesFactory, WidgetUtilService) {
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.tabbar', ['wm.base', 'wm.tabbar.dataProps']),
-            notifyFor   = { 'dataset': true},
+            notifyFor   = { 'dataset': true, 'position': true},
             layouts     = [
                 {'minwidth' : 2048, 'max': 12},
                 {'minwidth' : 1024, 'max': 10},
@@ -75,8 +75,11 @@ WM.module('wm.layouts.containers')
             }
         }
 
-        function propertyChangeHandler(scope, key, newVal) {
+        function propertyChangeHandler(scope, $el, key, newVal, oldVal) {
             switch (key) {
+            case 'position':
+                $el.removeClass(oldVal).addClass(newVal);
+                break;
             case 'dataset':
                 if (newVal) {
                     getTabItems(newVal.data || newVal, scope);
@@ -115,7 +118,7 @@ WM.module('wm.layouts.containers')
                     scope.menutype = 'thumbnail'; /**thumbnail | list**/
                 },
                 'post' : function (scope, element, attrs) {
-                    var onPropertyChange = propertyChangeHandler.bind(undefined, scope);
+                    var onPropertyChange = propertyChangeHandler.bind(undefined, scope, element);
 
                     registerResizeHandler(scope, element);
 
