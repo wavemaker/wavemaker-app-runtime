@@ -5,7 +5,7 @@ WM.module('wm.layouts.containers')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/mobile/segmentedcontrol/segmentedcontrol.html',
-            '<div class="app-segmented-control {{class}}" hm-swipe-left="goToNext()" hm-swipe-right="goToPrev();" init-widget apply-styles="container">' +
+            '<div class="app-segmented-control" hm-swipe-left="goToNext()" hm-swipe-right="goToPrev();" init-widget apply-styles="container">' +
                 '<div class="app-segments-container">' +
                     '<ul class="list-inline" wmtransclude></ul>' +
                 '</div>' +

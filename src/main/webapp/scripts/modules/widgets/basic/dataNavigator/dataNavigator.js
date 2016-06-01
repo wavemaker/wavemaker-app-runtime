@@ -5,7 +5,7 @@ WM.module("wm.widgets.basic")
     .run(["$templateCache", function ($templateCache) {
         "use strict";
         $templateCache.put("template/widget/datanavigator.html",
-            '<nav data-identifier="datanavigator" class="app-datanavigator clearfix text-{{navigationalign}}" init-widget apply-styles>' +
+            '<nav data-identifier="datanavigator" class="app-datanavigator clearfix" init-widget apply-styles>' +
                 '<ul class="pagination advanced {{class}}" ng-if="navcontrols === \'Classic\'">' +
                     '<li ng-class="{\'disabled\':isDisableFirst}"><a title="Go to Start" name="first" href="javascript:void(0);" aria-label="First" ng-click="navigatePage(\'first\', $event)"><i class="wi wi-first-page"></i></a></li>' +
                     '<li ng-class="{\'disabled\':isDisablePrevious}"><a title="Go Previous" name="prev" href="javascript:void(0);" aria-label="Previous" ng-click="navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li>' +
@@ -28,12 +28,13 @@ WM.module("wm.widgets.basic")
         "use strict";
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.datanavigator', ['wm.base', 'wm.base.navigation']),
             notifyFor = {
-                'dataset'    : true,
-                'navigation' : true
+                'dataset'        : true,
+                'navigation'     : true,
+                'navigationalign': true
             };
 
         /* Define the property change handler. This function will be triggered when there is a change in the widget property */
-        function propertyChangeHandler(scope, key, newVal) {
+        function propertyChangeHandler(scope, element, key, newVal, oldVal) {
             switch (key) {
             case 'dataset':
                 /*This is to prevent the data-navigator from getting triggered if newVal is undefined or ""*/
@@ -56,6 +57,9 @@ WM.module("wm.widgets.basic")
                 }
 
                 scope.navcontrols = newVal;
+                break;
+            case 'navigationalign':
+                element.removeClass('text-' + oldVal).addClass('text-' + newVal);
                 break;
             }
         }
@@ -447,7 +451,7 @@ WM.module("wm.widgets.basic")
 
                         scope.navigatorElement = element;
                         /* register the property change handler */
-                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
+                        WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope, element), scope, notifyFor);
 
                         WidgetUtilService.postWidgetCreate(scope, element, attrs);
                     }
