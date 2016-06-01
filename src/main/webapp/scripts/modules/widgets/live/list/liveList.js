@@ -24,7 +24,7 @@ WM.module('wm.widgets.live')
                     '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" ng-show="!noDataFound" ng-class="listclass" wmtransclude ' +
                              'ng-style="{padding: padding, height: height, overflow: overflow}">' +
                     '</ul>' +
-                    '<div class="no-data-msg" ng-if="noDataFound">{{nodatamessage}}</div>' +
+                    '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
                     '<div class="loading-data-msg" ng-if="variableInflight">{{loadingdatamsg}}</div>' +
                     '<nav class="app-datanavigator" ng-if="navigation === \'Inline\'">' +
                         '<ul class="pager"><li class="next" ng-class="{\'disabled\': dataNavigator.isDisableNext}"><a href="javascript:void(0);" ' +
