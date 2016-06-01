@@ -15,16 +15,14 @@
  */
 package com.wavemaker.runtime.security;
 
-import com.wavemaker.studio.common.WMRuntimeException;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Uday Shankar
@@ -50,7 +48,7 @@ public class WMCustomAuthenticationProvider implements AuthenticationProvider {
 					if (wmUser == null) {
 						throw new BadCredentialsException("Invalid credentials");
 					}
-					return new UsernamePasswordAuthenticationToken(wmUser.getUsername(), null, wmUser.getAuthorities());
+					return new UsernamePasswordAuthenticationToken(wmUser.getUsername(), wmUser.getUsername(), wmUser.getAuthorities());
 				} catch (AuthenticationException e) {
 					throw e;
 				} catch (Exception e) {
