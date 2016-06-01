@@ -190,7 +190,7 @@ WM.module('wm.widgets.base', [])
                         "displayfield": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "displayexpression": {"type": "string", "bindable": "in-bound", "bindonly": "expression"},
                         "displaytype": {"type": "list", "options": ["Currency", "Date", "Number", "Text", "Time"]},
-                        "orderby": {"type": "list", "widget": "order-by"}
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"}
                     },
                     "wm.base.navigation": {
                         "navigation": {"type": "list", "options": ["Basic", "Pager", "Classic"], "value": "Basic"},
@@ -342,7 +342,7 @@ WM.module('wm.widgets.base', [])
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "displayfield": {"type": "list", "options": [""], "value": "", "datasetfilter": "terminals"},
                         "tabindex": {"type": "string", "value": "0"},
-                        "orderby": {"type": "list", "widget": "order-by"},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "margin": {"type": "string", "widget": "box-model"}
                     },
                     "wm.menu": {
@@ -361,7 +361,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string", "value": "0"},
                         "animateitems": {"type": "list", "options": ['', 'slide', 'fade', 'scale']},
                         "shortcutkey": {"type": "string"},
-                        "orderby": {"type": "list", "widget": "order-by"},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "class": {"type": "string", "pattern": classRegex, "show": false}
                     },
 
@@ -384,7 +384,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string", "value": "0"},
                         "levels": {"type": "number", "value": 0, "min": "0", "max": "10", "step": "1"},
                         "datavalue": {"type": "string", "bindable": "in-bound", "ignoreGetterSetters": true, "widget": "tree-datavalue"},
-                        "orderby": {"type": "list", "widget": "order-by"}
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"}
                     },
 
                     "wm.text": {
@@ -916,7 +916,7 @@ WM.module('wm.widgets.base', [])
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]},
-                        "orderby": {"type": "list", "widget": "order-by"},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]},
                         "margin": {"type": "string", "widget": "box-model"}
                     },
@@ -1507,10 +1507,10 @@ WM.module('wm.widgets.base', [])
                         "selectfirstitem": {"type": "boolean", "value": false, "bindable": "in-out-bound"},
                         "tabindex": {"type": "string", "value": "0"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
-                        "groupby": {"type": "list", "show": true, "widget": "list-typeahead"},
+                        "groupby": {"type": "list", "show": true, "widget": "list-typeahead", "datasetfilter": "terminals"},
                         "match": {"type": "listGroup", "nonGroupOptions": ["alphabet", "word"], "options": [{"name": "TIME", "groupOptions": {"hour": "hour", "day": "day", "week": "week", "month": "month", "year": "year"}}], "show": false, "value": "word"},
                         "dateformat": {"type": "list", "options": [], "widget": "datetimepatterns", "show": false},
-                        "orderby": {"type": "list", "widget": "order-by"},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "nodatamessage": {"type": "string", "value": "No data found", "bindable": "in-out-bound"},
                         "loadingdatamsg": {"type": "string", "value": "Loading...", "bindable": "in-out-bound"}
                     },
@@ -1573,7 +1573,7 @@ WM.module('wm.widgets.base', [])
                         "navsearchbar": {"type": "string", "show": "false"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
                         "type": {"type": "string", "widget": "list", "options": ["search", "typeahead"], "value": "search"},
-                        "orderby": {"type": "list", "widget": "order-by"},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },
                     "wm.chart": {
@@ -1630,7 +1630,7 @@ WM.module('wm.widgets.base', [])
                         "aggregation": {"type": "list", "options": ["average", "count", "maximum", "minimum", "none", "sum"], "value": "none"},
                         "aggregationcolumn": {"type": "list", "widget": "list"},
                         "groupby": {"type": "list", "widget": "multiselect"},
-                        "orderby": {"type": "list", "widget": "order-by"},
+                        "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "theme": {"type": "list", "options": ["Annabelle", "Azure", "Flyer", "GrayScale", "Luminosity", "Mellow", "Orient", "Retro", "Terrestrial"]},
                         "customcolors": {"type": "array", "bindable": "in-bound", "widget": "string"},
                         "nodatamessage": {"type": "string", "value": "No Data Available.", "bindable": "in-out-bound"},
@@ -2574,6 +2574,30 @@ WM.module('wm.widgets.base', [])
                 if (prop.widget === 'multiselect') {
                     scope.widgetDataset = scope.widgetDataset || {};
                     scope.widgetDataset[name] = options;
+                } else if (prop.widget === 'list-typeahead') {
+                    var optionObjects = [],
+                        defaultOptions = [],
+                        optionCategoryName = 'Field';
+
+                    // default options for live list
+                    if (scope.widgettype === 'wm-livelist') {
+                        defaultOptions = [{"name": "Javascript", "category": "Script"}];
+                        if (_.includes(scope[prop], '(')) {
+                            defaultOptions.push({
+                                'category': 'Script',
+                                'name': scope[prop]
+                            });
+                        }
+                    }
+
+                    optionObjects = defaultOptions;
+                    options.forEach(function (option) {
+                        optionObjects.push({
+                            'category': optionCategoryName,
+                            'name': option
+                        });
+                    });
+                    prop.options = optionObjects;
                 } else {
                     prop.options = options;
                 }
@@ -2601,7 +2625,7 @@ WM.module('wm.widgets.base', [])
                     options,
                     fieldObjects,
                     ALLFIELDS               = 'All Fields',
-                    checkboxsetTypeWidgets  = ['multiselect', 'selectall'],
+                    checkboxsetTypeWidgets  = ['multiselect', 'selectall', 'list-typeahead', 'order-by'],
                     dataSetProp             = _.includes(['wm-panel'], scope.widgettype) ? 'actions' : 'dataset';
 
                 bindExpr        = scope['bind' + dataSetProp];
