@@ -13,15 +13,15 @@ import com.wavemaker.runtime.data.Types;
  * @author <a href="mailto:anusha.dharmasagar@wavemaker.com">Anusha Dharmasagar</a>
  * @since 27/5/16
  */
-public class ReportContext {
+public class TypeMapBuilder {
 
 
-    public HashMap<String, Types> buildFieldNameVsTypeMap(String className) {
+    public static HashMap<String, Types> buildFieldNameVsTypeMap(String className) {
         return _buildFieldNameVsTypeMap(className, "", true);
     }
 
 
-    private HashMap<String, Types> _buildFieldNameVsTypeMap(String entityName, String fieldPrefix, boolean loopOnce) {
+    public static HashMap<String, Types> _buildFieldNameVsTypeMap(String entityName, String fieldPrefix, boolean loopOnce) {
         try {
             Class entity = Class.forName(entityName);
             HashMap<String, Types> fieldNameVsTypeMap = new LinkedHashMap<>();
