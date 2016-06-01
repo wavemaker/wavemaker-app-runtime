@@ -7,7 +7,7 @@ WM.module('wm.widgets.live')
         'use strict';
 
         $tc.put('template/widget/list.html',
-                '<div class="app-livelist panel app-panel" ng-class="navigation" init-widget live-actions apply-styles="shell">' +
+                '<div class="app-livelist panel app-panel" ng-class="navigation" init-widget live-actions apply-styles="shell" listen-property="dataset">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -752,57 +752,6 @@ WM.module('wm.widgets.live')
                 case 'dataset':
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, nv, attrs, listCtrl);
-
-                    selectedVariable = eleScope.Variables[variable];
-
-                    if ($is.widgetid && WM.isDefined(nv) && nv !== null) {
-                        // set the groupby options
-                        wp.groupby.options = wp.orderby.options = WidgetUtilService.extractDataSetFields(nv, nv.propertiesMap, {'sort' : true});
-                        showOrHideMatchProperty();
-
-                        //if studio-mode, then update the displayField & dataField in property panel
-                        if (!nv.length) {
-                            //Get variable and properties map only on binddataset change
-                            if ($is.oldBindDataSet !== $is.binddataset) {
-                                if (!WM.isString(nv)) {
-                                    if (selectedVariable && selectedVariable.category === 'wm.LiveVariable') {
-                                        nv.propertiesMap = selectedVariable.propertiesMap;
-                                    }
-                                }
-                            }
-
-                            // set the groupby options
-                            if (selectedVariable && selectedVariable.category === 'wm.DeviceVariable') {
-                                operation = DeviceVariableService.getOperation(selectedVariable.service, selectedVariable.operation);
-                                if (operation.hasOwnProperty('getMeta')) {
-                                    wp.groupby.options = _.keys(operation.getMeta());
-                                    return;
-                                }
-                            }
-                            wp.groupby.options = WidgetUtilService.extractDataSetFields(nv.data || nv, nv.propertiesMap, {'sort' : true});
-                        }
-
-                        // empty option selection is included in groupby options.
-                        if (wp.groupby.options) {
-                            groupbyOptions = [{
-                                'name'      : 'Javascript',
-                                'category'  : 'Script'
-                            }];
-                            if ($is.groupby && _.includes($is.groupby, '(')) {
-                                groupbyOptions.push({
-                                    'name'      : $is.groupby,
-                                    'category'  : 'Script'
-                                });
-                            }
-                            _.forEach(wp.groupby.options, function (option) {
-                                groupbyOptions.push({
-                                    'name'      : option,
-                                    'category'  : 'Fields'
-                                });
-                            });
-                            wp.groupby.options = groupbyOptions;
-                        }
-                    }
                     break;
                 case 'itemsperrow':
                     if (CONSTANTS.isStudioMode) {

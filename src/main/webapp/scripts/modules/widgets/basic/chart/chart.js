@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chart.html',
-            '<div init-widget class="app-chart" title="{{hint}}" apply-styles>' +
+            '<div init-widget class="app-chart" title="{{hint}}" apply-styles listen-property="dataset">' +
                 '<div class="app-chart-inner">' +
                     '<svg></svg>' +
                     '<div class="wm-content-info readonly-wrapper {{class}}" ng-if="showContentLoadError && showNoDataMsg">' +
