@@ -5,7 +5,7 @@ WM.module('wm.widgets.basic')
     .run(['$templateCache', function ($templateCache) {
         'use strict';
         $templateCache.put('template/widget/form/chart.html',
-            '<div init-widget class="app-chart" title="{{hint}}" apply-styles listen-property="dataset">' +
+            '<div init-widget class="app-chart" title="{{hint}}" apply-styles>' +
                 '<div class="app-chart-inner">' +
                     '<svg></svg>' +
                     '<div class="wm-content-info readonly-wrapper {{class}}" ng-if="showContentLoadError && showNoDataMsg">' +
@@ -1826,6 +1826,7 @@ WM.module('wm.widgets.basic')
                         setDefaultAxisOptions(scope);
                         scope.newcolumns = false;
                     }
+                    WidgetUtilService.updatePropertyPanelOptions(scope);
                     //hiding the aggregation,group by and order by upon binding to the service variable
                     hideOrShowProperties(advanceDataProps, scope, scope.isLiveVariable);
                     modifyAxesOptions(scope);
