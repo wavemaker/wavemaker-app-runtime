@@ -17,7 +17,7 @@ WM.module('wm.layouts.containers')
                     '<div wmtransclude></div>' +
                 '</div>' +
                 '<div class="app-wizard-actions panel-footer">' +
-                    '<a class="app-wizard-skip" name="skipStep_{{name}}" ng-show="currentStep.enableskip" title="Skip step" ng-click="skip()">Skip &raquo;</a>' +
+                    '<a class="app-wizard-skip" name="skipStep_{{name}}" ng-if="currentStep.enableskip" title="Skip step" ng-click="skip()">Skip &raquo;</a>' +
                     '<div class="app-wizard-actions-right">' +
                         '<button name="cancelBtn_{{name}}" class="btn app-button btn-secondary" title="{{cancelbtnlabel}}">{{cancelbtnlabel}}</button>' +
                         '<button name="previousBtn_{{name}}" class="btn app-button btn-secondary" ng-if="steps.indexOf(currentStep) > 0" ng-click="prev()">' +
@@ -231,7 +231,8 @@ WM.module('wm.layouts.containers')
                                 });
                                 $stepPanes.removeClass('current');
                                 $currentStepEle.addClass('current');
-                                currentStep.status = STEP_STATUS.CURRENT;
+                                parentIs.currentStep = currentStep;
+                                currentStep.status   = STEP_STATUS.CURRENT;
                                 $rs.$emit('set-active-widget', widgetId);
                             } else {
                                 if (currentStep.status === STEP_STATUS.COMPLETED) {
