@@ -1171,7 +1171,8 @@ $.widget('wm.datagrid', {
             formData,
             isFormDataSupported,
             multipartData,
-            firstEditableEle;
+            firstEditableEle,
+            isValid;
         if (e.data.action === 'edit') {
             if ($.isFunction(this.options.beforeRowUpdate)) {
                 this.options.beforeRowUpdate(rowData, e);
@@ -1255,9 +1256,6 @@ $.widget('wm.datagrid', {
                     /* Angular does not bind file values so using native object to send files */
                     formData = new FormData();
                 }
-                if ($.isFunction(this.options.onSetRecord)) {
-                    this.options.onSetRecord(rowData, e);
-                }
                 if (isNewRow) {
                     isDataChanged = true;
                 } else {
@@ -1298,6 +1296,12 @@ $.widget('wm.datagrid', {
                             type: 'application/json'
                         }));
                         rowData = formData;
+                    }
+                    if ($.isFunction(this.options.onSetRecord)) {
+                        isValid = this.options.onSetRecord(rowData, e);
+                        if (isValid === false) {
+                            return;
+                        }
                     }
                     if (isNewRow) {
                         this.options.onRowInsert(rowData, e, multipartData);
