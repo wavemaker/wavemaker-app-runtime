@@ -1440,9 +1440,9 @@ WM.module('wm.widgets.base', [])
                     },
                     "wm.wizard": {
                         "addchild": {"hidelabel": true, "options": [{"label": "Add Step", "widgettype": "wm-wizardstep"}], "widget": "add-widget"},
-                        "nextbtnlabel": {"type": "string", "value": "Next Step", "bindable": "in-bound"},
+                        "nextbtnlabel": {"type": "string", "value": "Next", "bindable": "in-bound"},
                         "cancelbtnlabel": {"type": "string", "value": "Cancel", "bindable": "in-bound"},
-                        "previousbtnlabel": {"type": "string", "value": "Previous Step", "bindable": "in-bound"},
+                        "previousbtnlabel": {"type": "string", "value": "Previous", "bindable": "in-bound"},
                         "donebtnlabel": {"type": "string", "value": "Done", "bindable": "in-bound"},
                         "onDone": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
