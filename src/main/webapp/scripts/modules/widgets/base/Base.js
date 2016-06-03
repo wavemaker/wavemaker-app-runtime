@@ -2768,8 +2768,9 @@ WM.module('wm.widgets.base', [])
         }])
     .directive('applyStyles', [
         'WidgetUtilService',
+        '$rootScope',
 
-        function (WidgetUtilService) {
+        function (WidgetUtilService, $rs) {
             'use strict';
 
             var notifyFor = {},
@@ -3016,6 +3017,13 @@ WM.module('wm.widgets.base', [])
 
                 $is._cssObj = undefined;
             }
+
+            $rs.$on('apply-box-model-property', function (evt, $is, $target, key) {
+                var cssObj = {};
+
+                setDimensionProp($is, cssObj, key);
+                flushCSS(cssObj, $target);
+            });
 
             return {
                 'link': function ($s, $el, attrs) {

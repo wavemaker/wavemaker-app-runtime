@@ -22,7 +22,7 @@ WM.module('wm.widgets.live')
                             'ng-click="dataNavigator.navigatePage(\'prev\', $event)"><i class="wi wi-chevron-left"></i></a></li></ul>' +
                     '</nav>' +
                     '<ul data-identifier="list" class="app-livelist-container clearfix" title="{{hint}}" ng-show="!noDataFound" ng-class="listclass" wmtransclude ' +
-                             'ng-style="{padding: padding, height: height, overflow: overflow}">' +
+                             'ng-style="{height: height, overflow: overflow}">' +
                     '</ul>' +
                     '<div class="no-data-msg" ng-if="noDataFound && !variableInflight">{{nodatamessage}}</div>' +
                     '<div class="loading-data-msg" ng-if="variableInflight">{{loadingdatamsg}}</div>' +
@@ -78,7 +78,8 @@ WM.module('wm.widgets.live')
                     'groupby'     : true,
                     'navigation'  : CONSTANTS.isStudioMode,
                     'itemsperrow' : CONSTANTS.isStudioMode,
-                    'match'       : CONSTANTS.isStudioMode
+                    'match'       : CONSTANTS.isStudioMode,
+                    'padding'     : true
                 },
                 directiveDefn,
                 NAVIGATION = {
@@ -714,8 +715,6 @@ WM.module('wm.widgets.live')
                     selectedVariable,
                     oldClass,
                     newClass,
-                    groupbyOptions,
-                    operation,
                     eleScope    = $el.scope(),
                     variable    = Utils.getVariableName($is, eleScope),
                     wp          = $is.widgetProps,
@@ -792,6 +791,9 @@ WM.module('wm.widgets.live')
                     if ($is.widgetid) {
                         wp.dateformat.show = _.includes(['day', 'hour', 'month', 'week'], $is.match);
                     }
+                    break;
+                case 'padding':
+                    $rs.$emit('apply-box-model-property', $is, $el.find('> .app-livelist-container'), 'padding');
                     break;
                 }
             }
