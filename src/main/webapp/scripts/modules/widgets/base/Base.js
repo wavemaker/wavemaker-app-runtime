@@ -912,7 +912,7 @@ WM.module('wm.widgets.base', [])
                         "itemlink": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itembadge": {"type": "list", "options": [""], "datasetfilter" : "terminals"},
                         "itemchildren": {"type": "list", "options": [""], "datasetfilter" : "objects"},
-                        "addchild": {"hidelabel": true, "options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file'} } }], "widget": "add-widget"},
+                        "addchild": {"options": [{'label': 'Anchor', 'widgettype': 'wm-anchor', 'defaults': {'wm-anchor': {'iconclass': 'wi wi-file'} } }, {'label': 'Menu', 'widgettype': 'wm-menu', 'defaults': {'wm-menu': {'iconclass': 'wi wi-file', 'type': 'anchor'} } }, {'label': 'Popover', 'widgettype': 'wm-popover', 'defaults': {'wm-popover': {'iconclass': 'wi wi-file'} } }, {'label': 'Button', 'widgettype': 'wm-button', 'defaults': {'wm-button': {'iconclass': 'wi wi-file'} } }], "widget": "add-widget"},
                         "selecteditem": {"type": "object", "bindable": "in-out-bound", "show": false, "widget": "string"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["nav-justified", "nav-tabs-justified"]},
@@ -960,7 +960,7 @@ WM.module('wm.widgets.base', [])
                         "datafield": {"type": "list", "options": ["All Fields"], "value": "All Fields", "datasetfilter" : "terminals", "allfields" : true},
                         "defaultview": {"type": "selectByObject", "options": [{"label": "action-view", "value": "actionview"}, {"label": "search-view", "value": "searchview"}], "value": "actionview", "displayfield": "label", "datafield": "value" },
                         "query": {"type": "string", "bindable": "in-out-bound", "value": ""},
-                        "addchild": {"hidelabel": true, "options": [{"label": "Anchor", "widgettype": "wm-anchor", "defaults": {"iconclass": "wi wi-plus", "caption": ""}}, {"label": "Menu", "widgettype": "wm-menu", "defaults": {"iconclass": "wi wi-plus", "type": "anchor", "caption": ""}}, {"label": "Popover", "widgettype": "wm-popover", "defaults": {"iconclass": "wi wi-plus", "caption": ""}}, {"label": "Button", "widgettype": "wm-button", "defaults": {"iconclass": "wi wi-plus", "class": "navbar-btn btn-primary", "caption": ""}}], "widget": "add-widget"},
+                        "addchild": {"options": [{"label": "Anchor", "widgettype": "wm-anchor", "defaults": {"iconclass": "wi wi-plus", "caption": ""}}, {"label": "Menu", "widgettype": "wm-menu", "defaults": {"iconclass": "wi wi-plus", "type": "anchor", "caption": ""}}, {"label": "Popover", "widgettype": "wm-popover", "defaults": {"iconclass": "wi wi-plus", "caption": ""}}, {"label": "Button", "widgettype": "wm-button", "defaults": {"iconclass": "wi wi-plus", "class": "navbar-btn btn-primary", "caption": ""}}], "widget": "add-widget"},
                         "backgroundcolor": {"type": "string", "widget": "color"},
                         "backgroundgradient": {"type": "string"},
                         "backgroundimage": {"type": "string", "bindable": "in-bound"},
@@ -1239,7 +1239,7 @@ WM.module('wm.widgets.base', [])
                         "width": {"show": false},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "tabindex": {"type": "string", "value": "0"},
-                        "addchild": {"hidelabel": true, "options": [{"label": "Segmented Content", "widgettype": "wm-segment-content"}], "widget": "add-widget"}
+                        "addchild": {"options": [{"label": "Segmented Content", "widgettype": "wm-segment-content"}], "widget": "add-widget"}
                     },
                     "wm.layouts.segmentcontent" : {
                         "caption": {"type": "string", "bindable": "in-out-bound", "maxlength": 256},
@@ -1382,7 +1382,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.accordion": {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Accordion pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
+                        "addchild": {"options": [{"label": "Accordion pane", "widgettype": "wm-accordionpane"}], "widget": "add-widget"},
                         "closeothers": { "type": "boolean", "value": true},
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "tabindex": {"type": "string", "value": "0"}
@@ -1417,7 +1417,7 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.tabs": {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Tab pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
+                        "addchild": {"options": [{"label": "Tab pane", "widgettype": "wm-tabpane"}], "widget": "add-widget"},
                         "tabsposition": {"type": "list",  "options": ["left", "top", "right", "bottom"], "value": "top"},
                         "taborder": {"type": "list", "widget": "tabordering", "dataset": []},
                         "transition": {"type": "list", "options": ["none", "slide"], "value": "none"},
@@ -1439,7 +1439,7 @@ WM.module('wm.widgets.base', [])
                         "tabindex": {"type": "string", "value": "0"}
                     },
                     "wm.wizard": {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Steps", "widgettype": "wm-wizardstep"}], "widget": "add-widget"},
+                        "addchild": {"hidelabel": true, "options": [{"label": "Add Step", "widgettype": "wm-wizardstep"}], "widget": "add-widget"},
                         "nextbtnlabel": {"type": "string", "value": "Next Step", "bindable": "in-bound"},
                         "cancelbtnlabel": {"type": "string", "value": "Cancel", "bindable": "in-bound"},
                         "previousbtnlabel": {"type": "string", "value": "Previous Step", "bindable": "in-bound"},
@@ -1458,7 +1458,7 @@ WM.module('wm.widgets.base', [])
                         "onSkip": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.carousel" : {
-                        "addchild": {"hidelabel": true, "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
+                        "addchild": { "options": [{"label": "Carousel", "widgettype": "wm-carousel-content"}], "widget": "add-widget"},
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string", "show": false},
                         "animationinterval" : {"type" : "number", "value" : "3"},
                         "type" : {"type" : "string", "show" : false},
@@ -1747,8 +1747,8 @@ WM.module('wm.widgets.base', [])
                 {"name": "events", "parent": "", "show": true, "feature": "project.editor.design.events"},
                 {"name": "device", "parent": "", "show": true, "feature": "project.editor.design.mobile"},
                 {"name": "security", "parent": "", "show": true, "feature": "project.editor.design.security"},
-                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel"], "parent": "properties"},
-                {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "addchild", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
+                {"properties": ["widget", "caption", "gridcaption", "title", "displayname", "heading", "subheading", "name", "debugurl", "type", "inputtype", "accept", "filetype", "extensions", "placeholder", "currency",  "hint", "tabindex", "target",  "description", "message", "oktext", "canceltext", "servicevariabletotrack", "valuetype", "alerttype", "iframesrc", "insert", "dropposition", "spacing", "advancedsettings", "nextbtnlabel", "previousbtnlabel", "donebtnlabel", "cancelbtnlabel", "addchild"], "parent": "properties"},
+                {"name": "layout", "properties": ["width", "height", "filelistheight", "treeicons", "menulayout", "menuposition", "levels", "pictureaspect", "imgsrc", "shape", "layoutkind", "columns", "layout", "navtype", "stacked", "justified", "formlayout", "itemsperrow", "showheader", "header", "topnav", "leftnav", "rightnav", "footer", "offset", "addrow", "addcolumn", "popoverwidth", "popoverheight", "tabsposition", "gridsearch", "searchlabel", "picturetitle"], "parent": "properties"},
                 {"name": "video", "properties": ["videoposter", "mp4format", "oggformat", "webmformat", "videopreload", "videosupportmessage", "subtitlesource", "subtitlelang"], "parent": "properties"},
                 {"name": "audio", "properties": ["mp3format", "audiopreload", "audiosupportmessage"], "parent": "properties"},
                 {"name": "content", "properties": ["contentsource", "content", "inlinecontent", "url"], "parent": "properties"},
