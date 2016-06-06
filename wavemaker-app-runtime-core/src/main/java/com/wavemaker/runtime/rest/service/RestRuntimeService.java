@@ -64,24 +64,27 @@ public class RestRuntimeService {
     private RestResponse invokeRestCall(RestRequestInfo restRequestInfo) {
         RestResponse restResponse = new RestConnector().invokeRestCall(restRequestInfo);
         String responseBody = StringUtils.getStringFromBytes(restResponse.getResponseBody());
-        if (restResponse.getContentType() != null) {
-            MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
-            if (WMUtils.isXmlMediaType(responseContentType)) {
-                restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString().getBytes());
-                restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
-            } else if (!WMUtils.isJsonMediaType(responseContentType)) {
-                try {//trying if the content is of xml type
+        int statusCode = restResponse.getStatusCode();
+        if (statusCode >= 200 && statusCode<= 299) {
+            if (restResponse.getContentType() != null) {
+                MediaType responseContentType = MediaType.parseMediaType(restResponse.getContentType());
+                if (WMUtils.isXmlMediaType(responseContentType)) {
                     restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString().getBytes());
                     restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
-                } catch (Exception e) {
-                    logger.debug("Unable to read the response as xml for the media type {} and convert to json", responseContentType, e);
+                } else if (!WMUtils.isJsonMediaType(responseContentType)) {
+                    try {//trying if the content is of xml type
+                        restResponse.setConvertedResponse(SchemaConversionHelper.convertXmlToJson(responseBody).v2.toString().getBytes());
+                        restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
+                    } catch (Exception e) {
+                        logger.debug("Unable to read the response as xml for the media type {} and convert to json", responseContentType, e);
+                    }
+                } else {
+                    restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
                 }
-            } else {
-                restResponse.setContentType(MediaType.APPLICATION_JSON.toString());
             }
-        }
-        if (restResponse.getConvertedResponse() != null) {
-            restResponse.setResponseBody(null);
+            if (restResponse.getConvertedResponse() != null) {
+                restResponse.setResponseBody(null);
+            }
         }
         return restResponse;
     }

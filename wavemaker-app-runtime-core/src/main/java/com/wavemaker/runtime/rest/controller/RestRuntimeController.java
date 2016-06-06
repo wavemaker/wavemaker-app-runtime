@@ -91,7 +91,7 @@ public class RestRuntimeController extends AbstractController {
             responseBody = (responseBody == null) ? "".getBytes() : responseBody;
             IOUtils.copy(new ByteArrayInputStream(responseBody), httpServletResponse.getOutputStream(), true, false);
         } else {
-            throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, statusCode, responseBody);
+            throw new WMRuntimeException(MessageResource.REST_SERVICE_INVOKE_FAILED, statusCode, new String(responseBody).intern());
         }
     }
 
