@@ -396,6 +396,18 @@ wm.plugins.database.constant('DB_CONSTANTS', {
                 "DRIVER_VERSION": "Driver 6.0",
                 "URL": ""
             }
+        ],
+        "DB2": [
+            {
+                "DB_VERSION": "Express-C 9.5",
+                "DRIVER_VERSION": "db2jcc4.jar",
+                "URL": ""
+            },
+            {
+                "DB_VERSION": "Express-C 10.5",
+                "DRIVER_VERSION": "db2jcc4.jar",
+                "URL": ""
+            }
         ]
     },
     "NON_EDITABLE_DATABASE_SYSTEMS": ['HSQLDB', 'DB2', 'Other'],
