@@ -26,7 +26,7 @@ WM.module('wm.layouts.containers')
                     '</h3>' +
                 '</div>' +
                 '<div class="panel-content" ng-show="expanded">' +
-                    '<div class="panel-body" ng-class="helpClass" wmtransclude page-container-target  apply-styles="inner-shell" ></div>' +
+                    '<div class="panel-body" ng-class="helpClass" wmtransclude page-container-target apply-styles="inner-shell"></div>' +
                     '<aside class="panel-help-message" ng-class="helpClass"><h5 class="panel-help-header">{{::$root.appLocale.LABEL_HELP}}</h5><div class="panel-help-content" ng-bind-html="helptext"></div></aside>' +
                 '</div>' +
             '</div>'
