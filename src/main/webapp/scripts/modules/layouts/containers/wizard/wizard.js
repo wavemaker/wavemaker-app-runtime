@@ -171,7 +171,7 @@ WM.module('wm.layouts.containers')
                                     '<a href="javascript:void(0)">' +
                                         '<span class="arrow"></span>' +
                                         '<i class="app-icon {{iconclass}}" ng-if="iconclass"></i> ' +
-                                        '<span class="step-title" ng-bind="heading"></span>' +
+                                        '<span class="step-title" ng-bind="title"></span>' +
                                     '</a>' +
                                 '</li>';
             return {
@@ -291,7 +291,7 @@ WM.module('wm.layouts.containers')
      <file name="index.html">
          <div ng-controller="Ctrl" class="wm-app">
              <wm-wizard width="500">
-                <wm-wizardstep heading="Registration">
+                <wm-wizardstep title="Registration">
                 </wm-wizardstep>
              </wm-wizard>
          </div>
@@ -320,8 +320,8 @@ WM.module('wm.layouts.containers')
  *
  * @param {string=} name
  *                  Name of the wizardstep.
- * @param {string=} heading
- *                  Heading of the step.
+ * @param {string=} title
+ *                  Title of the step.
  * @param {boolean=} show
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the step on the web page. <br>
@@ -341,7 +341,7 @@ WM.module('wm.layouts.containers')
      <file name="index.html">
          <div ng-controller="Ctrl" class="wm-app">
             <wm-wizard width="500">
-                <wm-wizardstep heading="Registration">
+                <wm-wizardstep title="Registration">
                 </wm-wizardstep>
             </wm-wizard>
          </div>

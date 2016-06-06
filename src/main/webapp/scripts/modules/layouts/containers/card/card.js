@@ -6,18 +6,18 @@ WM.module('wm.layouts.containers')
         'use strict';
         $templateCache.put('template/layout/container/card.html',
             '<div init-widget class="app-card card" apply-styles="shell" wm-navigatable-element="true" ng-style="{height:height}">' +
-                '<div class="app-card-header" ng-show="heading || subheading || iconclass || iconurl">' +
+                '<div class="app-card-header" ng-show="title || subheading || iconclass || iconurl">' +
                     '<div class="app-card-avatar" ng-show="iconclass || iconurl">' +
                         '<i class="app-icon {{iconclass}}" ng-if="showIcon"></i>' +
                         '<wm-picture shape="circle" picturesource="{{iconurl}}" ng-if="showImage"></wm-picture>' +
                     '</div>' +
                     '<div class="app-card-header-text">' +
-                        '<h4 class="card-heading">{{heading}}</h4>' +
+                        '<h4 class="card-heading">{{title}}</h4>' +
                         '<h5 class="card-subheading text-muted">{{subheading}}</h5>' +
                     '</div>' +
                 '</div>' +
                 '<div class="app-card-image" ng-if="picturesource" ng-style="{\'height\':imageheight}">' +
-                    '<wm-picture class="card-image" ng-style="{width:imagewidth, height:imageheight}" picturesource="{{picturesource}}" class="{{!(heading || subheading || iconclass || iconurl) ? \'border-radius-top\' : \'\'}}"></wm-picture>' +
+                    '<wm-picture class="card-image" ng-style="{width:imagewidth, height:imageheight}" picturesource="{{picturesource}}" class="{{!(title || subheading || iconclass || iconurl) ? \'border-radius-top\' : \'\'}}"></wm-picture>' +
                     '<h5 class="card-image-headline">{{picturetitle}}</h5>' +
                 '</div>' +
                 '<div ng-transclude="content"></div>' +
@@ -33,7 +33,7 @@ WM.module('wm.layouts.containers')
         'use strict';
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.layouts.card', ['wm.base', 'wm.base.events.touch']),
             notifyFor   = {
-                'heading'   : true,
+                'title'     : true,
                 'subheading': true,
                 'iconclass' : true,
                 'footer'    : true,
@@ -45,7 +45,7 @@ WM.module('wm.layouts.containers')
         // Define the property change handler. This function will be triggered when there is a change in the widget property
         function propertyChangeHandler(scope, key, newVal) {
             switch (key) {
-            case 'heading':
+            case 'title':
             case 'subheading':
             case 'iconclass':
             case 'iconurl':
@@ -91,6 +91,8 @@ WM.module('wm.layouts.containers')
                     }
                 },
                 'post': function (scope, element, attrs) {
+                    //To support backward compatibility for old projects
+                    scope.title = scope.heading;
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
@@ -196,8 +198,8 @@ WM.module('wm.layouts.containers')
  * @requires Utils
  * @requires CONSTANTS
  *
- * @param {string=} heading
- *                  Heading of the card widget. This property is a bindable property.
+ * @param {string=} title
+ *                  Title of the card widget. This property is a bindable property.
  * @param {string=} subheading
  *                  Sub Heading of the card widget. This property is a bindable property.
  * @param {string=} picturesource
@@ -234,7 +236,7 @@ WM.module('wm.layouts.containers')
  <example module="wmCore">
      <file name="index.html">
          <div ng-controller="Ctrl" class="wm-app">
-             <wm-card width="400" height="500" heading="Daily Sync Up" subheading="Event">
+             <wm-card width="400" height="500" title="Daily Sync Up" subheading="Event">
                  <wm-card-content>
                      <wm-layoutgrid>
                          <wm-gridrow>

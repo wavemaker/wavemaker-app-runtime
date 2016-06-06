@@ -1026,7 +1026,7 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]}
                     },
                     'wm.layouts.card': {
-                        "heading": {"type": "string", "bindable": "in-bound"},
+                        "title": {"type": "string", "bindable": "in-bound"},
                         "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "selecticon", "bindable": "in-out-bound", "pattern": classRegex},
                         "iconurl": {"type": "string", "bindable": "in-bound"},
@@ -1447,7 +1447,7 @@ WM.module('wm.widgets.base', [])
                         "onDone": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.wizardstep": {
-                        "heading": {"type": "string", "value": "Step Title", "bindable": "in-bound"},
+                        "title": {"type": "string", "value": "Step Title", "bindable": "in-bound"},
                         "disablenext": {"type": "boolean", "value": false, "show": false},
                         "enabledone": {"type": "boolean", "value": false, "show": false},
                         "enableskip": {"type": "boolean", "value": false, "bindable": "in-bound"},
