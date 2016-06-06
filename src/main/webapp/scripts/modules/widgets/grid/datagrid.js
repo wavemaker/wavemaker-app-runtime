@@ -784,7 +784,9 @@ $.widget('wm.datagrid', {
                 } else if ($header.hasClass('grid-col-small')) { //For checkbox or radio, set width as 30
                     width = 50;
                 } else {
-                    if (colDef.width) {
+                    if (_.isUndefined(colDef.width) || colDef.width === '') {
+                        width = width > 90 ? width : 90; //columnSanity check to prevent width being too small
+                    } else {
                         width = colDef.width;
                     }
                 }
