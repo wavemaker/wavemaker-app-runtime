@@ -135,8 +135,8 @@ WM.module('wm.widgets.basic')
                 },
                 pagePosition = WM.element(popoverEle).offsetParent().offset(),
                 popoverPosition = {
-                    'left' : targetPosition.left + tipOffset.width - pagePosition.left - $(window).scrollLeft(),
-                    'top'  : targetPosition.top + tipOffset.height - pagePosition.top - $(window).scrollTop()
+                    'left' : targetPosition.left + tipOffset.width - pagePosition.left,
+                    'top'  : targetPosition.top + tipOffset.height - pagePosition.top
                 };
             if (placement === 'left' || placement === 'right') {
                 if (placement === 'left') {
