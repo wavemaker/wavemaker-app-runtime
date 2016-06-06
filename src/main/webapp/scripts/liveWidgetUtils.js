@@ -295,6 +295,7 @@ WM.module('wm.widgets.live')
                 columnDef.widget        = widgetType; /*Widget type support for older projects*/
                 columnDef.primaryKey    = attrs.primaryKey === 'true' || attrs.primaryKey === true;
                 columnDef.show          = attrs.show === 'false' ? false : (attrs.show === 'true' || attrs.show);
+                columnDef.name          = columnDef.name || columnDef.key || columnDef.field;
                 return columnDef;
             }
             /**
@@ -360,13 +361,13 @@ WM.module('wm.widgets.live')
                     dateTypes = ['date', 'datetime'],
                     textTypes = ['text', 'password', 'textarea'],
                     evtTypes  = _.pull(getEventTypes(), focusEvents),
-                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'name', 'onFocus', 'onBlur'];
+                    excludeProperties = ['caption', 'type', 'show', 'placeholder', 'maxPlaceholder', 'readonly', 'inputtype', 'widgettype', 'dataset', 'key', 'field', 'onFocus', 'onBlur'];
                 Object.keys(fieldDef).forEach(function (field) {
                     if (_.includes(excludeProperties, field)) {
                         return;
                     }
                     if (fieldDef[field]) {
-                        if (field === 'key' || field === 'field') {
+                        if (field === 'name') {
                             fields += ' name="' + fieldDef[field] + '_formWidget"';
                         } else if (field === 'widgetid') {
                             fields += ' widgetid="' + fieldDef.widgetid + '_' + fieldDef.name + '"';
@@ -564,7 +565,7 @@ WM.module('wm.widgets.live')
                 widgetType = widgetType.toLowerCase();
                 template = template +
                     '<wm-composite widget="' + widgetType + '" show="{{formFields[' + index + '].show}}" class="live-field">' +
-                    '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
+                    '<wm-label class="control-label ' + labelLayout + ' {{ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode ? \'text-danger\' : \'\' }}" caption="{{formFields[' + index + '].displayname}}" hint="{{formFields[' + index + '].displayname}}" required="{{formFields[' + index + '].required}}"></wm-label>' +
                     '<div class="' + controlLayout + ' {{formFields[' + index + '].class}}">' +
                     '<wm-label class="form-control-static" caption="' + getCaptionByWidget(widgetType, index) + '" show="{{!isUpdateMode}}"></wm-label>';
 
@@ -625,8 +626,8 @@ WM.module('wm.widgets.live')
                     template += getDefaultTemplate('text', fieldDef, index, 'Enter Min value', 'Enter Max value', 'Enter value');
                     break;
                 }
-                template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched) && isUpdateMode">' + fieldDef.hint + '</p>' : '');
-                template = template + '<p ng-if="ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.key + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
+                template = template + (fieldDef.hint ? '<p class="help-block" ng-if="!(ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$touched) && isUpdateMode">' + fieldDef.hint + '</p>' : '');
+                template = template + '<p ng-if="ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$invalid &&  ngform[\'' + fieldDef.parentForm + '\'][\'' + fieldDef.name + '_formWidget\'].$touched && isUpdateMode" class="help-block text-danger">{{formFields[' + index + '].validationmessage}}</p>';
                 template = template + '</div></wm-composite>';
                 return template;
             }
