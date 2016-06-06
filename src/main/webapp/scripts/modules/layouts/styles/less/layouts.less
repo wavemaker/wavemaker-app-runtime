@@ -1302,12 +1302,9 @@ body {
   }
   /********for buttons, anchors with icon on right****/
   .btn[icon-position = "right"], a[icon-position = "right"] {
-    clear: both;
-    > i {
-      float: right;
-    }
-    .badge {
-      right: 20pt;
+    direction: rtl;
+    .app-icon + .anchor-caption {
+      padding-right: 4px;
     }
   }
   /***reset the margin for the panel***/
