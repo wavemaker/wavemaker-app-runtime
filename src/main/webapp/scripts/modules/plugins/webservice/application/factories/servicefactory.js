@@ -1,4 +1,4 @@
-/*global WM, wm*/
+/*global WM,_, wm*/
 /*jslint sub: true */
 
 /**
@@ -230,6 +230,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         returnType,
                         returnFormat,
                         dbOperationName,
+                        tag,
                         isDbServiceOp = function (type) {
                             return type === "hqlquery" || type === "nativequery" || type === "procedure";
                         };
@@ -238,8 +239,10 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         returnType = operation.return;
                     } else {
                         dbOperationName = operation.relativePath && operation.relativePath.split("/").pop();
+                        tag = _.get(operation, 'tags[0]');
+
                         /* special case for user created query/procedure operations, actual type info is not given by swagger */
-                        if ((operation.tags[0] === "QueryExecutionController" || operation.tags[0] === "ProcedureExecutionController") && dbOperationName !== "wm_custom" && dbOperationName !== "wm_custom_update") {
+                        if ((tag === "QueryExecutionController" || tag === "ProcedureExecutionController") && dbOperationName !== "wm_custom" && dbOperationName !== "wm_custom_update") {
                             returnType = serviceObj.name + dbOperationName + "rtnType";
                             schemaObject = operation.responses['200'].schema;
                             isList = (schemaObject.$ref === "#/definitions/Page") || schemaObject.type === 'array' || schemaObject[IS_LIST_KEY];
@@ -294,7 +297,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                             isList = param[IS_LIST_KEY];
 
                             /* special cases for MultiPart type params */
-                            if (param[parameterTypeKey].toLowerCase() === "formdata") {
+                            if (_.lowerCase(param[parameterTypeKey]) === "formdata") {
                                 if (param.type === "ref") {
                                     typeRef = param['x-WM-FULLY_QUALIFIED_TYPE'];
                                 } else if (param.type === 'array') {
