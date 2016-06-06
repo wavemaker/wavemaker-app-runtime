@@ -954,7 +954,9 @@ WM.module('wm.widgets.grid')
                             'matchMode'    : 'anywhere',
                             'ignoreCase'   : true,
                             'scope'        : $scope.gridElement.scope()
-                        }, WM.noop, function (error) {
+                        }, function () {
+                            $scope.onSort({$event: e, $data: $scope.serverData});
+                        }, function (error) {
                             wmToaster.show('error', 'ERROR', error);
                         });
                     } else if (variable.category === 'wm.ServiceVariable') {
@@ -962,7 +964,9 @@ WM.module('wm.widgets.grid')
                         variable.update({
                             'orderBy' : sortOptions,
                             'page'    : 1
-                        }, WM.noop, function (error) {
+                        }, function () {
+                            $scope.onSort({$event: e, $data: $scope.serverData});
+                        }, function (error) {
                             wmToaster.show('error', 'ERROR', error);
                         });
                     }
@@ -1307,10 +1311,10 @@ WM.module('wm.widgets.grid')
                     $scope.onColumndeselect({$data: col, $event: e});
                     $rootScope.$safeApply($scope);
                 },
-                onHeaderClick: function (e) {
+                onHeaderClick: function (col, e) {
 //                    /* if onSort function is registered invoke it when the column header is clicked */
 //                    $scope.onSort({$event: e, $data: e.data.col});
-                    $scope.onHeaderclick({$event: e, $data: e.data.col});
+                    $scope.onHeaderclick({$event: e, $data: col});
                 },
                 onRowDelete: function (rowData, cancelRowDeleteCallback, e) {
                     deleteRecord(rowData, cancelRowDeleteCallback);
