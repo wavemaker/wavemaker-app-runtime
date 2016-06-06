@@ -109,7 +109,7 @@ WM.module('wm.widgets.live')
                         WM.forEach($scope.formFields, function (filterField) {
                             //Added check for range field
                             if (!filterField.readonly && filterField.show) {
-                                if (filterField.widget === 'typeahead') {
+                                if (filterField.widget === 'typeahead' || filterField.widget === 'autocomplete') {
                                     $scope.$element.find('div[name=' + filterField.name + '] input').val('');
                                 }
                                 if (filterField.isRange) {
@@ -154,7 +154,7 @@ WM.module('wm.widgets.live')
                         _.forEach($scope.formFields, function (field) {
                             var fieldSelector = 'div[name=' + field.name + '] input',
                                 $el     = $scope.$element;
-                            if (field.widget === 'typeahead' && $el) {
+                            if ((field.widget === 'typeahead' || field.widget === 'autocomplete') && $el) {
                                 var fieldEle = $el.find(fieldSelector);
                                 if (!field.isRange) {
                                     dataModel[field.field] = {
@@ -479,7 +479,7 @@ WM.module('wm.widgets.live')
                                     }
                                 });
                                 filterField.datafield = FILTER_CONSTANTS.LABEL_KEY;
-                                if (filterField.widget === 'typeahead') { //For search widget, set search key and display label
+                                if (filterField.widget === 'typeahead' || filterField.widget === 'autocomplete') { //For search widget, set search key and display label
                                     filterField.searchkey    = FILTER_CONSTANTS.LABEL_VALUE;
                                     filterField.displaylabel = FILTER_CONSTANTS.LABEL_VALUE;
                                 } else {

@@ -235,26 +235,26 @@ WM.module('wm.widgets.live')
              */
             function getFieldTypeWidgetTypesMap() {
                 var fieldTypeWidgetTypeMap = {
-                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'typeahead'],
-                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'typeahead'],
-                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
-                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
-                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
-                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
-                    'long'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'typeahead'],
-                    'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'typeahead'],
-                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'typeahead'],
-                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency', 'typeahead'],
-                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'typeahead'],
-                    'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset', 'typeahead'],
-                    'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset', 'typeahead'],
-                    'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset', 'typeahead'],
-                    'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset', 'typeahead'],
-                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select', 'typeahead'],
-                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch', 'typeahead'],
-                    'clob'       : ['text', 'number', 'select', 'textarea', 'richtext', 'typeahead'],
-                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext', 'typeahead'],
-                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'typeahead']
+                    'integer'    : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete'],
+                    'big_integer': ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete'],
+                    'short'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
+                    'float'      : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
+                    'big_decimal': ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
+                    'double'     : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
+                    'long'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'rating', 'slider', 'currency', 'autocomplete'],
+                    'byte'       : ['number', 'text', 'select', 'checkboxset', 'radioset', 'slider', 'currency', 'autocomplete'],
+                    'string'     : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete'],
+                    'character'  : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'switch', 'currency', 'autocomplete'],
+                    'text'       : ['text', 'number',  'textarea', 'password', 'richtext', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'switch', 'currency', 'autocomplete'],
+                    'date'       : ['date', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete'],
+                    'time'       : ['time', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete'],
+                    'timestamp'  : ['timestamp', 'text', 'number', 'select', 'checkboxset', 'radioset', 'autocomplete'],
+                    'datetime'   : ['datetime', 'text', 'select', 'checkboxset', 'radioset', 'autocomplete'],
+                    'boolean'    : ['checkbox', 'radioset', 'toggle', 'select', 'autocomplete'],
+                    'list'       : ['select', 'radioset', 'checkboxset', 'text', 'number', 'switch', 'autocomplete'],
+                    'clob'       : ['text', 'number', 'select', 'textarea', 'richtext', 'autocomplete'],
+                    'blob'       : ['upload', 'text', 'number', 'select', 'textarea', 'richtext', 'autocomplete'],
+                    'custom'     : ['text', 'number',  'textarea', 'password', 'checkbox', 'slider', 'richtext', 'currency', 'switch', 'select', 'checkboxset', 'radioset', 'date', 'time', 'timestamp', 'upload', 'rating', 'datetime', 'autocomplete']
                 };
                 return fieldTypeWidgetTypeMap;
             }
@@ -512,7 +512,7 @@ WM.module('wm.widgets.live')
             }
 
             function getSearchTemplate(fieldDef, index) {
-                var additionalFields = 'scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" type="typeahead" displaylabel="{{formFields[' + index + '].displaylabel}}"';
+                var additionalFields = 'scopedataset="formFields[' + index + '].dataset" datafield="{{formFields[' + index + '].datafield}}" searchkey="{{formFields[' + index + '].searchkey}}" type="autocomplete" displaylabel="{{formFields[' + index + '].displaylabel}}"';
                 return getDefaultTemplate('search', fieldDef, index, '', '', 'Search', additionalFields);
             }
             /**
@@ -620,6 +620,7 @@ WM.module('wm.widgets.live')
                     template += getCurrencyTemplate(fieldDef, index);
                     break;
                 case 'typeahead':
+                case 'autocomplete':
                     template += getSearchTemplate(fieldDef, index);
                     break;
                 default:
@@ -1001,6 +1002,7 @@ WM.module('wm.widgets.live')
                     extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors'];
                     break;
                 case 'typeahead':
+                case 'autocomplete':
                     baseProperties      = 'wm.search';
                     extendedProperties  = ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.events.keyboard'];
                     break;

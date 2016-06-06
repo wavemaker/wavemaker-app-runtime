@@ -496,9 +496,10 @@ $.widget('wm.datagrid', {
                 cellText = cellText || '';
                 template =  '<wm-select ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displayfield="' + colDef.displayfield + '" placeholder="' + placeholder + '"></wm-select>';
                 break;
+            case 'autocomplete':
             case 'typeahead':
                 $el.addClass('datetime-wrapper');
-                template =  '<wm-search ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="typeahead" placeholder="' + placeholder + '"></wm-select>';
+                template =  '<wm-search ' + dataValue + ' dataset="' + colDef.dataset + '" datafield="' + colDef.datafield + '" displaylabel="' + colDef.displaylabel + '" searchkey="' +  colDef.searchkey + '" type="autocomplete" placeholder="' + placeholder + '"></wm-select>';
                 break;
             case 'date':
                 $el.addClass('datetime-wrapper');
