@@ -263,8 +263,7 @@ WM.module('wm.widgets.base')
                             iScope.partialParams = [];
                             //Trigger registerPageContainer method of page widget when the content of this widget is loaded from other page.
                             // if the $lazyLoad method is defined on the iScope, do not register the pagePart.
-                            if (CONSTANTS.isRunMode && partialName && !loadedPartials[partialName] && !iScope.$lazyLoad) {
-                                iScope.isPagePartRegistered = true;
+                            if (CONSTANTS.isRunMode && partialName && !iScope.$lazyLoad) {
                                 Utils.triggerFn(element.scope().registerPagePart);
                             }
                         },
