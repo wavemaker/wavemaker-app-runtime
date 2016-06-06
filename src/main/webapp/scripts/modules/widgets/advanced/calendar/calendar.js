@@ -103,8 +103,17 @@ WM.module('wm.widgets.advanced')
                     $is.eventSources.length = 0;
                     if (CONSTANTS.isRunMode || (variable && eleScope.Variables[variable].category !== 'wm.ServiceVariable')) {
                         newVal = WM.isArray(newVal) ? newVal : WM.isObject(newVal) ? [newVal] : [];
+                        var eventSet = [];
                         if (_.includes(_.keys(newVal[0]), 'start')) {
-                            $is.eventSources.push(newVal);
+                            _.forEach(newVal, function (event) {
+                                if (!event.start && event.end) {
+                                    event.start = event.end;
+                                }
+                                if (event.start) {
+                                    eventSet.push(event);
+                                }
+                            });
+                            $is.eventSources.push(eventSet);
                         }
                     }
                     break;
