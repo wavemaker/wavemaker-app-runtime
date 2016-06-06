@@ -88,8 +88,8 @@ WM.module('wm.layouts.containers')
                         $is.steps.splice(stepScope.stepIndex, 1);
                         //On removal of current step make first step as current step
                         if ($is.steps.length) {
-                            $is.currentStep = $is.steps[0];
-                            WM.element($is.currentStep._headerElement).click();
+                            $is.currentStep        = $is.steps[0];
+                            $is.currentStep.status = STEP_STATUS.CURRENT;
                         }
                     };
                     if (CONSTANTS.isRunMode) {
