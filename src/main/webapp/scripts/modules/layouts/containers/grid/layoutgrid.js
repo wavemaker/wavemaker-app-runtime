@@ -166,6 +166,9 @@ WM.module('wm.layouts.containers')
                     }
                 },
                 'post': function (scope, element, attrs) {
+                    if (attrs.show === 'hide') {
+                        element.addClass(attrs.show);
+                    }
                     /* register the property change handler */
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, element), scope, notifyFor);
 
