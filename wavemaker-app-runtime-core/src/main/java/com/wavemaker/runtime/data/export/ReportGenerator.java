@@ -3,6 +3,7 @@ package com.wavemaker.runtime.data.export;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
@@ -11,7 +12,7 @@ import org.hibernate.Session;
 import com.wavemaker.runtime.data.Types;
 import com.wavemaker.runtime.data.util.CriteriaUtils;
 import com.wavemaker.runtime.data.util.QueryParser;
-import com.wavemaker.runtime.data.util.ReportContext;
+import com.wavemaker.runtime.data.util.TypeMapBuilder;
 import net.sf.dynamicreports.jasper.builder.JasperReportBuilder;
 import net.sf.dynamicreports.report.builder.column.ColumnBuilder;
 
@@ -35,9 +36,9 @@ public class ReportGenerator {
 
     public JasperReportBuilder generateReport() {
         JasperReportBuilder reportBuilder = new JasperReportBuilder();
-        ReportContext reportContext = new ReportContext();
-        HashMap<String, Types> fieldNameVsTypeMap = reportContext.buildFieldNameVsTypeMap(entityClass.getName());
-        reportBuilder.setDataSource(constructDataSource());
+
+        HashMap<String, Types> fieldNameVsTypeMap = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass.getName());
+        reportBuilder.setDataSource(constructDataSource(fieldNameVsTypeMap));
         List<String> fieldNames = new ArrayList<>(fieldNameVsTypeMap.keySet());
 
         for (String fieldName : fieldNames) {
@@ -51,12 +52,12 @@ public class ReportGenerator {
         return reportBuilder;
     }
 
-    private List constructDataSource() {
+    private List constructDataSource(Map<String, Types> fieldNameVsTypes) {
         Criteria criteria = session.createCriteria(entityClass);
-        QueryParser queryParser = new QueryParser(entityClass);
+        QueryParser queryParser = new QueryParser();
         String query = exportOptions.getQuery();
         if (StringUtils.isNotBlank(query)) {
-            criteria.add(queryParser.parse(query));
+            criteria.add(queryParser.parse(query, fieldNameVsTypes));
         }
         CriteriaUtils.updateCriteriaForPageable(criteria, exportOptions.getPageable());
         return criteria.list();
