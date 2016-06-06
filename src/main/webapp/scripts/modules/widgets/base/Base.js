@@ -1573,7 +1573,7 @@ WM.module('wm.widgets.base', [])
                         /* searchbar in mobile-navbar*/
                         "navsearchbar": {"type": "string", "show": "false"},
                         "readonly": {"type": "boolean", "bindable": "in-bound"},
-                        "type": {"type": "string", "widget": "list", "options": ["search", "typeahead"], "value": "search"},
+                        "type": {"type": "string", "widget": "list", "options": ["search", "autocomplete"], "value": "search", "show": false},
                         "orderby": {"type": "list", "widget": "order-by", "datasetfilter": "terminals"},
                         "height": {"type": "string", "pattern": dimensionRegex}
                     },

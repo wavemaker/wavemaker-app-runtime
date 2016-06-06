@@ -118,11 +118,12 @@ WM.module('wm.utils', [])
                 'datetime'  : true
             },
             dataSetWidgets = {
-                'select'      : true,
-                'checkboxset' : true,
-                'radioset'    : true,
-                'switch'      : true,
-                'typeahead'   : true
+                'select'       : true,
+                'checkboxset'  : true,
+                'radioset'     : true,
+                'switch'       : true,
+                'autocomplete' : true,
+                'typeahead'    : true
             },
             daysOptions = [{
                 'name': 'Sunday',

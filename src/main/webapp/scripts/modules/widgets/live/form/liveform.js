@@ -1159,7 +1159,7 @@ WM.module('wm.widgets.live')
                                     } else {
                                         displayField = _.head(_.keys(_.get({}, '[0]')));
                                     }
-                                    if (relatedFormField.widget === 'typeahead') { //For search widget, set search key and display label
+                                    if (relatedFormField.widget === 'typeahead' || relatedFormField.widget === 'autocomplete') { //For search widget, set search key and display label
                                         relatedFormField.searchkey    = relatedFormField.searchkey || displayField;
                                         relatedFormField.displaylabel = relatedFormField.displaylabel || displayField;
                                     } else {
