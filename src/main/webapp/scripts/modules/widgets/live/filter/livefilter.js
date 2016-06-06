@@ -5,7 +5,7 @@ WM.module('wm.widgets.live')
         "use strict";
 
         $templateCache.put("template/widget/livefilter/livefilter.html",
-                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline" init-widget title="{{hint}}" apply-styles>' +
+                '<form data-identifier="livefilter" class="app-livefilter panel app-panel clearfix liveform-inline" init-widget title="{{hint}}" apply-styles="shell">' +
                     '<div class="panel-heading" ng-if="title || subheading || iconclass">' +
                         '<h3 class="panel-title">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
@@ -18,11 +18,11 @@ WM.module('wm.widgets.live')
                             '</div>' +
                         '</h3>' +
                     '</div>' +
-                    '<div data-ng-show="expanded" class="panel-body">' +
+                    '<div data-ng-show="expanded" class="panel-body" apply-styles="inner-shell">' +
                         '<div data-identifier="filter-elements" ng-transclude></div>' +
                         '<div class="hidden-filter-elements"></div>' +
-                        '<div class="basic-btn-grp form-action panel-footer clearfix"></div>' +
                     '</div>' +
+                    '<div data-ng-show="expanded" class="basic-btn-grp form-action panel-footer clearfix"></div>' +
                 '</form>'
             );
     }]).directive('wmLivefilter', ['PropertiesFactory',
