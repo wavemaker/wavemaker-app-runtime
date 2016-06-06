@@ -671,7 +671,8 @@ WM.module('wm.widgets.base')
                             }
 
                             $is.propertyManager = new PropertyManager();
-                            $is._watchers = {};
+                            $is._watchers       = {};
+                            $is._applyCSSFns    = [];
 
                             $is.$on('$destroy', deregisterWatchersOniScope.bind(undefined, $is));
 
