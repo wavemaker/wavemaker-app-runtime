@@ -91,6 +91,7 @@ public class SecurityController {
     }
 
     @RequestMapping(value = "/user/login_time", method = RequestMethod.GET)
+    @ApiOperation(value = "Returns login time of logged-in user.")
     public StringWrapper getLoginTime() {
         return WMUtils.wrapString(String.valueOf(securityService.getLoginTime()));
     }
@@ -102,7 +103,7 @@ public class SecurityController {
     }
 
     @RequestMapping(value = "/info", method = RequestMethod.GET)
-    @ApiOperation(value = "returns security information")
+    @ApiOperation(value = "Returns security information")
     public SecurityInfo getSecurityInfo() {
         return securityService.getSecurityInfo();
     }
