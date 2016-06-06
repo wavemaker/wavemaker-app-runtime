@@ -1080,6 +1080,11 @@ $.widget('wm.datagrid', {
             this.options.onRowDblClick(rowData, e);
         }
     },
+    headerClickHandler: function (e) {
+        var $th = $(e.target).closest('th'),
+            id = $th.attr('data-col-id');
+        this.options.onHeaderClick(this.preparedHeaderData[id], e);
+    },
     /* Handles column selection. */
     columnSelectionHandler: function (e) {
         e.stopImmediatePropagation();
@@ -1653,7 +1658,7 @@ $.widget('wm.datagrid', {
         $header.on('click', 'input:checkbox', toggleSelectAll);
 
         if ($.isFunction(this.options.onHeaderClick)) {
-            this.gridHeader.on('click', {'col': this.options.colDefs}, this.options.onHeaderClick);
+            this.gridHeader.find('th').on('click', this.headerClickHandler.bind(this));
         }
 
         if (!this.options.isMobile && this.gridHeaderElement.length) {
