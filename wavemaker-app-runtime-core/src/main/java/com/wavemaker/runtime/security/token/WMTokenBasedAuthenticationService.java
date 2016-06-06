@@ -134,9 +134,9 @@ public class WMTokenBasedAuthenticationService {
 
         } else if (authentication instanceof CasAuthenticationToken) {
             CasAuthenticationToken casAuthenticationToken = (CasAuthenticationToken) authentication;
-            final UserDetails userDetails = casAuthenticationToken.getUserDetails();
-            return toWMUser(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
-
+            if(casAuthenticationToken.getPrincipal() instanceof WMUser) {
+                return (WMUser) casAuthenticationToken.getPrincipal();
+            }
         } else if (authentication instanceof RememberMeAuthenticationToken) {
             RememberMeAuthenticationToken rememberMeAuthenticationToken = (RememberMeAuthenticationToken) authentication;
             String username = (String) rememberMeAuthenticationToken.getPrincipal();
