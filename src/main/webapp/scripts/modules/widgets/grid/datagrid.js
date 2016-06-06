@@ -297,11 +297,11 @@ $.widget('wm.datagrid', {
         sel += '</select>';
         htm =
             '<form class="form-search form-inline" onsubmit="return false;"><div class="form-group">' +
-                '<label class="control-label app-label" data-element="dgSearchLabel">' +
-                    searchLabel + ' </label>' + sel +
-                '</div><div class="input-append input-group">' +
-                    '<input type="text" data-element="dgSearchText" class="form-control app-textbox" value="" placeholder="Search" style="display: inline-block;"/>' +
-                    '<span class="input-group-addon"><button type="button" data-element="dgSearchButton" class="app-search-button" title="Search">' +
+                '<input type="text" data-element="dgSearchText" class="form-control app-textbox" value="" placeholder="' +  searchLabel + '" style="display: inline-block;"/>' +
+                '<label class="app-label" >in</label>' +
+            '</div><div class="input-append input-group">' +
+                sel +
+                '<span class="input-group-addon"><button type="button" data-element="dgSearchButton" class="app-search-button" title="Search">' +
                         '<i class="wi wi-search"></i>' +
                     '</button></span>' +
                 '</div>' +
@@ -858,8 +858,8 @@ $.widget('wm.datagrid', {
         case 'searchLabel':
             if (this.gridSearch) {
                 this.gridSearch.find(
-                    '[data-element="dgSearchLabel"]'
-                ).text(value);
+                    '[data-element="dgSearchText"]'
+                ).attr('placeholder', value);
             }
             break;
         case 'selectFirstRow':
