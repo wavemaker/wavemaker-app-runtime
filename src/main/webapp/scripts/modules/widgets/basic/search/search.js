@@ -145,8 +145,8 @@ WM.module('wm.widgets.basic')
 
                 if (WM.isObject($is.datavalue)) {
                     // convert display-label-value to string, as ui.typeahead expects only strings
-                    $is.datavalue.wmDisplayLabel = _.get($is.datavalue, $is.displaylabel);
-                    $is.datavalue.wmImgSrc       = _.get($is.datavalue, $is.displayimagesrc);
+                    $is.datavalue.wmDisplayLabel = WidgetUtilService.getEvaluatedData($is, $is.datavalue, {expressionName: 'displaylabel'});
+                    $is.datavalue.wmImgSrc       = WidgetUtilService.getEvaluatedData($is, $is.datavalue, {expressionName: 'displayimagesrc'});
                 }
                 // set the queryModel by checking the matched item based on formattedDataSet.
                 $is.queryModel = _.find($is.formattedDataSet, function (item) {
