@@ -48,7 +48,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "firstRow": {"type": "number", "value": 0, "disabled": true, "hide": true},
                     "maxResults": {"type": "number", "value": 20, "disabled": true, "hide": true},
                     "designMaxResults": {"type": "number", "value": 10, "disabled": true, "hide": true},
-                    "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc"},
+                    "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": true},
                     "service": {"type": "list", "required": true},
                     "operation": {"type": "list", "required": true},
                     "operationType": {"type": "string", "hide": true},
@@ -82,7 +82,7 @@ wm.variables.factories.BaseVariablePropertyFactory = [
                     "designMaxResults": {"disabled": false, "hide": false},
                     "ignoreCase": {"type": "boolean", "value": false},
                     "matchMode": {"type": "list", "options": matchModes, "value": "start"},
-                    "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc"},
+                    "orderBy": {"type": "string", "placeholder": "field1 asc,field2 desc", "hide": false},
                     "autoUpdate": {"value": true},
                     "startUpdate": {"value": false},
                     "inFlightBehavior": {"type": "list", "options": {"doNotExecute": "doNotExecute", "executeLast": "executeLast", "executeAll": "executeAll"}, "value": "executeLast"}
