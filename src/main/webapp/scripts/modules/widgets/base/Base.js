@@ -2179,9 +2179,12 @@ WM.module('wm.widgets.base', [])
             function cleanupMarkup(element) {
                 if (!$rICQueue.length) {
                     $rIC(function () {
-                        while ($rICQueue.length) {
-                            $rICQueue.shift().removeAttr(attrsToBeRemoved);
+                        var i;
+                        // use the native for to improve the performance
+                        for (i = 0; i < $rICQueue.length; i++) {
+                            $rICQueue[i].removeAttr(attrsToBeRemoved);
                         }
+                        $rICQueue.length = 0;
                         element.removeAttr(attrsToBeRemoved);
                     });
                 }
@@ -3009,9 +3012,12 @@ WM.module('wm.widgets.base', [])
 
                 if (!$rAFQueue.length) {
                     $rAF(function () {
-                        while ($rAFQueue.length) {
-                            $rAFQueue.shift()();
+                        var i;
+                        // use the native for to improve the performance
+                        for (i = 0; i < $rAFQueue.length; i++) {
+                            $rAFQueue[i]();
                         }
+                        $rAFQueue.length = 0;
                     });
                 }
 
