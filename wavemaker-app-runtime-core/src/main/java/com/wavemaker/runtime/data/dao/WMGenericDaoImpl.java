@@ -33,6 +33,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.hibernate4.HibernateCallback;
 import org.springframework.orm.hibernate4.HibernateTemplate;
@@ -141,11 +142,18 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
 
     @Override
     public Downloadable export(final ExportType exportType, final String query, final Pageable pageable) {
+//        FIXME remove this check when pageable options are sent.
+        final Pageable customPageable;
+        if (pageable == null || (pageable.getPageNumber() == 0 && pageable.getPageSize() == 20)) {
+            customPageable = new PageRequest(0, 100);
+        } else {
+            customPageable = pageable;
+        }
         ByteArrayOutputStream reportOutputStream = (ByteArrayOutputStream) getTemplate().execute(new HibernateCallback<OutputStream>() {
             @Override
             public OutputStream doInHibernate(Session session) throws HibernateException {
                 ExportOptions exportOptions = new ExportOptions();
-                exportOptions.setPageable(pageable);
+                exportOptions.setPageable(customPageable);
                 exportOptions.setQuery(query);
                 DataExporter<Entity> exporter = new DataExporter<>(session, entityClass, exportType, exportOptions);
                 return exporter.build();
