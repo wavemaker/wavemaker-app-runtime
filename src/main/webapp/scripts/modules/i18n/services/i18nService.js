@@ -317,14 +317,14 @@ WM.module('i18n')
                     path  += _selectedLocale + '.json';
                     $http
                         .get(path)
-                        .success(function (response) {
+                        .then(function (response) {
                             // extend the $rs.locale object with the response json
                             WM.extend(content, response);
                             count--;
                             if (!count) {
                                 deferred.resolve(content);
                             }
-                        });
+                        }, deferred.resolve);
                 });
 
                 return deferred.promise;

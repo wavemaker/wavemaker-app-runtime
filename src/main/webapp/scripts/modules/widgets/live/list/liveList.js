@@ -724,6 +724,7 @@ WM.module('wm.widgets.live')
                         if (!$is.dataset || $is.groupby === 'Javascript') {
                             return;
                         }
+                        selectedVariable = selectedVariable || eleScope.Variables[variable];
                         if (!$is.groupby || _.includes($is.groupby, '(')) {
                             wp.match.show = false;
                         } else if (selectedVariable) {
@@ -751,6 +752,9 @@ WM.module('wm.widgets.live')
                 case 'dataset':
                     doNotRemoveTemplate = attrs.template === 'true';
                     onDataSetChange($is, $el, doNotRemoveTemplate, nv, attrs, listCtrl);
+                    if ($is.widgetid) {
+                        showOrHideMatchProperty();
+                    }
                     break;
                 case 'itemsperrow':
                     if (CONSTANTS.isStudioMode) {
