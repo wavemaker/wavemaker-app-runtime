@@ -8,7 +8,7 @@ WM.module('wm.widgets.basic')
                 '<a data-identifier="anchor" class="app-anchor" init-widget title="{{hint}}" apply-styles role="button" accesskey="{{::shortcutkey}}">' +
                     '<img data-identifier="img" class="anchor-image-icon" ng-src="{{iconsrc}}" ng-if="showimage" ng-style="{width:iconwidth ,height:iconheight, margin:iconmargin}"/>' +
                     '<i class="app-icon {{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}" ng-if="iconclass"></i>' +
-                    '<span class="anchor-caption"></span>' +
+                    ' <span class="anchor-caption"></span>' +
                     '<span ng-if="badgevalue" class="badge pull-right">{{badgevalue}}</span>' +
                 '</a>'
             );
