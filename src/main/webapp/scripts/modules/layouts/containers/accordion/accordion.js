@@ -19,8 +19,8 @@ WM.module('wm.layouts.containers')
                     '</h3>' +
                     '<div class="panel-actions"><span class="label label-{{badgetype}}">{{badgevalue}}</span><button type="button" class="app-icon wi panel-action" ng-class="isActive ? \'wi-minus\': \'wi-plus\'"></button></div>' +
                 '</div>' +
-                '<div class="panel-collapse collapse"  ng-class="isActive ? \'collapse in\' : \'collapse\'" apply-styles="scrollable-container">' +
-                    '<div class="panel-body" wmtransclude page-container-target apply-styles="container"></div>' +
+                '<div class="panel-collapse collapse"  ng-class="isActive ? \'collapse in\' : \'collapse\'">' +
+                    '<div class="panel-body" wmtransclude page-container-target apply-styles="inner-shell"></div>' +
                 '</div>' +
             '</div>'
             );
