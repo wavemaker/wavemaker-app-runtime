@@ -208,8 +208,8 @@ WM.module('wm.widgets.advanced')
                 'link': {
                     'pre': function ($is) {
                         $is.widgetProps   = widgetProps;
-                        $is.events        = [];
-                        $is.eventSources  = [$is.events];
+                        $is.events = [];
+                        $is.eventSources = [];
                     },
                     'post': function ($is, $el, attrs) {
                         var handlers            = [],
@@ -293,10 +293,18 @@ WM.module('wm.widgets.advanced')
                             oldData = Utils.getClonedObject(event);
                         }
 
+                        function renderMobileView(viewObj) {
+                            if (!viewObj) {
+                                return;
+                            }
+                            $is.currentview = {start: moment(viewObj.date)._d.getTime(), end: moment(viewObj.date).add(1, 'month')._d.getTime()};
+                            $is.onViewrender({$view: $is.mobileCalendarOptions});
+                        }
+
                         if (isMobile) {
                             $is.eventData = {};
                             wp.view.options = ['day', 'month', 'year'];
-                            wp.controls.show = wp.multiselect.show = wp.calendartype.show = wp.onEventdrop.show = wp.onEventresize.show = wp.onViewrender.show = false;
+                            wp.controls.show = wp.multiselect.show = wp.calendartype.show = wp.onEventdrop.show = wp.onEventresize.show = false;
                             //prepare calendar Events
                             $is.prepareCalendarEvents = function () {
                                 var eventDay;
@@ -340,6 +348,10 @@ WM.module('wm.widgets.advanced')
                                 'customClass'   : getDayClass,
                                 'datepickerMode': $is.view
                             };
+                            //watch the child activeDt property which gives us the current month details.
+                            if (CONSTANTS.isRunMode) {
+                                $is.$on('$destroy', $is.$watch('$$childHead.activeDt', _.debounce(renderMobileView, 30), true));
+                            }
                         } else {
                             $is.calendarOptions = {
                                 calendar: {

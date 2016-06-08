@@ -179,7 +179,7 @@ WM.module('wm.widgets.live')
                         },
                         {
                             key         :   'clear',
-                            class       :   'btn',
+                            class       :   'btn-secondary',
                             iconclass   :   'wi wi-trash',
                             action      :   'clearFilter()',
                             displayName :   'Clear',

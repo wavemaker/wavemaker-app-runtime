@@ -889,6 +889,17 @@ html, body {
       }
     }
   }
+  .uib-daypicker {
+    tbody{
+      .btn-default {
+        position: relative;
+        margin-bottom: .75em;
+        &:after {
+          bottom: -1em;
+        }
+      }
+    }
+  }
 }
 /**input required**/
 .app-required-input {
@@ -1507,9 +1518,6 @@ If the height and width are not specified the video takes the height of the post
     .app-select {
       width: auto;
     }
-    .app-label {
-      padding: 0 0.5em;
-    }
   }
   > .panel-heading {
     .panel-actions {
@@ -1528,6 +1536,9 @@ If the height and width are not specified the video takes the height of the post
       text-align: right;
       display: table-cell;
       vertical-align: top;
+      > .btn {
+        margin: 0.33em;
+      }
     }
   }
   .app-datagrid {

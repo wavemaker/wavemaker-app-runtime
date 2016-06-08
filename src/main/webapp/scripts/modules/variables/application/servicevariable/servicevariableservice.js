@@ -307,7 +307,9 @@ wm.variables.services.$servicevariable = ['Variables',
                 if (_.includes(operationInfo.consumes, WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED)
                         && !_.includes(WS_CONSTANTS.NON_BODY_HTTP_METHODS, (method || '').toUpperCase())) {
                     // remove the '?' at the start of the queryParams
-                    requestBody = queryParams.substring(1);
+                    if (queryParams) {
+                        requestBody = (requestBody ? requestBody + '&' : '') + queryParams.substring(1);
+                    }
                     headers['Content-Type'] = WS_CONSTANTS.CONTENT_TYPES.FORM_URL_ENCODED;
                 } else {
                     url += queryParams;
