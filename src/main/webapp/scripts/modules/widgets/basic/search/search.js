@@ -170,10 +170,24 @@ WM.module('wm.widgets.basic')
             }
 
             // this function checks if the variable bound is a live variable or service variable
-            function isVariableUpdateRequired($is, scope) {
+            function isVariableUpdateRequired($is, scope, calledFromSetDataSet) {
                 var variable          = Variables.getVariableByName(Utils.getVariableName($is, scope)),
-                    updateRequiredFor = ['wm.LiveVariable', 'wm.ServiceVariable'];
+                    updateRequiredFor = ['wm.LiveVariable', 'wm.ServiceVariable'],
+                    queryParams       = [];
 
+                // check if the variable is service variable
+                if (!calledFromSetDataSet && variable && variable.category === 'wm.ServiceVariable') {
+                    queryParams = getMappedServiceQueryParams(_.get(variable, '_wmServiceOperationInfo.parameters'));
+                    if (!queryParams.length) {
+                        $is.isQueryWithoutParams = true;
+                        // if we don't have any query param and variable data is available then we don't need variable update, so return false
+                        if ($is.isVariableDataAvailable || ($is.itemList && $is.itemList.length)) {
+                            return false;
+                        }
+                    } else {
+                        $is.isQueryWithoutParams = false;
+                    }
+                }
                 return variable && _.includes(updateRequiredFor, variable.category);
             }
 
@@ -198,8 +212,10 @@ WM.module('wm.widgets.basic')
                     $servicevariable.getServiceOperationInfo(variable.operation, variable.service, function (serviceOperationInfo) {
                         queryParams = serviceOperationInfo.parameters;
                     });
-                    if (queryParams) {
-                        searchOptions = _.map(getMappedServiceQueryParams(queryParams), function (value) {
+                    queryParams = getMappedServiceQueryParams(queryParams);
+                    // don't update search options if there is no query service param
+                    if (queryParams && queryParams.length > 0) {
+                        searchOptions = _.map(queryParams, function (value) {
                             return value;
                         });
                         _.set($is.widgetProps, 'searchkey.options', searchOptions);
@@ -259,8 +275,10 @@ WM.module('wm.widgets.basic')
                         return;
                     }
                     $is.formattedDataSet = dataSet;
-                    if (!isVariableUpdateRequired($is, element.scope())) {
+                    // update the queryModel, if the default value is given and formatted Dataset is defined.
+                    if (!isVariableUpdateRequired($is, element.scope(), true) || ($is.formattedDataSet.length && !$is.isDefaultValueExist && $is.datavalue)) {
                         updateQueryModel($is);
+                        $is.isDefaultValueExist = true;
                     }
                 }
             }
@@ -430,7 +448,8 @@ WM.module('wm.widgets.basic')
             function fetchVariableData($is, el, searchValue, $s) {
                 var variable      = Variables.getVariableByName(Utils.getVariableName($is, $s)),  // get the bound variable
                     requestParams = getQueryRequestParams($is, variable, searchValue), // params to be sent along with variable update call
-                    deferred      = $q.defer();
+                    deferred      = $q.defer(),
+                    customFilter  = $filter('_custom_search_filter');
 
                 if (variable) {
                     // call variable update
@@ -454,7 +473,13 @@ WM.module('wm.widgets.basic')
                              with which we are resolving the promise
                              */
                             setDataSet(data, $is, el, $s);
-                            deferred.resolve($is.itemList);
+                            // if service variable has no query params and startUpdate is false then get the variable data and make a local search on that
+                            if ($is.isQueryWithoutParams && !$is.isVariableDataAvailable) {
+                                deferred.resolve(customFilter($is.itemList, $is.searchkey, searchValue, $is.casesensitive));
+                                $is.isVariableDataAvailable = true;
+                            } else {
+                                deferred.resolve($is.itemList);
+                            }
                         }
                     }, function () {
                         // setting loadingItems to false when some error occurs, so that loading icon is hidden

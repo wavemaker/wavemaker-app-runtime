@@ -1077,7 +1077,8 @@ WM.module('wm.widgets.base', [])
                         "onMouseout": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onMouseover": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "animation": {"type": "list", "options": animationOptions},
-                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]}
+                        "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["well", "alert", "alert-success", "alert-info", "alert-warning", "alert-danger"]},
+                        "overflow": {"type": "list", "options": ["visible", "hidden", "scroll", "auto", "initial", "inherit"]}
                     },
                     'wm.layouts.tile': {
                         "margin": {"type": "string", "widget": "box-model"},
