@@ -1982,7 +1982,7 @@ wm.variables.services.Variables = [
                     createdVariable.type = variableDetails.table;
                     createdVariable.category = variableCategory;
                     createdVariable.isDefault = true;
-                    _.forEach(['maxResults', 'startUpdate', 'autoUpdate'], function (property) {
+                    _.forEach(['maxResults', 'startUpdate', 'autoUpdate', 'bindCount'], function (property) {
                         if (WM.isDefined(variableDetails[property])) {
                             createdVariable[property] = variableDetails[property];
                         }
