@@ -236,7 +236,8 @@ WM.module('wm.widgets.live')
                     .first()
                     .scrollParent(false)
                     .each(function () {
-                        lastScrollTop = this.scrollTop;
+                        //scrollTop property is 0 or undefined for body in IE, safari.
+                        lastScrollTop = this === document ? (this.body.scrollTop || WM.element(window).scrollTop()) : this.scrollTop;
                     })
                     .off('scroll.livelist')
                     .on('scroll.livelist', function (evt) {
@@ -244,12 +245,12 @@ WM.module('wm.widgets.live')
                             clientHeight,
                             totalHeight,
                             scrollTop;
-
-                        target =  target === document ? target.scrollingElement : target;
+                        //scrollingElement is undefined for IE, safari. use body as target Element
+                        target =  target === document ? (target.scrollingElement || document.body) : target;
 
                         clientHeight = target.clientHeight;
                         totalHeight  = target.scrollHeight;
-                        scrollTop    = target.scrollTop;
+                        scrollTop    = target === document.body ? WM.element(window).scrollTop() : target.scrollTop;
 
                         if ((lastScrollTop < scrollTop) && (totalHeight * 0.9 < scrollTop + clientHeight)) {
                             WM.element(this).off('scroll.livelist');
@@ -521,7 +522,7 @@ WM.module('wm.widgets.live')
                 // In run mode, making the first element selected, if flag is set
                 if ($is.selectfirstitem) {
                     unbindWatcher = $is.$watch(function () {
-                        var items = $el.find('.list-group li.app-list-item:first-of-type');
+                        var items = $el.find('.list-group li.app-list-item:first');
                         if (items.length) {
                             $rs.$safeApply($is, function () {
                                 $timeout(function () {
@@ -729,7 +730,7 @@ WM.module('wm.widgets.live')
                             wp.match.show = false;
                         } else if (selectedVariable) {
                             if (selectedVariable.category === 'wm.LiveVariable') {
-                                wp.match.show = _.includes(matchDataTypes, getFieldType($is.dataset.propertiesMap, $is.groupby));
+                                wp.match.show = _.includes(matchDataTypes, getFieldType($is.dataset.propertiesMap || selectedVariable.propertiesMap, $is.groupby));
                             } else if (selectedVariable.category === 'wm.DeviceVariable') {
                                 wp.match.show = _.includes(matchDataTypes, DeviceVariableService.getFieldType(variable, $is.groupby));
                             } else if (selectedVariable.category === 'wm.ServiceVariable' || selectedVariable.category === 'wm.Variable') {

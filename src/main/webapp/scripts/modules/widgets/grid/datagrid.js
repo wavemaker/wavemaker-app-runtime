@@ -283,7 +283,7 @@ $.widget('wm.datagrid', {
         var htm,
             sel = '<select name="wm-datagrid" data-element="dgFilterValue" ' +
                 'class="form-control app-select">' +
-                '<option value="" selected>Select Column</option>',
+                '<option value="" selected>Select Field</option>',
             searchLabel = (this.Utils.isDefined(this.options.searchLabel) &&
                 this.options.searchLabel.length) ? this.options.searchLabel : 'Search:';
         this.options.colDefs.forEach(function (colDef, index) {
@@ -298,7 +298,6 @@ $.widget('wm.datagrid', {
         htm =
             '<form class="form-search form-inline" onsubmit="return false;"><div class="form-group">' +
                 '<input type="text" data-element="dgSearchText" class="form-control app-textbox" value="" placeholder="' +  searchLabel + '" style="display: inline-block;"/>' +
-                '<label class="app-label" >in</label>' +
             '</div><div class="input-append input-group">' +
                 sel +
                 '<span class="input-group-addon"><button type="button" data-element="dgSearchButton" class="app-search-button" title="Search">' +
@@ -1593,7 +1592,6 @@ $.widget('wm.datagrid', {
                 placeholder = colDef.searchPlaceholder || 'Search';
                 $htm.find('[data-element="dgSearchText"]').attr('placeholder', placeholder);
             }
-            $searchBox.val('');
             // If "No data found" message is shown, and user changes the selection, then fetch all data.
             if (self.dataStatusContainer.find('.status').text() === self.options.dataStates.nodata) {
                 search(e);
