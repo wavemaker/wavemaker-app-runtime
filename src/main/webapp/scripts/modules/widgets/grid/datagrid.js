@@ -255,7 +255,7 @@ $.widget('wm.datagrid', {
                 htm += '';
             }
             htm += '<div class="header-data">' + headerLabel + '</div>';
-            if (this.options.enableSort && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType) {
+            if (this.options.enableSort && (_.isUndefined(value.show) || value.show) && (_.isUndefined(value.sortable) || value.sortable) && !value.widgetType) {
                 htm += '<span class="sort-buttons-container">';
                 sortInfo = this.options.sortInfo;
                 sortField = sortInfo.field;
@@ -1001,7 +1001,9 @@ $.widget('wm.datagrid', {
         var rowId = $row.attr('data-row-id'),
             $checkbox,
             $radio;
-
+        if (!this.preparedData[rowId]) {
+            return;
+        }
         this.preparedData[rowId].selected = selected;
         if (selected) {
             $row.addClass('active');
