@@ -39,8 +39,12 @@ WM.module('wm.layouts.page')
                         scope.widgetProps = widgetProps;
                         if (CONSTANTS.isRunMode) {
                             Utils.triggerFn(element.scope().registerPagePart);
-                            scope.loadmode = 'after-delay';
-                            scope.loaddelay = 100;
+
+                            /** We do not require a delay for page dialogs. Delay is required only for pages*/
+                            if(!element.closest('.app-dialog').length){
+                                scope.loadmode = 'after-delay';
+                                scope.loaddelay = 100;
+                            }
                             scope.__onTransclude = function () {
                                 Utils.triggerFn(element.scope().onPagePartLoad);
                             };
