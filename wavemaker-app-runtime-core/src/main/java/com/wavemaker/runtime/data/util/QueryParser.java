@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.LogicalExpression;
 
@@ -27,15 +28,16 @@ public class QueryParser {
     private static String CLOSE_PARENTHESIS = ")";
     private static String SINGLE_QUOTE = "'";
     private static String COMMA = ",";
+    private static String DOT = ".";
 
     public QueryParser() {}
 
-    public Criterion parse(String query, Class<?> entityClass) {
+    public Criterion parse(String query, Class<?> entityClass, Criteria criteria) {
         HashMap<String, Types> fieldNameVsTypeMap = TypeMapBuilder.buildFieldNameVsTypeMap(entityClass.getName());
-        return parse(query,fieldNameVsTypeMap);
+        return parse(query, fieldNameVsTypeMap, criteria);
     }
 
-    public Criterion parse(String query, Map<String, Types> fieldNameVsTypeMap) {
+    public Criterion parse(String query, Map<String, Types> fieldNameVsTypeMap, Criteria criteria) {
 
         Stack<Criterion> criterionStack = new Stack<>();
         Stack<String> joinOperatorStack = new Stack<>();
@@ -63,6 +65,9 @@ public class QueryParser {
                 } else {
                     String operator = stringTokenizer.nextToken();
                     Type type = Type.valueFor(operator);
+                    if (token.contains(DOT)) {
+                        CriteriaUtils.criteriaForRelatedProperty(criteria, token);
+                    }
                     if (type != null) {
                         Types types = fieldNameVsTypeMap.get(token);
                         if (Type.IN == type || Type.BETWEEN == type) {
