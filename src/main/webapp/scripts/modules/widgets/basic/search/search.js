@@ -431,6 +431,18 @@ WM.module('wm.widgets.basic')
                 return data;
             }
 
+            // This function determines if drop up is required or not
+            function isDropUpRequired(element) {
+                var dropDownContainer = element.get(0),
+                    dimensions        = dropDownContainer.getBoundingClientRect(),
+                    position          = dimensions.top,
+                    buttonHeight      = dimensions.height,
+                    menuHeight        = element.find('.dropdown-menu').outerHeight(),
+                    $win              = WM.element(window);
+
+                return position > menuHeight && $win.height() - position < buttonHeight + menuHeight;
+            }
+
             // This function fetch the updated variable data in case search widget is bound to some variable
             function fetchVariableData($is, el, searchValue, $s) {
                 var variable      = Variables.getVariableByName(Utils.getVariableName($is, $s)),  // get the bound variable
@@ -467,6 +479,14 @@ WM.module('wm.widgets.basic')
                             } else {
                                 deferred.resolve($is.itemList);
                             }
+                            //Checking if drop up is required for the search results menu, if yes, add class dropup to menu and set top to auto
+                            $timeout(function () {
+                                if (isDropUpRequired(el)) {
+                                    el.addClass('dropup').find('ul').css('top', 'auto');
+                                } else {
+                                    el.removeClass('dropup').find('ul').css('top', '100%');
+                                }
+                            });
                         }
                     }, function () {
                         // setting loadingItems to false when some error occurs, so that loading icon is hidden
