@@ -113,7 +113,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
                         final String attributeName = queryFilter.getAttributeName();
 
                         // if search filter contains related table property, then add entity alias to criteria to perform search on related properties.
-                        criteria = CriteriaUtils.criteriaForRelatedProperty(criteria, attributeName);
+                        CriteriaUtils.criteriaForRelatedProperty(criteria, attributeName);
 
                         Criterion criterion = CriteriaUtils.createCriterion(queryFilter);
                         criteria.add(criterion);
@@ -132,7 +132,7 @@ public abstract class WMGenericDaoImpl<Entity extends Serializable, Identifier e
             public Page<Entity> doInHibernate(Session session) throws HibernateException {
                 Criteria criteria = session.createCriteria(entityClass);
                 if (StringUtils.isNotBlank(query)) {
-                    Criterion criterion = new QueryParser().parse(query, entityClass);
+                    Criterion criterion = new QueryParser().parse(query, entityClass, criteria);
                     criteria.add(criterion);
                 }
                 return CriteriaUtils.executeAndGetPageableData(criteria, pageable);
