@@ -17,7 +17,7 @@ import com.wavemaker.runtime.data.spring.WMPageImpl;
  */
 public abstract class CriteriaUtils {
 
-    public static final String SEARCH_PROPERTY_DILIMITTER = ".";
+    public static final String SEARCH_PROPERTY_DELIMITER = ".";
 
     public static Criterion createCriterion(QueryFilter queryFilter) {
         Object attributeValue = queryFilter.getAttributeValue();
@@ -55,7 +55,7 @@ public abstract class CriteriaUtils {
     }
 
     public static Criteria criteriaForRelatedProperty(Criteria criteria, final String attributeName) {
-        final int indexOfDot = attributeName.indexOf(SEARCH_PROPERTY_DILIMITTER);
+        final int indexOfDot = attributeName.indexOf(SEARCH_PROPERTY_DELIMITER);
         if (indexOfDot != -1) {
             String relatedEntityName = attributeName.substring(0, indexOfDot);
             criteria = criteria.createAlias(relatedEntityName, relatedEntityName);

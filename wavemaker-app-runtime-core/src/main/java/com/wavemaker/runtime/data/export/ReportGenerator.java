@@ -57,7 +57,7 @@ public class ReportGenerator {
         QueryParser queryParser = new QueryParser();
         String query = exportOptions.getQuery();
         if (StringUtils.isNotBlank(query)) {
-            criteria.add(queryParser.parse(query, fieldNameVsTypes));
+            criteria.add(queryParser.parse(query, fieldNameVsTypes, criteria));
         }
         CriteriaUtils.updateCriteriaForPageable(criteria, exportOptions.getPageable());
         return criteria.list();
