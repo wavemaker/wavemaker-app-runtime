@@ -123,7 +123,10 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 }
 
                 requestQueue['serviceDef'][serviceId] = requestQueue['serviceDef'][serviceId] || [];
-                requestQueue['serviceDef'][serviceId].push(success);
+                requestQueue['serviceDef'][serviceId].push({
+                    success: success,
+                    error: error
+                });
                 /* if same queue is already in progress, do not send another request */
                 if (requestQueue['serviceDef'][serviceId].length > 1) {
                     return;
@@ -137,13 +140,19 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     /*while loop is used so that any requests that come when the response is being served; are also handled.*/
                     while (true) {
                         callback = requestQueue['serviceDef'][serviceId].shift();
-                        Utils.triggerFn(callback, response);
+                        Utils.triggerFn(callback.success, response);
                         if (!requestQueue['serviceDef'][serviceId].length) {
                             break;
                         }
                     }
                 }, function (errMsg) {
-                    Utils.triggerFn(error, errMsg);
+                    while (true) {
+                        callback = requestQueue['serviceDef'][serviceId].shift();
+                        Utils.triggerFn(callback.error, errMsg);
+                        if (!requestQueue['serviceDef'][serviceId].length) {
+                            break;
+                        }
+                    }
                 });
             },
 
@@ -372,7 +381,15 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         /*while loop is used so that any requests that come when the response is being served; are also handled.*/
                         while (true) {
                             callback = requestQueue['operations'][serviceId].shift();
-                            Utils.triggerFn(callback, serviceObj.operations);
+                            Utils.triggerFn(callback.success, serviceObj.operations);
+                            if (!requestQueue['operations'][serviceId].length) {
+                                break;
+                            }
+                        }
+                    },
+                    onOperationFetchError = function () {
+                        while (true) {
+                            requestQueue['operations'][serviceId].shift();
                             if (!requestQueue['operations'][serviceId].length) {
                                 break;
                             }
@@ -386,7 +403,9 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 }
 
                 requestQueue['operations'][serviceId] = requestQueue['operations'][serviceId] || [];
-                requestQueue['operations'][serviceId].push(successCallBack);
+                requestQueue['operations'][serviceId].push({
+                    success: successCallBack
+                });
                 /* if same queue is already in progress, do not send another request */
                 if (requestQueue['operations'][serviceId].length > 1) {
                     return;
@@ -424,6 +443,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     }, function () {
                         /*handle error response*/
                         wmToaster.show("error", $rootScope.locale["MESSAGE_ERROR_TITLE"], $rootScope.locale["MESSAGE_ERROR_FETCH_SERVICE_METHODS_DESC"]);
+                        onOperationFetchError();
                     }, reloadFlag);
                 } else {
                     /*data for the request*/
@@ -436,6 +456,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         onOperationsFetch(response);
                     }, function () {
                         wmToaster.show("error", $rootScope.locale["MESSAGE_ERROR_TITLE"], $rootScope.locale["MESSAGE_ERROR_FETCH_SERVICE_METHODS_DESC"]);
+                        onOperationFetchError();
                     });
                 }
             },
