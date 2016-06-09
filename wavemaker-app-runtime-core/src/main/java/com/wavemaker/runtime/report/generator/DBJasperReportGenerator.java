@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.report.service;
+package com.wavemaker.runtime.report.generator;
 
 import java.sql.Connection;
 import java.sql.SQLException;

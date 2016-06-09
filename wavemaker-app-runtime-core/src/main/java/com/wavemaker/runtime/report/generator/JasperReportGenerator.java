@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.report.service;
+package com.wavemaker.runtime.report.generator;
 
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.report.model.ReportContext;

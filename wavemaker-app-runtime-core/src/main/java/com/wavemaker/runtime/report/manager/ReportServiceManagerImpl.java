@@ -2,13 +2,11 @@ package com.wavemaker.runtime.report.manager;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.wavemaker.runtime.file.model.DownloadResponse;
 import com.wavemaker.runtime.report.model.ReportContext;
-import com.wavemaker.runtime.report.service.JasperReportGenerator;
+import com.wavemaker.runtime.report.generator.JasperReportGenerator;
 
 /**
  * Created by kishorer on 2/5/16.

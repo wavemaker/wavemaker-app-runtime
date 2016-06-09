@@ -1,9 +1,11 @@
-package com.wavemaker.runtime.report.service;
+package com.wavemaker.runtime.report.helper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,19 +45,18 @@ public class JasperReportHelper {
         return INSTANCE;
     }
 
-    public JasperReport compileReport(String reportName) {
-        JasperReport jasperReport = jasperReportCache.getIfPresent(reportName);
-        if (jasperReport == null) {
-            synchronized (jasperReportCache) {
-                jasperReport = jasperReportCache.getIfPresent(reportName);
-                if (jasperReport == null) {
+    public JasperReport compileReport(final String reportName) {
+        try {
+            return jasperReportCache.get(reportName, new Callable<JasperReport>() {
+                @Override
+                public JasperReport call() throws Exception {
                     InputStream inputStream = loadReportTemplateXml(reportName);
-                    jasperReport = compilerReport(inputStream);
-                    jasperReportCache.put(reportName, jasperReport);
+                    return compileReport(inputStream);
                 }
-            }
+            });
+        } catch (ExecutionException e) {
+            throw new WMRuntimeException(e);
         }
-        return jasperReport;
     }
 
     public InputStream exportAsStream(ReportContext reportContext) {
@@ -84,7 +85,7 @@ public class JasperReportHelper {
         return ClassLoaderUtils.getResourceAsStream(reportTemplateFile);
     }
 
-    private JasperReport compilerReport(InputStream xmlInputStream) {
+    private JasperReport compileReport(InputStream xmlInputStream) {
         try {
             JasperDesign jasperDesign = JRXmlLoader.load(xmlInputStream);
             return JasperCompileManager.compileReport(jasperDesign);
