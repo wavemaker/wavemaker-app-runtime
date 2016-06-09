@@ -6,6 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.web.DefaultRedirectStrategy;
 
 /**
@@ -15,21 +18,19 @@ public class CASRedirectStrategy extends DefaultRedirectStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CASRedirectStrategy.class);
 
+    @Autowired
+    @Qualifier("casServiceProperties")
+    private ServiceProperties serviceProperties;
+
     @Override
     public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
-
-        StringBuffer requestURL = request.getRequestURL();
-        String contextPath = request.getContextPath();
-
-        String serviceHostUrl = requestURL.substring(0, requestURL.lastIndexOf(contextPath));
-        String serviceUrl = serviceHostUrl + contextPath;
-
+        String serviceUrl = CASUtils.getServiceUrl(request);
         StringBuilder stringBuilder = new StringBuilder(url);
-        stringBuilder.append("?service=" + serviceUrl);
+        stringBuilder.append("?" + serviceProperties.getServiceParameter() + "=" + serviceUrl);
 
         LOGGER.info("CAS logout redirect url is {}", url);
         String casRedirectUrl = stringBuilder.toString();
-        if (!isAjaxRequest(request)) {
+        if (!CASUtils.isAjaxRequest(request)) {
             super.sendRedirect(request, response, casRedirectUrl);
         } else {
             response.setStatus(HttpServletResponse.SC_OK);
@@ -38,7 +39,4 @@ public class CASRedirectStrategy extends DefaultRedirectStrategy {
         }
     }
 
-    private boolean isAjaxRequest(HttpServletRequest request) {
-        return "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
-    }
 }
