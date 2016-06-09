@@ -1,11 +1,11 @@
-package com.wavemaker.runtime.report.service;
+package com.wavemaker.runtime.report.generator;
 
 import java.io.InputStream;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.wavemaker.runtime.file.model.DownloadResponse;
+import com.wavemaker.runtime.report.helper.JasperReportHelper;
 import com.wavemaker.runtime.report.model.ExportType;
 import com.wavemaker.runtime.report.model.ReportContext;
 
