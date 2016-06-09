@@ -40,7 +40,7 @@ WM.module('wm.widgets.basic')
                     ' uib-typeahead="item.wmDisplayLabel || item for item in _getItems($viewValue) | limitTo:limit" ' +
                     ' typeahead-on-select="onTypeAheadSelect($event, $item, $model, $label)"' +
                     ' typeahead-template-url="template/widget/form/searchlist.html">' +
-                '<i ng-show="_loadingItems" class="fa fa-refresh wm-search-widget-refresh"></i>' +
+                '<span ng-show="_loadingItems" class="fa fa-spinner fa-pulse form-control-feedback"></span>' +
                 '<span class="input-group-addon" ng-class="{\'disabled\': disabled}" ng-if="showSearchIcon" >' +
                     '<form ng-submit="onSubmit({$event: $event, $scope: this})" >' +
                         '<button title="Search" ng-disabled="disabled" class="app-search-button wi wi-search" type="submit" ' +
