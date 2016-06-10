@@ -140,7 +140,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                     /*while loop is used so that any requests that come when the response is being served; are also handled.*/
                     while (true) {
                         callback = requestQueue['serviceDef'][serviceId].shift();
-                        Utils.triggerFn(callback.success, response);
+                        Utils.triggerFn(callback && callback.success, response);
                         if (!requestQueue['serviceDef'][serviceId].length) {
                             break;
                         }
@@ -148,7 +148,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                 }, function (errMsg) {
                     while (true) {
                         callback = requestQueue['serviceDef'][serviceId].shift();
-                        Utils.triggerFn(callback.error, errMsg);
+                        Utils.triggerFn(callback && callback.error, errMsg);
                         if (!requestQueue['serviceDef'][serviceId].length) {
                             break;
                         }
@@ -381,7 +381,7 @@ wm.plugins.webServices.factories.ServiceFactory = [
                         /*while loop is used so that any requests that come when the response is being served; are also handled.*/
                         while (true) {
                             callback = requestQueue['operations'][serviceId].shift();
-                            Utils.triggerFn(callback.success, serviceObj.operations);
+                            Utils.triggerFn(callback && callback.success, serviceObj.operations);
                             if (!requestQueue['operations'][serviceId].length) {
                                 break;
                             }
