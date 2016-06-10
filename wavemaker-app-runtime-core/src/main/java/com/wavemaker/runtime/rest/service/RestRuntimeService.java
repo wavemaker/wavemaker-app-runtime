@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +55,8 @@ public class RestRuntimeService {
 
     private static final Logger logger = LoggerFactory.getLogger(RestRuntimeService.class);
 
-    public RestResponse executeRestCall(String serviceId, String methodName, Map<String, Object> params) throws IOException {
-        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, methodName, params);
+    public RestResponse executeRestCall(String serviceId, String methodName, Map<String, Object> params, HttpServletRequest originRequest) throws IOException {
+        RestRequestInfo restRequestInfo = getRestRequestInfo(serviceId, methodName, params, originRequest);
         logger.debug("Rest service request details {}", restRequestInfo.toString());
         RestResponse restResponse = invokeRestCall(restRequestInfo);
         logger.debug("Rest service response details for the endpoint {} is {}", restRequestInfo.getEndpointAddress(), restResponse.toString());
@@ -86,7 +88,7 @@ public class RestRuntimeService {
         return restResponse;
     }
 
-    private RestRequestInfo getRestRequestInfo(String serviceId, String methodName, Map<String, Object> params) throws IOException {
+    private RestRequestInfo getRestRequestInfo(String serviceId, String methodName, Map<String, Object> params, HttpServletRequest originRequest) throws IOException {
         Swagger swagger = getSwaggerDoc(serviceId);
         Map.Entry<String, Path> pathEntry = swagger.getPaths().entrySet().iterator().next();
         String relativePath = pathEntry.getKey();
@@ -158,6 +160,17 @@ public class RestRuntimeService {
             }
 
         }
+
+        String[] defaultHeaders = {"User-Agent", "Referer"};
+        for (String headerKey : defaultHeaders) {
+            if (!headers.containsKey(headerKey)) {
+                String headerValue = originRequest.getHeader(headerKey);
+                if (org.apache.commons.lang3.StringUtils.isNotBlank(headerValue)) {
+                    headers.put(headerKey, headerValue);
+                }
+            }
+        }
+
         boolean first = true;
         for (String queryParam : queryParams.keySet()) {
             Object val = queryParams.get(queryParam);

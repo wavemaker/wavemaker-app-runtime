@@ -27,7 +27,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -71,7 +71,7 @@ public class RestRuntimeController extends AbstractController {
         addHeaders(httpServletRequest, params);
         addRequestParams(httpServletRequest, params);
         addRequestBody(httpServletRequest, params);
-        RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, methodName, params);
+        RestResponse restResponse = restRuntimeService.executeRestCall(serviceId, methodName, params, httpServletRequest);
         Map<String,List<String>> responseHeaders = restResponse.getResponseHeaders();
         for (String responseHeaderKey : responseHeaders.keySet()) {
             String updatedResponseHeaderKey = "X-WM-"+ responseHeaderKey;
