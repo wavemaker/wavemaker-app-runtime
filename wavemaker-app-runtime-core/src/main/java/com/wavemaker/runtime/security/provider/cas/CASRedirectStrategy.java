@@ -24,18 +24,22 @@ public class CASRedirectStrategy extends DefaultRedirectStrategy {
 
     @Override
     public void sendRedirect(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
-        String serviceUrl = CASUtils.getServiceUrl(request);
-        StringBuilder stringBuilder = new StringBuilder(url);
-        stringBuilder.append("?" + serviceProperties.getServiceParameter() + "=" + serviceUrl);
-
-        LOGGER.info("CAS logout redirect url is {}", url);
-        String casRedirectUrl = stringBuilder.toString();
-        if (!CASUtils.isAjaxRequest(request)) {
-            super.sendRedirect(request, response, casRedirectUrl);
+        if ("/".equals(url)) {
+            super.sendRedirect(request, response, url);
         } else {
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(casRedirectUrl);
-            response.getWriter().flush();
+            String serviceUrl = CASUtils.getServiceUrl(request);
+            StringBuilder stringBuilder = new StringBuilder(url);
+            stringBuilder.append("?" + serviceProperties.getServiceParameter() + "=" + serviceUrl);
+
+            LOGGER.info("CAS logout redirect url is {}", url);
+            String casRedirectUrl = stringBuilder.toString();
+            if (!CASUtils.isAjaxRequest(request)) {
+                super.sendRedirect(request, response, casRedirectUrl);
+            } else {
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write(casRedirectUrl);
+                response.getWriter().flush();
+            }
         }
     }
 
