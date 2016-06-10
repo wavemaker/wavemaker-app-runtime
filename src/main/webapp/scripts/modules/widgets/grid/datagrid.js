@@ -81,7 +81,7 @@ $.widget('wm.datagrid', {
                 data = $.extend(true, [], this.options.data);
             this._setOption('data', data.sort(sorter));
             if ($.isFunction(this.options.afterSort)) {
-                this.options.afterSort();
+                this.options.afterSort(e);
             }
         }
     },
@@ -1275,7 +1275,6 @@ $.widget('wm.datagrid', {
                             colDef = self.preparedHeaderData[colId],
                             fields = _.split(colDef.field, '.'),
                             text;
-                        $el.removeClass('datetime-wrapper');
                         text = self.getTextValue($el, colDef, fields);
                         if (fields.length === 1 && colDef.editWidgetType === 'upload') {
                             if (isFormDataSupported) {
