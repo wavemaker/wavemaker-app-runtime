@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ package com.wavemaker.runtime.server;
 
 import java.beans.Introspector;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,8 +29,9 @@ import java.util.WeakHashMap;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.logging.LogFactory;
+import org.hsqldb.DatabaseManager;
+import org.hsqldb.lib.HsqlTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cglib.proxy.Enhancer;
@@ -108,16 +108,10 @@ public class CleanupListener implements ServletContextListener {
             Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
             if (klass != null && klass.getClassLoader() == this.getClass().getClassLoader()) {
                 //Shutdown the thread only if the class is loaded by web-app
-                final Class<?> databaseManagerClass = ClassUtils.getClass("org.hsqldb.DatabaseManager");
-                final Class<?> hsqlTimerClass = ClassUtils.getClass("org.hsqldb.lib.HsqlTimer");
-
-                Method timerMethod = databaseManagerClass.getMethod("getTimer");
-
-                Object timerObj = timerMethod.invoke(null);
-                if (timerObj != null) {
-                    hsqlTimerClass.getMethod("shutDown").invoke(timerObj);
-
-                    Thread hsqlTimerThread = (Thread) hsqlTimerClass.getMethod("getThread").invoke(timerObj);
+                HsqlTimer timer = DatabaseManager.getTimer();
+                if (timer != null) {
+                    timer.shutDown();
+                    Thread hsqlTimerThread = timer.getThread();
                     if (hsqlTimerThread != null && hsqlTimerThread.isAlive()) {
                         logger.info("Joining HSQL-Timer thread: {}", hsqlTimerThread.getName());
                         hsqlTimerThread.join(2000);
@@ -136,8 +130,7 @@ public class CleanupListener implements ServletContextListener {
     private void shutDownMySQLThreadIfAny() {
         String className = "com.mysql.jdbc.AbandonedConnectionCleanupThread";
         try {
-            Class<?> klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(),
-                    className);
+            Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader(), className);
             if (klass != null && klass.getClassLoader() == this.getClass().getClassLoader()) {
                 //Shutdown the thread only if the class is loaded by web-app
                 logger.info("Shutting down mysql AbandonedConnectionCleanupThread");
@@ -156,8 +149,7 @@ public class CleanupListener implements ServletContextListener {
         if (isSharedLib()) {
             String className = "com.fasterxml.jackson.databind.type.TypeFactory";
             try {
-                Class klass = ClassLoaderUtils
-                        .findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
+                Class klass = ClassLoaderUtils.findLoadedClass(Thread.currentThread().getContextClassLoader().getParent(), className);
                 if (klass != null) {
                     logger.info("Attempt to clear typeCache from {} class instance", klass);
                     TypeFactory.defaultInstance().clearCache();
@@ -196,8 +188,7 @@ public class CleanupListener implements ServletContextListener {
         try {
             Field propertiesCache = klass.getDeclaredField("propertiesCache");
             propertiesCache.setAccessible(true);
-            WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache
-                    .get(null);
+            WeakHashMap<Object, Hashtable<? super String, Object>> map = (WeakHashMap<Object, Hashtable<? super String, Object>>) propertiesCache.get(null);
             if (!map.isEmpty()) {
                 logger.info("Clearing propertiesCache from ");
                 map.clear();
@@ -219,8 +210,7 @@ public class CleanupListener implements ServletContextListener {
                 Field SOURCE = Enhancer.class.getDeclaredField("SOURCE");
                 SOURCE.setAccessible(true);
                 SOURCE.get(null);
-                Field cache = org.springframework.cglib.core.AbstractClassGenerator.class.getClassLoader()
-                        .loadClass(className).getDeclaredField("cache");
+                Field cache = org.springframework.cglib.core.AbstractClassGenerator.class.getClassLoader().loadClass(className).getDeclaredField("cache");
                 cache.setAccessible(true);
                 Map map = (Map) cache.get(SOURCE.get(null));
                 map.remove(CleanupListener.class.getClassLoader());
@@ -234,10 +224,9 @@ public class CleanupListener implements ServletContextListener {
         Set<Thread> threads = Thread.getAllStackTraces().keySet();
         for (Thread thread : threads) {
             if (thread.isAlive() && !(thread == Thread.currentThread()) &&
-                    (thread.getContextClassLoader() == Thread.currentThread().getContextClassLoader())) {
+                        (thread.getContextClassLoader() == Thread.currentThread().getContextClassLoader())) {
                 try {
-                    if (thread.getName().startsWith("C3P0PooledConnectionPoolManager") && thread.getName().toLowerCase()
-                            .contains("helper")) {
+                    if (thread.getName().startsWith("C3P0PooledConnectionPoolManager") && thread.getName().toLowerCase().contains("helper")) {
                         logger.info("Joining C3P0PooledConnectionPoolManager Helper Thread {}", thread);
                         thread.join(2000);
                     } else if (thread.getName().startsWith("Thread-")) {
