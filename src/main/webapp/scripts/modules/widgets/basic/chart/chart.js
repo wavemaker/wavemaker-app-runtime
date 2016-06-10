@@ -2037,6 +2037,11 @@ WM.module('wm.widgets.basic')
                         // flag to prevent initial chart plotting on each property change
                         scope.chartReady = false;
 
+                        function onDestroy() {
+                            handlers.forEach(Utils.triggerFn);
+                            handlers = [];
+                        }
+
                         //add id the the chart
                         element.attr('id', 'wmChart' + scope.$id);
                         scope.widgetDataset = {};
@@ -2063,15 +2068,15 @@ WM.module('wm.widgets.basic')
                             // fields defined in scope: {} MUST be watched explicitly
                             //watching scopedataset attribute to plot chart for the element.
                             if (attrs.scopedataset) {
-                                scope.$watch('scopedataset', function (newVal) {
+                                handlers.push(scope.$watch('scopedataset', function (newVal) {
                                     scope.chartData = newVal || scope.chartData;
                                     plotChartProxy(scope, element);
-                                });
+                                }));
                             }
                         } else {
                             scope.showNoDataMsg = true;
                             // on canvas-resize, plot the chart again
-                            scope.$on('$destroy', scope.$root.$on('canvas-resize', function () {
+                            handlers.push(scope.$root.$on('canvas-resize', function () {
                                 plotChartProxy(scope, element);
                             }));
                         }
@@ -2088,6 +2093,9 @@ WM.module('wm.widgets.basic')
                                 }
                             }));
                         }
+
+                        scope.$on('$destroy', onDestroy);
+                        element.on('$destroy', onDestroy);
 
                         //Container widgets like tabs, accordions will trigger this method to redraw the chart.
                         scope.redraw = plotChartProxy.bind(undefined, scope, element);
