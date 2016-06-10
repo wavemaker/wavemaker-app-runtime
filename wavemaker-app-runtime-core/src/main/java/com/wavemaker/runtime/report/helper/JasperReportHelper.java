@@ -61,11 +61,7 @@ public class JasperReportHelper {
 
     public InputStream exportAsStream(ReportContext reportContext) {
         try {
-            ExportType reportExportType = ExportType.PDF;
-            String exportType = reportContext.getExportType();
-            if (StringUtils.isNotBlank(exportType)) {
-                reportExportType = ExportType.getExportTypeByValue(exportType);
-            }
+            ExportType reportExportType = reportContext.getExportType();
             String reportName = reportContext.getReportName();
             JasperReport jasperReport = compileReport(reportName);
             JasperPrint jasperPrint = fillTheReport(jasperReport, reportContext.getParameters());
@@ -85,7 +81,7 @@ public class JasperReportHelper {
         return ClassLoaderUtils.getResourceAsStream(reportTemplateFile);
     }
 
-    private JasperReport compileReport(InputStream xmlInputStream) {
+    public JasperReport compileReport(InputStream xmlInputStream) {
         try {
             JasperDesign jasperDesign = JRXmlLoader.load(xmlInputStream);
             return JasperCompileManager.compileReport(jasperDesign);

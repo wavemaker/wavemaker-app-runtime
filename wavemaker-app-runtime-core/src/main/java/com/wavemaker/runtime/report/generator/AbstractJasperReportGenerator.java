@@ -15,11 +15,7 @@ import com.wavemaker.runtime.report.model.ReportContext;
 public abstract class AbstractJasperReportGenerator implements JasperReportGenerator {
 
     protected DownloadResponse buildReport(ReportContext reportContext) {
-        ExportType reportExportType = ExportType.PDF;
-        String exportType = reportContext.getExportType();
-        if (StringUtils.isNotBlank(exportType)) {
-            reportExportType = ExportType.getExportTypeByValue(exportType);
-        }
+        ExportType reportExportType = reportContext.getExportType();
         JasperReportHelper jasperReportHelper = JasperReportHelper.getInstance();
         InputStream dataStream = jasperReportHelper.exportAsStream(reportContext);
         return new DownloadResponse(dataStream, null, getFileName(reportContext.getReportName(), reportExportType));
