@@ -7,7 +7,7 @@ import com.wavemaker.runtime.service.reflect.ReflectServiceType;
  */
 public class SchedulerServiceType extends ReflectServiceType {
 
-    public static final String TYPE_NAME = "SchedulerServiceType";
+    public static final String TYPE_NAME = "SchedulerService";
 
     @Override
     public String getTypeName() {
