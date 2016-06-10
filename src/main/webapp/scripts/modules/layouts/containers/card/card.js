@@ -92,7 +92,10 @@ WM.module('wm.layouts.containers')
                 },
                 'post': function (scope, element, attrs) {
                     //To support backward compatibility for old projects
-                    scope.title = scope.heading;
+                    if (scope.title === undefined) {
+                        scope.title = scope.heading;
+                    }
+
                     WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, scope), scope, notifyFor);
                     WidgetUtilService.postWidgetCreate(scope, element, attrs);
                 }
