@@ -388,7 +388,17 @@ wm.variables.services.$servicevariable = ['Variables',
                             }
                         });
                     }
-                    params = constructRestRequestParams(methodInfo, variable);
+                    if (_.isEmpty(methodInfo)) {
+                        params = {
+                            'error': {
+                                'type': 'meta_data_missing',
+                                'field': '_wmServiceOperationInfo',
+                                'message': 'Meta data for the service "' + variable.service + '" is missing. Please run the project again.'
+                            }
+                        };
+                    } else {
+                        params = constructRestRequestParams(methodInfo, variable);
+                    }
                     if (params.error && params.error.message) {
                         processErrorResponse(params.error.message, variable, callBackScope, error);
                         return;
