@@ -795,20 +795,22 @@ WM.module('wm.widgets.base')
 
             // register the watchers.
             function registerWatchers() {
-                var watcher;
-
                 $rs.$evalAsync(function () {
-                    while (watchers.length) {
-                        watcher = watchers.shift();
+                    var i, watcher;
+                    // use the native for to improve the performance
+                    for (i = 0; i < watchers.length; i++) {
+                        watcher = watchers[i];
                         if (watcher.$s && !watcher.$s.$$destroyed) {
                             // when bound to FileUpload widget, use $watchCollection instead of $watch
-                            if (_.includes(watcher.expr, 'Widgets.') && _.endsWith(watcher.expr, 'selectedFiles')) {
+                            if (_.endsWith(watcher.expr, 'selectedFiles') && _.includes(watcher.expr, 'Widgets.')) {
                                 watcher.deRegister.destroy = watcher.$s.$watchCollection(watcher.expr, watcher.listener, watcher.deepWatch);
                             } else {
                                 watcher.deRegister.destroy = watcher.$s.$watch(watcher.expr, watcher.listener, watcher.deepWatch);
                             }
                         }
                     }
+
+                    watchers.length = 0;
                 });
             }
 
