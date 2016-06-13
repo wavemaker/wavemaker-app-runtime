@@ -16,13 +16,13 @@ WM.module('wm.widgets.dialog')
                 '</button>' +
                 '<h4 class="app-dialog-title modal-title">' +
                     '<i class="{{iconclass}}" ng-style="{width:iconwidth, height:iconheight, margin:iconmargin}"></i> ' +
-                    '<span>{{caption}}</span>' +
+                    '<span name="wm-{{dialogid}}-title">{{caption}}</span>' +
                 '</h4>' +
                 '<div class="dialog-header-action" wmtransclude></div>' +
             '</div>'
             );
         $templateCache.put("template/widget/dialog/design.html",
-            '<div class="app-dialog-body modal-body" apply-styles="scrollable-container" data-identifier="dialog-content" init-widget wmtransclude></div>'
+            '<div class="app-dialog-body modal-body" name="wm-{{dialogid}}-content" apply-styles="scrollable-container" data-identifier="dialog-content" init-widget wmtransclude></div>'
             );
         $templateCache.put("template/widget/dialog/dialog-footer.html",
             '<div class="app-dialog-footer modal-footer" data-identifier="actions" init-widget wmtransclude></div>'
