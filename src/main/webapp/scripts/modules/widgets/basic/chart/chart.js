@@ -410,7 +410,7 @@ WM.module('wm.widgets.basic')
                 PropertiesFactory.getPropertyGroup('xaxis').displayKey = undefined;
                 PropertiesFactory.getPropertyGroup('yaxis').displayKey = undefined;
 
-                scope.widgetProps.yaxisdatakey.widget = 'multiselect';
+                scope.widgetProps.yaxisdatakey.widget = 'multi-select';
                 $timeout(function () {
                     scope.widgetDataset.yaxisdatakey = scope.axisoptions || [];
                 }, 5);
@@ -1771,7 +1771,7 @@ WM.module('wm.widgets.basic')
                     $rootScope.$emit('update-widget-property', 'groupby', choosenColumn);
                 }
             } else {
-                scope.widgetProps.groupby.widget = 'multiselect';
+                scope.widgetProps.groupby.widget = 'multi-select';
                 scope.widgetDataset.groupby = columns || [];
             }
         }

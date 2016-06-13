@@ -798,7 +798,7 @@ WM.module('wm.widgets.live')
                     }
                     break;
                 case 'padding':
-                    $rs.$emit('apply-box-model-property', $is, $el.find('> .app-livelist-container'), 'padding');
+                    $rs.$emit('apply-box-model-property', $el.find('> .app-livelist-container'), 'padding', nv);
                     break;
                 }
             }

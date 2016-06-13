@@ -1031,7 +1031,7 @@ WM.module('wm.widgets.live')
                     widgetProps = WM.extend(widgetProps, {
                         'readonly'   : {'type': 'boolean', 'show': true},
                         'required'   : {'type': 'boolean', 'show': true},
-                        'filetype'   : {'type': 'datalist', 'options': ['image', 'audio', 'video'], 'show': true},
+                        'filetype'   : {'type': 'data-list', 'options': ['image', 'audio', 'video'], 'show': true},
                         'extensions' : {'type': 'string', 'show': true}
                     });
                 }
