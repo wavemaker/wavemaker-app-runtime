@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.scheduler;
+package com.wavemaker.runtime.scheduler.quartz.jobdetail;
 
 import java.lang.reflect.InvocationTargetException;
 

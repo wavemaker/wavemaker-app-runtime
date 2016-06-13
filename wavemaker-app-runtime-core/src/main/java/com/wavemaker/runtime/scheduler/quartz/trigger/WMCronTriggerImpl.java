@@ -1,4 +1,4 @@
-package com.wavemaker.runtime.scheduler;
+package com.wavemaker.runtime.scheduler.quartz.trigger;
 
 import java.util.Date;
 
