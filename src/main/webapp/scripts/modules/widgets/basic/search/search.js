@@ -401,7 +401,7 @@ WM.module('wm.widgets.basic')
 
                 // setup common request param values
                 requestParams = {
-                    'pagesize'           : $is.pagesize || 20,
+                    'pagesize'           : $is.limit || $is.pagesize || 20,
                     'skipDataSetUpdate'  : true //don't update the actual variable dataset
                 };
                 switch (variable.category) {
