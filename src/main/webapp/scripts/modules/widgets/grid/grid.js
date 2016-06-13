@@ -1356,8 +1356,9 @@ WM.module('wm.widgets.grid')
                     wmToaster.show('info', '', 'No changes detected');
                     $scope.$root.$safeApply($scope);
                 },
-                afterSort: function () {
+                afterSort: function (e) {
                     $rootScope.$safeApply($scope);
+                    $scope.onSort({$event: e, $data: $scope.serverData});
                 },
                 //Function to loop through events and trigger
                 handleCustomEvents: function (e, options) {
