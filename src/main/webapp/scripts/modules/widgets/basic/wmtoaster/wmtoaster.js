@@ -19,7 +19,7 @@ WM.module('wm.widgets.basic')
                     }
                 }
 
-                toaster.pop(type, title, desc, timeout, bodyOutputType, onClickHandler, undefined, undefined, undefined, onHideCallback);
+                toaster.pop(type, title, desc, timeout, bodyOutputType || 'trustedHtml', onClickHandler, undefined, undefined, undefined, onHideCallback);
             }
         },  classlist = [],
             idCount = 0,
