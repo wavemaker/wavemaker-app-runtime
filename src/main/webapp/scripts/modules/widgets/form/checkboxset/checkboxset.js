@@ -32,8 +32,10 @@ WM.module('wm.widgets.form')
             /*if checkboxValue is provided use that to assign model value else use the selectedvalue property if provided*/
             if (checkboxValue) {
                 selectedValues.push(checkboxValue);
+            } else if (scope.selectedvalues === '') {
+                scope._model_ = [];
             } else if (scope.selectedvalues) {
-                if (WM.isString(scope.selectedvalues) && scope.selectedvalues !== '') {
+                if (WM.isString(scope.selectedvalues)) {
                     selectedValues = scope.selectedvalues.split(',');
                 } else if (WM.isArray(scope.selectedvalues)) {
                     selectedValues = scope.selectedvalues;
