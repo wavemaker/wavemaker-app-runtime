@@ -1842,7 +1842,7 @@ $.widget('wm.datagrid', {
         } else {
             this.dataStatusContainer.show();
         }
-        if (state === 'nodata' || state === 'loading') {
+        if (state === 'nodata' || state === 'loading' || state === 'error') {
             this.gridContainer.addClass('show-msg');
         } else {
             this.gridContainer.removeClass('show-msg');
