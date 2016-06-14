@@ -25,9 +25,10 @@ WM.module('wm.widgets.form')
         /*Obtaining properties specific to select widget by extending from all editor related widget properties*/
         var widgetProps = PropertiesFactory.getPropertiesOf('wm.select', ['wm.base', 'wm.base.editors', 'wm.base.editors.abstracteditors', 'wm.base.editors.dataseteditors', 'wm.base.events.keyboard']),
             notifyFor = {
-                'dataset': true,
-                'multiple': true,
-                'active': true
+                'dataset'           : true,
+                'multiple'          : true,
+                'active'            : true,
+                'displayfield'      : true
             },
 
         /** store the whole object of the selected option - in '_dataSetModelProxyMap' */
@@ -215,6 +216,11 @@ WM.module('wm.widgets.form')
                 /*if studio-mode, then update the displayField & dataField in property panel*/
                 if (scope.widgetid && scope.dataset && newVal) {
                     WidgetUtilService.updatePropertyPanelOptions(scope);
+                }
+                break;
+            case 'displayfield':
+                if (scope.widgetid) {
+                    createSelectOptions(scope.dataset, scope, element);
                 }
                 break;
             }
