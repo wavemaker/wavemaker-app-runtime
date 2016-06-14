@@ -1469,7 +1469,8 @@ WM.module('wm.widgets.base', [])
                         "height": {"type": "string", "pattern": dimensionRegex},
                         "width": {"type": "string", "pattern": dimensionRegex},
                         "accessroles": {"type": "access-roles-select", "options": roles, "value": EVERYONE},
-                        "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'}
+                        "showindevice": {"type": "select-all", "options": showInDeviceOptions, "value": "all", "displaytype": 'block'},
+                        "onChange": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"}
                     },
                     "wm.tabbar" : {
                         "dataset": {"type": "array, object", "bindable": "in-bound", "widget": "string"},

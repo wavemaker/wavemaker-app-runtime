@@ -7,7 +7,7 @@ WM.module('wm.widgets.advanced')
         $tc.put('template/widget/advanced/carousel/static/carousel.html',
                 '<div init-widget class="app-carousel carousel slide" apply-styles>' +
                     '<ol class="carousel-indicators">' +
-                        '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}" ng-click="goTo($index)"></li>' +
+                        '<li ng-repeat="content in contents" ng-class="{\'active\': active === $index}" ng-click="goTo($index)"></li>' +
                     '</ol>' +
                     '<div class="carousel-inner" wmtransclude></div>' +
                     '<a class="left carousel-control" ng-click="previous()">' +
@@ -27,7 +27,7 @@ WM.module('wm.widgets.advanced')
                      '<div class="carousel-inner" wmtransclude></div>' +
                      '<div class="carousel-actions">' +
                         '<ul class="pagination" >' +
-                            '<li ng-repeat="content in contents" ng-class="{\'active\': activeIndex === $index}"">' +
+                            '<li ng-repeat="content in contents" ng-class="{\'active\': active === $index}"">' +
                                 '<a href="javascript:void(0);" ng-click="goTo($index)">{{$index + 1}}</a>' +
                             '</li>' +
                         '</ul>' +
@@ -173,6 +173,10 @@ WM.module('wm.widgets.advanced')
                 return $templateCache.get('template/widget/advanced/carousel' + (CONSTANTS.isStudioMode ? '/design/static/' : '/static/') + 'carousel.html');
             }
 
+            function onDestroy($is, handlers) {
+                handlers.forEach(Utils.triggerFn);
+            }
+
             directiveDefn = {
                 'restrict'  : 'E',
                 'scope'     : {},
@@ -209,7 +213,7 @@ WM.module('wm.widgets.advanced')
                             }
                         }
                         $scope.contents.splice(i, 1);
-                        $scope.goTo($scope.activeIndex);
+                        $scope.goTo($scope.active);
                     };
                 },
                 'link' : {
@@ -229,47 +233,49 @@ WM.module('wm.widgets.advanced')
                         if (!attrs.type) {
                             $is.widgetProps = widgetProps;
                             $is.contents    = [];
-                            $is.activeIndex = 0;
+                            $is.active = 0;
 
                             //function for slide  to move to a specific slide index
                             $is.goTo = function (index) {
-                                if (!$is.contents[$is.activeIndex] || $is.activeIndex === index) {
+                                if (!$is.contents[$is.active] || $is.active === index) {
                                     return;
                                 }
-                                var oldElement = $is.contents[$is.activeIndex].getElement(),
+                                var oldElement = $is.contents[$is.active].getElement(),
                                     newElement = $is.contents[index].getElement(),
                                     type = 'next';
 
                                 if ($is.widgetid) {
                                     oldElement.removeClass('active');
                                     newElement.addClass('active');
-                                    $is.activeIndex  = index;
+                                    $is.active  = index;
                                 } else {
                                     $is.stop();
-                                    if ($is.activeIndex > index) {
+                                    if ($is.active > index) {
                                         type = 'prev';
                                     }
                                     animateSlide(oldElement, newElement, type);
-                                    $is.activeIndex  = index;
+                                    $is.active  = index;
                                     $is.play();
+                                    Utils.triggerFn($is.onChange, {$isolateScope: $is});
                                 }
+
                             };
 
                             //function to move to next slide
                             $is.next = function () {
-                                if ($is.activeIndex > $is.contents.length - 2) {
+                                if ($is.active > $is.contents.length - 2) {
                                     $is.goTo(0);
                                 } else {
-                                    $is.goTo($is.activeIndex + 1);
+                                    $is.goTo($is.active + 1);
                                 }
                             };
 
                             //function to move to previous slide
                             $is.previous = function () {
-                                if ($is.activeIndex < 1) {
+                                if ($is.active < 1) {
                                     $is.goTo($is.contents.length - 1);
                                 } else {
-                                    $is.goTo($is.activeIndex - 1);
+                                    $is.goTo($is.active - 1);
                                 }
                             };
 
@@ -308,7 +314,9 @@ WM.module('wm.widgets.advanced')
                     },
                     'post': function ($is, $el, attrs, listCtrl) {
                         var $s = $el.scope(),
-                            $slideTemplate;
+                            handlers = [],
+                            $slideTemplate,
+                            _onDestroy;
 
                         $is.interval = $is.animationinterval * 1000;
                         Object.defineProperties($is, {
@@ -330,10 +338,20 @@ WM.module('wm.widgets.advanced')
                                 $slideTemplate = prepareSlideTemplate(listCtrl.$get('carouselTemplate'), attrs);
                                 $el.prepend($slideTemplate);
                                 $compile($slideTemplate)($el.closest('[data-identifier="carousel"]').isolateScope());
+                                if (attrs.onChange) {
+                                    handlers.push($is.$watch('active', function (nv) {
+                                        if (nv !== undefined) {
+                                            Utils.triggerFn($is.onChange, {$isolateScope: $is});
+                                        }
+                                    }));
+                                }
                             }
                         }
                         WidgetUtilService.registerPropertyChangeListener(propertyChangeHandler.bind(undefined, $is, attrs), $is, notifyFor);
                         WidgetUtilService.postWidgetCreate($is, $el, attrs);
+                        _onDestroy = onDestroy.bind(undefined, $is, handlers);
+                        $is.$on('$destroy', _onDestroy);
+                        $el.on('$destroy', _onDestroy);
                     }
                 }
             };
