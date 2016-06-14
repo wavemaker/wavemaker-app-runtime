@@ -185,7 +185,7 @@ Application
                         'method': 'GET',
                         'url'   : Utils.preventCachingOf('pages/' + pageName + '/' + 'page.min.html')
                     }).then(function (response) {
-                        defaultPageLoadSuccessHandler(pageName, response ,isPartial);
+                        defaultPageLoadSuccessHandler(pageName, response, isPartial);
                         Utils.triggerFn(onSuccess, cache.get(pageName));
                     }, function (jqxhr) {
                         defaultPageLoadErrorHandler(pageName, onSuccess, onError, jqxhr);
@@ -368,19 +368,9 @@ Application
                  */
                 function initAppVariablesAndDependencies() {
                     var deferred = $q.defer();
-                    Variables.initAppVariables(undefined, function (appVariables) {
+                    Variables.initAppVariables(undefined, function () {
                         appVariablesLoaded = true;
-                        var supportedLocale = (appVariables.supportedLocale || {}).dataSet;
-
-                        //Assume supported locale as 'en' when supportedLocale variable is missing
-                        if (!supportedLocale) {
-                            supportedLocale = {'en' : 'English'};
-                        }
-                        initI18nService(_.keys(supportedLocale), _WM_APP_PROPERTIES.defaultLanguage);
-                        updateLoggedInUserVariable().
-                            then(function () {
-                                deferred.resolve();
-                            });
+                        updateLoggedInUserVariable().then(deferred.resolve);
                     }, function (error) {
                         deferred.reject(error);
                     });
@@ -554,6 +544,10 @@ Application
                     i18nService.setSelectedLocale($is.datavalue);
                 };
 
+                // load the language bundle
+                AppManager.initI18nService(_.split(_WM_APP_PROPERTIES.supportedLanguages, ',') || ['en'], _WM_APP_PROPERTIES.defaultLanguage);
+
+
                 /*
                  * Route Change Handler, for every page
                  * Page content is fetched here and provided to the template for rendering
@@ -561,9 +555,7 @@ Application
                  * For Prefabs: localization resources are loaded
                  */
                 $rs.$on('$routeChangeSuccess', function (evt, $cRoute, $pRoute) {
-                    var pageName = $cRoute.params.name,
-                        pageVars,
-                        supportedLocale;
+                    var pageName = $cRoute.params.name;
 
                     if ($rs._appNavEvt) {
                         $rs._appNavEvt.widgetName = WM.element($rs._appNavEvt.target).closest('[init-widget]').attr('name');
@@ -576,11 +568,6 @@ Application
                     if (pageName) {
                         pageName = pageName.split('.').shift();
                         $cRoute.locals.$template = AppManager.getPreparedPageContent(pageName);
-
-                        if ($rs.isPrefabType) {
-                            supportedLocale = Utils.findValueOf(pageVars, 'supportedLocale.dataSet');
-                            AppManager.initI18nService(_.keys(supportedLocale), appProperties.defaultLanguage);
-                        }
                     }
 
                     // hide the app-spinner
