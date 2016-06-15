@@ -2953,7 +2953,7 @@ WM.module('wm.widgets.base', [])
                 }
 
                 if (MAP_DIMENSION_PROPS[key]) {
-                    setDimensionProp($is, obj, key);
+                    setDimensionProp(obj, key, $is[key]);
                 } else {
                     if (cssName) {
                         obj[cssName] = nv;
