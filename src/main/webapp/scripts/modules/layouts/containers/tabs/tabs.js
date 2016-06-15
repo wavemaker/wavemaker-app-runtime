@@ -310,7 +310,7 @@ WM.module('wm.layouts.containers')
                             '<a href="javascript:void(0);" role="button" tabindex="0">' +
                                 '<div class="tab-heading">' +
                                     '<i class="app-icon {{paneicon}}" ng-if="paneicon"></i> ' +
-                                    '<span ng-bind="heading"></span>' +
+                                    '<span ng-bind="title"></span>' +
                                 '</div>' +
                             '</a>' +
                           '</li>',
@@ -324,12 +324,19 @@ WM.module('wm.layouts.containers')
             'template': $templateCache.get('template/layout/container/tab-pane.html'),
             'compile': function () {
                 return {
-                    'pre': function (scope) {
+                    'pre': function (scope, element, attrs) {
+                        if (attrs.heading && !attrs.title) {
+                            attrs.title = attrs.heading;
+                        }
                         /* save the reference to widgetProps in scope */
                         scope.widgetProps = widgetProps;
                         scope.$lazyLoad = WM.noop;
                     },
                     'post': function (scope, element, attrs, ctrl) {
+                        //To support backward compatibility for old projects
+                        if (scope.title === undefined) {
+                            scope.title = scope.heading;
+                        }
                         scope._headerElement = WM.element($headerEle);
                         ctrl.registerHeader(scope);
                         /* register the tabpane with the tabs */
@@ -416,7 +423,7 @@ WM.module('wm.layouts.containers')
                             };
                         } else {
                             // create an option element and add it to the tabs-list element.
-                            $opt = WM.element('<option ng-bind-html="heading"></option>');
+                            $opt = WM.element('<option ng-bind-html="title"></option>');
                             $opt = $compile($opt)(scope);
                             element.closest('.app-tabs').children('select').append($opt);
 
@@ -492,7 +499,7 @@ WM.module('wm.layouts.containers')
                 <div>Address2: {{address2}}</div>
                 <br>
                 <wm-tabs width="{{width}}" height="{{height}}">
-                    <wm-tabpane heading="tab1">
+                    <wm-tabpane title="tab1">
                          Content of tab1:<br>
                          Address1:<br>
                          <wm-composite>
@@ -508,7 +515,7 @@ WM.module('wm.layouts.containers')
                              <wm-text scopedatavalue="address1.zip"></wm-text>
                          </wm-composite>
                     </wm-tabpane>
-                    <wm-tabpane heading="tab2">
+                    <wm-tabpane title="tab2">
                          Content of tab2:<br>
                          Address2:<br>
                          <wm-composite>
@@ -557,7 +564,7 @@ WM.module('wm.layouts.containers')
  *
  * @param {string=} name
  *                  Name of the tabpane.
- * @param {string=} heading
+ * @param {string=} title
  *                  Title of the header. <br>
  *                  This property is bindable. <br>
  *                  Default value: `Tab Title`. <br>
@@ -595,10 +602,10 @@ WM.module('wm.layouts.containers')
                 </div>
                 <br>
                 <wm-tabs>
-                    <wm-tabpane on-select="onTab1Select()" on-deselect="onTab1Deselect()" Heading="tab1">
+                    <wm-tabpane on-select="onTab1Select()" on-deselect="onTab1Deselect()" title="tab1">
                         Content for tab1:
                     </wm-tabpane>
-                    <wm-tabpane on-select="onTab2Select()" Heading="tab2">
+                    <wm-tabpane on-select="onTab2Select()" title="tab2">
                         Content for tab2:
                     </wm-tabpane>
                 </wm-tabs>

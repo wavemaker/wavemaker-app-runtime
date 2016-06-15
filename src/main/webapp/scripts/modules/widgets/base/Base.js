@@ -1394,7 +1394,7 @@ WM.module('wm.widgets.base', [])
                         "class": {"type": "string", "pattern": classRegex, "widget": "list-picker", "options": ["panel-default", "panel-primary", "panel-success", "panel-info", "panel-warning", "panel-danger"]},
                         "onExpand": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onCollapse": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "heading": {"type": "string", "value": "Heading", "bindable": "in-bound"},
+                        "title": {"type": "string", "value": "Title", "bindable": "in-bound"},
                         "subheading": {"type": "string", "bindable": "in-bound"},
                         "iconclass": {"type": "string", "widget": "select-icon", "bindable": "in-out-bound", "pattern": classRegex},
                         "badgevalue": {"type": "string", "bindable": "in-out-bound"},
@@ -1428,13 +1428,13 @@ WM.module('wm.widgets.base', [])
                     },
 
                     "wm.tab": {
-                        "heading": {"type": "string", "bindable": "in-bound"}
+                        "title": {"type": "string", "bindable": "in-bound"}
                     },
                     "wm.tabpane": {
                         "disabled": {"type": "boolean", "bindable": "in-bound"},
                         "onSelect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
                         "onDeselect": {"type": "event", "options": widgetEventOptions, "widget": "eventlist"},
-                        "heading": {"type": "string", "value": "Tab Title", "bindable": "in-bound"},
+                        "title": {"type": "string", "value": "Tab Title", "bindable": "in-bound"},
                         "paneicon": {"type": "string", "widget": "select-icon", "bindable": "in-bound", "pattern": classRegex},
                         "isdefaulttab": {"type": "boolean", "bindable": "in-bound"},
                         "tabindex": {"type": "string", "value": "0"}

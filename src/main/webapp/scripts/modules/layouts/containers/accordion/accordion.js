@@ -13,7 +13,7 @@ WM.module('wm.layouts.containers')
                     '<h3 class="panel-title">' +
                         '<a href="javascript:void(0);" class="accordion-toggle">' +
                             '<div class="pull-left"><i class="app-icon panel-icon {{iconclass}}" ng-show="iconclass"></i></div>' +
-                            '<div class="pull-left"><div class="heading" ng-bind-html="heading"></div>' +
+                            '<div class="pull-left"><div class="heading" ng-bind-html="title"></div>' +
                             '<div class="description" ng-bind-html="subheading"></div></div>' +
                         '</a>' +
                     '</h3>' +
@@ -90,12 +90,18 @@ WM.module('wm.layouts.containers')
             'require': '^wmAccordion',
             'compile': function () {
                 return {
-                    'pre': function (scope) {
+                    'pre': function (scope, element, attrs) {
+                        if (attrs.heading && !attrs.title) {
+                            attrs.title = attrs.heading;
+                        }
                         scope.widgetProps = widgetProps;
                         scope.$lazyLoad   = WM.noop;
                     },
                     'post': function (scope, element, attrs, panesCtrl) {
-
+                        //To support backward compatibility for old projects
+                        if (scope.title === undefined) {
+                            scope.title = scope.heading;
+                        }
                         /* register accordion-pane with accordion */
                         panesCtrl.register(scope);
 
@@ -180,10 +186,10 @@ WM.module('wm.layouts.containers')
         <file name="index.html">
             <div ng-controller="Ctrl" class="wm-app">
                 <wm-accordion width="400px" height="400px" closeothers="false" horizontalalign='right'>
-                    <wm-accordionpane heading="pane1">
+                    <wm-accordionpane title="pane1">
                         Content for pane1
                     </wm-accordionpane>
-                    <wm-accordionpane heading="pane2">
+                    <wm-accordionpane title="pane2">
                         Content for pane2
                     </wm-accordionpane>
                 </wm-accordion>
@@ -219,10 +225,10 @@ WM.module('wm.layouts.containers')
  *                  Show is a bindable property. <br>
  *                  This property will be used to show/hide the accordion on the web page. <br>
  *                  Default value: `true`.
- * @param {string=} heading
+ * @param {string=} title
  *                  Title of the header. <br>
  *                  This property is bindable. <br>
- *                  Default value: `Heading`. <br>
+ *                  Default value: `Title`. <br>
  *                  This is will be used only when the default template is used.
  * @param {string=} subheading
  *                  subheading of the accordion header. <br>
