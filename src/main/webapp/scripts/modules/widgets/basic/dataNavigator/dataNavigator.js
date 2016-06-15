@@ -391,7 +391,9 @@ WM.module("wm.widgets.basic")
                 };
 
                 $scope.pageChanged = function () {
+                    var callbackFn = $scope.$parent.onPaginationchange || $scope.onPaginationchange;
                     $scope.goToPage();
+                    callbackFn({$event: undefined, $scope: this, $index: $scope.dn.currentPage});
                 };
 
                 /*Function to navigate to the respective pages.*/
